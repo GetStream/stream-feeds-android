@@ -23,3 +23,4 @@ rootProject.name = "stream-feeds-android"
 include(":app")
 include(":stream-feeds-android-client")
 include(":stream-feeds-android-core")
+include(":stream-annotations")

@@ -3,15 +3,13 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
+apply(from = "$rootDir/scripts/android.gradle")
+
 android {
     namespace = "io.getstream.feeds.android.core"
-    compileSdk = 36
 
     defaultConfig {
-        minSdk = 21
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -21,16 +19,15 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            consumerProguardFiles("consumer-rules.pro")
+        }
+        debug {
+            consumerProguardFiles("consumer-rules.pro")
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
 }
+
+// TODO: Set compiler options
 
 dependencies {
 
