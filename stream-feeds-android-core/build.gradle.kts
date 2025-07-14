@@ -40,5 +40,8 @@ dependencies {
 
     // Network
     implementation(libs.moshi)
+    implementation(libs.moshi.kotlin)
     implementation(libs.retrofit)
+
+    api(libs.threentenabp2)
 }
