@@ -67,7 +67,15 @@ interface ApiService {
      */
     @POST("/api/v2/feeds/activities/query")
     suspend fun queryActivities(
-        @Body queryActivitiesRequest : io.getstream.feeds.android.core.generated.models.QueryActivitiesRequest? = null
+        @Body queryActivitiesRequest : io.getstream.feeds.android.core.generated.models.QueryActivitiesRequest
+    ): io.getstream.feeds.android.core.generated.models.QueryActivitiesResponse
+    
+    /**
+     * Query activities
+     * Query activities based on filters with pagination and sorting options
+     */
+    @POST("/api/v2/feeds/activities/query")
+    suspend fun queryActivities(
     ): io.getstream.feeds.android.core.generated.models.QueryActivitiesResponse
     
     /**
@@ -96,7 +104,16 @@ interface ApiService {
     @PATCH("/api/v2/feeds/activities/{activity_id}")
     suspend fun updateActivityPartial(
         @Path("activity_id") activityId: kotlin.String ,
-        @Body updateActivityPartialRequest : io.getstream.feeds.android.core.generated.models.UpdateActivityPartialRequest? = null
+        @Body updateActivityPartialRequest : io.getstream.feeds.android.core.generated.models.UpdateActivityPartialRequest
+    ): io.getstream.feeds.android.core.generated.models.UpdateActivityPartialResponse
+    
+    /**
+     * Partially activity update
+     * Updates certain fields of the activity
+     */
+    @PATCH("/api/v2/feeds/activities/{activity_id}")
+    suspend fun updateActivityPartial(
+        @Path("activity_id") activityId: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.UpdateActivityPartialResponse
     
     /**
@@ -106,7 +123,16 @@ interface ApiService {
     @PUT("/api/v2/feeds/activities/{activity_id}")
     suspend fun updateActivity(
         @Path("activity_id") activityId: kotlin.String ,
-        @Body updateActivityRequest : io.getstream.feeds.android.core.generated.models.UpdateActivityRequest? = null
+        @Body updateActivityRequest : io.getstream.feeds.android.core.generated.models.UpdateActivityRequest
+    ): io.getstream.feeds.android.core.generated.models.UpdateActivityResponse
+    
+    /**
+     * Full activity update
+     * Replaces an activity with the provided data
+     */
+    @PUT("/api/v2/feeds/activities/{activity_id}")
+    suspend fun updateActivity(
+        @Path("activity_id") activityId: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.UpdateActivityResponse
     
     /**
@@ -126,7 +152,16 @@ interface ApiService {
     @PATCH("/api/v2/feeds/activities/{activity_id}/bookmarks")
     suspend fun updateBookmark(
         @Path("activity_id") activityId: kotlin.String ,
-        @Body updateBookmarkRequest : io.getstream.feeds.android.core.generated.models.UpdateBookmarkRequest? = null
+        @Body updateBookmarkRequest : io.getstream.feeds.android.core.generated.models.UpdateBookmarkRequest
+    ): io.getstream.feeds.android.core.generated.models.UpdateBookmarkResponse
+    
+    /**
+     * Update bookmark
+     * Updates a bookmark for an activity
+     */
+    @PATCH("/api/v2/feeds/activities/{activity_id}/bookmarks")
+    suspend fun updateBookmark(
+        @Path("activity_id") activityId: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.UpdateBookmarkResponse
     
     /**
@@ -136,7 +171,16 @@ interface ApiService {
     @POST("/api/v2/feeds/activities/{activity_id}/bookmarks")
     suspend fun addBookmark(
         @Path("activity_id") activityId: kotlin.String ,
-        @Body addBookmarkRequest : io.getstream.feeds.android.core.generated.models.AddBookmarkRequest? = null
+        @Body addBookmarkRequest : io.getstream.feeds.android.core.generated.models.AddBookmarkRequest
+    ): io.getstream.feeds.android.core.generated.models.AddBookmarkResponse
+    
+    /**
+     * Add bookmark
+     * Adds a bookmark to an activity
+     */
+    @POST("/api/v2/feeds/activities/{activity_id}/bookmarks")
+    suspend fun addBookmark(
+        @Path("activity_id") activityId: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.AddBookmarkResponse
     
     /**
@@ -147,7 +191,17 @@ interface ApiService {
     suspend fun castPollVote(
         @Path("activity_id") activityId: kotlin.String,
         @Path("poll_id") pollId: kotlin.String ,
-        @Body castPollVoteRequest : io.getstream.feeds.android.core.generated.models.CastPollVoteRequest? = null
+        @Body castPollVoteRequest : io.getstream.feeds.android.core.generated.models.CastPollVoteRequest
+    ): io.getstream.feeds.android.core.generated.models.PollVoteResponse
+    
+    /**
+     * Cast vote
+     * Cast a vote on a poll
+     */
+    @POST("/api/v2/feeds/activities/{activity_id}/polls/{poll_id}/vote")
+    suspend fun castPollVote(
+        @Path("activity_id") activityId: kotlin.String,
+        @Path("poll_id") pollId: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.PollVoteResponse
     
     /**
@@ -179,7 +233,16 @@ interface ApiService {
     @POST("/api/v2/feeds/activities/{activity_id}/reactions/query")
     suspend fun queryActivityReactions(
         @Path("activity_id") activityId: kotlin.String ,
-        @Body queryActivityReactionsRequest : io.getstream.feeds.android.core.generated.models.QueryActivityReactionsRequest? = null
+        @Body queryActivityReactionsRequest : io.getstream.feeds.android.core.generated.models.QueryActivityReactionsRequest
+    ): io.getstream.feeds.android.core.generated.models.QueryActivityReactionsResponse
+    
+    /**
+     * Query activity reactions
+     * Query activity reactions
+     */
+    @POST("/api/v2/feeds/activities/{activity_id}/reactions/query")
+    suspend fun queryActivityReactions(
+        @Path("activity_id") activityId: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.QueryActivityReactionsResponse
     
     /**
@@ -198,7 +261,15 @@ interface ApiService {
      */
     @POST("/api/v2/feeds/bookmark_folders/query")
     suspend fun queryBookmarkFolders(
-        @Body queryBookmarkFoldersRequest : io.getstream.feeds.android.core.generated.models.QueryBookmarkFoldersRequest? = null
+        @Body queryBookmarkFoldersRequest : io.getstream.feeds.android.core.generated.models.QueryBookmarkFoldersRequest
+    ): io.getstream.feeds.android.core.generated.models.QueryBookmarkFoldersResponse
+    
+    /**
+     * Query bookmark folders
+     * Query bookmark folders with filter query
+     */
+    @POST("/api/v2/feeds/bookmark_folders/query")
+    suspend fun queryBookmarkFolders(
     ): io.getstream.feeds.android.core.generated.models.QueryBookmarkFoldersResponse
     
     /**
@@ -217,7 +288,16 @@ interface ApiService {
     @PATCH("/api/v2/feeds/bookmark_folders/{folder_id}")
     suspend fun updateBookmarkFolder(
         @Path("folder_id") folderId: kotlin.String ,
-        @Body updateBookmarkFolderRequest : io.getstream.feeds.android.core.generated.models.UpdateBookmarkFolderRequest? = null
+        @Body updateBookmarkFolderRequest : io.getstream.feeds.android.core.generated.models.UpdateBookmarkFolderRequest
+    ): io.getstream.feeds.android.core.generated.models.UpdateBookmarkFolderResponse
+    
+    /**
+     * Update a bookmark folder
+     * Update a bookmark folder by its ID
+     */
+    @PATCH("/api/v2/feeds/bookmark_folders/{folder_id}")
+    suspend fun updateBookmarkFolder(
+        @Path("folder_id") folderId: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.UpdateBookmarkFolderResponse
     
     /**
@@ -226,7 +306,15 @@ interface ApiService {
      */
     @POST("/api/v2/feeds/bookmarks/query")
     suspend fun queryBookmarks(
-        @Body queryBookmarksRequest : io.getstream.feeds.android.core.generated.models.QueryBookmarksRequest? = null
+        @Body queryBookmarksRequest : io.getstream.feeds.android.core.generated.models.QueryBookmarksRequest
+    ): io.getstream.feeds.android.core.generated.models.QueryBookmarksResponse
+    
+    /**
+     * Query bookmarks
+     * Query bookmarks with filter query
+     */
+    @POST("/api/v2/feeds/bookmarks/query")
+    suspend fun queryBookmarks(
     ): io.getstream.feeds.android.core.generated.models.QueryBookmarksResponse
     
     /**
@@ -297,7 +385,16 @@ interface ApiService {
     @PATCH("/api/v2/feeds/comments/{comment_id}")
     suspend fun updateComment(
         @Path("comment_id") commentId: kotlin.String ,
-        @Body updateCommentRequest : io.getstream.feeds.android.core.generated.models.UpdateCommentRequest? = null
+        @Body updateCommentRequest : io.getstream.feeds.android.core.generated.models.UpdateCommentRequest
+    ): io.getstream.feeds.android.core.generated.models.UpdateCommentResponse
+    
+    /**
+     * Update a comment
+     * Updates a comment on an object (e.g., activity) and broadcasts appropriate events
+     */
+    @PATCH("/api/v2/feeds/comments/{comment_id}")
+    suspend fun updateComment(
+        @Path("comment_id") commentId: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.UpdateCommentResponse
     
     /**
@@ -317,7 +414,16 @@ interface ApiService {
     @POST("/api/v2/feeds/comments/{comment_id}/reactions/query")
     suspend fun queryCommentReactions(
         @Path("comment_id") commentId: kotlin.String ,
-        @Body queryCommentReactionsRequest : io.getstream.feeds.android.core.generated.models.QueryCommentReactionsRequest? = null
+        @Body queryCommentReactionsRequest : io.getstream.feeds.android.core.generated.models.QueryCommentReactionsRequest
+    ): io.getstream.feeds.android.core.generated.models.QueryCommentReactionsResponse
+    
+    /**
+     * Query comment reactions
+     * Query comment reactions
+     */
+    @POST("/api/v2/feeds/comments/{comment_id}/reactions/query")
+    suspend fun queryCommentReactions(
+        @Path("comment_id") commentId: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.QueryCommentReactionsResponse
     
     /**
@@ -365,7 +471,18 @@ interface ApiService {
         @Path("feed_group_id") feedGroupId: kotlin.String,
         @Path("feed_id") feedId: kotlin.String,
         @Query("connection_id") connectionId: kotlin.String? = null ,
-        @Body getOrCreateFeedRequest : io.getstream.feeds.android.core.generated.models.GetOrCreateFeedRequest? = null
+        @Body getOrCreateFeedRequest : io.getstream.feeds.android.core.generated.models.GetOrCreateFeedRequest
+    ): io.getstream.feeds.android.core.generated.models.GetOrCreateFeedResponse
+    
+    /**
+     * Create a new feed
+     * Create a single feed for a given feed group
+     */
+    @POST("/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}")
+    suspend fun getOrCreateFeed(
+        @Path("feed_group_id") feedGroupId: kotlin.String,
+        @Path("feed_id") feedId: kotlin.String,
+        @Query("connection_id") connectionId: kotlin.String? = null
     ): io.getstream.feeds.android.core.generated.models.GetOrCreateFeedResponse
     
     /**
@@ -376,7 +493,17 @@ interface ApiService {
     suspend fun updateFeed(
         @Path("feed_group_id") feedGroupId: kotlin.String,
         @Path("feed_id") feedId: kotlin.String ,
-        @Body updateFeedRequest : io.getstream.feeds.android.core.generated.models.UpdateFeedRequest? = null
+        @Body updateFeedRequest : io.getstream.feeds.android.core.generated.models.UpdateFeedRequest
+    ): io.getstream.feeds.android.core.generated.models.UpdateFeedResponse
+    
+    /**
+     * Update a feed
+     * Update an existing feed
+     */
+    @PUT("/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}")
+    suspend fun updateFeed(
+        @Path("feed_group_id") feedGroupId: kotlin.String,
+        @Path("feed_id") feedId: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.UpdateFeedResponse
     
     /**
@@ -387,7 +514,17 @@ interface ApiService {
     suspend fun markActivity(
         @Path("feed_group_id") feedGroupId: kotlin.String,
         @Path("feed_id") feedId: kotlin.String ,
-        @Body markActivityRequest : io.getstream.feeds.android.core.generated.models.MarkActivityRequest? = null
+        @Body markActivityRequest : io.getstream.feeds.android.core.generated.models.MarkActivityRequest
+    ): io.getstream.feeds.android.core.generated.models.Response
+    
+    /**
+     * Mark activities as read/seen/watched
+     * Mark activities as read/seen/watched. Can mark by timestamp (seen), activity IDs (read), or all as read.
+     */
+    @POST("/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}/activities/mark/batch")
+    suspend fun markActivity(
+        @Path("feed_group_id") feedGroupId: kotlin.String,
+        @Path("feed_id") feedId: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.Response
     
     /**
@@ -410,7 +547,18 @@ interface ApiService {
         @Path("feed_group_id") feedGroupId: kotlin.String,
         @Path("feed_id") feedId: kotlin.String,
         @Path("activity_id") activityId: kotlin.String ,
-        @Body pinActivityRequest : io.getstream.feeds.android.core.generated.models.PinActivityRequest? = null
+        @Body pinActivityRequest : io.getstream.feeds.android.core.generated.models.PinActivityRequest
+    ): io.getstream.feeds.android.core.generated.models.PinActivityResponse
+    
+    /**
+     * Pin an activity to a feed
+     * Pin an activity to a feed. Pinned activities are typically displayed at the top of a feed.
+     */
+    @POST("/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}/activities/{activity_id}/pin")
+    suspend fun pinActivity(
+        @Path("feed_group_id") feedGroupId: kotlin.String,
+        @Path("feed_id") feedId: kotlin.String,
+        @Path("activity_id") activityId: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.PinActivityResponse
     
     /**
@@ -432,7 +580,17 @@ interface ApiService {
     suspend fun acceptFeedMemberInvite(
         @Path("feed_id") feedId: kotlin.String,
         @Path("feed_group_id") feedGroupId: kotlin.String ,
-        @Body acceptFeedMemberInviteRequest : io.getstream.feeds.android.core.generated.models.AcceptFeedMemberInviteRequest? = null
+        @Body acceptFeedMemberInviteRequest : io.getstream.feeds.android.core.generated.models.AcceptFeedMemberInviteRequest
+    ): io.getstream.feeds.android.core.generated.models.AcceptFeedMemberInviteResponse
+    
+    /**
+     * Accept a feed member request
+     * Accepts a pending feed member request
+     */
+    @POST("/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}/members/accept")
+    suspend fun acceptFeedMemberInvite(
+        @Path("feed_id") feedId: kotlin.String,
+        @Path("feed_group_id") feedGroupId: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.AcceptFeedMemberInviteResponse
     
     /**
@@ -443,7 +601,17 @@ interface ApiService {
     suspend fun queryFeedMembers(
         @Path("feed_group_id") feedGroupId: kotlin.String,
         @Path("feed_id") feedId: kotlin.String ,
-        @Body queryFeedMembersRequest : io.getstream.feeds.android.core.generated.models.QueryFeedMembersRequest? = null
+        @Body queryFeedMembersRequest : io.getstream.feeds.android.core.generated.models.QueryFeedMembersRequest
+    ): io.getstream.feeds.android.core.generated.models.QueryFeedMembersResponse
+    
+    /**
+     * Query feed members
+     * Query feed members based on filters with pagination and sorting options
+     */
+    @POST("/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}/members/query")
+    suspend fun queryFeedMembers(
+        @Path("feed_group_id") feedGroupId: kotlin.String,
+        @Path("feed_id") feedId: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.QueryFeedMembersResponse
     
     /**
@@ -454,7 +622,17 @@ interface ApiService {
     suspend fun rejectFeedMemberInvite(
         @Path("feed_group_id") feedGroupId: kotlin.String,
         @Path("feed_id") feedId: kotlin.String ,
-        @Body rejectFeedMemberInviteRequest : io.getstream.feeds.android.core.generated.models.RejectFeedMemberInviteRequest? = null
+        @Body rejectFeedMemberInviteRequest : io.getstream.feeds.android.core.generated.models.RejectFeedMemberInviteRequest
+    ): io.getstream.feeds.android.core.generated.models.RejectFeedMemberInviteResponse
+    
+    /**
+     * Reject an invite to become a feed member
+     * Rejects a pending feed member request
+     */
+    @POST("/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}/members/reject")
+    suspend fun rejectFeedMemberInvite(
+        @Path("feed_group_id") feedGroupId: kotlin.String,
+        @Path("feed_id") feedId: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.RejectFeedMemberInviteResponse
     
     /**
@@ -483,7 +661,16 @@ interface ApiService {
     @POST("/api/v2/feeds/feeds/query")
     suspend fun feedsQueryFeeds(
         @Query("connection_id") connectionId: kotlin.String? = null ,
-        @Body queryFeedsRequest : io.getstream.feeds.android.core.generated.models.QueryFeedsRequest? = null
+        @Body queryFeedsRequest : io.getstream.feeds.android.core.generated.models.QueryFeedsRequest
+    ): io.getstream.feeds.android.core.generated.models.QueryFeedsResponse
+    
+    /**
+     * Query feeds
+     * Query feeds with filter query
+     */
+    @POST("/api/v2/feeds/feeds/query")
+    suspend fun feedsQueryFeeds(
+        @Query("connection_id") connectionId: kotlin.String? = null
     ): io.getstream.feeds.android.core.generated.models.QueryFeedsResponse
     
     /**
@@ -528,7 +715,15 @@ interface ApiService {
      */
     @POST("/api/v2/feeds/follows/query")
     suspend fun queryFollows(
-        @Body queryFollowsRequest : io.getstream.feeds.android.core.generated.models.QueryFollowsRequest? = null
+        @Body queryFollowsRequest : io.getstream.feeds.android.core.generated.models.QueryFollowsRequest
+    ): io.getstream.feeds.android.core.generated.models.QueryFollowsResponse
+    
+    /**
+     * Query follows
+     * Query follows based on filters with pagination and sorting options
+     */
+    @POST("/api/v2/feeds/follows/query")
+    suspend fun queryFollows(
     ): io.getstream.feeds.android.core.generated.models.QueryFollowsResponse
     
     /**
