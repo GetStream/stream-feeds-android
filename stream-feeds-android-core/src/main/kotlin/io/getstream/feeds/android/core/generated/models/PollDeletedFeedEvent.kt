@@ -57,14 +57,14 @@ data class PollDeletedFeedEvent (
     @Json(name = "received_at")
     val receivedAt: org.threeten.bp.OffsetDateTime? = null
 )
-: io.getstream.feeds.android.core.generated.models.WSEvent, io.getstream.feeds.android.core.generated.models.WSClientEvent
+: io.getstream.feeds.android.core.generated.models.WSClientEvent, io.getstream.feeds.android.core.generated.models.WSEvent, io.getstream.feeds.android.core.generated.models.FeedEvent
 {
     
-    override fun getWSEventType(): kotlin.String {
+    override fun getWSClientEventType(): kotlin.String {
         return type
     }
 
-    override fun getWSClientEventType(): kotlin.String {
+    override fun getWSEventType(): kotlin.String {
         return type
     }    
 }

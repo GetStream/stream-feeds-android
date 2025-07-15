@@ -54,7 +54,7 @@ data class UserMutedEvent (
     @Json(name = "user")
     val user: io.getstream.feeds.android.core.generated.models.User? = null
 )
-: io.getstream.feeds.android.core.generated.models.WSEvent
+: io.getstream.feeds.android.core.generated.models.WSEvent, io.getstream.feeds.android.core.generated.models.FeedEvent
 {
     
     override fun getWSEventType(): kotlin.String {

@@ -60,7 +60,7 @@ data class HealthCheckEvent (
     @Json(name = "me")
     val me: io.getstream.feeds.android.core.generated.models.OwnUserResponse? = null
 )
-: io.getstream.feeds.android.core.generated.models.WSClientEvent, io.getstream.feeds.android.core.generated.models.WSEvent
+: io.getstream.feeds.android.core.generated.models.WSClientEvent, io.getstream.feeds.android.core.generated.models.WSEvent, io.getstream.feeds.android.core.generated.models.FeedEvent
 {
     
     override fun getWSClientEventType(): kotlin.String {
