@@ -7,6 +7,8 @@ package io.getstream.android.core.error
  * - 40: Authentication Token Expired
  * - 41: Authentication Token Not Valid Yet
  * - 42: Authentication Token Before Issued At
+ *
+ * For more details, refer to [API Error Codes](https://getstream.io/chat/docs/android/api_errors_response/).
  */
 internal val TokenInvalidErrorCodes = listOf(40, 41, 42)
 
@@ -27,4 +29,4 @@ public val APIError.isTokenInvalidErrorCode: Boolean
  * @return `true` if the error code is in the 400-499 range, `false` otherwise.
  */
 public val APIError.isClientError: Boolean
-    get() = code in 400..499
+    get() = statusCode in 400..499
