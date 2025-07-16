@@ -46,10 +46,10 @@ data class FeedCreatedEvent (
     val fid: kotlin.String,
 
     @Json(name = "members")
-    val members: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedMemberResponse>,
+    val members: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedMemberResponse> = emptyList(),
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>,
+    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
     @Json(name = "feed")
     val feed: io.getstream.feeds.android.core.generated.models.FeedResponse,

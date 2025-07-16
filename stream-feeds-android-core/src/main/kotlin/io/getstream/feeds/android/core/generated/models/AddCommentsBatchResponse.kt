@@ -43,5 +43,5 @@ data class AddCommentsBatchResponse (
     val duration: kotlin.String,
 
     @Json(name = "comments")
-    val comments: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.CommentResponse>
+    val comments: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.CommentResponse> = emptyList()
 )

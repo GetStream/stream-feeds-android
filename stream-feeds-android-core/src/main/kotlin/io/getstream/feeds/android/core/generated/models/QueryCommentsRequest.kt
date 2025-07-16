@@ -40,7 +40,7 @@ import com.squareup.moshi.ToJson
 
 data class QueryCommentsRequest (
     @Json(name = "filter")
-    val filter: kotlin.collections.Map<kotlin.String, Any?>,
+    val filter: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
     @Json(name = "limit")
     val limit: kotlin.Int? = null,

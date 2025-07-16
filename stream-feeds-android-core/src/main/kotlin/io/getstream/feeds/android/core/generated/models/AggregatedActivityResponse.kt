@@ -58,5 +58,5 @@ data class AggregatedActivityResponse (
     val userCount: kotlin.Int,
 
     @Json(name = "activities")
-    val activities: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ActivityResponse>
+    val activities: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ActivityResponse> = emptyList()
 )

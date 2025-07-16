@@ -52,8 +52,8 @@ data class QueryFeedsRequest (
     val watch: kotlin.Boolean? = null,
 
     @Json(name = "sort")
-    val sort: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.SortParamRequest>? = null,
+    val sort: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.SortParamRequest>? = emptyList(),
 
     @Json(name = "filter")
-    val filter: kotlin.collections.Map<kotlin.String, Any?>? = null
+    val filter: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap()
 )

@@ -49,7 +49,7 @@ data class ActivityReactionDeletedEvent (
     val activity: io.getstream.feeds.android.core.generated.models.ActivityResponse,
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>,
+    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
     @Json(name = "reaction")
     val reaction: io.getstream.feeds.android.core.generated.models.FeedsReactionResponse,

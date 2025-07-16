@@ -52,7 +52,7 @@ data class BookmarkResponse (
     val user: io.getstream.feeds.android.core.generated.models.UserResponse,
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
 
     @Json(name = "folder")
     val folder: io.getstream.feeds.android.core.generated.models.BookmarkFolderResponse? = null

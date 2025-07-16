@@ -112,7 +112,7 @@ data class ChannelConfigWithInfo (
     val userMessageReminders: kotlin.Boolean,
 
     @Json(name = "commands")
-    val commands: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.Command>,
+    val commands: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.Command> = emptyList(),
 
     @Json(name = "blocklist")
     val blocklist: kotlin.String? = null,
@@ -127,16 +127,16 @@ data class ChannelConfigWithInfo (
     val partitionTtl: kotlin.String? = null,
 
     @Json(name = "allowed_flag_reasons")
-    val allowedFlagReasons: kotlin.collections.List<kotlin.String>? = null,
+    val allowedFlagReasons: kotlin.collections.List<kotlin.String>? = emptyList(),
 
     @Json(name = "blocklists")
-    val blocklists: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.BlockListOptions>? = null,
+    val blocklists: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.BlockListOptions>? = emptyList(),
 
     @Json(name = "automod_thresholds")
     val automodThresholds: io.getstream.feeds.android.core.generated.models.Thresholds? = null,
 
     @Json(name = "grants")
-    val grants: kotlin.collections.Map<kotlin.String, kotlin.collections.List<kotlin.String>>? = null
+    val grants: kotlin.collections.Map<kotlin.String, kotlin.collections.List<kotlin.String>>? = emptyMap()
 )
 {
     

@@ -61,13 +61,13 @@ data class UserResponse (
     val updatedAt: org.threeten.bp.OffsetDateTime,
 
     @Json(name = "blocked_user_ids")
-    val blockedUserIds: kotlin.collections.List<kotlin.String>,
+    val blockedUserIds: kotlin.collections.List<kotlin.String> = emptyList(),
 
     @Json(name = "teams")
-    val teams: kotlin.collections.List<kotlin.String>,
+    val teams: kotlin.collections.List<kotlin.String> = emptyList(),
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>,
+    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
     @Json(name = "deactivated_at")
     val deactivatedAt: org.threeten.bp.OffsetDateTime? = null,
@@ -88,5 +88,5 @@ data class UserResponse (
     val revokeTokensIssuedBefore: org.threeten.bp.OffsetDateTime? = null,
 
     @Json(name = "teams_role")
-    val teamsRole: kotlin.collections.Map<kotlin.String, kotlin.String>? = null
+    val teamsRole: kotlin.collections.Map<kotlin.String, kotlin.String>? = emptyMap()
 )

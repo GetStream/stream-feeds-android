@@ -43,14 +43,14 @@ data class FileUploadConfig (
     val sizeLimit: kotlin.Int,
 
     @Json(name = "allowed_file_extensions")
-    val allowedFileExtensions: kotlin.collections.List<kotlin.String>,
+    val allowedFileExtensions: kotlin.collections.List<kotlin.String> = emptyList(),
 
     @Json(name = "allowed_mime_types")
-    val allowedMimeTypes: kotlin.collections.List<kotlin.String>,
+    val allowedMimeTypes: kotlin.collections.List<kotlin.String> = emptyList(),
 
     @Json(name = "blocked_file_extensions")
-    val blockedFileExtensions: kotlin.collections.List<kotlin.String>,
+    val blockedFileExtensions: kotlin.collections.List<kotlin.String> = emptyList(),
 
     @Json(name = "blocked_mime_types")
-    val blockedMimeTypes: kotlin.collections.List<kotlin.String>
+    val blockedMimeTypes: kotlin.collections.List<kotlin.String> = emptyList()
 )

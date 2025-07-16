@@ -43,11 +43,11 @@ data class UpdateFeedMembersResponse (
     val duration: kotlin.String,
 
     @Json(name = "added")
-    val added: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedMemberResponse>,
+    val added: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedMemberResponse> = emptyList(),
 
     @Json(name = "removed_ids")
-    val removedIds: kotlin.collections.List<kotlin.String>,
+    val removedIds: kotlin.collections.List<kotlin.String> = emptyList(),
 
     @Json(name = "updated")
-    val updated: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedMemberResponse>
+    val updated: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedMemberResponse> = emptyList()
 )

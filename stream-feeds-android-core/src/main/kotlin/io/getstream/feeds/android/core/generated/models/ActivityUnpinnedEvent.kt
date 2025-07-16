@@ -46,7 +46,7 @@ data class ActivityUnpinnedEvent (
     val fid: kotlin.String,
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>,
+    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
     @Json(name = "pinned_activity")
     val pinnedActivity: io.getstream.feeds.android.core.generated.models.PinActivityResponse,

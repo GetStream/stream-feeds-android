@@ -55,16 +55,16 @@ data class GetOrCreateFeedRequest (
     val watch: kotlin.Boolean? = null,
 
     @Json(name = "activity_selector_options")
-    val activitySelectorOptions: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    val activitySelectorOptions: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
 
     @Json(name = "data")
     val data: io.getstream.feeds.android.core.generated.models.FeedInput? = null,
 
     @Json(name = "external_ranking")
-    val externalRanking: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    val externalRanking: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
 
     @Json(name = "filter")
-    val filter: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    val filter: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
 
     @Json(name = "followers_pagination")
     val followersPagination: io.getstream.feeds.android.core.generated.models.PagerRequest? = null,
@@ -73,7 +73,7 @@ data class GetOrCreateFeedRequest (
     val followingPagination: io.getstream.feeds.android.core.generated.models.PagerRequest? = null,
 
     @Json(name = "interest_weights")
-    val interestWeights: kotlin.collections.Map<kotlin.String, kotlin.Float>? = null,
+    val interestWeights: kotlin.collections.Map<kotlin.String, kotlin.Float>? = emptyMap(),
 
     @Json(name = "member_pagination")
     val memberPagination: io.getstream.feeds.android.core.generated.models.PagerRequest? = null

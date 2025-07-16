@@ -82,8 +82,8 @@ data class FeedResponse (
     val visibility: kotlin.String? = null,
 
     @Json(name = "filter_tags")
-    val filterTags: kotlin.collections.List<kotlin.String>? = null,
+    val filterTags: kotlin.collections.List<kotlin.String>? = emptyList(),
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>? = null
+    val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap()
 )

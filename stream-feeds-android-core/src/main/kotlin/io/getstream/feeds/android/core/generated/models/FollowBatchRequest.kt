@@ -40,5 +40,5 @@ import com.squareup.moshi.ToJson
 
 data class FollowBatchRequest (
     @Json(name = "follows")
-    val follows: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FollowRequest>
+    val follows: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FollowRequest> = emptyList()
 )

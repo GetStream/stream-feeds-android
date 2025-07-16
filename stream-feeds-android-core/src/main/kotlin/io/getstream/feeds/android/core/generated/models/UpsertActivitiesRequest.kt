@@ -40,5 +40,5 @@ import com.squareup.moshi.ToJson
 
 data class UpsertActivitiesRequest (
     @Json(name = "activities")
-    val activities: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ActivityRequest>
+    val activities: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ActivityRequest> = emptyList()
 )

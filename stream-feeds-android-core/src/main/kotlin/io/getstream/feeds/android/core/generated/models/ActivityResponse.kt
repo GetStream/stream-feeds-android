@@ -70,40 +70,40 @@ data class ActivityResponse (
     val visibility: Visibility,
 
     @Json(name = "attachments")
-    val attachments: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.Attachment>,
+    val attachments: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.Attachment> = emptyList(),
 
     @Json(name = "comments")
-    val comments: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.CommentResponse>,
+    val comments: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.CommentResponse> = emptyList(),
 
     @Json(name = "feeds")
-    val feeds: kotlin.collections.List<kotlin.String>,
+    val feeds: kotlin.collections.List<kotlin.String> = emptyList(),
 
     @Json(name = "filter_tags")
-    val filterTags: kotlin.collections.List<kotlin.String>,
+    val filterTags: kotlin.collections.List<kotlin.String> = emptyList(),
 
     @Json(name = "interest_tags")
-    val interestTags: kotlin.collections.List<kotlin.String>,
+    val interestTags: kotlin.collections.List<kotlin.String> = emptyList(),
 
     @Json(name = "latest_reactions")
-    val latestReactions: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedsReactionResponse>,
+    val latestReactions: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedsReactionResponse> = emptyList(),
 
     @Json(name = "mentioned_users")
-    val mentionedUsers: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.UserResponse>,
+    val mentionedUsers: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.UserResponse> = emptyList(),
 
     @Json(name = "own_bookmarks")
-    val ownBookmarks: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.BookmarkResponse>,
+    val ownBookmarks: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.BookmarkResponse> = emptyList(),
 
     @Json(name = "own_reactions")
-    val ownReactions: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedsReactionResponse>,
+    val ownReactions: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedsReactionResponse> = emptyList(),
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>,
+    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
     @Json(name = "reaction_groups")
-    val reactionGroups: kotlin.collections.Map<kotlin.String, io.getstream.feeds.android.core.generated.models.ReactionGroupResponse>,
+    val reactionGroups: kotlin.collections.Map<kotlin.String, io.getstream.feeds.android.core.generated.models.ReactionGroupResponse> = emptyMap(),
 
     @Json(name = "search_data")
-    val searchData: kotlin.collections.Map<kotlin.String, Any?>,
+    val searchData: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
     @Json(name = "user")
     val user: io.getstream.feeds.android.core.generated.models.UserResponse,

@@ -52,7 +52,7 @@ data class UpdateFollowRequest (
     val pushPreference: PushPreference? = null,
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>? = null
+    val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap()
 )
 {
     

@@ -49,13 +49,13 @@ data class FeedInput (
     val visibility: Visibility? = null,
 
     @Json(name = "filter_tags")
-    val filterTags: kotlin.collections.List<kotlin.String>? = null,
+    val filterTags: kotlin.collections.List<kotlin.String>? = emptyList(),
 
     @Json(name = "members")
-    val members: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedMemberRequest>? = null,
+    val members: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedMemberRequest>? = emptyList(),
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>? = null
+    val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap()
 )
 {
     

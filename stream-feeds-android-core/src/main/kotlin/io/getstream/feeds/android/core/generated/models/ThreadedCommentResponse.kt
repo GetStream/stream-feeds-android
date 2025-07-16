@@ -76,10 +76,10 @@ data class ThreadedCommentResponse (
     val upvoteCount: kotlin.Int,
 
     @Json(name = "mentioned_users")
-    val mentionedUsers: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.UserResponse>,
+    val mentionedUsers: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.UserResponse> = emptyList(),
 
     @Json(name = "own_reactions")
-    val ownReactions: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedsReactionResponse>,
+    val ownReactions: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedsReactionResponse> = emptyList(),
 
     @Json(name = "user")
     val user: io.getstream.feeds.android.core.generated.models.UserResponse,
@@ -97,16 +97,16 @@ data class ThreadedCommentResponse (
     val text: kotlin.String? = null,
 
     @Json(name = "attachments")
-    val attachments: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.Attachment>? = null,
+    val attachments: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.Attachment>? = emptyList(),
 
     @Json(name = "latest_reactions")
-    val latestReactions: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedsReactionResponse>? = null,
+    val latestReactions: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedsReactionResponse>? = emptyList(),
 
     @Json(name = "replies")
-    val replies: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ThreadedCommentResponse>? = null,
+    val replies: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ThreadedCommentResponse>? = emptyList(),
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
 
     @Json(name = "meta")
     val meta: io.getstream.feeds.android.core.generated.models.RepliesMeta? = null,
@@ -115,5 +115,5 @@ data class ThreadedCommentResponse (
     val moderation: io.getstream.feeds.android.core.generated.models.ModerationV2Response? = null,
 
     @Json(name = "reaction_groups")
-    val reactionGroups: kotlin.collections.Map<kotlin.String, io.getstream.feeds.android.core.generated.models.ReactionGroupResponse>? = null
+    val reactionGroups: kotlin.collections.Map<kotlin.String, io.getstream.feeds.android.core.generated.models.ReactionGroupResponse>? = emptyMap()
 )

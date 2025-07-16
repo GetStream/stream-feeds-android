@@ -49,7 +49,7 @@ data class FeedGroupDeletedEvent (
     val groupId: kotlin.String,
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>,
+    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
     @Json(name = "type")
     val type: kotlin.String,
@@ -57,14 +57,14 @@ data class FeedGroupDeletedEvent (
     @Json(name = "received_at")
     val receivedAt: org.threeten.bp.OffsetDateTime? = null
 )
-: io.getstream.feeds.android.core.generated.models.WSEvent, io.getstream.feeds.android.core.generated.models.WSClientEvent, io.getstream.feeds.android.core.generated.models.FeedEvent
+: io.getstream.feeds.android.core.generated.models.WSClientEvent, io.getstream.feeds.android.core.generated.models.WSEvent, io.getstream.feeds.android.core.generated.models.FeedEvent
 {
     
-    override fun getWSEventType(): kotlin.String {
+    override fun getWSClientEventType(): kotlin.String {
         return type
     }
 
-    override fun getWSClientEventType(): kotlin.String {
+    override fun getWSEventType(): kotlin.String {
         return type
     }    
 }

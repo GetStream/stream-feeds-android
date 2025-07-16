@@ -43,5 +43,5 @@ data class FollowBatchResponse (
     val duration: kotlin.String,
 
     @Json(name = "follows")
-    val follows: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FollowResponse>
+    val follows: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FollowResponse> = emptyList()
 )

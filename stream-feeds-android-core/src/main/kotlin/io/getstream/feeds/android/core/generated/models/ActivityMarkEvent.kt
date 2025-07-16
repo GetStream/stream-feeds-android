@@ -46,7 +46,7 @@ data class ActivityMarkEvent (
     val fid: kotlin.String,
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>,
+    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
     @Json(name = "type")
     val type: kotlin.String,
@@ -61,22 +61,22 @@ data class ActivityMarkEvent (
     val receivedAt: org.threeten.bp.OffsetDateTime? = null,
 
     @Json(name = "mark_read")
-    val markRead: kotlin.collections.List<kotlin.String>? = null,
+    val markRead: kotlin.collections.List<kotlin.String>? = emptyList(),
 
     @Json(name = "mark_watched")
-    val markWatched: kotlin.collections.List<kotlin.String>? = null,
+    val markWatched: kotlin.collections.List<kotlin.String>? = emptyList(),
 
     @Json(name = "user")
     val user: io.getstream.feeds.android.core.generated.models.UserResponseCommonFields? = null
 )
-: io.getstream.feeds.android.core.generated.models.WSEvent, io.getstream.feeds.android.core.generated.models.WSClientEvent, io.getstream.feeds.android.core.generated.models.FeedEvent
+: io.getstream.feeds.android.core.generated.models.WSClientEvent, io.getstream.feeds.android.core.generated.models.WSEvent, io.getstream.feeds.android.core.generated.models.FeedEvent
 {
     
-    override fun getWSEventType(): kotlin.String {
+    override fun getWSClientEventType(): kotlin.String {
         return type
     }
 
-    override fun getWSClientEventType(): kotlin.String {
+    override fun getWSEventType(): kotlin.String {
         return type
     }    
 }

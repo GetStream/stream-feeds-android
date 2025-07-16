@@ -58,7 +58,7 @@ data class FeedGroup (
     val updatedAt: org.threeten.bp.OffsetDateTime,
 
     @Json(name = "Custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>,
+    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
     @Json(name = "DeletedAt")
     val deletedAt: org.threeten.bp.OffsetDateTime? = null,

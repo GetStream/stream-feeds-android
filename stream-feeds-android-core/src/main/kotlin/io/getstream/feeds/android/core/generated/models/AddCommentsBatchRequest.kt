@@ -40,5 +40,5 @@ import com.squareup.moshi.ToJson
 
 data class AddCommentsBatchRequest (
     @Json(name = "comments")
-    val comments: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.AddCommentRequest>
+    val comments: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.AddCommentRequest> = emptyList()
 )

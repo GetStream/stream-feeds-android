@@ -46,7 +46,7 @@ data class BookmarkFolderUpdatedEvent (
     val bookmarkFolder: io.getstream.feeds.android.core.generated.models.BookmarkFolderResponse,
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>,
+    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
     @Json(name = "type")
     val type: kotlin.String,

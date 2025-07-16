@@ -43,7 +43,7 @@ data class AddBookmarkRequest (
     val folderId: kotlin.String? = null,
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
 
     @Json(name = "new_folder")
     val newFolder: io.getstream.feeds.android.core.generated.models.AddFolderRequest? = null

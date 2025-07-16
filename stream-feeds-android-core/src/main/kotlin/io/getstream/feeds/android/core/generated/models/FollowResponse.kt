@@ -67,7 +67,7 @@ data class FollowResponse (
     val requestRejectedAt: org.threeten.bp.OffsetDateTime? = null,
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>? = null
+    val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap()
 )
 {
     

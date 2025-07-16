@@ -46,25 +46,25 @@ data class GetOrCreateFeedResponse (
     val duration: kotlin.String,
 
     @Json(name = "activities")
-    val activities: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ActivityResponse>,
+    val activities: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ActivityResponse> = emptyList(),
 
     @Json(name = "aggregated_activities")
-    val aggregatedActivities: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.AggregatedActivityResponse>,
+    val aggregatedActivities: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.AggregatedActivityResponse> = emptyList(),
 
     @Json(name = "followers")
-    val followers: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FollowResponse>,
+    val followers: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FollowResponse> = emptyList(),
 
     @Json(name = "following")
-    val following: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FollowResponse>,
+    val following: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FollowResponse> = emptyList(),
 
     @Json(name = "members")
-    val members: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedMemberResponse>,
+    val members: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedMemberResponse> = emptyList(),
 
     @Json(name = "own_capabilities")
-    val ownCapabilities: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedOwnCapability>,
+    val ownCapabilities: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedOwnCapability> = emptyList(),
 
     @Json(name = "pinned_activities")
-    val pinnedActivities: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ActivityPinResponse>,
+    val pinnedActivities: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ActivityPinResponse> = emptyList(),
 
     @Json(name = "feed")
     val feed: io.getstream.feeds.android.core.generated.models.FeedResponse,
@@ -76,7 +76,7 @@ data class GetOrCreateFeedResponse (
     val prev: kotlin.String? = null,
 
     @Json(name = "own_follows")
-    val ownFollows: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FollowResponse>? = null,
+    val ownFollows: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FollowResponse>? = emptyList(),
 
     @Json(name = "followers_pagination")
     val followersPagination: io.getstream.feeds.android.core.generated.models.PagerResponse? = null,

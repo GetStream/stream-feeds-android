@@ -52,7 +52,7 @@ data class UpdateFeedMembersRequest (
     val prev: kotlin.String? = null,
 
     @Json(name = "members")
-    val members: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedMemberRequest>? = null
+    val members: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedMemberRequest>? = emptyList()
 )
 {
     

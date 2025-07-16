@@ -52,11 +52,11 @@ data class AddCommentRequest (
     val parentId: kotlin.String? = null,
 
     @Json(name = "attachments")
-    val attachments: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.Attachment>? = null,
+    val attachments: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.Attachment>? = emptyList(),
 
     @Json(name = "mentioned_user_ids")
-    val mentionedUserIds: kotlin.collections.List<kotlin.String>? = null,
+    val mentionedUserIds: kotlin.collections.List<kotlin.String>? = emptyList(),
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>? = null
+    val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap()
 )

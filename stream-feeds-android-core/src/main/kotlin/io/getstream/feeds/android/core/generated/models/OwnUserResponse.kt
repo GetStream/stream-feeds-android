@@ -76,19 +76,19 @@ data class OwnUserResponse (
     val updatedAt: org.threeten.bp.OffsetDateTime,
 
     @Json(name = "channel_mutes")
-    val channelMutes: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ChannelMute>,
+    val channelMutes: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ChannelMute> = emptyList(),
 
     @Json(name = "devices")
-    val devices: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.DeviceResponse>,
+    val devices: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.DeviceResponse> = emptyList(),
 
     @Json(name = "mutes")
-    val mutes: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.UserMuteResponse>,
+    val mutes: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.UserMuteResponse> = emptyList(),
 
     @Json(name = "teams")
-    val teams: kotlin.collections.List<kotlin.String>,
+    val teams: kotlin.collections.List<kotlin.String> = emptyList(),
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>,
+    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
     @Json(name = "deactivated_at")
     val deactivatedAt: org.threeten.bp.OffsetDateTime? = null,
@@ -109,17 +109,17 @@ data class OwnUserResponse (
     val revokeTokensIssuedBefore: org.threeten.bp.OffsetDateTime? = null,
 
     @Json(name = "blocked_user_ids")
-    val blockedUserIds: kotlin.collections.List<kotlin.String>? = null,
+    val blockedUserIds: kotlin.collections.List<kotlin.String>? = emptyList(),
 
     @Json(name = "latest_hidden_channels")
-    val latestHiddenChannels: kotlin.collections.List<kotlin.String>? = null,
+    val latestHiddenChannels: kotlin.collections.List<kotlin.String>? = emptyList(),
 
     @Json(name = "push_preferences")
     val pushPreferences: io.getstream.feeds.android.core.generated.models.PushPreferences? = null,
 
     @Json(name = "teams_role")
-    val teamsRole: kotlin.collections.Map<kotlin.String, kotlin.String>? = null,
+    val teamsRole: kotlin.collections.Map<kotlin.String, kotlin.String>? = emptyMap(),
 
     @Json(name = "total_unread_count_by_team")
-    val totalUnreadCountByTeam: kotlin.collections.Map<kotlin.String, kotlin.Int>? = null
+    val totalUnreadCountByTeam: kotlin.collections.Map<kotlin.String, kotlin.Int>? = emptyMap()
 )

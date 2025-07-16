@@ -49,7 +49,7 @@ data class CommentReactionAddedEvent (
     val comment: io.getstream.feeds.android.core.generated.models.CommentResponse,
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>,
+    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
     @Json(name = "reaction")
     val reaction: io.getstream.feeds.android.core.generated.models.FeedsReactionResponse,
@@ -63,14 +63,14 @@ data class CommentReactionAddedEvent (
     @Json(name = "user")
     val user: io.getstream.feeds.android.core.generated.models.UserResponseCommonFields? = null
 )
-: io.getstream.feeds.android.core.generated.models.WSClientEvent, io.getstream.feeds.android.core.generated.models.WSEvent, io.getstream.feeds.android.core.generated.models.FeedEvent
+: io.getstream.feeds.android.core.generated.models.WSEvent, io.getstream.feeds.android.core.generated.models.WSClientEvent, io.getstream.feeds.android.core.generated.models.FeedEvent
 {
     
-    override fun getWSClientEventType(): kotlin.String {
+    override fun getWSEventType(): kotlin.String {
         return type
     }
 
-    override fun getWSEventType(): kotlin.String {
+    override fun getWSClientEventType(): kotlin.String {
         return type
     }    
 }

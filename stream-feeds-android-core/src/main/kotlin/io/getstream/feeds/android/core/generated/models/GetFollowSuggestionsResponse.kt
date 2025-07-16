@@ -43,5 +43,5 @@ data class GetFollowSuggestionsResponse (
     val duration: kotlin.String,
 
     @Json(name = "suggestions")
-    val suggestions: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedResponse>
+    val suggestions: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedResponse> = emptyList()
 )

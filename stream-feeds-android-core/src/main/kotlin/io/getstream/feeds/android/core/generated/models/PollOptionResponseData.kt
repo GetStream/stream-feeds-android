@@ -46,5 +46,5 @@ data class PollOptionResponseData (
     val text: kotlin.String,
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>
+    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap()
 )

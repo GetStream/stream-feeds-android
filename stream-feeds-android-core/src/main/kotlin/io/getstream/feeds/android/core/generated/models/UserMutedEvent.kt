@@ -49,7 +49,7 @@ data class UserMutedEvent (
     val targetUser: kotlin.String? = null,
 
     @Json(name = "target_users")
-    val targetUsers: kotlin.collections.List<kotlin.String>? = null,
+    val targetUsers: kotlin.collections.List<kotlin.String>? = emptyList(),
 
     @Json(name = "user")
     val user: io.getstream.feeds.android.core.generated.models.User? = null

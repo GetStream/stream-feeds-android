@@ -49,5 +49,5 @@ data class NotificationStatusResponse (
     val lastSeenAt: org.threeten.bp.OffsetDateTime? = null,
 
     @Json(name = "read_activities")
-    val readActivities: kotlin.collections.List<kotlin.String>? = null
+    val readActivities: kotlin.collections.List<kotlin.String>? = emptyList()
 )

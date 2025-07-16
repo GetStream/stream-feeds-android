@@ -40,7 +40,7 @@ import com.squareup.moshi.ToJson
 
 data class Attachment (
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>,
+    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
     @Json(name = "asset_url")
     val assetUrl: kotlin.String? = null,
@@ -97,10 +97,10 @@ data class Attachment (
     val type: kotlin.String? = null,
 
     @Json(name = "actions")
-    val actions: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.Action>? = null,
+    val actions: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.Action>? = emptyList(),
 
     @Json(name = "fields")
-    val fields: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.Field>? = null,
+    val fields: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.Field>? = emptyList(),
 
     @Json(name = "giphy")
     val giphy: io.getstream.feeds.android.core.generated.models.Images? = null

@@ -52,5 +52,5 @@ data class BookmarkFolderResponse (
     val updatedAt: org.threeten.bp.OffsetDateTime,
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>? = null
+    val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap()
 )

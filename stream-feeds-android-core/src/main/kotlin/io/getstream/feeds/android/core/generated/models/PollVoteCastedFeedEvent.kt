@@ -46,7 +46,7 @@ data class PollVoteCastedFeedEvent (
     val fid: kotlin.String,
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>,
+    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
     @Json(name = "poll")
     val poll: io.getstream.feeds.android.core.generated.models.PollResponseData,
@@ -60,14 +60,14 @@ data class PollVoteCastedFeedEvent (
     @Json(name = "received_at")
     val receivedAt: org.threeten.bp.OffsetDateTime? = null
 )
-: io.getstream.feeds.android.core.generated.models.WSEvent, io.getstream.feeds.android.core.generated.models.WSClientEvent, io.getstream.feeds.android.core.generated.models.FeedEvent
+: io.getstream.feeds.android.core.generated.models.WSClientEvent, io.getstream.feeds.android.core.generated.models.WSEvent, io.getstream.feeds.android.core.generated.models.FeedEvent
 {
     
-    override fun getWSEventType(): kotlin.String {
+    override fun getWSClientEventType(): kotlin.String {
         return type
     }
 
-    override fun getWSClientEventType(): kotlin.String {
+    override fun getWSEventType(): kotlin.String {
         return type
     }    
 }

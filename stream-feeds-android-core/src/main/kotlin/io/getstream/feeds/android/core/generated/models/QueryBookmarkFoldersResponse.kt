@@ -43,7 +43,7 @@ data class QueryBookmarkFoldersResponse (
     val duration: kotlin.String,
 
     @Json(name = "bookmark_folders")
-    val bookmarkFolders: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.BookmarkFolderResponse>,
+    val bookmarkFolders: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.BookmarkFolderResponse> = emptyList(),
 
     @Json(name = "next")
     val next: kotlin.String? = null,

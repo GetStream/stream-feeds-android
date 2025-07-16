@@ -58,7 +58,7 @@ data class ChannelMember (
     val updatedAt: org.threeten.bp.OffsetDateTime,
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>,
+    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
     @Json(name = "archived_at")
     val archivedAt: org.threeten.bp.OffsetDateTime? = null,

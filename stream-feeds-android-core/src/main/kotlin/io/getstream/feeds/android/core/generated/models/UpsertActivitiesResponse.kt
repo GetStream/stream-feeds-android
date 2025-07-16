@@ -43,5 +43,5 @@ data class UpsertActivitiesResponse (
     val duration: kotlin.String,
 
     @Json(name = "activities")
-    val activities: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ActivityResponse>
+    val activities: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ActivityResponse> = emptyList()
 )

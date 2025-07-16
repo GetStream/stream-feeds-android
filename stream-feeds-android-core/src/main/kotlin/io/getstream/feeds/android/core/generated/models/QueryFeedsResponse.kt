@@ -43,7 +43,7 @@ data class QueryFeedsResponse (
     val duration: kotlin.String,
 
     @Json(name = "feeds")
-    val feeds: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedResponse>,
+    val feeds: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedResponse> = emptyList(),
 
     @Json(name = "next")
     val next: kotlin.String? = null,

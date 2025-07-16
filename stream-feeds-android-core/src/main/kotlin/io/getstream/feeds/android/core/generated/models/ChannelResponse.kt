@@ -61,7 +61,7 @@ data class ChannelResponse (
     val updatedAt: org.threeten.bp.OffsetDateTime,
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>,
+    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
     @Json(name = "auto_translation_enabled")
     val autoTranslationEnabled: kotlin.Boolean? = null,
@@ -103,10 +103,10 @@ data class ChannelResponse (
     val truncatedAt: org.threeten.bp.OffsetDateTime? = null,
 
     @Json(name = "members")
-    val members: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ChannelMember>? = null,
+    val members: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ChannelMember>? = emptyList(),
 
     @Json(name = "own_capabilities")
-    val ownCapabilities: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ChannelOwnCapability>? = null,
+    val ownCapabilities: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ChannelOwnCapability>? = emptyList(),
 
     @Json(name = "config")
     val config: io.getstream.feeds.android.core.generated.models.ChannelConfigWithInfo? = null,

@@ -43,7 +43,7 @@ data class GetCommentsResponse (
     val duration: kotlin.String,
 
     @Json(name = "comments")
-    val comments: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ThreadedCommentResponse>,
+    val comments: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ThreadedCommentResponse> = emptyList(),
 
     @Json(name = "next")
     val next: kotlin.String? = null,

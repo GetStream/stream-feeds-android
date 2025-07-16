@@ -76,22 +76,22 @@ data class PollResponseData (
     val votingVisibility: kotlin.String,
 
     @Json(name = "latest_answers")
-    val latestAnswers: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.PollVoteResponseData>,
+    val latestAnswers: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.PollVoteResponseData> = emptyList(),
 
     @Json(name = "options")
-    val options: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.PollOptionResponseData>,
+    val options: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.PollOptionResponseData> = emptyList(),
 
     @Json(name = "own_votes")
-    val ownVotes: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.PollVoteResponseData>,
+    val ownVotes: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.PollVoteResponseData> = emptyList(),
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>,
+    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
     @Json(name = "latest_votes_by_option")
-    val latestVotesByOption: kotlin.collections.Map<kotlin.String, kotlin.collections.List<io.getstream.feeds.android.core.generated.models.PollVoteResponseData>>,
+    val latestVotesByOption: kotlin.collections.Map<kotlin.String, kotlin.collections.List<io.getstream.feeds.android.core.generated.models.PollVoteResponseData>> = emptyMap(),
 
     @Json(name = "vote_counts_by_option")
-    val voteCountsByOption: kotlin.collections.Map<kotlin.String, kotlin.Int>,
+    val voteCountsByOption: kotlin.collections.Map<kotlin.String, kotlin.Int> = emptyMap(),
 
     @Json(name = "is_closed")
     val isClosed: kotlin.Boolean? = null,

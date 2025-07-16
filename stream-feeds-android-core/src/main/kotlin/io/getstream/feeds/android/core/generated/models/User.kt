@@ -52,10 +52,10 @@ data class User (
     val role: kotlin.String,
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>,
+    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
     @Json(name = "teams_role")
-    val teamsRole: kotlin.collections.Map<kotlin.String, kotlin.String>,
+    val teamsRole: kotlin.collections.Map<kotlin.String, kotlin.String> = emptyMap(),
 
     @Json(name = "ban_expires")
     val banExpires: org.threeten.bp.OffsetDateTime? = null,
@@ -88,5 +88,5 @@ data class User (
     val updatedAt: org.threeten.bp.OffsetDateTime? = null,
 
     @Json(name = "teams")
-    val teams: kotlin.collections.List<kotlin.String>? = null
+    val teams: kotlin.collections.List<kotlin.String>? = emptyList()
 )

@@ -43,5 +43,5 @@ data class DeleteActivitiesResponse (
     val duration: kotlin.String,
 
     @Json(name = "deleted_activity_ids")
-    val deletedActivityIds: kotlin.collections.List<kotlin.String>
+    val deletedActivityIds: kotlin.collections.List<kotlin.String> = emptyList()
 )

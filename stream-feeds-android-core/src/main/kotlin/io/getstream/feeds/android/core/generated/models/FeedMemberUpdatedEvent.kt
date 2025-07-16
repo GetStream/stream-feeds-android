@@ -46,7 +46,7 @@ data class FeedMemberUpdatedEvent (
     val fid: kotlin.String,
 
     @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>,
+    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
     @Json(name = "member")
     val member: io.getstream.feeds.android.core.generated.models.FeedMemberResponse,

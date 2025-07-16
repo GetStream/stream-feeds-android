@@ -55,8 +55,8 @@ data class ModerationV2Response (
     val semanticFilterMatched: kotlin.String? = null,
 
     @Json(name = "image_harms")
-    val imageHarms: kotlin.collections.List<kotlin.String>? = null,
+    val imageHarms: kotlin.collections.List<kotlin.String>? = emptyList(),
 
     @Json(name = "text_harms")
-    val textHarms: kotlin.collections.List<kotlin.String>? = null
+    val textHarms: kotlin.collections.List<kotlin.String>? = emptyList()
 )

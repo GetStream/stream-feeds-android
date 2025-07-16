@@ -46,8 +46,8 @@ data class MarkActivityRequest (
     val markAllSeen: kotlin.Boolean? = null,
 
     @Json(name = "mark_read")
-    val markRead: kotlin.collections.List<kotlin.String>? = null,
+    val markRead: kotlin.collections.List<kotlin.String>? = emptyList(),
 
     @Json(name = "mark_watched")
-    val markWatched: kotlin.collections.List<kotlin.String>? = null
+    val markWatched: kotlin.collections.List<kotlin.String>? = emptyList()
 )

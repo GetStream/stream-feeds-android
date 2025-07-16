@@ -40,5 +40,5 @@ import com.squareup.moshi.ToJson
 
 data class CreateFeedsBatchRequest (
     @Json(name = "feeds")
-    val feeds: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedRequest>
+    val feeds: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FeedRequest> = emptyList()
 )

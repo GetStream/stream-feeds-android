@@ -40,8 +40,8 @@ import com.squareup.moshi.ToJson
 
 data class UpdateActivityPartialRequest (
     @Json(name = "unset")
-    val unset: kotlin.collections.List<kotlin.String>? = null,
+    val unset: kotlin.collections.List<kotlin.String>? = emptyList(),
 
     @Json(name = "set")
-    val set: kotlin.collections.Map<kotlin.String, Any?>? = null
+    val set: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap()
 )
