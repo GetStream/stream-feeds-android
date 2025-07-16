@@ -5,12 +5,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
 }
 
 apply(from = "$rootDir/scripts/android.gradle")
 
 android {
-    namespace = "io.getstream.feeds.android.core"
+    namespace = "io.getstream.android.core"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -36,7 +37,7 @@ tasks.withType<KotlinCompile>().configureEach {
         freeCompilerArgs.addAll(
             listOf(
                 "-progressive",
-                "-opt-in=io.getstream.kotlin.base.annotation.marker.StreamInternalApi",
+                "-Xexplicit-api=strict",
             ),
         )
         jvmTarget.set(JvmTarget.JVM_11)
@@ -44,7 +45,6 @@ tasks.withType<KotlinCompile>().configureEach {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -53,9 +53,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     // Network
+    implementation(libs.okhttp)
     implementation(libs.moshi)
-    implementation(libs.moshi.kotlin)
-    implementation(libs.retrofit)
-
-    api(libs.threetenabp)
+    ksp(libs.moshi.codegen)
 }

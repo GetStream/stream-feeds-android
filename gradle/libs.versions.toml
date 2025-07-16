@@ -3,7 +3,7 @@ agp = "8.11.0"
 kotlin = "2.0.21"
 kotlinxCoroutines = "1.10.2"
 kotlinpoet = "2.2.0"
-ksp = "1.9.25-1.0.20"
+ksp = "2.0.21-1.0.28"
 coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -15,15 +15,20 @@ composeBom = "2024.09.00"
 appcompat = "1.7.1"
 material = "1.12.0"
 moshi = "1.15.2"
+okhttp = "4.12.0"
 retrofit = "2.12.0"
 symbolProcessingApi = "2.0.21-1.0.28"
-threetenAbp = "1.4.7"
+streamLog = "1.3.2"
+streamPush = "1.3.1"
+threetenabp = "1.4.7"
+lifecycleProcess = "2.9.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycleProcess" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
@@ -43,8 +48,15 @@ kotlinpoet-ksp = { group = "com.squareup", name = "kotlinpoet-ksp", version.ref 
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
 moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
+moshi-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
-threentenabp2 = { group = "com.jakewharton.threetenabp", name = "threetenabp", version.ref = "threetenAbp" }
+retrofit-moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
+retrofit-scalars = { group = "com.squareup.retrofit2", name = "converter-scalars", version.ref = "retrofit" }
+stream-log = { group = "io.getstream", name = "stream-log", version.ref = "streamLog" }
+stream-push-delegate = { module = "io.getstream:stream-android-push-delegate", version.ref = "streamPush"}
+threetenabp = { group = "com.jakewharton.threetenabp", name = "threetenabp", version.ref = "threetenabp" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
