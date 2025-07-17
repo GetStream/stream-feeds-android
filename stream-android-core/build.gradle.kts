@@ -37,6 +37,7 @@ tasks.withType<KotlinCompile>().configureEach {
         freeCompilerArgs.addAll(
             listOf(
                 "-progressive",
+                "-Xconsistent-data-class-copy-visibility",
                 "-Xexplicit-api=strict",
             ),
         )
