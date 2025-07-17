@@ -164,3 +164,40 @@ public class AnySortComparator<T>(
         return this.compare.invoke(lhs, rhs, direction)
     }
 }
+
+/**
+ * Extension function to sort a list of models using a list of sort configurations.
+ *
+ * @param T The type of elements in the list.
+ * @param sort A list of sort configurations to apply to the list.
+ */
+public fun <T> List<T>.sortedWith(sort: List<Sort<T>>): List<T> =
+    sortedWith(CompositeComparator(sort))
+
+/**
+ * A composite comparator that combines multiple sort comparators.
+ * This class allows for sorting based on multiple criteria, where each comparator is applied in
+ * sequence.
+ *
+ * This implementation mirrors the Swift Array.sorted(using:) extension behavior:
+ * - Iterates through each sort comparator in order
+ * - Returns the first non-equal comparison result
+ * - If all comparators return equal (0), returns 0 to maintain stable sort order
+ *
+ * @param T The type of elements to be compared.
+ * @param comparators The list of comparators to be combined.
+ */
+internal class CompositeComparator<T>(private val comparators: List<Comparator<T>>) :
+    Comparator<T> {
+
+    override fun compare(o1: T, o2: T): Int {
+        for (comparator in comparators) {
+            val result = comparator.compare(o1, o2)
+            when (result) {
+                0 -> continue // Equal, move to the next comparator
+                else -> return result // Return the first non-equal comparison result
+            }
+        }
+        return 0 // All comparators returned equal, maintain original order (Swift returns false)
+    }
+}
