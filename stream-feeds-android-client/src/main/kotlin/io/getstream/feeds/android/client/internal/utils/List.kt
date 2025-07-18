@@ -119,8 +119,25 @@ internal fun <T> List<T>.upsertSorted(
     comparator: Comparator<T>
 ): List<T> {
     val elementId = idSelector(element)
-    val listWithoutExisting = this.filterNot { idSelector(it) == elementId }
-    return listWithoutExisting.toMutableList().insertSorted(element, comparator)
+    val existingIndex = this.indexOfFirst { idSelector(it) == elementId }
+    
+    return if (existingIndex >= 0) {
+        // Element exists - check if sort order has changed
+        val existingElement = this[existingIndex]
+        val sortComparison = comparator.compare(existingElement, element)
+        
+        if (sortComparison == 0) {
+            // Sort order hasn't changed - replace in place to preserve position
+            this.toMutableList().apply { this[existingIndex] = element }.toImmutableList()
+        } else {
+            // Sort order has changed - remove and insert at correct position
+            val listWithoutExisting = this.filterNot { idSelector(it) == elementId }
+            listWithoutExisting.toMutableList().insertSorted(element, comparator)
+        }
+    } else {
+        // Element doesn't exist - insert at correct position
+        this.toMutableList().insertSorted(element, comparator)
+    }
 }
 
 /**

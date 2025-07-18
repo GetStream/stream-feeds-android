@@ -269,7 +269,6 @@ internal class ListUpsertSortedTest {
 
     @Test
     fun testUpsertSorted_duplicateValues_maintainStableSort() {
-        // TODO: Fix this test - upsertSorted switches the order of Alice and Bob
         val ageField = SortField.create<TestUser, Int>("age") { it.age }
         val sort = listOf(Sort(ageField, SortDirection.FORWARD))
 
@@ -279,7 +278,7 @@ internal class ListUpsertSortedTest {
             TestUser("3", "Charlie", 30, 80.0)
         )
 
-        // Update Alice with same age
+        // Update Alice with same age - should preserve position
         val updatedUser = TestUser("1", "Alice Updated", 25, 87.0)
         val result = originalList.upsertSorted(updatedUser, { it.id }, sort)
 
@@ -287,6 +286,53 @@ internal class ListUpsertSortedTest {
         assertEquals("Alice Updated", result[0].name)
         assertEquals("Bob", result[1].name)
         assertEquals("Charlie", result[2].name)
+        
+        // Verify ages are still correct
+        assertEquals(25, result[0].age)
+        assertEquals(25, result[1].age)
+        assertEquals(30, result[2].age)
+    }
+
+    @Test
+    fun testUpsertSorted_preservePositionWhenSortValueUnchanged() {
+        val ageComparator = compareBy<TestUser> { it.age }
+        
+        // Two items with same age (20) - Alice first, Bob second
+        val originalList = listOf(
+            TestUser("1", "Alice", 20, 85.0),
+            TestUser("2", "Bob", 20, 90.0)
+        )
+
+        // Update Alice with same age but different score - should stay in position 0
+        val updatedAlice = TestUser("1", "Alice Updated", 20, 95.0)
+        val result = originalList.upsertSorted(updatedAlice, { it.id }, ageComparator)
+
+        assertEquals(2, result.size)
+        assertEquals("Alice Updated", result[0].name) // Alice should remain in position 0
+        assertEquals("Bob", result[1].name)           // Bob should remain in position 1
+        assertEquals(20, result[0].age)
+        assertEquals(95.0, result[0].score, 0.01)    // Score should be updated
+    }
+
+    @Test
+    fun testUpsertSorted_repositionWhenSortValueChanges() {
+        val ageComparator = compareBy<TestUser> { it.age }
+        
+        // Two items with same age (20) - Alice first, Bob second
+        val originalList = listOf(
+            TestUser("1", "Alice", 20, 85.0),
+            TestUser("2", "Bob", 20, 90.0)
+        )
+
+        // Update Alice with different age (30) - should move to end
+        val updatedAlice = TestUser("1", "Alice Updated", 30, 95.0)
+        val result = originalList.upsertSorted(updatedAlice, { it.id }, ageComparator)
+
+        assertEquals(2, result.size)
+        assertEquals("Bob", result[0].name)           // Bob should move to position 0
+        assertEquals("Alice Updated", result[1].name) // Alice should move to position 1
+        assertEquals(20, result[0].age)
+        assertEquals(30, result[1].age)
     }
 
     // MARK: - Immutability Tests
