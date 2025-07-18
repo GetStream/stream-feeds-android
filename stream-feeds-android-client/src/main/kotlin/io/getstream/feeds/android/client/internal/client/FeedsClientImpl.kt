@@ -4,17 +4,27 @@ import android.content.Context
 import android.net.ConnectivityManager
 import androidx.lifecycle.ProcessLifecycleOwner
 import io.getstream.android.core.http.XStreamClient
+import io.getstream.android.core.http.interceptor.AnonymousAuthInterceptor
+import io.getstream.android.core.http.interceptor.ApiKeyInterceptor
+import io.getstream.android.core.http.interceptor.HeadersInterceptor
+import io.getstream.android.core.http.interceptor.TokenAuthInterceptor
 import io.getstream.android.core.lifecycle.StreamLifecycleObserver
 import io.getstream.android.core.network.NetworkStateProvider
 import io.getstream.android.core.user.ApiKey
 import io.getstream.android.core.user.User
 import io.getstream.android.core.user.UserAuthType
 import io.getstream.android.core.user.UserToken
+import io.getstream.android.core.websocket.DisconnectionSource
 import io.getstream.android.core.websocket.WebSocketConnectionState
 import io.getstream.feeds.android.client.BuildConfig
 import io.getstream.feeds.android.client.api.FeedsClient
+import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.state.Feed
+import io.getstream.feeds.android.client.api.state.FeedQuery
 import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManagerImpl
 import io.getstream.feeds.android.client.internal.log.provideLogger
+import io.getstream.feeds.android.client.internal.repository.FeedsRepository
+import io.getstream.feeds.android.client.internal.repository.FeedsRepositoryImpl
 import io.getstream.feeds.android.client.internal.socket.ConnectUserData
 import io.getstream.feeds.android.client.internal.socket.FeedsSocket
 import io.getstream.feeds.android.client.internal.socket.FeedsSocketConfig
@@ -27,6 +37,8 @@ import io.getstream.feeds.android.client.internal.socket.common.monitor.StreamHe
 import io.getstream.feeds.android.client.internal.socket.common.parser.MoshiJsonParser
 import io.getstream.feeds.android.client.internal.socket.common.reconnect.ConnectionRecoveryHandler
 import io.getstream.feeds.android.client.internal.socket.common.reconnect.DefaultRetryStrategy
+import io.getstream.feeds.android.client.internal.state.FeedImpl
+import io.getstream.feeds.android.core.generated.apis.ApiService
 import io.getstream.feeds.android.core.generated.infrastructure.Serializer
 import io.getstream.feeds.android.core.generated.models.WSEvent
 import io.getstream.feeds.android.core.generated.models.WSEventAdapter
@@ -38,6 +50,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.plus
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 
 internal fun createFeedsClient(
     context: Context,
@@ -63,6 +79,7 @@ internal fun createFeedsClient(
         product = BuildConfig.PRODUCT_NAME,
         productVersion = BuildConfig.PRODUCT_VERSION,
     )
+    // Socket configuration
     val socket = FeedsSocket(
         config = FeedsSocketConfig(
             socketConfig = StreamSocketConfig(
@@ -102,6 +119,30 @@ internal fun createFeedsClient(
         keepConnectionAliveInBackground = false,
         reconnectStrategy = DefaultRetryStrategy(),
     )
+    // HTTP Configuration
+    val authInterceptor = if (user.type == UserAuthType.ANONYMOUS) {
+        AnonymousAuthInterceptor(token.rawValue)
+    } else {
+        // TODO: Implement these things properly
+        TokenAuthInterceptor(
+            token = { token.rawValue },
+            connectionId = { "" }
+        )
+    }
+    val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor(ApiKeyInterceptor(apiKey))
+        .addInterceptor(HeadersInterceptor(xStreamClient))
+        .addInterceptor(authInterceptor)
+        .build()
+    val retrofit = Retrofit.Builder()
+        .baseUrl(endpointConfig.httpUrl)
+        .client(okHttpClient)
+        .addConverterFactory(ScalarsConverterFactory.create())
+        .addConverterFactory(MoshiConverterFactory.create(Serializer.moshi))
+        .build()
+    val feedsApi: ApiService = retrofit.create(ApiService::class.java)
+    val feedsRepository = FeedsRepositoryImpl(feedsApi)
+
     // Build client
     return FeedsClientImpl(
         apiKey = apiKey,
@@ -109,6 +150,7 @@ internal fun createFeedsClient(
         token = token,
         socket = socket,
         connectionRecoveryHandler = connectionRecoveryHandler,
+        feedRepository = feedsRepository,
         logger = logger,
     )
 }
@@ -119,6 +161,7 @@ internal class FeedsClientImpl(
     private val token: UserToken,
     private val socket: FeedsSocket,
     private val connectionRecoveryHandler: ConnectionRecoveryHandler,
+    private val feedRepository: FeedsRepository,
     private val logger: TaggedLogger = provideLogger(tag = "Client")
 ) : FeedsClient {
 
@@ -160,4 +203,19 @@ internal class FeedsClientImpl(
             )
         }
     }
+
+    override suspend fun disconnect(): Result<Unit> {
+        connectionRecoveryHandler.stop()
+        return socket.disconnect(DisconnectionSource.UserInitiated)
+    }
+
+    override fun feed(group: String, id: String): Feed = feed(FeedId(group, id))
+
+    override fun feed(fid: FeedId): Feed = feed(FeedQuery(fid))
+
+    override fun feed(query: FeedQuery): Feed = FeedImpl(
+        query = query,
+        currentUserId = user.id,
+        feedsRepository = feedRepository,
+    )
 }

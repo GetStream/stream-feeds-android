@@ -1,0 +1,113 @@
+package io.getstream.feeds.android.client.internal.repository
+
+import io.getstream.feeds.android.client.api.model.ActivityData
+import io.getstream.feeds.android.client.api.model.ActivityPinData
+import io.getstream.feeds.android.client.api.model.FeedData
+import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.model.FeedMemberData
+import io.getstream.feeds.android.client.api.model.FollowData
+import io.getstream.feeds.android.client.api.model.ModelUpdates
+import io.getstream.feeds.android.client.api.model.PaginationResult
+import io.getstream.feeds.android.client.api.model.QueryConfiguration
+import io.getstream.feeds.android.client.api.state.FeedQuery
+import io.getstream.feeds.android.client.api.state.FeedsQuery
+import io.getstream.feeds.android.core.generated.models.AcceptFollowRequest
+import io.getstream.feeds.android.core.generated.models.FeedOwnCapability
+import io.getstream.feeds.android.core.generated.models.QueryFeedMembersRequest
+import io.getstream.feeds.android.core.generated.models.QueryFollowsRequest
+import io.getstream.feeds.android.core.generated.models.RejectFollowRequest
+import io.getstream.feeds.android.core.generated.models.SingleFollowRequest
+import io.getstream.feeds.android.core.generated.models.UpdateFeedMembersRequest
+import io.getstream.feeds.android.core.generated.models.UpdateFeedRequest
+
+/**
+ * Represents the repository for managing feeds.
+ * Performs requests and transforms API models to domain models.
+ */
+internal interface FeedsRepository {
+
+    // BEGIN: Creating or Getting the state of the feed
+
+    suspend fun getOrCreateFeed(query: FeedQuery): Result<GetOrCreateInfo>
+
+    // END: Creating or Getting the state of the feed
+
+    // BEGIN: Manging the feed
+
+    suspend fun deleteFeed(feedGroupId: String, feedId: String, hardDelete: Boolean): Result<Unit>
+
+    suspend fun updateFeed(
+        feedGroupId: String,
+        feedId: String,
+        request: UpdateFeedRequest
+    ): Result<FeedData>
+
+    // END: Manging the feed
+
+    // BEGIN: Feed lists
+
+    suspend fun queryFeeds(query: FeedsQuery): Result<PaginationResult<FeedData>>
+
+    // END: Feed lists
+
+    // BEGIN: Follows
+
+    suspend fun queryFollowSuggestions(feedGroupId: String, limit: Int?): Result<List<FeedData>>
+
+    suspend fun queryFollows(request: QueryFollowsRequest): Result<PaginationResult<FollowData>>
+
+    suspend fun follow(request: SingleFollowRequest): Result<FollowData>
+
+    suspend fun unfollow(source: FeedId, target: FeedId): Result<Unit>
+
+    suspend fun acceptFollow(request: AcceptFollowRequest): Result<FollowData>
+
+    suspend fun rejectFollow(request: RejectFollowRequest): Result<FollowData>
+
+    // END: Follows
+
+    // BEGIN: Members
+
+    suspend fun updateFeedMembers(
+        feedGroupId: String,
+        feedId: String,
+        request: UpdateFeedMembersRequest
+    ): Result<ModelUpdates<FeedMemberData>>
+
+    suspend fun acceptFeedMember(feedGroupId: String, feedId: String): Result<FeedMemberData>
+
+    suspend fun rejectFeedMember(feedGroupId: String, feedId: String): Result<FeedMemberData>
+
+    suspend fun queryFeedMembers(
+        feedGroupId: String,
+        feedId: String,
+        request: QueryFeedMembersRequest
+    ): Result<PaginationResult<FeedMemberData>>
+
+    // END: Members
+}
+
+/**
+ * Data class representing the information returned when getting or creating a feed.
+ *
+ * @property activities A paginated result of activities associated with the feed.
+ * @property activitiesQueryConfig The configuration used to query activities.
+ * @property feed The feed data associated with the feed.
+ * @property followers A list of followers for the feed.
+ * @property following A list of feeds that this feed is following.
+ * @property followRequests A list of follow requests for the feed.
+ * @property members A paginated result of members in the feed.
+ * @property ownCapabilities The capabilities that the current user has on the feed.
+ * @property pinnedActivities A list of activities that are pinned in the feed.
+ */
+internal data class GetOrCreateInfo(
+    val activities: PaginationResult<ActivityData>,
+    val activitiesQueryConfig: QueryConfiguration<ActivityData>,
+    val feed: FeedData,
+    val followers: List<FollowData>,
+    val following: List<FollowData>,
+    val followRequests: List<FollowData>,
+    val members: PaginationResult<FeedMemberData>,
+    val ownCapabilities: List<FeedOwnCapability>,
+    val pinnedActivities: List<ActivityPinData>,
+)

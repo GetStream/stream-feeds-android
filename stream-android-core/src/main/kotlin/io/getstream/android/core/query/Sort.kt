@@ -187,7 +187,7 @@ public fun <T> List<T>.sortedWith(sort: List<Sort<T>>): List<T> =
  * @param T The type of elements to be compared.
  * @param comparators The list of comparators to be combined.
  */
-internal class CompositeComparator<T>(private val comparators: List<Comparator<T>>) :
+public class CompositeComparator<T>(private val comparators: List<Comparator<T>>) :
     Comparator<T> {
 
     override fun compare(o1: T, o2: T): Int {
