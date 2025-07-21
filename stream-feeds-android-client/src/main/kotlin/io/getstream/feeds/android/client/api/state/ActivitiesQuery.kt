@@ -48,19 +48,19 @@ public data class ActivitiesQuery(
 public class ActivitiesSort(field: ActivitiesSortField, direction: SortDirection) :
     Sort<ActivityData>(field, direction) {
 
-        public companion object {
+    public companion object {
 
-            /**
-             * Default sorting configuration for activities.
-             *
-             * This uses the `CreatedAt` field in reverse order, meaning the most recent activities
-             * will appear first.
-             */
-            public val Default: List<ActivitiesSort> = listOf(
-                ActivitiesSort(ActivitiesSortField.CreatedAt, SortDirection.REVERSE)
-            )
-        }
+        /**
+         * Default sorting configuration for activities.
+         *
+         * This uses the `CreatedAt` field in reverse order, meaning the most recent activities
+         * will appear first.
+         */
+        public val Default: List<ActivitiesSort> = listOf(
+            ActivitiesSort(ActivitiesSortField.CreatedAt, SortDirection.REVERSE)
+        )
     }
+}
 
 /**
  * Defines the fields by which activities can be sorted.

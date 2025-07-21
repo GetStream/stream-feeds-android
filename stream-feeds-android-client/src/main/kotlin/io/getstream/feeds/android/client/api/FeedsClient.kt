@@ -5,8 +5,16 @@ import io.getstream.android.core.user.ApiKey
 import io.getstream.android.core.user.User
 import io.getstream.android.core.user.UserToken
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.state.BookmarkList
+import io.getstream.feeds.android.client.api.state.BookmarksQuery
 import io.getstream.feeds.android.client.api.state.Feed
+import io.getstream.feeds.android.client.api.state.FeedList
 import io.getstream.feeds.android.client.api.state.FeedQuery
+import io.getstream.feeds.android.client.api.state.FeedsQuery
+import io.getstream.feeds.android.client.api.state.FollowList
+import io.getstream.feeds.android.client.api.state.FollowsQuery
+import io.getstream.feeds.android.client.api.state.MemberList
+import io.getstream.feeds.android.client.api.state.MembersQuery
 import io.getstream.feeds.android.client.internal.client.createFeedsClient
 
 
@@ -86,6 +94,57 @@ public interface FeedsClient {
      * @return A [Feed] instance that can be used to interact with the specified feed.
      */
     public fun feed(query: FeedQuery): Feed
+
+    /**
+     * Creates a feed list instance based on the provided query.
+     *
+     * This method creates a `FeedList` object that represents a collection of feeds matching the
+     * specified query. The feed list can be used to fetch multiple feeds, manage feed groups, and
+     * receive real-time updates for all feeds in the list.
+     *
+     * @param query The feeds query containing filtering and pagination parameters.
+     * @return A [FeedList] instance that can be used to interact with the collection of feeds.
+     */
+    public fun feedList(query: FeedsQuery): FeedList
+
+    /**
+     * Creates a follow list instance based on the provided query.
+     *
+     * This method creates a [FollowList] object that represents a collection of follow
+     * relationships matching the specified query. The follow list can be used to fetch followers,
+     * following relationships, and manage follow data with pagination support.
+     *
+     * @param query The follows query containing filtering, sorting, and pagination parameters.
+     * @return A [FollowList] instance that can be used to interact with the collection of follow
+     * relationships
+     */
+    public fun followList(query: FollowsQuery): FollowList
+
+    // TODO: Activities operations
+
+    /**
+     * Creates a bookmark list instance based on the provided query.
+     *
+     * This method creates a `BookmarkList` object that represents a collection of bookmarks
+     * matching the specified query. The bookmark list can be used to fetch user bookmarks,
+     * manage bookmark folders, and receive real-time updates for bookmark-related events.
+     * */
+    public fun bookmarkList(query: BookmarksQuery): BookmarkList
+
+    /**
+     * Creates a member list instance based on the provided query.
+     *
+     * This method creates a [MemberList] object that represents a collection of feed members
+     * matching the specified query. The member list can be used to fetch feed members, manage
+     * member pagination,  and receive real-time updates for member-related events.
+     *
+     * @param query The members query containing filtering, sorting, and pagination parameters.
+     * @return A [MemberList] instance that can be used to interact with the collection of feed
+     * members.
+     */
+    public fun memberList(query: MembersQuery): MemberList
+
+
 }
 
 /**

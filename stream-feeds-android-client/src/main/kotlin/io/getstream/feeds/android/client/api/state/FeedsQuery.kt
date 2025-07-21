@@ -54,7 +54,19 @@ public data class FeedsQuery(
  * @property direction The direction of the sort operation.
  */
 public class FeedsSort(field: FeedsSortField, direction: SortDirection) :
-    Sort<FeedData>(field, direction)
+    Sort<FeedData>(field, direction) {
+
+        public companion object {
+
+            /**
+             * The default sorting for feeds queries.
+             * Sorts by creation date in ascending order (oldest first).
+             */
+            public val Default: List<FeedsSort> = listOf(
+                FeedsSort(FeedsSortField.CreatedAt, SortDirection.FORWARD)
+            )
+        }
+    }
 
 /**
  * Defines the fields by which feeds can be sorted.

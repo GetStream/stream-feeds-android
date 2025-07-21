@@ -122,9 +122,12 @@ internal open class StreamWebSocketImpl<T : StreamWebSocketListener>(
 
     override fun onMessage(webSocket: WebSocket, text: String) {
         logger.v { "[onMessage] Socket message: $text" }
+        var count = 0
         forEach {
             it.onMessage(text)
+            count++
         }
+        logger.v { "[onMessage] subscr. count: $count" }
         super.onMessage(webSocket, text)
     }
 

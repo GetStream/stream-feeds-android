@@ -12,6 +12,7 @@ import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.state.Feed
 import io.getstream.feeds.android.client.api.state.FeedQuery
 import io.getstream.feeds.android.client.api.state.FeedState
+import io.getstream.feeds.android.client.api.state.MembersQuery
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.core.generated.models.AcceptFollowRequest
 import io.getstream.feeds.android.core.generated.models.AddBookmarkRequest
@@ -51,11 +52,18 @@ internal class FeedImpl(
     private val query: FeedQuery,
     private val currentUserId: String,
     private val feedsRepository: FeedsRepository,
+    // TODO: Observe events
 ) : Feed {
+
+    private val memberList: MemberListImpl = MemberListImpl(
+        query = MembersQuery(fid = query.fid),
+        feedsRepository = feedsRepository,
+    )
 
     private val _state: FeedStateImpl = FeedStateImpl(
         feedQuery = query,
         currentUserId = currentUserId,
+        memberListState = memberList.mutableState,
     )
 
     private val group: String
@@ -229,20 +237,20 @@ internal class FeedImpl(
     }
 
     override suspend fun queryFeedMembers(): Result<List<FeedMemberData>> {
-        TODO("Not yet implemented")
+        return memberList.get()
     }
 
     override suspend fun queryMoreFeedMembers(limit: Int?): Result<List<FeedMemberData>> {
-        TODO("Not yet implemented")
+        return memberList.queryMoreMembers(limit)
     }
 
     override suspend fun updateFeedMembers(request: UpdateFeedMembersRequest): Result<ModelUpdates<FeedMemberData>> {
         return feedsRepository.updateFeedMembers(
             feedGroupId = group,
             feedId = id,
-            request = request
+            request = request,
         ).onSuccess { updates ->
-            // TODO: Update member state in the _state
+            memberList.mutableState.onMembersUpdated(updates)
         }
     }
 
