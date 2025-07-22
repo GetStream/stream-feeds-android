@@ -18,7 +18,9 @@ package io.getstream.feeds.android.core.generated.infrastructure
 
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.ToJson
+import org.threeten.bp.Instant
 import org.threeten.bp.OffsetDateTime
+import org.threeten.bp.ZoneOffset
 import org.threeten.bp.format.DateTimeFormatter
 
 class OffsetDateTimeAdapter {
@@ -29,7 +31,10 @@ class OffsetDateTimeAdapter {
 
     @FromJson
     fun fromJson(value: String): OffsetDateTime {
-        return OffsetDateTime.parse(value, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-    }
+        val epochSeconds = value.toLong() / 1_000_000_000L
+        val nanoAdjustment = (value.toLong() % 1_000_000_000L)
 
+        val instant = Instant.ofEpochSecond(epochSeconds, nanoAdjustment)
+        return instant.atOffset(ZoneOffset.UTC)
+    }
 }
