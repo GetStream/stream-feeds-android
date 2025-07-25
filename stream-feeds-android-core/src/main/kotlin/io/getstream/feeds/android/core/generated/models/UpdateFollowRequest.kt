@@ -45,6 +45,9 @@ data class UpdateFollowRequest (
     @Json(name = "target")
     val target: kotlin.String,
 
+    @Json(name = "create_notification_activity")
+    val createNotificationActivity: kotlin.Boolean? = null,
+
     @Json(name = "follower_role")
     val followerRole: kotlin.String? = null,
 

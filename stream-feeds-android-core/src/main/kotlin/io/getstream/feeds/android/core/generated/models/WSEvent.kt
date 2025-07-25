@@ -99,6 +99,7 @@ class WSEventAdapter : JsonAdapter<WSEvent>() {
             "feeds.follow.created" -> io.getstream.feeds.android.core.generated.models.FollowCreatedEvent::class.java
             "feeds.follow.deleted" -> io.getstream.feeds.android.core.generated.models.FollowDeletedEvent::class.java
             "feeds.follow.updated" -> io.getstream.feeds.android.core.generated.models.FollowUpdatedEvent::class.java
+            "feeds.notification_feed.updated" -> io.getstream.feeds.android.core.generated.models.NotificationFeedUpdatedEvent::class.java
             "feeds.poll.closed" -> io.getstream.feeds.android.core.generated.models.PollClosedFeedEvent::class.java
             "feeds.poll.deleted" -> io.getstream.feeds.android.core.generated.models.PollDeletedFeedEvent::class.java
             "feeds.poll.updated" -> io.getstream.feeds.android.core.generated.models.PollUpdatedFeedEvent::class.java

@@ -35,10 +35,10 @@ import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
 
 /**
- * Emitted when a feed is deleted.
+ * Emitted when notification feed is updated.
  */
 
-data class FeedDeletedEvent (
+data class NotificationFeedUpdatedEvent (
     @Json(name = "created_at")
     val createdAt: org.threeten.bp.OffsetDateTime,
 
@@ -53,6 +53,12 @@ data class FeedDeletedEvent (
 
     @Json(name = "received_at")
     val receivedAt: org.threeten.bp.OffsetDateTime? = null,
+
+    @Json(name = "aggregated_activities")
+    val aggregatedActivities: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.AggregatedActivityResponse>? = emptyList(),
+
+    @Json(name = "notification_status")
+    val notificationStatus: io.getstream.feeds.android.core.generated.models.NotificationStatusResponse? = null,
 
     @Json(name = "user")
     val user: io.getstream.feeds.android.core.generated.models.UserResponseCommonFields? = null
