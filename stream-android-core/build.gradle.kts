@@ -46,6 +46,8 @@ tasks.withType<KotlinCompile>().configureEach {
 }
 
 dependencies {
+    // Stream
+    implementation(project(":stream-annotations"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

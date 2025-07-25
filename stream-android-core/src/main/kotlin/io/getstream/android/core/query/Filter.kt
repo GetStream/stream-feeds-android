@@ -1,5 +1,7 @@
 package io.getstream.android.core.query
 
+import io.getstream.kotlin.base.annotation.marker.StreamInternalApi
+
 /**
  * Base sealed class for all query filters used in Stream API operations.
  *
@@ -143,9 +145,11 @@ public data class PathExistsFilter internal constructor(
     val value: String,
 ) : Filter()
 
-
-// TODO Mark as internal
-public fun Filter.toMap(): Map<String, Any> = when (this) {
+/**
+ * Converts a [Filter] instance to a request map suitable for API queries.
+ */
+@StreamInternalApi
+public fun Filter.toRequest(): Map<String, Any> = when (this) {
     is EqualFilter -> mapOf(field to value)
     is GreaterThanFilter -> mapOf(field to mapOf(FilterOperator.GREATER to value))
     is GreaterThanOrEqualFilter -> mapOf(field to mapOf(FilterOperator.GREATER_OR_EQUAL to value))
@@ -155,8 +159,8 @@ public fun Filter.toMap(): Map<String, Any> = when (this) {
     is QueryFilter -> mapOf(field to mapOf(FilterOperator.QUERY to value))
     is AutocompleteFilter -> mapOf(field to mapOf(FilterOperator.AUTOCOMPLETE to value))
     is ExistsFilter -> mapOf(field to mapOf(FilterOperator.EXISTS to value))
-    is AndFilter -> mapOf(FilterOperator.AND to filters.map(Filter::toMap))
-    is OrFilter -> mapOf(FilterOperator.OR to filters.map(Filter::toMap))
+    is AndFilter -> mapOf(FilterOperator.AND to filters.map(Filter::toRequest))
+    is OrFilter -> mapOf(FilterOperator.OR to filters.map(Filter::toRequest))
     is ContainsFilter -> mapOf(field to mapOf(FilterOperator.CONTAINS to value))
     is PathExistsFilter -> mapOf(field to mapOf(FilterOperator.PATH_EXISTS to value))
 }

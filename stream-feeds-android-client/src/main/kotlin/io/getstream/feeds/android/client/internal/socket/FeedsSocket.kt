@@ -2,6 +2,7 @@ package io.getstream.feeds.android.client.internal.socket
 
 import io.getstream.android.core.error.APIError
 import io.getstream.android.core.error.APIErrorContainer
+import io.getstream.android.core.parser.JsonParser
 import io.getstream.android.core.user.ConnectUserDetailsRequest
 import io.getstream.android.core.user.WSAuthMessageRequest
 import io.getstream.android.core.websocket.DisconnectionSource
@@ -16,7 +17,6 @@ import io.getstream.feeds.android.client.internal.socket.common.factory.StreamSo
 import io.getstream.feeds.android.client.internal.socket.common.listeners.StreamWebSocketListener
 import io.getstream.feeds.android.client.internal.socket.common.monitor.StreamHealthMonitor
 import io.getstream.feeds.android.client.internal.socket.common.parser.FeedsEventParser
-import io.getstream.feeds.android.client.internal.socket.common.parser.JsonParser
 import io.getstream.feeds.android.client.internal.socket.events.ConnectedEvent
 import io.getstream.feeds.android.client.internal.socket.events.ConnectionErrorEvent
 import io.getstream.feeds.android.core.generated.models.HealthCheckEvent
@@ -139,7 +139,7 @@ internal class FeedsSocket(
     private val jsonParser: JsonParser,
     private val eventParser: FeedsEventParser = FeedsEventParser(jsonParser),
     private val healthMonitor: StreamHealthMonitor,
-    private val debounceProcessor: DebounceProcessor<WSEvent>,
+    private val debounceProcessor: DebounceProcessor<String>,
     private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener>,
 ) : StreamSubscriptionManager<FeedsSocketListener> by subscriptionManager {
 
@@ -156,30 +156,7 @@ internal class FeedsSocket(
 
         override fun onMessage(text: String) {
             logger.v { "[onMessage] Socket message: $text" }
-            // Attempt to parse an event from the text message
-            eventParser.decode(text)
-                .onSuccess {
-                    logger.d { "[onMessage] Received event: ${it.getWSEventType()}" }
-                    debounceProcessor.onMessage(it)
-                    if (it is ConnectionErrorEvent) {
-                        connectionState = WebSocketConnectionState.Disconnecting(
-                            DisconnectionSource.ServerInitiated(it.error)
-                        )
-                    }
-                }
-                .onFailure {
-                    // Attempt to parse as APIError
-                    jsonParser.fromJsonOrError(text, APIErrorContainer::class.java)
-                        .onSuccess {
-                            logger.e { "[onMessage] Received an error webSocket event: ${it.error}" }
-                            connectionState = WebSocketConnectionState.Disconnecting(
-                                DisconnectionSource.ServerInitiated(it.error)
-                            )
-                        }
-                        .onFailure {
-                            logger.i { "[onMessage] Failed to parse $text" }
-                        }
-                }
+            debounceProcessor.onMessage(text)
         }
 
         override fun onFailure(t: Throwable, response: Response?) {
@@ -404,13 +381,32 @@ internal class FeedsSocket(
         debounceProcessor.onBatch { batch, delay, count ->
             logger.v { "[onBatch] Socket batch (delay: $delay ms, buffer size: $count): $batch" }
             healthMonitor.ack()
-            batch.forEach { event ->
-                // Skip heath.check events
-                if (event !is HealthCheckEvent) {
-                    subscriptionManager.forEach {
-                        it.onEvent(event)
+            batch.forEach { message ->
+                eventParser.decode(message)
+                    .onSuccess { event ->
+                        logger.d { "[onBatch] Parsed event: ${event.getWSEventType()}" }
+                        if (event !is HealthCheckEvent) {
+                            subscriptionManager.forEach { it.onEvent(event) }
+                        }
+                        if (event is ConnectionErrorEvent) {
+                            connectionState = WebSocketConnectionState.Disconnecting(
+                                DisconnectionSource.ServerInitiated(event.error)
+                            )
+                        }
                     }
-                }
+                    .onFailure {
+                        // Attempt to parse as APIError
+                        jsonParser.fromJsonOrError(message, APIErrorContainer::class.java)
+                            .onSuccess { apiError ->
+                                logger.e { "[onBatch] Parsed error event: ${apiError.error}" }
+                                connectionState = WebSocketConnectionState.Disconnecting(
+                                    DisconnectionSource.ServerInitiated(apiError.error)
+                                )
+                            }
+                            .onFailure {
+                                logger.i { "[onBatch] Failed to parse $message" }
+                            }
+                    }
             }
         }
     }

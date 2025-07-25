@@ -1,6 +1,7 @@
 package io.getstream.android.core.http.interceptor
 
 import io.getstream.android.core.user.ApiKey
+import io.getstream.kotlin.base.annotation.marker.StreamInternalApi
 import okhttp3.Interceptor
 import okhttp3.Response
 
@@ -9,6 +10,7 @@ import okhttp3.Response
  *
  * @param apiKey The API key to be added to the request headers.
  */
+@StreamInternalApi
 public class ApiKeyInterceptor(private val apiKey: ApiKey): Interceptor {
 
     private companion object {

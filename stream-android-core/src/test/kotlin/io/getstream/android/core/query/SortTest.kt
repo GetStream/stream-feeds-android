@@ -1,9 +1,11 @@
 package io.getstream.android.core.query
 
+import io.getstream.kotlin.base.annotation.marker.StreamInternalApi
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
+@OptIn(StreamInternalApi::class)
 internal class SortTest {
 
     // Test data classes

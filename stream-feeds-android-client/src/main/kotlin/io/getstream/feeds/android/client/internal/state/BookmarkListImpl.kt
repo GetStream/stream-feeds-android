@@ -1,0 +1,82 @@
+package io.getstream.feeds.android.client.internal.state
+
+import io.getstream.android.core.websocket.WebSocketConnectionState
+import io.getstream.feeds.android.client.api.model.BookmarkData
+import io.getstream.feeds.android.client.api.model.QueryConfiguration
+import io.getstream.feeds.android.client.api.state.BookmarkList
+import io.getstream.feeds.android.client.api.state.BookmarkListState
+import io.getstream.feeds.android.client.api.state.query.BookmarksQuery
+import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManager
+import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
+import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
+import io.getstream.feeds.android.client.internal.state.event.handler.BookmarkListEventHandler
+import io.getstream.feeds.android.core.generated.models.WSEvent
+
+
+/**
+ * A class that manages a paginated list of bookmarks.
+ *
+ * [BookmarkList] provides functionality to query and paginate through bookmarks.
+ * It maintains the current state of the bookmark list and provides methods to load more bookmarks
+ * when available.
+ *
+ * @property query The query configuration used to fetch the bookmarks.
+ * @property bookmarksRepository The repository used to perform network requests for bookmarks.
+ * @property subscriptionManager The manager for WebSocket subscriptions to receive real-time
+ * updates.
+ */
+internal class BookmarkListImpl(
+    override val query: BookmarksQuery,
+    private val bookmarksRepository: BookmarksRepository,
+    private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener>,
+) : BookmarkList {
+
+    init {
+        subscriptionManager.subscribe(object : FeedsSocketListener {
+            override fun onState(state: WebSocketConnectionState) {
+                // Not relevant, rethink this
+            }
+
+            override fun onEvent(event: WSEvent) {
+                eventHandler.handleEvent(event)
+            }
+        })
+    }
+
+    private val _state: BookmarkListStateImpl = BookmarkListStateImpl(query)
+
+    private val eventHandler = BookmarkListEventHandler(_state)
+
+    override val state: BookmarkListState
+        get() = _state
+
+    override suspend fun get(): Result<List<BookmarkData>> {
+        return queryBookmarks(query)
+    }
+
+    override suspend fun queryMoreBookmarks(limit: Int?): Result<List<BookmarkData>> {
+        val next = _state.pagination?.next
+        if (next == null) {
+            // If there is no next cursor, return an empty list.
+            return Result.success(emptyList())
+        }
+        val nextQuery = BookmarksQuery(
+            filter = _state.queryConfig?.filter,
+            sort = _state.queryConfig?.sort,
+            limit = limit ?: query.limit,
+            next = next,
+            previous = null,
+        )
+        return queryBookmarks(nextQuery)
+    }
+
+    private suspend fun queryBookmarks(query: BookmarksQuery): Result<List<BookmarkData>> {
+        return bookmarksRepository.queryBookmarks(query)
+            .onSuccess {
+                _state.onQueryMoreBookmarks(it, QueryConfiguration(query.filter, query.sort))
+            }
+            .map {
+                it.models
+            }
+    }
+}

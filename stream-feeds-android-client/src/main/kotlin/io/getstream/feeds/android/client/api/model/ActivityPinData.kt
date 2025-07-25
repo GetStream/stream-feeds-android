@@ -1,6 +1,8 @@
 package io.getstream.feeds.android.client.api.model
 
+import io.getstream.feeds.android.client.internal.model.mapping.toDate
 import io.getstream.feeds.android.core.generated.models.ActivityPinResponse
+import io.getstream.feeds.android.core.generated.models.PinActivityResponse
 import java.util.Date
 
 /**
@@ -48,4 +50,18 @@ internal fun ActivityPinResponse.toModel(): ActivityPinData = ActivityPinData(
     fid = FeedId(feed),
     updatedAt = Date(updatedAt.toInstant().toEpochMilli()),
     userId = user.id,
+)
+
+/**
+ * Converts a [PinActivityResponse] to an [ActivityPinData] model.
+ *
+ * This conversion is used when pinning an activity to a feed, where the response
+ * contains the pinned activity details.
+ */
+internal fun PinActivityResponse.toModel(): ActivityPinData = ActivityPinData(
+    activity = activity.toModel(),
+    createdAt = createdAt.toDate(),
+    fid = FeedId(fid),
+    updatedAt = createdAt.toDate(), // no updated_at
+    userId = userId,
 )

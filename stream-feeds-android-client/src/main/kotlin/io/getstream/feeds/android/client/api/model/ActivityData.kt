@@ -5,7 +5,6 @@ import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.core.generated.models.ActivityLocation
 import io.getstream.feeds.android.core.generated.models.ActivityResponse
 import io.getstream.feeds.android.core.generated.models.Attachment
-import io.getstream.feeds.android.core.generated.models.ModerationV2Response
 import java.util.Date
 import kotlin.math.max
 
@@ -96,7 +95,7 @@ public data class ActivityData(
     val latestReactions: List<FeedsReactionData>,
     val location: ActivityLocation?,
     val mentionedUsers: List<UserData>,
-    val moderation: ModerationV2Response?,
+    val moderation: Moderation?,
     val ownBookmarks: List<BookmarkData>,
     val ownReactions: List<FeedsReactionData>,
     val parent: ActivityData?,
@@ -147,7 +146,7 @@ internal fun ActivityResponse.toModel(): ActivityData = ActivityData(
     latestReactions = latestReactions.map { it.toModel() },
     location = location,
     mentionedUsers = mentionedUsers.map { it.toModel() },
-    moderation = moderation,
+    moderation = moderation?.toModel(),
     ownBookmarks = ownBookmarks.map { it.toModel() },
     ownReactions = ownReactions.map { it.toModel() },
     parent = parent?.toModel(),

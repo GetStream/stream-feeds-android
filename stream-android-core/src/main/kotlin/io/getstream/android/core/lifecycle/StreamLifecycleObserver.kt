@@ -3,6 +3,7 @@ package io.getstream.android.core.lifecycle
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import io.getstream.kotlin.base.annotation.marker.StreamInternalApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,6 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * @param scope The [CoroutineScope] used to launch coroutines for notifying listeners
  * @param lifecycle The [Lifecycle] to observe for lifecycle events
  */
+@StreamInternalApi
 public class StreamLifecycleObserver(
     private val scope: CoroutineScope,
     private val lifecycle: Lifecycle,

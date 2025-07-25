@@ -1,49 +1,51 @@
 package io.getstream.android.core.query
 
+import io.getstream.kotlin.base.annotation.marker.StreamInternalApi
 import org.junit.Assert
 import org.junit.Test
 
+@OptIn(StreamInternalApi::class)
 internal class FilterTest {
 
     @Test
     fun testEqualFilter() {
         val filter = EqualFilter("field", "value")
-        val map = filter.toMap()
+        val map = filter.toRequest()
         Assert.assertEquals(mapOf("field" to "value"), map)
     }
 
     @Test
     fun testGreaterThanFilter() {
         val filter = GreaterThanFilter("age", 18)
-        val map = filter.toMap()
+        val map = filter.toRequest()
         Assert.assertEquals(mapOf("age" to mapOf("\$gt" to 18)), map)
     }
 
     @Test
     fun testGreaterThanOrEqualFilter() {
         val filter = GreaterThanOrEqualFilter("score", 100)
-        val map = filter.toMap()
+        val map = filter.toRequest()
         Assert.assertEquals(mapOf("score" to mapOf("\$gte" to 100)), map)
     }
 
     @Test
     fun testLessThanFilter() {
         val filter = LessThanFilter("price", 50.0)
-        val map = filter.toMap()
+        val map = filter.toRequest()
         Assert.assertEquals(mapOf("price" to mapOf("\$lt" to 50.0)), map)
     }
 
     @Test
     fun testLessThanOrEqualFilter() {
         val filter = LessThanOrEqualFilter("quantity", 10)
-        val map = filter.toMap()
+        val map = filter.toRequest()
         Assert.assertEquals(mapOf("quantity" to mapOf("\$lte" to 10)), map)
     }
 
     @Test
     fun testInFilter() {
         val filter = InFilter("status", setOf("active", "pending", "completed"))
-        val map = filter.toMap()
+        val map = filter.toRequest()
         Assert.assertEquals(
             mapOf("status" to mapOf("\$in" to setOf("active", "pending", "completed"))),
             map
@@ -53,42 +55,42 @@ internal class FilterTest {
     @Test
     fun testQueryFilter() {
         val filter = QueryFilter("content", "search term")
-        val map = filter.toMap()
+        val map = filter.toRequest()
         Assert.assertEquals(mapOf("content" to mapOf("\$q" to "search term")), map)
     }
 
     @Test
     fun testAutocompleteFilter() {
         val filter = AutocompleteFilter("name", "john")
-        val map = filter.toMap()
+        val map = filter.toRequest()
         Assert.assertEquals(mapOf("name" to mapOf("\$autocomplete" to "john")), map)
     }
 
     @Test
     fun testExistsFilter() {
         val filter = ExistsFilter("optional_field", true)
-        val map = filter.toMap()
+        val map = filter.toRequest()
         Assert.assertEquals(mapOf("optional_field" to mapOf("\$exists" to true)), map)
     }
 
     @Test
     fun testExistsFilterFalse() {
         val filter = ExistsFilter("missing_field", false)
-        val map = filter.toMap()
+        val map = filter.toRequest()
         Assert.assertEquals(mapOf("missing_field" to mapOf("\$exists" to false)), map)
     }
 
     @Test
     fun testContainsFilter() {
         val filter = ContainsFilter("tags", "important")
-        val map = filter.toMap()
+        val map = filter.toRequest()
         Assert.assertEquals(mapOf("tags" to mapOf("\$contains" to "important")), map)
     }
 
     @Test
     fun testPathExistsFilter() {
         val filter = PathExistsFilter("metadata", "user.preferences.theme")
-        val map = filter.toMap()
+        val map = filter.toRequest()
         Assert.assertEquals(
             mapOf("metadata" to mapOf("\$path_exists" to "user.preferences.theme")),
             map
@@ -100,7 +102,7 @@ internal class FilterTest {
         val filter1 = EqualFilter("type", "post")
         val filter2 = GreaterThanFilter("likes", 10)
         val andFilter = AndFilter(setOf(filter1, filter2))
-        val map = andFilter.toMap()
+        val map = andFilter.toRequest()
         
         val expected = mapOf(
             "\$and" to listOf(
@@ -116,7 +118,7 @@ internal class FilterTest {
         val filter1 = EqualFilter("status", "published")
         val filter2 = EqualFilter("status", "draft")
         val orFilter = OrFilter(setOf(filter1, filter2))
-        val map = orFilter.toMap()
+        val map = orFilter.toRequest()
         
         val expected = mapOf(
             "\$or" to listOf(
@@ -135,7 +137,7 @@ internal class FilterTest {
         
         val andFilter = AndFilter(setOf(filter1, filter2))
         val orFilter = OrFilter(setOf(andFilter, filter3))
-        val map = orFilter.toMap()
+        val map = orFilter.toRequest()
         
         val expected = mapOf(
             "\$or" to listOf(

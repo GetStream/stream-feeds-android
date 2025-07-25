@@ -9,8 +9,10 @@ import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
+import io.getstream.feeds.android.core.generated.models.AddActivityRequest
 import io.getstream.feeds.android.core.generated.models.AddBookmarkRequest
 import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
+import io.getstream.feeds.android.core.generated.models.AddCommentRequest
 import io.getstream.feeds.android.core.generated.models.AddReactionRequest
 import io.getstream.feeds.android.core.generated.models.MarkActivityRequest
 import io.getstream.feeds.android.core.generated.models.SingleFollowRequest
@@ -65,6 +67,14 @@ public interface Feed {
     public suspend fun getOrCreate(): Result<FeedData>
 
     /**
+     * Stops watching the feed.
+     * When this method is called, you will not receive any web socket events for the feed anymore.
+     *
+     * @return A [Result] indicating success or failure of the stop operation.
+     */
+    public suspend fun stopWatching(): Result<Unit>
+
+    /**
      * Updates the feed with the provided request data.
      *
      * @param request The update request containing the new feed data.
@@ -90,6 +100,11 @@ public interface Feed {
      * operation fails.
      */
 //    public suspend fun addActivity(request: FeedAddActivityRequest): Result<ActivityData>
+
+    /**
+     * TODO: Remove this method once the attachment upload logic is implemented.
+     */
+    public suspend fun addActivity(request: AddActivityRequest): Result<ActivityData>
 
     /**
      * Updates an existing activity in the feed.
@@ -195,6 +210,15 @@ public interface Feed {
      * fails.
      */
     public suspend fun getComment(commentId: String): Result<CommentData>
+
+    /**
+     * Adds a new comment to activity with id.
+     *
+     * @param request The request containing the comment data to add.
+     * @return A [Result] containing the added [CommentData] if successful, or an error if the
+     * operation fails.
+     */
+    public suspend fun addComment(request: AddCommentRequest): Result<CommentData>
 
     /**
      * Updates an existing comment with the provided request data.

@@ -39,5 +39,13 @@ internal data class EndpointConfig(
             httpUrl = "https://chat-edge-frankfurt-ce1.stream-io-api.com",
             wsUrl = "wss://chat-edge-frankfurt-ce1.stream-io-api.com/api/v2/connect",
         )
+
+        /**
+         * Production environment.
+         */
+        val PRODUCTION = EndpointConfig(
+            httpUrl = "https://feeds.stream-io-api.com",
+            wsUrl = "wss://feeds.stream-io-api.com/api/v2/connect",
+        )
     }
 }

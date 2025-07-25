@@ -1,6 +1,7 @@
 package io.getstream.android.core.user
 
 import androidx.annotation.WorkerThread
+import io.getstream.kotlin.base.annotation.marker.StreamInternalApi
 
 /**
  * Provides a token used to authenticate the user with Stream Chat API.
@@ -18,4 +19,37 @@ public interface UserTokenProvider {
      */
     @WorkerThread
     public fun loadToken(): UserToken
+}
+
+/**
+ * An implementation of [UserTokenProvider] that keeps previous values of the loaded token.
+ * This implementation delegate the process to obtain a new token to another tokenProvider.
+ *
+ * @property provider The [UserTokenProvider] used to obtain new tokens.
+ */
+@StreamInternalApi
+public class CacheableUserTokenProvider(
+    private val provider: UserTokenProvider,
+) : UserTokenProvider {
+
+    @Volatile
+    private var cachedToken: UserToken = UserToken.EMPTY
+
+    override fun loadToken(): UserToken {
+        val currentToken = cachedToken
+        return synchronized(this) {
+            cachedToken
+                .takeIf { it != currentToken }
+                ?: provider.loadToken().also { cachedToken = it }
+        }
+    }
+
+    /**
+     * Obtain the cached token.
+     *
+     * @return The cached token.
+     */
+    public fun getCachedToken(): UserToken {
+        return cachedToken
+    }
 }

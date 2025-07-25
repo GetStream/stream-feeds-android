@@ -10,10 +10,10 @@ import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.model.toModel
-import io.getstream.feeds.android.client.api.state.ActivitiesSort
-import io.getstream.feeds.android.client.api.state.FeedQuery
-import io.getstream.feeds.android.client.api.state.FeedsQuery
-import io.getstream.feeds.android.client.api.state.toRequest
+import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
+import io.getstream.feeds.android.client.api.state.query.FeedQuery
+import io.getstream.feeds.android.client.api.state.query.FeedsQuery
+import io.getstream.feeds.android.client.api.state.query.toRequest
 import io.getstream.feeds.android.core.generated.apis.ApiService
 import io.getstream.feeds.android.core.generated.models.AcceptFollowRequest
 import io.getstream.feeds.android.core.generated.models.QueryFeedMembersRequest

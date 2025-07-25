@@ -1,10 +1,10 @@
-package io.getstream.feeds.android.client.api.state
+package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.query.Filter
 import io.getstream.android.core.query.Sort
 import io.getstream.android.core.query.SortDirection
 import io.getstream.android.core.query.SortField
-import io.getstream.android.core.query.toMap
+import io.getstream.android.core.query.toRequest
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.core.generated.models.QueryFeedsRequest
@@ -39,7 +39,7 @@ import io.getstream.feeds.android.core.generated.models.QueryFeedsRequest
  * real-time functionality.
  */
 public data class FeedsQuery(
-    public val filter: Filter? = null, // TODO: Type safety?
+    public val filter: Filter? = null,
     public val sort: List<FeedsSort>? = null,
     public val limit: Int? = null,
     public val next: String? = null,
@@ -54,7 +54,19 @@ public data class FeedsQuery(
  * @property direction The direction of the sort operation.
  */
 public class FeedsSort(field: FeedsSortField, direction: SortDirection) :
-    Sort<FeedData>(field, direction)
+    Sort<FeedData>(field, direction) {
+
+        public companion object {
+
+            /**
+             * The default sorting for feeds queries.
+             * Sorts by creation date in ascending order (oldest first).
+             */
+            public val Default: List<FeedsSort> = listOf(
+                FeedsSort(FeedsSortField.CreatedAt, SortDirection.FORWARD)
+            )
+        }
+    }
 
 /**
  * Defines the fields by which feeds can be sorted.
@@ -115,6 +127,6 @@ internal fun FeedsQuery.toRequest(): QueryFeedsRequest = QueryFeedsRequest(
     prev = previous,
     watch = watch,
     sort = sort?.map { it.toRequest() },
-    filter = filter?.toMap(),
+    filter = filter?.toRequest(),
 )
 

@@ -1,6 +1,7 @@
 package io.getstream.android.core.http.interceptor
 
 import io.getstream.android.core.http.XStreamClient
+import io.getstream.kotlin.base.annotation.marker.StreamInternalApi
 import okhttp3.Interceptor
 import okhttp3.Response
 
@@ -9,6 +10,7 @@ import okhttp3.Response
  *
  * @property xStreamClient the value of the `X-Stream-Client` header.
  */
+@StreamInternalApi
 public class HeadersInterceptor(private val xStreamClient: XStreamClient): Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {

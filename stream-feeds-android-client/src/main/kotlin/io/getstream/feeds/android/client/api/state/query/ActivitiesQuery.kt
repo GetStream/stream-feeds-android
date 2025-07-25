@@ -1,10 +1,13 @@
-package io.getstream.feeds.android.client.api.state
+package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.query.Filter
 import io.getstream.android.core.query.Sort
 import io.getstream.android.core.query.SortDirection
 import io.getstream.android.core.query.SortField
+import io.getstream.android.core.query.toRequest
 import io.getstream.feeds.android.client.api.model.ActivityData
+import io.getstream.feeds.android.client.internal.model.mapping.toRequest
+import io.getstream.feeds.android.core.generated.models.QueryActivitiesRequest
 
 /**
  * A query for retrieving activities with filtering, sorting, and pagination options.
@@ -24,19 +27,19 @@ import io.getstream.feeds.android.client.api.model.ActivityData
  * results based on specific criteria.
  * @property sort Array of sorting criteria to apply to the activities. If not specified, the API
  * will use its default sorting.
+ * @property limit Maximum number of activities to return in a single request. If not specified,
+ * the API will use its default limit.
  * @property next Pagination cursor for fetching the next page of results. This is typically
  * provided in the response of a previous request.
  * @property previous Pagination cursor for fetching the previous page of results. This is typically
  * provided in the response of a previous request.
- * @property limit Maximum number of activities to return in a single request. If not specified,
- * the API will use its default limit.
  */
 public data class ActivitiesQuery(
     public val filter: Filter? = null,
-    public val sort: List<ActivitiesSort>,
+    public val sort: List<ActivitiesSort>? = null,
+    public val limit: Int? = null,
     public val next: String? = null,
     public val previous: String? = null,
-    public val limit: Int? = null,
 )
 
 /**
@@ -48,19 +51,19 @@ public data class ActivitiesQuery(
 public class ActivitiesSort(field: ActivitiesSortField, direction: SortDirection) :
     Sort<ActivityData>(field, direction) {
 
-        public companion object {
+    public companion object {
 
-            /**
-             * Default sorting configuration for activities.
-             *
-             * This uses the `CreatedAt` field in reverse order, meaning the most recent activities
-             * will appear first.
-             */
-            public val Default: List<ActivitiesSort> = listOf(
-                ActivitiesSort(ActivitiesSortField.CreatedAt, SortDirection.REVERSE)
-            )
-        }
+        /**
+         * Default sorting configuration for activities.
+         *
+         * This uses the `CreatedAt` field in reverse order, meaning the most recent activities
+         * will appear first.
+         */
+        public val Default: List<ActivitiesSort> = listOf(
+            ActivitiesSort(ActivitiesSortField.CreatedAt, SortDirection.REVERSE)
+        )
     }
+}
 
 /**
  * Defines the fields by which activities can be sorted.
@@ -85,3 +88,14 @@ public sealed interface ActivitiesSortField : SortField<ActivityData> {
     public data object Popularity : ActivitiesSortField,
         SortField<ActivityData> by SortField.create("popularity", ActivityData::popularity)
 }
+
+/**
+ * Converts the [ActivitiesQuery] to a [QueryActivitiesRequest].
+ */
+internal fun ActivitiesQuery.toRequest(): QueryActivitiesRequest = QueryActivitiesRequest(
+    filter = filter?.toRequest(),
+    sort = sort?.map { it.toRequest() },
+    limit = limit,
+    next = next,
+    prev = previous,
+)

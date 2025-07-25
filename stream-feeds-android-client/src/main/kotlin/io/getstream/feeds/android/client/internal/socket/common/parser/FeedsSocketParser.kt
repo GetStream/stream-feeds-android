@@ -1,5 +1,6 @@
 package io.getstream.feeds.android.client.internal.socket.common.parser
 
+import io.getstream.android.core.parser.JsonParser
 import io.getstream.feeds.android.client.internal.socket.events.ConnectedEvent
 import io.getstream.feeds.android.client.internal.socket.events.ConnectionErrorEvent
 import io.getstream.feeds.android.client.internal.socket.events.EVENT_TYPE_CONNECTION_ERROR

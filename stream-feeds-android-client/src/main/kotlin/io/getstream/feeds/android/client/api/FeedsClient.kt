@@ -3,10 +3,41 @@ package io.getstream.feeds.android.client.api
 import android.content.Context
 import io.getstream.android.core.user.ApiKey
 import io.getstream.android.core.user.User
-import io.getstream.android.core.user.UserToken
+import io.getstream.android.core.user.UserTokenProvider
+import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.state.Activity
+import io.getstream.feeds.android.client.api.state.ActivityCommentList
+import io.getstream.feeds.android.client.api.state.ActivityCommentsQuery
+import io.getstream.feeds.android.client.api.state.ActivityList
+import io.getstream.feeds.android.client.api.state.ActivityReactionList
+import io.getstream.feeds.android.client.api.state.BookmarkFolderList
+import io.getstream.feeds.android.client.api.state.BookmarkList
+import io.getstream.feeds.android.client.api.state.CommentList
+import io.getstream.feeds.android.client.api.state.CommentReactionList
+import io.getstream.feeds.android.client.api.state.CommentReplyList
 import io.getstream.feeds.android.client.api.state.Feed
-import io.getstream.feeds.android.client.api.state.FeedQuery
+import io.getstream.feeds.android.client.api.state.FeedList
+import io.getstream.feeds.android.client.api.state.FollowList
+import io.getstream.feeds.android.client.api.state.MemberList
+import io.getstream.feeds.android.client.api.state.ModerationConfigList
+import io.getstream.feeds.android.client.api.state.PollList
+import io.getstream.feeds.android.client.api.state.PollVoteList
+import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
+import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQuery
+import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersQuery
+import io.getstream.feeds.android.client.api.state.query.BookmarksQuery
+import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
+import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
+import io.getstream.feeds.android.client.api.state.query.CommentsQuery
+import io.getstream.feeds.android.client.api.state.query.FeedQuery
+import io.getstream.feeds.android.client.api.state.query.FeedsQuery
+import io.getstream.feeds.android.client.api.state.query.FollowsQuery
+import io.getstream.feeds.android.client.api.state.query.MembersQuery
+import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
+import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
+import io.getstream.feeds.android.client.api.state.query.PollsQuery
+import io.getstream.feeds.android.client.api.subscribe.StreamSubscription
 import io.getstream.feeds.android.client.internal.client.createFeedsClient
 
 
@@ -86,6 +117,254 @@ public interface FeedsClient {
      * @return A [Feed] instance that can be used to interact with the specified feed.
      */
     public fun feed(query: FeedQuery): Feed
+
+    /**
+     * Creates a feed list instance based on the provided query.
+     *
+     * This method creates a [FeedList] object that represents a collection of feeds matching the
+     * specified query. The feed list can be used to fetch multiple feeds, manage feed groups, and
+     * receive real-time updates for all feeds in the list.
+     *
+     * @param query The feeds query containing filtering and pagination parameters.
+     * @return A [FeedList] instance that can be used to interact with the collection of feeds.
+     */
+    public fun feedList(query: FeedsQuery): FeedList
+
+    /**
+     * Creates a follow list instance based on the provided query.
+     *
+     * This method creates a [FollowList] object that represents a collection of follow
+     * relationships matching the specified query. The follow list can be used to fetch followers,
+     * following relationships, and manage follow data with pagination support.
+     *
+     * @param query The follows query containing filtering, sorting, and pagination parameters.
+     * @return A [FollowList] instance that can be used to interact with the collection of follow
+     * relationships
+     */
+    public fun followList(query: FollowsQuery): FollowList
+
+    // TODO: Event subscription
+
+
+    // TODO: Activities operations
+
+    /**
+     * Creates an activity instance for the specified activity ID and feed ID.
+     *
+     * This method creates an [Activity] object that represents a specific activity within a feed.
+     * The activity can be used to manage comments, reactions, and other activity-specific
+     * operations.
+     *
+     * Example:
+     * ```kotlin
+     * val feedId = FeedId(group = "user", id = "john")
+     * val activity = client.activity(activityId = "activity-123", fid = feedId)
+     * ```
+     *
+     * @param activityId The unique identifier of the activity.
+     * @param fid The feed identifier where the activity belongs.
+     */
+    public fun activity(activityId: String, fid: FeedId): Activity
+
+    /**
+     * Creates an activity list instance based on the provided query.
+     *
+     * This method creates an [ActivityList] object that represents a collection of activities
+     * matching the specified query. The activity list can be used to fetch activities,
+     * manage activity pagination, and receive real-time updates for activity-related events.
+     *
+     * @param query The activities query containing filtering, sorting, and pagination parameters.
+     * @return A [ActivityList] instance that can be used to interact with the collection of
+     * activities.
+     */
+    public fun activityList(query: ActivitiesQuery): ActivityList
+
+    /**
+     * Creates an activity reaction list instance based on the provided query.
+     *
+     * This method creates an `ActivityReactionList` object that represents a collection of reactions
+     * for a specific activity. The activity reaction list can be used to fetch reactions for an activity,
+     * manage reaction pagination, and receive real-time updates for reaction-related events.
+     *
+     * @param query The activity reactions query containing the activity identifier and pagination
+     * parameters.
+     * @return An [ActivityReactionList] instance that can be used to interact with the collection
+     * of activity reactions.
+     */
+    public fun activityReactionList(query: ActivityReactionsQuery): ActivityReactionList
+
+    /**
+     * Creates a bookmark list instance based on the provided query.
+     *
+     * This method creates a [BookmarkList] object that represents a collection of bookmarks
+     * matching the specified query. The bookmark list can be used to fetch user bookmarks,
+     * manage bookmark folders, and receive real-time updates for bookmark-related events.
+     * */
+    public fun bookmarkList(query: BookmarksQuery): BookmarkList
+
+    /**
+     * Creates a bookmark folder list instance based on the provided query.
+     *
+     * This method creates a [BookmarkFolderList] object that represents a collection of bookmark
+     * folders matching the specified query. The bookmark folder list can be used to fetch user
+     * bookmark folders, manage folder organization, and receive real-time updates for
+     * folder-related events..
+     *
+     * @param query The bookmark folders query containing filtering, sorting, and pagination
+     * parameters.
+     * @return A [BookmarkFolderList] instance that can be used to interact with the collection of
+     * bookmark folders.
+     */
+    public fun bookmarkFolderList(query: BookmarkFoldersQuery): BookmarkFolderList
+
+    /**
+     * Creates a comment list instance based on the provided query.
+     *
+     * This method creates a [CommentList] object that represents a collection of comments
+     * matching the specified query. The comment list can be used to fetch comments,
+     * manage comment pagination, and receive real-time updates for comment-related events.
+     *
+     * @param query The comments query containing filtering, sorting, and pagination parameters.
+     * @return A [CommentList] instance that can be used to interact with a collection of comments.
+     */
+    public fun commentList(query: CommentsQuery): CommentList
+
+    /**
+     * Creates an activity comment list instance based on the provided query.
+     *
+     * This method creates an [ActivityCommentList] object that represents a collection of comments
+     * for a specific activity. The activity comment list can be used to fetch comments for an
+     * activity, manage comment pagination, and receive real-time updates for comment-related
+     * events.
+     *
+     * @param query The activity comments query containing the activity identifier and pagination
+     * parameters.
+     * @return An [ActivityCommentList] instance that can be used to interact with the collection of
+     * activity comments.
+     */
+    public fun activityCommentList(query: ActivityCommentsQuery): ActivityCommentList
+
+    /**
+     * Creates a comment reply list instance based on the provided query.
+     *
+     * This method creates a [CommentReplyList] object that represents a collection of replies
+     * for a specific comment. The comment reply list can be used to fetch replies to a comment,
+     * manage reply pagination, and receive real-time updates for reply-related events.
+     *
+     * @param query The comment replies query containing the comment identifier and pagination
+     * parameters.
+     * @return A [CommentReplyList] instance that can be used to interact with the collection of
+     * comment replies.
+     */
+    public fun commentReplyList(query: CommentRepliesQuery): CommentReplyList
+
+    /**
+     * Creates a comment reaction list instance based on the provided query.
+     *
+     * This method creates a [CommentReactionList] object that represents a collection of reactions
+     * for a specific comment. The comment reaction list can be used to fetch reactions for a comment,
+     * manage reaction pagination, and receive real-time updates for reaction-related events.
+     *
+     * @param query The comment reactions query containing the comment identifier and pagination
+     * parameters.
+     * @return A [CommentReactionList]  instance that can be used to interact with the collection of
+     * comment reactions.
+     */
+    public fun commentReactionList(query: CommentReactionsQuery): CommentReactionList
+
+    /**
+     * Creates a member list instance based on the provided query.
+     *
+     * This method creates a [MemberList] object that represents a collection of feed members
+     * matching the specified query. The member list can be used to fetch feed members, manage
+     * member pagination,  and receive real-time updates for member-related events.
+     *
+     * @param query The members query containing filtering, sorting, and pagination parameters.
+     * @return A [MemberList] instance that can be used to interact with the collection of feed
+     * members.
+     */
+    public fun memberList(query: MembersQuery): MemberList
+
+    /**
+     * Creates a poll vote list instance based on the provided query.
+     *
+     * This method creates a [PollVoteList] object that represents a collection of poll votes
+     * matching the specified query. The poll vote list can be used to fetch poll votes,
+     * manage vote pagination, and receive real-time updates for vote-related events.
+     *
+     * @param query The poll votes query containing filtering, sorting, and pagination parameters.
+     * @return A [PollVoteList] instance that can be used to interact with the collection of poll
+     * votes.
+     */
+    public fun pollVoteList(query: PollVotesQuery): PollVoteList
+
+    /**
+     * Creates a poll list instance based on the provided query.
+     *
+     * This method creates a [PollList] object that represents a collection of polls
+     * matching the specified query. The poll list can be used to fetch polls,
+     * manage poll pagination, and receive real-time updates for poll-related events.
+     *
+     * @param query The polls query containing filtering, sorting, and pagination parameters.
+     * @return A [PollList] instance that can be used to interact with the collection of polls.
+     */
+    public fun pollList(query: PollsQuery): PollList
+
+    /**
+     * Creates a moderation configuration list instance based on the provided query.
+     *
+     * This method creates a `ModerationConfigList` object that represents a collection of
+     * moderation configurations matching the specified query. The moderation configuration list can
+     * be used to fetch configurations, manage configuration pagination, and receive real-time
+     * updates for configuration-related events.
+     *
+     * @param query The moderation configurations query containing filtering, sorting, and
+     * pagination parameters.
+     * @return A [ModerationConfigList] instance that can be used to interact with the collection of
+     * moderation configurations.
+     */
+    public fun moderationConfigList(query: ModerationConfigsQuery): ModerationConfigList
+
+    /**
+     * Retrieves the application configuration and settings.
+     *
+     * This method fetches the current application data including configuration settings,
+     * file upload configurations, and feature flags.
+     *
+     * The returned `AppData` contains:
+     * - **Async URL Enrichment**: Whether automatic URL enrichment is enabled
+     * - **Auto Translation**: Whether automatic translation is enabled
+     * - **File Upload Config**: Configuration for file uploads including allowed extensions, MIME types, and size limits
+     * - **Image Upload Config**: Configuration for image uploads including allowed extensions, MIME types, and size limits
+     * - **Application Name**: The name of the application
+     *
+     * @return A [Result] containing the [AppData] if successful, or an error if the request fails.
+     */
+    public suspend fun getApp(): Result<AppData>
+
+    // TODO: Devices API
+
+    /**
+     * Deletes a previously uploaded file from the CDN.
+     *
+     * This is typically used for videos, or other non-image attachments.
+     * The method makes an asynchronous request to the global file deletion endpoint.
+     *
+     * @param url The URL of the file to be deleted.
+     * @return A [Result] indicating success or failure of the deletion operation.
+     */
+    public suspend fun deleteFile(url: String): Result<Unit>
+
+    /**
+     * Deletes a previously uploaded image from the CDN.
+     *
+     * This is intended for removing images such as user-uploaded photos or thumbnails.
+     * The method makes an asynchronous request to the global image deletion endpoint.
+     *
+     * @param url The URL of the image to be deleted.
+     * @return A [Result] indicating success or failure of the deletion operation.
+     */
+    public suspend fun deleteImage(url: String): Result<Unit>
 }
 
 /**
@@ -94,16 +373,16 @@ public interface FeedsClient {
  * @param context The Android [Context] for the client.
  * @param apiKey The API key for the client.
  * @param user The user associated with the client.
- * @param token The user token for authentication.
+ * @param tokenProvider The provider for user tokens, used for refreshing tokens as needed.
  */
 public fun FeedsClient(
     context: Context,
     apiKey: ApiKey,
     user: User,
-    token: UserToken,
+    tokenProvider: UserTokenProvider,
 ): FeedsClient = createFeedsClient(
     context = context,
     apiKey = apiKey,
     user = user,
-    token = token,
+    tokenProvider = tokenProvider,
 )

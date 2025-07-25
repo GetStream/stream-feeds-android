@@ -5,6 +5,7 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
+import io.getstream.kotlin.base.annotation.marker.StreamInternalApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
@@ -22,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * @param scope The CoroutineScope in which network state changes will be handled
  * @param connectivityManager The system's ConnectivityManager service
  */
+@StreamInternalApi
 public class NetworkStateProvider(
     private val scope: CoroutineScope,
     private val connectivityManager: ConnectivityManager,

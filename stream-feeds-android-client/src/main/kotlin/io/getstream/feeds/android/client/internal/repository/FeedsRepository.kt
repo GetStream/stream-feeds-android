@@ -9,8 +9,9 @@ import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
-import io.getstream.feeds.android.client.api.state.FeedQuery
-import io.getstream.feeds.android.client.api.state.FeedsQuery
+import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
+import io.getstream.feeds.android.client.api.state.query.FeedQuery
+import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.core.generated.models.AcceptFollowRequest
 import io.getstream.feeds.android.core.generated.models.FeedOwnCapability
 import io.getstream.feeds.android.core.generated.models.QueryFeedMembersRequest
@@ -102,7 +103,7 @@ internal interface FeedsRepository {
  */
 internal data class GetOrCreateInfo(
     val activities: PaginationResult<ActivityData>,
-    val activitiesQueryConfig: QueryConfiguration<ActivityData>,
+    val activitiesQueryConfig: QueryConfiguration<ActivitiesSort>,
     val feed: FeedData,
     val followers: List<FollowData>,
     val following: List<FollowData>,

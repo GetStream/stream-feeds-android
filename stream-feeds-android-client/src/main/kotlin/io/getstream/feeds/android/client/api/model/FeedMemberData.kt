@@ -25,7 +25,14 @@ public data class FeedMemberData(
     public val status: FeedMemberStatus,
     public val updatedAt: Date,
     public val user: UserData,
-)
+) {
+
+    /**
+     * Unique identifier of the feed member, same as the user's ID.
+     */
+    public val id: String
+        get() = user.id
+}
 
 /**
  * Sealed class representing the status of a feed member.

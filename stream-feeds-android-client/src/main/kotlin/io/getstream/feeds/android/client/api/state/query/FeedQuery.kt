@@ -1,12 +1,12 @@
-package io.getstream.feeds.android.client.api.state
+package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.query.Filter
-import io.getstream.android.core.query.toMap
+import io.getstream.android.core.query.toRequest
 import io.getstream.feeds.android.client.api.model.FeedId
-import io.getstream.feeds.android.core.generated.models.FeedInput
+import io.getstream.feeds.android.client.api.model.FeedInputData
+import io.getstream.feeds.android.client.api.model.toRequest
 import io.getstream.feeds.android.core.generated.models.GetOrCreateFeedRequest
 import io.getstream.feeds.android.core.generated.models.PagerRequest
-import io.getstream.feeds.android.core.generated.models.QueryFeedsRequest
 
 /**
  * A query configuration for retrieving and managing feed data from Stream feeds.
@@ -34,7 +34,7 @@ public data class FeedQuery(
     public val activityNext: String? = null,
     public val activityPrevious: String? = null,
     public val activitySelectorOptions: Map<String, Any>? = null,
-    public val data: FeedInput? = null, // todo potentially map to a domain model
+    public val data: FeedInputData? = null,
     public val externalRanking: Map<String, Any>? = null,
     public val followerLimit: Int? = null,
     public val followingLimit: Int? = null,
@@ -72,7 +72,7 @@ public data class FeedQuery(
         activityNext: String? = null,
         activityPrevious: String? = null,
         activitySelectorOptions: Map<String, Any>? = null,
-        data: FeedInput? = null,
+        data: FeedInputData? = null,
         externalRanking: Map<String, Any>? = null,
         followerLimit: Int? = null,
         followingLimit: Int? = null,
@@ -108,9 +108,9 @@ internal fun FeedQuery.toRequest(): GetOrCreateFeedRequest = GetOrCreateFeedRequ
     view = view,
     watch = watch,
     activitySelectorOptions = activitySelectorOptions,
-    data = data,
+    data = data?.toRequest(),
     externalRanking = externalRanking,
-    filter = activityFilter?.toMap(),
+    filter = activityFilter?.toRequest(),
     followersPagination = followerLimit?.let { PagerRequest(it) },
     followingPagination = followingLimit?.let { PagerRequest(it) },
     interestWeights = interestWeights,

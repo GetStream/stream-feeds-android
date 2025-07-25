@@ -2,6 +2,7 @@ package io.getstream.android.core.http
 
 import android.content.Context
 import android.os.Build
+import io.getstream.kotlin.base.annotation.marker.StreamInternalApi
 
 /**
  * Utility class for creating the `X-Stream-Client` header value.
@@ -21,6 +22,7 @@ import android.os.Build
  * stream-feeds-android-1.0.0|os=Android 14|api_version=34|device_model=Google Pixel 7|app=MyApp|app_version=2.1.0
  * ```
  */
+@StreamInternalApi
 public class XStreamClient private constructor(public val value: String) {
 
     public companion object {
@@ -46,6 +48,7 @@ public class XStreamClient private constructor(public val value: String) {
          * @see getAppName For automatic app name retrieval
          * @see getAppVersion For automatic app version retrieval
          */
+        @StreamInternalApi
         public fun create(
             context: Context,
             product: String,

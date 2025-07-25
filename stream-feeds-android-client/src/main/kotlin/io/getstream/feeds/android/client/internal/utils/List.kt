@@ -44,9 +44,6 @@ internal fun <T> List<T>.upsert(element: T, idSelector: (T) -> String): List<T> 
  * @param comparator The comparator used to determine the sort order and insertion point.
  * @return A new immutable list containing all original elements plus the inserted element
  *         in the correct sorted position.
- *
- * @see List.binarySearch
- * @see MutableList.add
  */
 internal fun <T> MutableList<T>.insertSorted(element: T, comparator: Comparator<T>): List<T> {
     val insertionPoint = this.binarySearch(element, comparator)
@@ -77,11 +74,6 @@ internal fun <T> MutableList<T>.insertSorted(element: T, comparator: Comparator<
  *             The sorts are applied in sequence, with earlier sorts taking precedence.
  * @return A new immutable list containing all original elements plus the inserted element
  *         in the correct sorted position.
- *
- * @see Sort
- * @see CompositeComparator
- * @see List.binarySearch
- * @see MutableList.add
  */
 internal fun <T> MutableList<T>.insertSorted(element: T, sort: List<Sort<T>>): List<T> =
     insertSorted(element, CompositeComparator(sort))
@@ -107,11 +99,6 @@ internal fun <T> MutableList<T>.insertSorted(element: T, sort: List<Sort<T>>): L
  * @return A new sorted list containing the upserted element. If an existing element was found,
  *         it will be replaced and repositioned; otherwise, the new element will be inserted
  *         in the correct sorted position.
- *
- * @see List.binarySearch
- * @see MutableList.add
- * @see upsert
- * @see insertSorted
  */
 internal fun <T> List<T>.upsertSorted(
     element: T,
@@ -164,13 +151,6 @@ internal fun <T> List<T>.upsertSorted(
  * @return A new sorted list containing the upserted element. If an existing element was found,
  *         it will be replaced and repositioned; otherwise, the new element will be inserted
  *         in the correct sorted position.
- *
- * @see Sort
- * @see CompositeComparator
- * @see List.binarySearch
- * @see MutableList.add
- * @see upsert
- * @see insertSorted
  */
 internal fun <T> List<T>.upsertSorted(
     element: T,
@@ -196,9 +176,6 @@ internal fun <T> List<T>.upsertSorted(
  * @param comparator The comparator that both lists are sorted by and used for merging.
  * @return A new sorted list containing all elements from both lists, with duplicates
  *         resolved by taking elements from the [other] list.
- *
- * @see List.binarySearch
- * @see Comparator
  */
 internal fun <T> List<T>.mergeSorted(
     other: List<T>,
@@ -271,10 +248,6 @@ internal fun <T> List<T>.mergeSorted(
  *             The sorts are applied in sequence, with earlier sorts taking precedence.
  * @return A new sorted list containing all elements from both lists, with duplicates
  *         resolved by taking elements from the [other] list.
- *
- * @see Sort
- * @see CompositeComparator
- * @see mergeSorted
  */
 internal fun <T> List<T>.mergeSorted(
     other: List<T>,

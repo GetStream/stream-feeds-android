@@ -1,5 +1,7 @@
 package io.getstream.android.core.query
 
+import io.getstream.kotlin.base.annotation.marker.StreamInternalApi
+
 /**
  * The direction of a sort operation.
  * This enum defines whether a sort should be performed in ascending (forward) or
@@ -171,6 +173,7 @@ public class AnySortComparator<T>(
  * @param T The type of elements in the list.
  * @param sort A list of sort configurations to apply to the list.
  */
+@StreamInternalApi
 public fun <T> List<T>.sortedWith(sort: List<Sort<T>>): List<T> =
     sortedWith(CompositeComparator(sort))
 
@@ -187,6 +190,7 @@ public fun <T> List<T>.sortedWith(sort: List<Sort<T>>): List<T> =
  * @param T The type of elements to be compared.
  * @param comparators The list of comparators to be combined.
  */
+@StreamInternalApi
 public class CompositeComparator<T>(private val comparators: List<Comparator<T>>) :
     Comparator<T> {
 

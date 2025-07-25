@@ -3,7 +3,6 @@ package io.getstream.feeds.android.client.api.model
 import io.getstream.feeds.android.client.internal.model.mapping.toDate
 import io.getstream.feeds.android.core.generated.models.Attachment
 import io.getstream.feeds.android.core.generated.models.CommentResponse
-import io.getstream.feeds.android.core.generated.models.ModerationV2Response
 import io.getstream.feeds.android.core.generated.models.RepliesMeta
 import java.util.Date
 
@@ -85,7 +84,7 @@ public data class CommentData(
     val latestReactions: List<FeedsReactionData>,
     val mentionedUsers: List<UserData>,
     val meta: RepliesMeta?,
-    val moderation: ModerationV2Response?,
+    val moderation: Moderation?,
     val objectId: String,
     val objectType: String,
     val ownReactions: List<FeedsReactionData>,
@@ -124,7 +123,7 @@ internal fun CommentResponse.toModel(): CommentData = CommentData(
     latestReactions = latestReactions?.map { it.toModel() }.orEmpty(),
     mentionedUsers = mentionedUsers.map { it.toModel() },
     meta = null,
-    moderation = moderation,
+    moderation = moderation?.toModel(),
     objectId = objectId,
     objectType = objectType,
     ownReactions = ownReactions.map { it.toModel() },

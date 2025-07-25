@@ -1,5 +1,6 @@
 package io.getstream.feeds.android.client.internal.state
 
+import io.getstream.android.core.websocket.WebSocketConnectionState
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.CommentData
@@ -10,12 +11,21 @@ import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.state.Feed
-import io.getstream.feeds.android.client.api.state.FeedQuery
 import io.getstream.feeds.android.client.api.state.FeedState
+import io.getstream.feeds.android.client.api.state.query.FeedQuery
+import io.getstream.feeds.android.client.api.state.query.MembersQuery
+import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManager
+import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
+import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
+import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
+import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
+import io.getstream.feeds.android.client.internal.state.event.handler.FeedEventHandler
 import io.getstream.feeds.android.core.generated.models.AcceptFollowRequest
+import io.getstream.feeds.android.core.generated.models.AddActivityRequest
 import io.getstream.feeds.android.core.generated.models.AddBookmarkRequest
 import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
+import io.getstream.feeds.android.core.generated.models.AddCommentRequest
 import io.getstream.feeds.android.core.generated.models.AddReactionRequest
 import io.getstream.feeds.android.core.generated.models.MarkActivityRequest
 import io.getstream.feeds.android.core.generated.models.RejectFollowRequest
@@ -25,6 +35,7 @@ import io.getstream.feeds.android.core.generated.models.UpdateBookmarkRequest
 import io.getstream.feeds.android.core.generated.models.UpdateCommentRequest
 import io.getstream.feeds.android.core.generated.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.core.generated.models.UpdateFeedRequest
+import io.getstream.feeds.android.core.generated.models.WSEvent
 
 /**
  * A feed represents a collection of activities and provides methods to interact with them.
@@ -45,18 +56,47 @@ import io.getstream.feeds.android.core.generated.models.UpdateFeedRequest
  * Internal implementation of the [Feed] interface.
  *
  * @property query The [FeedQuery] used to create this feed instance.
+ * @property currentUserId The ID of the current user.
+ * @property activitiesRepository The [ActivitiesRepository] used to manage activities in the feed.
+ * @property bookmarksRepository The [BookmarksRepository] used to manage bookmarks in the feed.
+ * @property commentsRepository The [CommentsRepository] used to manage comments in the feed.
  * @property feedsRepository The [FeedsRepository] used to manage feed data and operations.
  */
 internal class FeedImpl(
     private val query: FeedQuery,
     private val currentUserId: String,
+    private val activitiesRepository: ActivitiesRepository,
+    private val bookmarksRepository: BookmarksRepository,
+    private val commentsRepository: CommentsRepository,
     private val feedsRepository: FeedsRepository,
+    private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener>,
 ) : Feed {
+
+    init {
+        subscriptionManager.subscribe(object : FeedsSocketListener {
+            override fun onState(state: WebSocketConnectionState) {
+                // Not relevant, rethink this
+            }
+
+            override fun onEvent(event: WSEvent) {
+                eventHandler.handleEvent(event)
+            }
+        })
+    }
+
+    private val memberList: MemberListImpl = MemberListImpl(
+        query = MembersQuery(fid = query.fid),
+        feedsRepository = feedsRepository,
+        subscriptionManager = subscriptionManager,
+    )
 
     private val _state: FeedStateImpl = FeedStateImpl(
         feedQuery = query,
         currentUserId = currentUserId,
+        memberListState = memberList.mutableState,
     )
+
+    private val eventHandler = FeedEventHandler(fid = fid, state = _state)
 
     private val group: String
         get() = fid.group
@@ -76,6 +116,10 @@ internal class FeedImpl(
             .map { it.feed }
     }
 
+    override suspend fun stopWatching(): Result<Unit> {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun updateFeed(request: UpdateFeedRequest): Result<FeedData> {
         return feedsRepository.updateFeed(feedGroupId = group, feedId = id, request = request)
             .onSuccess { _state.onFeedUpdated(it) }
@@ -86,29 +130,47 @@ internal class FeedImpl(
             .onSuccess { _state.onFeedDeleted() }
     }
 
+    override suspend fun addActivity(request: AddActivityRequest): Result<ActivityData> {
+        return activitiesRepository.addActivity(request)
+            .onSuccess { _state.onActivityAdded(it) }
+    }
+
     override suspend fun updateActivity(
         id: String,
         request: UpdateActivityRequest
     ): Result<ActivityData> {
-        TODO("Not yet implemented")
+        return activitiesRepository.updateActivity(id, request)
+            .onSuccess { _state.onActivityUpdated(it) }
     }
 
     override suspend fun deleteActivity(
         id: String,
         hardDelete: Boolean
     ): Result<Unit> {
-        TODO("Not yet implemented")
+        return activitiesRepository.deleteActivity(id, hardDelete)
+            .onSuccess { _state.onActivityRemoved(id) }
     }
 
     override suspend fun markActivity(request: MarkActivityRequest): Result<Unit> {
-        TODO("Not yet implemented")
+        return activitiesRepository.markActivity(
+            feedGroupId = group,
+            feedId = id,
+            request = request,
+        )
     }
 
     override suspend fun repost(
         activityId: String,
         text: String?
     ): Result<ActivityData> {
-        TODO("Not yet implemented")
+        val request = AddActivityRequest(
+            type = "post",
+            text = text,
+            fids = listOf(fid.rawValue),
+            parentId = activityId,
+        )
+        return activitiesRepository.addActivity(request)
+            .onSuccess { _state.onActivityAdded(it) }
     }
 
     override suspend fun queryMoreActivities(limit: Int?): Result<List<ActivityData>> {
@@ -142,36 +204,42 @@ internal class FeedImpl(
         activityId: String,
         request: AddBookmarkRequest
     ): Result<BookmarkData> {
-        TODO("Not yet implemented")
+        return bookmarksRepository.addBookmark(activityId, request)
+            .onSuccess { _state.onBookmarkAdded(it) }
     }
 
     override suspend fun updateBookmark(
         activityId: String,
         request: UpdateBookmarkRequest
     ): Result<BookmarkData> {
-        TODO("Not yet implemented")
+        return bookmarksRepository.updateBookmark(activityId, request)
     }
 
     override suspend fun deleteBookmark(
         activityId: String,
         folderId: String?
     ): Result<BookmarkData> {
-        TODO("Not yet implemented")
+        return bookmarksRepository.deleteBookmark(activityId = activityId, folderId = folderId)
+            .onSuccess { _state.onBookmarkRemoved(it) }
     }
 
     override suspend fun getComment(commentId: String): Result<CommentData> {
-        TODO("Not yet implemented")
+        return commentsRepository.getComment(commentId)
+    }
+
+    override suspend fun addComment(request: AddCommentRequest): Result<CommentData> {
+        return commentsRepository.addComment(request)
     }
 
     override suspend fun updateComment(
         commentId: String,
         request: UpdateCommentRequest
     ): Result<CommentData> {
-        TODO("Not yet implemented")
+        return commentsRepository.updateComment(commentId, request)
     }
 
     override suspend fun deleteComment(commentId: String): Result<Unit> {
-        TODO("Not yet implemented")
+        return commentsRepository.deleteComment(commentId)
     }
 
     override suspend fun queryFollowSuggestions(limit: Int?): Result<List<FeedData>> {
@@ -195,9 +263,7 @@ internal class FeedImpl(
 
     override suspend fun unfollow(targetFid: FeedId): Result<Unit> {
         return feedsRepository.unfollow(source = fid, target = targetFid)
-            .onSuccess {
-                // TODO: Remove all following feeds where sourceFeed.fid == fid && targetFeed.fid == targetFid
-            }
+            .onSuccess { _state.onUnfollow(sourceFid = fid, targetFid = targetFid) }
     }
 
     override suspend fun acceptFollow(
@@ -211,7 +277,7 @@ internal class FeedImpl(
         )
         return feedsRepository.acceptFollow(request)
             .onSuccess { follow ->
-                // TODO Remove all followRequests where id == follow.id
+                _state.onFollowRequestRemoved(follow.id)
                 _state.onFollowAdded(follow)
             }
     }
@@ -223,26 +289,26 @@ internal class FeedImpl(
         )
         return feedsRepository.rejectFollow(request)
             .onSuccess { follow ->
-                // TODO Remove all followRequests where id == follow.id
+                _state.onFollowRequestRemoved(follow.id)
                 _state.onFollowRemoved(follow)
             }
     }
 
     override suspend fun queryFeedMembers(): Result<List<FeedMemberData>> {
-        TODO("Not yet implemented")
+        return memberList.get()
     }
 
     override suspend fun queryMoreFeedMembers(limit: Int?): Result<List<FeedMemberData>> {
-        TODO("Not yet implemented")
+        return memberList.queryMoreMembers(limit)
     }
 
     override suspend fun updateFeedMembers(request: UpdateFeedMembersRequest): Result<ModelUpdates<FeedMemberData>> {
         return feedsRepository.updateFeedMembers(
             feedGroupId = group,
             feedId = id,
-            request = request
+            request = request,
         ).onSuccess { updates ->
-            // TODO: Update member state in the _state
+            memberList.mutableState.onMembersUpdated(updates)
         }
     }
 
@@ -258,27 +324,29 @@ internal class FeedImpl(
         activityId: String,
         request: AddReactionRequest
     ): Result<FeedsReactionData> {
-        TODO("Not yet implemented")
+        return activitiesRepository.addReaction(activityId, request)
     }
 
     override suspend fun deleteReaction(
         activityId: String,
         type: String
     ): Result<FeedsReactionData> {
-        TODO("Not yet implemented")
+        return activitiesRepository.deleteReaction(activityId = activityId, type = type)
     }
 
     override suspend fun addCommentReaction(
         commentId: String,
         request: AddCommentReactionRequest
     ): Result<FeedsReactionData> {
-        TODO("Not yet implemented")
+        return commentsRepository.addCommentReaction(commentId, request)
+            .map { it.first }
     }
 
     override suspend fun deleteCommentReaction(
         commentId: String,
         type: String
     ): Result<FeedsReactionData> {
-        TODO("Not yet implemented")
+        return commentsRepository.deleteCommentReaction(commentId = commentId, type = type)
+            .map { it.first }
     }
 }
