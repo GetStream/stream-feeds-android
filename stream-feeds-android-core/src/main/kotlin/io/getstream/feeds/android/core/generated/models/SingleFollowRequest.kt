@@ -45,6 +45,9 @@ data class SingleFollowRequest (
     @Json(name = "target")
     val target: kotlin.String,
 
+    @Json(name = "create_notification_activity")
+    val createNotificationActivity: kotlin.Boolean? = null,
+
     @Json(name = "push_preference")
     val pushPreference: PushPreference? = null,
 

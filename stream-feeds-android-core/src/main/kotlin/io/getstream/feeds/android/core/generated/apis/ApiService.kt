@@ -636,6 +636,17 @@ interface ApiService {
     ): io.getstream.feeds.android.core.generated.models.RejectFeedMemberInviteResponse
     
     /**
+     * Stop watching feed
+     * Call this Method to stop receiving feed events
+     */
+    @DELETE("/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}/watch")
+    suspend fun stopWatchingFeed(
+        @Path("feed_group_id") feedGroupId: kotlin.String,
+        @Path("feed_id") feedId: kotlin.String,
+        @Query("connection_id") connectionId: kotlin.String? = null
+    ): io.getstream.feeds.android.core.generated.models.Response
+    
+    /**
      * Get follow suggestions
      * Get follow suggestions for a feed group
      */

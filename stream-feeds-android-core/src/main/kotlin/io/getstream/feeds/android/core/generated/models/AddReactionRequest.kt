@@ -42,6 +42,9 @@ data class AddReactionRequest (
     @Json(name = "type")
     val type: kotlin.String,
 
+    @Json(name = "create_notification_activity")
+    val createNotificationActivity: kotlin.Boolean? = null,
+
     @Json(name = "custom")
     val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap()
 )

@@ -57,6 +57,9 @@ data class User (
     @Json(name = "teams_role")
     val teamsRole: kotlin.collections.Map<kotlin.String, kotlin.String> = emptyMap(),
 
+    @Json(name = "avg_response_time")
+    val avgResponseTime: kotlin.Int? = null,
+
     @Json(name = "ban_expires")
     val banExpires: org.threeten.bp.OffsetDateTime? = null,
 

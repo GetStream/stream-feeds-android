@@ -48,6 +48,9 @@ data class AddCommentRequest (
     @Json(name = "object_type")
     val objectType: kotlin.String,
 
+    @Json(name = "create_notification_activity")
+    val createNotificationActivity: kotlin.Boolean? = null,
+
     @Json(name = "parent_id")
     val parentId: kotlin.String? = null,
 

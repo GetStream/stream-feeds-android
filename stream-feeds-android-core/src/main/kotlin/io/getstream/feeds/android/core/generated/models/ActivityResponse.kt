@@ -54,6 +54,9 @@ data class ActivityResponse (
     @Json(name = "popularity")
     val popularity: kotlin.Int,
 
+    @Json(name = "reaction_count")
+    val reactionCount: kotlin.Int,
+
     @Json(name = "score")
     val score: kotlin.Float,
 
@@ -131,6 +134,9 @@ data class ActivityResponse (
 
     @Json(name = "moderation")
     val moderation: io.getstream.feeds.android.core.generated.models.ModerationV2Response? = null,
+
+    @Json(name = "object")
+    val `object`: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
 
     @Json(name = "parent")
     val parent: io.getstream.feeds.android.core.generated.models.ActivityResponse? = null,
