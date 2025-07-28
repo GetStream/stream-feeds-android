@@ -107,6 +107,9 @@ class WSEventAdapter : JsonAdapter<WSEvent>() {
             "feeds.poll.vote_changed" -> io.getstream.feeds.android.core.generated.models.PollVoteChangedFeedEvent::class.java
             "feeds.poll.vote_removed" -> io.getstream.feeds.android.core.generated.models.PollVoteRemovedFeedEvent::class.java
             "health.check" -> io.getstream.feeds.android.core.generated.models.HealthCheckEvent::class.java
+            "moderation.custom_action" -> io.getstream.feeds.android.core.generated.models.ModerationCustomActionEvent::class.java
+            "moderation.flagged" -> io.getstream.feeds.android.core.generated.models.ModerationFlaggedEvent::class.java
+            "moderation.mark_reviewed" -> io.getstream.feeds.android.core.generated.models.ModerationMarkReviewedEvent::class.java
             "user.banned" -> io.getstream.feeds.android.core.generated.models.UserBannedEvent::class.java
             "user.deactivated" -> io.getstream.feeds.android.core.generated.models.UserDeactivatedEvent::class.java
             "user.muted" -> io.getstream.feeds.android.core.generated.models.UserMutedEvent::class.java

@@ -35,6 +35,87 @@ import retrofit2.http.PUT
 interface ApiService {
     
     /**
+     * Get App Settings
+     * This Method returns the application settings
+     */
+    @GET("/api/v2/app")
+    suspend fun getApp(
+    ): io.getstream.feeds.android.core.generated.models.GetApplicationResponse
+    
+    /**
+     * List block lists
+     * Returns all available block lists
+     */
+    @GET("/api/v2/blocklists")
+    suspend fun listBlockLists(
+        @Query("team") team: kotlin.String? = null
+    ): io.getstream.feeds.android.core.generated.models.ListBlockListResponse
+    
+    /**
+     * Create block list
+     * Creates a new application blocklist, once created the blocklist can be used by any channel type
+     */
+    @POST("/api/v2/blocklists")
+    suspend fun createBlockList(
+        @Body createBlockListRequest : io.getstream.feeds.android.core.generated.models.CreateBlockListRequest
+    ): io.getstream.feeds.android.core.generated.models.CreateBlockListResponse
+    
+    /**
+     * Delete block list
+     * Deletes previously created application blocklist
+     */
+    @DELETE("/api/v2/blocklists/{name}")
+    suspend fun deleteBlockList(
+        @Path("name") name: kotlin.String,
+        @Query("team") team: kotlin.String? = null
+    ): io.getstream.feeds.android.core.generated.models.Response
+    
+    /**
+     * Update block list
+     * Updates contents of the block list
+     */
+    @PUT("/api/v2/blocklists/{name}")
+    suspend fun updateBlockList(
+        @Path("name") name: kotlin.String ,
+        @Body updateBlockListRequest : io.getstream.feeds.android.core.generated.models.UpdateBlockListRequest
+    ): io.getstream.feeds.android.core.generated.models.UpdateBlockListResponse
+    
+    /**
+     * Update block list
+     * Updates contents of the block list
+     */
+    @PUT("/api/v2/blocklists/{name}")
+    suspend fun updateBlockList(
+        @Path("name") name: kotlin.String
+    ): io.getstream.feeds.android.core.generated.models.UpdateBlockListResponse
+    
+    /**
+     * Delete device
+     * Deletes one device
+     */
+    @DELETE("/api/v2/devices")
+    suspend fun deleteDevice(
+        @Query("id") id: kotlin.String
+    ): io.getstream.feeds.android.core.generated.models.Response
+    
+    /**
+     * List devices
+     * Returns all available devices
+     */
+    @GET("/api/v2/devices")
+    suspend fun listDevices(
+    ): io.getstream.feeds.android.core.generated.models.ListDevicesResponse
+    
+    /**
+     * Create device
+     * Adds a new device to a user, if the same device already exists the call will have no effect
+     */
+    @POST("/api/v2/devices")
+    suspend fun createDevice(
+        @Body createDeviceRequest : io.getstream.feeds.android.core.generated.models.CreateDeviceRequest
+    ): io.getstream.feeds.android.core.generated.models.Response
+    
+    /**
      * Add a single activity
      * Create a new activity or update an existing one
      */
@@ -755,5 +836,393 @@ interface ApiService {
         @Path("source") source: kotlin.String,
         @Path("target") target: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.UnfollowResponse
+    
+    /**
+     * Create Guest
+     * 
+     */
+    @POST("/api/v2/guest")
+    suspend fun createGuest(
+        @Body createGuestRequest : io.getstream.feeds.android.core.generated.models.CreateGuestRequest
+    ): io.getstream.feeds.android.core.generated.models.CreateGuestResponse
+    
+    /**
+     * Long Poll (Transport)
+     * WebSocket fallback transport endpoint
+     */
+    @GET("/api/v2/longpoll")
+    suspend fun longPoll(
+        @Query("connection_id") connectionId: kotlin.String? = null,
+        @Query("json") json: io.getstream.feeds.android.core.generated.models.WSAuthMessage? = null
+    )
+    
+    /**
+     * Ban
+     * Ban a user from a channel or the entire app
+     */
+    @POST("/api/v2/moderation/ban")
+    suspend fun ban(
+        @Body banRequest : io.getstream.feeds.android.core.generated.models.BanRequest
+    ): io.getstream.feeds.android.core.generated.models.BanResponse
+    
+    /**
+     * Create or update moderation configuration
+     * Create a new moderation configuration or update an existing one. Configure settings for content filtering, AI analysis, toxicity detection, and other moderation features.
+     */
+    @POST("/api/v2/moderation/config")
+    suspend fun upsertConfig(
+        @Body upsertConfigRequest : io.getstream.feeds.android.core.generated.models.UpsertConfigRequest
+    ): io.getstream.feeds.android.core.generated.models.UpsertConfigResponse
+    
+    /**
+     * Delete a moderation policy
+     * Delete a specific moderation policy by its name
+     */
+    @DELETE("/api/v2/moderation/config/{key}")
+    suspend fun deleteConfig(
+        @Path("key") key: kotlin.String,
+        @Query("team") team: kotlin.String? = null
+    ): io.getstream.feeds.android.core.generated.models.DeleteModerationConfigResponse
+    
+    /**
+     * Get moderation configuration
+     * Retrieve a specific moderation configuration by its key and team. This configuration contains settings for various moderation features like toxicity detection, AI analysis, and filtering rules.
+     */
+    @GET("/api/v2/moderation/config/{key}")
+    suspend fun getConfig(
+        @Path("key") key: kotlin.String,
+        @Query("team") team: kotlin.String? = null
+    ): io.getstream.feeds.android.core.generated.models.GetConfigResponse
+    
+    /**
+     * Query moderation configurations
+     * Search and filter moderation configurations across your application. This endpoint is designed for building moderation dashboards and managing multiple configuration sets.
+     */
+    @POST("/api/v2/moderation/configs")
+    suspend fun queryModerationConfigs(
+        @Body queryModerationConfigsRequest : io.getstream.feeds.android.core.generated.models.QueryModerationConfigsRequest
+    ): io.getstream.feeds.android.core.generated.models.QueryModerationConfigsResponse
+    
+    /**
+     * Query moderation configurations
+     * Search and filter moderation configurations across your application. This endpoint is designed for building moderation dashboards and managing multiple configuration sets.
+     */
+    @POST("/api/v2/moderation/configs")
+    suspend fun queryModerationConfigs(
+    ): io.getstream.feeds.android.core.generated.models.QueryModerationConfigsResponse
+    
+    /**
+     * Flag content for moderation
+     * Flag any type of content (messages, users, channels, activities) for moderation review. Supports custom content types and additional metadata for flagged content.
+     */
+    @POST("/api/v2/moderation/flag")
+    suspend fun flag(
+        @Body flagRequest : io.getstream.feeds.android.core.generated.models.FlagRequest
+    ): io.getstream.feeds.android.core.generated.models.FlagResponse
+    
+    /**
+     * Mute
+     * Mute a user. Mutes are generally not visible to the user you mute, while block is something you notice.
+     */
+    @POST("/api/v2/moderation/mute")
+    suspend fun mute(
+        @Body muteRequest : io.getstream.feeds.android.core.generated.models.MuteRequest
+    ): io.getstream.feeds.android.core.generated.models.MuteResponse
+    
+    /**
+     * Query review queue items
+     * Query review queue items allows you to filter the review queue items. This is used for building a moderation dashboard.
+     */
+    @POST("/api/v2/moderation/review_queue")
+    suspend fun queryReviewQueue(
+        @Body queryReviewQueueRequest : io.getstream.feeds.android.core.generated.models.QueryReviewQueueRequest
+    ): io.getstream.feeds.android.core.generated.models.QueryReviewQueueResponse
+    
+    /**
+     * Query review queue items
+     * Query review queue items allows you to filter the review queue items. This is used for building a moderation dashboard.
+     */
+    @POST("/api/v2/moderation/review_queue")
+    suspend fun queryReviewQueue(
+    ): io.getstream.feeds.android.core.generated.models.QueryReviewQueueResponse
+    
+    /**
+     * Submit moderation action
+     * Take action on flagged content, such as marking content as safe, deleting content, banning users, or executing custom moderation actions. Supports various action types with configurable parameters.
+     */
+    @POST("/api/v2/moderation/submit_action")
+    suspend fun submitAction(
+        @Body submitActionRequest : io.getstream.feeds.android.core.generated.models.SubmitActionRequest
+    ): io.getstream.feeds.android.core.generated.models.SubmitActionResponse
+    
+    /**
+     * Get OG
+     * Get an OpenGraph attachment for a link
+     */
+    @GET("/api/v2/og")
+    suspend fun getOG(
+        @Query("url") url: kotlin.String
+    ): io.getstream.feeds.android.core.generated.models.GetOGResponse
+    
+    /**
+     * Create poll
+     * Creates a new poll
+     */
+    @POST("/api/v2/polls")
+    suspend fun createPoll(
+        @Body createPollRequest : io.getstream.feeds.android.core.generated.models.CreatePollRequest
+    ): io.getstream.feeds.android.core.generated.models.PollResponse
+    
+    /**
+     * Update poll
+     * Updates a poll
+     */
+    @PUT("/api/v2/polls")
+    suspend fun updatePoll(
+        @Body updatePollRequest : io.getstream.feeds.android.core.generated.models.UpdatePollRequest
+    ): io.getstream.feeds.android.core.generated.models.PollResponse
+    
+    /**
+     * Query polls
+     * Queries polls
+     */
+    @POST("/api/v2/polls/query")
+    suspend fun queryPolls(
+        @Query("user_id") userId: kotlin.String? = null ,
+        @Body queryPollsRequest : io.getstream.feeds.android.core.generated.models.QueryPollsRequest
+    ): io.getstream.feeds.android.core.generated.models.QueryPollsResponse
+    
+    /**
+     * Query polls
+     * Queries polls
+     */
+    @POST("/api/v2/polls/query")
+    suspend fun queryPolls(
+        @Query("user_id") userId: kotlin.String? = null
+    ): io.getstream.feeds.android.core.generated.models.QueryPollsResponse
+    
+    /**
+     * Delete poll
+     * Deletes a poll
+     */
+    @DELETE("/api/v2/polls/{poll_id}")
+    suspend fun deletePoll(
+        @Path("poll_id") pollId: kotlin.String,
+        @Query("user_id") userId: kotlin.String? = null
+    ): io.getstream.feeds.android.core.generated.models.Response
+    
+    /**
+     * Get poll
+     * Retrieves a poll
+     */
+    @GET("/api/v2/polls/{poll_id}")
+    suspend fun getPoll(
+        @Path("poll_id") pollId: kotlin.String,
+        @Query("user_id") userId: kotlin.String? = null
+    ): io.getstream.feeds.android.core.generated.models.PollResponse
+    
+    /**
+     * Partial update poll
+     * Updates a poll partially
+     */
+    @PATCH("/api/v2/polls/{poll_id}")
+    suspend fun updatePollPartial(
+        @Path("poll_id") pollId: kotlin.String ,
+        @Body updatePollPartialRequest : io.getstream.feeds.android.core.generated.models.UpdatePollPartialRequest
+    ): io.getstream.feeds.android.core.generated.models.PollResponse
+    
+    /**
+     * Partial update poll
+     * Updates a poll partially
+     */
+    @PATCH("/api/v2/polls/{poll_id}")
+    suspend fun updatePollPartial(
+        @Path("poll_id") pollId: kotlin.String
+    ): io.getstream.feeds.android.core.generated.models.PollResponse
+    
+    /**
+     * Create poll option
+     * Creates a poll option
+     */
+    @POST("/api/v2/polls/{poll_id}/options")
+    suspend fun createPollOption(
+        @Path("poll_id") pollId: kotlin.String ,
+        @Body createPollOptionRequest : io.getstream.feeds.android.core.generated.models.CreatePollOptionRequest
+    ): io.getstream.feeds.android.core.generated.models.PollOptionResponse
+    
+    /**
+     * Update poll option
+     * Updates a poll option
+     */
+    @PUT("/api/v2/polls/{poll_id}/options")
+    suspend fun updatePollOption(
+        @Path("poll_id") pollId: kotlin.String ,
+        @Body updatePollOptionRequest : io.getstream.feeds.android.core.generated.models.UpdatePollOptionRequest
+    ): io.getstream.feeds.android.core.generated.models.PollOptionResponse
+    
+    /**
+     * Delete poll option
+     * Deletes a poll option
+     */
+    @DELETE("/api/v2/polls/{poll_id}/options/{option_id}")
+    suspend fun deletePollOption(
+        @Path("poll_id") pollId: kotlin.String,
+        @Path("option_id") optionId: kotlin.String,
+        @Query("user_id") userId: kotlin.String? = null
+    ): io.getstream.feeds.android.core.generated.models.Response
+    
+    /**
+     * Get poll option
+     * Retrieves a poll option
+     */
+    @GET("/api/v2/polls/{poll_id}/options/{option_id}")
+    suspend fun getPollOption(
+        @Path("poll_id") pollId: kotlin.String,
+        @Path("option_id") optionId: kotlin.String,
+        @Query("user_id") userId: kotlin.String? = null
+    ): io.getstream.feeds.android.core.generated.models.PollOptionResponse
+    
+    /**
+     * Query votes
+     * Queries votes
+     */
+    @POST("/api/v2/polls/{poll_id}/votes")
+    suspend fun queryPollVotes(
+        @Path("poll_id") pollId: kotlin.String,
+        @Query("user_id") userId: kotlin.String? = null ,
+        @Body queryPollVotesRequest : io.getstream.feeds.android.core.generated.models.QueryPollVotesRequest
+    ): io.getstream.feeds.android.core.generated.models.PollVotesResponse
+    
+    /**
+     * Query votes
+     * Queries votes
+     */
+    @POST("/api/v2/polls/{poll_id}/votes")
+    suspend fun queryPollVotes(
+        @Path("poll_id") pollId: kotlin.String,
+        @Query("user_id") userId: kotlin.String? = null
+    ): io.getstream.feeds.android.core.generated.models.PollVotesResponse
+    
+    /**
+     * Delete file
+     * Deletes previously uploaded file
+     */
+    @DELETE("/api/v2/uploads/file")
+    suspend fun deleteFile(
+        @Query("url") url: kotlin.String? = null
+    ): io.getstream.feeds.android.core.generated.models.Response
+    
+    /**
+     * Upload file
+     * Uploads file
+     */
+    @POST("/api/v2/uploads/file")
+    suspend fun uploadFile(
+        @Body fileUploadRequest : io.getstream.feeds.android.core.generated.models.FileUploadRequest
+    ): io.getstream.feeds.android.core.generated.models.FileUploadResponse
+    
+    /**
+     * Upload file
+     * Uploads file
+     */
+    @POST("/api/v2/uploads/file")
+    suspend fun uploadFile(
+    ): io.getstream.feeds.android.core.generated.models.FileUploadResponse
+    
+    /**
+     * Delete image
+     * Deletes previously uploaded image
+     */
+    @DELETE("/api/v2/uploads/image")
+    suspend fun deleteImage(
+        @Query("url") url: kotlin.String? = null
+    ): io.getstream.feeds.android.core.generated.models.Response
+    
+    /**
+     * Upload image
+     * Uploads image
+     */
+    @POST("/api/v2/uploads/image")
+    suspend fun uploadImage(
+        @Body imageUploadRequest : io.getstream.feeds.android.core.generated.models.ImageUploadRequest
+    ): io.getstream.feeds.android.core.generated.models.ImageUploadResponse
+    
+    /**
+     * Upload image
+     * Uploads image
+     */
+    @POST("/api/v2/uploads/image")
+    suspend fun uploadImage(
+    ): io.getstream.feeds.android.core.generated.models.ImageUploadResponse
+    
+    /**
+     * Query users
+     * Find and filter users
+     */
+    @GET("/api/v2/users")
+    suspend fun queryUsers(
+        @Query("payload") payload: io.getstream.feeds.android.core.generated.models.QueryUsersPayload? = null
+    ): io.getstream.feeds.android.core.generated.models.QueryUsersResponse
+    
+    /**
+     * Partially update user
+     * Updates certain fields of the user
+     */
+    @PATCH("/api/v2/users")
+    suspend fun updateUsersPartial(
+        @Body updateUsersPartialRequest : io.getstream.feeds.android.core.generated.models.UpdateUsersPartialRequest
+    ): io.getstream.feeds.android.core.generated.models.UpdateUsersResponse
+    
+    /**
+     * Upsert users
+     * Update or create users in bulk
+     */
+    @POST("/api/v2/users")
+    suspend fun updateUsers(
+        @Body updateUsersRequest : io.getstream.feeds.android.core.generated.models.UpdateUsersRequest
+    ): io.getstream.feeds.android.core.generated.models.UpdateUsersResponse
+    
+    /**
+     * Get list of blocked Users
+     * Get list of blocked Users
+     */
+    @GET("/api/v2/users/block")
+    suspend fun getBlockedUsers(
+    ): io.getstream.feeds.android.core.generated.models.GetBlockedUsersResponse
+    
+    /**
+     * Block user
+     * Block users
+     */
+    @POST("/api/v2/users/block")
+    suspend fun blockUsers(
+        @Body blockUsersRequest : io.getstream.feeds.android.core.generated.models.BlockUsersRequest
+    ): io.getstream.feeds.android.core.generated.models.BlockUsersResponse
+    
+    /**
+     * Get user live locations
+     * Retrieves all active live locations for a user
+     */
+    @GET("/api/v2/users/live_locations")
+    suspend fun getUserLiveLocations(
+    ): io.getstream.feeds.android.core.generated.models.SharedLocationsResponse
+    
+    /**
+     * Update live location
+     * Updates an existing live location with new coordinates or expiration time
+     */
+    @PUT("/api/v2/users/live_locations")
+    suspend fun updateLiveLocation(
+        @Body updateLiveLocationRequest : io.getstream.feeds.android.core.generated.models.UpdateLiveLocationRequest
+    ): io.getstream.feeds.android.core.generated.models.SharedLocationResponse
+    
+    /**
+     * Unblock user
+     * Unblock users
+     */
+    @POST("/api/v2/users/unblock")
+    suspend fun unblockUsers(
+        @Body unblockUsersRequest : io.getstream.feeds.android.core.generated.models.UnblockUsersRequest
+    ): io.getstream.feeds.android.core.generated.models.UnblockUsersResponse
     
 }

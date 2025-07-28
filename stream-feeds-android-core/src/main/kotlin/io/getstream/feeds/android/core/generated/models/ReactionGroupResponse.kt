@@ -35,7 +35,7 @@ import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
 
 /**
- * 
+ * ReactionGroupResponse contains all information about a reaction of the same type.
  */
 
 data class ReactionGroupResponse (
@@ -46,5 +46,8 @@ data class ReactionGroupResponse (
     val firstReactionAt: org.threeten.bp.OffsetDateTime,
 
     @Json(name = "last_reaction_at")
-    val lastReactionAt: org.threeten.bp.OffsetDateTime
+    val lastReactionAt: org.threeten.bp.OffsetDateTime,
+
+    @Json(name = "sum_scores")
+    val sumScores: kotlin.Int
 )
