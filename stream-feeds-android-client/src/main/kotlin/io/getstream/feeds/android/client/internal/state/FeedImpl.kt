@@ -117,7 +117,7 @@ internal class FeedImpl(
     }
 
     override suspend fun stopWatching(): Result<Unit> {
-        TODO("Not yet implemented")
+        return feedsRepository.stopWatching(groupId = group, feedId = id)
     }
 
     override suspend fun updateFeed(request: UpdateFeedRequest): Result<FeedData> {

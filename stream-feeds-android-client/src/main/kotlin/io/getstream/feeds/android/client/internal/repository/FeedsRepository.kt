@@ -31,6 +31,8 @@ internal interface FeedsRepository {
 
     suspend fun getOrCreateFeed(query: FeedQuery): Result<GetOrCreateInfo>
 
+    suspend fun stopWatching(groupId: String, feedId: String): Result<Unit>
+
     // END: Creating or Getting the state of the feed
 
     // BEGIN: Manging the feed

@@ -68,6 +68,10 @@ internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepositor
         )
     }
 
+    override suspend fun stopWatching(groupId: String, feedId: String): Result<Unit> = runCatching {
+        api.stopWatchingFeed(feedGroupId = groupId, feedId = feedId)
+    }
+
     override suspend fun deleteFeed(
         feedGroupId: String,
         feedId: String,
