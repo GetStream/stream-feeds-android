@@ -37,7 +37,6 @@ import io.getstream.feeds.android.client.api.state.query.MembersQuery
 import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
-import io.getstream.feeds.android.client.api.subscribe.StreamSubscription
 import io.getstream.feeds.android.client.internal.client.createFeedsClient
 
 

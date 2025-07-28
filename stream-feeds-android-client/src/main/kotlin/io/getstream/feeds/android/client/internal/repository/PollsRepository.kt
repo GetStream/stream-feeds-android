@@ -7,6 +7,11 @@ import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
 import io.getstream.feeds.android.core.generated.models.CastPollVoteRequest
+import io.getstream.feeds.android.core.generated.models.CreatePollOptionRequest
+import io.getstream.feeds.android.core.generated.models.CreatePollRequest
+import io.getstream.feeds.android.core.generated.models.UpdatePollOptionRequest
+import io.getstream.feeds.android.core.generated.models.UpdatePollPartialRequest
+import io.getstream.feeds.android.core.generated.models.UpdatePollRequest
 
 /**
  * A repository for managing polls and poll votes.
@@ -24,9 +29,8 @@ internal interface PollsRepository {
      * Creates a new poll.
      *
      * @param request The request containing the details of the poll to create.
-     * TODO: Uncomment and implement this method when ready.
      */
-//    suspend fun createPoll(request: CreatePollRequest): Result<PollData>
+    suspend fun createPoll(request: CreatePollRequest): Result<PollData>
 
     /**
      * Deletes a poll by its ID.
@@ -49,29 +53,26 @@ internal interface PollsRepository {
      *
      * @param pollId The ID of the poll to update.
      * @param request The request containing the partial updates for the poll.
-     * TODO: Uncomment and implement this method when ready.
      */
-//    suspend fun updatePollPartial(
-//        pollId: String,
-//        request: UpdatePollPartialRequest
-//    ): Result<PollData>
+    suspend fun updatePollPartial(
+        pollId: String,
+        request: UpdatePollPartialRequest
+    ): Result<PollData>
 
     /**
      * Updates a poll by its ID.
      *
      * @param request The request containing the updated details of the poll.
-     * TODO: Uncomment and implement this method when ready.
      */
-//    suspend fun updatePoll(request: UpdatePollRequest): Result<PollData>
+    suspend fun updatePoll(request: UpdatePollRequest): Result<PollData>
 
     /**
      * Creates a new poll option for a given poll.
      *
      * @param pollId The ID of the poll to which the option will be added.
      * @param request The request containing the details of the poll option to create.
-     * TODO: Uncomment and implement this method when ready.
      */
-//    suspend fun createPollOption(pollId: String, request: CreatePollOptionRequest): Result<PollOptionData>
+    suspend fun createPollOption(pollId: String, request: CreatePollOptionRequest): Result<PollOptionData>
 
     /**
      * Deletes a poll option by its ID.
@@ -100,12 +101,11 @@ internal interface PollsRepository {
      *
      * @param pollId The ID of the poll containing the option to update.
      * @param request The request containing the updated details of the poll option.
-     * TODO: Uncomment and implement this method when ready.
      */
-//    suspend fun updatePollOption(
-//        pollId: String,
-//        request: UpdatePollOptionRequest,
-//    ): Result<PollOptionData>
+    suspend fun updatePollOption(
+        pollId: String,
+        request: UpdatePollOptionRequest,
+    ): Result<PollOptionData>
 
     /**
      * Queries polls based on the provided query parameters.

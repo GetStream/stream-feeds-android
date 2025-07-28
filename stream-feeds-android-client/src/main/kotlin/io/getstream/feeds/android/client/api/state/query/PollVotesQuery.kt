@@ -4,7 +4,10 @@ import io.getstream.android.core.query.Filter
 import io.getstream.android.core.query.Sort
 import io.getstream.android.core.query.SortDirection
 import io.getstream.android.core.query.SortField
+import io.getstream.android.core.query.toRequest
 import io.getstream.feeds.android.client.api.model.PollVoteData
+import io.getstream.feeds.android.client.internal.model.mapping.toRequest
+import io.getstream.feeds.android.core.generated.models.QueryPollVotesRequest
 
 /**
  * A query for retrieving poll votes with filtering, sorting, and pagination options.
@@ -97,3 +100,15 @@ public sealed interface PollVotesSortField : SortField<PollVoteData> {
     public data object UpdatedAt : PollVotesSortField,
         SortField<PollVoteData> by SortField.create("updated_at", PollVoteData::updatedAt)
 }
+
+/**
+ * Converts this [PollVotesQuery] to a [QueryPollVotesRequest].
+ */
+internal fun PollVotesQuery.toRequest(): QueryPollVotesRequest =
+    QueryPollVotesRequest(
+        filter = filter?.toRequest(),
+        limit = limit,
+        next = next,
+        prev = previous,
+        sort = sort?.map { it.toRequest() },
+    )

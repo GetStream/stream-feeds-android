@@ -19,14 +19,17 @@ import io.getstream.feeds.android.client.internal.repository.ActivitiesRepositor
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
+import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
 import io.getstream.feeds.android.client.internal.state.event.handler.FeedEventHandler
+import io.getstream.feeds.android.client.internal.utils.flatMap
 import io.getstream.feeds.android.core.generated.models.AcceptFollowRequest
 import io.getstream.feeds.android.core.generated.models.AddActivityRequest
 import io.getstream.feeds.android.core.generated.models.AddBookmarkRequest
 import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
 import io.getstream.feeds.android.core.generated.models.AddCommentRequest
 import io.getstream.feeds.android.core.generated.models.AddReactionRequest
+import io.getstream.feeds.android.core.generated.models.CreatePollRequest
 import io.getstream.feeds.android.core.generated.models.MarkActivityRequest
 import io.getstream.feeds.android.core.generated.models.RejectFollowRequest
 import io.getstream.feeds.android.core.generated.models.SingleFollowRequest
@@ -61,6 +64,9 @@ import io.getstream.feeds.android.core.generated.models.WSEvent
  * @property bookmarksRepository The [BookmarksRepository] used to manage bookmarks in the feed.
  * @property commentsRepository The [CommentsRepository] used to manage comments in the feed.
  * @property feedsRepository The [FeedsRepository] used to manage feed data and operations.
+ * @property pollsRepository The [PollsRepository] used to manage polls in the feed.
+ * @property subscriptionManager The [StreamSubscriptionManager] used to manage WebSocket
+ * subscriptions for feed events.
  */
 internal class FeedImpl(
     private val query: FeedQuery,
@@ -69,6 +75,7 @@ internal class FeedImpl(
     private val bookmarksRepository: BookmarksRepository,
     private val commentsRepository: CommentsRepository,
     private val feedsRepository: FeedsRepository,
+    private val pollsRepository: PollsRepository,
     private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener>,
 ) : Feed {
 
@@ -348,5 +355,19 @@ internal class FeedImpl(
     ): Result<FeedsReactionData> {
         return commentsRepository.deleteCommentReaction(commentId = commentId, type = type)
             .map { it.first }
+    }
+
+    override suspend fun createPoll(
+        request: CreatePollRequest,
+        activityType: String
+    ): Result<ActivityData> {
+        return pollsRepository.createPoll(request).flatMap { poll ->
+            val request = AddActivityRequest(
+                fids = listOf(fid.rawValue),
+                pollId = poll.id,
+                type = activityType,
+            )
+            activitiesRepository.addActivity(request)
+        }
     }
 }

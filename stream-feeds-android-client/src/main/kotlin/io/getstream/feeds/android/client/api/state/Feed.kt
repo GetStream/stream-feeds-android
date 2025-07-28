@@ -14,6 +14,7 @@ import io.getstream.feeds.android.core.generated.models.AddBookmarkRequest
 import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
 import io.getstream.feeds.android.core.generated.models.AddCommentRequest
 import io.getstream.feeds.android.core.generated.models.AddReactionRequest
+import io.getstream.feeds.android.core.generated.models.CreatePollRequest
 import io.getstream.feeds.android.core.generated.models.MarkActivityRequest
 import io.getstream.feeds.android.core.generated.models.SingleFollowRequest
 import io.getstream.feeds.android.core.generated.models.UpdateActivityRequest
@@ -176,7 +177,19 @@ public interface Feed {
      * This method allows you to modify the properties of an existing bookmark, such as changing the
      * folder it belongs to or updating custom data associated with the bookmark.
      *
-     * TODO: Add example
+     * Example:
+     * ```kotlin
+     * // Move a bookmark to a different folder
+     * val updateRequest = UpdateBookmarkRequest(folderId = "new-folder-id")
+     * val updatedBookmark = feed.updateBookmark("activity-123", updateRequest)
+     *
+     * // Update bookmark with custom data
+     * val customUpdateRequest = UpdateBookmarkRequest(
+     *   folderId = "favorites",
+     *   custom = mapOf("note" to "Important article")
+     * )
+     * val bookmark = feed.updateBookmark("activity-456", customUpdateRequest)
+     * ```
      *
      * @param activityId The unique identifier of the activity whose bookmark should be updated.
      * @param request The update request containing the new bookmark properties to apply.
@@ -309,9 +322,9 @@ public interface Feed {
     /**
      * Loads the next page of members if more are available.
      *
-     * This method fetches additional members using the pagination information from the previous 
+     * This method fetches additional members using the pagination information from the previous
      * request. If no more members are available, an empty list is returned.
-     * 
+     *
      * @param limit Optional limit for the number of members to fetch. If not specified, uses the
      * limit from the original query.
      * @return A [Result] containing a list of additional [FeedMemberData] if successful, or an
@@ -390,15 +403,21 @@ public interface Feed {
      * @return A [Result] containing the deleted [FeedsReactionData] if successful, or an error if
      * the operation fails.
      */
-    public suspend fun deleteCommentReaction(commentId: String, type: String): Result<FeedsReactionData>
+    public suspend fun deleteCommentReaction(
+        commentId: String,
+        type: String,
+    ): Result<FeedsReactionData>
 
     /**
-     * Creates a new poll and adds it as an activity to the feed. TODO: CreatePollRequest missing
+     * Creates a new poll and adds it as an activity to the feed.
      *
      * @param request The request containing the poll data to create.
      * @param activityType The type of activity to create for the poll.
      * @return A [Result] containing the created [ActivityData] with poll if successful, or an error
      * if the operation fails.
      */
-//    public suspend fun createPoll(request: CreatePollRequest, activityType: String): Result<ActivityData>
+    public suspend fun createPoll(
+        request: CreatePollRequest,
+        activityType: String,
+    ): Result<ActivityData>
 }

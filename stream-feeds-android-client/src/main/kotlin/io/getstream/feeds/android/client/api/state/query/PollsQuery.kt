@@ -4,7 +4,10 @@ import io.getstream.android.core.query.Filter
 import io.getstream.android.core.query.Sort
 import io.getstream.android.core.query.SortDirection
 import io.getstream.android.core.query.SortField
+import io.getstream.android.core.query.toRequest
 import io.getstream.feeds.android.client.api.model.PollData
+import io.getstream.feeds.android.client.internal.model.mapping.toRequest
+import io.getstream.feeds.android.core.generated.models.QueryPollsRequest
 
 /**
  * A query for retrieving polls with filtering, sorting, and pagination options.
@@ -54,6 +57,7 @@ public class PollsSort(field: PollsSortField, direction: SortDirection) :
         )
     }
 }
+
 /**
  * Represents a field that can be used for sorting polls.
  *
@@ -107,3 +111,14 @@ public sealed interface PollsSortField : SortField<PollData> {
             localValue = { if (it.isClosed) 1 else 0 })
 
 }
+
+/**
+ * Maps the [PollsQuery] to a [QueryPollsRequest].
+ */
+internal fun PollsQuery.toRequest(): QueryPollsRequest = QueryPollsRequest(
+    filter = filter?.toRequest(),
+    limit = limit,
+    next = next,
+    prev = previous,
+    sort = sort?.map { it.toRequest() },
+)
