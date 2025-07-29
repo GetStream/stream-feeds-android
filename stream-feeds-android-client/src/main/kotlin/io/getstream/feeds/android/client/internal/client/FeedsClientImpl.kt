@@ -22,6 +22,7 @@ import io.getstream.android.core.websocket.DisconnectionSource
 import io.getstream.android.core.websocket.WebSocketConnectionState
 import io.getstream.feeds.android.client.BuildConfig
 import io.getstream.feeds.android.client.api.FeedsClient
+import io.getstream.feeds.android.client.api.Moderation
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.Activity
@@ -67,6 +68,7 @@ import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepositoryImpl
+import io.getstream.feeds.android.client.internal.repository.ModerationRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.repository.PollsRepositoryImpl
 import io.getstream.feeds.android.client.internal.socket.ConnectUserData
@@ -147,12 +149,6 @@ internal fun createFeedsClient(
         productVersion = BuildConfig.PRODUCT_VERSION,
     )
     // Socket configuration
-    val jsonParser = MoshiJsonParser(Serializer.moshi)
-    val authInterceptor = if (user.type == UserAuthType.ANONYMOUS) {
-        AnonymousAuthInterceptor(tokenManager, jsonParser)
-    } else {
-        UserTokenAuthInterceptor(tokenManager, jsonParser)
-    }
     val socket = FeedsSocket(
         config = FeedsSocketConfig(
             socketConfig = StreamSocketConfig(
@@ -194,12 +190,12 @@ internal fun createFeedsClient(
     )
     val clientState = FeedsClientStateImpl()
     // HTTP Configuration
-//    val jsonParser = MoshiJsonParser(Serializer.moshi)
-//    val authInterceptor = if (user.type == UserAuthType.ANONYMOUS) {
-//        AnonymousAuthInterceptor(tokenManager, jsonParser)
-//    } else {
-//        UserTokenAuthInterceptor(tokenManager, jsonParser)
-//    }
+    val jsonParser = MoshiJsonParser(Serializer.moshi)
+    val authInterceptor = if (user.type == UserAuthType.ANONYMOUS) {
+        AnonymousAuthInterceptor(tokenManager, jsonParser)
+    } else {
+        UserTokenAuthInterceptor(tokenManager, jsonParser)
+    }
     val connectionIdInterceptor = ConnectionIdInterceptor {
         val connectionState = clientState.connectionState
         if (connectionState !is WebSocketConnectionState.Connected) {
@@ -231,7 +227,10 @@ internal fun createFeedsClient(
     val bookmarksRepository = BookmarksRepositoryImpl(feedsApi)
     val commentsRepository = CommentsRepositoryImpl(feedsApi)
     val feedsRepository = FeedsRepositoryImpl(feedsApi)
+    val moderationRepository = ModerationRepositoryImpl(feedsApi)
     val pollsRepository = PollsRepositoryImpl(feedsApi)
+
+    val moderation = ModerationImpl(moderationRepository)
 
     // Build client
     return FeedsClientImpl(
@@ -245,6 +244,7 @@ internal fun createFeedsClient(
         commentsRepository = commentsRepository,
         feedsRepository = feedsRepository,
         pollsRepository = pollsRepository,
+        moderation = moderation,
         clientState = clientState,
         logger = logger,
     )
@@ -261,6 +261,7 @@ internal class FeedsClientImpl(
     private val commentsRepository: CommentsRepository,
     private val feedsRepository: FeedsRepository,
     private val pollsRepository: PollsRepository,
+    override val moderation: Moderation,
     private val clientState: FeedsClientStateImpl, // TODO: Expose
     private val logger: TaggedLogger = provideLogger(tag = "Client")
 ) : FeedsClient {

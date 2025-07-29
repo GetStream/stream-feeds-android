@@ -364,6 +364,15 @@ public interface FeedsClient {
      * @return A [Result] indicating success or failure of the deletion operation.
      */
     public suspend fun deleteImage(url: String): Result<Unit>
+
+    /**
+     * Provides an instance of [Moderation] for managing moderation-related operations.
+     *
+     * @return An instance of [Moderation] that can be used to perform moderation actions such as
+     * querying moderation configurations, banning users, muting users, blocking users, and
+     * unblocking users.
+     */
+    public val moderation: Moderation
 }
 
 /**
