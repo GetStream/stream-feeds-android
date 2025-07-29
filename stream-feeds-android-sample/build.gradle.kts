@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "io.getstream.feeds.android"
+    namespace = "io.getstream.feeds.android.sample"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "io.getstream.feeds.android"
+        applicationId = "io.getstream.feeds.android.sample"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -40,9 +40,18 @@ android {
 }
 
 dependencies {
+    // Feeds Client
+    implementation(project(":stream-feeds-android-client"))
+    implementation(project(":stream-feeds-android-core"))
+    // Stream Log
+    implementation(libs.stream.log)
+    // Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)

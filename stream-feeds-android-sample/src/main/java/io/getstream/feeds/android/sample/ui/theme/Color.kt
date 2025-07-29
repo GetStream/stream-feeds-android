@@ -1,4 +1,4 @@
-package io.getstream.feeds.android.ui.theme
+package io.getstream.feeds.android.sample.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

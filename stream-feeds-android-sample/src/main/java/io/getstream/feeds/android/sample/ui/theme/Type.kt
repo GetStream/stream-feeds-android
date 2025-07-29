@@ -1,4 +1,4 @@
-package io.getstream.feeds.android.ui.theme
+package io.getstream.feeds.android.sample.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
