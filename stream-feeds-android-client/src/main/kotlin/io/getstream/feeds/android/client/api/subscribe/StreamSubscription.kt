@@ -4,12 +4,7 @@ package io.getstream.feeds.android.client.api.subscribe
 public interface StreamSubscription {
 
     /**
-     * The subscription ID.
-     */
-    public val id: Int
-
-    /**
      * Cancels the subscription.
      */
-    public fun cancel() : Result<Unit>
+    public fun cancel()
 }

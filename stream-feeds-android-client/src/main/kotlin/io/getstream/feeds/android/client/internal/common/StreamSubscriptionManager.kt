@@ -49,11 +49,10 @@ internal class StreamSubscriptionManagerImpl<T : StreamSubscriber>(
         internal const val MAX_LISTENERS = 250
     }
 
-    private val subscribers = ConcurrentHashMap<Int, T>()
-    private var nextId = 0
+    private val subscribers = ConcurrentHashMap<T, Unit>()
 
     override fun subscribe(listener: T): Result<StreamSubscription> = runCatching {
-        if (nextId > maxSubscriptions) {
+        if (subscribers.size >= maxSubscriptions) {
             logger.e {
                 """
                 |[subscribe] Failed, too many subscribers (size: ${subscribers.size}, max: ${maxSubscriptions})
@@ -63,13 +62,11 @@ internal class StreamSubscriptionManagerImpl<T : StreamSubscriber>(
             }
             throw IllegalStateException("Max listeners reached, unsubscribe some listeners.")
         }
-        val id = nextId + 1
-        subscribers[id] = listener
-        logger.v { "[subscribe] Subscribed with id: $id" }
-        nextId = id
+        subscribers[listener] = Unit
         object : StreamSubscription {
-            override val id: Int = id
-            override fun cancel() = unsubscribe(id)
+            override fun cancel() {
+                subscribers.remove(listener)
+            }
         }
     }
 
@@ -79,13 +76,6 @@ internal class StreamSubscriptionManagerImpl<T : StreamSubscriber>(
     }
 
     override fun forEach(block: (T) -> Unit) = runCatching {
-        subscribers.forEach { (_, listener) ->
-            block(listener)
-        }
-    }
-
-    private fun unsubscribe(id: Int): Result<Unit> = runCatching {
-        subscribers.remove(id)
-        logger.v { "[unsubscribe] Removed subscriber with id: $id" }
+        subscribers.keys.forEach(block)
     }
 }
