@@ -40,8 +40,10 @@ public interface PollVoteList {
      * This method fetches additional poll votes if there are more available based on the current
      * query. The new poll votes are automatically merged with the existing ones in the state.
      *
+     * @param limit The maximum number of poll votes to fetch. If null, the default limit from the
+     * API will be used.
      * @return A [Result] containing a list of [PollVoteData] if successful, or an error if the
      * request fails. Returns an empty list if there are no more poll votes to fetch.
      */
-    public suspend fun queryMorePollVotes(): Result<List<PollVoteData>>
+    public suspend fun queryMorePollVotes(limit: Int? = null): Result<List<PollVoteData>>
 }

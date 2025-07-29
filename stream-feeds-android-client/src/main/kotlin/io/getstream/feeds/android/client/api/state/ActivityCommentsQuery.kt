@@ -49,10 +49,10 @@ import io.getstream.feeds.android.client.api.state.query.CommentsSort
 public data class ActivityCommentsQuery(
     public val objectId: String,
     public val objectType: String,
-    public val depth: Int?,
-    public val limit: Int?,
-    public val next: String?,
-    public val previous: String?,
-    public val repliesLimit: Int,
-    public val sort: CommentsSort?,
+    public val depth: Int? = null,
+    public val limit: Int? = null,
+    public val next: String? = null,
+    public val previous: String? = null,
+    public val repliesLimit: Int? = null,
+    public val sort: CommentsSort? = null,
 )

@@ -11,7 +11,11 @@ import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
 import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
 import io.getstream.feeds.android.core.generated.models.CastPollVoteRequest
+import io.getstream.feeds.android.core.generated.models.CreatePollOptionRequest
 import io.getstream.feeds.android.core.generated.models.UpdateCommentRequest
+import io.getstream.feeds.android.core.generated.models.UpdatePollOptionRequest
+import io.getstream.feeds.android.core.generated.models.UpdatePollPartialRequest
+import io.getstream.feeds.android.core.generated.models.UpdatePollRequest
 
 /**
  * A class representing a single activity in a feed.
@@ -190,9 +194,8 @@ public interface Activity {
      * @param request The request containing the partial update data.
      * @return A [Result] containing the updated [PollData] if successful, or an error if the
      * operation fails.
-     * TODO: Uncomment when the API supports partial updates
      */
-//    public suspend fun updatePollPartial(request: UpdatePollPartialRequest): Result<PollData>
+    public suspend fun updatePollPartial(request: UpdatePollPartialRequest): Result<PollData>
 
     /**
      * Updates a poll.
@@ -200,9 +203,8 @@ public interface Activity {
      * @param request The request containing the update data.
      * @return A [Result] containing the updated [PollData] if successful, or an error if the
      * operation fails.
-     * TODO: Uncomment when the API supports full updates
      */
-//    public suspend fun updatePoll(request: UpdatePollRequest): Result<PollData>
+    public suspend fun updatePoll(request: UpdatePollRequest): Result<PollData>
 
     /**
      * Creates a new option for a poll.
@@ -210,9 +212,8 @@ public interface Activity {
      * @param request The request containing the details of the poll option to be created.
      * @return A [Result] containing the newly created [PollOptionData] if successful, or an error
      * if the operation fails.
-     * // TODO: Uncomment when the API supports creating poll options
      */
-//    public suspend fun createPollOption(request: CreatePollOptionRequest): Result<PollOptionData>
+    public suspend fun createPollOption(request: CreatePollOptionRequest): Result<PollOptionData>
 
     /**
      * Removes a poll option.
@@ -242,9 +243,8 @@ public interface Activity {
      * @param request The request containing the updated details of the poll option.
      * @return A [Result] containing the updated [PollOptionData] if successful, or an error if the
      * operation fails.
-     * TODO: Uncomment when the API supports updating poll options
      */
-//    public suspend fun updatePollOption(request: UpdatePollOptionRequest): Result<PollOptionData>
+    public suspend fun updatePollOption(request: UpdatePollOptionRequest): Result<PollOptionData>
 
     /**
      * Casts a vote in a poll.

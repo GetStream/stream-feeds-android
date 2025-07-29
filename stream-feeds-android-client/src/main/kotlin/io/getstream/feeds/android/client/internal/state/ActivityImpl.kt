@@ -22,7 +22,11 @@ import io.getstream.feeds.android.client.internal.utils.flatMap
 import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
 import io.getstream.feeds.android.core.generated.models.AddCommentsBatchRequest
 import io.getstream.feeds.android.core.generated.models.CastPollVoteRequest
+import io.getstream.feeds.android.core.generated.models.CreatePollOptionRequest
 import io.getstream.feeds.android.core.generated.models.UpdateCommentRequest
+import io.getstream.feeds.android.core.generated.models.UpdatePollOptionRequest
+import io.getstream.feeds.android.core.generated.models.UpdatePollPartialRequest
+import io.getstream.feeds.android.core.generated.models.UpdatePollRequest
 import io.getstream.feeds.android.core.generated.models.WSEvent
 
 /**
@@ -181,27 +185,24 @@ internal class ActivityImpl(
         }
     }
 
-//    TODO: Uncomment and implement when repository methods are ready
-//    override suspend fun updatePollPartial(request: UpdatePollPartialRequest): Result<PollData> {
-//        return pollId().flatMap { pollId ->
-//            pollsRepository.updatePollPartial(pollId, request)
-//                .onSuccess { _state.onPollUpdated(it) }
-//        }
-//    }
+    override suspend fun updatePollPartial(request: UpdatePollPartialRequest): Result<PollData> {
+        return pollId().flatMap { pollId ->
+            pollsRepository.updatePollPartial(pollId, request)
+                .onSuccess { _state.onPollUpdated(it) }
+        }
+    }
 
-//    TODO: Uncomment and implement when repository methods are ready
-//    override suspend fun updatePoll(request: UpdatePollRequest): Result<PollData> {
-//        return pollsRepository.updatePoll(request)
-//            .onSuccess { _state.onPollUpdated(it) }
-//    }
+    override suspend fun updatePoll(request: UpdatePollRequest): Result<PollData> {
+        return pollsRepository.updatePoll(request)
+            .onSuccess { _state.onPollUpdated(it) }
+    }
 
-//    TODO: Uncomment and implement when repository methods are ready
-//    override suspend fun createPollOption(request: CreatePollOptionRequest): Result<PollOptionData> {
-//        return pollId().flatMap { pollId ->
-//            pollsRepository.createPollOption(pollId, request)
-//                .onSuccess { _state.onOptionCreated(it) }
-//        }
-//    }
+    override suspend fun createPollOption(request: CreatePollOptionRequest): Result<PollOptionData> {
+        return pollId().flatMap { pollId ->
+            pollsRepository.createPollOption(pollId, request)
+                .onSuccess { _state.onOptionCreated(it) }
+        }
+    }
 
     override suspend fun deletePollOption(
         optionId: String,
@@ -223,13 +224,12 @@ internal class ActivityImpl(
         }
     }
 
-//    TODO: Uncomment and implement when repository methods are ready
-//    override suspend fun updatePollOption(request: UpdatePollOptionRequest): Result<PollOptionData> {
-//        return pollId().flatMap { pollId ->
-//            pollsRepository.updatePollOption(pollId, request)
-//                .onSuccess { _state.onOptionUpdated(it) }
-//        }
-//    }
+    override suspend fun updatePollOption(request: UpdatePollOptionRequest): Result<PollOptionData> {
+        return pollId().flatMap { pollId ->
+            pollsRepository.updatePollOption(pollId, request)
+                .onSuccess { _state.onOptionUpdated(it) }
+        }
+    }
 
     override suspend fun castPollVote(request: CastPollVoteRequest): Result<PollVoteData?> {
         return pollId().flatMap { pollId ->

@@ -5,6 +5,12 @@ import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
 import kotlinx.coroutines.flow.StateFlow
 
+/**
+ * An observable state object that manages the current state of a poll list.
+ *
+ * This interface provides access to the current query, the list of polls, pagination information,
+ * and whether more polls can be loaded.
+ */
 public interface PollListState {
 
     /**

@@ -55,6 +55,7 @@ import io.getstream.feeds.android.client.api.state.query.MembersQuery
 import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
+import io.getstream.feeds.android.client.api.subscribe.StreamSubscription
 import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManagerImpl
 import io.getstream.feeds.android.client.internal.http.interceptor.ApiErrorInterceptor
 import io.getstream.feeds.android.client.internal.log.provideLogger
@@ -66,6 +67,8 @@ import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepositoryImpl
+import io.getstream.feeds.android.client.internal.repository.PollsRepository
+import io.getstream.feeds.android.client.internal.repository.PollsRepositoryImpl
 import io.getstream.feeds.android.client.internal.socket.ConnectUserData
 import io.getstream.feeds.android.client.internal.socket.FeedsSocket
 import io.getstream.feeds.android.client.internal.socket.FeedsSocketConfig
@@ -79,6 +82,7 @@ import io.getstream.feeds.android.client.internal.socket.common.parser.MoshiJson
 import io.getstream.feeds.android.client.internal.socket.common.reconnect.ConnectionRecoveryHandler
 import io.getstream.feeds.android.client.internal.socket.common.reconnect.DefaultRetryStrategy
 import io.getstream.feeds.android.client.internal.state.ActivityCommentListImpl
+import io.getstream.feeds.android.client.internal.state.ActivityImpl
 import io.getstream.feeds.android.client.internal.state.ActivityListImpl
 import io.getstream.feeds.android.client.internal.state.ActivityReactionListImpl
 import io.getstream.feeds.android.client.internal.state.BookmarkFolderListImpl
@@ -91,6 +95,8 @@ import io.getstream.feeds.android.client.internal.state.FeedListImpl
 import io.getstream.feeds.android.client.internal.state.FeedsClientStateImpl
 import io.getstream.feeds.android.client.internal.state.FollowListImpl
 import io.getstream.feeds.android.client.internal.state.MemberListImpl
+import io.getstream.feeds.android.client.internal.state.PollListImpl
+import io.getstream.feeds.android.client.internal.state.PollVoteListImpl
 import io.getstream.feeds.android.core.generated.apis.ApiService
 import io.getstream.feeds.android.core.generated.infrastructure.Serializer
 import io.getstream.feeds.android.core.generated.models.WSEvent
@@ -165,11 +171,7 @@ internal fun createFeedsClient(
         ),
         healthMonitor = StreamHealthMonitor(scope = clientScope),
         internalSocket = StreamWebSocketImpl(
-            socketFactory = StreamWebSocketFactory(
-                okHttpClient = OkHttpClient.Builder()
-                    .addInterceptor(authInterceptor)
-                    .build()
-            ),
+            socketFactory = StreamWebSocketFactory(),
             subscriptionManager = StreamSubscriptionManagerImpl(),
         ),
         jsonParser = MoshiJsonParser(Serializer.moshiBuilder.add(WSEventAdapter()).build()),
@@ -229,6 +231,7 @@ internal fun createFeedsClient(
     val bookmarksRepository = BookmarksRepositoryImpl(feedsApi)
     val commentsRepository = CommentsRepositoryImpl(feedsApi)
     val feedsRepository = FeedsRepositoryImpl(feedsApi)
+    val pollsRepository = PollsRepositoryImpl(feedsApi)
 
     // Build client
     return FeedsClientImpl(
@@ -241,6 +244,7 @@ internal fun createFeedsClient(
         bookmarksRepository = bookmarksRepository,
         commentsRepository = commentsRepository,
         feedsRepository = feedsRepository,
+        pollsRepository = pollsRepository,
         clientState = clientState,
         logger = logger,
     )
@@ -256,7 +260,8 @@ internal class FeedsClientImpl(
     private val bookmarksRepository: BookmarksRepository,
     private val commentsRepository: CommentsRepository,
     private val feedsRepository: FeedsRepository,
-    private val clientState: FeedsClientStateImpl,
+    private val pollsRepository: PollsRepository,
+    private val clientState: FeedsClientStateImpl, // TODO: Expose
     private val logger: TaggedLogger = provideLogger(tag = "Client")
 ) : FeedsClient {
 
@@ -274,6 +279,10 @@ internal class FeedsClientImpl(
 
     init {
         socket.subscribe(socketListener)
+    }
+
+    public fun subscribe(listener: FeedsSocketListener): Result<StreamSubscription> {
+        return socket.subscribe(listener)
     }
 
     override suspend fun connect(): Result<Unit> {
@@ -317,6 +326,7 @@ internal class FeedsClientImpl(
         bookmarksRepository = bookmarksRepository,
         commentsRepository = commentsRepository,
         feedsRepository = feedsRepository,
+        pollsRepository = pollsRepository,
         subscriptionManager = socket,
     )
 
@@ -332,9 +342,25 @@ internal class FeedsClientImpl(
         subscriptionManager = socket,
     )
 
-    override fun activity(activityId: String, fid: FeedId): Activity {
-        TODO("Not yet implemented")
-    }
+    override fun activity(activityId: String, fid: FeedId): Activity = ActivityImpl(
+        activityId = activityId,
+        fid = fid,
+        currentUserId = user.id,
+        activitiesRepository = activitiesRepository,
+        commentsRepository = commentsRepository,
+        pollsRepository = pollsRepository,
+        subscriptionManager = socket,
+        commentList = ActivityCommentListImpl(
+            query = ActivityCommentsQuery(
+                objectId = activityId,
+                objectType = "activity",
+                depth = 3,
+            ),
+            currentUserId = user.id,
+            commentsRepository = commentsRepository,
+            subscriptionManager = socket,
+        ),
+    )
 
     override fun activityList(query: ActivitiesQuery): ActivityList = ActivityListImpl(
         query = query,
@@ -398,13 +424,17 @@ internal class FeedsClientImpl(
         subscriptionManager = socket,
     )
 
-    override fun pollVoteList(query: PollVotesQuery): PollVoteList {
-        TODO("Not yet implemented")
-    }
+    override fun pollVoteList(query: PollVotesQuery): PollVoteList = PollVoteListImpl(
+        query = query,
+        repository = pollsRepository,
+        subscriptionManager = socket,
+    )
 
-    override fun pollList(query: PollsQuery): PollList {
-        TODO("Not yet implemented")
-    }
+    override fun pollList(query: PollsQuery): PollList = PollListImpl(
+        query = query,
+        pollsRepository = pollsRepository,
+        subscriptionManager = socket,
+    )
 
     override fun moderationConfigList(query: ModerationConfigsQuery): ModerationConfigList {
         TODO("Not yet implemented")

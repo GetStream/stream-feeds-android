@@ -75,6 +75,7 @@ dependencies {
 
     // Stream
     api(project(":stream-android-core"))
+    implementation(project(":stream-annotations"))
     implementation(project(":stream-feeds-android-core"))
     implementation(libs.stream.log)
 //    implementation(libs.stream.push.delegate)
