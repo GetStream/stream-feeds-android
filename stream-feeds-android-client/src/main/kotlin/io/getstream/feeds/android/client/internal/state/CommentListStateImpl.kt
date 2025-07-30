@@ -17,8 +17,6 @@ import kotlinx.coroutines.flow.StateFlow
  * real-time updates. It automatically handles WebSocket events to keep the comment list
  * synchronized.
  *
- * TODO: Add example usage
- *
  * ## Features
  *
  * - **Observable State**: Uses flow properties for reactive UI updates

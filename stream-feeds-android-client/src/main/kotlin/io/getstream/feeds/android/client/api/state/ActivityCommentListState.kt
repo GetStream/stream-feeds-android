@@ -2,6 +2,7 @@ package io.getstream.feeds.android.client.api.state
 
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
+import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -12,7 +13,25 @@ import kotlinx.coroutines.flow.StateFlow
  * WebSocket events. It automatically handles comment additions, updates,
  * deletions, and reaction changes.
  *
- * TODO: Add usage examples
+ * ## Example:
+ * ```kotlin
+ * // Access the state from an ActivityCommentList
+ * val commentList = feedsClient.activityCommentList(query)
+ * val state = commentList.state
+ *
+ * // Observe comment changes
+ * state.comments.collect { comments ->
+ *     // Update UI with new comments
+ * }
+ *
+ * // Check pagination status
+ * if (state.canLoadMore) {
+ *     // Load more comments
+ * }
+ *
+ * // Access current comments
+ * val currentComments = state.comments.value
+ * ```
  *
  * ## Features
  *

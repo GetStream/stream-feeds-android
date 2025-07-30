@@ -1,6 +1,7 @@
 package io.getstream.feeds.android.client.api.state
 
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
+import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 
 /**
  * A class representing a paginated list of comments for a specific activity.
@@ -9,7 +10,26 @@ import io.getstream.feeds.android.client.api.model.ThreadedCommentData
  * pagination support and real-time updates through WebSocket events. It maintains an
  * observable state that automatically updates when comment-related events are received.
  *
- * TODO: Add examples
+ * ## Example:
+ * ```kotlin
+ * // Create a comment list for an activity
+ * val commentList = feedsClient.activityCommentList(
+ *      query = ActivityCommentsQuery(objectId = "activity-123", objectType = "activity")
+ * )
+ *
+ * // Fetch initial comments
+ * val comments = commentList.get()
+ *
+ * // Load more comments if available
+ * if (commentList.state.canLoadMore) {
+ *     val moreComments = commentList.queryMoreComments()
+ * }
+ *
+ * // Observe state changes
+ * commentList.state.comments.collect { comments ->
+ *     println("Updated comments: ${comments.size}")
+ * }
+ * ```
  *
  * ## Features
  *

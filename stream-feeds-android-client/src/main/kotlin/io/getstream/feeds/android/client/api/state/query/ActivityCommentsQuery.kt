@@ -1,6 +1,4 @@
-package io.getstream.feeds.android.client.api.state
-
-import io.getstream.feeds.android.client.api.state.query.CommentsSort
+package io.getstream.feeds.android.client.api.state.query
 
 /**
  * A query configuration for fetching comments for a specific activity.

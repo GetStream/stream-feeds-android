@@ -25,6 +25,7 @@ internal class MemberListStateImpl(
 ) : MemberListMutableState {
 
     private val _members: MutableStateFlow<List<FeedMemberData>> = MutableStateFlow(emptyList())
+
     internal var queryConfig: QueryConfiguration<MembersSort>? = null
         private set
 

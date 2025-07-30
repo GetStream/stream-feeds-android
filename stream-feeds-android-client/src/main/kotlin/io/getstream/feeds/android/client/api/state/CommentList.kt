@@ -9,6 +9,25 @@ import io.getstream.feeds.android.client.api.state.query.CommentsQuery
  * This interface provides methods to fetch and manage comments, including pagination support
  * and real-time updates through WebSocket events. It maintains an observable state that
  * automatically updates when comment-related events are received.
+ *
+ * ## Example:
+ * ```kotlin
+ * val query = CommentsQuery()
+ * val commentList = feedsClient.commentList(query)
+ *
+ * // Fetch initial comment matching the query
+ * val comments = commentList.get()
+ *
+ * // Load more comments if available
+ * if (commentList.state.canLoadMore) {
+ *     val moreComments = commentList.queryMoreComments()
+ * }
+ *
+ * // Observe state changes
+ * commentList.state.comments.collect { comments ->
+ *     println("Updated comments: ${comments.size}")
+ * }
+ * ```
  */
 public interface CommentList {
 

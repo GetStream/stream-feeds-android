@@ -8,6 +8,26 @@ import io.getstream.feeds.android.client.api.state.query.PollsQuery
  *
  * This class provides a way to fetch and manage a collection of polls with support for filtering,
  * sorting, and pagination. It maintains an observable state that can be used in UI components.
+ *
+ * ## Example Usage:
+ * ```kotlin
+ * // Create a poll list with a specific query
+ * val query = PollsQuery()
+ * val pollList = feedsClient.pollList(query)
+ *
+ * // Fetch initial polls matching the query
+ * val polls = pollList.get()
+ *
+ * // Load more polls if available
+ * if (pollList.state.canLoadMore) {
+ *    val morePolls = pollList.queryMorePolls()
+ * }
+ *
+ * // Observe state changes
+ * pollList.state.polls.collect { polls ->
+ *    println("Updated polls: ${polls.size}")
+ * }
+ * ```
  */
 public interface PollList {
 

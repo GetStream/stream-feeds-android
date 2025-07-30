@@ -4,7 +4,7 @@ import io.getstream.android.core.websocket.WebSocketConnectionState
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.state.ActivityCommentList
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
-import io.getstream.feeds.android.client.api.state.ActivityCommentsQuery
+import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManager
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener

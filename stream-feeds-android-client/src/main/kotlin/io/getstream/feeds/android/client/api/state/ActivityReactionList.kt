@@ -10,7 +10,24 @@ import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQuery
  * to fetch reactions with pagination support and automatically handles real-time updates
  * when reactions are added or removed from the activity.
  *
- * TODO: Add usage examples
+ * ## Example:
+ * ```kotlin
+ * val query = ActivityReactionsQuery(activityId = "activity-123")
+ * val reactionList = feedsClient.activityReactionList(query)
+ *
+ * // Fetch initial reactions
+ * val reactions = reactionList.get()
+ *
+ * // Load more reactions if available
+ * if (reactionList.state.canLoadMore) {
+ *     val moreReactions = reactionList.queryMoreReactions()
+ * }
+ *
+ * // Observe state changes
+ * reactionList.state.reactions.collect { reactions ->
+ *     println("Updated reactions: ${reactions.size}")
+ * }
+ * ```
  */
 public interface ActivityReactionList {
 

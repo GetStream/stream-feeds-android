@@ -5,6 +5,26 @@ import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 
 /**
  * Represents a list of feeds with a query and state.
+ *
+ * ## Example:
+ * ```kotlin
+ * // Create a feed list
+ * val query = FeedsQuery()
+ * val feedList = feedsClient.feedList(query)
+ *
+ * // Fetch initial feeds matching the query
+ * val feeds = feedList.get()
+ *
+ * // Load more feeds if available
+ * if (feedList.state.canLoadMore) {
+ *     val moreFeeds = feedList.queryMoreFeeds()
+ * }
+ *
+ * // Observe state changes
+ * feedList.state.feeds.collect { feeds ->
+ *    println("Updated feeds: ${feeds.size}")
+ * }
+ * ```
  */
 public interface FeedList {
 

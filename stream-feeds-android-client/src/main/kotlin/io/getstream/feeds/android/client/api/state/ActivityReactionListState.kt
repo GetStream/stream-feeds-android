@@ -12,7 +12,25 @@ import kotlinx.coroutines.flow.StateFlow
  * It automatically handles real-time updates when reactions are added or removed from the activity,
  * and maintains pagination state for loading additional reactions.
  *
- * TODO: Add usage
+ * ## Example:
+ * ```kotlin
+ * // Access the state from an ActivityReactionList
+ * val reactionList = feedsClient.activityReactionList(query)
+ * val state = reactionList.state
+ *
+ * // Observe reaction changes
+ * state.reactions.collect { reactions ->
+ *    // Update UI with new reactions
+ * }
+ *
+ * // Check pagination status
+ * if (state.canLoadMore) {
+ *    // Load more reactions
+ * }
+ *
+ * // Access current reactions
+ * val currentReactions = state.reactions.value
+ * ```
  */
 public interface ActivityReactionListState {
 

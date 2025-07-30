@@ -9,6 +9,25 @@ import io.getstream.feeds.android.client.api.state.query.BookmarksQuery
  * [BookmarkList] provides functionality to query and paginate through bookmarks.
  * It maintains the current state of the bookmark list and provides methods to load more bookmarks
  * when available.
+ *
+ * ## Example:
+ * ```kotlin
+ * val query = BookmarksQuery()
+ * val bookmarkList = feedsClient.bookmarkList(query)
+ *
+ * // Fetch initial bookmarks matching the query
+ * val bookmarks = bookmarkList.get()
+ *
+ * // Load more bookmarks if available
+ * if (bookmarkList.state.canLoadMore) {
+ *     val moreBookmarks = bookmarkList.queryMoreBookmarks()
+ * }
+ *
+ * // Observe state changes
+ * bookmarkList.state.bookmarks.collect { bookmarks ->
+ *     println("Updated bookmarks: ${bookmarks.size}")
+ * }
+ * ```
  */
 public interface BookmarkList {
 

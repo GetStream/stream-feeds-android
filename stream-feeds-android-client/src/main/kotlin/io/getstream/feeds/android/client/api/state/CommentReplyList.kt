@@ -10,7 +10,25 @@ import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
  * pagination support and real-time updates through WebSocket events. It maintains an
  * observable state that automatically updates when reply-related events are received.
  *
- * TODO: Add Usage examples
+ * ## Example:
+ * ```kotlin
+ * // Create a reply list for a comment
+ * val query = CommentRepliesQuery(commentId = "comment-123")
+ * val replyList = feedsClient.commentReplyList(query)
+ *
+ * // Fetch initial replies
+ * val replies = replyList.get()
+ *
+ * // Load more replies if available
+ * if (replyList.state.canLoadMore) {
+ *     val moreReactions = replyList.queryMoreReplies()
+ * }
+ *
+ * // Observe state changes
+ * replyList.state.replies.collect { replies ->
+ *     Log.d(TAG, "Updated replies: ${replies.size}")
+ * }
+ * ```
  *
  * ## Features
  *

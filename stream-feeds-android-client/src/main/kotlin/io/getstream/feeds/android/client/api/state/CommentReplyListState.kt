@@ -12,8 +12,6 @@ import kotlinx.coroutines.flow.StateFlow
  * the list of replies, pagination information, and real-time updates from
  * WebSocket events. It automatically handles reply updates and reaction changes.
  *
- * TODO: Add Usage examples
- *
  * ## Features
  *
  * - **Observable State**: Uses `@Published` properties for reactive UI updates

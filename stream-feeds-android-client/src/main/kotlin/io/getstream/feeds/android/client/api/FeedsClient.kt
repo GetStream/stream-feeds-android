@@ -8,7 +8,7 @@ import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.Activity
 import io.getstream.feeds.android.client.api.state.ActivityCommentList
-import io.getstream.feeds.android.client.api.state.ActivityCommentsQuery
+import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.ActivityList
 import io.getstream.feeds.android.client.api.state.ActivityReactionList
 import io.getstream.feeds.android.client.api.state.BookmarkFolderList

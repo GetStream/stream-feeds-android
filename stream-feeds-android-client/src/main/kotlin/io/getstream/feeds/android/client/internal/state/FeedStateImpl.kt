@@ -161,7 +161,7 @@ internal class FeedStateImpl(
 
     override fun onBookmarkAdded(bookmark: BookmarkData) {
         _activities.value = _activities.value.map {
-            if (it.id == bookmark.activity.id) { // todo generalize this in a common operations
+            if (it.id == bookmark.activity.id) {
                 it.addBookmark(bookmark, currentUserId)
             } else {
                 it

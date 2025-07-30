@@ -9,6 +9,26 @@ import io.getstream.feeds.android.client.api.state.query.FollowsQuery
  * [FollowList] provides functionality to query and paginate through follows.
  * It maintains the current state of the follow list and provides methods to load more follows
  * when available.
+ *
+ * ## Example:
+ * ```kotlin
+ * // Create a follow list with a specific query
+ * val query = FollowsQuery()
+ * val followList = feedsClient.followList(query)
+ *
+ * // Fetch initial follows matching the query
+ * val follows = followList.get()
+ *
+ * // Load more follows if available
+ * if (followList.state.canLoadMore) {
+ *     val moreFollows = followList.queryMoreFollows()
+ * }
+ *
+ * // Observe state changes
+ * followList.state.follows.collect { follows ->
+ *     println("Updated follows: ${follows.size}")
+ * }
+ * ```
  */
 public interface FollowList {
 

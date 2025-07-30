@@ -9,6 +9,26 @@ import io.getstream.feeds.android.client.api.state.query.MembersQuery
  * [MemberList] provides functionality to query and paginate through members of a specific feed.
  * It maintains the current state of the member list and provides methods to load more members
  * when available.
+ *
+ * ## Example:
+ * ```kotlin
+ * // Create a member list with a specific query
+ * val query = MembersQuery(fid = FeedId("feed:123"))
+ * val memberList = feedsClient.memberList(query)
+ *
+ * // Fetch initial members matching the query
+ * val members = memberList.get()
+ *
+ * // Load more members if available
+ * if (memberList.state.canLoadMore) {
+ *    val moreMembers = memberList.queryMoreMembers()
+ * }
+ *
+ * // Observe state changes
+ * memberList.state.members.collect { members ->
+ *    println("Updated members: ${members.size}")
+ * }
+ * ```
  */
 public interface MemberList {
 

@@ -7,8 +7,27 @@ import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersQuery
  * A class that manages a paginated list of bookmark folders.
  *
  * [BookmarkFolderList] provides functionality to query and paginate through bookmark folders.
- * It maintains the current state of the bookmark folder list and provides methods to load more
+ * It maintains the current st  ate of the bookmark folder list and provides methods to load more
  * folders when available.
+ *
+ * ## Example:
+ * ```kotlin
+ * val query = BookmarkFoldersQuery()
+ * val bookmarkFolderList = feedsClient.bookmarkFolderList(query)
+ *
+ * // Fetch initial bookmark folders matching the query
+ * val bookmarkFolders = bookmarkFolderList.get()
+ *
+ * // Load more bookmark folders if available
+ * if (bookmarkFolderList.state.canLoadMore) {
+ *     val moreBookmarkFolders = bookmarkFolderList.queryMoreBookmarkFolders()
+ * }
+ *
+ * // Observe state changes
+ * bookmarkFolderList.state.folders.collect { folders ->
+ *     println("Updated bookmark folders: ${folders.size}")
+ * }
+ * ```
  */
 public interface BookmarkFolderList {
 

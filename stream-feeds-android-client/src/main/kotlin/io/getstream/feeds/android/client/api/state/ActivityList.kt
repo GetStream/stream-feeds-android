@@ -9,6 +9,25 @@ import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
  * `ActivityList` provides a convenient way to fetch, paginate, and observe activities
  * with automatic real-time updates via WebSocket events. It manages the state of activities
  * and provides methods for loading more activities as needed.
+ *
+ * ## Example:
+ * ```kotlin
+ * val query = ActivitiesQuery()
+ * val activityList = feedsClient.activityList(query)
+ *
+ * // Fetch initial activities matching the query
+ * val activities = activityList.get()
+ *
+ * // Load more activities if available
+ * if (activityList.state.canLoadMore) {
+ *     val moreActivities = activityList.queryMoreActivities()
+ * }
+ *
+ * // Observe state changes
+ * activityList.state.activities.collect { activities ->
+ *     println("Updated activities: ${activities.size}")
+ * }
+ * ```
  */
 public interface ActivityList {
 

@@ -27,7 +27,6 @@ import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.Activity
 import io.getstream.feeds.android.client.api.state.ActivityCommentList
-import io.getstream.feeds.android.client.api.state.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.ActivityList
 import io.getstream.feeds.android.client.api.state.ActivityReactionList
 import io.getstream.feeds.android.client.api.state.BookmarkFolderList
@@ -43,6 +42,7 @@ import io.getstream.feeds.android.client.api.state.ModerationConfigList
 import io.getstream.feeds.android.client.api.state.PollList
 import io.getstream.feeds.android.client.api.state.PollVoteList
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
+import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersQuery
 import io.getstream.feeds.android.client.api.state.query.BookmarksQuery
@@ -68,6 +68,7 @@ import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepositoryImpl
+import io.getstream.feeds.android.client.internal.repository.ModerationRepository
 import io.getstream.feeds.android.client.internal.repository.ModerationRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.repository.PollsRepositoryImpl
@@ -97,6 +98,7 @@ import io.getstream.feeds.android.client.internal.state.FeedListImpl
 import io.getstream.feeds.android.client.internal.state.FeedsClientStateImpl
 import io.getstream.feeds.android.client.internal.state.FollowListImpl
 import io.getstream.feeds.android.client.internal.state.MemberListImpl
+import io.getstream.feeds.android.client.internal.state.ModerationConfigListImpl
 import io.getstream.feeds.android.client.internal.state.PollListImpl
 import io.getstream.feeds.android.client.internal.state.PollVoteListImpl
 import io.getstream.feeds.android.core.generated.apis.ApiService
@@ -243,6 +245,7 @@ internal fun createFeedsClient(
         bookmarksRepository = bookmarksRepository,
         commentsRepository = commentsRepository,
         feedsRepository = feedsRepository,
+        moderationRepository = moderationRepository,
         pollsRepository = pollsRepository,
         moderation = moderation,
         clientState = clientState,
@@ -260,6 +263,7 @@ internal class FeedsClientImpl(
     private val bookmarksRepository: BookmarksRepository,
     private val commentsRepository: CommentsRepository,
     private val feedsRepository: FeedsRepository,
+    private val moderationRepository: ModerationRepository,
     private val pollsRepository: PollsRepository,
     override val moderation: Moderation,
     private val clientState: FeedsClientStateImpl, // TODO: Expose
@@ -437,9 +441,11 @@ internal class FeedsClientImpl(
         subscriptionManager = socket,
     )
 
-    override fun moderationConfigList(query: ModerationConfigsQuery): ModerationConfigList {
-        TODO("Not yet implemented")
-    }
+    override fun moderationConfigList(query: ModerationConfigsQuery): ModerationConfigList =
+        ModerationConfigListImpl(
+            query = query,
+            moderationRepository = moderationRepository,
+        )
 
     override suspend fun getApp(): Result<AppData> {
         TODO("Not yet implemented")

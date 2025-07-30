@@ -10,7 +10,7 @@ import io.getstream.feeds.android.client.api.model.addReply
 import io.getstream.feeds.android.client.api.model.removeReaction
 import io.getstream.feeds.android.client.api.model.setCommentData
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
-import io.getstream.feeds.android.client.api.state.ActivityCommentsQuery
+import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.internal.utils.upsert
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

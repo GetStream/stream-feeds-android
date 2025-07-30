@@ -29,7 +29,7 @@ import io.getstream.feeds.android.core.generated.models.PagerRequest
  */
 public data class FeedQuery(
     public val fid: FeedId,
-    public val activityFilter: Filter? = null, // TODO: Type-safe filter?
+    public val activityFilter: Filter? = null,
     public val activityLimit: Int? = null,
     public val activityNext: String? = null,
     public val activityPrevious: String? = null,
