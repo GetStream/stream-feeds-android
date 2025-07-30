@@ -66,6 +66,17 @@ internal class ActivitiesRepositoryImpl(
         ).activity.toModel()
     }
 
+    override suspend fun unpin(
+        activityId: String,
+        fid: FeedId,
+    ): Result<ActivityData> = runCatching {
+        api.unpinActivity(
+            feedGroupId = fid.group,
+            feedId = fid.id,
+            activityId = activityId,
+        ).activity.toModel()
+    }
+
     override suspend fun markActivity(
         feedGroupId: String,
         feedId: String,

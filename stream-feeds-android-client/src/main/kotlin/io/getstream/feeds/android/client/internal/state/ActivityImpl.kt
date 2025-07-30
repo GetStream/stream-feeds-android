@@ -159,7 +159,7 @@ internal class ActivityImpl(
     }
 
     override suspend fun unpin(): Result<Unit> {
-        return activitiesRepository.pin(activityId, fid)
+        return activitiesRepository.unpin(activityId, fid)
             .onSuccess { _state.onActivityUpdated(it) }
             .map { Unit }
     }

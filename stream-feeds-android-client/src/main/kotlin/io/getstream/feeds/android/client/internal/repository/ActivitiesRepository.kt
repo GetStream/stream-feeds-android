@@ -78,6 +78,15 @@ internal interface ActivitiesRepository {
     suspend fun pin(activityId: String, fid: FeedId): Result<ActivityData>
 
     /**
+     * Unpins an activity from a feed.
+     *
+     * @param activityId The ID of the activity to unpin.
+     * @param fid The ID of the feed from which the activity should be unpinned.
+     * @return A [Result] containing the unpinned [ActivityData] or an error.
+     */
+    suspend fun unpin(activityId: String, fid: FeedId): Result<ActivityData>
+
+    /**
      * Marks activities in a feed as read or seen.
      *
      * @param feedGroupId The group ID of the feed.
