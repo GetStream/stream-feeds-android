@@ -271,11 +271,13 @@ public interface Feed {
      * Follows another feed.
      *
      * @param targetFid The target feed identifier.
+     * @param createNotificationActivity Whether the action is added to the notification feed.
      * @param custom Additional data for the request.
      * @param pushPreference Push notification preferences for the follow request.
      */
     public suspend fun follow(
         targetFid: FeedId,
+        createNotificationActivity: Boolean? = null,
         custom: Map<String, Any>? = null,
         pushPreference: SingleFollowRequest.PushPreference? = null,
     ): Result<FollowData>

@@ -32,7 +32,7 @@ public data class ActivityAddCommentRequest(
         AddCommentRequest(
             comment = comment,
             attachments = attachments,
-//            createNotificationActivity = createNotificationActivity,
+            createNotificationActivity = createNotificationActivity,
             custom = custom,
             mentionedUserIds = mentionedUserIds,
             objectId = "",

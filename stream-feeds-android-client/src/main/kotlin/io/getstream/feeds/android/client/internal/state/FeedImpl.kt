@@ -255,10 +255,12 @@ internal class FeedImpl(
 
     override suspend fun follow(
         targetFid: FeedId,
+        createNotificationActivity: Boolean?,
         custom: Map<String, Any>?,
         pushPreference: SingleFollowRequest.PushPreference?
     ): Result<FollowData> {
         val request = SingleFollowRequest(
+            createNotificationActivity = createNotificationActivity,
             custom = custom,
             pushPreference = pushPreference,
             source = fid.rawValue,
