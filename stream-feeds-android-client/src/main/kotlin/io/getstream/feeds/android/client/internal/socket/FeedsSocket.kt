@@ -127,7 +127,7 @@ internal data class FeedsSocketConfig(
  * @property config The configuration for the Feeds socket connection.
  * @property internalSocket The underlying WebSocket implementation used for communication.
  * @property jsonParser The JSON parser used to serialize and deserialize messages.
- * @property parser The parser used to decode and encode WebSocket messages.
+ * @property eventParser The parser used to decode and encode WebSocket messages.
  * @property healthMonitor The health monitor for the WebSocket connection.
  * @param debounceProcessor The processor for debouncing WebSocket events.
  * @param subscriptionManager The manager for handling subscriptions to socket events.
