@@ -4,11 +4,10 @@ import android.content.Context
 import android.net.ConnectivityManager
 import androidx.lifecycle.ProcessLifecycleOwner
 import io.getstream.android.core.http.XStreamClient
-import io.getstream.android.core.http.interceptor.AnonymousAuthInterceptor
 import io.getstream.android.core.http.interceptor.ApiKeyInterceptor
+import io.getstream.android.core.http.interceptor.AuthInterceptor
 import io.getstream.android.core.http.interceptor.ConnectionIdInterceptor
 import io.getstream.android.core.http.interceptor.HeadersInterceptor
-import io.getstream.android.core.http.interceptor.UserTokenAuthInterceptor
 import io.getstream.android.core.lifecycle.StreamLifecycleObserver
 import io.getstream.android.core.network.NetworkStateProvider
 import io.getstream.android.core.user.ApiKey
@@ -200,11 +199,11 @@ internal fun createFeedsClient(
     val clientState = FeedsClientStateImpl()
     // HTTP Configuration
     val jsonParser = MoshiJsonParser(Serializer.moshi)
-    val authInterceptor = if (user.type == UserAuthType.ANONYMOUS) {
-        AnonymousAuthInterceptor(tokenManager, jsonParser)
-    } else {
-        UserTokenAuthInterceptor(tokenManager, jsonParser)
-    }
+    val authInterceptor = AuthInterceptor(
+        tokenManager = tokenManager,
+        jsonParser = jsonParser,
+        authType = if (user.type == UserAuthType.ANONYMOUS) "anonymous" else "jwt"
+    )
     val connectionIdInterceptor = ConnectionIdInterceptor {
         val connectionState = clientState.connectionState
         if (connectionState !is WebSocketConnectionState.Connected) {

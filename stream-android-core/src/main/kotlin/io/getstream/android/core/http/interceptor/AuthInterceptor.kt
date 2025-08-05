@@ -12,20 +12,18 @@ import okhttp3.Response
  * Base class for [AuthInterceptor] that provides common functionality for token-based
  * authentication.
  * It ensures the token is loaded from the [TokenManager] and handles token expiration.
+ * It adds the `stream-auth-type` header with [authType] as value and the `Authorization` header
+ * with the retrieved token.
  *
  * @param tokenManager The [TokenManager] to retrieve the token from.
  * @param jsonParser The [JsonParser] to parse potential error responses.
  */
 @StreamInternalApi
-public abstract class AuthInterceptor(
+public class AuthInterceptor(
     private val tokenManager: TokenManager,
     private val jsonParser: JsonParser,
+    private val authType: String,
 ) : Interceptor {
-
-    /**
-     * The type of authentication used by this interceptor.
-     */
-    public abstract val authType: String
 
     override fun intercept(chain: Interceptor.Chain): Response {
         // Ensure the token is loaded from the TokenManager
@@ -66,42 +64,4 @@ public abstract class AuthInterceptor(
         const val HEADER_STREAM_AUTH_TYPE = "stream-auth-type"
         const val HEADER_AUTHORIZATION = "Authorization"
     }
-}
-
-/**
- * [AuthInterceptor] to be used for anonymous users.
- *
- * It adds the `stream-auth-type` header with value `anonymous` and the `Authorization` header with
- * the retrieved token.
- *
- * @property tokenManager The [TokenManager] to retrieve the token from.
- * @param jsonParser The [JsonParser] to parse potential error responses.
- */
-@StreamInternalApi
-public class AnonymousAuthInterceptor(
-    tokenManager: TokenManager,
-    jsonParser: JsonParser,
-): AuthInterceptor(tokenManager, jsonParser) {
-
-    override val authType: String
-        get() = "anonymous"
-}
-
-/**
- * [AuthInterceptor] to be used for authenticated users.
- *
- * It adds the `stream-auth-type` header with value `jwt` and the `Authorization` header with
- *  * the retrieved token.
- *
- * @param tokenManager The [TokenManager] to retrieve the token from.
- * @param jsonParser The [JsonParser] to for parsing potential error responses.
- */
-@StreamInternalApi
-public class UserTokenAuthInterceptor(
-    tokenManager: TokenManager,
-    jsonParser: JsonParser,
-) : AuthInterceptor(tokenManager, jsonParser) {
-
-    override val authType: String
-        get() = "jwt"
 }
