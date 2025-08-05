@@ -112,13 +112,7 @@ internal class ActivityCommentListStateImpl(
             val updatedReplies = replies.map { replyComment ->
                 addNestedReply(replyComment, reply)
             }
-            // Check if any reply was actually updated
-            val wasUpdated = updatedReplies.zip(replies).any { (updated, original) ->
-                updated != original
-            }
-            if (wasUpdated) {
-                return parent.copy(replies = updatedReplies)
-            }
+            return parent.copy(replies = updatedReplies)
         }
         // No matching parent found in this subtree, return unchanged
         return parent
@@ -140,17 +134,7 @@ internal class ActivityCommentListStateImpl(
         val updatedReplies = comment.replies.map { reply ->
             updateNestedComment(reply, updated)
         }
-        // Check if any reply was updated
-        val wasUpdated = updatedReplies.zip(comment.replies).any { (updatedReply, originalReply) ->
-            updatedReply != originalReply
-        }
-        return if (wasUpdated) {
-            // If any reply was updated, return the comment with updated replies
-            comment.copy(replies = updatedReplies)
-        } else {
-            // If no replies were updated, return unchanged
-            comment
-        }
+        return comment.copy(replies = updatedReplies)
     }
 
     private fun removeCommentFromReplies(
@@ -177,16 +161,7 @@ internal class ActivityCommentListStateImpl(
             removeCommentFromReplies(reply, commentIdToRemove)
         }
 
-        // Check if any nested replies were modified
-        val wasModified = updatedReplies.zip(comment.replies).any { (updated, original) ->
-            updated !== original
-        }
-
-        return if (wasModified) {
-            comment.copy(replies = updatedReplies)
-        } else {
-            comment
-        }
+        return comment.copy(replies = updatedReplies)
     }
 
     private fun addCommentReaction(
