@@ -10,6 +10,7 @@ import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * An observable state object that manages the current state of a moderation config list.
@@ -33,7 +34,7 @@ internal class ModerationConfigListStateImpl(
 
 
     override val configs: StateFlow<List<ModerationConfigData>>
-        get() = _configs
+        get() = _configs.asStateFlow()
 
     override val pagination: PaginationData?
         get() = _pagination

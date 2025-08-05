@@ -10,6 +10,7 @@ import io.getstream.feeds.android.client.api.state.query.CommentReactionsSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * An observable state object that manages the current state of a comment reaction list.
@@ -33,7 +34,7 @@ internal class CommentReactionListStateImpl(
         get() = query.sort ?: CommentReactionsSort.Default
 
     override val reactions: StateFlow<List<FeedsReactionData>>
-        get() = _reactions
+        get() = _reactions.asStateFlow()
 
     override val pagination: PaginationData?
         get() = _pagination

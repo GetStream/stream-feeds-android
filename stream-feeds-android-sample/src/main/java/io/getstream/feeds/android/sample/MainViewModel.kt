@@ -13,13 +13,14 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class MainViewModel: ViewModel() {
 
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.LoggedOut)
     val viewState: StateFlow<ViewState>
-        get() = _viewState
+        get() = _viewState.asStateFlow()
 
     private val _errorEvent: MutableSharedFlow<String> = MutableSharedFlow(extraBufferCapacity = 1)
     val errorEvent: SharedFlow<String>

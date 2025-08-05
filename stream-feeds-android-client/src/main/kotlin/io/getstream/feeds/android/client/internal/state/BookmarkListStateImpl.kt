@@ -11,6 +11,7 @@ import io.getstream.feeds.android.client.api.state.query.BookmarksSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * An observable state object that manages the current state of a bookmark list.
@@ -36,7 +37,7 @@ internal class BookmarkListStateImpl(
         get() = query.sort ?: BookmarksSort.Default
 
     override val bookmarks: StateFlow<List<BookmarkData>>
-        get() = _bookmarks
+        get() = _bookmarks.asStateFlow()
 
     override val pagination: PaginationData?
         get() = _pagination

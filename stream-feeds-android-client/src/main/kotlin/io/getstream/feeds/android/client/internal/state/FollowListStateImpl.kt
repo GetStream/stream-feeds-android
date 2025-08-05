@@ -10,6 +10,7 @@ import io.getstream.feeds.android.client.api.state.query.FollowsSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * An observable state object that manages the current state of a follow list.
@@ -33,7 +34,7 @@ internal class FollowListStateImpl(
         get() = queryConfig?.sort ?: FollowsSort.Default
 
     override val follows: StateFlow<List<FollowData>>
-        get() = _follows
+        get() = _follows.asStateFlow()
 
     override val pagination: PaginationData?
         get() = _pagination

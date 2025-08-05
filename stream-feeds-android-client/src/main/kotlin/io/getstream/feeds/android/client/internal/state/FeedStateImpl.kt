@@ -19,9 +19,9 @@ import io.getstream.feeds.android.client.api.model.addReaction
 import io.getstream.feeds.android.client.api.model.deleteBookmark
 import io.getstream.feeds.android.client.api.model.removeComment
 import io.getstream.feeds.android.client.api.model.removeReaction
+import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
-import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.upsert
@@ -29,6 +29,7 @@ import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import io.getstream.feeds.android.core.generated.models.FeedOwnCapability
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Default implementation of [FeedState].
@@ -68,28 +69,28 @@ internal class FeedStateImpl(
         get() = feedQuery.fid
 
     override val activities: StateFlow<List<ActivityData>>
-        get() = _activities
+        get() = _activities.asStateFlow()
 
     override val feed: StateFlow<FeedData?>
-        get() = _feed
+        get() = _feed.asStateFlow()
 
     override val followers: StateFlow<List<FollowData>>
-        get() = _followers
+        get() = _followers.asStateFlow()
 
     override val following: StateFlow<List<FollowData>>
-        get() = _following
+        get() = _following.asStateFlow()
 
     override val followRequests: StateFlow<List<FollowData>>
-        get() = _followRequests
+        get() = _followRequests.asStateFlow()
 
     override val members: StateFlow<List<FeedMemberData>>
         get() = memberListState.members
 
     override val ownCapabilities: StateFlow<List<FeedOwnCapability>>
-        get() = _ownCapabilities
+        get() = _ownCapabilities.asStateFlow()
 
     override val pinnedActivities: StateFlow<List<ActivityPinData>>
-        get() = _pinnedActivities
+        get() = _pinnedActivities.asStateFlow()
 
     override val activitiesPagination: PaginationData?
         get() = _activitiesPagination

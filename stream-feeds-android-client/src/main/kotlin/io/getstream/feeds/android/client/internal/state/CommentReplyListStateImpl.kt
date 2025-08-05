@@ -13,6 +13,7 @@ import io.getstream.feeds.android.client.api.state.CommentReplyListState
 import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * An observable object representing the current state of a comment's reply list.
@@ -34,7 +35,7 @@ internal class CommentReplyListStateImpl(
     private var _pagination: PaginationData? = null
 
     override val replies: StateFlow<List<ThreadedCommentData>>
-        get() = _replies
+        get() = _replies.asStateFlow()
 
     override val pagination: PaginationData?
         get() = _pagination

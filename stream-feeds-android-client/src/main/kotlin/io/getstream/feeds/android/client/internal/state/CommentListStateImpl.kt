@@ -9,6 +9,7 @@ import io.getstream.feeds.android.client.api.state.query.CommentsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentsSort
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * An observable state object that manages the current state of a comment list.
@@ -41,7 +42,7 @@ internal class CommentListStateImpl(
     private var _pagination: PaginationData? = null
 
     override val comments: StateFlow<List<CommentData>>
-        get() = _comments
+        get() = _comments.asStateFlow()
 
     override val pagination: PaginationData?
         get() = _pagination

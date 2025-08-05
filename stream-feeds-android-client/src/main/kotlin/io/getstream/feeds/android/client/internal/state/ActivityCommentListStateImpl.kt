@@ -14,6 +14,7 @@ import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.internal.utils.upsert
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * A class representing a paginated list of comments for a specific activity.
@@ -33,7 +34,7 @@ internal class ActivityCommentListStateImpl(
     private var _pagination: PaginationData? = null
 
     override val comments: StateFlow<List<ThreadedCommentData>>
-        get() = _comments
+        get() = _comments.asStateFlow()
 
     override val pagination: PaginationData?
         get() = _pagination
