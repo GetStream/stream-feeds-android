@@ -1,5 +1,6 @@
 package io.getstream.feeds.android.client.internal.socket.common
 
+import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.subscribe.StreamSubscription
 import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManager
 import io.getstream.feeds.android.client.internal.log.provideLogger
@@ -61,7 +62,7 @@ internal open class StreamWebSocketImpl<T : StreamWebSocketListener>(
 
     private lateinit var socket: WebSocket
 
-    override fun open(config: StreamSocketConfig): Result<Unit> = runCatching {
+    override fun open(config: StreamSocketConfig): Result<Unit> = runSafely {
         socket = socketFactory.createSocket(config, this).onFailure {
             logger.e { "[open] SocketFactory failed to create socket. ${it.message}" }
         }.getOrThrow()
@@ -160,7 +161,7 @@ internal open class StreamWebSocketImpl<T : StreamWebSocketListener>(
     override fun forEach(block: (T) -> Unit): Result<Unit> =
         subscriptionManager.forEach(block)
 
-    private inline fun <V> catchingWithSocket(block: (WebSocket) -> V) = runCatching {
+    private inline fun <V> catchingWithSocket(block: (WebSocket) -> V) = runSafely {
         if (::socket.isInitialized) {
             block(socket)
         } else {

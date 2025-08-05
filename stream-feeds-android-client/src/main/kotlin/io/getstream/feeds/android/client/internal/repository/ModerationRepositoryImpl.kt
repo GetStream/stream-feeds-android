@@ -1,5 +1,6 @@
 package io.getstream.feeds.android.client.internal.repository
 
+import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.ModerationConfigData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
@@ -39,7 +40,7 @@ internal class ModerationRepositoryImpl(private val api: ApiService) : Moderatio
 
     override suspend fun queryModerationConfigs(
         query: ModerationConfigsQuery,
-    ): Result<PaginationResult<ModerationConfigData>> = runCatching {
+    ): Result<PaginationResult<ModerationConfigData>> = runSafely {
         val response = api.queryModerationConfigs(query.toRequest())
         PaginationResult(
             models = response.configs.map { it.toModel() },
@@ -47,69 +48,69 @@ internal class ModerationRepositoryImpl(private val api: ApiService) : Moderatio
         )
     }
 
-    override suspend fun ban(banRequest: BanRequest): Result<BanResponse> = runCatching {
+    override suspend fun ban(banRequest: BanRequest): Result<BanResponse> = runSafely {
         api.ban(banRequest)
     }
 
-    override suspend fun mute(muteRequest: MuteRequest): Result<MuteResponse> = runCatching {
+    override suspend fun mute(muteRequest: MuteRequest): Result<MuteResponse> = runSafely {
         api.mute(muteRequest)
     }
 
     override suspend fun blockUser(
         blockUserRequest: BlockUsersRequest,
-    ): Result<BlockUsersResponse> = runCatching {
+    ): Result<BlockUsersResponse> = runSafely {
         api.blockUsers(blockUserRequest)
     }
 
     override suspend fun unblockUser(
         unblockUserRequest: UnblockUsersRequest,
-    ): Result<UnblockUsersResponse> = runCatching {
+    ): Result<UnblockUsersResponse> = runSafely {
         api.unblockUsers(unblockUserRequest)
     }
 
-    override suspend fun getBlockedUsers(): Result<GetBlockedUsersResponse> = runCatching {
+    override suspend fun getBlockedUsers(): Result<GetBlockedUsersResponse> = runSafely {
         api.getBlockedUsers()
     }
 
-    override suspend fun flag(flagRequest: FlagRequest): Result<FlagResponse> = runCatching {
+    override suspend fun flag(flagRequest: FlagRequest): Result<FlagResponse> = runSafely {
         api.flag(flagRequest)
     }
 
     override suspend fun submitAction(
         submitActionRequest: SubmitActionRequest,
-    ): Result<SubmitActionResponse> = runCatching {
+    ): Result<SubmitActionResponse> = runSafely {
         api.submitAction(submitActionRequest)
     }
 
     override suspend fun queryReviewQueue(
         queryReviewQueueRequest: QueryReviewQueueRequest,
-    ): Result<QueryReviewQueueResponse> = runCatching {
+    ): Result<QueryReviewQueueResponse> = runSafely {
         api.queryReviewQueue(queryReviewQueueRequest)
     }
 
     override suspend fun upsertConfig(
         upsertConfigRequest: UpsertConfigRequest,
-    ): Result<UpsertConfigResponse> = runCatching {
+    ): Result<UpsertConfigResponse> = runSafely {
         api.upsertConfig(upsertConfigRequest)
     }
 
     override suspend fun deleteConfig(
         key: String,
         team: String?
-    ): Result<DeleteModerationConfigResponse> = runCatching {
+    ): Result<DeleteModerationConfigResponse> = runSafely {
         api.deleteConfig(key = key, team = team)
     }
 
     override suspend fun getConfig(
         key: String,
         team: String?
-    ): Result<GetConfigResponse> = runCatching {
+    ): Result<GetConfigResponse> = runSafely {
         api.getConfig(key = key, team = team)
     }
 
     override suspend fun queryModerationConfigs(
         queryModerationConfigsRequest: QueryModerationConfigsRequest,
-    ): Result<QueryModerationConfigsResponse> = runCatching {
+    ): Result<QueryModerationConfigsResponse> = runSafely {
         api.queryModerationConfigs(queryModerationConfigsRequest)
     }
 }
