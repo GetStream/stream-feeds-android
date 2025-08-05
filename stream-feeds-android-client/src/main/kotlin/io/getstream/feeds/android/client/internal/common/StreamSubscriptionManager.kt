@@ -1,0 +1,81 @@
+package io.getstream.feeds.android.client.internal.common
+
+import io.getstream.feeds.android.client.api.subscribe.StreamSubscriber
+import io.getstream.feeds.android.client.api.subscribe.StreamSubscription
+import io.getstream.feeds.android.client.internal.log.provideLogger
+import io.getstream.log.TaggedLogger
+import java.util.concurrent.ConcurrentHashMap
+
+/**
+ * Internal interface for managing subscriptions to a stream of events.
+ */
+internal interface StreamSubscriptionManager<T : StreamSubscriber> {
+
+    /**
+     * Subscribes a listener to the manager.
+     *
+     * @param listener The listener to subscribe.
+     * @return The subscription ID.
+     */
+    fun subscribe(listener: T): Result<StreamSubscription>
+
+    /**
+     * Clears all the listeners from the manager.
+     *
+     * @return The result of the operation.
+     */
+    fun clear(): Result<Unit>
+
+    /**
+     * Iterates over all the listeners.
+     *
+     * @param block The block to execute for each listener.
+     * @return The result of the operation.
+     */
+    fun forEach(block: (T) -> Unit): Result<Unit>
+}
+
+/**
+ * Manages the subscribers of any object.
+ */
+internal class StreamSubscriptionManagerImpl<T : StreamSubscriber>(
+    private val logger: TaggedLogger = provideLogger(tag = "SubscriptionManager"),
+    private val maxSubscriptions: Int = MAX_LISTENERS
+) : StreamSubscriptionManager<T> {
+    companion object {
+        /**
+         * Maximum number of listeners.
+         */
+        internal const val MAX_LISTENERS = 250
+    }
+
+    private val subscribers = ConcurrentHashMap<T, Unit>()
+
+    override fun subscribe(listener: T): Result<StreamSubscription> = runCatching {
+        if (subscribers.size >= maxSubscriptions) {
+            logger.e {
+                """
+                |[subscribe] Failed, too many subscribers (size: ${subscribers.size}, max: ${maxSubscriptions})
+                | - The default MAX_LISTENERS is 250. This limit is set to avoid mistakes and "loop" subscriptions.
+                | - If you intentionally need to go over 250 listeners, supply this in the configuration.
+                """".trimMargin()
+            }
+            throw IllegalStateException("Max listeners reached, unsubscribe some listeners.")
+        }
+        subscribers[listener] = Unit
+        object : StreamSubscription {
+            override fun cancel() {
+                subscribers.remove(listener)
+            }
+        }
+    }
+
+    override fun clear(): Result<Unit> = runCatching {
+        subscribers.clear()
+        logger.v { "[clear] Cleared all subscribers" }
+    }
+
+    override fun forEach(block: (T) -> Unit) = runCatching {
+        subscribers.keys.forEach(block)
+    }
+}

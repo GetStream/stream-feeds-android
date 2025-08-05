@@ -1,0 +1,257 @@
+package io.getstream.feeds.android.client.internal.state
+
+import io.getstream.feeds.android.client.api.model.CommentData
+import io.getstream.feeds.android.client.api.model.FeedsReactionData
+import io.getstream.feeds.android.client.api.model.PaginationData
+import io.getstream.feeds.android.client.api.model.PaginationResult
+import io.getstream.feeds.android.client.api.model.ThreadedCommentData
+import io.getstream.feeds.android.client.api.model.addReaction
+import io.getstream.feeds.android.client.api.model.addReply
+import io.getstream.feeds.android.client.api.model.removeReaction
+import io.getstream.feeds.android.client.api.model.setCommentData
+import io.getstream.feeds.android.client.api.state.CommentReplyListState
+import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+
+/**
+ * An observable object representing the current state of a comment's reply list.
+ *
+ * This class manages the state of replies for a specific comment, including
+ * the list of replies, pagination information, and real-time updates from
+ * WebSocket events. It automatically handles reply updates and reaction changes.
+ *
+ * @property query The query configuration used to fetch replies.
+ * @property currentUserId The ID of the current user, used for reaction management.
+ */
+internal class CommentReplyListStateImpl(
+    override val query: CommentRepliesQuery,
+    private val currentUserId: String,
+): CommentReplyListMutableState {
+
+    private val _replies: MutableStateFlow<List<ThreadedCommentData>> = MutableStateFlow(emptyList())
+
+    private var _pagination: PaginationData? = null
+
+    override val replies: StateFlow<List<ThreadedCommentData>>
+        get() = _replies
+
+    override val pagination: PaginationData?
+        get() = _pagination
+
+    override fun onQueryMoreReplies(result: PaginationResult<ThreadedCommentData>) {
+        _pagination = result.pagination
+        // Merge the new replies with the existing ones (keeping the sort order)
+        _replies.value = _replies.value + result.models
+    }
+
+    override fun onCommentAdded(comment: ThreadedCommentData) {
+        if (comment.parentId == null) {
+            // Comment is not a reply, ignore it
+            return
+        }
+        _replies.value = _replies.value.map {
+            addNestedReply(it, comment)
+        }
+    }
+
+    override fun onCommentRemoved(commentId: String) {
+        val filteredTopLevel = _replies.value.filter { it.id != commentId }
+        if (filteredTopLevel.size != _replies.value.size) {
+            // A top-level comment was removed, update the state
+            _replies.value = filteredTopLevel
+        } else {
+            // It might be a nested reply, search and remove recursively
+            _replies.value = _replies.value.map { parent ->
+                removeNestedReply(parent, commentId)
+            }
+        }
+    }
+
+    override fun onCommentUpdated(comment: CommentData) {
+        _replies.value = _replies.value.map { parent ->
+            updateNestedReply(parent, comment)
+        }
+    }
+
+    override fun onCommentReactionAdded(
+        commentId: String,
+        reaction: FeedsReactionData
+    ) {
+        _replies.value = _replies.value.map { parent ->
+            addNestedReplyReaction(parent, commentId, reaction)
+        }
+    }
+
+    override fun onCommentReactionRemoved(
+        commentId: String,
+        reaction: FeedsReactionData
+    ) {
+        _replies.value = _replies.value.map { parent ->
+            removeNestedReplyReaction(parent, commentId, reaction)
+        }
+    }
+
+    private fun addNestedReply(
+        parent: ThreadedCommentData,
+        reply: ThreadedCommentData
+    ): ThreadedCommentData {
+        // If this comment is the parent, add the reply directly
+        if (parent.id == reply.parentId) {
+            return parent.addReply(reply)
+        }
+        // If the parent has no replies, return it unchanged
+        if (parent.replies.isNullOrEmpty()) {
+            return parent
+        }
+        // Otherwise, recursively search for the parent in the replies
+        return parent.copy(
+            replies = parent.replies.map { child ->
+                addNestedReply(child, reply)
+            }
+        )
+    }
+
+    private fun removeNestedReply(
+        comment: ThreadedCommentData,
+        commentIdToRemove: String
+    ): ThreadedCommentData {
+        // If this comment has no replies, nothing to remove
+        if (comment.replies.isNullOrEmpty()) {
+            return comment
+        }
+        // Check if the comment to remove is a direct reply
+        val filteredReplies = comment.replies.filter { it.id != commentIdToRemove }
+        if (filteredReplies.size != comment.replies.size) {
+            // Found and removed a direct child, update reply count
+            return comment.copy(
+                replies = filteredReplies,
+                replyCount = comment.replyCount - 1
+            )
+        }
+        // If not found, recursively check each reply
+        return comment.copy(
+            replies = comment.replies.map { child ->
+                removeNestedReply(child, commentIdToRemove)
+            }
+        )
+    }
+
+    private fun updateNestedReply(
+        parent: ThreadedCommentData,
+        updatedComment: CommentData
+    ): ThreadedCommentData {
+        // If this comment is the parent, update it directly
+        if (parent.id == updatedComment.id) {
+            return parent.setCommentData(updatedComment)
+        }
+        // If the parent has no replies, return it unchanged
+        if (parent.replies.isNullOrEmpty()) {
+            return parent
+        }
+        // Otherwise, recursively search for the comment to update in the replies
+        return parent.copy(
+            replies = parent.replies.map { child ->
+                updateNestedReply(child, updatedComment)
+            }
+        )
+    }
+
+    private fun addNestedReplyReaction(
+        parent: ThreadedCommentData,
+        commentId: String,
+        reaction: FeedsReactionData
+    ): ThreadedCommentData {
+        // If this comment is the parent, add the reaction directly
+        if (parent.id == commentId) {
+            return parent.addReaction(reaction, currentUserId)
+        }
+        // If the parent has no replies, return it unchanged
+        if (parent.replies.isNullOrEmpty()) {
+            return parent
+        }
+        // Otherwise, recursively search for the comment in the replies
+        return parent.copy(
+            replies = parent.replies.map { child ->
+                addNestedReplyReaction(child, commentId, reaction)
+            }
+        )
+    }
+
+    private fun removeNestedReplyReaction(
+        parent: ThreadedCommentData,
+        commentId: String,
+        reaction: FeedsReactionData
+    ): ThreadedCommentData {
+        // If this comment is the parent, remove the reaction directly
+        if (parent.id == commentId) {
+            return parent.removeReaction(reaction, currentUserId)
+        }
+        // If the parent has no replies, return it unchanged
+        if (parent.replies.isNullOrEmpty()) {
+            return parent
+        }
+        // Otherwise, recursively search for the comment in the replies
+        return parent.copy(
+            replies = parent.replies.map { child ->
+                removeNestedReplyReaction(child, commentId, reaction)
+            }
+        )
+    }
+}
+
+/**
+ * A mutable state interface for managing the state of a comment reply list.
+ */
+internal interface CommentReplyListMutableState : CommentReplyListState,
+    CommentReplyListStateUpdates
+
+/**
+ * An interface that defines the methods for handling updates to the state of a comment reply list.
+ */
+internal interface CommentReplyListStateUpdates {
+
+    /**
+     * Handles the result of a query for replies to a comment.
+     *
+     * @param result The pagination result containing the replies to the comment.
+     */
+    fun onQueryMoreReplies(result: PaginationResult<ThreadedCommentData>)
+
+    /**
+     * Handles the addition of a new comment reply.
+     *
+     * @param comment The comment data for the newly added reply.
+     */
+    fun onCommentAdded(comment: ThreadedCommentData)
+
+    /**
+     * Handles the removal of a comment reply.
+     *
+     * @param commentId The ID of the comment that was removed.
+     */
+    fun onCommentRemoved(commentId: String)
+
+    /**
+     * Handles the update of an existing comment reply.
+     *
+     * @param comment The updated comment data for the reply.
+     */
+    fun onCommentUpdated(comment: CommentData)
+
+    /**
+     * Handles the addition of a reaction to a comment reply.
+     *
+     * @param commentId The ID of the comment that received the reaction.
+     * @param reaction The reaction data that was added to the comment.
+     */
+    fun onCommentReactionAdded(commentId: String, reaction: FeedsReactionData)
+
+    /**
+     * Handles the removal of a reaction from a comment reply.
+     *
+     * @param commentId The ID of the comment that had the reaction removed.
+     * @param reaction The reaction data that was removed from the comment.
+     */
+    fun onCommentReactionRemoved(commentId: String, reaction: FeedsReactionData)
+}

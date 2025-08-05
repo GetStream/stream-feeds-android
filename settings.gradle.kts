@@ -20,5 +20,8 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "stream-feeds-android"
-include(":app")
- 
+include(":stream-feeds-android-sample")
+include(":stream-feeds-android-client")
+include(":stream-feeds-android-core")
+include(":stream-annotations")
+include(":stream-android-core")
