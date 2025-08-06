@@ -3,6 +3,7 @@ package io.getstream.feeds.android.client.api.state.query
 import io.getstream.android.core.query.Filter
 import io.getstream.android.core.query.toRequest
 import io.getstream.feeds.android.core.generated.models.QueryCommentsRequest
+import java.util.Date
 
 /**
  * A query for retrieving comments with filtering, sorting, and pagination options.
@@ -103,4 +104,23 @@ internal fun CommentsSort.toRequest(): QueryCommentsRequest.Sort = when (this) {
     CommentsSort.First -> QueryCommentsRequest.Sort.First
     CommentsSort.Last -> QueryCommentsRequest.Sort.Last
     CommentsSort.Top -> QueryCommentsRequest.Sort.Top
+}
+
+internal interface CommentsSortDataFields {
+    val createdAt: Date
+    val confidenceScore: Float
+    val controversyScore: Float?
+    val score: Int
+}
+
+internal fun CommentsSort?.toComparator(): Comparator<CommentsSortDataFields> = when (this) {
+    CommentsSort.Top -> compareByDescending(CommentsSortDataFields::score)
+        .thenByDescending(CommentsSortDataFields::createdAt)
+
+    CommentsSort.Best -> compareByDescending(CommentsSortDataFields::confidenceScore)
+        .thenByDescending(CommentsSortDataFields::createdAt)
+
+    CommentsSort.Controversial -> compareByDescending { it.controversyScore ?: -1f }
+    CommentsSort.First -> compareBy(CommentsSortDataFields::createdAt)
+    CommentsSort.Last, null -> compareByDescending(CommentsSortDataFields::createdAt)
 }

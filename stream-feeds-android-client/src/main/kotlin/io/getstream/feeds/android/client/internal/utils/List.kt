@@ -45,7 +45,7 @@ internal fun <T> List<T>.upsert(element: T, idSelector: (T) -> String): List<T> 
  * @return A new immutable list containing all original elements plus the inserted element
  *         in the correct sorted position.
  */
-internal fun <T> MutableList<T>.insertSorted(element: T, comparator: Comparator<T>): List<T> {
+internal fun <T> MutableList<T>.insertSorted(element: T, comparator: Comparator<in T>): List<T> {
     val insertionPoint = this.binarySearch(element, comparator)
     val index = if (insertionPoint >= 0) {
         insertionPoint + 1
@@ -103,23 +103,24 @@ internal fun <T> MutableList<T>.insertSorted(element: T, sort: List<Sort<T>>): L
 internal fun <T> List<T>.upsertSorted(
     element: T,
     idSelector: (T) -> String,
-    comparator: Comparator<T>
+    comparator: Comparator<in T>
 ): List<T> {
     val elementId = idSelector(element)
     val existingIndex = this.indexOfFirst { idSelector(it) == elementId }
-    
+
     return if (existingIndex >= 0) {
         // Element exists - check if sort order has changed
         val existingElement = this[existingIndex]
         val sortComparison = comparator.compare(existingElement, element)
-        
+
         if (sortComparison == 0) {
             // Sort order hasn't changed - replace in place to preserve position
             this.toMutableList().apply { this[existingIndex] = element }.toImmutableList()
         } else {
             // Sort order has changed - remove and insert at correct position
-            val listWithoutExisting = this.filterNot { idSelector(it) == elementId }
-            listWithoutExisting.toMutableList().insertSorted(element, comparator)
+            this.toMutableList()
+                .apply { removeAt(existingIndex) }
+                .insertSorted(element, comparator)
         }
     } else {
         // Element doesn't exist - insert at correct position
@@ -180,30 +181,31 @@ internal fun <T> List<T>.upsertSorted(
 internal fun <T> List<T>.mergeSorted(
     other: List<T>,
     idSelector: (T) -> String,
-    comparator: Comparator<T>,
+    comparator: Comparator<in T>,
 ): List<T> {
     // Create a set of IDs from the other list for quick duplicate detection
     val otherIds = other.mapTo(mutableSetOf(), idSelector)
-    
+
     // Filter this list to exclude elements that exist in other (by ID)
     val filteredThis = this.filterNot { idSelector(it) in otherIds }
-    
+
     // Now merge the filtered list with other using standard merge algorithm
     val result = mutableListOf<T>()
     var i = 0
     var j = 0
-    
+
     while (i < filteredThis.size && j < other.size) {
         val thisElement = filteredThis[i]
         val otherElement = other[j]
         val comparison = comparator.compare(thisElement, otherElement)
-        
+
         when {
             comparison <= 0 -> {
                 // thisElement comes before or is equal to otherElement
                 result.add(thisElement)
                 i++
             }
+
             else -> {
                 // otherElement comes before thisElement
                 result.add(otherElement)
@@ -211,24 +213,24 @@ internal fun <T> List<T>.mergeSorted(
             }
         }
     }
-    
+
     // Add remaining elements from filteredThis
     while (i < filteredThis.size) {
         result.add(filteredThis[i])
         i++
     }
-    
+
     // Add remaining elements from other
     while (j < other.size) {
         result.add(other[j])
         j++
     }
-    
+
     return result.toImmutableList()
 }
 
 /**
- * Merges two sorted arrays while maintaining the sort order and handling duplicates using Sort 
+ * Merges two sorted arrays while maintaining the sort order and handling duplicates using Sort
  * configurations.
  *
  * This function combines two pre-sorted lists into a single sorted list while resolving
@@ -254,3 +256,56 @@ internal fun <T> List<T>.mergeSorted(
     idSelector: (T) -> String,
     sort: List<Sort<T>>,
 ): List<T> = mergeSorted(other, idSelector, CompositeComparator(sort))
+
+/**
+ * Updates an existing element in a tree-like list, and optionally sorts the result.
+ *
+ * This function traverses the tree in DFS order, finds the first element for which [matcher]
+ * returns true and replaces it with the updated element provided by the [updateElement] function.
+ * If no matching element is found, the list remains unchanged.
+ * If a [comparator] is provided, the updated list will be sorted according to it.
+ *
+ * @param T The type of elements in the list.
+ * @param matcher A function that determines whether an element should be updated.
+ * @param childrenSelector A function that extracts the children of an element.
+ *                         This is used to recursively update nested elements.
+ * @param updateElement A function that takes the existing element and returns the updated element.
+ * @param updateChildren A function that takes the existing element and the updated children,
+ *                       and returns the updated element with the new children.
+ * @param comparator The comparator used to sort the list after the update.
+ * @return A list containing the updated element. If an existing element was found, it will be
+ *         replaced and repositioned; otherwise, the list remains unchanged.
+ */
+internal fun <T> List<T>.treeUpdateFirst(
+    matcher: (T) -> Boolean,
+    childrenSelector: (T) -> List<T>,
+    updateElement: (T) -> T,
+    updateChildren: (T, List<T>) -> T,
+    comparator: Comparator<in T>? = null,
+): List<T> {
+    if (isEmpty()) {
+        return this
+    }
+
+    val index = indexOfFirst(matcher)
+
+    return if (index >= 0) {
+        toMutableList()
+            .apply {
+                this[index] = updateElement(this[index])
+                comparator?.let(::sortWith)
+            }
+            .toImmutableList()
+    } else {
+        map { item ->
+            val newChildren = childrenSelector(item).treeUpdateFirst(
+                matcher = matcher,
+                updateElement = updateElement,
+                comparator = comparator,
+                childrenSelector = childrenSelector,
+                updateChildren = updateChildren
+            )
+            updateChildren(item, newChildren)
+        }
+    }
+}

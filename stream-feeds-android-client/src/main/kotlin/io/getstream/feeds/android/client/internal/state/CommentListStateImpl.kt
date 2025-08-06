@@ -7,9 +7,13 @@ import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.state.CommentListState
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentsSort
+import io.getstream.feeds.android.client.api.state.query.toComparator
+import io.getstream.feeds.android.client.internal.utils.mergeSorted
+import io.getstream.feeds.android.client.internal.utils.treeUpdateFirst
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * An observable state object that manages the current state of a comment list.
@@ -29,7 +33,7 @@ import kotlinx.coroutines.flow.asStateFlow
  */
 internal class CommentListStateImpl(
     override val query: CommentsQuery,
-): CommentListMutableState {
+) : CommentListMutableState {
 
     private val _comments: MutableStateFlow<List<CommentData>> = MutableStateFlow(emptyList())
 
@@ -57,23 +61,26 @@ internal class CommentListStateImpl(
         this.filter = filter
         this.sort = sort
         // Merge the new comments with the existing ones (keeping the sort order)
-        _comments.value = _comments.value + result.models
+        _comments.update { current ->
+            current.mergeSorted(result.models, CommentData::id, sort.toComparator())
+        }
     }
 
     override fun onCommentUpdated(comment: CommentData) {
-        _comments.value = _comments.value.map { existingComment ->
-            if (existingComment.id == comment.id) {
-                // Update the existing comment with the new data
-                comment
-            } else {
-                existingComment
-            }
+        _comments.update { current ->
+            current.treeUpdateFirst(
+                matcher = { it.id == comment.id },
+                childrenSelector = { it.replies.orEmpty() },
+                updateElement = { comment },
+                updateChildren = { parent, children -> parent.copy(replies = children) },
+                comparator = sort.toComparator(),
+            )
         }
     }
 }
 
 
-internal interface CommentListMutableState: CommentListState, CommentListStateUpdates
+internal interface CommentListMutableState : CommentListState, CommentListStateUpdates
 
 /**
  * Interface defining the methods for updating the comment list state.

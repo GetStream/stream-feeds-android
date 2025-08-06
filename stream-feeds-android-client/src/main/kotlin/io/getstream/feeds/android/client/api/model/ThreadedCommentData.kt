@@ -1,5 +1,6 @@
 package io.getstream.feeds.android.client.api.model
 
+import io.getstream.feeds.android.client.api.state.query.CommentsSortDataFields
 import io.getstream.feeds.android.client.internal.model.mapping.toDate
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.core.generated.models.Attachment
@@ -78,9 +79,9 @@ import java.util.Date
  */
 public data class ThreadedCommentData(
     public val attachments: List<Attachment>?, // TODO: Make an Attachment domain model
-    public val confidenceScore: Float,
-    public val controversyScore: Float?,
-    public val createdAt: Date,
+    public override val confidenceScore: Float,
+    public override val controversyScore: Float?,
+    public override val createdAt: Date,
     public val custom: Map<String, Any?>?,
     public val deletedAt: Date?,
     public val downvoteCount: Int,
@@ -97,13 +98,13 @@ public data class ThreadedCommentData(
     public val reactionGroups: Map<String, ReactionGroupData>,
     public val replies: List<ThreadedCommentData>?,
     public val replyCount: Int,
-    public val score: Int,
+    public override val score: Int,
     public val status: String,
     public val text: String?,
     public val updatedAt: Date,
     public val upvoteCount: Int,
     public val user: UserData,
-) {
+) : CommentsSortDataFields {
 
     /**
      * Creates a new instance of [ThreadedCommentData] from a [CommentData] object.
