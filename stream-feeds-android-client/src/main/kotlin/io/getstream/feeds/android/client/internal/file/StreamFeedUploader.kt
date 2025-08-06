@@ -6,12 +6,15 @@ import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.file.UploadedFile
 import io.getstream.feeds.android.client.api.file.isImage
 import io.getstream.feeds.android.client.internal.http.ProgressRequestBody
+import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 
 internal class StreamFeedUploader(
-    private val cdnApi: CdnApi
+    private val cdnApi: CdnApi,
+    private val getMediaType: File.() -> MediaType = File::getMediaType,
 ) : FeedUploader {
     override suspend fun upload(
         payload: FeedUploadPayload,
