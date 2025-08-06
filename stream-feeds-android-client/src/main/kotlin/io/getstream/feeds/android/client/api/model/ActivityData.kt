@@ -186,9 +186,14 @@ internal fun ActivityResponse.Visibility.toModel(): ActivityDataVisibility = whe
  */
 internal fun ActivityData.addComment(comment: CommentData): ActivityData {
     val updatedComments = this.comments.upsert(comment, CommentData::id)
+    val updatedCommentCount = if (updatedComments.size > this.comments.size) {
+        this.commentCount + 1
+    } else {
+        this.commentCount
+    }
     return this.copy(
         comments = updatedComments,
-        commentCount = this.commentCount + 1,
+        commentCount = updatedCommentCount,
     )
 }
 

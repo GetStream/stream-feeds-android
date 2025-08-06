@@ -1,5 +1,6 @@
 package io.getstream.feeds.android.client.internal.repository
 
+import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.core.generated.apis.ApiService
@@ -15,10 +16,8 @@ internal class AppRepositoryImpl(private val api: ApiService) : AppRepository {
 
     private var cachedAppData: AppData? = null
 
-    override suspend fun getApp(): Result<AppData> = runCatching {
-        if (cachedAppData != null) {
-            return Result.success(cachedAppData!!)
-        }
+    override suspend fun getApp(): Result<AppData> = runSafely {
+        cachedAppData?.let { return Result.success(it) }
         api.getApp().app.toModel()
             .also { cachedAppData = it }
     }
