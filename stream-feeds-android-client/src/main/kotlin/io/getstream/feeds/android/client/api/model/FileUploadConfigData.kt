@@ -1,5 +1,7 @@
 package io.getstream.feeds.android.client.api.model
 
+import io.getstream.feeds.android.core.generated.models.FileUploadConfig
+
 /**
  * Data class representing file upload configuration.
  *
@@ -15,5 +17,16 @@ public data class FileUploadConfigData(
     val blockedFileExtensions: List<String>,
     val blockedMimeTypes: List<String>,
     val sizeLimit: Int
+)
+
+/**
+ * Converts [FileUploadConfig] to [FileUploadConfigData].
+ */
+internal fun FileUploadConfig.toModel(): FileUploadConfigData = FileUploadConfigData(
+    allowedFileExtensions = allowedFileExtensions,
+    allowedMimeTypes = allowedMimeTypes,
+    blockedFileExtensions = blockedFileExtensions,
+    blockedMimeTypes = blockedMimeTypes,
+    sizeLimit = sizeLimit
 )
 

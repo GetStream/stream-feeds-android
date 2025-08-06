@@ -1,7 +1,6 @@
 package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.client.internal.model.mapping.toDate
-import io.getstream.feeds.android.core.generated.models.PollVoteResponse
 import io.getstream.feeds.android.core.generated.models.PollVoteResponseData
 import java.util.Date
 

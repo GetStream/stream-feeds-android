@@ -62,6 +62,8 @@ import io.getstream.feeds.android.client.internal.http.interceptor.ApiErrorInter
 import io.getstream.feeds.android.client.internal.log.provideLogger
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepositoryImpl
+import io.getstream.feeds.android.client.internal.repository.AppRepository
+import io.getstream.feeds.android.client.internal.repository.AppRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
@@ -226,6 +228,7 @@ internal fun createFeedsClient(
         .build()
     val feedsApi: ApiService = retrofit.create(ApiService::class.java)
     val activitiesRepository = ActivitiesRepositoryImpl(feedsApi)
+    val appRepository = AppRepositoryImpl(feedsApi)
     val bookmarksRepository = BookmarksRepositoryImpl(feedsApi)
     val commentsRepository = CommentsRepositoryImpl(feedsApi)
     val feedsRepository = FeedsRepositoryImpl(feedsApi)
@@ -242,6 +245,7 @@ internal fun createFeedsClient(
         socket = socket,
         connectionRecoveryHandler = connectionRecoveryHandler,
         activitiesRepository = activitiesRepository,
+        appRepository = appRepository,
         bookmarksRepository = bookmarksRepository,
         commentsRepository = commentsRepository,
         feedsRepository = feedsRepository,
@@ -260,6 +264,7 @@ internal class FeedsClientImpl(
     private val socket: FeedsSocket,
     private val connectionRecoveryHandler: ConnectionRecoveryHandler,
     private val activitiesRepository: ActivitiesRepository,
+    private val appRepository: AppRepository,
     private val bookmarksRepository: BookmarksRepository,
     private val commentsRepository: CommentsRepository,
     private val feedsRepository: FeedsRepository,
@@ -448,7 +453,7 @@ internal class FeedsClientImpl(
         )
 
     override suspend fun getApp(): Result<AppData> {
-        TODO("Not yet implemented")
+        return appRepository.getApp()
     }
 
     override suspend fun deleteFile(url: String): Result<Unit> {

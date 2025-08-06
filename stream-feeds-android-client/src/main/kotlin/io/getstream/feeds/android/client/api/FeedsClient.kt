@@ -333,9 +333,14 @@ public interface FeedsClient {
      * The returned `AppData` contains:
      * - **Async URL Enrichment**: Whether automatic URL enrichment is enabled
      * - **Auto Translation**: Whether automatic translation is enabled
-     * - **File Upload Config**: Configuration for file uploads including allowed extensions, MIME types, and size limits
-     * - **Image Upload Config**: Configuration for image uploads including allowed extensions, MIME types, and size limits
+     * - **File Upload Config**: Configuration for file uploads including allowed extensions,
+     * MIME types, and size limits
+     * - **Image Upload Config**: Configuration for image uploads including allowed extensions,
+     * MIME types, and size limits
      * - **Application Name**: The name of the application
+     *
+     * **Important**: The result is cached after the first successful request to avoid unnecessary
+     * API calls.
      *
      * @return A [Result] containing the [AppData] if successful, or an error if the request fails.
      */
