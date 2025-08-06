@@ -202,7 +202,7 @@ internal fun createFeedsClient(
     val authInterceptor = AuthInterceptor(
         tokenManager = tokenManager,
         jsonParser = jsonParser,
-        authType = if (user.type == UserAuthType.ANONYMOUS) "anonymous" else "jwt"
+        authType = user.type.rawValue
     )
     val connectionIdInterceptor = ConnectionIdInterceptor {
         val connectionState = clientState.connectionState
