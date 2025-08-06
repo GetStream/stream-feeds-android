@@ -10,6 +10,7 @@ import io.getstream.feeds.android.client.api.state.query.PollVotesSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * An observable state object that manages the current state of a poll vote list.
@@ -31,7 +32,7 @@ internal class PollVoteListStateImpl(
         get() = query.sort ?: PollVotesSort.Default
 
     override val votes: StateFlow<List<PollVoteData>>
-        get() = _votes
+        get() = _votes.asStateFlow()
 
     override val pagination: PaginationData?
         get() = _pagination

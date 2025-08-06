@@ -14,6 +14,7 @@ import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.api.state.ActivityState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * An observable object representing the current state of an activity.
@@ -35,13 +36,13 @@ internal class ActivityStateImpl(
     private val _poll: MutableStateFlow<PollData?> = MutableStateFlow(null)
 
     override val activity: StateFlow<ActivityData?>
-        get() = _activity
+        get() = _activity.asStateFlow()
 
     override val comments: StateFlow<List<ThreadedCommentData>>
         get() = activityCommentListState.comments
 
     override val poll: StateFlow<PollData?>
-        get() = _poll
+        get() = _poll.asStateFlow()
 
     override fun onActivityUpdated(activity: ActivityData) {
         _activity.value = activity

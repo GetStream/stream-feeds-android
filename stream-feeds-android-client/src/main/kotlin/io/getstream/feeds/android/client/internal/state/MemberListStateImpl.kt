@@ -12,6 +12,7 @@ import io.getstream.feeds.android.client.api.state.query.MembersSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * An observable state object that manages the current state of a member list.
@@ -35,7 +36,7 @@ internal class MemberListStateImpl(
         get() = queryConfig?.sort ?: MembersSort.Default
 
     override val members: StateFlow<List<FeedMemberData>>
-        get() = _members
+        get() = _members.asStateFlow()
 
     override val pagination: PaginationData?
         get() = _pagination

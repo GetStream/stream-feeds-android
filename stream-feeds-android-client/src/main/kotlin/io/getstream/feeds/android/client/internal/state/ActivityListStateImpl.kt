@@ -13,13 +13,14 @@ import io.getstream.feeds.android.client.api.model.addReaction
 import io.getstream.feeds.android.client.api.model.deleteBookmark
 import io.getstream.feeds.android.client.api.model.removeComment
 import io.getstream.feeds.android.client.api.model.removeReaction
+import io.getstream.feeds.android.client.api.state.ActivityListState
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
-import io.getstream.feeds.android.client.api.state.ActivityListState
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * An observable state object that manages the activities list and handles real-time updates.
@@ -47,7 +48,7 @@ internal class ActivityListStateImpl(
         get() = query.sort ?: ActivitiesSort.Default
 
     override val activities: StateFlow<List<ActivityData>>
-        get() = _activities
+        get() = _activities.asStateFlow()
 
     override val pagination: PaginationData?
         get() = _pagination

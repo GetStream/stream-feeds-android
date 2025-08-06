@@ -11,6 +11,7 @@ import io.getstream.feeds.android.client.api.state.Feed
 import io.getstream.feeds.android.client.api.state.FeedState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
@@ -22,7 +23,7 @@ class ProfileViewModel(
     public val state: FeedState = feed.state
 
     private val _followSuggestions: MutableStateFlow<List<FeedData>> = MutableStateFlow(emptyList())
-    public val followSuggestions: StateFlow<List<FeedData>> = _followSuggestions
+    public val followSuggestions: StateFlow<List<FeedData>> = _followSuggestions.asStateFlow()
 
     init {
         viewModelScope.launch {
