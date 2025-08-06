@@ -1,5 +1,6 @@
 package io.getstream.feeds.android.client.internal.socket.common.debounce
 
+import io.getstream.android.core.result.runSafely
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -34,7 +35,7 @@ internal class DebounceProcessor<T>(
      * Starts the debounce processor.
      */
     @OptIn(ObsoleteCoroutinesApi::class)
-    fun start() = runCatching {
+    fun start() = runSafely {
         actor = scope.actor(capacity = Channel.UNLIMITED) {
             batchingLoop()
         }
@@ -44,7 +45,7 @@ internal class DebounceProcessor<T>(
      * Stops the debounce processor.
      */
     @OptIn(DelicateCoroutinesApi::class)
-    fun stop() = runCatching {
+    fun stop() = runSafely {
         if (actor?.isClosedForSend == false) {
             actor?.close()
         }

@@ -1,5 +1,6 @@
 package io.getstream.feeds.android.client.internal.socket.common.factory
 
+import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.internal.log.provideLogger
 import io.getstream.log.TaggedLogger
 import okhttp3.OkHttpClient
@@ -20,7 +21,7 @@ internal class StreamWebSocketFactory(
     internal fun createSocket(
         config: StreamSocketConfig,
         listener: WebSocketListener
-    ): Result<WebSocket> = runCatching {
+    ): Result<WebSocket> = runSafely {
         logger.v { "[createSocket] config: $config" }
         val request = buildRequest(config)
         okHttpClient.newWebSocket(request, listener)

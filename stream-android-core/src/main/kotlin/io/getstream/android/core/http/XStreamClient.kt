@@ -2,6 +2,7 @@ package io.getstream.android.core.http
 
 import android.content.Context
 import android.os.Build
+import io.getstream.android.core.result.runSafely
 import io.getstream.kotlin.base.annotation.marker.StreamInternalApi
 
 /**
@@ -96,9 +97,9 @@ public class XStreamClient private constructor(public val value: String) {
          * @return The version name (e.g., "1.2.3") or `"nameNotFound"` if retrieval fails.
          */
         private fun getAppVersion(context: Context): String {
-            return runCatching {
+            return runSafely {
                 context.packageManager
-                    ?.getPackageInfo(context.packageName ?: return@runCatching null, 0)
+                    ?.getPackageInfo(context.packageName ?: return@runSafely null, 0)
                     ?.versionName
             }.getOrNull() ?: "nameNotFound"
         }

@@ -1,6 +1,7 @@
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.android.core.query.sortedWith
+import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
@@ -32,7 +33,7 @@ import io.getstream.feeds.android.core.generated.models.UpdateFeedRequest
  */
 internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepository {
 
-    override suspend fun getOrCreateFeed(query: FeedQuery): Result<GetOrCreateInfo> = runCatching {
+    override suspend fun getOrCreateFeed(query: FeedQuery): Result<GetOrCreateInfo> = runSafely {
         val fid = query.fid
         val request = query.toRequest()
         val response = api.getOrCreateFeed(
@@ -68,7 +69,7 @@ internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepositor
         )
     }
 
-    override suspend fun stopWatching(groupId: String, feedId: String): Result<Unit> = runCatching {
+    override suspend fun stopWatching(groupId: String, feedId: String): Result<Unit> = runSafely {
         api.stopWatchingFeed(feedGroupId = groupId, feedId = feedId)
     }
 
@@ -76,7 +77,7 @@ internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepositor
         feedGroupId: String,
         feedId: String,
         hardDelete: Boolean
-    ): Result<Unit> = runCatching {
+    ): Result<Unit> = runSafely {
         api.deleteFeed(feedGroupId = feedGroupId, feedId = feedId, hardDelete = hardDelete)
     }
 
@@ -84,7 +85,7 @@ internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepositor
         feedGroupId: String,
         feedId: String,
         request: UpdateFeedRequest
-    ): Result<FeedData> = runCatching {
+    ): Result<FeedData> = runSafely {
         api.updateFeed(
             feedGroupId = feedGroupId,
             feedId = feedId,
@@ -93,7 +94,7 @@ internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepositor
     }
 
     override suspend fun queryFeeds(query: FeedsQuery): Result<PaginationResult<FeedData>> =
-        runCatching {
+        runSafely {
             val request = query.toRequest()
             val response = api.feedsQueryFeeds(queryFeedsRequest = request)
             val feeds = response.feeds.map { it.toModel() }
@@ -104,7 +105,7 @@ internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepositor
     override suspend fun queryFollowSuggestions(
         feedGroupId: String,
         limit: Int?
-    ): Result<List<FeedData>> = runCatching {
+    ): Result<List<FeedData>> = runSafely {
         api.getFollowSuggestions(feedGroupId = feedGroupId, limit = limit)
             .suggestions
             .map { it.toModel() }
@@ -113,31 +114,31 @@ internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepositor
     override suspend fun queryFollows(
         request: QueryFollowsRequest
     ): Result<PaginationResult<FollowData>> =
-        runCatching {
+        runSafely {
             val response = api.queryFollows(request)
             val follows = response.follows.map { it.toModel() }
             val pagination = PaginationData(next = response.next, previous = response.prev)
             PaginationResult(follows, pagination)
         }
 
-    override suspend fun follow(request: SingleFollowRequest): Result<FollowData> = runCatching {
+    override suspend fun follow(request: SingleFollowRequest): Result<FollowData> = runSafely {
         api.follow(request).follow.toModel()
     }
 
     override suspend fun unfollow(
         source: FeedId,
         target: FeedId
-    ): Result<Unit> = runCatching {
+    ): Result<Unit> = runSafely {
         api.unfollow(source = source.rawValue, target = target.rawValue)
     }
 
     override suspend fun acceptFollow(request: AcceptFollowRequest): Result<FollowData> =
-        runCatching {
+        runSafely {
             api.acceptFollow(request).follow.toModel()
         }
 
     override suspend fun rejectFollow(request: RejectFollowRequest): Result<FollowData> =
-        runCatching {
+        runSafely {
             api.rejectFollow(request).follow.toModel()
         }
 
@@ -145,7 +146,7 @@ internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepositor
         feedGroupId: String,
         feedId: String,
         request: UpdateFeedMembersRequest
-    ): Result<ModelUpdates<FeedMemberData>> = runCatching {
+    ): Result<ModelUpdates<FeedMemberData>> = runSafely {
         val response = api.updateFeedMembers(
             feedGroupId = feedGroupId,
             feedId = feedId,
@@ -160,14 +161,14 @@ internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepositor
     override suspend fun acceptFeedMember(
         feedGroupId: String,
         feedId: String
-    ): Result<FeedMemberData> = runCatching {
+    ): Result<FeedMemberData> = runSafely {
         api.acceptFeedMemberInvite(feedGroupId = feedGroupId, feedId = feedId).member.toModel()
     }
 
     override suspend fun rejectFeedMember(
         feedGroupId: String,
         feedId: String
-    ): Result<FeedMemberData> = runCatching {
+    ): Result<FeedMemberData> = runSafely {
         api.rejectFeedMemberInvite(feedGroupId = feedGroupId, feedId = feedId).member.toModel()
     }
 
@@ -175,7 +176,7 @@ internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepositor
         feedGroupId: String,
         feedId: String,
         request: QueryFeedMembersRequest
-    ): Result<PaginationResult<FeedMemberData>> = runCatching {
+    ): Result<PaginationResult<FeedMemberData>> = runSafely {
         val response = api.queryFeedMembers(
             feedGroupId = feedGroupId,
             feedId = feedId,

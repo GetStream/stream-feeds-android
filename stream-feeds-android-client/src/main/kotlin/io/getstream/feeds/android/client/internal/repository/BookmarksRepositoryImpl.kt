@@ -1,5 +1,6 @@
 package io.getstream.feeds.android.client.internal.repository
 
+import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.BookmarkFolderData
 import io.getstream.feeds.android.client.api.model.PaginationData
@@ -23,7 +24,7 @@ internal class BookmarksRepositoryImpl(private val api: ApiService) : BookmarksR
 
     override suspend fun queryBookmarks(
         query: BookmarksQuery
-    ): Result<PaginationResult<BookmarkData>> = runCatching {
+    ): Result<PaginationResult<BookmarkData>> = runSafely {
         val response = api.queryBookmarks(query.toRequest())
         PaginationResult(
             models = response.bookmarks.map { it.toModel() },
@@ -34,27 +35,27 @@ internal class BookmarksRepositoryImpl(private val api: ApiService) : BookmarksR
     override suspend fun addBookmark(
         activityId: String,
         request: AddBookmarkRequest
-    ): Result<BookmarkData> = runCatching {
+    ): Result<BookmarkData> = runSafely {
         api.addBookmark(activityId, request).bookmark.toModel()
     }
 
     override suspend fun deleteBookmark(
         activityId: String,
         folderId: String?
-    ): Result<BookmarkData> = runCatching {
+    ): Result<BookmarkData> = runSafely {
         api.deleteBookmark(activityId, folderId).bookmark.toModel()
     }
 
     override suspend fun updateBookmark(
         activityId: String,
         request: UpdateBookmarkRequest
-    ): Result<BookmarkData> = runCatching {
+    ): Result<BookmarkData> = runSafely {
         api.updateBookmark(activityId, request).bookmark.toModel()
     }
 
     override suspend fun queryBookmarkFolders(
         query: BookmarkFoldersQuery
-    ): Result<PaginationResult<BookmarkFolderData>> = runCatching {
+    ): Result<PaginationResult<BookmarkFolderData>> = runSafely {
         val response = api.queryBookmarkFolders(query.toRequest())
         PaginationResult(
             models = response.bookmarkFolders.map { it.toModel() },

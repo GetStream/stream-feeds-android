@@ -1,5 +1,6 @@
 package io.getstream.feeds.android.client.internal.repository
 
+import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.PollData
@@ -26,44 +27,44 @@ import io.getstream.feeds.android.core.generated.models.UpdatePollRequest
  */
 internal class PollsRepositoryImpl(private val api: ApiService) : PollsRepository {
 
-    override suspend fun closePoll(pollId: String): Result<PollData> = runCatching {
+    override suspend fun closePoll(pollId: String): Result<PollData> = runSafely {
         val request = UpdatePollPartialRequest(set = mapOf("is_closed" to true))
         api.updatePollPartial(pollId, request).poll.toModel()
     }
 
-    override suspend fun createPoll(request: CreatePollRequest): Result<PollData> = runCatching {
+    override suspend fun createPoll(request: CreatePollRequest): Result<PollData> = runSafely {
         api.createPoll(request).poll.toModel()
     }
 
     override suspend fun deletePoll(
         pollId: String,
         userId: String?
-    ): Result<Unit> = runCatching {
+    ): Result<Unit> = runSafely {
         api.deletePoll(pollId = pollId, userId = userId)
     }
 
     override suspend fun getPoll(
         pollId: String,
         userId: String?
-    ): Result<PollData> = runCatching {
+    ): Result<PollData> = runSafely {
         api.getPoll(pollId = pollId, userId = userId).poll.toModel()
     }
 
     override suspend fun updatePollPartial(
         pollId: String,
         request: UpdatePollPartialRequest
-    ): Result<PollData> = runCatching {
+    ): Result<PollData> = runSafely {
         api.updatePollPartial(pollId, request).poll.toModel()
     }
 
-    override suspend fun updatePoll(request: UpdatePollRequest): Result<PollData> = runCatching {
+    override suspend fun updatePoll(request: UpdatePollRequest): Result<PollData> = runSafely {
         api.updatePoll(request).poll.toModel()
     }
 
     override suspend fun createPollOption(
         pollId: String,
         request: CreatePollOptionRequest
-    ): Result<PollOptionData> = runCatching {
+    ): Result<PollOptionData> = runSafely {
         api.createPollOption(pollId, request).pollOption.toModel()
     }
 
@@ -71,7 +72,7 @@ internal class PollsRepositoryImpl(private val api: ApiService) : PollsRepositor
         pollId: String,
         optionId: String,
         userId: String?
-    ): Result<Unit> = runCatching {
+    ): Result<Unit> = runSafely {
         api.deletePollOption(pollId = pollId, optionId = optionId, userId = userId)
     }
 
@@ -79,7 +80,7 @@ internal class PollsRepositoryImpl(private val api: ApiService) : PollsRepositor
         pollId: String,
         optionId: String,
         userId: String?
-    ): Result<PollOptionData> = runCatching {
+    ): Result<PollOptionData> = runSafely {
         api.getPollOption(
             pollId = pollId,
             optionId = optionId,
@@ -90,13 +91,13 @@ internal class PollsRepositoryImpl(private val api: ApiService) : PollsRepositor
     override suspend fun updatePollOption(
         pollId: String,
         request: UpdatePollOptionRequest
-    ): Result<PollOptionData> = runCatching {
+    ): Result<PollOptionData> = runSafely {
         api.updatePollOption(pollId, request).pollOption.toModel()
     }
 
     override suspend fun queryPolls(
         query: PollsQuery,
-    ): Result<PaginationResult<PollData>> = runCatching {
+    ): Result<PaginationResult<PollData>> = runSafely {
         val response = api.queryPolls(
             userId = null,
             queryPollsRequest = query.toRequest(),
@@ -111,7 +112,7 @@ internal class PollsRepositoryImpl(private val api: ApiService) : PollsRepositor
         activityId: String,
         pollId: String,
         request: CastPollVoteRequest
-    ): Result<PollVoteData?> = runCatching {
+    ): Result<PollVoteData?> = runSafely {
         api.castPollVote(
             activityId = activityId,
             pollId = pollId,
@@ -121,7 +122,7 @@ internal class PollsRepositoryImpl(private val api: ApiService) : PollsRepositor
 
     override suspend fun queryPollVotes(
         query: PollVotesQuery,
-    ): Result<PaginationResult<PollVoteData>> = runCatching {
+    ): Result<PaginationResult<PollVoteData>> = runSafely {
         val response = api.queryPollVotes(
             pollId = query.pollId,
             userId = query.userId,
@@ -138,7 +139,7 @@ internal class PollsRepositoryImpl(private val api: ApiService) : PollsRepositor
         pollId: String,
         voteId: String,
         userId: String?
-    ): Result<PollVoteData?> = runCatching {
+    ): Result<PollVoteData?> = runSafely {
         api.deletePollVote(
             activityId = activityId,
             pollId = pollId,

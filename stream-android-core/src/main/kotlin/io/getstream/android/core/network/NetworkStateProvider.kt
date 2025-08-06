@@ -5,6 +5,7 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
+import io.getstream.android.core.result.runSafely
 import io.getstream.kotlin.base.annotation.marker.StreamInternalApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -81,7 +82,7 @@ public class NetworkStateProvider(
      */
     public fun isConnected(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            runCatching {
+            runSafely {
                 connectivityManager.run {
                     getNetworkCapabilities(activeNetwork)?.run {
                         hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&

@@ -1,5 +1,6 @@
 package io.getstream.feeds.android.client.internal.repository
 
+import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
@@ -28,7 +29,7 @@ internal class CommentsRepositoryImpl(private val api: ApiService) : CommentsRep
 
     override suspend fun queryComments(
         query: CommentsQuery,
-    ): Result<PaginationResult<CommentData>> = runCatching {
+    ): Result<PaginationResult<CommentData>> = runSafely {
         val response = api.queryComments(query.toRequest())
         PaginationResult(
             models = response.comments.map { it.toModel() },
@@ -38,7 +39,7 @@ internal class CommentsRepositoryImpl(private val api: ApiService) : CommentsRep
 
     override suspend fun getComments(
         query: ActivityCommentsQuery,
-    ): Result<PaginationResult<ThreadedCommentData>> = runCatching {
+    ): Result<PaginationResult<ThreadedCommentData>> = runSafely {
         val response = api.getComments(
             objectId = query.objectId,
             objectType = query.objectType,
@@ -54,35 +55,35 @@ internal class CommentsRepositoryImpl(private val api: ApiService) : CommentsRep
         )
     }
 
-    override suspend fun addComment(request: AddCommentRequest): Result<CommentData> = runCatching {
+    override suspend fun addComment(request: AddCommentRequest): Result<CommentData> = runSafely {
         api.addComment(request).comment.toModel()
     }
 
     override suspend fun addCommentsBatch(
         request: AddCommentsBatchRequest,
-    ): Result<List<CommentData>> = runCatching {
+    ): Result<List<CommentData>> = runSafely {
         api.addCommentsBatch(request).comments.map { it.toModel() }
     }
 
-    override suspend fun deleteComment(commentId: String): Result<Unit> = runCatching {
+    override suspend fun deleteComment(commentId: String): Result<Unit> = runSafely {
         api.deleteComment(commentId)
     }
 
-    override suspend fun getComment(commentId: String): Result<CommentData> = runCatching {
+    override suspend fun getComment(commentId: String): Result<CommentData> = runSafely {
         api.getComment(commentId).comment.toModel()
     }
 
     override suspend fun updateComment(
         commentId: String,
         request: UpdateCommentRequest,
-    ): Result<CommentData> = runCatching {
+    ): Result<CommentData> = runSafely {
         api.updateComment(commentId, request).comment.toModel()
     }
 
     override suspend fun addCommentReaction(
         commentId: String,
         request: AddCommentReactionRequest,
-    ): Result<Pair<FeedsReactionData, String>> = runCatching {
+    ): Result<Pair<FeedsReactionData, String>> = runSafely {
         val response = api.addCommentReaction(commentId, request)
         Pair(response.reaction.toModel(), response.comment.id)
     }
@@ -90,7 +91,7 @@ internal class CommentsRepositoryImpl(private val api: ApiService) : CommentsRep
     override suspend fun deleteCommentReaction(
         commentId: String,
         type: String,
-    ): Result<Pair<FeedsReactionData, String>> = runCatching {
+    ): Result<Pair<FeedsReactionData, String>> = runSafely {
         val response = api.deleteCommentReaction(commentId = commentId, type = type)
         Pair(response.reaction.toModel(), response.comment.id)
     }
@@ -98,7 +99,7 @@ internal class CommentsRepositoryImpl(private val api: ApiService) : CommentsRep
     override suspend fun queryCommentReactions(
         commentId: String,
         query: CommentReactionsQuery,
-    ): Result<PaginationResult<FeedsReactionData>> = runCatching {
+    ): Result<PaginationResult<FeedsReactionData>> = runSafely {
         val response = api.queryCommentReactions(commentId, query.toRequest())
         PaginationResult(
             models = response.reactions.map { it.toModel() },
@@ -108,7 +109,7 @@ internal class CommentsRepositoryImpl(private val api: ApiService) : CommentsRep
 
     override suspend fun getCommentReplies(
         query: CommentRepliesQuery,
-    ): Result<PaginationResult<ThreadedCommentData>> = runCatching {
+    ): Result<PaginationResult<ThreadedCommentData>> = runSafely {
         val response = api.getCommentReplies(
             commentId = query.commentId,
             depth = query.depth,

@@ -1,5 +1,6 @@
 package io.getstream.feeds.android.client.internal.common
 
+import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.subscribe.StreamSubscriber
 import io.getstream.feeds.android.client.api.subscribe.StreamSubscription
 import io.getstream.feeds.android.client.internal.log.provideLogger
@@ -51,7 +52,7 @@ internal class StreamSubscriptionManagerImpl<T : StreamSubscriber>(
 
     private val subscribers = ConcurrentHashMap<T, Unit>()
 
-    override fun subscribe(listener: T): Result<StreamSubscription> = runCatching {
+    override fun subscribe(listener: T): Result<StreamSubscription> = runSafely {
         if (subscribers.size >= maxSubscriptions) {
             logger.e {
                 """
@@ -70,12 +71,12 @@ internal class StreamSubscriptionManagerImpl<T : StreamSubscriber>(
         }
     }
 
-    override fun clear(): Result<Unit> = runCatching {
+    override fun clear(): Result<Unit> = runSafely {
         subscribers.clear()
         logger.v { "[clear] Cleared all subscribers" }
     }
 
-    override fun forEach(block: (T) -> Unit) = runCatching {
+    override fun forEach(block: (T) -> Unit) = runSafely {
         subscribers.keys.forEach(block)
     }
 }

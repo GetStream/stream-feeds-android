@@ -1,6 +1,7 @@
 package io.getstream.feeds.android.client.internal.socket.common.parser
 
 import io.getstream.android.core.parser.JsonParser
+import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.internal.socket.events.ConnectedEvent
 import io.getstream.feeds.android.client.internal.socket.events.ConnectionErrorEvent
 import io.getstream.feeds.android.client.internal.socket.events.EVENT_TYPE_CONNECTION_ERROR
@@ -15,11 +16,11 @@ import io.getstream.feeds.android.core.generated.models.WSEvent
  */
 internal class FeedsEventParser(private val jsonParser: JsonParser) : GenericParser<Any, WSEvent> {
 
-    override fun encode(event: Any): Result<String> = runCatching {
+    override fun encode(event: Any): Result<String> = runSafely {
         jsonParser.toJson(event)
     }
 
-    override fun decode(raw: String): Result<WSEvent> = runCatching {
+    override fun decode(raw: String): Result<WSEvent> = runSafely {
         val event = jsonParser.fromJson(raw, WSEvent::class.java)
         if (event is UnsupportedWSEvent) {
             parseUnsupportedEvent(raw, event)

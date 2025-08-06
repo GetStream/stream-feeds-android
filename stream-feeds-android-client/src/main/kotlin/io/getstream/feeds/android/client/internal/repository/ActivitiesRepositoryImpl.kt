@@ -1,5 +1,6 @@
 package io.getstream.feeds.android.client.internal.repository
 
+import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
@@ -30,35 +31,35 @@ internal class ActivitiesRepositoryImpl(
 ) : ActivitiesRepository {
 
     override suspend fun addActivity(request: AddActivityRequest): Result<ActivityData> =
-        runCatching {
+        runSafely {
             api.addActivity(request).activity.toModel()
         }
 
     override suspend fun deleteActivity(
         activityId: String,
         hardDelete: Boolean
-    ): Result<Unit> = runCatching {
+    ): Result<Unit> = runSafely {
         api.deleteActivity(activityId, hardDelete)
     }
 
-    override suspend fun getActivity(activityId: String): Result<ActivityData> = runCatching {
+    override suspend fun getActivity(activityId: String): Result<ActivityData> = runSafely {
         api.getActivity(activityId).activity.toModel()
     }
 
     override suspend fun updateActivity(
         activityId: String,
         request: UpdateActivityRequest
-    ): Result<ActivityData> = runCatching {
+    ): Result<ActivityData> = runSafely {
         api.updateActivity(activityId, request).activity.toModel()
     }
 
     override suspend fun upsertActivities(activities: List<ActivityRequest>): Result<List<ActivityData>> =
-        runCatching {
+        runSafely {
             val request = UpsertActivitiesRequest(activities)
             api.upsertActivities(request).activities.map { it.toModel() }
         }
 
-    override suspend fun pin(activityId: String, fid: FeedId): Result<ActivityData> = runCatching {
+    override suspend fun pin(activityId: String, fid: FeedId): Result<ActivityData> = runSafely {
         api.pinActivity(
             feedGroupId = fid.group,
             feedId = fid.id,
@@ -69,7 +70,7 @@ internal class ActivitiesRepositoryImpl(
     override suspend fun unpin(
         activityId: String,
         fid: FeedId,
-    ): Result<ActivityData> = runCatching {
+    ): Result<ActivityData> = runSafely {
         api.unpinActivity(
             feedGroupId = fid.group,
             feedId = fid.id,
@@ -81,13 +82,13 @@ internal class ActivitiesRepositoryImpl(
         feedGroupId: String,
         feedId: String,
         request: MarkActivityRequest
-    ): Result<Unit> = runCatching {
+    ): Result<Unit> = runSafely {
         api.markActivity(feedGroupId = feedGroupId, feedId = feedId, markActivityRequest = request)
     }
 
     override suspend fun queryActivities(
         query: ActivitiesQuery
-    ): Result<PaginationResult<ActivityData>> = runCatching {
+    ): Result<PaginationResult<ActivityData>> = runSafely {
         val request = query.toRequest()
         val response = api.queryActivities(request)
         PaginationResult(
@@ -99,21 +100,21 @@ internal class ActivitiesRepositoryImpl(
     override suspend fun addReaction(
         activityId: String,
         request: AddReactionRequest
-    ): Result<FeedsReactionData> = runCatching {
+    ): Result<FeedsReactionData> = runSafely {
         api.addReaction(activityId, request).reaction.toModel()
     }
 
     override suspend fun deleteReaction(
         activityId: String,
         type: String
-    ): Result<FeedsReactionData> = runCatching {
+    ): Result<FeedsReactionData> = runSafely {
         api.deleteActivityReaction(activityId = activityId, type = type).reaction.toModel()
     }
 
     override suspend fun queryActivityReactions(
         activityId: String,
         request: QueryActivityReactionsRequest
-    ): Result<PaginationResult<FeedsReactionData>> = runCatching {
+    ): Result<PaginationResult<FeedsReactionData>> = runSafely {
         val response = api.queryActivityReactions(activityId, request)
         PaginationResult(
             models = response.reactions.map { it.toModel() },
