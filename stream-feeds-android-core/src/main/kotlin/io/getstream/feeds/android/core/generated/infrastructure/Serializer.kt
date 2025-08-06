@@ -67,6 +67,8 @@ object Serializer {
         .add(io.getstream.feeds.android.core.generated.models.FrameRecordingSettingsResponse.Mode.ModeAdapter())
         .add(io.getstream.feeds.android.core.generated.models.ImageSize.Crop.CropAdapter())
         .add(io.getstream.feeds.android.core.generated.models.ImageSize.Resize.ResizeAdapter())
+        .add(io.getstream.feeds.android.core.generated.models.IngressAudioEncodingOptions.Channels.ChannelsAdapter())
+        .add(io.getstream.feeds.android.core.generated.models.IngressVideoLayer.Codec.CodecAdapter())
         .add(io.getstream.feeds.android.core.generated.models.LayoutSettings.Name.NameAdapter())
         .add(io.getstream.feeds.android.core.generated.models.MessageResponse.Type.TypeAdapter())
         .add(io.getstream.feeds.android.core.generated.models.NoiseCancellationSettings.Mode.ModeAdapter())

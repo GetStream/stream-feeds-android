@@ -63,6 +63,9 @@ data class ActivityMarkEvent (
     @Json(name = "mark_read")
     val markRead: kotlin.collections.List<kotlin.String>? = emptyList(),
 
+    @Json(name = "mark_seen")
+    val markSeen: kotlin.collections.List<kotlin.String>? = emptyList(),
+
     @Json(name = "mark_watched")
     val markWatched: kotlin.collections.List<kotlin.String>? = emptyList(),
 

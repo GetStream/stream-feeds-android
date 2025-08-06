@@ -38,10 +38,19 @@ import com.squareup.moshi.ToJson
  * 
  */
 
-data class UnfollowResponse (
-    @Json(name = "duration")
-    val duration: kotlin.String,
+data class IngressVideoLayerResponse (
+    @Json(name = "bitrate")
+    val bitrate: kotlin.Int,
 
-    @Json(name = "follow")
-    val follow: io.getstream.feeds.android.core.generated.models.FollowResponse
+    @Json(name = "codec")
+    val codec: kotlin.String,
+
+    @Json(name = "frame_rate_limit")
+    val frameRateLimit: kotlin.Int,
+
+    @Json(name = "max_dimension")
+    val maxDimension: kotlin.Int,
+
+    @Json(name = "min_dimension")
+    val minDimension: kotlin.Int
 )

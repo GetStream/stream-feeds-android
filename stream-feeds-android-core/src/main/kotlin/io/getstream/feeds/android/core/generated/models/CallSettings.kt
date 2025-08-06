@@ -54,6 +54,9 @@ data class CallSettings (
     @Json(name = "geofencing")
     val geofencing: io.getstream.feeds.android.core.generated.models.GeofenceSettings? = null,
 
+    @Json(name = "ingress")
+    val ingress: io.getstream.feeds.android.core.generated.models.IngressSettings? = null,
+
     @Json(name = "limits")
     val limits: io.getstream.feeds.android.core.generated.models.LimitsSettings? = null,
 

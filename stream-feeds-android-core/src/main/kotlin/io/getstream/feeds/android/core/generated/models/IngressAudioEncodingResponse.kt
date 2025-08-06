@@ -38,10 +38,13 @@ import com.squareup.moshi.ToJson
  * 
  */
 
-data class UnfollowResponse (
-    @Json(name = "duration")
-    val duration: kotlin.String,
+data class IngressAudioEncodingResponse (
+    @Json(name = "bitrate")
+    val bitrate: kotlin.Int,
 
-    @Json(name = "follow")
-    val follow: io.getstream.feeds.android.core.generated.models.FollowResponse
+    @Json(name = "channels")
+    val channels: kotlin.Int,
+
+    @Json(name = "enable_dtx")
+    val enableDtx: kotlin.Boolean
 )

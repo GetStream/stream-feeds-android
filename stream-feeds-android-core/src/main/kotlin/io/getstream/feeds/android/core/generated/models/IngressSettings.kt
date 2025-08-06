@@ -38,10 +38,13 @@ import com.squareup.moshi.ToJson
  * 
  */
 
-data class UnfollowResponse (
-    @Json(name = "duration")
-    val duration: kotlin.String,
+data class IngressSettings (
+    @Json(name = "enabled")
+    val enabled: kotlin.Boolean,
 
-    @Json(name = "follow")
-    val follow: io.getstream.feeds.android.core.generated.models.FollowResponse
+    @Json(name = "audio_encoding_options")
+    val audioEncodingOptions: io.getstream.feeds.android.core.generated.models.IngressAudioEncodingOptions? = null,
+
+    @Json(name = "video_encoding_options")
+    val videoEncodingOptions: kotlin.collections.Map<kotlin.String, io.getstream.feeds.android.core.generated.models.IngressVideoEncodingOptions>? = emptyMap()
 )
