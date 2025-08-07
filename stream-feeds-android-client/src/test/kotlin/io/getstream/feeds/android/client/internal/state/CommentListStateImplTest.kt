@@ -33,11 +33,11 @@ internal class CommentListStateImplTest {
 
     @Test
     fun `onCommentUpdated, update the comment in the list`() {
-        val comment1 = commentData("1", text = "First")
-        val comment2 = commentData("2", text = "Second")
+        val comment1 = commentData("1", text = "First", createdAt = Date(3))
+        val comment2 = commentData("2", text = "Second", createdAt = Date(4))
         val result = PaginationResult(listOf(comment1, comment2), PaginationData("next", "previous"))
-        val updatedComment2 = comment2.copy(text = "Updated Second")
-        val expected = listOf(comment1, updatedComment2)
+        val updatedComment2 = comment2.copy(text = "Updated Second", createdAt = Date(2))
+        val expected = listOf(updatedComment2, comment1)
 
         state.onQueryMoreComments(result)
         state.onCommentUpdated(updatedComment2)
