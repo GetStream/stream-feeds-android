@@ -1,8 +1,9 @@
+package io.getstream.feeds.android.client.internal.state
+
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentsSort
-import io.getstream.feeds.android.client.internal.state.CommentListStateImpl
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -10,7 +11,7 @@ import java.util.Date
 
 internal class CommentListStateImplTest {
 
-    private val query = CommentsQuery(null)
+    private val query = CommentsQuery(null, sort = CommentsSort.First)
     private val state = CommentListStateImpl(query)
 
     @Test
@@ -21,11 +22,10 @@ internal class CommentListStateImplTest {
         val pagination = PaginationData("next", "previous")
         val result1 = PaginationResult(models = listOf(comment1, comment2), pagination = pagination)
         val result2 = PaginationResult(models = listOf(comment2, comment3), pagination = pagination)
-        val sort = CommentsSort.Last
-        val expected = listOf(comment3, comment2, comment1)
+        val expected = listOf(comment1, comment2, comment3)
 
-        state.onQueryMoreComments(result1, null, sort)
-        state.onQueryMoreComments(result2, null, sort)
+        state.onQueryMoreComments(result1)
+        state.onQueryMoreComments(result2)
 
         assertEquals(expected, state.comments.value)
         assertEquals(pagination, state.pagination)
@@ -39,7 +39,7 @@ internal class CommentListStateImplTest {
         val updatedComment2 = comment2.copy(text = "Updated Second")
         val expected = listOf(comment1, updatedComment2)
 
-        state.onQueryMoreComments(result, null, null)
+        state.onQueryMoreComments(result)
         state.onCommentUpdated(updatedComment2)
 
         assertEquals(expected, state.comments.value)
