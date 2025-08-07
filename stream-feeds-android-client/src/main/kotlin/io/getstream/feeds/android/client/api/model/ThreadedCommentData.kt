@@ -3,6 +3,7 @@ package io.getstream.feeds.android.client.api.model
 import io.getstream.feeds.android.client.api.state.query.CommentsSortDataFields
 import io.getstream.feeds.android.client.internal.model.mapping.toDate
 import io.getstream.feeds.android.client.internal.utils.upsert
+import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import io.getstream.feeds.android.core.generated.models.Attachment
 import io.getstream.feeds.android.core.generated.models.RepliesMeta
 import io.getstream.feeds.android.core.generated.models.ThreadedCommentResponse
@@ -225,8 +226,11 @@ internal fun ThreadedCommentData.removeReaction(
  * @param comment The reply comment to add.
  * @return A new [ThreadedCommentData] instance with the updated replies and reply count.
  */
-internal fun ThreadedCommentData.addReply(comment: ThreadedCommentData): ThreadedCommentData {
-    val replies = this.replies.orEmpty().upsert(comment, ThreadedCommentData::id)
+internal fun ThreadedCommentData.addReply(
+    comment: ThreadedCommentData,
+    comparator: Comparator<CommentsSortDataFields>
+): ThreadedCommentData {
+    val replies = this.replies.orEmpty().upsertSorted(comment, ThreadedCommentData::id, comparator)
     val replyCount = this.replyCount + 1
     return this.copy(
         replies = replies,

@@ -119,7 +119,7 @@ internal class ActivityCommentListStateImpl(
     ): ThreadedCommentData {
         // If this comment is the parent, add the reply directly
         if (parent.id == reply.parentId) {
-            return parent.addReply(reply)
+            return parent.addReply(reply, commentsComparator)
         }
         // If this comment has replies, recursively search through them
         val replies = parent.replies

@@ -44,7 +44,8 @@ internal object TestData {
         id: String,
         parentId: String? = null,
         text: String = "Test comment",
-        replies: List<ThreadedCommentData> = emptyList()
+        replies: List<ThreadedCommentData> = emptyList(),
+        createdAt: Date = Date(1),
     ): ThreadedCommentData {
         return ThreadedCommentData(
             id = id,
@@ -52,7 +53,7 @@ internal object TestData {
             attachments = null,
             confidenceScore = 0f,
             controversyScore = null,
-            createdAt = Date(1),
+            createdAt = createdAt,
             custom = null,
             deletedAt = null,
             downvoteCount = 0,
@@ -66,7 +67,7 @@ internal object TestData {
             reactionCount = 0,
             reactionGroups = emptyMap(),
             replies = replies,
-            replyCount = 0,
+            replyCount = replies.size,
             score = 0,
             status = "",
             text = text,
