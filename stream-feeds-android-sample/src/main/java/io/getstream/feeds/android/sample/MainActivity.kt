@@ -5,19 +5,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dagger.hilt.android.AndroidEntryPoint
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.sample.feed.FeedsScreen
 import io.getstream.feeds.android.sample.login.ConnectingScreen
 import io.getstream.feeds.android.sample.login.LoginScreen
-import io.getstream.feeds.android.sample.login.ProfileScreen
-import io.getstream.feeds.android.sample.ui.theme.StreamfeedsandroidTheme
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
@@ -32,11 +28,13 @@ class MainActivity : ComponentActivity() {
                 is ViewState.Connecting -> {
                     ConnectingScreen()
                 }
+
                 is ViewState.LoggedOut -> {
                     LoginScreen(
                         onCredentialsSelected = { viewModel.connect(applicationContext, it) }
                     )
                 }
+
                 is ViewState.LoggedIn -> {
                     FeedsScreen(
                         fid = FeedId("user", (viewState as ViewState.LoggedIn).user.id),
