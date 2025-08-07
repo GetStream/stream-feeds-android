@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.getstream.android.core.user.ApiKey
 import io.getstream.android.core.user.User
 import io.getstream.android.core.user.UserToken
@@ -17,7 +18,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor() : ViewModel() {
+class MainViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
+) : ViewModel() {
 
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.LoggedOut)
     val viewState: StateFlow<ViewState>
@@ -25,7 +28,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     lateinit var client: FeedsClient
 
-    fun connect(context: Context, credentials: UserCredentials) {
+    fun connect(credentials: UserCredentials) {
         client = FeedsClient(
             context = context,
             apiKey = ApiKey(DemoAppConfig.Current.apiKey),
