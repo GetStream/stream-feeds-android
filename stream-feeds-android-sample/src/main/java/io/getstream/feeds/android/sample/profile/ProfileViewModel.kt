@@ -24,18 +24,17 @@ class ProfileViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val fid = ProfileScreenDestination.argsFrom(savedStateHandle).fid
-
-    private val feed: Feed = loginManager.state?.client?.feed(fid)!!
-    public val state: FeedState = feed.state
+    private val feed: Feed? = loginManager.state?.client?.feed(fid)
+    public val state: FeedState? = feed?.state
 
     private val _followSuggestions: MutableStateFlow<List<FeedData>> = MutableStateFlow(emptyList())
     public val followSuggestions: StateFlow<List<FeedData>> = _followSuggestions.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            feed.getOrCreate()
+        executeFeedOp {
+            getOrCreate()
                 .onSuccess {
-                    feed.queryFollowSuggestions(limit = 10)
+                    queryFollowSuggestions(limit = 10)
                         .onSuccess {
                             _followSuggestions.value = it
                         }
@@ -47,14 +46,20 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun follow(feedId: FeedId) {
-        viewModelScope.launch {
-            feed.follow(feedId)
+        executeFeedOp {
+            follow(feedId)
                 .onSuccess {
                     Log.d(TAG, "Successfully followed feed: $it")
                 }
                 .onFailure {
                     Log.e(TAG, "Failed to follow feed: $feedId", it)
                 }
+        }
+    }
+
+    private fun executeFeedOp(block: suspend Feed.() -> Unit) {
+        if (feed != null) {
+            viewModelScope.launch { block(feed) }
         }
     }
 

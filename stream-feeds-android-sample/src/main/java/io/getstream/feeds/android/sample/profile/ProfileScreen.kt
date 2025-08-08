@@ -15,6 +15,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +33,7 @@ import coil3.request.ImageRequest
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.UserData
 
@@ -41,8 +43,14 @@ data class ProfileScreenArgs(val feedId: String) {
 
 @Destination<RootGraph>(style = DestinationStyleBottomSheet::class, navArgs = ProfileScreenArgs::class)
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(navigator: DestinationsNavigator) {
     val viewModel = hiltViewModel<ProfileViewModel>()
+
+    if (viewModel.state == null) {
+        LaunchedEffect(Unit) { navigator.popBackStack() }
+        return
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
