@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -57,12 +58,17 @@ fun ProfileScreen(navigator: DestinationsNavigator) {
             .systemBarsPadding()
             .padding(16.dp),
     ) {
-        Text("Profile", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Text(
+            text = "Profile",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
 
         // Feed members
         ProfileSection(
             title = "Members:",
-            emptyText = "-No members-",
+            emptyText = "No members",
             items = viewModel.state.members.collectAsStateWithLifecycle().value,
             itemText = { member -> "${member.user.name ?: member.user.id} (${member.role})" },
         )
@@ -70,7 +76,7 @@ fun ProfileScreen(navigator: DestinationsNavigator) {
         // Follow requests
         ProfileSection(
             title = "Follow requests:",
-            emptyText = "-No follow requests-",
+            emptyText = "No follow requests",
             items = viewModel.state.followRequests.collectAsStateWithLifecycle().value,
             itemText = { it.sourceFeed.createdBy.run { name ?: id } },
         )
@@ -78,7 +84,7 @@ fun ProfileScreen(navigator: DestinationsNavigator) {
         // Following
         ProfileSection(
             title = "Following:",
-            emptyText = "-Not following any feeds-",
+            emptyText = "Not following any feeds",
             items = viewModel.state.following.collectAsStateWithLifecycle().value,
             itemText = { it.targetFeed.createdBy.run { name ?: id } },
         )
@@ -86,7 +92,7 @@ fun ProfileScreen(navigator: DestinationsNavigator) {
         // Followers
         ProfileSection(
             title = "Followers:",
-            emptyText = "-No followers-",
+            emptyText = "No followers",
             items = viewModel.state.followers.collectAsStateWithLifecycle().value,
             itemText = { it.sourceFeed.createdBy.run { name ?: id } },
         )
@@ -120,7 +126,7 @@ private fun SectionTitle(text: String) {
         text = text,
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp,
-        modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
+        modifier = Modifier.padding(bottom = 8.dp)
     )
 }
 
@@ -141,8 +147,14 @@ private fun <T> ProfileSection(
             )
         }
     } else {
-        Text(text = emptyText)
+        Text(text = emptyText, color = Color.Gray)
     }
+
+    HorizontalDivider(
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp)
+    )
 }
 
 @Composable
