@@ -8,15 +8,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.NavGraphs
 import dagger.hilt.android.AndroidEntryPoint
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.sample.feed.FeedsScreen
 import io.getstream.feeds.android.sample.login.ConnectingScreen
 import io.getstream.feeds.android.sample.login.LoginScreen
-import kotlinx.serialization.Serializable
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -26,19 +26,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            val navController = rememberNavController()
-
-            NavHost(navController, startDestination = Main) {
-                composable<Main> {
-                    MainScreen()
-                }
-            }
+            DestinationsNavHost(NavGraphs.root)
         }
     }
 }
 
+@Destination<RootGraph>(start = true)
 @Composable
-fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
+fun MainScreen() {
+    val viewModel = hiltViewModel<MainViewModel>()
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
     when (viewState) {
@@ -62,6 +58,3 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
         }
     }
 }
-
-@Serializable
-object Main
