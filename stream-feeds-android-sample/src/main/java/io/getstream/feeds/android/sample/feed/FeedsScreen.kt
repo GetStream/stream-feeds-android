@@ -57,6 +57,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
+import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.FeedId
@@ -65,6 +67,7 @@ import io.getstream.feeds.android.core.generated.models.Attachment
 import io.getstream.feeds.android.sample.R
 import io.getstream.feeds.android.sample.components.LinkText
 import io.getstream.feeds.android.sample.components.UserAvatar
+import io.getstream.feeds.android.sample.login.ProfileScreenArgs
 import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,6 +77,7 @@ fun FeedsScreen(
     feedsClient: FeedsClient,
     avatarUrl: String?,
     currentUserId: String,
+    navigator: DestinationsNavigator,
     viewModel: FeedViewModel = viewModel(factory = feedViewModelFactory(currentUserId, fid, feedsClient))
 ) {
     var showCreatePostBottomSheet by remember { mutableStateOf(false) }
@@ -87,7 +91,9 @@ fun FeedsScreen(
             avatarUrl = avatarUrl,
             onUserAvatarClick = {},
             onNotificationsClick = {},
-            onProfileClick = {},
+            onProfileClick = {
+                navigator.navigate(ProfileScreenDestination(ProfileScreenArgs(feedId = fid.rawValue)))
+            }
         )
 
         // Toolbar divider

@@ -1,10 +1,11 @@
 package io.getstream.feeds.android.sample.login
 
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import io.getstream.feeds.android.client.api.FeedsClient
+import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.Feed
@@ -13,13 +14,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ProfileViewModel(
-    private val fid: FeedId,
-    private val feedsClient: FeedsClient,
-    private val feed: Feed = feedsClient.feed(fid),
-): ViewModel() {
+@HiltViewModel
+class ProfileViewModel @Inject constructor(
+    loginManager: LoginManager,
+    savedStateHandle: SavedStateHandle,
+) : ViewModel() {
 
+    private val fid = ProfileScreenDestination.argsFrom(savedStateHandle).fid
+
+    private val feed: Feed = loginManager.state?.client?.feed(fid)!!
     public val state: FeedState = feed.state
 
     private val _followSuggestions: MutableStateFlow<List<FeedData>> = MutableStateFlow(emptyList())
@@ -54,14 +59,5 @@ class ProfileViewModel(
 
     companion object {
         private const val TAG = "ProfileViewModel"
-    }
-}
-
-class ProfileViewModelFactory(
-    private val fid: FeedId,
-    private val feedsClient: FeedsClient
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return ProfileViewModel(fid, feedsClient) as T
     }
 }
