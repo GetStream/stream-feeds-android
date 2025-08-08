@@ -1,4 +1,4 @@
-package io.getstream.feeds.android.sample.login
+package io.getstream.feeds.android.sample.profile
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column

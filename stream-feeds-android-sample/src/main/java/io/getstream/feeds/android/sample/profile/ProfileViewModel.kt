@@ -1,4 +1,4 @@
-package io.getstream.feeds.android.sample.login
+package io.getstream.feeds.android.sample.profile
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
@@ -10,6 +10,7 @@ import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.Feed
 import io.getstream.feeds.android.client.api.state.FeedState
+import io.getstream.feeds.android.sample.login.LoginManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

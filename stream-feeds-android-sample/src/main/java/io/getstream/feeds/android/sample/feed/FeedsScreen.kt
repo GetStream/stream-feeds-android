@@ -67,7 +67,7 @@ import io.getstream.feeds.android.core.generated.models.Attachment
 import io.getstream.feeds.android.sample.R
 import io.getstream.feeds.android.sample.components.LinkText
 import io.getstream.feeds.android.sample.components.UserAvatar
-import io.getstream.feeds.android.sample.login.ProfileScreenArgs
+import io.getstream.feeds.android.sample.profile.ProfileScreenArgs
 import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
 
 @OptIn(ExperimentalMaterial3Api::class)
