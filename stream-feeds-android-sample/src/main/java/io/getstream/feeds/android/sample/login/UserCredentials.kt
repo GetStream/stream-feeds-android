@@ -30,7 +30,15 @@ data class UserCredentials(
             ),
             userToken = UserToken(DemoAppConfig.Current.token("luke_skywalker"))
         )
+        val Gian = UserCredentials(
+            user = User(
+                id = "gian",
+                name = "Gian",
+                imageURL = "https://ca.slack-edge.com/T02RM6X6B-U09645WUWQ3-a89200afc9fd-512"
+            ),
+            userToken = UserToken(DemoAppConfig.Current.token("gian"))
+        )
 
-        val BuiltIn = listOf(Petar, Luke)
+        val BuiltIn = listOf(Petar, Luke, Gian)
     }
 }
