@@ -23,22 +23,13 @@
 
 package io.getstream.feeds.android.core.generated.models
 
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.collections.*
-import kotlin.io.*
-import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonReader
-import com.squareup.moshi.JsonWriter
-import com.squareup.moshi.ToJson
 
 /**
  * ReactionGroupResponse contains all information about a reaction of the same type.
  */
 
-data class ReactionGroupResponse (
+data class ReactionGroupResponse(
     @Json(name = "count")
     val count: kotlin.Int,
 
@@ -49,5 +40,5 @@ data class ReactionGroupResponse (
     val lastReactionAt: org.threeten.bp.OffsetDateTime,
 
     @Json(name = "sum_scores")
-    val sumScores: kotlin.Int
+    val sumScores: kotlin.Int = 0
 )
