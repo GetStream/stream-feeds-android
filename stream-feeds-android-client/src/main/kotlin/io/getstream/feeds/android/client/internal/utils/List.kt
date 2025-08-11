@@ -260,8 +260,8 @@ internal fun <T> List<T>.mergeSorted(
 /**
  * Updates an existing element in a tree-like list, and optionally sorts the result.
  *
- * This function traverses the tree in DFS order, finds the first element for which [matcher]
- * returns true and replaces it with the updated element provided by the [updateElement] function.
+ * This function traverses the tree, finds the first element for which [matcher] returns true and
+ * replaces it with the updated element provided by the [updateElement] function.
  * If no matching element is found, the list remains unchanged.
  * If a [comparator] is provided, the updated list will be sorted according to it.
  *
@@ -276,6 +276,7 @@ internal fun <T> List<T>.mergeSorted(
  * @return A list containing the updated element. If an existing element was found, it will be
  *         replaced and repositioned; otherwise, the list remains unchanged.
  */
+
 internal fun <T> List<T>.treeUpdateFirst(
     matcher: (T) -> Boolean,
     childrenSelector: (T) -> List<T>,
@@ -283,29 +284,48 @@ internal fun <T> List<T>.treeUpdateFirst(
     updateChildren: (T, List<T>) -> T,
     comparator: Comparator<in T>? = null,
 ): List<T> {
-    if (isEmpty()) {
-        return this
-    }
+    var wasUpdated = false
 
-    val index = indexOfFirst(matcher)
+    /**
+     * A nested recursive function that can see and modify the `wasUpdated` flag.
+     */
+    fun updateRecursively(list: List<T>): List<T> {
+        if (wasUpdated || list.isEmpty()) {
+            return list
+        }
 
-    return if (index >= 0) {
-        toMutableList()
-            .apply {
-                this[index] = updateElement(this[index])
-                comparator?.let(::sortWith)
+        // 1. Check for a match at the current level
+        val index = list.indexOfFirst(matcher)
+        if (index >= 0) {
+            wasUpdated = true
+
+            return list.toMutableList()
+                .apply {
+                    this[index] = updateElement(this[index])
+                    comparator?.let(::sortWith)
+                }
+        }
+
+        // 2. If no match, recurse into children
+        return buildList(list.size) {
+            for (item in list) {
+                // If a sibling was updated, add the remaining items as-is
+                if (wasUpdated) {
+                    add(item)
+                    continue
+                }
+
+                val newChildren = updateRecursively(childrenSelector(item))
+
+                // If the recursive call changed something, we add the item as-is
+                if (wasUpdated) {
+                    add(updateChildren(item, newChildren))
+                } else {
+                    add(item)
+                }
             }
-            .toImmutableList()
-    } else {
-        map { item ->
-            val newChildren = childrenSelector(item).treeUpdateFirst(
-                matcher = matcher,
-                updateElement = updateElement,
-                comparator = comparator,
-                childrenSelector = childrenSelector,
-                updateChildren = updateChildren
-            )
-            updateChildren(item, newChildren)
         }
     }
+
+    return updateRecursively(this)
 }

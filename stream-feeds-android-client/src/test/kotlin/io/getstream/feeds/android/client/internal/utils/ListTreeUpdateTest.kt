@@ -97,5 +97,26 @@ internal class ListTreeUpdateTest {
         assertEquals(expected, updated)
     }
 
+    @Test
+    fun `when id is found in multiple nodes, then update only the first match`() {
+        val initial = listOf(
+            TestNode("A", 1, listOf(TestNode("target", 100))),
+            TestNode("B", 2, listOf(TestNode("target", 200))),
+        )
+        val expected = listOf(
+            TestNode("A", 1, listOf(TestNode("target", 101))),
+            TestNode("B", 2, listOf(TestNode("target", 200))),
+        )
+
+        val updated = initial.treeUpdateFirst(
+            matcher = { it.id == "target" },
+            updateElement = { it.copy(sortField = it.sortField + 1) },
+            childrenSelector = TestNode::nodes,
+            updateChildren = { node, children -> node.copy(nodes = children) }
+        )
+
+        assertEquals(expected, updated)
+    }
+
     private data class TestNode(val id: String, val sortField: Int, val nodes: List<TestNode> = emptyList())
 }
