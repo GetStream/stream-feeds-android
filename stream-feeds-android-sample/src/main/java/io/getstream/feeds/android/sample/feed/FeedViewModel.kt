@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.file.FeedUploadContext
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
@@ -24,12 +23,10 @@ import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.core.generated.models.AddActivityRequest
 import io.getstream.feeds.android.core.generated.models.AddReactionRequest
 import io.getstream.feeds.android.core.generated.models.UpdateActivityRequest
+import io.getstream.feeds.android.sample.util.copyToCache
+import io.getstream.feeds.android.sample.util.deleteFiles
 import io.getstream.feeds.android.sample.utils.logResult
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
 
 class FeedViewModel(
     private val currentUserId: String,
@@ -117,7 +114,7 @@ class FeedViewModel(
 
     fun onCreatePost(text: String, attachments: List<Uri>) {
         viewModelScope.launch {
-            val attachmentFiles = copyToFiles(attachments).getOrElse { error ->
+            val attachmentFiles = application.copyToCache(attachments).getOrElse { error ->
                 Log.e(TAG, "Failed to copy attachments", error)
                 return@launch
             }
@@ -139,40 +136,6 @@ class FeedViewModel(
             ).logResult(TAG, "Creating activity with text: $text")
 
             deleteFiles(attachmentFiles)
-        }
-    }
-
-    private suspend fun copyToFiles(uris: List<Uri>): Result<List<File>> {
-        val files = mutableListOf<File>()
-        for (uri in uris) {
-            try {
-                val file = copyToFile(uri)
-                files.add(file)
-            } catch (e: Exception) {
-                Log.e(TAG, "Error copying file from URI: $uri", e)
-                deleteFiles(files)
-                return Result.failure(e)
-            }
-        }
-
-        return Result.success(files)
-    }
-
-    private suspend fun copyToFile(uri: Uri) = withContext(Dispatchers.IO) {
-        val outputFile = File(application.cacheDir, "attachment_${System.currentTimeMillis()}.tmp")
-
-        application.contentResolver.openInputStream(uri).use { inputStream ->
-            checkNotNull(inputStream) { "Error opening input stream for URI: $uri" }
-
-            FileOutputStream(outputFile).use(inputStream::copyTo)
-        }
-        outputFile
-    }
-
-
-    private suspend fun deleteFiles(files: List<File>) = runSafely {
-        withContext(Dispatchers.IO) {
-            files.forEach(File::delete)
         }
     }
 

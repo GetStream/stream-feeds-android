@@ -1,5 +1,6 @@
 package io.getstream.feeds.android.sample.feed
 
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -67,7 +68,7 @@ private fun ColumnScope.CommentsBottomSheetContent(
     comments: List<ThreadedCommentData>,
     onLoadMore: () -> Unit,
     onLikeClick: (ThreadedCommentData) -> Unit,
-    onPostComment: (text: String, parentCommentId: String?) -> Unit,
+    onPostComment: (text: String, parentCommentId: String?, attachmentUris: List<Uri>) -> Unit,
 ) {
     var createCommentData: CreateCommentData? by remember { mutableStateOf(null) }
     var expandedCommentId: String? by remember { mutableStateOf(null) }
@@ -120,7 +121,7 @@ private fun ColumnScope.CommentsBottomSheetContent(
         CreateContentBottomSheet(
             onDismiss = { createCommentData = null },
             onPost = { text, attachments ->
-                onPostComment(text, createCommentData?.replyParentId)
+                onPostComment(text, createCommentData?.replyParentId, attachments)
                 createCommentData = null
             }
         )
