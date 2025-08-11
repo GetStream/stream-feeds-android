@@ -235,7 +235,7 @@ internal fun createFeedsClient(
     val activitiesRepository = ActivitiesRepositoryImpl(feedsApi, uploader)
     val appRepository = AppRepositoryImpl(feedsApi)
     val bookmarksRepository = BookmarksRepositoryImpl(feedsApi)
-    val commentsRepository = CommentsRepositoryImpl(feedsApi)
+    val commentsRepository = CommentsRepositoryImpl(feedsApi, uploader)
     val feedsRepository = FeedsRepositoryImpl(feedsApi)
     val moderationRepository = ModerationRepositoryImpl(feedsApi)
     val pollsRepository = PollsRepositoryImpl(feedsApi)

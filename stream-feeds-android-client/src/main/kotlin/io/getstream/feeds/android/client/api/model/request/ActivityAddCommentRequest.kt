@@ -1,14 +1,16 @@
 package io.getstream.feeds.android.client.api.model.request
 
+import io.getstream.feeds.android.client.api.file.FeedUploadPayload
+import io.getstream.feeds.android.client.api.state.Activity
 import io.getstream.feeds.android.core.generated.models.AddCommentRequest
 import io.getstream.feeds.android.core.generated.models.Attachment
-import io.getstream.feeds.android.client.api.state.Activity
 
 /**
  * A request for adding comment when interacting with [Activity].
  */
 public data class ActivityAddCommentRequest(
     private val request: AddCommentRequest,
+    val attachmentUploads: List<FeedUploadPayload> = emptyList(),
 ) {
 
     /**
@@ -28,7 +30,7 @@ public data class ActivityAddCommentRequest(
         custom: Map<String, Any?>? = null,
         mentionedUserIds: List<String>? = null,
         parentId: String? = null,
-    ): this (
+    ) : this(
         AddCommentRequest(
             comment = comment,
             attachments = attachments,

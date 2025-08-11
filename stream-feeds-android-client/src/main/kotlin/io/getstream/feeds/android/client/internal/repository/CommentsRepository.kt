@@ -1,6 +1,9 @@
 package io.getstream.feeds.android.client.internal.repository
 
+import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.model.CommentData
+import io.getstream.feeds.android.client.api.model.FeedAddCommentBatchRequest
+import io.getstream.feeds.android.client.api.model.FeedAddCommentRequest
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
@@ -9,8 +12,6 @@ import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
 import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
-import io.getstream.feeds.android.core.generated.models.AddCommentRequest
-import io.getstream.feeds.android.core.generated.models.AddCommentsBatchRequest
 import io.getstream.feeds.android.core.generated.models.UpdateCommentRequest
 
 /**
@@ -48,7 +49,10 @@ internal interface CommentsRepository {
      * @return A [Result] containing the newly created [CommentData] if successful, or an error if
      * the operation fails.
      */
-    suspend fun addComment(request: AddCommentRequest): Result<CommentData>
+    suspend fun addComment(
+        request: FeedAddCommentRequest,
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)? = null,
+    ): Result<CommentData>
 
     /**
      * Adds multiple comments in a single batch operation.
@@ -57,7 +61,10 @@ internal interface CommentsRepository {
      * @return A [Result] containing a list of [CommentData] for each successfully added comment, or
      * an error if the operation fails.
      */
-    suspend fun addCommentsBatch(request: AddCommentsBatchRequest): Result<List<CommentData>>
+    suspend fun addCommentsBatch(
+        request: FeedAddCommentBatchRequest,
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?
+    ): Result<List<CommentData>>
 
     /**
      * Deletes a comment by its identifier.

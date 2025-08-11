@@ -1,5 +1,6 @@
 package io.getstream.feeds.android.client.api.state
 
+import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedId
@@ -88,7 +89,10 @@ public interface Activity {
      * @return A [Result] containing the newly created [CommentData] if successful, or an error if
      * the operation fails.
      */
-    public suspend fun addComment(request: ActivityAddCommentRequest): Result<CommentData>
+    public suspend fun addComment(
+        request: ActivityAddCommentRequest,
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)? = null,
+    ): Result<CommentData>
 
     /**
      * Adds multiple comments to the activity in a single batch operation.
@@ -100,6 +104,7 @@ public interface Activity {
      */
     public suspend fun addCommentsBatch(
         requests: List<ActivityAddCommentRequest>,
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)? = null,
     ): Result<List<CommentData>>
 
     /**
