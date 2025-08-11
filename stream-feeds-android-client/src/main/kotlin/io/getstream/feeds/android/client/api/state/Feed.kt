@@ -5,13 +5,13 @@ import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedAddActivityRequest
-import io.getstream.feeds.android.client.api.model.FeedAddCommentRequest
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
+import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
 import io.getstream.feeds.android.core.generated.models.AddBookmarkRequest
 import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
 import io.getstream.feeds.android.core.generated.models.AddReactionRequest
@@ -231,7 +231,7 @@ public interface Feed {
      * operation fails.
      */
     public suspend fun addComment(
-        request: FeedAddCommentRequest,
+        request: ActivityAddCommentRequest,
         attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)? = null,
     ): Result<CommentData>
 

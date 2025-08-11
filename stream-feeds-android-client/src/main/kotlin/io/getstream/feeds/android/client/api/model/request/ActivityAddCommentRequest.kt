@@ -9,7 +9,7 @@ import io.getstream.feeds.android.core.generated.models.Attachment
  * A request for adding comment when interacting with [Activity].
  */
 public data class ActivityAddCommentRequest(
-    private val request: AddCommentRequest,
+    val request: AddCommentRequest,
     val attachmentUploads: List<FeedUploadPayload> = emptyList(),
 ) {
 
@@ -25,6 +25,7 @@ public data class ActivityAddCommentRequest(
      */
     public constructor(
         comment: String,
+        activityId: String,
         attachments: List<Attachment>? = null,
         createNotificationActivity: Boolean? = null,
         custom: Map<String, Any?>? = null,
@@ -38,17 +39,10 @@ public data class ActivityAddCommentRequest(
             createNotificationActivity = createNotificationActivity,
             custom = custom,
             mentionedUserIds = mentionedUserIds,
-            objectId = "",
+            objectId = activityId,
             objectType = "activity",
             parentId = parentId,
         ),
         attachmentUploads = attachmentUploads,
     )
-
-    /**
-     * Sets the ID of the activity to which this comment will be added.
-     */
-    internal fun withActivityId(activityId: String): AddCommentRequest {
-        return request.copy(objectId = activityId)
-    }
 }

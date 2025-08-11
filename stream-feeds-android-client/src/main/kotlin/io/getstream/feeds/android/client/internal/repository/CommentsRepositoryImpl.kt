@@ -4,12 +4,11 @@ import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.CommentData
-import io.getstream.feeds.android.client.api.model.FeedAddCommentBatchRequest
-import io.getstream.feeds.android.client.api.model.FeedAddCommentRequest
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
+import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
@@ -67,7 +66,7 @@ internal class CommentsRepositoryImpl(
     }
 
     override suspend fun addComment(
-        request: FeedAddCommentRequest,
+        request: ActivityAddCommentRequest,
         attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?
     ): Result<CommentData> = runSafely {
         val newRequest = uploadAttachmentsAndUpdateRequest(request, attachmentUploadProgress)
@@ -75,11 +74,11 @@ internal class CommentsRepositoryImpl(
     }
 
     override suspend fun addCommentsBatch(
-        request: FeedAddCommentBatchRequest,
+        requests: List<ActivityAddCommentRequest>,
         attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?
     ): Result<List<CommentData>> = runSafely {
         val newRequests = coroutineScope {
-            request.requests.map { request ->
+            requests.map { request ->
                 async { uploadAttachmentsAndUpdateRequest(request, attachmentUploadProgress) }
             }
         }.awaitAll()
@@ -90,7 +89,7 @@ internal class CommentsRepositoryImpl(
     }
 
     private suspend fun uploadAttachmentsAndUpdateRequest(
-        request: FeedAddCommentRequest,
+        request: ActivityAddCommentRequest,
         attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?
     ): AddCommentRequest {
         val uploadedAttachments = uploader.uploadAll(

@@ -4,8 +4,6 @@ import io.getstream.android.core.websocket.WebSocketConnectionState
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.CommentData
-import io.getstream.feeds.android.client.api.model.FeedAddCommentBatchRequest
-import io.getstream.feeds.android.client.api.model.FeedAddCommentRequest
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PollData
@@ -110,7 +108,7 @@ internal class ActivityImpl(
     ): Result<CommentData> {
         return commentsRepository
             .addComment(
-                request = FeedAddCommentRequest(request.withActivityId(activityId), request.attachmentUploads),
+                request = request,
                 attachmentUploadProgress = attachmentUploadProgress
             )
             .onSuccess { commentList.mutableState.onCommentAdded(ThreadedCommentData(it)) }
@@ -120,15 +118,7 @@ internal class ActivityImpl(
         requests: List<ActivityAddCommentRequest>,
         attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?
     ): Result<List<CommentData>> {
-        val request = FeedAddCommentBatchRequest(
-            requests.map {
-                FeedAddCommentRequest(
-                    it.withActivityId(activityId),
-                    it.attachmentUploads
-                )
-            }
-        )
-        return commentsRepository.addCommentsBatch(request, attachmentUploadProgress)
+        return commentsRepository.addCommentsBatch(requests, attachmentUploadProgress)
             .onSuccess { comments ->
                 val threadedComments = comments.map(::ThreadedCommentData)
                 threadedComments.forEach { threadedComment ->

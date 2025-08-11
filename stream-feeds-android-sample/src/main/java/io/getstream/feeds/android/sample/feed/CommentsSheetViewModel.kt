@@ -67,6 +67,7 @@ class CommentsSheetViewModel(
                 .addComment(
                     ActivityAddCommentRequest(
                         comment = text,
+                        activityId = activity.activityId,
                         parentId = replyParentId,
                         attachmentUploads = attachmentFiles.map {
                             FeedUploadPayload(

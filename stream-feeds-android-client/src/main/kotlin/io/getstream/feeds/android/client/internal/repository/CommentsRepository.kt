@@ -2,11 +2,10 @@ package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.model.CommentData
-import io.getstream.feeds.android.client.api.model.FeedAddCommentBatchRequest
-import io.getstream.feeds.android.client.api.model.FeedAddCommentRequest
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
+import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
 import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
@@ -50,19 +49,20 @@ internal interface CommentsRepository {
      * the operation fails.
      */
     suspend fun addComment(
-        request: FeedAddCommentRequest,
+        request: ActivityAddCommentRequest,
         attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)? = null,
     ): Result<CommentData>
 
     /**
      * Adds multiple comments in a single batch operation.
      *
-     * @param request The request containing a list of comments to be added.
+     * @param requests A list of [ActivityAddCommentRequest] objects, each representing a comment to
+     * be added.
      * @return A [Result] containing a list of [CommentData] for each successfully added comment, or
      * an error if the operation fails.
      */
     suspend fun addCommentsBatch(
-        request: FeedAddCommentBatchRequest,
+        requests: List<ActivityAddCommentRequest>,
         attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?
     ): Result<List<CommentData>>
 

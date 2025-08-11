@@ -6,13 +6,13 @@ import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedAddActivityRequest
-import io.getstream.feeds.android.client.api.model.FeedAddCommentRequest
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
+import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
 import io.getstream.feeds.android.client.api.state.Feed
 import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
@@ -240,7 +240,7 @@ internal class FeedImpl(
     }
 
     override suspend fun addComment(
-        request: FeedAddCommentRequest,
+        request: ActivityAddCommentRequest,
         attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?
     ): Result<CommentData> {
         return commentsRepository.addComment(request, attachmentUploadProgress)
