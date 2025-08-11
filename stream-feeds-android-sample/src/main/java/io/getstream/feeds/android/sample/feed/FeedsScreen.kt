@@ -62,6 +62,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.UserData
 import io.getstream.feeds.android.core.generated.models.Attachment
 import io.getstream.feeds.android.sample.R
@@ -134,6 +135,7 @@ fun FeedsScreen(
                         onBookmarkClick = { viewModel.onBookmarkClick(activity) },
                         onDeleteClick = { viewModel.onDeleteClick(activity.id) },
                         onEditSave = { viewModel.onEditActivity(activity.id, it) },
+                        pollSection = { poll -> PollSection(activity.id, poll, viewModel.pollController) }
                     )
                 }
             }
@@ -243,7 +245,8 @@ fun ActivityContent(
     onRepostClick: (String?) -> Unit,
     onBookmarkClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    onEditSave: ((String) -> Unit)? = null
+    onEditSave: ((String) -> Unit),
+    pollSection: @Composable (PollData) -> Unit,
 ) {
     var showCommentsBottomSheet by remember { mutableStateOf(false) }
     var showRepostDialog by remember { mutableStateOf(false) }
@@ -300,6 +303,8 @@ fun ActivityContent(
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                 }
+
+                data.poll?.let { pollSection(it) }
             }
         }
 
@@ -348,7 +353,7 @@ fun ActivityContent(
                 initialText = text,
                 onDismiss = { showEditDialog = false },
                 onSave = { editedText ->
-                    onEditSave?.invoke(editedText)
+                    onEditSave(editedText)
                     showEditDialog = false
                 }
             )

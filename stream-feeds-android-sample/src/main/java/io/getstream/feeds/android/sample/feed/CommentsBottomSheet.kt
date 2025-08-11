@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
+import io.getstream.feeds.android.sample.ui.theme.LighterGray
 import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -140,7 +141,7 @@ private fun Comment(
     Column(modifier.width(IntrinsicSize.Max)) {
         Column(
             Modifier
-                .background(Color.LightGray, shape = RoundedCornerShape(16.dp))
+                .background(LighterGray, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
                 .fillMaxWidth()
         ) {

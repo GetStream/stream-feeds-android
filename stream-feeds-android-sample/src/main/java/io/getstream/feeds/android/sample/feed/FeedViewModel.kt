@@ -37,6 +37,8 @@ class FeedViewModel(
     private val application: Application
 ) : ViewModel() {
 
+    val pollController = PollController(viewModelScope, feedsClient, fid)
+
     private val query = FeedQuery(
         fid = fid,
         data = FeedInputData(
@@ -201,7 +203,6 @@ class FeedViewModel(
     }
 
     companion object {
-
         private const val TAG = "FeedViewModel"
     }
 }
