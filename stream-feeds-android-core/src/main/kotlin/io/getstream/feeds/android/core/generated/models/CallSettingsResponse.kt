@@ -76,5 +76,8 @@ data class CallSettingsResponse (
     val transcription: io.getstream.feeds.android.core.generated.models.TranscriptionSettingsResponse,
 
     @Json(name = "video")
-    val video: io.getstream.feeds.android.core.generated.models.VideoSettingsResponse
+    val video: io.getstream.feeds.android.core.generated.models.VideoSettingsResponse,
+
+    @Json(name = "ingress")
+    val ingress: io.getstream.feeds.android.core.generated.models.IngressSettingsResponse? = null
 )

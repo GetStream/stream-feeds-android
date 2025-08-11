@@ -135,8 +135,8 @@ data class ActivityResponse (
     @Json(name = "moderation")
     val moderation: io.getstream.feeds.android.core.generated.models.ModerationV2Response? = null,
 
-    @Json(name = "object")
-    val `object`: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "notification_context")
+    val notificationContext: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
 
     @Json(name = "parent")
     val parent: io.getstream.feeds.android.core.generated.models.ActivityResponse? = null,

@@ -84,6 +84,9 @@ data class FeedResponse (
     @Json(name = "filter_tags")
     val filterTags: kotlin.collections.List<kotlin.String>? = emptyList(),
 
+    @Json(name = "own_follows")
+    val ownFollows: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FollowResponse>? = emptyList(),
+
     @Json(name = "custom")
     val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap()
 )

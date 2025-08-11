@@ -38,10 +38,7 @@ import com.squareup.moshi.ToJson
  * 
  */
 
-data class UnfollowResponse (
-    @Json(name = "duration")
-    val duration: kotlin.String,
-
-    @Json(name = "follow")
-    val follow: io.getstream.feeds.android.core.generated.models.FollowResponse
+data class IngressVideoEncodingResponse (
+    @Json(name = "layers")
+    val layers: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.IngressVideoLayerResponse> = emptyList()
 )

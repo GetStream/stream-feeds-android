@@ -54,6 +54,7 @@ import kotlin.math.max
  * @property mentionedUsers Users mentioned in the activity. This property contains the list of users
  * who were mentioned in the activity using @mentions or similar functionality.
  * @property moderation Moderation state and data for the activity.
+ * @property notificationContext Contextual data for notifications related to this activity.
  * @property ownBookmarks All the bookmarks from the current user for this activity.
  * @property ownReactions All the reactions from the current user for this activity.
  * @property parent The parent activity, if this is a child activity. This supports hierarchical
@@ -96,6 +97,7 @@ public data class ActivityData(
     val location: ActivityLocation?,
     val mentionedUsers: List<UserData>,
     val moderation: Moderation?,
+    val notificationContext: Map<String, Any?>?,
     val ownBookmarks: List<BookmarkData>,
     val ownReactions: List<FeedsReactionData>,
     val parent: ActivityData?,
@@ -147,6 +149,7 @@ internal fun ActivityResponse.toModel(): ActivityData = ActivityData(
     location = location,
     mentionedUsers = mentionedUsers.map { it.toModel() },
     moderation = moderation?.toModel(),
+    notificationContext = notificationContext,
     ownBookmarks = ownBookmarks.map { it.toModel() },
     ownReactions = ownReactions.map { it.toModel() },
     parent = parent?.toModel(),
@@ -183,9 +186,14 @@ internal fun ActivityResponse.Visibility.toModel(): ActivityDataVisibility = whe
  */
 internal fun ActivityData.addComment(comment: CommentData): ActivityData {
     val updatedComments = this.comments.upsert(comment, CommentData::id)
+    val updatedCommentCount = if (updatedComments.size > this.comments.size) {
+        this.commentCount + 1
+    } else {
+        this.commentCount
+    }
     return this.copy(
         comments = updatedComments,
-        commentCount = updatedComments.size,
+        commentCount = updatedCommentCount,
     )
 }
 
@@ -199,7 +207,7 @@ internal fun ActivityData.removeComment(comment: CommentData): ActivityData {
     val updatedComments = this.comments.filter { it.id != comment.id }
     return this.copy(
         comments = updatedComments,
-        commentCount = updatedComments.size,
+        commentCount = max(0, this.commentCount - 1),
     )
 }
 

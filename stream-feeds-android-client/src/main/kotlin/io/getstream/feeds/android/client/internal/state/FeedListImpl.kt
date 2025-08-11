@@ -3,7 +3,6 @@ package io.getstream.feeds.android.client.internal.state
 import io.getstream.android.core.websocket.WebSocketConnectionState
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.api.state.FeedList
 import io.getstream.feeds.android.client.api.state.FeedListState
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
@@ -11,7 +10,6 @@ import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManag
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
 import io.getstream.feeds.android.client.internal.state.event.handler.FeedListEventHandler
-import io.getstream.feeds.android.core.generated.models.FeedUpdatedEvent
 import io.getstream.feeds.android.core.generated.models.WSEvent
 import kotlin.collections.emptyList
 

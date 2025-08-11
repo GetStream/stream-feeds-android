@@ -92,6 +92,7 @@ data class SubmitActionRequest (
                     "shadow_block" -> ShadowBlock
                     "unban" -> Unban
                     "unblock" -> Unblock
+                    "unmask" -> Unmask
                     else -> Unknown(s)
                 }
             }
@@ -108,6 +109,7 @@ data class SubmitActionRequest (
             object ShadowBlock : ActionType("shadow_block")
             object Unban : ActionType("unban")
             object Unblock : ActionType("unblock")
+            object Unmask : ActionType("unmask")
             data class Unknown(val unknownValue: kotlin.String) : ActionType(unknownValue)
         
 
