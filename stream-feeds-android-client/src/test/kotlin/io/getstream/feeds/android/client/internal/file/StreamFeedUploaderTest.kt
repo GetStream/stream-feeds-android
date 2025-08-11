@@ -1,6 +1,6 @@
 package io.getstream.feeds.android.client.internal.file
 
-import io.getstream.feeds.android.client.api.file.FeedUploadContext
+import io.getstream.feeds.android.client.api.file.DefaultFeedUploadContext
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.file.FileType
 import io.getstream.feeds.android.client.api.file.UploadedFile
@@ -40,7 +40,7 @@ internal class StreamFeedUploaderTest {
         val payload = FeedUploadPayload(
             file = File("test.txt"),
             type = FileType.Other("txt"),
-            context = FeedUploadContext(FeedId("user", "timeline"))
+            context = DefaultFeedUploadContext(FeedId("user", "timeline"))
         )
 
         val result = uploader.upload(payload)
@@ -56,7 +56,7 @@ internal class StreamFeedUploaderTest {
         val payload = FeedUploadPayload(
             file = File("test.png"),
             type = FileType.Image("png"),
-            context = FeedUploadContext(FeedId("user", "timeline"))
+            context = DefaultFeedUploadContext(FeedId("user", "timeline"))
         )
 
         val result = uploader.upload(payload)
@@ -70,7 +70,7 @@ internal class StreamFeedUploaderTest {
         val payload = FeedUploadPayload(
             file = file,
             type = FileType.Image("png"),
-            context = FeedUploadContext(FeedId("user", "timeline"))
+            context = DefaultFeedUploadContext(FeedId("user", "timeline"))
         )
         val progressListener: (Double) -> Unit = mockk(relaxed = true)
         val uploadResponse = FileUploadResponse(duration = "", file = "img", thumbUrl = "thumbnail")

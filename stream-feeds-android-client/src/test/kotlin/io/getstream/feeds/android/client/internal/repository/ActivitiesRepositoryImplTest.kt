@@ -1,6 +1,6 @@
 package io.getstream.feeds.android.client.internal.repository
 
-import io.getstream.feeds.android.client.api.file.FeedUploadContext
+import io.getstream.feeds.android.client.api.file.DefaultFeedUploadContext
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.file.FileType
@@ -30,8 +30,8 @@ internal class ActivitiesRepositoryImplTest {
     @Test
     fun `on addActivity, upload attachments and send api request`() = runTest {
         val attachmentUploads = listOf(
-            FeedUploadPayload(File("1"), FileType.Image("jpg"), FeedUploadContext(FeedId("id:1"))),
-            FeedUploadPayload(File("2"), FileType.Image("png"), FeedUploadContext(FeedId("id:2"))),
+            FeedUploadPayload(File("1"), FileType.Image("jpg"), DefaultFeedUploadContext(FeedId("id:1"))),
+            FeedUploadPayload(File("2"), FileType.Image("png"), DefaultFeedUploadContext(FeedId("id:2"))),
         )
         val request = FeedAddActivityRequest(
             request = AddActivityRequest(
@@ -67,7 +67,7 @@ internal class ActivitiesRepositoryImplTest {
     @Test
     fun `addActivity on error return failure`() = runTest {
         val attachmentUploads = listOf(
-            FeedUploadPayload(File("some file"), FileType.Image("jpg"), FeedUploadContext(FeedId("id1")))
+            FeedUploadPayload(File("some file"), FileType.Image("jpg"), DefaultFeedUploadContext(FeedId("id1")))
         )
         val request = FeedAddActivityRequest(
             request = AddActivityRequest(type = "post", text = "Nice post"),
