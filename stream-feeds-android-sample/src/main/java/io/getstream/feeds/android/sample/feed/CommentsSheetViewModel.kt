@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.getstream.feeds.android.client.api.file.DefaultFeedUploadContext
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.file.FileType
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
@@ -73,7 +72,6 @@ class CommentsSheetViewModel(
                             FeedUploadPayload(
                                 file = it,
                                 type = FileType.Image("jpeg"),
-                                context = DefaultFeedUploadContext(activity.fid)
                             )
                         }
                     ),

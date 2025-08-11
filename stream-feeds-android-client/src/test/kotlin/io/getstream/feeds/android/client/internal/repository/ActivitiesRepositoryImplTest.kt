@@ -1,12 +1,10 @@
 package io.getstream.feeds.android.client.internal.repository
 
-import io.getstream.feeds.android.client.api.file.DefaultFeedUploadContext
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.file.FileType
 import io.getstream.feeds.android.client.api.file.UploadedFile
 import io.getstream.feeds.android.client.api.model.FeedAddActivityRequest
-import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.core.generated.apis.ApiService
 import io.getstream.feeds.android.core.generated.models.AddActivityRequest
 import io.getstream.feeds.android.core.generated.models.Attachment
@@ -30,8 +28,8 @@ internal class ActivitiesRepositoryImplTest {
     @Test
     fun `on addActivity, upload attachments and send api request`() = runTest {
         val attachmentUploads = listOf(
-            FeedUploadPayload(File("1"), FileType.Image("jpg"), DefaultFeedUploadContext(FeedId("id:1"))),
-            FeedUploadPayload(File("2"), FileType.Image("png"), DefaultFeedUploadContext(FeedId("id:2"))),
+            FeedUploadPayload(File("1"), FileType.Image("jpg")),
+            FeedUploadPayload(File("2"), FileType.Image("png")),
         )
         val request = FeedAddActivityRequest(
             request = AddActivityRequest(
@@ -46,14 +44,14 @@ internal class ActivitiesRepositoryImplTest {
             text = "Nice post",
             attachments = listOf(
                 Attachment(imageUrl = "alreadyUploaded", type = "image"),
-                Attachment(assetUrl = "file/id:1", thumbUrl = "thumb/id:1"),
-                Attachment(assetUrl = "file/id:2", thumbUrl = "thumb/id:2"),
+                Attachment(assetUrl = "file/1", thumbUrl = "thumb/1"),
+                Attachment(assetUrl = "file/2", thumbUrl = "thumb/2"),
             )
         )
 
         coEvery { uploader.upload(any()) } answers {
-            val id = firstArg<FeedUploadPayload>().context.feedId.rawValue
-            Result.success(UploadedFile(fileUrl = "file/$id", thumbnailUrl = "thumb/$id"))
+            val name = firstArg<FeedUploadPayload>().file.name
+            Result.success(UploadedFile(fileUrl = "file/$name", thumbnailUrl = "thumb/$name"))
         }
 
         repository.addActivity(request)
@@ -66,9 +64,7 @@ internal class ActivitiesRepositoryImplTest {
 
     @Test
     fun `addActivity on error return failure`() = runTest {
-        val attachmentUploads = listOf(
-            FeedUploadPayload(File("some file"), FileType.Image("jpg"), DefaultFeedUploadContext(FeedId("id1")))
-        )
+        val attachmentUploads = listOf(FeedUploadPayload(File("some file"), FileType.Image("jpg")))
         val request = FeedAddActivityRequest(
             request = AddActivityRequest(type = "post", text = "Nice post"),
             attachmentUploads = attachmentUploads

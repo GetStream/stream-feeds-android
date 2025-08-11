@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import io.getstream.feeds.android.client.api.FeedsClient
-import io.getstream.feeds.android.client.api.file.DefaultFeedUploadContext
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.file.FileType
 import io.getstream.feeds.android.client.api.model.ActivityData
@@ -127,7 +126,7 @@ class FeedViewModel(
                         feeds = listOf(fid.rawValue)
                     ),
                     attachmentUploads = attachmentFiles.map {
-                        FeedUploadPayload(it, FileType.Image("jpeg"), DefaultFeedUploadContext(fid))
+                        FeedUploadPayload(it, FileType.Image("jpeg"))
                     }
                 ),
                 attachmentUploadProgress = { file, progress ->

@@ -1,11 +1,9 @@
 package io.getstream.feeds.android.client.internal.repository
 
-import io.getstream.feeds.android.client.api.file.DefaultFeedUploadContext
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.file.FileType
 import io.getstream.feeds.android.client.api.file.UploadedFile
-import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
 import io.getstream.feeds.android.core.generated.apis.ApiService
 import io.getstream.feeds.android.core.generated.models.AddCommentRequest
@@ -31,8 +29,8 @@ internal class CommentsRepositoryImplTest {
     @Test
     fun `on addComment, upload attachments and send api request`() = runTest {
         val attachmentUploads = listOf(
-            FeedUploadPayload(File("1"), FileType.Image("jpg"), DefaultFeedUploadContext(FeedId("id:1"))),
-            FeedUploadPayload(File("2"), FileType.Image("png"), DefaultFeedUploadContext(FeedId("id:2"))),
+            FeedUploadPayload(File("1"), FileType.Image("jpg")),
+            FeedUploadPayload(File("2"), FileType.Image("png")),
         )
         val request = ActivityAddCommentRequest(
             activityId = "activityId",
@@ -46,8 +44,8 @@ internal class CommentsRepositoryImplTest {
             comment = "Nice comment",
             attachments = listOf(
                 Attachment(imageUrl = "alreadyUploaded", type = "image"),
-                Attachment(assetUrl = "file/id:1", thumbUrl = "thumb/id:1"),
-                Attachment(assetUrl = "file/id:2", thumbUrl = "thumb/id:2"),
+                Attachment(assetUrl = "file/1", thumbUrl = "thumb/1"),
+                Attachment(assetUrl = "file/2", thumbUrl = "thumb/2"),
             )
         )
         mockUploader()
@@ -63,7 +61,7 @@ internal class CommentsRepositoryImplTest {
     @Test
     fun `addComment on error return failure`() = runTest {
         val attachmentUploads = listOf(
-            FeedUploadPayload(File("some file"), FileType.Image("jpg"), DefaultFeedUploadContext(FeedId("id1")))
+            FeedUploadPayload(File("some file"), FileType.Image("jpg"))
         )
         val request = ActivityAddCommentRequest(
             request = AddCommentRequest(comment = "Nice comment", objectId = "activityId", objectType = "activity"),
@@ -80,8 +78,8 @@ internal class CommentsRepositoryImplTest {
 
     @Test
     fun `on addCommentsBatch, upload attachments and send api request`() = runTest {
-        val payload1 = FeedUploadPayload(File("1"), FileType.Image("jpg"), DefaultFeedUploadContext(FeedId("id:1")))
-        val payload2 = FeedUploadPayload(File("2"), FileType.Image("png"), DefaultFeedUploadContext(FeedId("id:2")))
+        val payload1 = FeedUploadPayload(File("1"), FileType.Image("jpg"))
+        val payload2 = FeedUploadPayload(File("2"), FileType.Image("png"))
         val requests = listOf(
             ActivityAddCommentRequest(
                 activityId = "activityId1",
@@ -103,7 +101,7 @@ internal class CommentsRepositoryImplTest {
                 comment = "Nice comment 1",
                 attachments = listOf(
                     Attachment(imageUrl = "alreadyUploaded1", type = "image"),
-                    Attachment(assetUrl = "file/id:1", thumbUrl = "thumb/id:1"),
+                    Attachment(assetUrl = "file/1", thumbUrl = "thumb/1"),
                 )
             ),
             AddCommentRequest(
@@ -112,7 +110,7 @@ internal class CommentsRepositoryImplTest {
                 comment = "Nice comment 2",
                 attachments = listOf(
                     Attachment(imageUrl = "alreadyUploaded2", type = "image"),
-                    Attachment(assetUrl = "file/id:2", thumbUrl = "thumb/id:2"),
+                    Attachment(assetUrl = "file/2", thumbUrl = "thumb/2"),
                 )
             )
         )
@@ -129,8 +127,8 @@ internal class CommentsRepositoryImplTest {
 
     private fun mockUploader() {
         coEvery { uploader.upload(any()) } answers {
-            val id = firstArg<FeedUploadPayload>().context.feedId.rawValue
-            Result.success(UploadedFile(fileUrl = "file/$id", thumbnailUrl = "thumb/$id"))
+            val name = firstArg<FeedUploadPayload>().file.name
+            Result.success(UploadedFile(fileUrl = "file/$name", thumbnailUrl = "thumb/$name"))
         }
     }
 }
