@@ -1,9 +1,12 @@
 package io.getstream.feeds.android.sample.feed
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +26,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
@@ -44,23 +49,34 @@ fun CommentsBottomSheet(
     onDismiss: () -> Unit,
 ) {
     val comments by viewModel.state.comments.collectAsStateWithLifecycle()
+    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    ModalBottomSheet(onDismiss) {
+    ModalBottomSheet(onDismiss, sheetState = state) {
         CommentsBottomSheetContent(
             comments = comments,
             onLoadMore = viewModel::onLoadMore,
+            onLikeClick = viewModel::onLikeClick,
             onPostComment = viewModel::onPostComment,
         )
     }
 }
 
 @Composable
-private fun CommentsBottomSheetContent(
+private fun ColumnScope.CommentsBottomSheetContent(
     comments: List<ThreadedCommentData>,
     onLoadMore: () -> Unit,
-    onPostComment: (text: String) -> Unit,
+    onLikeClick: (ThreadedCommentData) -> Unit,
+    onPostComment: (text: String, parentCommentId: String?) -> Unit,
 ) {
-    var showCreateCommentBottomSheet by remember { mutableStateOf(false) }
+    var createCommentData: CreateCommentData? by remember { mutableStateOf(null) }
+    var expandedCommentId: String? by remember { mutableStateOf(null) }
+
+    Text(
+        text = "Comments",
+        fontWeight = FontWeight.Bold,
+        fontSize = 20.sp,
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+    )
 
     Box(Modifier.fillMaxWidth()) {
         val lazyListState = rememberLazyListState()
@@ -69,12 +85,21 @@ private fun CommentsBottomSheetContent(
 
         LazyColumn(state = lazyListState) {
             items(comments) { comment ->
-                Comment(comment, Modifier.fillMaxWidth())
+                Comment(
+                    data = comment,
+                    isExpanded = comment.id == expandedCommentId,
+                    onExpandClick = { expandedCommentId = comment.id.takeUnless { it == expandedCommentId } },
+                    onReplyClick = { commentId -> createCommentData = CreateCommentData(commentId) },
+                    onLikeClick = onLikeClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                )
             }
         }
 
         FloatingActionButton(
-            onClick = { showCreateCommentBottomSheet = true },
+            onClick = { createCommentData = CreateCommentData() },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp),
@@ -90,24 +115,29 @@ private fun CommentsBottomSheetContent(
         }
     }
 
-    if (showCreateCommentBottomSheet) {
+    if (createCommentData != null) {
         CreateContentBottomSheet(
-            onDismiss = { showCreateCommentBottomSheet = false },
+            onDismiss = { createCommentData = null },
             onPost = { text, attachments ->
-                showCreateCommentBottomSheet = false
-                onPostComment(text)
+                onPostComment(text, createCommentData?.replyParentId)
+                createCommentData = null
             }
         )
     }
 }
 
 @Composable
-private fun Comment(data: ThreadedCommentData, modifier: Modifier = Modifier) {
-    Column(
-        modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .width(IntrinsicSize.Max)
-    ) {
+private fun Comment(
+    data: ThreadedCommentData,
+    isExpanded: Boolean,
+    onExpandClick: () -> Unit,
+    onReplyClick: (commentId: String) -> Unit,
+    onLikeClick: (ThreadedCommentData) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expandedCommentId: String? by remember { mutableStateOf(null) }
+
+    Column(modifier.width(IntrinsicSize.Max)) {
         Column(
             Modifier
                 .background(Color.LightGray, shape = RoundedCornerShape(16.dp))
@@ -117,17 +147,51 @@ private fun Comment(data: ThreadedCommentData, modifier: Modifier = Modifier) {
             Text(data.user.name.orEmpty(), fontWeight = FontWeight.SemiBold)
             Text(data.text.orEmpty())
         }
+
         Row(
             Modifier
                 .padding(top = 8.dp, start = 16.dp, end = 16.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // TODO [G.] Implement actions
-            Text("Like")
-            Text("Reply")
+            val hasOwnHeart = data.ownReactions.any { it.type == "heart" }
+
+            Text(
+                text = "Like",
+                modifier = Modifier.clickable { onLikeClick(data) },
+                color = if (hasOwnHeart) Color.Red else Color.Unspecified
+            )
+            Text(
+                text = "Reply",
+                modifier = Modifier.clickable(onClick = { onReplyClick(data.id) })
+            )
             Spacer(Modifier.weight(1f))
-            Text("Replies")
+            Text(
+                text = "Replies (${data.replyCount}) ",
+                modifier = Modifier.clickable(onClick = onExpandClick),
+            )
+        }
+
+        AnimatedVisibility(isExpanded && !data.replies.isNullOrEmpty()) {
+            Column {
+                data.replies?.forEach { reply ->
+                    Comment(
+                        data = reply,
+                        isExpanded = reply.id == expandedCommentId,
+                        onExpandClick = { expandedCommentId = reply.id.takeUnless { it == expandedCommentId } },
+                        onReplyClick = onReplyClick,
+                        onLikeClick = onLikeClick,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, top = 16.dp)
+                    )
+                }
+            }
         }
     }
 }
+
+@JvmInline
+private value class CreateCommentData(
+    val replyParentId: String? = null,
+)
