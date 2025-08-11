@@ -23,15 +23,6 @@ public data class User(
     public companion object {
 
         /**
-         * Creates a guest user with the provided ID.
-         *
-         * @param userId The ID of the user.
-         * @return a guest [User].
-         */
-        public fun guest(userId: String): User =
-            User(id = userId, name = userId, type = UserAuthType.GUEST)
-
-        /**
          * Creates an anonymous user.
          *
          * @return an anonymous user.
@@ -44,8 +35,7 @@ public data class User(
 /**
  * Represents the type of user authentication.
  */
-public enum class UserAuthType {
-    REGULAR,
-    ANONYMOUS,
-    GUEST;
+public enum class UserAuthType(public val rawValue: String) {
+    REGULAR("jwt"),
+    ANONYMOUS("anonymous"),
 }
