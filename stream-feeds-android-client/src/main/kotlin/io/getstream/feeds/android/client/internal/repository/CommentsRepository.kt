@@ -63,7 +63,7 @@ internal interface CommentsRepository {
      */
     suspend fun addCommentsBatch(
         requests: List<ActivityAddCommentRequest>,
-        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)? = null
     ): Result<List<CommentData>>
 
     /**

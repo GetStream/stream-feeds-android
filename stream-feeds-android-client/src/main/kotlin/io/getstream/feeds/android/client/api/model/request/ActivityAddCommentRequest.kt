@@ -26,10 +26,10 @@ public data class ActivityAddCommentRequest(
     public constructor(
         comment: String,
         activityId: String,
-        attachments: List<Attachment>? = null,
+        attachments: List<Attachment>? = emptyList(),
         createNotificationActivity: Boolean? = null,
-        custom: Map<String, Any?>? = null,
-        mentionedUserIds: List<String>? = null,
+        custom: Map<String, Any?>? = emptyMap(),
+        mentionedUserIds: List<String>? = emptyList(),
         parentId: String? = null,
         attachmentUploads: List<FeedUploadPayload> = emptyList(),
     ) : this(
