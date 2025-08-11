@@ -31,8 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,6 +61,7 @@ import io.getstream.feeds.android.core.generated.models.Attachment
 import io.getstream.feeds.android.sample.R
 import io.getstream.feeds.android.sample.components.LinkText
 import io.getstream.feeds.android.sample.components.UserAvatar
+import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -98,23 +97,7 @@ fun FeedsScreen(
             val activities by viewModel.state.activities.collectAsStateWithLifecycle()
             val listState = rememberLazyListState()
 
-            // Detect when scrolled to 5th item from bottom
-            val shouldLoadMore by remember {
-                derivedStateOf {
-                    val layoutInfo = listState.layoutInfo
-                    val totalItems = layoutInfo.totalItemsCount
-                    val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-
-                    // Check if we're within 5 items of the bottom
-                    totalItems > 0 && lastVisibleItem >= (totalItems - 5)
-                }
-            }
-
-            LaunchedEffect(shouldLoadMore) {
-                if (shouldLoadMore) {
-                    viewModel.onLoadMore()
-                }
-            }
+            ScrolledToBottomEffect(listState, action = viewModel::onLoadMore)
 
             LazyColumn(state = listState) {
                 items(activities) { activity ->
@@ -126,6 +109,8 @@ fun FeedsScreen(
                         )
                         val parent = activity.parent!!
                         ActivityContent(
+                            feedsClient = feedsClient,
+                            feedId = fid,
                             user = parent.user,
                             text = parent.text ?: "",
                             attachments = parent.attachments,
@@ -144,6 +129,8 @@ fun FeedsScreen(
                         )
                     } else {
                         ActivityContent(
+                            feedsClient = feedsClient,
+                            feedId = fid,
                             user = activity.user,
                             text = activity.text ?: "",
                             attachments = activity.attachments,
@@ -180,10 +167,10 @@ fun FeedsScreen(
                 )
             }
         }
-        
+
         // Create Post Bottom Sheet
         if (showCreatePostBottomSheet) {
-            CreatePostBottomSheet(
+            CreateContentBottomSheet(
                 onDismiss = { showCreatePostBottomSheet = false },
                 onPost = { postText ->
                     showCreatePostBottomSheet = false
@@ -258,6 +245,8 @@ fun FeedsScreenToolbar(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ActivityContent(
+    feedsClient: FeedsClient,
+    feedId: FeedId,
     user: UserData,
     text: String,
     attachments: List<Attachment>,
@@ -269,6 +258,7 @@ fun ActivityContent(
     onDeleteClick: () -> Unit,
     onEditSave: ((String) -> Unit)? = null
 ) {
+    var showCommentsBottomSheet by remember { mutableStateOf(false) }
     var showRepostDialog by remember { mutableStateOf(false) }
     var showContextMenu by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
@@ -346,7 +336,7 @@ fun ActivityContent(
         // Action buttons row
         ActivityActions(
             activity = data,
-            onCommentClick = { /* TODO: Handle comment */ },
+            onCommentClick = { showCommentsBottomSheet = true },
             onHeartClick = onHeartClick,
             onRepostClick = { showRepostDialog = true },
             onBookmarkClick = onBookmarkClick,
@@ -391,6 +381,17 @@ fun ActivityContent(
             )
         }
 
+        if (showCommentsBottomSheet) {
+            CommentsBottomSheet(
+                // TODO [G.] migrate to Compose navigation
+                viewModel = remember {
+                    CommentsSheetViewModel
+                        .Factory(feedsClient.activity(activityId = data.id, fid = feedId))
+                        .create(CommentsSheetViewModel::class.java)
+                },
+                onDismiss = { showCommentsBottomSheet = false },
+            )
+        }
         // Add divider between activities for better separation
         HorizontalDivider(
             modifier = Modifier
@@ -521,14 +522,14 @@ fun EditPostDialog(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreatePostBottomSheet(
+fun CreateContentBottomSheet(
     onDismiss: () -> Unit,
     onPost: (String) -> Unit
 ) {
     var postText by remember { mutableStateOf("") }
     var hasAttachment by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = bottomSheetState,
@@ -550,7 +551,7 @@ fun CreatePostBottomSheet(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
-                
+
                 Text(
                     text = "Post",
                     color = if (postText.isNotBlank()) Color.Blue else Color.Gray,
@@ -562,7 +563,7 @@ fun CreatePostBottomSheet(
                     }
                 )
             }
-            
+
             // Text Input
             OutlinedTextField(
                 value = postText,
@@ -574,7 +575,7 @@ fun CreatePostBottomSheet(
                 minLines = 3,
                 maxLines = 6
             )
-            
+
             // Bottom toolbar with image attachment option
             Row(
                 modifier = Modifier
@@ -596,7 +597,7 @@ fun CreatePostBottomSheet(
                         modifier = Modifier.size(24.dp)
                     )
                 }
-                
+
                 if (hasAttachment) {
                     Text(
                         text = "Attachment selected",
