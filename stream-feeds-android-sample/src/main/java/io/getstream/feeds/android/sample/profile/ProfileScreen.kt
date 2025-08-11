@@ -1,4 +1,4 @@
-package io.getstream.feeds.android.sample.login
+package io.getstream.feeds.android.sample.profile
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
@@ -13,8 +13,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,111 +27,79 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
-import io.getstream.feeds.android.client.api.FeedsClient
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.UserData
 
+data class ProfileScreenArgs(val feedId: String) {
+    val fid = FeedId(feedId)
+}
+
+@Destination<RootGraph>(style = DestinationStyleBottomSheet::class, navArgs = ProfileScreenArgs::class)
 @Composable
-fun ProfileScreen(
-    fid: FeedId,
-    client: FeedsClient,
-    viewModel: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(fid, client))
-) {
+fun ProfileScreen(navigator: DestinationsNavigator) {
+    val viewModel = hiltViewModel<ProfileViewModel>()
+
+    if (viewModel.state == null) {
+        LaunchedEffect(Unit) { navigator.popBackStack() }
+        return
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .systemBarsPadding()
             .padding(16.dp),
     ) {
-        // Feed members
         Text(
-            text = "Feed members:",
+            text = "Profile",
+            fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
+            modifier = Modifier.padding(bottom = 16.dp)
         )
-        val members by viewModel.state.members.collectAsStateWithLifecycle()
-        members.forEach { member ->
-            Text(
-                text = "${member.user.name ?: member.user.id} (${member.role})",
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
-        }
+
+        // Feed members
+        ProfileSection(
+            title = "Members:",
+            emptyText = "No members",
+            items = viewModel.state.members.collectAsStateWithLifecycle().value,
+            itemText = { member -> "${member.user.name ?: member.user.id} (${member.role})" },
+        )
 
         // Follow requests
-        Text(
-            text = "Follow requests:",
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
-            modifier = Modifier.padding(top = 16.dp)
+        ProfileSection(
+            title = "Follow requests:",
+            emptyText = "No follow requests",
+            items = viewModel.state.followRequests.collectAsStateWithLifecycle().value,
+            itemText = { it.sourceFeed.createdBy.run { name ?: id } },
         )
-        val followRequests by viewModel.state.followRequests.collectAsStateWithLifecycle()
-        if (followRequests.isNotEmpty()) {
-            followRequests.forEach { request ->
-                Text(
-                    text = request.sourceFeed.createdBy.name ?: request.sourceFeed.createdBy.id,
-                    modifier = Modifier.padding(vertical = 4.dp)
-                )
-            }
-        } else {
-            Text(
-                text = "-No follow requests-",
-            )
-        }
 
         // Following
-        Text(
-            text = "Following:",
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
-            modifier = Modifier.padding(top = 16.dp)
+        ProfileSection(
+            title = "Following:",
+            emptyText = "Not following any feeds",
+            items = viewModel.state.following.collectAsStateWithLifecycle().value,
+            itemText = { it.targetFeed.createdBy.run { name ?: id } },
         )
-        val following by viewModel.state.following.collectAsStateWithLifecycle()
-        if (following.isNotEmpty()) {
-            following.forEach { feed ->
-                Text(
-                    text = feed.targetFeed.createdBy.name ?: feed.targetFeed.createdBy.id,
-                    modifier = Modifier.padding(vertical = 4.dp)
-                )
-            }
-        } else {
-            Text(
-                text = "-Not following any feeds-",
-            )
-        }
 
         // Followers
-        Text(
-            text = "Followers:",
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
-            modifier = Modifier.padding(top = 16.dp)
+        ProfileSection(
+            title = "Followers:",
+            emptyText = "No followers",
+            items = viewModel.state.followers.collectAsStateWithLifecycle().value,
+            itemText = { it.sourceFeed.createdBy.run { name ?: id } },
         )
-        val followers by viewModel.state.followers.collectAsStateWithLifecycle()
-        if (followers.isNotEmpty()) {
-            followers.forEach { feed ->
-                Text(
-                    text = feed.sourceFeed.createdBy.name ?: feed.sourceFeed.createdBy.id,
-                    modifier = Modifier.padding(vertical = 4.dp)
-                )
-            }
-        } else {
-            Text(
-                text = "-No followers-",
-            )
-        }
 
         // Follow suggestions
         val followSuggestions by viewModel.followSuggestions.collectAsStateWithLifecycle()
-        Text(
-            text = "Follow suggestions:",
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
-            modifier = Modifier.padding(top = 16.dp)
-        )
+        SectionTitle("Who to follow")
         if (followSuggestions.isNotEmpty()) {
             LazyColumn {
                 items(followSuggestions) {
@@ -148,6 +118,43 @@ fun ProfileScreen(
             )
         }
     }
+}
+
+@Composable
+private fun SectionTitle(text: String) {
+    Text(
+        text = text,
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp,
+        modifier = Modifier.padding(bottom = 8.dp)
+    )
+}
+
+@Composable
+private fun <T> ProfileSection(
+    title: String,
+    emptyText: String,
+    items: List<T>,
+    itemText: (T) -> String,
+) {
+    SectionTitle(title)
+
+    if (items.isNotEmpty()) {
+        items.forEach { item ->
+            Text(
+                text = itemText(item),
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+        }
+    } else {
+        Text(text = emptyText, color = Color.Gray)
+    }
+
+    HorizontalDivider(
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp)
+    )
 }
 
 @Composable

@@ -4,14 +4,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.material.navigation.ModalBottomSheetLayout
+import androidx.compose.material.navigation.rememberBottomSheetNavigator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.NavGraphs
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.sample.feed.FeedsScreen
@@ -26,14 +31,22 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            DestinationsNavHost(NavGraphs.root)
+            val bottomSheetNavigator = rememberBottomSheetNavigator()
+            val navController = rememberNavController(bottomSheetNavigator)
+
+            ModalBottomSheetLayout(
+                bottomSheetNavigator = bottomSheetNavigator,
+                sheetShape = MaterialTheme.shapes.large
+            ) {
+                DestinationsNavHost(NavGraphs.root, navController = navController)
+            }
         }
     }
 }
 
 @Destination<RootGraph>(start = true)
 @Composable
-fun MainScreen() {
+fun MainScreen(navigator: DestinationsNavigator) {
     val viewModel = hiltViewModel<MainViewModel>()
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
@@ -54,6 +67,7 @@ fun MainScreen() {
                 feedsClient = (viewState as ViewState.LoggedIn).client,
                 avatarUrl = (viewState as ViewState.LoggedIn).user.imageURL,
                 currentUserId = (viewState as ViewState.LoggedIn).user.id,
+                navigator = navigator,
             )
         }
     }

@@ -14,6 +14,7 @@ data class DemoAppConfig(
                     "luke_skywalker" -> "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoibHVrZV9za3l3YWxrZXIifQ.hZ59SWtp_zLKVV9ShkqkTsCGi_jdPHly7XNCf5T_Ev0"
 //                    /* expired token */ "luke_skywalker" -> "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoibHVrZV9za3l3YWxrZXIiLCJleHAiOjE3NTMyOTUyMDh9.FhnfaytqAOponkFigQl1_BWIbuHhfubNPKKz4jxfA8I"
                     "petar" -> "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicGV0YXIifQ.mZFi4iSblaIoyo9JDdcxIkGkwI-tuApeSBawxpz42rs"
+                    "gian" -> "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZ2lhbiJ9.DEb-U3KExmEmYLkc9nYA1CFMSYJF-eUZrcDWDJhtiIY"
                     else -> ""
                 }
             }

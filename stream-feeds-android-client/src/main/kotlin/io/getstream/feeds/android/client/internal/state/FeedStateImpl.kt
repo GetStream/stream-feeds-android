@@ -30,6 +30,7 @@ import io.getstream.feeds.android.core.generated.models.FeedOwnCapability
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * Default implementation of [FeedState].
@@ -259,11 +260,11 @@ internal class FeedStateImpl(
 
     private fun addFollow(follow: FollowData) {
         if (follow.isFollowRequest) {
-            _followRequests.value = _followRequests.value.plus(follow)
+            _followRequests.update { it.upsert(follow, FollowData::id) }
         } else if (follow.isFollowing(fid)) {
-            _following.value = _following.value.plus(follow)
+            _following.update { it.upsert(follow, FollowData::id) }
         } else if (follow.isFollowerOf(fid)) {
-            _followers.value = _followers.value.plus(follow)
+            _followers.update { it.upsert(follow, FollowData::id) }
         }
     }
 
@@ -285,7 +286,7 @@ internal class FeedStateImpl(
  * This interface combines the [FeedState] for read access and [FeedStateUpdates] for
  * write access to the feed state.
  */
-internal interface FeedMutableState: FeedState, FeedStateUpdates
+internal interface FeedMutableState : FeedState, FeedStateUpdates
 
 /**
  * An interface for handling updates to the feed state.
