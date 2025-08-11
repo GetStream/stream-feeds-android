@@ -30,6 +30,7 @@ public data class ActivityAddCommentRequest(
         custom: Map<String, Any?>? = null,
         mentionedUserIds: List<String>? = null,
         parentId: String? = null,
+        attachmentUploads: List<FeedUploadPayload> = emptyList(),
     ) : this(
         AddCommentRequest(
             comment = comment,
@@ -40,7 +41,8 @@ public data class ActivityAddCommentRequest(
             objectId = "",
             objectType = "activity",
             parentId = parentId,
-        )
+        ),
+        attachmentUploads = attachmentUploads,
     )
 
     /**
