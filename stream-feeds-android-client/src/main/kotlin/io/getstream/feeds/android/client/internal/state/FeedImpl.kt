@@ -1,9 +1,11 @@
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.android.core.websocket.WebSocketConnectionState
+import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.CommentData
+import io.getstream.feeds.android.client.api.model.FeedAddActivityRequest
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
@@ -137,8 +139,11 @@ internal class FeedImpl(
             .onSuccess { _state.onFeedDeleted() }
     }
 
-    override suspend fun addActivity(request: AddActivityRequest): Result<ActivityData> {
-        return activitiesRepository.addActivity(request)
+    override suspend fun addActivity(
+        request: FeedAddActivityRequest,
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?
+    ): Result<ActivityData> {
+        return activitiesRepository.addActivity(request, attachmentUploadProgress)
             .onSuccess { _state.onActivityAdded(it) }
     }
 
@@ -176,7 +181,7 @@ internal class FeedImpl(
             fids = listOf(fid.rawValue),
             parentId = activityId,
         )
-        return activitiesRepository.addActivity(request)
+        return activitiesRepository.addActivity(FeedAddActivityRequest(request))
             .onSuccess { _state.onActivityAdded(it) }
     }
 
@@ -369,7 +374,7 @@ internal class FeedImpl(
                 pollId = poll.id,
                 type = activityType,
             )
-            activitiesRepository.addActivity(request)
+            activitiesRepository.addActivity(FeedAddActivityRequest(request))
         }
     }
 }

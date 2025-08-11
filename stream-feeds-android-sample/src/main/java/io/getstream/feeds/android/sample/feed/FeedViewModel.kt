@@ -1,11 +1,20 @@
 package io.getstream.feeds.android.sample.feed
 
+import android.app.Application
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.FeedsClient
+import io.getstream.feeds.android.client.api.file.FeedUploadContext
+import io.getstream.feeds.android.client.api.file.FeedUploadPayload
+import io.getstream.feeds.android.client.api.file.FileType
 import io.getstream.feeds.android.client.api.model.ActivityData
+import io.getstream.feeds.android.client.api.model.FeedAddActivityRequest
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedInputData
 import io.getstream.feeds.android.client.api.model.FeedMemberRequestData
@@ -15,12 +24,17 @@ import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.core.generated.models.AddActivityRequest
 import io.getstream.feeds.android.core.generated.models.AddReactionRequest
 import io.getstream.feeds.android.core.generated.models.UpdateActivityRequest
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 
 class FeedViewModel(
     private val currentUserId: String,
     private val fid: FeedId,
     private val feedsClient: FeedsClient,
+    private val application: Application
 ) : ViewModel() {
 
     private val query = FeedQuery(
@@ -119,14 +133,27 @@ class FeedViewModel(
         }
     }
 
-    fun onCreatePost(text: String) {
+    fun onCreatePost(text: String, attachments: List<Uri>) {
         viewModelScope.launch {
+            val attachmentFiles = copyToFiles(attachments).getOrElse { error ->
+                Log.e(TAG, "Failed to copy attachments", error)
+                return@launch
+            }
+
             feed.addActivity(
-                AddActivityRequest(
-                    type = "activity",
-                    text = text,
-                    fids = listOf(fid.rawValue)
-                )
+                FeedAddActivityRequest(
+                    AddActivityRequest(
+                        type = "activity",
+                        text = text,
+                        fids = listOf(fid.rawValue)
+                    ),
+                    attachmentUploads = attachmentFiles.map {
+                        FeedUploadPayload(it, FileType.Image("jpeg"), FeedUploadContext(fid))
+                    }
+                ),
+                attachmentUploadProgress = { file, progress ->
+                    Log.d(TAG, "Uploading attachment: ${file.type}, progress: $progress")
+                }
             )
                 .onSuccess {
                     Log.d(TAG, "Activity created successfully: ${it.id}")
@@ -134,6 +161,42 @@ class FeedViewModel(
                 .onFailure {
                     Log.e(TAG, "Failed to create activity: $it")
                 }
+
+            deleteFiles(attachmentFiles)
+        }
+    }
+
+    private suspend fun copyToFiles(uris: List<Uri>): Result<List<File>> {
+        val files = mutableListOf<File>()
+        for (uri in uris) {
+            try {
+                val file = copyToFile(uri)
+                files.add(file)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error copying file from URI: $uri", e)
+                deleteFiles(files)
+                return Result.failure(e)
+            }
+        }
+
+        return Result.success(files)
+    }
+
+    private suspend fun copyToFile(uri: Uri) = withContext(Dispatchers.IO) {
+        val outputFile = File(application.cacheDir, "attachment_${System.currentTimeMillis()}.tmp")
+
+        application.contentResolver.openInputStream(uri).use { inputStream ->
+            checkNotNull(inputStream) { "Error opening input stream for URI: $uri" }
+
+            FileOutputStream(outputFile).use(inputStream::copyTo)
+        }
+        outputFile
+    }
+
+
+    private suspend fun deleteFiles(files: List<File>) = runSafely {
+        withContext(Dispatchers.IO) {
+            files.forEach(File::delete)
         }
     }
 
@@ -143,12 +206,17 @@ class FeedViewModel(
     }
 }
 
-class FeedViewModelFactory(
-    private val currentUserId: String,
-    private val fid: FeedId,
-    private val feedsClient: FeedsClient
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return FeedViewModel(currentUserId, fid, feedsClient) as T
+fun feedViewModelFactory(
+    currentUserId: String,
+    fid: FeedId,
+    feedsClient: FeedsClient
+) = viewModelFactory {
+    initializer {
+        FeedViewModel(
+            currentUserId = currentUserId,
+            fid = fid,
+            feedsClient = feedsClient,
+            application = checkNotNull(this[APPLICATION_KEY])
+        )
     }
 }

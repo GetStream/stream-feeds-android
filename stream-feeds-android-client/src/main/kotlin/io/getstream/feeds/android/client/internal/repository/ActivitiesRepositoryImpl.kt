@@ -1,7 +1,10 @@
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.android.core.result.runSafely
+import io.getstream.feeds.android.client.api.file.FeedUploadPayload
+import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.ActivityData
+import io.getstream.feeds.android.client.api.model.FeedAddActivityRequest
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
@@ -9,9 +12,9 @@ import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.api.state.query.toRequest
+import io.getstream.feeds.android.client.internal.file.uploadAll
 import io.getstream.feeds.android.core.generated.apis.ApiService
 import io.getstream.feeds.android.core.generated.models.ActivityRequest
-import io.getstream.feeds.android.core.generated.models.AddActivityRequest
 import io.getstream.feeds.android.core.generated.models.AddReactionRequest
 import io.getstream.feeds.android.core.generated.models.MarkActivityRequest
 import io.getstream.feeds.android.core.generated.models.QueryActivityReactionsRequest
@@ -27,13 +30,23 @@ import io.getstream.feeds.android.core.generated.models.UpsertActivitiesRequest
  */
 internal class ActivitiesRepositoryImpl(
     private val api: ApiService,
-    // TODO: Handle attachment uploads logic
+    private val uploader: FeedUploader,
 ) : ActivitiesRepository {
 
-    override suspend fun addActivity(request: AddActivityRequest): Result<ActivityData> =
-        runSafely {
-            api.addActivity(request).activity.toModel()
-        }
+    override suspend fun addActivity(
+        request: FeedAddActivityRequest,
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?
+    ): Result<ActivityData> = runSafely {
+        val uploadedAttachments = uploader.uploadAll(
+            files = request.attachmentUploads,
+            attachmentUploadProgress = attachmentUploadProgress
+        )
+        val newActivityRequest = request.request.copy(
+            attachments = request.request.attachments.orEmpty() + uploadedAttachments
+        )
+
+        api.addActivity(newActivityRequest).activity.toModel()
+    }
 
     override suspend fun deleteActivity(
         activityId: String,

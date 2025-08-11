@@ -6,9 +6,9 @@ import io.getstream.android.core.user.User
 import io.getstream.android.core.user.UserTokenProvider
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.model.FeedsConfig
 import io.getstream.feeds.android.client.api.state.Activity
 import io.getstream.feeds.android.client.api.state.ActivityCommentList
-import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.ActivityList
 import io.getstream.feeds.android.client.api.state.ActivityReactionList
 import io.getstream.feeds.android.client.api.state.BookmarkFolderList
@@ -24,6 +24,7 @@ import io.getstream.feeds.android.client.api.state.ModerationConfigList
 import io.getstream.feeds.android.client.api.state.PollList
 import io.getstream.feeds.android.client.api.state.PollVoteList
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
+import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersQuery
 import io.getstream.feeds.android.client.api.state.query.BookmarksQuery
@@ -387,15 +388,18 @@ public interface FeedsClient {
  * @param apiKey The API key for the client.
  * @param user The user associated with the client.
  * @param tokenProvider The provider for user tokens, used for refreshing tokens as needed.
+ * @param config Configuration for the client, such as custom file uploader.
  */
 public fun FeedsClient(
     context: Context,
     apiKey: ApiKey,
     user: User,
     tokenProvider: UserTokenProvider,
+    config: FeedsConfig = FeedsConfig(),
 ): FeedsClient = createFeedsClient(
     context = context,
     apiKey = apiKey,
     user = user,
     tokenProvider = tokenProvider,
+    config = config,
 )

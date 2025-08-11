@@ -1,12 +1,13 @@
 package io.getstream.feeds.android.client.internal.repository
 
+import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.model.ActivityData
+import io.getstream.feeds.android.client.api.model.FeedAddActivityRequest
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.core.generated.models.ActivityRequest
-import io.getstream.feeds.android.core.generated.models.AddActivityRequest
 import io.getstream.feeds.android.core.generated.models.AddReactionRequest
 import io.getstream.feeds.android.core.generated.models.MarkActivityRequest
 import io.getstream.feeds.android.core.generated.models.QueryActivityReactionsRequest
@@ -24,9 +25,10 @@ internal interface ActivitiesRepository {
      * @param request The request containing the activity data to be added.
      * @return A [Result] containing the added [ActivityData] or an error.
      */
-    suspend fun addActivity(request: AddActivityRequest): Result<ActivityData>
-
-    // TODO: suspend fun addActivity(request: FeedAddActivityRequest): Result<ActivityData>
+    suspend fun addActivity(
+        request: FeedAddActivityRequest,
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)? = null,
+    ): Result<ActivityData>
 
     /**
      * Deletes an activity from the feed.

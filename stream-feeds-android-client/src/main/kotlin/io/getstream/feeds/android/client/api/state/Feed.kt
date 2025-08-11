@@ -1,15 +1,16 @@
 package io.getstream.feeds.android.client.api.state
 
+import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.CommentData
+import io.getstream.feeds.android.client.api.model.FeedAddActivityRequest
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
-import io.getstream.feeds.android.core.generated.models.AddActivityRequest
 import io.getstream.feeds.android.core.generated.models.AddBookmarkRequest
 import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
 import io.getstream.feeds.android.core.generated.models.AddCommentRequest
@@ -94,18 +95,16 @@ public interface Feed {
     public suspend fun deleteFeed(hardDelete: Boolean = false): Result<Unit>
 
     /**
-     * Adds a new activity to the feed. TODO: Need attachments setup for this
+     * Adds a new activity to the feed.
      *
      * @param request The request containing the activity data to add.
      * @return A [Result] containing the added [ActivityData] if successful, or an error if the
      * operation fails.
      */
-//    public suspend fun addActivity(request: FeedAddActivityRequest): Result<ActivityData>
-
-    /**
-     * TODO: Remove this method once the attachment upload logic is implemented.
-     */
-    public suspend fun addActivity(request: AddActivityRequest): Result<ActivityData>
+    public suspend fun addActivity(
+        request: FeedAddActivityRequest,
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)? = null,
+    ): Result<ActivityData>
 
     /**
      * Updates an existing activity in the feed.

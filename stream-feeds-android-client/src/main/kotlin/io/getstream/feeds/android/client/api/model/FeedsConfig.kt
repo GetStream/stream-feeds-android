@@ -1,5 +1,7 @@
 package io.getstream.feeds.android.client.api.model
 
+import io.getstream.feeds.android.client.api.file.FeedUploader
+
 /**
  * Configuration class for the Stream Feeds Android client.
  *
@@ -10,5 +12,6 @@ package io.getstream.feeds.android.client.api.model
  * Defaults to [PushNotificationsConfig] with default settings.
  */
 public class FeedsConfig(
+    public val customUploader: FeedUploader? = null,
     public val pushNotificationsConfig: PushNotificationsConfig = PushNotificationsConfig(),
 )

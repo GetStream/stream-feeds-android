@@ -1,5 +1,10 @@
 package io.getstream.feeds.android.sample.feed
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts.PickMultipleVisualMedia
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -14,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -41,7 +47,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -52,7 +57,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.FeedId
@@ -70,7 +74,7 @@ fun FeedsScreen(
     feedsClient: FeedsClient,
     avatarUrl: String?,
     currentUserId: String,
-    viewModel: FeedViewModel = viewModel(factory = FeedViewModelFactory(currentUserId, fid, feedsClient))
+    viewModel: FeedViewModel = viewModel(factory = feedViewModelFactory(currentUserId, fid, feedsClient))
 ) {
     var showCreatePostBottomSheet by remember { mutableStateOf(false) }
     Column(
@@ -172,9 +176,9 @@ fun FeedsScreen(
         if (showCreatePostBottomSheet) {
             CreateContentBottomSheet(
                 onDismiss = { showCreatePostBottomSheet = false },
-                onPost = { postText ->
+                onPost = { postText, attachments ->
                     showCreatePostBottomSheet = false
-                    viewModel.onCreatePost(postText)
+                    viewModel.onCreatePost(postText, attachments)
                 }
             )
         }
@@ -317,21 +321,7 @@ fun ActivityContent(
         }
 
         // Attachments - show below the content for better visual hierarchy
-        val context = LocalContext.current
-        attachments.firstOrNull()?.let { attachment ->
-            AsyncImage(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(240.dp)
-                    .padding(top = 8.dp)
-                    .clip(RoundedCornerShape(12.dp)),
-                model = ImageRequest.Builder(context)
-                    .data(attachment.imageUrl)
-                    .build(),
-                contentDescription = "Activity image",
-                contentScale = ContentScale.Crop,
-            )
-        }
+        AttachmentsSection(attachments)
 
         // Action buttons row
         ActivityActions(
@@ -400,6 +390,40 @@ fun ActivityContent(
             color = Color.Gray.copy(alpha = 0.2f),
             thickness = 1.dp
         )
+    }
+}
+
+@Composable
+private fun AttachmentsSection(attachments: List<Attachment>) {
+    if (attachments.size == 1) {
+        AsyncImage(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(240.dp)
+                .padding(top = 8.dp)
+                .clip(RoundedCornerShape(12.dp)),
+            model = attachments.first().assetUrl,
+            contentDescription = "Activity image",
+            contentScale = ContentScale.Crop,
+        )
+    } else if (attachments.size > 1) {
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(attachments) { attachment ->
+                AsyncImage(
+                    modifier = Modifier
+                        .size(160.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    model = attachment.assetUrl,
+                    contentDescription = "Activity image",
+                    contentScale = ContentScale.Crop,
+                )
+            }
+        }
     }
 }
 
@@ -524,10 +548,10 @@ fun EditPostDialog(
 @Composable
 fun CreateContentBottomSheet(
     onDismiss: () -> Unit,
-    onPost: (String) -> Unit
+    onPost: (text: String, attachments: List<Uri>) -> Unit
 ) {
     var postText by remember { mutableStateOf("") }
-    var hasAttachment by remember { mutableStateOf(false) }
+    var attachments by remember { mutableStateOf<List<Uri>>(emptyList()) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     ModalBottomSheet(
@@ -559,7 +583,7 @@ fun CreateContentBottomSheet(
                     modifier = Modifier.clickable(
                         enabled = postText.isNotBlank()
                     ) {
-                        onPost(postText)
+                        onPost(postText, attachments)
                     }
                 )
             }
@@ -584,21 +608,14 @@ fun CreateContentBottomSheet(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(
-                    onClick = {
-                        hasAttachment = !hasAttachment
-                        // TODO: Handle image/video attachment selection
-                    }
-                ) {
-                    Icon(
-                        painter = painterResource(android.R.drawable.ic_menu_gallery),
-                        contentDescription = "Add Image/Video",
-                        tint = if (hasAttachment) Color.Blue else Color.Gray,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+                val hasAttachments = attachments.isNotEmpty()
 
-                if (hasAttachment) {
+                AttachmentButton(
+                    hasAttachment = hasAttachments,
+                    onAttachmentsSelected = { uris -> attachments = uris }
+                )
+
+                if (hasAttachments) {
                     Text(
                         text = "Attachment selected",
                         fontSize = 12.sp,
@@ -608,5 +625,23 @@ fun CreateContentBottomSheet(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun AttachmentButton(hasAttachment: Boolean, onAttachmentsSelected: (List<Uri>) -> Unit) {
+    val activityLauncher = rememberLauncherForActivityResult(PickMultipleVisualMedia(), onAttachmentsSelected)
+
+    IconButton(
+        onClick = {
+            activityLauncher.launch(PickVisualMediaRequest(mediaType = PickVisualMedia.ImageOnly))
+        }
+    ) {
+        Icon(
+            painter = painterResource(android.R.drawable.ic_menu_gallery),
+            contentDescription = "Add Image/Video",
+            tint = if (hasAttachment) Color.Blue else Color.Gray,
+            modifier = Modifier.size(24.dp)
+        )
     }
 }

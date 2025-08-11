@@ -93,7 +93,7 @@ private fun CommentsBottomSheetContent(
     if (showCreateCommentBottomSheet) {
         CreateContentBottomSheet(
             onDismiss = { showCreateCommentBottomSheet = false },
-            onPost = { text ->
+            onPost = { text, attachments ->
                 showCreateCommentBottomSheet = false
                 onPostComment(text)
             }

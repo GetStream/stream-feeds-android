@@ -23,8 +23,10 @@ import io.getstream.android.core.websocket.WebSocketConnectionState
 import io.getstream.feeds.android.client.BuildConfig
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.Moderation
+import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.model.FeedsConfig
 import io.getstream.feeds.android.client.api.state.Activity
 import io.getstream.feeds.android.client.api.state.ActivityCommentList
 import io.getstream.feeds.android.client.api.state.ActivityList
@@ -58,6 +60,7 @@ import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
 import io.getstream.feeds.android.client.api.subscribe.StreamSubscription
 import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManagerImpl
+import io.getstream.feeds.android.client.internal.file.StreamFeedUploader
 import io.getstream.feeds.android.client.internal.http.interceptor.ApiErrorInterceptor
 import io.getstream.feeds.android.client.internal.log.provideLogger
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
@@ -120,12 +123,14 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import retrofit2.create
 
 internal fun createFeedsClient(
     context: Context,
     apiKey: ApiKey,
     user: User,
     tokenProvider: UserTokenProvider,
+    config: FeedsConfig,
 ): FeedsClient {
     // Setup logging
     if (!StreamLog.isInstalled) {
@@ -226,8 +231,9 @@ internal fun createFeedsClient(
         .addConverterFactory(ScalarsConverterFactory.create())
         .addConverterFactory(MoshiConverterFactory.create(Serializer.moshi))
         .build()
-    val feedsApi: ApiService = retrofit.create(ApiService::class.java)
-    val activitiesRepository = ActivitiesRepositoryImpl(feedsApi)
+    val feedsApi: ApiService = retrofit.create()
+    val uploader: FeedUploader = config.customUploader ?: StreamFeedUploader(retrofit.create())
+    val activitiesRepository = ActivitiesRepositoryImpl(feedsApi, uploader)
     val appRepository = AppRepositoryImpl(feedsApi)
     val bookmarksRepository = BookmarksRepositoryImpl(feedsApi)
     val commentsRepository = CommentsRepositoryImpl(feedsApi)
