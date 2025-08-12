@@ -118,5 +118,33 @@ internal class ListTreeUpdateTest {
         assertEquals(expected, updated)
     }
 
+    @Test
+    fun `when updating a child changes parent's sort key, then parent level must be resorted`() {
+        val initial = listOf(
+            TestNode("A", 10, listOf(TestNode("x", 10))),
+            TestNode("B", 15, listOf(TestNode("y", 15)))
+        )
+        val expected = listOf(
+            TestNode("B", 15, listOf(TestNode("y", 15))),
+            TestNode("A", 25, listOf(TestNode("x", 25)))
+        )
+
+        val updated = initial.treeUpdateFirst(
+            matcher = { it.id == "x" },
+            updateElement = { it.copy(sortField = 25) },
+            childrenSelector = TestNode::nodes,
+            updateChildren = { node, children ->
+                node.copy(
+                    nodes = children,
+                    sortField = children.maxOfOrNull { it.sortField } ?: node.sortField
+                )
+            },
+            comparator = comparator
+        )
+
+
+        assertEquals(expected, updated)
+    }
+
     private data class TestNode(val id: String, val sortField: Int, val nodes: List<TestNode> = emptyList())
 }
