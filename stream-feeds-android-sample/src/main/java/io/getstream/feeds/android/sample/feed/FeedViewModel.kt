@@ -24,6 +24,7 @@ import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.core.generated.models.AddActivityRequest
 import io.getstream.feeds.android.core.generated.models.AddReactionRequest
 import io.getstream.feeds.android.core.generated.models.UpdateActivityRequest
+import io.getstream.feeds.android.sample.utils.logResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -54,13 +55,7 @@ class FeedViewModel(
     init {
         viewModelScope.launch {
             feed.getOrCreate()
-                .onSuccess {
-                    Log.d(TAG, "Feed created or retrieved successfully: $fid")
-                }
-                .onFailure {
-                    // Handle error
-                    Log.e(TAG, "Failed to get or create feed: $fid, $it")
-                }
+                .logResult(TAG, "Getting or creating feed: $fid")
         }
     }
 
@@ -68,12 +63,7 @@ class FeedViewModel(
         if (!state.canLoadMoreActivities) return
         viewModelScope.launch {
             feed.queryMoreActivities()
-                .onSuccess {
-                    Log.d(TAG, "Loaded more activities for feed: $fid")
-                }
-                .onFailure {
-                    Log.e(TAG, "Failed to load more activities for feed: $fid, $it")
-                }
+                .logResult(TAG, "Loading more activities for feed: $fid")
         }
     }
 
@@ -114,24 +104,14 @@ class FeedViewModel(
     fun onDeleteClick(activityId: String) {
         viewModelScope.launch {
             feed.deleteActivity(activityId)
-                .onSuccess {
-                    Log.d(TAG, "Activity deleted successfully: $activityId")
-                }
-                .onFailure {
-                    Log.e(TAG, "Failed to delete activity: $activityId, $it")
-                }
+                .logResult(TAG, "Deleting activity: $activityId")
         }
     }
 
     fun onEditActivity(activityId: String, text: String) {
         viewModelScope.launch {
             feed.updateActivity(activityId, UpdateActivityRequest(text = text))
-                .onSuccess {
-                    Log.d(TAG, "Activity updated successfully: $activityId")
-                }
-                .onFailure {
-                    Log.e(TAG, "Failed to update activity: $activityId, $it")
-                }
+                .logResult(TAG, "Updating activity: $activityId with text: $text")
         }
     }
 
@@ -156,13 +136,7 @@ class FeedViewModel(
                 attachmentUploadProgress = { file, progress ->
                     Log.d(TAG, "Uploading attachment: ${file.type}, progress: $progress")
                 }
-            )
-                .onSuccess {
-                    Log.d(TAG, "Activity created successfully: ${it.id}")
-                }
-                .onFailure {
-                    Log.e(TAG, "Failed to create activity: $it")
-                }
+            ).logResult(TAG, "Creating activity with text: $text")
 
             deleteFiles(attachmentFiles)
         }
