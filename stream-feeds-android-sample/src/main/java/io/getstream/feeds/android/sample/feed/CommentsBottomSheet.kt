@@ -134,12 +134,14 @@ private fun ColumnScope.CommentsBottomSheetContent(
     }
 
     if (createCommentData != null) {
+        // TODO [G.] differentiate between creating a post vs a comment, e.g. no polls in comments
         CreateContentBottomSheet(
             onDismiss = { createCommentData = null },
             onPost = { text, attachments ->
                 onPostComment(text, createCommentData?.replyParentId, attachments)
                 createCommentData = null
             },
+            onCreatePoll = {}
         )
     }
 }
