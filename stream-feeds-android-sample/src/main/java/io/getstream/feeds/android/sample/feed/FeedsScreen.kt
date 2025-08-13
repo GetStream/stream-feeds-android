@@ -189,23 +189,26 @@ private fun FeedsScreenContent(
                                 navigator.navigate(
                                     CommentsBottomSheetDestination(
                                         feedId = args.fid.rawValue,
-                                        activityId = activity.id,
-                                    )
+                                    activityId = activity.id,
                                 )
-                            },
-                            onHeartClick = { viewModel.onHeartClick(activity) },
-                            onRepostClick = { message ->
-                                viewModel.onRepostClick(activity, message)
-                            },
-                            onBookmarkClick = { viewModel.onBookmarkClick(activity) },
-                            onDeleteClick = { viewModel.onDeleteClick(activity.id) },
-                            onEditSave = { viewModel.onEditActivity(activity.id, it) },
-                            pollSection = { poll ->
-                                PollSection(activity.id, poll, viewModel.pollController)
-                            },
-                        )
-                    }
+                            )
+                        },
+                        onHeartClick = { viewModel.onHeartClick(activity) },
+                        onRepostClick = { message -> viewModel.onRepostClick(activity, message) },
+                        onBookmarkClick = { viewModel.onBookmarkClick(activity) },
+                        onDeleteClick = { viewModel.onDeleteClick(activity.id) },
+                        onEditSave = { viewModel.onEditActivity(activity.id, it) },
+                        pollSection = { poll ->
+                            PollSection(
+                                activityId = activity.id,
+                                currentUserId = args.userId,
+                                poll = poll,
+                                controller = viewModel.pollController
+                            )
+                        }
+                    )
                 }
+            }
 
                 FloatingActionButton(
                     onClick = { showCreatePostBottomSheet = true },
