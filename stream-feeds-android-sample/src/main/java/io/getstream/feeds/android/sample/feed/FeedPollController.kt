@@ -9,7 +9,7 @@ import io.getstream.feeds.android.sample.utils.logResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-class PollController(
+class FeedPollController(
     private val scope: CoroutineScope,
     private val feedsClient: FeedsClient,
     private val fid: FeedId,

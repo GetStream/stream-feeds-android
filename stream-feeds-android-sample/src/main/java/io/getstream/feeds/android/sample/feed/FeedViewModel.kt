@@ -38,7 +38,7 @@ class FeedViewModel(
     private val application: Application
 ) : ViewModel() {
 
-    val pollController = PollController(viewModelScope, feedsClient, fid)
+    val pollController = FeedPollController(viewModelScope, feedsClient, fid)
 
     private val query = FeedQuery(
         fid = fid,

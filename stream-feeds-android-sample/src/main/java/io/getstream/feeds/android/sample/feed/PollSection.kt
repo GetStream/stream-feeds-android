@@ -27,7 +27,7 @@ import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.sample.ui.theme.LighterGray
 
 @Composable
-fun PollSection(activityId: String, poll: PollData, controller: PollController) {
+fun PollSection(activityId: String, poll: PollData, controller: FeedPollController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
