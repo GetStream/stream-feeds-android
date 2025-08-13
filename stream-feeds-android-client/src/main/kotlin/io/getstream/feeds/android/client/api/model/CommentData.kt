@@ -1,5 +1,6 @@
 package io.getstream.feeds.android.client.api.model
 
+import io.getstream.feeds.android.client.api.state.query.CommentsSortDataFields
 import io.getstream.feeds.android.client.internal.model.mapping.toDate
 import io.getstream.feeds.android.core.generated.models.Attachment
 import io.getstream.feeds.android.core.generated.models.CommentResponse
@@ -74,9 +75,9 @@ import java.util.Date
  */
 public data class CommentData(
     val attachments: List<Attachment>?,
-    val confidenceScore: Float,
-    val controversyScore: Float?,
-    val createdAt: Date,
+    override val confidenceScore: Float,
+    override val controversyScore: Float?,
+    override val createdAt: Date,
     val custom: Map<String, Any?>?,
     val deletedAt: Date?,
     val downvoteCount: Int,
@@ -93,13 +94,13 @@ public data class CommentData(
     val reactionGroups: Map<String, ReactionGroupData>,
     val replies: List<CommentData>?,
     val replyCount: Int,
-    val score: Int,
+    override val score: Int,
     val status: String,
     val text: String?,
     val updatedAt: Date,
     val upvoteCount: Int,
     val user: UserData
-) {
+) : CommentsSortDataFields {
     /**
      * Indicates whether this comment has threaded replies.
      * Returns true if replies are loaded (not null).
@@ -139,4 +140,3 @@ internal fun CommentResponse.toModel(): CommentData = CommentData(
     upvoteCount = upvoteCount,
     user = user.toModel(),
 )
-

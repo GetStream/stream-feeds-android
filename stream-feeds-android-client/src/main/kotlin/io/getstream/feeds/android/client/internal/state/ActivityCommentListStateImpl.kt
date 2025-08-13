@@ -11,10 +11,14 @@ import io.getstream.feeds.android.client.api.model.removeReaction
 import io.getstream.feeds.android.client.api.model.setCommentData
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
-import io.getstream.feeds.android.client.internal.utils.upsert
+import io.getstream.feeds.android.client.api.state.query.toComparator
+import io.getstream.feeds.android.client.internal.utils.mergeSorted
+import io.getstream.feeds.android.client.internal.utils.treeUpdateFirst
+import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * A class representing a paginated list of comments for a specific activity.
@@ -33,6 +37,8 @@ internal class ActivityCommentListStateImpl(
 
     private var _pagination: PaginationData? = null
 
+    private val commentsComparator = query.sort.toComparator()
+
     override val comments: StateFlow<List<ThreadedCommentData>>
         get() = _comments.asStateFlow()
 
@@ -41,43 +47,51 @@ internal class ActivityCommentListStateImpl(
 
     override fun onQueryMoreComments(result: PaginationResult<ThreadedCommentData>) {
         _pagination = result.pagination
-        _comments.value = _comments.value + result.models
+        _comments.update { current ->
+            current.mergeSorted(result.models, ThreadedCommentData::id, commentsComparator)
+        }
     }
 
     override fun onCommentAdded(comment: ThreadedCommentData) {
         if (comment.parentId == null) {
             // If the comment is a top-level comment, add it directly
-            _comments.value = _comments.value.upsert(comment, ThreadedCommentData::id)
+            _comments.update { current ->
+                current.upsertSorted(comment, ThreadedCommentData::id, commentsComparator)
+            }
         } else {
             // If it's a reply, find the parent and add it to the parent's replies
             // Update the comments list by searching for the parent in all top-level comments
-            val updatedComments = _comments.value.map { parent ->
-                addNestedReply(parent, comment)
+            _comments.update { current ->
+                current.map { parent -> addNestedReply(parent, comment) }
             }
-            _comments.value = updatedComments
         }
     }
 
     override fun onCommentUpdated(comment: CommentData) {
-        _comments.value = _comments.value.map {
-            updateNestedComment(it, comment)
+        _comments.update { current ->
+            current.treeUpdateFirst(
+                matcher = { it.id == comment.id },
+                childrenSelector = { it.replies.orEmpty() },
+                updateElement = { it.setCommentData(comment) },
+                updateChildren = { parent, children -> parent.copy(replies = children) },
+                comparator = commentsComparator,
+            )
         }
     }
 
     override fun onCommentRemoved(commentId: String) {
-        // First check if it's a top-level comment
-        val filteredTopLevel = _comments.value.filter { it.id != commentId }
+        _comments.update { current ->
+            // First check if it's a top-level comment
+            val filteredTopLevel = current.filter { it.id != commentId }
 
-        if (filteredTopLevel.size != _comments.value.size) {
-            // A top-level comment was removed
-            _comments.value = filteredTopLevel
-        } else {
-            // TODO: test this logic
-            // It might be a nested reply, search and remove recursively
-            val updatedComments = _comments.value.map { comment ->
-                removeCommentFromReplies(comment, commentId)
+            if (filteredTopLevel.size != current.size) {
+                // A top-level comment was removed
+                filteredTopLevel
+            } else {
+                // TODO: test this logic
+                // It might be a nested reply, search and remove recursively
+                current.map { comment -> removeCommentFromReplies(comment, commentId) }
             }
-            _comments.value = updatedComments
         }
     }
 
@@ -85,8 +99,8 @@ internal class ActivityCommentListStateImpl(
         commentId: String,
         reaction: FeedsReactionData
     ) {
-        _comments.value = _comments.value.map { comment ->
-            addCommentReaction(comment, commentId, reaction)
+        _comments.update { current ->
+            current.map { comment -> addCommentReaction(comment, commentId, reaction) }
         }
     }
 
@@ -94,8 +108,8 @@ internal class ActivityCommentListStateImpl(
         commentId: String,
         reaction: FeedsReactionData
     ) {
-        _comments.value = _comments.value.map { comment ->
-            removeCommentReaction(comment, commentId, reaction)
+        _comments.update { current ->
+            current.map { comment -> removeCommentReaction(comment, commentId, reaction) }
         }
     }
 
@@ -105,7 +119,7 @@ internal class ActivityCommentListStateImpl(
     ): ThreadedCommentData {
         // If this comment is the parent, add the reply directly
         if (parent.id == reply.parentId) {
-            return parent.addReply(reply)
+            return parent.addReply(reply, commentsComparator)
         }
         // If this comment has replies, recursively search through them
         val replies = parent.replies
@@ -117,25 +131,6 @@ internal class ActivityCommentListStateImpl(
         }
         // No matching parent found in this subtree, return unchanged
         return parent
-    }
-
-    private fun updateNestedComment(
-        comment: ThreadedCommentData,
-        updated: CommentData
-    ): ThreadedCommentData {
-        if (comment.id == updated.id) {
-            // If this comment matches the updated comment, return it with the new data
-            return comment.setCommentData(updated)
-        }
-        if (comment.replies.isNullOrEmpty()) {
-            // If there are no replies, return unchanged
-            return comment
-        }
-        // Recursively search through replies
-        val updatedReplies = comment.replies.map { reply ->
-            updateNestedComment(reply, updated)
-        }
-        return comment.copy(replies = updatedReplies)
     }
 
     private fun removeCommentFromReplies(

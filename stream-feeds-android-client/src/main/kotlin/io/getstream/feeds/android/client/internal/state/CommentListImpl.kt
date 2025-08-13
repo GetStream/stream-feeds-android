@@ -58,9 +58,7 @@ internal class CommentListImpl(
             // If there is no next cursor, return an empty list.
             return Result.success(emptyList())
         }
-        val nextQuery = CommentsQuery(
-            filter = _state.filter,
-            sort = _state.sort,
+        val nextQuery = query.copy(
             limit = limit,
             next = next,
             previous = null,
@@ -70,10 +68,7 @@ internal class CommentListImpl(
 
     private suspend fun queryComments(query: CommentsQuery): Result<List<CommentData>> {
         return commentsRepository.queryComments(query)
-            .onSuccess { result ->
-                _state.onQueryMoreComments(result, query.filter, query.sort)
-            }.map {
-                it.models
-            }
+            .onSuccess(_state::onQueryMoreComments)
+            .map { it.models }
     }
 }

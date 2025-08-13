@@ -11,6 +11,7 @@ import io.getstream.feeds.android.client.api.model.removeReaction
 import io.getstream.feeds.android.client.api.model.setCommentData
 import io.getstream.feeds.android.client.api.state.CommentReplyListState
 import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
+import io.getstream.feeds.android.client.api.state.query.toComparator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,7 +29,7 @@ import kotlinx.coroutines.flow.asStateFlow
 internal class CommentReplyListStateImpl(
     override val query: CommentRepliesQuery,
     private val currentUserId: String,
-): CommentReplyListMutableState {
+) : CommentReplyListMutableState {
 
     private val _replies: MutableStateFlow<List<ThreadedCommentData>> = MutableStateFlow(emptyList())
 
@@ -39,6 +40,8 @@ internal class CommentReplyListStateImpl(
 
     override val pagination: PaginationData?
         get() = _pagination
+
+    private val comparator = query.sort.toComparator()
 
     override fun onQueryMoreReplies(result: PaginationResult<ThreadedCommentData>) {
         _pagination = result.pagination
@@ -99,7 +102,7 @@ internal class CommentReplyListStateImpl(
     ): ThreadedCommentData {
         // If this comment is the parent, add the reply directly
         if (parent.id == reply.parentId) {
-            return parent.addReply(reply)
+            return parent.addReply(reply, comparator)
         }
         // If the parent has no replies, return it unchanged
         if (parent.replies.isNullOrEmpty()) {
