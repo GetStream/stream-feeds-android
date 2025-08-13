@@ -203,7 +203,8 @@ private fun FeedsScreenContent(
                                 activityId = activity.id,
                                 currentUserId = args.userId,
                                 poll = poll,
-                                controller = viewModel.pollController
+                                controller = viewModel.pollController,
+                                navigator = navigator,
                             )
                         }
                     )

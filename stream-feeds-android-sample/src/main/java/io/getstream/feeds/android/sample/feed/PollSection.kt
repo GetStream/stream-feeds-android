@@ -43,6 +43,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ramcosta.composedestinations.generated.destinations.PollCommentsScreenDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollOptionData
 import io.getstream.feeds.android.client.api.model.PollVoteData
@@ -50,7 +52,13 @@ import io.getstream.feeds.android.sample.ui.theme.LighterGray
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PollSection(activityId: String, currentUserId: String, poll: PollData, controller: FeedPollController) {
+fun PollSection(
+    activityId: String,
+    currentUserId: String,
+    poll: PollData,
+    controller: FeedPollController,
+    navigator: DestinationsNavigator,
+) {
     Column(
         modifier =
             Modifier
@@ -105,7 +113,10 @@ fun PollSection(activityId: String, currentUserId: String, poll: PollData, contr
         }
 
         if (poll.answersCount > 0) {
-            PollTextButton(text = "View comments")
+            PollTextButton(
+                text = "View comments",
+                onClick = { navigator.navigate(PollCommentsScreenDestination(poll.id)) },
+            )
         }
 
         PollTextButton(text = "View results")
