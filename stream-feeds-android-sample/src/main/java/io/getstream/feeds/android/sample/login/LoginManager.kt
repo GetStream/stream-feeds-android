@@ -31,7 +31,7 @@ class LoginManager @Inject constructor(
             loadCredentials()
                 ?.let { connect(it) }
                 ?.getOrNull()
-                ?.also(::state::set)
+                ?.also { state = it }
         }
     }
 
