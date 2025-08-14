@@ -78,9 +78,12 @@ fun FeedsScreen(
     avatarUrl: String?,
     currentUserId: String,
     navigator: DestinationsNavigator,
+    onLogout: () -> Unit,
     viewModel: FeedViewModel = viewModel(factory = feedViewModelFactory(currentUserId, fid, feedsClient))
 ) {
+    var showLogoutConfirmation by remember { mutableStateOf(false) }
     var showCreatePostBottomSheet by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -89,7 +92,7 @@ fun FeedsScreen(
         // Toolbar
         FeedsScreenToolbar(
             avatarUrl = avatarUrl,
-            onUserAvatarClick = {},
+            onUserAvatarClick = { showLogoutConfirmation = true },
             onNotificationsClick = {},
             onProfileClick = {
                 navigator.navigate(ProfileScreenDestination(ProfileScreenArgs(feedId = fid.rawValue)))
@@ -176,6 +179,16 @@ fun FeedsScreen(
                     modifier = Modifier.size(24.dp)
                 )
             }
+        }
+
+        if (showLogoutConfirmation) {
+            LogoutConfirmationDialog(
+                onDismiss = { showLogoutConfirmation = false },
+                onConfirm = {
+                    showLogoutConfirmation = false
+                    onLogout()
+                }
+            )
         }
 
         // Create Post Bottom Sheet
@@ -650,4 +663,19 @@ private fun AttachmentButton(hasAttachment: Boolean, onAttachmentsSelected: (Lis
             modifier = Modifier.size(24.dp)
         )
     }
+}
+
+@Composable
+fun LogoutConfirmationDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = "Logout") },
+        text = { Text("Are you sure you want to logout?") },
+        confirmButton = {
+            Button(onClick = onConfirm) { Text("Confirm") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        },
+    )
 }
