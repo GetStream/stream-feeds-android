@@ -19,8 +19,8 @@ import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.sample.components.LoadingScreen
 import io.getstream.feeds.android.sample.feed.FeedsScreen
-import io.getstream.feeds.android.sample.login.ConnectingScreen
 import io.getstream.feeds.android.sample.login.LoginScreen
 
 @AndroidEntryPoint
@@ -51,8 +51,8 @@ fun MainScreen(navigator: DestinationsNavigator) {
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
     when (viewState) {
-        is ViewState.Connecting -> {
-            ConnectingScreen()
+        is ViewState.Loading -> {
+            LoadingScreen()
         }
 
         is ViewState.LoggedOut -> {
@@ -67,6 +67,7 @@ fun MainScreen(navigator: DestinationsNavigator) {
                 feedsClient = (viewState as ViewState.LoggedIn).client,
                 avatarUrl = (viewState as ViewState.LoggedIn).user.imageURL,
                 currentUserId = (viewState as ViewState.LoggedIn).user.id,
+                onLogout = viewModel::onLogout,
                 navigator = navigator,
             )
         }

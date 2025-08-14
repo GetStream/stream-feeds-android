@@ -35,8 +35,13 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.UserData
+import io.getstream.feeds.android.client.api.state.FeedState
+import io.getstream.feeds.android.sample.components.LoadingScreen
+import io.getstream.feeds.android.sample.util.AsyncResource
+import kotlinx.coroutines.flow.StateFlow
 
 data class ProfileScreenArgs(val feedId: String) {
     val fid = FeedId(feedId)
@@ -47,11 +52,30 @@ data class ProfileScreenArgs(val feedId: String) {
 fun ProfileScreen(navigator: DestinationsNavigator) {
     val viewModel = hiltViewModel<ProfileViewModel>()
 
-    if (viewModel.state == null) {
-        LaunchedEffect(Unit) { navigator.popBackStack() }
-        return
-    }
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
+    when (val state = state) {
+        AsyncResource.Loading -> LoadingScreen()
+
+        AsyncResource.Error -> {
+            LaunchedEffect(Unit) { navigator.popBackStack() }
+            return
+        }
+
+        is AsyncResource.Content -> ProfileScreen(
+            state = state.data,
+            followSuggestions = viewModel.followSuggestions,
+            onFollowClick = viewModel::follow
+        )
+    }
+}
+
+@Composable
+fun ProfileScreen(
+    state: FeedState,
+    followSuggestions: StateFlow<List<FeedData>>,
+    onFollowClick: (FeedId) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -69,7 +93,7 @@ fun ProfileScreen(navigator: DestinationsNavigator) {
         ProfileSection(
             title = "Members:",
             emptyText = "No members",
-            items = viewModel.state.members.collectAsStateWithLifecycle().value,
+            items = state.members.collectAsStateWithLifecycle().value,
             itemText = { member -> "${member.user.name ?: member.user.id} (${member.role})" },
         )
 
@@ -77,7 +101,7 @@ fun ProfileScreen(navigator: DestinationsNavigator) {
         ProfileSection(
             title = "Follow requests:",
             emptyText = "No follow requests",
-            items = viewModel.state.followRequests.collectAsStateWithLifecycle().value,
+            items = state.followRequests.collectAsStateWithLifecycle().value,
             itemText = { it.sourceFeed.createdBy.run { name ?: id } },
         )
 
@@ -85,7 +109,7 @@ fun ProfileScreen(navigator: DestinationsNavigator) {
         ProfileSection(
             title = "Following:",
             emptyText = "Not following any feeds",
-            items = viewModel.state.following.collectAsStateWithLifecycle().value,
+            items = state.following.collectAsStateWithLifecycle().value,
             itemText = { it.targetFeed.createdBy.run { name ?: id } },
         )
 
@@ -93,12 +117,12 @@ fun ProfileScreen(navigator: DestinationsNavigator) {
         ProfileSection(
             title = "Followers:",
             emptyText = "No followers",
-            items = viewModel.state.followers.collectAsStateWithLifecycle().value,
+            items = state.followers.collectAsStateWithLifecycle().value,
             itemText = { it.sourceFeed.createdBy.run { name ?: id } },
         )
 
         // Follow suggestions
-        val followSuggestions by viewModel.followSuggestions.collectAsStateWithLifecycle()
+        val followSuggestions by followSuggestions.collectAsStateWithLifecycle()
         SectionTitle("Who to follow")
         if (followSuggestions.isNotEmpty()) {
             LazyColumn {
@@ -106,9 +130,7 @@ fun ProfileScreen(navigator: DestinationsNavigator) {
                     FollowSuggestionItem(
                         owner = it.createdBy,
                         fid = it.fid,
-                        onFollowClick = { feedId ->
-                            viewModel.follow(feedId)
-                        }
+                        onFollowClick = onFollowClick
                     )
                 }
             }

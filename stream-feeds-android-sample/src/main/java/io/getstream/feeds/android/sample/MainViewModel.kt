@@ -18,13 +18,22 @@ class MainViewModel @Inject constructor(
     private val loginManager: LoginManager,
 ) : ViewModel() {
 
-    private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.LoggedOut)
+    private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
     val viewState: StateFlow<ViewState>
         get() = _viewState.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            _viewState.value = when (val current = loginManager.currentState()) {
+                null -> ViewState.LoggedOut
+                else -> ViewState.LoggedIn(current.client, current.user)
+            }
+        }
+    }
+
     fun connect(credentials: UserCredentials) {
         viewModelScope.launch {
-            _viewState.value = ViewState.Connecting
+            _viewState.value = ViewState.Loading
             _viewState.value = loginManager.login(credentials)
                 .fold(
                     onSuccess = { ViewState.LoggedIn(it.client, it.user) },
@@ -32,10 +41,17 @@ class MainViewModel @Inject constructor(
                 )
         }
     }
+
+    fun onLogout() {
+        viewModelScope.launch {
+            _viewState.value = ViewState.LoggedOut
+            loginManager.logout()
+        }
+    }
 }
 
 sealed interface ViewState {
-    data object Connecting : ViewState
+    data object Loading : ViewState
     data class LoggedIn(val client: FeedsClient, val user: User) : ViewState
     data object LoggedOut : ViewState
 }
