@@ -26,13 +26,13 @@ internal class DevicesRepositoryImpl(private val api: ApiService) : DevicesRepos
         check(id.isNotBlank()) {
             "Device id must not be empty when trying to set device."
         }
-        val pushProvider = CreateDeviceRequest.PushProvider.fromString(pushProvider.value)
-        check(pushProvider !is CreateDeviceRequest.PushProvider.Unknown) {
+        val requestPushProvider = CreateDeviceRequest.PushProvider.fromString(pushProvider.value)
+        check(requestPushProvider !is CreateDeviceRequest.PushProvider.Unknown) {
             "Invalid push provider value: $pushProvider"
         }
         val request = CreateDeviceRequest(
             id = id,
-            pushProvider = pushProvider,
+            pushProvider = requestPushProvider,
             pushProviderName = pushProviderName,
         )
         api.createDevice(request)
