@@ -2,6 +2,7 @@ package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.ActivityPinData
+import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
@@ -14,6 +15,7 @@ import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.core.generated.models.AcceptFollowRequest
 import io.getstream.feeds.android.core.generated.models.FeedOwnCapability
+import io.getstream.feeds.android.core.generated.models.NotificationStatusResponse
 import io.getstream.feeds.android.core.generated.models.QueryFeedMembersRequest
 import io.getstream.feeds.android.core.generated.models.QueryFollowsRequest
 import io.getstream.feeds.android.core.generated.models.RejectFollowRequest
@@ -102,6 +104,8 @@ internal interface FeedsRepository {
  * @property members A paginated result of members in the feed.
  * @property ownCapabilities The capabilities that the current user has on the feed.
  * @property pinnedActivities A list of activities that are pinned in the feed.
+ * @property aggregatedActivities A list of aggregated activities in the feed.
+ * @property notificationStatus The notification status for the feed, if available.
  */
 internal data class GetOrCreateInfo(
     val activities: PaginationResult<ActivityData>,
@@ -113,4 +117,6 @@ internal data class GetOrCreateInfo(
     val members: PaginationResult<FeedMemberData>,
     val ownCapabilities: List<FeedOwnCapability>,
     val pinnedActivities: List<ActivityPinData>,
+    val aggregatedActivities: List<AggregatedActivityData>,
+    val notificationStatus: NotificationStatusResponse?,
 )

@@ -19,6 +19,7 @@ import io.getstream.feeds.android.core.generated.models.FeedUpdatedEvent
 import io.getstream.feeds.android.core.generated.models.FollowCreatedEvent
 import io.getstream.feeds.android.core.generated.models.FollowDeletedEvent
 import io.getstream.feeds.android.core.generated.models.FollowUpdatedEvent
+import io.getstream.feeds.android.core.generated.models.NotificationFeedUpdatedEvent
 import io.getstream.feeds.android.core.generated.models.WSEvent
 
 /**
@@ -32,7 +33,7 @@ import io.getstream.feeds.android.core.generated.models.WSEvent
 internal class FeedEventHandler(
     private val fid: FeedId,
     private val state: FeedStateUpdates,
-): StateEventHandler {
+) : StateEventHandler {
 
     /**
      * Processes a WebSocket event and updates the feed state.
@@ -134,6 +135,16 @@ internal class FeedEventHandler(
             is FollowUpdatedEvent -> {
                 if (event.fid == fid.rawValue) {
                     state.onFollowUpdated(event.follow.toModel())
+                }
+            }
+
+            is NotificationFeedUpdatedEvent -> {
+                if (event.fid == fid.rawValue) {
+                    state.onNotificationFeedUpdated(
+                        aggregatedActivities = event.aggregatedActivities?.map { it.toModel() }
+                            .orEmpty(),
+                        notificationStatus = event.notificationStatus,
+                    )
                 }
             }
 
