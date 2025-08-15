@@ -37,28 +37,32 @@ class FeedViewModel(
     private val application: Application
 ) : ViewModel() {
 
+    // User feed
     private val query = FeedQuery(
         fid = fid,
         data = FeedInputData(
             members = listOf(FeedMemberRequestData(currentUserId)),
-            visibility = FeedVisibility.Public,
+            visibility = FeedVisibility.Followers,
         )
     )
     private val feed = feedsClient.feed(query)
 
+    // Notification feed
+    private val notificationFid = FeedId("notification", currentUserId)
+    private val notificationFeed = feedsClient.feed(notificationFid)
+
     val state: FeedState
         get() = feed.state
+
+    val notificationState: FeedState
+        get() = notificationFeed.state
 
     init {
         viewModelScope.launch {
             feed.getOrCreate()
-                .onSuccess {
-                    Log.d(TAG, "Feed created or retrieved successfully: $fid")
-                }
-                .onFailure {
-                    // Handle error
-                    Log.e(TAG, "Failed to get or create feed: $fid, $it")
-                }
+        }
+        viewModelScope.launch {
+            notificationFeed.getOrCreate()
         }
     }
 
@@ -79,7 +83,8 @@ class FeedViewModel(
         if (activity.ownReactions.isEmpty()) {
             // Add 'heart' reaction
             viewModelScope.launch {
-                feed.addReaction(activity.id, AddReactionRequest("heart"))
+                val request = AddReactionRequest("heart", createNotificationActivity = true)
+                feed.addReaction(activity.id, request)
             }
         } else {
             // Remove 'heart' reaction

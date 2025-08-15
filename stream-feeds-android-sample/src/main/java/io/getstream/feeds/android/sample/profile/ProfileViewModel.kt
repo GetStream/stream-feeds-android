@@ -61,7 +61,7 @@ class ProfileViewModel @Inject constructor(
 
     fun follow(feedId: FeedId) {
         onFeedLoaded {
-            follow(feedId)
+            follow(feedId, createNotificationActivity = true)
                 .onSuccess {
                     Log.d(TAG, "Successfully followed feed: $it")
                 }

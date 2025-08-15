@@ -6,6 +6,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickMultipleVisualMedia
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -57,6 +58,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
+import com.ramcosta.composedestinations.generated.destinations.NotificationsScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.getstream.feeds.android.client.api.FeedsClient
@@ -67,6 +69,7 @@ import io.getstream.feeds.android.core.generated.models.Attachment
 import io.getstream.feeds.android.sample.R
 import io.getstream.feeds.android.sample.components.LinkText
 import io.getstream.feeds.android.sample.components.UserAvatar
+import io.getstream.feeds.android.sample.notification.NotificationsScreenArgs
 import io.getstream.feeds.android.sample.profile.ProfileScreenArgs
 import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
 
@@ -79,7 +82,13 @@ fun FeedsScreen(
     currentUserId: String,
     navigator: DestinationsNavigator,
     onLogout: () -> Unit,
-    viewModel: FeedViewModel = viewModel(factory = feedViewModelFactory(currentUserId, fid, feedsClient))
+    viewModel: FeedViewModel = viewModel(
+        factory = feedViewModelFactory(
+            currentUserId,
+            fid,
+            feedsClient
+        )
+    )
 ) {
     var showLogoutConfirmation by remember { mutableStateOf(false) }
     var showCreatePostBottomSheet by remember { mutableStateOf(false) }
@@ -90,10 +99,16 @@ fun FeedsScreen(
             .systemBarsPadding(),
     ) {
         // Toolbar
+        val notificationStatus by viewModel.notificationState.notificationStatus.collectAsStateWithLifecycle()
         FeedsScreenToolbar(
             avatarUrl = avatarUrl,
+            hasUnreadNotifications = (notificationStatus?.unread ?: 0) > 0,
             onUserAvatarClick = { showLogoutConfirmation = true },
-            onNotificationsClick = {},
+            onNotificationsClick = {
+                // Open notifications screen ()
+                val fid = FeedId("notification", currentUserId)
+                navigator.navigate(NotificationsScreenDestination(NotificationsScreenArgs(fid.rawValue)))
+            },
             onProfileClick = {
                 navigator.navigate(ProfileScreenDestination(ProfileScreenArgs(feedId = fid.rawValue)))
             }
@@ -110,56 +125,60 @@ fun FeedsScreen(
             val activities by viewModel.state.activities.collectAsStateWithLifecycle()
             val listState = rememberLazyListState()
 
-            ScrolledToBottomEffect(listState, action = viewModel::onLoadMore)
+            if (activities.isEmpty()) {
+                EmptyContent()
+            } else {
+                ScrolledToBottomEffect(listState, action = viewModel::onLoadMore)
 
-            LazyColumn(state = listState) {
-                items(activities) { activity ->
-                    if (activity.parent != null) {
-                        Text(
-                            text = "${activity.user.name ?: activity.user.id} reposted${if (activity.text != null) ": ${activity.text}" else ""}",
-                            fontStyle = FontStyle.Italic,
-                            modifier = Modifier.padding(16.dp),
-                        )
-                        val parent = activity.parent!!
-                        ActivityContent(
-                            feedsClient = feedsClient,
-                            feedId = fid,
-                            user = parent.user,
-                            text = parent.text ?: "",
-                            attachments = parent.attachments,
-                            data = activity,
-                            currentUserId = currentUserId,
-                            onHeartClick = { viewModel.onHeartClick(activity) },
-                            onRepostClick = { message ->
-                                viewModel.onRepostClick(
-                                    activity,
-                                    message
-                                )
-                            },
-                            onBookmarkClick = { viewModel.onBookmarkClick(activity) },
-                            onDeleteClick = { viewModel.onDeleteClick(activity.id) },
-                            onEditSave = { viewModel.onEditActivity(activity.id, it) },
-                        )
-                    } else {
-                        ActivityContent(
-                            feedsClient = feedsClient,
-                            feedId = fid,
-                            user = activity.user,
-                            text = activity.text ?: "",
-                            attachments = activity.attachments,
-                            data = activity,
-                            currentUserId = currentUserId,
-                            onHeartClick = { viewModel.onHeartClick(activity) },
-                            onRepostClick = { message ->
-                                viewModel.onRepostClick(
-                                    activity,
-                                    message
-                                )
-                            },
-                            onBookmarkClick = { viewModel.onBookmarkClick(activity) },
-                            onDeleteClick = { viewModel.onDeleteClick(activity.id) },
-                            onEditSave = { viewModel.onEditActivity(activity.id, it) },
-                        )
+                LazyColumn(state = listState) {
+                    items(activities) { activity ->
+                        if (activity.parent != null) {
+                            Text(
+                                text = "${activity.user.name ?: activity.user.id} reposted${if (activity.text != null) ": ${activity.text}" else ""}",
+                                fontStyle = FontStyle.Italic,
+                                modifier = Modifier.padding(16.dp),
+                            )
+                            val parent = activity.parent!!
+                            ActivityContent(
+                                feedsClient = feedsClient,
+                                feedId = fid,
+                                user = parent.user,
+                                text = parent.text ?: "",
+                                attachments = parent.attachments,
+                                data = activity,
+                                currentUserId = currentUserId,
+                                onHeartClick = { viewModel.onHeartClick(activity) },
+                                onRepostClick = { message ->
+                                    viewModel.onRepostClick(
+                                        activity,
+                                        message
+                                    )
+                                },
+                                onBookmarkClick = { viewModel.onBookmarkClick(activity) },
+                                onDeleteClick = { viewModel.onDeleteClick(activity.id) },
+                                onEditSave = { viewModel.onEditActivity(activity.id, it) },
+                            )
+                        } else {
+                            ActivityContent(
+                                feedsClient = feedsClient,
+                                feedId = fid,
+                                user = activity.user,
+                                text = activity.text ?: "",
+                                attachments = activity.attachments,
+                                data = activity,
+                                currentUserId = currentUserId,
+                                onHeartClick = { viewModel.onHeartClick(activity) },
+                                onRepostClick = { message ->
+                                    viewModel.onRepostClick(
+                                        activity,
+                                        message
+                                    )
+                                },
+                                onBookmarkClick = { viewModel.onBookmarkClick(activity) },
+                                onDeleteClick = { viewModel.onDeleteClick(activity.id) },
+                                onEditSave = { viewModel.onEditActivity(activity.id, it) },
+                            )
+                        }
                     }
                 }
             }
@@ -207,6 +226,7 @@ fun FeedsScreen(
 @Composable
 fun FeedsScreenToolbar(
     avatarUrl: String?,
+    hasUnreadNotifications: Boolean,
     onUserAvatarClick: () -> Unit,
     onNotificationsClick: () -> Unit,
     onProfileClick: () -> Unit,
@@ -236,32 +256,79 @@ fun FeedsScreenToolbar(
         )
 
         // Right side - Action buttons
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            NotificationIcon(
+                hasUnread = hasUnreadNotifications,
                 onClick = onNotificationsClick,
-                modifier = Modifier.size(40.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.notifications_24),
-                    contentDescription = "Notifications",
-                    tint = Color(0xFF1976D2), // Material Blue 700
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-            IconButton(
+            )
+            ProfileButton(
                 onClick = onProfileClick,
-                modifier = Modifier.size(40.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.profile_24),
-                    contentDescription = "Profile",
-                    tint = Color(0xFF1976D2), // Material Blue 700
-                    modifier = Modifier.size(24.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun NotificationIcon(
+    hasUnread: Boolean,
+    onClick: () -> Unit
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = Modifier.size(40.dp)
+    ) {
+        Box {
+            Icon(
+                painter = painterResource(R.drawable.notifications_24),
+                contentDescription = "Notifications",
+                tint = Color(0xFF1976D2),
+                modifier = Modifier.size(24.dp)
+            )
+            // Red indicator for unread notifications
+            if (hasUnread) {
+                Box(
+                    modifier = Modifier
+                        .size(8.dp)
+                        .clip(CircleShape)
+                        .background(Color.Red)
+                        .align(Alignment.TopEnd)
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun ProfileButton(
+    onClick: () -> Unit
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = Modifier.size(40.dp)
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.profile_24),
+            contentDescription = "Profile",
+            tint = Color(0xFF1976D2), // Material Blue 700
+            modifier = Modifier.size(24.dp)
+        )
+    }
+}
+
+@Composable
+fun EmptyContent() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "No activities yet. Start by creating a post!",
+            fontSize = 16.sp,
+            color = Color.Gray,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -649,7 +716,8 @@ fun CreateContentBottomSheet(
 
 @Composable
 private fun AttachmentButton(hasAttachment: Boolean, onAttachmentsSelected: (List<Uri>) -> Unit) {
-    val activityLauncher = rememberLauncherForActivityResult(PickMultipleVisualMedia(), onAttachmentsSelected)
+    val activityLauncher =
+        rememberLauncherForActivityResult(PickMultipleVisualMedia(), onAttachmentsSelected)
 
     IconButton(
         onClick = {

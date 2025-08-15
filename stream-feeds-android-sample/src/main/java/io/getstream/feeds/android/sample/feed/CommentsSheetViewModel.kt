@@ -41,14 +41,20 @@ class CommentsSheetViewModel(
             if (comment.ownReactions.any { it.type == "heart" }) {
                 activity.deleteCommentReaction(comment.id, "heart")
             } else {
-                activity.addCommentReaction(comment.id, AddCommentReactionRequest("heart"))
+                val request = AddCommentReactionRequest("heart", createNotificationActivity = true)
+                activity.addCommentReaction(comment.id, request)
             }.logResult("Toggling heart reaction for comment: ${comment.id}")
         }
     }
 
     fun onPostComment(text: String, replyParentId: String?) {
         viewModelScope.launch {
-            activity.addComment(ActivityAddCommentRequest(comment = text, parentId = replyParentId))
+            val request = ActivityAddCommentRequest(
+                comment = text,
+                parentId = replyParentId,
+                createNotificationActivity = true,
+            )
+            activity.addComment(request)
                 .logResult("Adding comment to activity: ${activity.activityId}")
         }
     }
