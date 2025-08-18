@@ -127,7 +127,7 @@ class FeedViewModel(
                     AddActivityRequest(
                         type = "activity",
                         text = text,
-                        fids = listOf(fid.rawValue)
+                        feeds = listOf(fid.rawValue)
                     ),
                     attachmentUploads = attachmentFiles.map {
                         FeedUploadPayload(it, FileType.Image("jpeg"), FeedUploadContext(fid))

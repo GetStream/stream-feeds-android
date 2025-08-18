@@ -16,8 +16,8 @@ import io.getstream.feeds.android.core.generated.models.AddCommentReactionReques
 import io.getstream.feeds.android.core.generated.models.AddCommentRequest
 import io.getstream.feeds.android.core.generated.models.AddReactionRequest
 import io.getstream.feeds.android.core.generated.models.CreatePollRequest
+import io.getstream.feeds.android.core.generated.models.FollowRequest
 import io.getstream.feeds.android.core.generated.models.MarkActivityRequest
-import io.getstream.feeds.android.core.generated.models.SingleFollowRequest
 import io.getstream.feeds.android.core.generated.models.UpdateActivityRequest
 import io.getstream.feeds.android.core.generated.models.UpdateBookmarkRequest
 import io.getstream.feeds.android.core.generated.models.UpdateCommentRequest
@@ -252,9 +252,11 @@ public interface Feed {
      * Removes a comment for id.
      *
      * @param commentId The unique identifier of the comment to remove.
+     * @param hardDelete If `true`, the comment will be permanently deleted. Otherwise, it will be
+     * soft-deleted.
      * @return A [Result] indicating success or failure of the deletion operation.
      */
-    public suspend fun deleteComment(commentId: String): Result<Unit>
+    public suspend fun deleteComment(commentId: String, hardDelete: Boolean? = null): Result<Unit>
 
     /**
      * Queries for feed suggestions that the current user might want to follow.
@@ -278,7 +280,7 @@ public interface Feed {
         targetFid: FeedId,
         createNotificationActivity: Boolean? = null,
         custom: Map<String, Any>? = null,
-        pushPreference: SingleFollowRequest.PushPreference? = null,
+        pushPreference: FollowRequest.PushPreference? = null,
     ): Result<FollowData>
 
     /**

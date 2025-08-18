@@ -39,11 +39,11 @@ import com.squareup.moshi.ToJson
  */
 
 data class AcceptFollowRequest (
-    @Json(name = "source_fid")
-    val sourceFid: kotlin.String,
+    @Json(name = "source")
+    val source: kotlin.String,
 
-    @Json(name = "target_fid")
-    val targetFid: kotlin.String,
+    @Json(name = "target")
+    val target: kotlin.String,
 
     @Json(name = "follower_role")
     val followerRole: kotlin.String? = null

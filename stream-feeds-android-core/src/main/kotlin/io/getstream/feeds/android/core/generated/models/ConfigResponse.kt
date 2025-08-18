@@ -75,6 +75,9 @@ data class ConfigResponse (
     @Json(name = "block_list_config")
     val blockListConfig: io.getstream.feeds.android.core.generated.models.BlockListConfig? = null,
 
+    @Json(name = "llm_config")
+    val llmConfig: io.getstream.feeds.android.core.generated.models.LLMConfig? = null,
+
     @Json(name = "rule_builder_config")
     val ruleBuilderConfig: io.getstream.feeds.android.core.generated.models.RuleBuilderConfig? = null,
 
