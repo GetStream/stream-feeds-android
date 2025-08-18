@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.Feed
+import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.util.map
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,8 +35,15 @@ class ProfileViewModel @Inject constructor(
 
     private val fid = ProfileScreenDestination.argsFrom(savedStateHandle).fid
 
+    private val profileFeedQuery = FeedQuery(
+        fid = fid,
+        activityLimit = 0, // We don't need activities for the profile feed
+        followerLimit = 10, // Load first 10 followers
+        followingLimit = 10, // Load first 10 followings
+    )
+
     private val feed = flow {
-        emit(AsyncResource.notNull(loginManager.currentState()?.client?.feed(fid)))
+        emit(AsyncResource.notNull(loginManager.currentState()?.client?.feed(profileFeedQuery)))
     }.stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
     val state = feed
@@ -63,10 +72,25 @@ class ProfileViewModel @Inject constructor(
         onFeedLoaded {
             follow(feedId, createNotificationActivity = true)
                 .onSuccess {
-                    Log.d(TAG, "Successfully followed feed: $it")
+                    // Update the follow suggestions after following a feed
+                    _followSuggestions.update {
+                        it.filter { suggestion -> suggestion.fid != feedId }
+                    }
                 }
                 .onFailure {
                     Log.e(TAG, "Failed to follow feed: $feedId", it)
+                }
+        }
+    }
+
+    fun unfollow(feedId: FeedId) {
+        onFeedLoaded {
+            unfollow(feedId)
+                .onSuccess {
+                    Log.d(TAG, "Successfully unfollowed feed: $it")
+                }
+                .onFailure {
+                    Log.e(TAG, "Failed to unfollow feed: $feedId", it)
                 }
         }
     }
