@@ -57,6 +57,9 @@ data class CommentReactionUpdatedEvent (
     @Json(name = "type")
     val type: kotlin.String,
 
+    @Json(name = "feed_visibility")
+    val feedVisibility: kotlin.String? = null,
+
     @Json(name = "received_at")
     val receivedAt: org.threeten.bp.OffsetDateTime? = null,
 

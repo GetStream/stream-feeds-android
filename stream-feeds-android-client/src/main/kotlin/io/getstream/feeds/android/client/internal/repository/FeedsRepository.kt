@@ -14,10 +14,10 @@ import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.core.generated.models.AcceptFollowRequest
 import io.getstream.feeds.android.core.generated.models.FeedOwnCapability
+import io.getstream.feeds.android.core.generated.models.FollowRequest
 import io.getstream.feeds.android.core.generated.models.QueryFeedMembersRequest
 import io.getstream.feeds.android.core.generated.models.QueryFollowsRequest
 import io.getstream.feeds.android.core.generated.models.RejectFollowRequest
-import io.getstream.feeds.android.core.generated.models.SingleFollowRequest
 import io.getstream.feeds.android.core.generated.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.core.generated.models.UpdateFeedRequest
 
@@ -59,7 +59,7 @@ internal interface FeedsRepository {
 
     suspend fun queryFollows(request: QueryFollowsRequest): Result<PaginationResult<FollowData>>
 
-    suspend fun follow(request: SingleFollowRequest): Result<FollowData>
+    suspend fun follow(request: FollowRequest): Result<FollowData>
 
     suspend fun unfollow(source: FeedId, target: FeedId): Result<Unit>
 

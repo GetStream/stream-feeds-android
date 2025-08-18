@@ -42,8 +42,8 @@ data class UnpinActivityResponse (
     @Json(name = "duration")
     val duration: kotlin.String,
 
-    @Json(name = "fid")
-    val fid: kotlin.String,
+    @Json(name = "feed")
+    val feed: kotlin.String,
 
     @Json(name = "user_id")
     val userId: kotlin.String,

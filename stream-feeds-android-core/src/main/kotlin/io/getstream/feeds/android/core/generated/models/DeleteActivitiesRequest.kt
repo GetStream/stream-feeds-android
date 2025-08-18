@@ -39,8 +39,8 @@ import com.squareup.moshi.ToJson
  */
 
 data class DeleteActivitiesRequest (
-    @Json(name = "activity_ids")
-    val activityIds: kotlin.collections.List<kotlin.String> = emptyList(),
+    @Json(name = "ids")
+    val ids: kotlin.collections.List<kotlin.String> = emptyList(),
 
     @Json(name = "hard_delete")
     val hardDelete: kotlin.Boolean? = null

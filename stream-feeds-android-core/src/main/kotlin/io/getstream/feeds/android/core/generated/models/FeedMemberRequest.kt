@@ -45,6 +45,9 @@ data class FeedMemberRequest (
     @Json(name = "invite")
     val invite: kotlin.Boolean? = null,
 
+    @Json(name = "membership_level")
+    val membershipLevel: kotlin.String? = null,
+
     @Json(name = "role")
     val role: kotlin.String? = null,
 

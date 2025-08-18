@@ -17,10 +17,10 @@ import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.client.api.state.query.toRequest
 import io.getstream.feeds.android.core.generated.apis.ApiService
 import io.getstream.feeds.android.core.generated.models.AcceptFollowRequest
+import io.getstream.feeds.android.core.generated.models.FollowRequest
 import io.getstream.feeds.android.core.generated.models.QueryFeedMembersRequest
 import io.getstream.feeds.android.core.generated.models.QueryFollowsRequest
 import io.getstream.feeds.android.core.generated.models.RejectFollowRequest
-import io.getstream.feeds.android.core.generated.models.SingleFollowRequest
 import io.getstream.feeds.android.core.generated.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.core.generated.models.UpdateFeedRequest
 
@@ -96,7 +96,7 @@ internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepositor
     override suspend fun queryFeeds(query: FeedsQuery): Result<PaginationResult<FeedData>> =
         runSafely {
             val request = query.toRequest()
-            val response = api.feedsQueryFeeds(queryFeedsRequest = request)
+            val response = api.queryFeeds(queryFeedsRequest = request)
             val feeds = response.feeds.map { it.toModel() }
             val pagination = PaginationData(next = response.next, previous = response.prev)
             PaginationResult(feeds, pagination)
@@ -121,7 +121,7 @@ internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepositor
             PaginationResult(follows, pagination)
         }
 
-    override suspend fun follow(request: SingleFollowRequest): Result<FollowData> = runSafely {
+    override suspend fun follow(request: FollowRequest): Result<FollowData> = runSafely {
         api.follow(request).follow.toModel()
     }
 

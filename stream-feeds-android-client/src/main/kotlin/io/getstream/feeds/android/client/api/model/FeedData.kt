@@ -1,5 +1,6 @@
 package io.getstream.feeds.android.client.api.model
 
+import io.getstream.feeds.android.client.internal.model.mapping.toDate
 import io.getstream.feeds.android.core.generated.models.FeedResponse
 import java.util.Date
 
@@ -26,11 +27,11 @@ import java.util.Date
 public data class FeedData(
     public val createdAt: Date,
     public val createdBy: UserData,
-    public val custom: Map<String, Any?>,
+    public val custom: Map<String, Any?>?,
     public val deletedAt: Date?,
     public val description: String,
     public val fid: FeedId,
-    public val filterTags: List<String>,
+    public val filterTags: List<String>?,
     public val followerCount: Int,
     public val followingCount: Int,
     public val groupId: String,
@@ -46,13 +47,13 @@ public data class FeedData(
  * Converts a [FeedResponse] to a [FeedData] model.
  */
 public fun FeedResponse.toModel(): FeedData = FeedData(
-    createdAt = Date(createdAt.toInstant().toEpochMilli()),
+    createdAt = createdAt.toDate(),
     createdBy = createdBy.toModel(),
-    custom = custom ?: emptyMap(),
-    deletedAt = deletedAt?.let { Date(it.toInstant().toEpochMilli()) },
+    custom = custom,
+    deletedAt = deletedAt?.toDate(),
     description = description,
-    fid = FeedId(groupId, id),
-    filterTags = filterTags ?: emptyList(),
+    fid = FeedId(feed),
+    filterTags = filterTags,
     followerCount = followerCount,
     followingCount = followingCount,
     groupId = groupId,
@@ -60,6 +61,6 @@ public fun FeedResponse.toModel(): FeedData = FeedData(
     memberCount = memberCount,
     name = name,
     pinCount = pinCount,
-    updatedAt = Date(updatedAt.toInstant().toEpochMilli()),
+    updatedAt = updatedAt.toDate(),
     visibility = visibility,
 )
