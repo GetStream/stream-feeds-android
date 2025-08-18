@@ -1,6 +1,8 @@
 package io.getstream.feeds.android.sample.profile
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,6 +39,7 @@ import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomS
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.UserData
 import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.sample.components.LoadingScreen
@@ -47,7 +50,10 @@ data class ProfileScreenArgs(val feedId: String) {
     val fid = FeedId(feedId)
 }
 
-@Destination<RootGraph>(style = DestinationStyleBottomSheet::class, navArgs = ProfileScreenArgs::class)
+@Destination<RootGraph>(
+    style = DestinationStyleBottomSheet::class,
+    navArgs = ProfileScreenArgs::class
+)
 @Composable
 fun ProfileScreen(navigator: DestinationsNavigator) {
     val viewModel = hiltViewModel<ProfileViewModel>()
@@ -65,7 +71,8 @@ fun ProfileScreen(navigator: DestinationsNavigator) {
         is AsyncResource.Content -> ProfileScreen(
             state = state.data,
             followSuggestions = viewModel.followSuggestions,
-            onFollowClick = viewModel::follow
+            onFollowClick = viewModel::follow,
+            onUnfollowClick = viewModel::unfollow,
         )
     }
 }
@@ -74,7 +81,8 @@ fun ProfileScreen(navigator: DestinationsNavigator) {
 fun ProfileScreen(
     state: FeedState,
     followSuggestions: StateFlow<List<FeedData>>,
-    onFollowClick: (FeedId) -> Unit
+    onFollowClick: (FeedId) -> Unit,
+    onUnfollowClick: (FeedId) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -94,7 +102,12 @@ fun ProfileScreen(
             title = "Members:",
             emptyText = "No members",
             items = state.members.collectAsStateWithLifecycle().value,
-            itemText = { member -> "${member.user.name ?: member.user.id} (${member.role})" },
+            itemContent = { member ->
+                Text(
+                    text = "${member.user.name ?: member.user.id} (${member.role})",
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
         )
 
         // Follow requests
@@ -102,7 +115,12 @@ fun ProfileScreen(
             title = "Follow requests:",
             emptyText = "No follow requests",
             items = state.followRequests.collectAsStateWithLifecycle().value,
-            itemText = { it.sourceFeed.createdBy.run { name ?: id } },
+            itemContent = {
+                Text(
+                    text = it.sourceFeed.createdBy.run { name ?: id },
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
         )
 
         // Following
@@ -110,7 +128,12 @@ fun ProfileScreen(
             title = "Following:",
             emptyText = "Not following any feeds",
             items = state.following.collectAsStateWithLifecycle().value,
-            itemText = { it.targetFeed.createdBy.run { name ?: id } },
+            itemContent = {
+                FollowingItem(
+                    follow = it,
+                    onUnfollowClick = onUnfollowClick,
+                )
+            }
         )
 
         // Followers
@@ -118,7 +141,12 @@ fun ProfileScreen(
             title = "Followers:",
             emptyText = "No followers",
             items = state.followers.collectAsStateWithLifecycle().value,
-            itemText = { it.sourceFeed.createdBy.run { name ?: id } },
+            itemContent = {
+                Text(
+                    text = it.sourceFeed.createdBy.run { name ?: id },
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
         )
 
         // Follow suggestions
@@ -157,16 +185,13 @@ private fun <T> ProfileSection(
     title: String,
     emptyText: String,
     items: List<T>,
-    itemText: (T) -> String,
+    itemContent: @Composable (T) -> Unit,
 ) {
     SectionTitle(title)
 
     if (items.isNotEmpty()) {
         items.forEach { item ->
-            Text(
-                text = itemText(item),
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
+            itemContent(item)
         }
     } else {
         Text(text = emptyText, color = Color.Gray)
@@ -177,6 +202,31 @@ private fun <T> ProfileSection(
             .fillMaxWidth()
             .padding(vertical = 16.dp)
     )
+}
+
+@Composable
+fun FollowingItem(
+    follow: FollowData,
+    onUnfollowClick: (FeedId) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            text = follow.targetFeed.createdBy.run { name ?: id },
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+        )
+        Text(
+            modifier = Modifier.clickable { onUnfollowClick(follow.targetFeed.fid) },
+            text = "Unfollow",
+            fontSize = 14.sp,
+            color = Color.Blue,
+        )
+    }
 }
 
 @Composable
