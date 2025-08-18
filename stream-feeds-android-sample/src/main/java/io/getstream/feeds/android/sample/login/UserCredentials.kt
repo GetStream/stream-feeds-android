@@ -52,7 +52,7 @@ data class UserCredentials(
                 name = "Han Solo",
                 imageURL = "https://vignette.wikia.nocookie.net/starwars/images/e/e2/TFAHanSolo.png",
             ),
-            userToken = UserToken(DemoAppConfig.Current.token("han_solo"))
+            userToken = UserToken(DemoAppConfig.Current.token("han_solo")),
         )
         val Lando = UserCredentials(
             user = User(
