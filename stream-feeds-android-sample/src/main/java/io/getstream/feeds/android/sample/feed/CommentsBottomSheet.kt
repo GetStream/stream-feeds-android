@@ -41,10 +41,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,26 +54,53 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
+import io.getstream.feeds.android.sample.components.LoadingScreen
 import io.getstream.feeds.android.sample.R
 import io.getstream.feeds.android.sample.ui.theme.LighterGray
 import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
+import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.ui.util.rippleClickable
 
+data class CommentsSheetArgs(val feedId: String, val activityId: String) {
+    val fid = FeedId(feedId)
+}
+
+@Destination<RootGraph>(
+    style = DestinationStyleBottomSheet::class,
+    navArgs = CommentsSheetArgs::class
+)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommentsBottomSheet(viewModel: CommentsSheetViewModel, onDismiss: () -> Unit) {
-    val comments by viewModel.state.comments.collectAsStateWithLifecycle()
-    val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+fun ColumnScope.CommentsBottomSheet(navigator: DestinationsNavigator) {
+    val viewModel = hiltViewModel<CommentsSheetViewModel>()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
-    ModalBottomSheet(onDismiss, sheetState = state) {
-        CommentsBottomSheetContent(
-            comments = comments,
-            onLoadMore = viewModel::onLoadMore,
-            onLikeClick = viewModel::onLikeClick,
-            onPostComment = viewModel::onPostComment,
-        )
+    when (val state = state) {
+        AsyncResource.Loading -> LoadingScreen()
+
+        AsyncResource.Error -> {
+            LaunchedEffect(Unit) { navigator.popBackStack() }
+            return
+        }
+
+        is AsyncResource.Content -> {
+            val comments by state.data.comments.collectAsStateWithLifecycle()
+
+            CommentsBottomSheetContent(
+                comments = comments,
+                onLoadMore = viewModel::onLoadMore,
+                onLikeClick = viewModel::onLikeClick,
+                onPostComment = viewModel::onPostComment,
+            )
+        }
     }
 }
 
@@ -92,7 +118,7 @@ private fun ColumnScope.CommentsBottomSheetContent(
         text = "Comments",
         fontWeight = FontWeight.Bold,
         fontSize = 20.sp,
-        modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 16.dp),
+        modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp),
     )
 
     Box(Modifier.fillMaxWidth().defaultMinSize(minHeight = 300.dp)) {

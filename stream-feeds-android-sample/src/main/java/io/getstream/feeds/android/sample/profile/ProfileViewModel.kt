@@ -29,18 +29,17 @@ import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.util.map
 import io.getstream.feeds.android.sample.util.notNull
-import javax.inject.Inject
+import io.getstream.feeds.android.sample.util.withFirstContent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel
@@ -76,7 +75,7 @@ constructor(loginManager: LoginManager, savedStateHandle: SavedStateHandle) : Vi
     val followSuggestions: StateFlow<List<FeedData>> = _followSuggestions.asStateFlow()
 
     init {
-        onFeedLoaded {
+        feed.withFirstContent(viewModelScope) {
             getOrCreate()
                 .onSuccess {
                     queryFollowSuggestions(limit = 10).onSuccess { _followSuggestions.value = it }
@@ -86,7 +85,7 @@ constructor(loginManager: LoginManager, savedStateHandle: SavedStateHandle) : Vi
     }
 
     fun follow(feedId: FeedId) {
-        onFeedLoaded {
+        feed.withFirstContent(viewModelScope) {
             follow(feedId)
                 .onSuccess {
                     // Update the follow suggestions after following a feed
@@ -99,16 +98,10 @@ constructor(loginManager: LoginManager, savedStateHandle: SavedStateHandle) : Vi
     }
 
     fun unfollow(feedId: FeedId) {
-        onFeedLoaded {
+        feed.withFirstContent(viewModelScope) {
             unfollow(feedId)
                 .onSuccess { Log.d(TAG, "Successfully unfollowed feed: $it") }
                 .onFailure { Log.e(TAG, "Failed to unfollow feed: $feedId", it) }
-        }
-    }
-
-    private fun onFeedLoaded(block: suspend Feed.() -> Unit) {
-        viewModelScope.launch {
-            feed.filterIsInstance<AsyncResource.Content<Feed>>().first().data.block()
         }
     }
 
