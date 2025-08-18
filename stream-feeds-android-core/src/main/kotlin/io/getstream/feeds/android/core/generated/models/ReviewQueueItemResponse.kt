@@ -79,7 +79,7 @@ data class ReviewQueueItemResponse (
     val bans: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.Ban> = emptyList(),
 
     @Json(name = "flags")
-    val flags: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.FlagResponse> = emptyList(),
+    val flags: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ModerationFlagResponse> = emptyList(),
 
     @Json(name = "languages")
     val languages: kotlin.collections.List<kotlin.String> = emptyList(),

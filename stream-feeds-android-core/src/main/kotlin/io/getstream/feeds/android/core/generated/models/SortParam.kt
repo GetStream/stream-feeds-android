@@ -38,39 +38,10 @@ import com.squareup.moshi.ToJson
  * 
  */
 
-data class PollVoteCastedFeedEvent (
-    @Json(name = "created_at")
-    val createdAt: org.threeten.bp.OffsetDateTime,
+data class SortParam (
+    @Json(name = "direction")
+    val direction: kotlin.Int,
 
-    @Json(name = "fid")
-    val fid: kotlin.String,
-
-    @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-
-    @Json(name = "poll")
-    val poll: io.getstream.feeds.android.core.generated.models.PollResponseData,
-
-    @Json(name = "poll_vote")
-    val pollVote: io.getstream.feeds.android.core.generated.models.PollVoteResponseData,
-
-    @Json(name = "type")
-    val type: kotlin.String,
-
-    @Json(name = "feed_visibility")
-    val feedVisibility: kotlin.String? = null,
-
-    @Json(name = "received_at")
-    val receivedAt: org.threeten.bp.OffsetDateTime? = null
+    @Json(name = "field")
+    val field: kotlin.String
 )
-: io.getstream.feeds.android.core.generated.models.WSClientEvent, io.getstream.feeds.android.core.generated.models.WSEvent, io.getstream.feeds.android.core.generated.models.FeedEvent
-{
-    
-    override fun getWSClientEventType(): kotlin.String {
-        return type
-    }
-
-    override fun getWSEventType(): kotlin.String {
-        return type
-    }    
-}

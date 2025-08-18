@@ -51,6 +51,9 @@ data class ActivityMarkEvent (
     @Json(name = "type")
     val type: kotlin.String,
 
+    @Json(name = "feed_visibility")
+    val feedVisibility: kotlin.String? = null,
+
     @Json(name = "mark_all_read")
     val markAllRead: kotlin.Boolean? = null,
 

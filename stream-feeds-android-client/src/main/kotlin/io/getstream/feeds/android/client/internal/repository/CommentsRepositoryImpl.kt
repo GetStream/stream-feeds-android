@@ -65,8 +65,11 @@ internal class CommentsRepositoryImpl(private val api: ApiService) : CommentsRep
         api.addCommentsBatch(request).comments.map { it.toModel() }
     }
 
-    override suspend fun deleteComment(commentId: String): Result<Unit> = runSafely {
-        api.deleteComment(commentId)
+    override suspend fun deleteComment(
+        commentId: String,
+        hardDelete: Boolean?,
+    ): Result<Unit> = runSafely {
+        api.deleteComment(commentId, hardDelete)
     }
 
     override suspend fun getComment(commentId: String): Result<CommentData> = runSafely {
@@ -92,7 +95,7 @@ internal class CommentsRepositoryImpl(private val api: ApiService) : CommentsRep
         commentId: String,
         type: String,
     ): Result<Pair<FeedsReactionData, String>> = runSafely {
-        val response = api.deleteCommentReaction(commentId = commentId, type = type)
+        val response = api.deleteCommentReaction(id = commentId, type = type)
         Pair(response.reaction.toModel(), response.comment.id)
     }
 
@@ -111,7 +114,7 @@ internal class CommentsRepositoryImpl(private val api: ApiService) : CommentsRep
         query: CommentRepliesQuery,
     ): Result<PaginationResult<ThreadedCommentData>> = runSafely {
         val response = api.getCommentReplies(
-            commentId = query.commentId,
+            id = query.commentId,
             depth = query.depth,
             limit = query.limit,
             next = query.next,

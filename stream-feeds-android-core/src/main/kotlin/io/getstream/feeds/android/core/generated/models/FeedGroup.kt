@@ -39,14 +39,14 @@ import com.squareup.moshi.ToJson
  */
 
 data class FeedGroup (
+    @Json(name = "AggregationVersion")
+    val aggregationVersion: kotlin.Int,
+
     @Json(name = "AppPK")
     val appPK: kotlin.Int,
 
     @Json(name = "created_at")
     val createdAt: org.threeten.bp.OffsetDateTime,
-
-    @Json(name = "DefaultViewID")
-    val defaultViewID: kotlin.String,
 
     @Json(name = "DefaultVisibility")
     val defaultVisibility: kotlin.String,
@@ -57,6 +57,12 @@ data class FeedGroup (
     @Json(name = "updated_at")
     val updatedAt: org.threeten.bp.OffsetDateTime,
 
+    @Json(name = "ActivityProcessors")
+    val activityProcessors: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ActivityProcessorConfig> = emptyList(),
+
+    @Json(name = "ActivitySelectors")
+    val activitySelectors: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ActivitySelectorConfig> = emptyList(),
+
     @Json(name = "Custom")
     val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 
@@ -66,8 +72,14 @@ data class FeedGroup (
     @Json(name = "LastFeedGetAt")
     val lastFeedGetAt: org.threeten.bp.OffsetDateTime? = null,
 
+    @Json(name = "Aggregation")
+    val aggregation: io.getstream.feeds.android.core.generated.models.AggregationConfig? = null,
+
     @Json(name = "Notification")
     val notification: io.getstream.feeds.android.core.generated.models.NotificationConfig? = null,
+
+    @Json(name = "Ranking")
+    val ranking: io.getstream.feeds.android.core.generated.models.RankingConfig? = null,
 
     @Json(name = "Stories")
     val stories: io.getstream.feeds.android.core.generated.models.StoriesConfig? = null
