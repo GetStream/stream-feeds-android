@@ -1,22 +1,29 @@
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.android.core.result.runSafely
+import io.getstream.feeds.android.client.api.file.FeedUploadPayload
+import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
+import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
 import io.getstream.feeds.android.client.api.state.query.toRequest
+import io.getstream.feeds.android.client.internal.file.uploadAll
 import io.getstream.feeds.android.core.generated.apis.ApiService
 import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
 import io.getstream.feeds.android.core.generated.models.AddCommentRequest
 import io.getstream.feeds.android.core.generated.models.AddCommentsBatchRequest
 import io.getstream.feeds.android.core.generated.models.UpdateCommentRequest
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 /**
  * Default implementation of the [CommentsRepository] interface.
@@ -25,7 +32,10 @@ import io.getstream.feeds.android.core.generated.models.UpdateCommentRequest
  *
  * @property api The API service used to perform network requests.
  */
-internal class CommentsRepositoryImpl(private val api: ApiService) : CommentsRepository {
+internal class CommentsRepositoryImpl(
+    private val api: ApiService,
+    private val uploader: FeedUploader,
+) : CommentsRepository {
 
     override suspend fun queryComments(
         query: CommentsQuery,
@@ -55,14 +65,40 @@ internal class CommentsRepositoryImpl(private val api: ApiService) : CommentsRep
         )
     }
 
-    override suspend fun addComment(request: AddCommentRequest): Result<CommentData> = runSafely {
-        api.addComment(request).comment.toModel()
+    override suspend fun addComment(
+        request: ActivityAddCommentRequest,
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?
+    ): Result<CommentData> = runSafely {
+        val newRequest = uploadAttachmentsAndUpdateRequest(request, attachmentUploadProgress)
+        api.addComment(newRequest).comment.toModel()
     }
 
     override suspend fun addCommentsBatch(
-        request: AddCommentsBatchRequest,
+        requests: List<ActivityAddCommentRequest>,
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?
     ): Result<List<CommentData>> = runSafely {
-        api.addCommentsBatch(request).comments.map { it.toModel() }
+        val newRequests = coroutineScope {
+            requests.map { request ->
+                async { uploadAttachmentsAndUpdateRequest(request, attachmentUploadProgress) }
+            }
+        }.awaitAll()
+
+        val batchRequest = AddCommentsBatchRequest(newRequests)
+
+        api.addCommentsBatch(batchRequest).comments.map { it.toModel() }
+    }
+
+    private suspend fun uploadAttachmentsAndUpdateRequest(
+        request: ActivityAddCommentRequest,
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?
+    ): AddCommentRequest {
+        val uploadedAttachments = uploader.uploadAll(
+            files = request.attachmentUploads,
+            attachmentUploadProgress = attachmentUploadProgress
+        )
+        return request.request.copy(
+            attachments = request.request.attachments.orEmpty() + uploadedAttachments
+        )
     }
 
     override suspend fun deleteComment(

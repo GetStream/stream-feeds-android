@@ -1,6 +1,7 @@
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.android.core.websocket.WebSocketConnectionState
+import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedId
@@ -20,7 +21,6 @@ import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
 import io.getstream.feeds.android.client.internal.state.event.handler.ActivityEventHandler
 import io.getstream.feeds.android.client.internal.utils.flatMap
 import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
-import io.getstream.feeds.android.core.generated.models.AddCommentsBatchRequest
 import io.getstream.feeds.android.core.generated.models.CastPollVoteRequest
 import io.getstream.feeds.android.core.generated.models.CreatePollOptionRequest
 import io.getstream.feeds.android.core.generated.models.UpdateCommentRequest
@@ -102,17 +102,23 @@ internal class ActivityImpl(
             .onSuccess { commentList.mutableState.onCommentUpdated(it) }
     }
 
-    override suspend fun addComment(request: ActivityAddCommentRequest): Result<CommentData> {
+    override suspend fun addComment(
+        request: ActivityAddCommentRequest,
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?,
+    ): Result<CommentData> {
         return commentsRepository
-            .addComment(request.withActivityId(activityId))
+            .addComment(
+                request = request,
+                attachmentUploadProgress = attachmentUploadProgress
+            )
             .onSuccess { commentList.mutableState.onCommentAdded(ThreadedCommentData(it)) }
     }
 
-    override suspend fun addCommentsBatch(requests: List<ActivityAddCommentRequest>): Result<List<CommentData>> {
-        val request = AddCommentsBatchRequest(
-            comments = requests.map { it.withActivityId(activityId) }
-        )
-        return commentsRepository.addCommentsBatch(request)
+    override suspend fun addCommentsBatch(
+        requests: List<ActivityAddCommentRequest>,
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?
+    ): Result<List<CommentData>> {
+        return commentsRepository.addCommentsBatch(requests, attachmentUploadProgress)
             .onSuccess { comments ->
                 val threadedComments = comments.map(::ThreadedCommentData)
                 threadedComments.forEach { threadedComment ->

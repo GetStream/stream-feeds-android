@@ -1,16 +1,16 @@
 package io.getstream.feeds.android.client.internal.repository
 
+import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
+import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
 import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
 import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
-import io.getstream.feeds.android.core.generated.models.AddCommentRequest
-import io.getstream.feeds.android.core.generated.models.AddCommentsBatchRequest
 import io.getstream.feeds.android.core.generated.models.UpdateCommentRequest
 
 /**
@@ -48,16 +48,23 @@ internal interface CommentsRepository {
      * @return A [Result] containing the newly created [CommentData] if successful, or an error if
      * the operation fails.
      */
-    suspend fun addComment(request: AddCommentRequest): Result<CommentData>
+    suspend fun addComment(
+        request: ActivityAddCommentRequest,
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)? = null,
+    ): Result<CommentData>
 
     /**
      * Adds multiple comments in a single batch operation.
      *
-     * @param request The request containing a list of comments to be added.
+     * @param requests A list of [ActivityAddCommentRequest] objects, each representing a comment to
+     * be added.
      * @return A [Result] containing a list of [CommentData] for each successfully added comment, or
      * an error if the operation fails.
      */
-    suspend fun addCommentsBatch(request: AddCommentsBatchRequest): Result<List<CommentData>>
+    suspend fun addCommentsBatch(
+        requests: List<ActivityAddCommentRequest>,
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)? = null
+    ): Result<List<CommentData>>
 
     /**
      * Deletes a comment by its identifier.

@@ -7,7 +7,7 @@ import java.util.Date
 
 internal object TestData {
     fun commentData(
-        id: String,
+        id: String = "comment-id",
         parentId: String? = null,
         text: String = "Test comment",
         createdAt: Date = Date(1),
