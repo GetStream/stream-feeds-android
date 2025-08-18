@@ -121,8 +121,8 @@ internal class ActivityImpl(
             }
     }
 
-    override suspend fun deleteComment(commentId: String): Result<Unit> {
-        return commentsRepository.deleteComment(commentId)
+    override suspend fun deleteComment(commentId: String, hardDelete: Boolean?): Result<Unit> {
+        return commentsRepository.deleteComment(commentId, hardDelete)
             .onSuccess { commentList.mutableState.onCommentRemoved(commentId) }
     }
 

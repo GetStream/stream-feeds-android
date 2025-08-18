@@ -39,9 +39,9 @@ import com.squareup.moshi.ToJson
  */
 
 data class RejectFollowRequest (
-    @Json(name = "source_fid")
-    val sourceFid: kotlin.String,
+    @Json(name = "source")
+    val source: kotlin.String,
 
-    @Json(name = "target_fid")
-    val targetFid: kotlin.String
+    @Json(name = "target")
+    val target: kotlin.String
 )

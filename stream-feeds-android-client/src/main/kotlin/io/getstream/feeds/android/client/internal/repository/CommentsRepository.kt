@@ -63,9 +63,11 @@ internal interface CommentsRepository {
      * Deletes a comment by its identifier.
      *
      * @param commentId The unique identifier of the comment to be deleted.
+     * @param hardDelete If true, the comment will be permanently deleted. Otherwise, it will be
+     * soft-deleted.
      * @return A [Result] indicating success or failure of the deletion operation.
      */
-    suspend fun deleteComment(commentId: String): Result<Unit>
+    suspend fun deleteComment(commentId: String, hardDelete: Boolean?): Result<Unit>
 
     /**
      * Retrieves a specific comment by its identifier.

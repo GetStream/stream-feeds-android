@@ -45,8 +45,8 @@ data class FeedResponse (
     @Json(name = "description")
     val description: kotlin.String,
 
-    @Json(name = "fid")
-    val fid: kotlin.String,
+    @Json(name = "feed")
+    val feed: kotlin.String,
 
     @Json(name = "follower_count")
     val followerCount: kotlin.Int,

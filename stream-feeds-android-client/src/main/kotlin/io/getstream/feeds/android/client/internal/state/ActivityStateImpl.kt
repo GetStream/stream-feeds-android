@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.asStateFlow
 internal class ActivityStateImpl(
     private val currentUserId: String,
     private val activityCommentListState: ActivityCommentListState,
-): ActivityMutableState {
+) : ActivityMutableState {
 
     private val _activity: MutableStateFlow<ActivityData?> = MutableStateFlow(null)
     private val _poll: MutableStateFlow<PollData?> = MutableStateFlow(null)
@@ -118,7 +118,7 @@ internal class ActivityStateImpl(
  * a mutable state representation of an activity, allowing updates to the activity and its
  * associated poll data.
  */
-internal interface ActivityMutableState: ActivityState, ActivityStateUpdates
+internal interface ActivityMutableState : ActivityState, ActivityStateUpdates
 
 /**
  * Interface for handling updates to the activity state.

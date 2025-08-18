@@ -106,9 +106,11 @@ public interface Activity {
      * Deletes a comment from the activity.
      *
      * @param commentId The unique identifier of the comment to be deleted.
+     * @param hardDelete If true, the comment will be permanently deleted. Otherwise, it will be
+     * soft-deleted.
      * @return A [Result] indicating success or failure of the deletion operation.
      */
-    public suspend fun deleteComment(commentId: String): Result<Unit>
+    public suspend fun deleteComment(commentId: String, hardDelete: Boolean? = null): Result<Unit>
 
     /**
      * Updates an existing comment in the activity.
