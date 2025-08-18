@@ -582,13 +582,12 @@ fun CreateContentBottomSheet(
                     fontWeight = FontWeight.Bold
                 )
 
+                val canPost = attachments.isNotEmpty() || postText.isNotBlank()
                 Text(
                     text = "Post",
-                    color = if (postText.isNotBlank()) Color.Blue else Color.Gray,
+                    color = if (canPost) Color.Blue else Color.Gray,
                     fontWeight = FontWeight.Medium,
-                    modifier = Modifier.clickable(
-                        enabled = postText.isNotBlank()
-                    ) {
+                    modifier = Modifier.clickable(enabled = canPost) {
                         onPost(postText, attachments)
                     }
                 )
