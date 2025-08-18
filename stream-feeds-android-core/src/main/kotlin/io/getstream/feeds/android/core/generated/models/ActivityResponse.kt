@@ -120,6 +120,9 @@ data class ActivityResponse (
     @Json(name = "expires_at")
     val expiresAt: org.threeten.bp.OffsetDateTime? = null,
 
+    @Json(name = "hidden")
+    val hidden: kotlin.Boolean? = null,
+
     @Json(name = "text")
     val text: kotlin.String? = null,
 

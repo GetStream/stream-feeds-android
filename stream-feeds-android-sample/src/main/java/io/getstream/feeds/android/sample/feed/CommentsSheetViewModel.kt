@@ -1,6 +1,5 @@
 package io.getstream.feeds.android.sample.feed
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -9,6 +8,7 @@ import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentReq
 import io.getstream.feeds.android.client.api.state.Activity
 import io.getstream.feeds.android.client.api.state.ActivityState
 import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
+import io.getstream.feeds.android.sample.utils.logResult
 import kotlinx.coroutines.launch
 
 class CommentsSheetViewModel(
@@ -23,7 +23,7 @@ class CommentsSheetViewModel(
     init {
         viewModelScope.launch {
             activity.get()
-                .logResult("Loading activity: ${activity.activityId}")
+                .logResult(TAG, "Loading activity: ${activity.activityId}")
         }
     }
 
@@ -32,7 +32,7 @@ class CommentsSheetViewModel(
         viewModelScope.launch {
             activity.queryMoreComments()
                 .onSuccess { comments -> canLoadMoreComments = comments.isNotEmpty() }
-                .logResult("Loading more comments for activity: ${activity.activityId}")
+                .logResult(TAG, "Loading more comments for activity: ${activity.activityId}")
         }
     }
 
@@ -43,7 +43,7 @@ class CommentsSheetViewModel(
             } else {
                 val request = AddCommentReactionRequest("heart", createNotificationActivity = true)
                 activity.addCommentReaction(comment.id, request)
-            }.logResult("Toggling heart reaction for comment: ${comment.id}")
+            }.logResult(TAG, "Toggling heart reaction for comment: ${comment.id}")
         }
     }
 
@@ -55,15 +55,8 @@ class CommentsSheetViewModel(
                 createNotificationActivity = true,
             )
             activity.addComment(request)
-                .logResult("Adding comment to activity: ${activity.activityId}")
+                .logResult(TAG, "Adding comment to activity: ${activity.activityId}")
         }
-    }
-
-    private fun <T> Result<T>.logResult(operation: String) {
-        fold(
-            onSuccess = { Log.d(TAG, "[Success] $operation") },
-            onFailure = { Log.e(TAG, "[Failure] $operation", it) }
-        )
     }
 
     class Factory(private val activity: Activity) : ViewModelProvider.Factory {

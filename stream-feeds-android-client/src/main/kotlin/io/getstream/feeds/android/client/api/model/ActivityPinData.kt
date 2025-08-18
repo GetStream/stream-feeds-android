@@ -61,7 +61,7 @@ internal fun ActivityPinResponse.toModel(): ActivityPinData = ActivityPinData(
 internal fun PinActivityResponse.toModel(): ActivityPinData = ActivityPinData(
     activity = activity.toModel(),
     createdAt = createdAt.toDate(),
-    fid = FeedId(fid),
+    fid = FeedId(feed),
     updatedAt = createdAt.toDate(), // no updated_at
     userId = userId,
 )

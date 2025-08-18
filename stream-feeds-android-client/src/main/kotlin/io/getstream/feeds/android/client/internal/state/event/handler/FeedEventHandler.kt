@@ -20,6 +20,12 @@ import io.getstream.feeds.android.core.generated.models.FollowCreatedEvent
 import io.getstream.feeds.android.core.generated.models.FollowDeletedEvent
 import io.getstream.feeds.android.core.generated.models.FollowUpdatedEvent
 import io.getstream.feeds.android.core.generated.models.NotificationFeedUpdatedEvent
+import io.getstream.feeds.android.core.generated.models.PollClosedFeedEvent
+import io.getstream.feeds.android.core.generated.models.PollDeletedFeedEvent
+import io.getstream.feeds.android.core.generated.models.PollUpdatedFeedEvent
+import io.getstream.feeds.android.core.generated.models.PollVoteCastedFeedEvent
+import io.getstream.feeds.android.core.generated.models.PollVoteChangedFeedEvent
+import io.getstream.feeds.android.core.generated.models.PollVoteRemovedFeedEvent
 import io.getstream.feeds.android.core.generated.models.WSEvent
 
 /**
@@ -145,6 +151,42 @@ internal class FeedEventHandler(
                             .orEmpty(),
                         notificationStatus = event.notificationStatus,
                     )
+                }
+            }
+
+            is PollClosedFeedEvent -> {
+                if (event.fid == fid.rawValue) {
+                    state.onPollChanged(event.poll.id, event.poll.toModel())
+                }
+            }
+
+            is PollDeletedFeedEvent -> {
+                if (event.fid == fid.rawValue) {
+                    state.onPollChanged(event.poll.id, null)
+                }
+            }
+
+            is PollUpdatedFeedEvent -> {
+                if (event.fid == fid.rawValue) {
+                    state.onPollChanged(event.poll.id, event.poll.toModel())
+                }
+            }
+
+            is PollVoteCastedFeedEvent -> {
+                if (event.fid == fid.rawValue) {
+                    state.onPollChanged(event.poll.id, event.poll.toModel())
+                }
+            }
+
+            is PollVoteChangedFeedEvent -> {
+                if (event.fid == fid.rawValue) {
+                    state.onPollChanged(event.poll.id, event.poll.toModel())
+                }
+            }
+
+            is PollVoteRemovedFeedEvent -> {
+                if (event.fid == fid.rawValue) {
+                    state.onPollChanged(event.poll.id, event.poll.toModel())
                 }
             }
 

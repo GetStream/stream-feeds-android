@@ -78,6 +78,9 @@ data class UpsertConfigRequest (
     @Json(name = "google_vision_config")
     val googleVisionConfig: io.getstream.feeds.android.core.generated.models.GoogleVisionConfig? = null,
 
+    @Json(name = "llm_config")
+    val llmConfig: io.getstream.feeds.android.core.generated.models.LLMConfig? = null,
+
     @Json(name = "rule_builder_config")
     val ruleBuilderConfig: io.getstream.feeds.android.core.generated.models.RuleBuilderConfig? = null,
 

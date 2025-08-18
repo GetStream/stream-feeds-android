@@ -13,6 +13,7 @@ import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
+import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.model.addBookmark
 import io.getstream.feeds.android.client.api.model.addComment
@@ -300,6 +301,18 @@ internal class FeedStateImpl(
         removeFollow(follow)
         addFollow(follow)
     }
+
+    override fun onPollChanged(id: String, data: PollData?) {
+        _activities.update { current ->
+            current.map { activity ->
+                if (activity.poll?.id == id) {
+                    activity.copy(poll = data)
+                } else {
+                    activity
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -425,6 +438,14 @@ internal interface FeedStateUpdates {
      * Handles updates to the feed state when a reaction is removed.
      */
     fun onReactionRemoved(reaction: FeedsReactionData)
+
+    /**
+     * Handles updates to the feed state when a poll is changed.
+     *
+     * @param id The ID of the poll that has changed.
+     * @param data The updated poll data, or null if the poll was removed.
+     */
+    fun onPollChanged(id: String, data: PollData?)
 
     /**
      * Handles updates to a notification feed.

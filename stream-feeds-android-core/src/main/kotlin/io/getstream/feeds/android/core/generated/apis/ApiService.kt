@@ -160,63 +160,6 @@ interface ApiService {
     ): io.getstream.feeds.android.core.generated.models.QueryActivitiesResponse
     
     /**
-     * Delete a single activity
-     * Delete a single activity by its ID
-     */
-    @DELETE("/api/v2/feeds/activities/{activity_id}")
-    suspend fun deleteActivity(
-        @Path("activity_id") activityId: kotlin.String,
-        @Query("hard_delete") hardDelete: kotlin.Boolean? = null
-    ): io.getstream.feeds.android.core.generated.models.DeleteActivityResponse
-    
-    /**
-     * Get activity
-     * Returns activity by ID
-     */
-    @GET("/api/v2/feeds/activities/{activity_id}")
-    suspend fun getActivity(
-        @Path("activity_id") activityId: kotlin.String
-    ): io.getstream.feeds.android.core.generated.models.GetActivityResponse
-    
-    /**
-     * Partially activity update
-     * Updates certain fields of the activity
-     */
-    @PATCH("/api/v2/feeds/activities/{activity_id}")
-    suspend fun updateActivityPartial(
-        @Path("activity_id") activityId: kotlin.String ,
-        @Body updateActivityPartialRequest : io.getstream.feeds.android.core.generated.models.UpdateActivityPartialRequest
-    ): io.getstream.feeds.android.core.generated.models.UpdateActivityPartialResponse
-    
-    /**
-     * Partially activity update
-     * Updates certain fields of the activity
-     */
-    @PATCH("/api/v2/feeds/activities/{activity_id}")
-    suspend fun updateActivityPartial(
-        @Path("activity_id") activityId: kotlin.String
-    ): io.getstream.feeds.android.core.generated.models.UpdateActivityPartialResponse
-    
-    /**
-     * Full activity update
-     * Replaces an activity with the provided data
-     */
-    @PUT("/api/v2/feeds/activities/{activity_id}")
-    suspend fun updateActivity(
-        @Path("activity_id") activityId: kotlin.String ,
-        @Body updateActivityRequest : io.getstream.feeds.android.core.generated.models.UpdateActivityRequest
-    ): io.getstream.feeds.android.core.generated.models.UpdateActivityResponse
-    
-    /**
-     * Full activity update
-     * Replaces an activity with the provided data
-     */
-    @PUT("/api/v2/feeds/activities/{activity_id}")
-    suspend fun updateActivity(
-        @Path("activity_id") activityId: kotlin.String
-    ): io.getstream.feeds.android.core.generated.models.UpdateActivityResponse
-    
-    /**
      * Delete a bookmark
      * Deletes a bookmark from an activity
      */
@@ -263,6 +206,25 @@ interface ApiService {
     suspend fun addBookmark(
         @Path("activity_id") activityId: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.AddBookmarkResponse
+    
+    /**
+     * Provide feedback on an activity
+     * Submit feedback for an activity including options to show less, hide, report, or mute the user
+     */
+    @POST("/api/v2/feeds/activities/{activity_id}/feedback")
+    suspend fun activityFeedback(
+        @Path("activity_id") activityId: kotlin.String ,
+        @Body activityFeedbackRequest : io.getstream.feeds.android.core.generated.models.ActivityFeedbackRequest
+    ): io.getstream.feeds.android.core.generated.models.ActivityFeedbackResponse
+    
+    /**
+     * Provide feedback on an activity
+     * Submit feedback for an activity including options to show less, hide, report, or mute the user
+     */
+    @POST("/api/v2/feeds/activities/{activity_id}/feedback")
+    suspend fun activityFeedback(
+        @Path("activity_id") activityId: kotlin.String
+    ): io.getstream.feeds.android.core.generated.models.ActivityFeedbackResponse
     
     /**
      * Cast vote
@@ -335,6 +297,63 @@ interface ApiService {
         @Path("activity_id") activityId: kotlin.String,
         @Path("type") type: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.DeleteActivityReactionResponse
+    
+    /**
+     * Delete a single activity
+     * Delete a single activity by its ID
+     */
+    @DELETE("/api/v2/feeds/activities/{id}")
+    suspend fun deleteActivity(
+        @Path("id") id: kotlin.String,
+        @Query("hard_delete") hardDelete: kotlin.Boolean? = null
+    ): io.getstream.feeds.android.core.generated.models.DeleteActivityResponse
+    
+    /**
+     * Get activity
+     * Returns activity by ID
+     */
+    @GET("/api/v2/feeds/activities/{id}")
+    suspend fun getActivity(
+        @Path("id") id: kotlin.String
+    ): io.getstream.feeds.android.core.generated.models.GetActivityResponse
+    
+    /**
+     * Partially activity update
+     * Updates certain fields of the activity
+     */
+    @PATCH("/api/v2/feeds/activities/{id}")
+    suspend fun updateActivityPartial(
+        @Path("id") id: kotlin.String ,
+        @Body updateActivityPartialRequest : io.getstream.feeds.android.core.generated.models.UpdateActivityPartialRequest
+    ): io.getstream.feeds.android.core.generated.models.UpdateActivityPartialResponse
+    
+    /**
+     * Partially activity update
+     * Updates certain fields of the activity
+     */
+    @PATCH("/api/v2/feeds/activities/{id}")
+    suspend fun updateActivityPartial(
+        @Path("id") id: kotlin.String
+    ): io.getstream.feeds.android.core.generated.models.UpdateActivityPartialResponse
+    
+    /**
+     * Full activity update
+     * Replaces an activity with the provided data
+     */
+    @PUT("/api/v2/feeds/activities/{id}")
+    suspend fun updateActivity(
+        @Path("id") id: kotlin.String ,
+        @Body updateActivityRequest : io.getstream.feeds.android.core.generated.models.UpdateActivityRequest
+    ): io.getstream.feeds.android.core.generated.models.UpdateActivityResponse
+    
+    /**
+     * Full activity update
+     * Replaces an activity with the provided data
+     */
+    @PUT("/api/v2/feeds/activities/{id}")
+    suspend fun updateActivity(
+        @Path("id") id: kotlin.String
+    ): io.getstream.feeds.android.core.generated.models.UpdateActivityResponse
     
     /**
      * Query bookmark folders
@@ -445,27 +464,28 @@ interface ApiService {
      * Delete a comment
      * Deletes a comment from an object (e.g., activity) and broadcasts appropriate events
      */
-    @DELETE("/api/v2/feeds/comments/{comment_id}")
+    @DELETE("/api/v2/feeds/comments/{id}")
     suspend fun deleteComment(
-        @Path("comment_id") commentId: kotlin.String
+        @Path("id") id: kotlin.String,
+        @Query("hard_delete") hardDelete: kotlin.Boolean? = null
     ): io.getstream.feeds.android.core.generated.models.DeleteCommentResponse
     
     /**
      * Get comment
      * Get a comment by ID
      */
-    @GET("/api/v2/feeds/comments/{comment_id}")
+    @GET("/api/v2/feeds/comments/{id}")
     suspend fun getComment(
-        @Path("comment_id") commentId: kotlin.String
+        @Path("id") id: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.GetCommentResponse
     
     /**
      * Update a comment
      * Updates a comment on an object (e.g., activity) and broadcasts appropriate events
      */
-    @PATCH("/api/v2/feeds/comments/{comment_id}")
+    @PATCH("/api/v2/feeds/comments/{id}")
     suspend fun updateComment(
-        @Path("comment_id") commentId: kotlin.String ,
+        @Path("id") id: kotlin.String ,
         @Body updateCommentRequest : io.getstream.feeds.android.core.generated.models.UpdateCommentRequest
     ): io.getstream.feeds.android.core.generated.models.UpdateCommentResponse
     
@@ -473,18 +493,18 @@ interface ApiService {
      * Update a comment
      * Updates a comment on an object (e.g., activity) and broadcasts appropriate events
      */
-    @PATCH("/api/v2/feeds/comments/{comment_id}")
+    @PATCH("/api/v2/feeds/comments/{id}")
     suspend fun updateComment(
-        @Path("comment_id") commentId: kotlin.String
+        @Path("id") id: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.UpdateCommentResponse
     
     /**
      * Add comment reaction
      * Adds a reaction to a comment
      */
-    @POST("/api/v2/feeds/comments/{comment_id}/reactions")
+    @POST("/api/v2/feeds/comments/{id}/reactions")
     suspend fun addCommentReaction(
-        @Path("comment_id") commentId: kotlin.String ,
+        @Path("id") id: kotlin.String ,
         @Body addCommentReactionRequest : io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
     ): io.getstream.feeds.android.core.generated.models.AddCommentReactionResponse
     
@@ -492,9 +512,9 @@ interface ApiService {
      * Query comment reactions
      * Query comment reactions
      */
-    @POST("/api/v2/feeds/comments/{comment_id}/reactions/query")
+    @POST("/api/v2/feeds/comments/{id}/reactions/query")
     suspend fun queryCommentReactions(
-        @Path("comment_id") commentId: kotlin.String ,
+        @Path("id") id: kotlin.String ,
         @Body queryCommentReactionsRequest : io.getstream.feeds.android.core.generated.models.QueryCommentReactionsRequest
     ): io.getstream.feeds.android.core.generated.models.QueryCommentReactionsResponse
     
@@ -502,18 +522,18 @@ interface ApiService {
      * Query comment reactions
      * Query comment reactions
      */
-    @POST("/api/v2/feeds/comments/{comment_id}/reactions/query")
+    @POST("/api/v2/feeds/comments/{id}/reactions/query")
     suspend fun queryCommentReactions(
-        @Path("comment_id") commentId: kotlin.String
+        @Path("id") id: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.QueryCommentReactionsResponse
     
     /**
      * Delete comment reaction
      * Deletes a reaction from a comment
      */
-    @DELETE("/api/v2/feeds/comments/{comment_id}/reactions/{type}")
+    @DELETE("/api/v2/feeds/comments/{id}/reactions/{type}")
     suspend fun deleteCommentReaction(
-        @Path("comment_id") commentId: kotlin.String,
+        @Path("id") id: kotlin.String,
         @Path("type") type: kotlin.String
     ): io.getstream.feeds.android.core.generated.models.DeleteCommentReactionResponse
     
@@ -521,9 +541,9 @@ interface ApiService {
      * Get replies for a comment
      * Retrieve a threaded list of replies for a single comment, with configurable depth, sorting, and pagination
      */
-    @GET("/api/v2/feeds/comments/{comment_id}/replies")
+    @GET("/api/v2/feeds/comments/{id}/replies")
     suspend fun getCommentReplies(
-        @Path("comment_id") commentId: kotlin.String,
+        @Path("id") id: kotlin.String,
         @Query("depth") depth: kotlin.Int? = null,
         @Query("sort") sort: kotlin.String? = null,
         @Query("replies_limit") repliesLimit: kotlin.Int? = null,
@@ -751,7 +771,7 @@ interface ApiService {
      * Query feeds with filter query
      */
     @POST("/api/v2/feeds/feeds/query")
-    suspend fun feedsQueryFeeds(
+    suspend fun queryFeeds(
         @Query("connection_id") connectionId: kotlin.String? = null ,
         @Body queryFeedsRequest : io.getstream.feeds.android.core.generated.models.QueryFeedsRequest
     ): io.getstream.feeds.android.core.generated.models.QueryFeedsResponse
@@ -761,7 +781,7 @@ interface ApiService {
      * Query feeds with filter query
      */
     @POST("/api/v2/feeds/feeds/query")
-    suspend fun feedsQueryFeeds(
+    suspend fun queryFeeds(
         @Query("connection_id") connectionId: kotlin.String? = null
     ): io.getstream.feeds.android.core.generated.models.QueryFeedsResponse
     
@@ -780,7 +800,7 @@ interface ApiService {
      */
     @POST("/api/v2/feeds/follows")
     suspend fun follow(
-        @Body singleFollowRequest : io.getstream.feeds.android.core.generated.models.SingleFollowRequest
+        @Body followRequest : io.getstream.feeds.android.core.generated.models.FollowRequest
     ): io.getstream.feeds.android.core.generated.models.SingleFollowResponse
     
     /**
