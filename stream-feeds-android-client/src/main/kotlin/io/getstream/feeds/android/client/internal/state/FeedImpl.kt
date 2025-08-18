@@ -32,9 +32,9 @@ import io.getstream.feeds.android.core.generated.models.AddCommentReactionReques
 import io.getstream.feeds.android.core.generated.models.AddCommentRequest
 import io.getstream.feeds.android.core.generated.models.AddReactionRequest
 import io.getstream.feeds.android.core.generated.models.CreatePollRequest
+import io.getstream.feeds.android.core.generated.models.FollowRequest
 import io.getstream.feeds.android.core.generated.models.MarkActivityRequest
 import io.getstream.feeds.android.core.generated.models.RejectFollowRequest
-import io.getstream.feeds.android.core.generated.models.SingleFollowRequest
 import io.getstream.feeds.android.core.generated.models.UpdateActivityRequest
 import io.getstream.feeds.android.core.generated.models.UpdateBookmarkRequest
 import io.getstream.feeds.android.core.generated.models.UpdateCommentRequest
@@ -178,7 +178,7 @@ internal class FeedImpl(
         val request = AddActivityRequest(
             type = "post",
             text = text,
-            fids = listOf(fid.rawValue),
+            feeds = listOf(fid.rawValue),
             parentId = activityId,
         )
         return activitiesRepository.addActivity(FeedAddActivityRequest(request))
@@ -250,8 +250,8 @@ internal class FeedImpl(
         return commentsRepository.updateComment(commentId, request)
     }
 
-    override suspend fun deleteComment(commentId: String): Result<Unit> {
-        return commentsRepository.deleteComment(commentId)
+    override suspend fun deleteComment(commentId: String, hardDelete: Boolean?): Result<Unit> {
+        return commentsRepository.deleteComment(commentId, hardDelete)
     }
 
     override suspend fun queryFollowSuggestions(limit: Int?): Result<List<FeedData>> {
@@ -262,9 +262,9 @@ internal class FeedImpl(
         targetFid: FeedId,
         createNotificationActivity: Boolean?,
         custom: Map<String, Any>?,
-        pushPreference: SingleFollowRequest.PushPreference?
+        pushPreference: FollowRequest.PushPreference?
     ): Result<FollowData> {
-        val request = SingleFollowRequest(
+        val request = FollowRequest(
             createNotificationActivity = createNotificationActivity,
             custom = custom,
             pushPreference = pushPreference,
@@ -286,8 +286,8 @@ internal class FeedImpl(
     ): Result<FollowData> {
         val request = AcceptFollowRequest(
             followerRole = role,
-            sourceFid = sourceFid.rawValue,
-            targetFid = fid.rawValue,
+            source = sourceFid.rawValue,
+            target = fid.rawValue,
         )
         return feedsRepository.acceptFollow(request)
             .onSuccess { follow ->
@@ -298,8 +298,8 @@ internal class FeedImpl(
 
     override suspend fun rejectFollow(sourceFid: FeedId): Result<FollowData> {
         val request = RejectFollowRequest(
-            sourceFid = sourceFid.rawValue,
-            targetFid = fid.rawValue,
+            source = sourceFid.rawValue,
+            target = fid.rawValue,
         )
         return feedsRepository.rejectFollow(request)
             .onSuccess { follow ->
@@ -370,7 +370,7 @@ internal class FeedImpl(
     ): Result<ActivityData> {
         return pollsRepository.createPoll(request).flatMap { poll ->
             val request = AddActivityRequest(
-                fids = listOf(fid.rawValue),
+                feeds = listOf(fid.rawValue),
                 pollId = poll.id,
                 type = activityType,
             )

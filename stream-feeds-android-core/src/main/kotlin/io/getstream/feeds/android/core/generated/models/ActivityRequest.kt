@@ -42,8 +42,8 @@ data class ActivityRequest (
     @Json(name = "type")
     val type: kotlin.String,
 
-    @Json(name = "fids")
-    val fids: kotlin.collections.List<kotlin.String> = emptyList(),
+    @Json(name = "feeds")
+    val feeds: kotlin.collections.List<kotlin.String> = emptyList(),
 
     @Json(name = "expires_at")
     val expiresAt: kotlin.String? = null,

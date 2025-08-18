@@ -62,6 +62,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.UserData
 import io.getstream.feeds.android.core.generated.models.Attachment
 import io.getstream.feeds.android.sample.R
@@ -115,52 +116,30 @@ fun FeedsScreen(
             LazyColumn(state = listState) {
                 items(activities) { activity ->
                     if (activity.parent != null) {
+                        val repostText = activity.text?.let { ": $it" }.orEmpty()
                         Text(
-                            text = "${activity.user.name ?: activity.user.id} reposted${if (activity.text != null) ": ${activity.text}" else ""}",
+                            text = "${activity.user.name ?: activity.user.id} reposted$repostText",
                             fontStyle = FontStyle.Italic,
                             modifier = Modifier.padding(16.dp),
                         )
-                        val parent = activity.parent!!
-                        ActivityContent(
-                            feedsClient = feedsClient,
-                            feedId = fid,
-                            user = parent.user,
-                            text = parent.text ?: "",
-                            attachments = parent.attachments,
-                            data = activity,
-                            currentUserId = currentUserId,
-                            onHeartClick = { viewModel.onHeartClick(activity) },
-                            onRepostClick = { message ->
-                                viewModel.onRepostClick(
-                                    activity,
-                                    message
-                                )
-                            },
-                            onBookmarkClick = { viewModel.onBookmarkClick(activity) },
-                            onDeleteClick = { viewModel.onDeleteClick(activity.id) },
-                            onEditSave = { viewModel.onEditActivity(activity.id, it) },
-                        )
-                    } else {
-                        ActivityContent(
-                            feedsClient = feedsClient,
-                            feedId = fid,
-                            user = activity.user,
-                            text = activity.text ?: "",
-                            attachments = activity.attachments,
-                            data = activity,
-                            currentUserId = currentUserId,
-                            onHeartClick = { viewModel.onHeartClick(activity) },
-                            onRepostClick = { message ->
-                                viewModel.onRepostClick(
-                                    activity,
-                                    message
-                                )
-                            },
-                            onBookmarkClick = { viewModel.onBookmarkClick(activity) },
-                            onDeleteClick = { viewModel.onDeleteClick(activity.id) },
-                            onEditSave = { viewModel.onEditActivity(activity.id, it) },
-                        )
                     }
+
+                    val baseActivity = activity.parent ?: activity
+                    ActivityContent(
+                        feedsClient = feedsClient,
+                        feedId = fid,
+                        user = baseActivity.user,
+                        text = baseActivity.text.orEmpty(),
+                        attachments = baseActivity.attachments,
+                        data = activity,
+                        currentUserId = currentUserId,
+                        onHeartClick = { viewModel.onHeartClick(activity) },
+                        onRepostClick = { message -> viewModel.onRepostClick(activity, message) },
+                        onBookmarkClick = { viewModel.onBookmarkClick(activity) },
+                        onDeleteClick = { viewModel.onDeleteClick(activity.id) },
+                        onEditSave = { viewModel.onEditActivity(activity.id, it) },
+                        pollSection = { poll -> PollSection(activity.id, poll, viewModel.pollController) }
+                    )
                 }
             }
 
@@ -279,7 +258,8 @@ fun ActivityContent(
     onRepostClick: (String?) -> Unit,
     onBookmarkClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    onEditSave: ((String) -> Unit)? = null
+    onEditSave: ((String) -> Unit),
+    pollSection: @Composable (PollData) -> Unit,
 ) {
     var showCommentsBottomSheet by remember { mutableStateOf(false) }
     var showRepostDialog by remember { mutableStateOf(false) }
@@ -336,6 +316,8 @@ fun ActivityContent(
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                 }
+
+                data.poll?.let { pollSection(it) }
             }
         }
 
@@ -384,7 +366,7 @@ fun ActivityContent(
                 initialText = text,
                 onDismiss = { showEditDialog = false },
                 onSave = { editedText ->
-                    onEditSave?.invoke(editedText)
+                    onEditSave(editedText)
                     showEditDialog = false
                 }
             )

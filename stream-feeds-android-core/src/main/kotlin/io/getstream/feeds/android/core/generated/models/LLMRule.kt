@@ -38,51 +38,58 @@ import com.squareup.moshi.ToJson
  * 
  */
 
-data class SingleFollowRequest (
-    @Json(name = "source")
-    val source: kotlin.String,
+data class LLMRule (
+    @Json(name = "action")
+    val action: Action,
 
-    @Json(name = "target")
-    val target: kotlin.String,
+    @Json(name = "description")
+    val description: kotlin.String,
 
-    @Json(name = "create_notification_activity")
-    val createNotificationActivity: kotlin.Boolean? = null,
+    @Json(name = "label")
+    val label: kotlin.String,
 
-    @Json(name = "push_preference")
-    val pushPreference: PushPreference? = null,
-
-    @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap()
+    @Json(name = "severity_rules")
+    val severityRules: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.BodyguardSeverityRule> = emptyList()
 )
 {
     
     /**
-    * PushPreference Enum
+    * Action Enum
     */
-    sealed class PushPreference(val value: kotlin.String) {
+    sealed class Action(val value: kotlin.String) {
             override fun toString(): String = value
 
             companion object {
-                fun fromString(s: kotlin.String): PushPreference = when (s) {
-                    "all" -> All
-                    "none" -> None
+                fun fromString(s: kotlin.String): Action = when (s) {
+                    "bounce" -> Bounce
+                    "bounce_flag" -> BounceFlag
+                    "bounce_remove" -> BounceRemove
+                    "flag" -> Flag
+                    "keep" -> Keep
+                    "remove" -> Remove
+                    "shadow" -> Shadow
                     else -> Unknown(s)
                 }
             }
-            object All : PushPreference("all")
-            object None : PushPreference("none")
-            data class Unknown(val unknownValue: kotlin.String) : PushPreference(unknownValue)
+            object Bounce : Action("bounce")
+            object BounceFlag : Action("bounce_flag")
+            object BounceRemove : Action("bounce_remove")
+            object Flag : Action("flag")
+            object Keep : Action("keep")
+            object Remove : Action("remove")
+            object Shadow : Action("shadow")
+            data class Unknown(val unknownValue: kotlin.String) : Action(unknownValue)
         
 
-        class PushPreferenceAdapter : JsonAdapter<PushPreference>() {
+        class ActionAdapter : JsonAdapter<Action>() {
             @FromJson
-            override fun fromJson(reader: JsonReader): PushPreference? {
+            override fun fromJson(reader: JsonReader): Action? {
                 val s = reader.nextString() ?: return null
-                return PushPreference.fromString(s)
+                return Action.fromString(s)
             }
 
             @ToJson
-            override fun toJson(writer: JsonWriter, value: PushPreference?) {
+            override fun toJson(writer: JsonWriter, value: Action?) {
                 writer.value(value?.value)
             }
         }

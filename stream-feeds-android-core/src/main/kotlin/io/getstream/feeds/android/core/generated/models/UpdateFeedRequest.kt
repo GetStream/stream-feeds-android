@@ -39,9 +39,6 @@ import com.squareup.moshi.ToJson
  */
 
 data class UpdateFeedRequest (
-    @Json(name = "created_by_id")
-    val createdById: kotlin.String? = null,
-
     @Json(name = "custom")
     val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap()
 )
