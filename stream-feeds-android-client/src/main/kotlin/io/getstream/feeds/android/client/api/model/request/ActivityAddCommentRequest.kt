@@ -8,7 +8,7 @@ import io.getstream.feeds.android.core.generated.models.Attachment
 /**
  * A request for adding comment when interacting with [Activity].
  */
-public data class ActivityAddCommentRequest(
+public data class ActivityAddCommentRequest internal constructor(
     val request: AddCommentRequest,
     val attachmentUploads: List<FeedUploadPayload> = emptyList(),
 ) {

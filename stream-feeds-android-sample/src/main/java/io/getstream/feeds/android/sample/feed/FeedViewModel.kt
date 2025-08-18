@@ -19,7 +19,6 @@ import io.getstream.feeds.android.client.api.model.FeedMemberRequestData
 import io.getstream.feeds.android.client.api.model.FeedVisibility
 import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
-import io.getstream.feeds.android.core.generated.models.AddActivityRequest
 import io.getstream.feeds.android.core.generated.models.AddReactionRequest
 import io.getstream.feeds.android.core.generated.models.UpdateActivityRequest
 import io.getstream.feeds.android.sample.util.copyToCache
@@ -120,11 +119,9 @@ class FeedViewModel(
 
             feed.addActivity(
                 FeedAddActivityRequest(
-                    AddActivityRequest(
-                        type = "activity",
-                        text = text,
-                        feeds = listOf(fid.rawValue)
-                    ),
+                    type = "activity",
+                    text = text,
+                    feeds = listOf(fid.rawValue),
                     attachmentUploads = attachmentFiles.map {
                         FeedUploadPayload(it, FileType.Image("jpeg"))
                     }

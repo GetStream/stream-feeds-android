@@ -5,11 +5,13 @@ import io.getstream.feeds.android.core.generated.models.ActivityLocation
 import io.getstream.feeds.android.core.generated.models.AddActivityRequest
 import io.getstream.feeds.android.core.generated.models.Attachment
 
-public data class FeedAddActivityRequest(
+public data class FeedAddActivityRequest internal constructor(
     val request: AddActivityRequest,
     val attachmentUploads: List<FeedUploadPayload> = emptyList(),
 ) {
     public constructor(
+        type: String,
+        feeds: List<String> = emptyList(),
         attachments: List<Attachment>? = null,
         attachmentUploads: List<FeedUploadPayload>? = null,
         custom: Map<String, Any>? = null,
@@ -23,7 +25,6 @@ public data class FeedAddActivityRequest(
         pollId: String? = null,
         searchData: Map<String, Any>? = null,
         text: String? = null,
-        type: String,
         visibility: AddActivityRequest.Visibility? = null,
         visibilityTag: String? = null
     ) : this(
@@ -42,7 +43,8 @@ public data class FeedAddActivityRequest(
             text = text,
             type = type,
             visibility = visibility,
-            visibilityTag = visibilityTag
+            visibilityTag = visibilityTag,
+            feeds = feeds,
         ),
         attachmentUploads = attachmentUploads.orEmpty()
     )

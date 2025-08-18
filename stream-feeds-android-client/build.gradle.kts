@@ -43,6 +43,7 @@ tasks.withType<KotlinCompile>().configureEach {
         freeCompilerArgs.addAll(
             listOf(
                 "-progressive",
+                "-Xconsistent-data-class-copy-visibility",
                 "-Xexplicit-api=strict",
                 "-opt-in=io.getstream.kotlin.base.annotation.marker.StreamInternalApi",
             ),
