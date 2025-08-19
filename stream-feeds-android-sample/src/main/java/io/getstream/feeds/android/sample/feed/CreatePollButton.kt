@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -181,9 +182,12 @@ private fun ColumnScope.CreatePollBottomSheetContent(
                                 maxVotesPerPerson = newText
                             }
                         },
-                        placeholder = { Text("Max votes per person") },
+                        placeholder = { Text("Max votes") },
+                        maxLines = 1,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.padding(bottom = 8.dp),
+                        modifier = Modifier
+                            .weight(2f)
+                            .padding(bottom = 8.dp),
                         singleLine = true,
                     )
                 },
@@ -227,7 +231,7 @@ private fun TextSwitchRow(
 
 @Composable
 private fun SwitchRow(
-    content: @Composable () -> Unit,
+    content: @Composable RowScope.() -> Unit,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
@@ -238,7 +242,7 @@ private fun SwitchRow(
     ) {
         content()
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.weight(0.1f))
 
         Switch(
             checked = checked,
