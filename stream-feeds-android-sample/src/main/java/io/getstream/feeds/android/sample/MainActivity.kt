@@ -23,6 +23,7 @@ import androidx.compose.material.navigation.ModalBottomSheetLayout
 import androidx.compose.material.navigation.rememberBottomSheetNavigator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -31,11 +32,12 @@ import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.NavGraphs
+import com.ramcosta.composedestinations.generated.destinations.FeedsScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.sample.components.LoadingScreen
-import io.getstream.feeds.android.sample.feed.FeedsScreen
+import io.getstream.feeds.android.sample.feed.FeedsScreenArgs
 import io.getstream.feeds.android.sample.login.LoginScreen
 import io.getstream.feeds.android.sample.ui.theme.AppTheme
 
@@ -62,13 +64,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Destination<RootGraph>(start = true)
+@Destination<RootGraph>(start = true, navArgs = MainScreenArgs::class)
 @Composable
 fun MainScreen(navigator: DestinationsNavigator) {
     val viewModel = hiltViewModel<MainViewModel>()
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
-    when (viewState) {
+    when (val viewState = viewState) {
         is ViewState.Loading -> {
             LoadingScreen()
         }
@@ -78,14 +80,20 @@ fun MainScreen(navigator: DestinationsNavigator) {
         }
 
         is ViewState.LoggedIn -> {
-            FeedsScreen(
-                fid = FeedId("user", (viewState as ViewState.LoggedIn).user.id),
-                feedsClient = (viewState as ViewState.LoggedIn).client,
-                avatarUrl = (viewState as ViewState.LoggedIn).user.imageURL,
-                currentUserId = (viewState as ViewState.LoggedIn).user.id,
-                onLogout = viewModel::onLogout,
-                navigator = navigator,
-            )
+            LaunchedEffect(Unit) {
+                val args = FeedsScreenArgs(
+                    feedId = FeedId("user", viewState.user.id).rawValue,
+                    avatarUrl = viewState.user.imageURL,
+                    userId = viewState.user.id,
+                )
+                navigator.navigate(FeedsScreenDestination(args)) {
+                    popUpTo(NavGraphs.root) {
+                        inclusive = true
+                    }
+                }
+            }
         }
     }
 }
+
+data class MainScreenArgs(val logout: Boolean = false)

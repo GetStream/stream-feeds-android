@@ -15,21 +15,28 @@
  */
 package io.getstream.feeds.android.sample
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ramcosta.composedestinations.generated.destinations.MainScreenDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.getstream.android.core.user.User
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.login.UserCredentials
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val loginManager: LoginManager) : ViewModel() {
+class MainViewModel @Inject constructor(
+    private val loginManager: LoginManager,
+    savedStateHandle: SavedStateHandle,
+) : ViewModel() {
+
+    private val args = MainScreenDestination.argsFrom(savedStateHandle)
 
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
     val viewState: StateFlow<ViewState>
@@ -37,6 +44,10 @@ class MainViewModel @Inject constructor(private val loginManager: LoginManager) 
 
     init {
         viewModelScope.launch {
+            if (args.logout) {
+                loginManager.logout()
+            }
+
             _viewState.value =
                 when (val current = loginManager.currentState()) {
                     null -> ViewState.LoggedOut
@@ -55,13 +66,6 @@ class MainViewModel @Inject constructor(private val loginManager: LoginManager) 
                         onSuccess = { ViewState.LoggedIn(it.client, it.user) },
                         onFailure = { ViewState.LoggedOut },
                     )
-        }
-    }
-
-    fun onLogout() {
-        viewModelScope.launch {
-            _viewState.value = ViewState.LoggedOut
-            loginManager.logout()
         }
     }
 }

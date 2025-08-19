@@ -53,6 +53,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,37 +71,60 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.CommentsBottomSheetDestination
+import com.ramcosta.composedestinations.generated.destinations.MainScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.NotificationsScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.UserData
+import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.network.models.Attachment
 import io.getstream.feeds.android.sample.R
 import io.getstream.feeds.android.sample.components.LinkText
+import io.getstream.feeds.android.sample.components.LoadingScreen
 import io.getstream.feeds.android.sample.components.UserAvatar
 import io.getstream.feeds.android.sample.notification.NotificationsScreenArgs
-import io.getstream.feeds.android.sample.profile.ProfileScreenArgs
 import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
+import io.getstream.feeds.android.sample.util.AsyncResource
 
+data class FeedsScreenArgs(val feedId: String, val avatarUrl: String?, val userId: String) {
+    val fid = FeedId(feedId)
+}
+
+@Destination<RootGraph>(navArgs = FeedsScreenArgs::class)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FeedsScreen(
-    fid: FeedId,
-    feedsClient: FeedsClient,
-    avatarUrl: String?,
-    currentUserId: String,
+fun FeedsScreen(args: FeedsScreenArgs, navigator: DestinationsNavigator) {
+    val viewModel = hiltViewModel<FeedViewModel>()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    when (val state = state) {
+        AsyncResource.Loading -> LoadingScreen()
+
+        AsyncResource.Error -> {
+            LaunchedEffect(Unit) { navigator.popBackStack() }
+            return
+        }
+
+        is AsyncResource.Content -> FeedsScreenContent(args, navigator, state.data, viewModel)
+    }
+}
+
+@Composable
+private fun FeedsScreenContent(
+    args: FeedsScreenArgs,
     navigator: DestinationsNavigator,
-    onLogout: () -> Unit,
-    viewModel: FeedViewModel =
-        viewModel(factory = feedViewModelFactory(currentUserId, fid, feedsClient)),
+    state: FeedState,
+    viewModel: FeedViewModel
 ) {
     var showLogoutConfirmation by remember { mutableStateOf(false) }
     var showCreatePostBottomSheet by remember { mutableStateOf(false) }
@@ -110,7 +134,7 @@ fun FeedsScreen(
         val notificationStatus by
             viewModel.notificationState.notificationStatus.collectAsStateWithLifecycle()
         FeedsScreenToolbar(
-            avatarUrl = avatarUrl,
+            avatarUrl = args.avatarUrl,
             hasUnseenNotifications = (notificationStatus?.unseen ?: 0) > 0,
             onUserAvatarClick = { showLogoutConfirmation = true },
             onNotificationsClick = {
@@ -122,7 +146,7 @@ fun FeedsScreen(
             },
             onProfileClick = {
                 navigator.navigate(
-                    ProfileScreenDestination(ProfileScreenArgs(feedId = fid.rawValue))
+                    ProfileScreenDestination(feedId = args.feedId)
                 )
             },
         )
@@ -132,7 +156,7 @@ fun FeedsScreen(
 
         Box(modifier = Modifier.fillMaxSize()) {
             // Feed content
-            val activities by viewModel.state.activities.collectAsStateWithLifecycle()
+            val activities by state.activities.collectAsStateWithLifecycle()
             val listState = rememberLazyListState()
 
             if (activities.isEmpty()) {
@@ -158,11 +182,11 @@ fun FeedsScreen(
                             text = baseActivity.text.orEmpty(),
                             attachments = baseActivity.attachments,
                             data = activity,
-                            currentUserId = currentUserId,
+                            currentUserId = args.userId,
                             onCommentClick = {
                                 navigator.navigate(
                                     CommentsBottomSheetDestination(
-                                        feedId = fid.rawValue,
+                                        feedId = args.fid.rawValue,
                                         activityId = activity.id,
                                     )
                                 )
@@ -201,7 +225,11 @@ fun FeedsScreen(
                     onDismiss = { showLogoutConfirmation = false },
                     onConfirm = {
                         showLogoutConfirmation = false
-                        onLogout()
+                        navigator.navigate(MainScreenDestination(logout = true)) {
+                        popUpTo(NavGraphs.root) {
+                            inclusive = true
+                        }
+                    }
                     },
                 )
             }

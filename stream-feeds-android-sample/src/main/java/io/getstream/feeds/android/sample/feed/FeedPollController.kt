@@ -22,13 +22,18 @@ import io.getstream.feeds.android.network.models.CastPollVoteRequest
 import io.getstream.feeds.android.network.models.VoteData
 import io.getstream.feeds.android.sample.utils.logResult
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 
 class FeedPollController(
     private val scope: CoroutineScope,
-    private val feedsClient: FeedsClient,
+    feedsClient: Flow<FeedsClient>,
     private val fid: FeedId,
 ) {
+    private val client = feedsClient.shareIn(scope, SharingStarted.Eagerly, replay = 1)
     private val activities: MutableMap<String, Activity> = mutableMapOf()
 
     fun onPollOptionSelected(activityId: String, optionId: String) {
@@ -46,8 +51,9 @@ class FeedPollController(
             )
     }
 
-    private fun activity(id: String): Activity =
-        activities.getOrPut(id) { feedsClient.activity(activityId = id, fid = fid) }
+    private suspend fun activity(id: String): Activity = activities.getOrPut(id) {
+        client.first().activity(activityId = id, fid = fid)
+    }
 
     companion object {
         private const val TAG = "PollController"
