@@ -18,7 +18,7 @@ import io.getstream.feeds.android.core.generated.models.QueryPollsRequest
  * @property filter Optional filter to apply to the polls query. Use this to narrow down results
  * based on specific criteria. Supported filters:
  * - field: `allow_answers`, operators: `equal`
- * - field: `allow_user_suggested_options` operators: `equal`
+ * - field: `allow_user_suggested_options`, operators: `equal`
  * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
  * - field: `created_by_id`, operators: `equal`, `in`
  * - field: `id`, operators: `equal`, `in`
