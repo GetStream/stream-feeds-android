@@ -15,4 +15,4 @@ buildSrc/build
 .cxx
 local.properties
 .idea
-./.kotlin
+.kotlin
