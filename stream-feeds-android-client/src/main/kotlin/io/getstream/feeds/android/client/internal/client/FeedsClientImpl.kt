@@ -72,6 +72,8 @@ import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepositoryImpl
+import io.getstream.feeds.android.client.internal.repository.FilesRepository
+import io.getstream.feeds.android.client.internal.repository.FilesRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.ModerationRepository
 import io.getstream.feeds.android.client.internal.repository.ModerationRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
@@ -237,6 +239,7 @@ internal fun createFeedsClient(
     val bookmarksRepository = BookmarksRepositoryImpl(feedsApi)
     val commentsRepository = CommentsRepositoryImpl(feedsApi, uploader)
     val feedsRepository = FeedsRepositoryImpl(feedsApi)
+    val filesRepository = FilesRepositoryImpl(feedsApi)
     val moderationRepository = ModerationRepositoryImpl(feedsApi)
     val pollsRepository = PollsRepositoryImpl(feedsApi)
 
@@ -254,6 +257,7 @@ internal fun createFeedsClient(
         bookmarksRepository = bookmarksRepository,
         commentsRepository = commentsRepository,
         feedsRepository = feedsRepository,
+        filesRepository = filesRepository,
         moderationRepository = moderationRepository,
         pollsRepository = pollsRepository,
         moderation = moderation,
@@ -273,6 +277,7 @@ internal class FeedsClientImpl(
     private val bookmarksRepository: BookmarksRepository,
     private val commentsRepository: CommentsRepository,
     private val feedsRepository: FeedsRepository,
+    private val filesRepository: FilesRepository,
     private val moderationRepository: ModerationRepository,
     private val pollsRepository: PollsRepository,
     override val moderation: Moderation,
@@ -462,10 +467,10 @@ internal class FeedsClientImpl(
     }
 
     override suspend fun deleteFile(url: String): Result<Unit> {
-        TODO("Not yet implemented")
+        return filesRepository.deleteFile(url)
     }
 
     override suspend fun deleteImage(url: String): Result<Unit> {
-        TODO("Not yet implemented")
+        return filesRepository.deleteImage(url)
     }
 }

@@ -66,7 +66,7 @@ internal interface ModerationRepository {
     /**
      * Blocks a user.
      *
-     * @param blockUsersRequest The request containing the user ID to block.
+     * @param blockUserRequest The request containing the user ID to block.
      * @return A [Result] containing a [BlockUsersResponse] if the blocking is successful,
      * or an error if the operation fails.
      */
