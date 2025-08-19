@@ -26,6 +26,7 @@ import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsConfig
+import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
 import io.getstream.feeds.android.client.api.state.Activity
 import io.getstream.feeds.android.client.api.state.ActivityCommentList
 import io.getstream.feeds.android.client.api.state.ActivityList
@@ -70,6 +71,8 @@ import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepositoryImpl
+import io.getstream.feeds.android.client.internal.repository.DevicesRepository
+import io.getstream.feeds.android.client.internal.repository.DevicesRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.ModerationRepository
@@ -107,6 +110,7 @@ import io.getstream.feeds.android.client.internal.state.PollListImpl
 import io.getstream.feeds.android.client.internal.state.PollVoteListImpl
 import io.getstream.feeds.android.core.generated.apis.ApiService
 import io.getstream.feeds.android.core.generated.infrastructure.Serializer
+import io.getstream.feeds.android.core.generated.models.ListDevicesResponse
 import io.getstream.feeds.android.core.generated.models.WSEvent
 import io.getstream.feeds.android.core.generated.models.WSEventAdapter
 import io.getstream.log.AndroidStreamLogger
@@ -236,6 +240,7 @@ internal fun createFeedsClient(
     val appRepository = AppRepositoryImpl(feedsApi)
     val bookmarksRepository = BookmarksRepositoryImpl(feedsApi)
     val commentsRepository = CommentsRepositoryImpl(feedsApi, uploader)
+    val devicesRepository = DevicesRepositoryImpl(feedsApi)
     val feedsRepository = FeedsRepositoryImpl(feedsApi)
     val moderationRepository = ModerationRepositoryImpl(feedsApi)
     val pollsRepository = PollsRepositoryImpl(feedsApi)
@@ -253,6 +258,7 @@ internal fun createFeedsClient(
         appRepository = appRepository,
         bookmarksRepository = bookmarksRepository,
         commentsRepository = commentsRepository,
+        devicesRepository = devicesRepository,
         feedsRepository = feedsRepository,
         moderationRepository = moderationRepository,
         pollsRepository = pollsRepository,
@@ -272,6 +278,7 @@ internal class FeedsClientImpl(
     private val appRepository: AppRepository,
     private val bookmarksRepository: BookmarksRepository,
     private val commentsRepository: CommentsRepository,
+    private val devicesRepository: DevicesRepository,
     private val feedsRepository: FeedsRepository,
     private val moderationRepository: ModerationRepository,
     private val pollsRepository: PollsRepository,
@@ -459,6 +466,22 @@ internal class FeedsClientImpl(
 
     override suspend fun getApp(): Result<AppData> {
         return appRepository.getApp()
+    }
+
+    override suspend fun queryDevices(): Result<ListDevicesResponse> {
+        return devicesRepository.queryDevices()
+    }
+
+    override suspend fun createDevice(
+        id: String,
+        pushProvider: PushNotificationsProvider,
+        pushProviderName: String
+    ): Result<Unit> {
+        return devicesRepository.createDevice(id, pushProvider, pushProviderName)
+    }
+
+    override suspend fun deleteDevice(id: String): Result<Unit> {
+        return devicesRepository.deleteDevice(id)
     }
 
     override suspend fun deleteFile(url: String): Result<Unit> {

@@ -60,8 +60,6 @@ internal interface ActivitiesRepository {
         request: UpdateActivityRequest
     ): Result<ActivityData>
 
-    // TODO: suspend fun uploadAttachmentPayloads()
-
     /**
      * Upserts a list of activities.
      *

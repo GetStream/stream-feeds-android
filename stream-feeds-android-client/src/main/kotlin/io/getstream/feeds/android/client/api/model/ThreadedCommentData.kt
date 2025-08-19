@@ -79,7 +79,7 @@ import java.util.Date
  * * @property user The user who created the comment.
  */
 public data class ThreadedCommentData(
-    public val attachments: List<Attachment>?, // TODO: Make an Attachment domain model
+    public val attachments: List<Attachment>?,
     public override val confidenceScore: Float,
     public override val controversyScore: Float?,
     public override val createdAt: Date,
@@ -89,7 +89,7 @@ public data class ThreadedCommentData(
     public val id: String,
     public val latestReactions: List<FeedsReactionData>,
     public val mentionedUsers: List<UserData>,
-    public val meta: RepliesMeta?, // TODO: Make a RepliesMeta domain model
+    public val meta: RepliesMeta?,
     public val moderation: Moderation?,
     public val objectId: String,
     public val objectType: String,
