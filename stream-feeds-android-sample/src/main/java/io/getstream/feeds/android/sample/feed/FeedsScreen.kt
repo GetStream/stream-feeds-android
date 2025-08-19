@@ -48,6 +48,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -451,11 +452,15 @@ fun ActivityContent(
         }
 
         if (showCommentsBottomSheet) {
+            val context = LocalContext.current
             CommentsBottomSheet(
                 // TODO [G.] migrate to Compose navigation
                 viewModel = remember {
                     CommentsSheetViewModel
-                        .Factory(feedsClient.activity(activityId = data.id, fid = feedId))
+                        .Factory(
+                            feedsClient.activity(activityId = data.id, fid = feedId),
+                            context.applicationContext
+                        )
                         .create(CommentsSheetViewModel::class.java)
                 },
                 onDismiss = { showCommentsBottomSheet = false },
@@ -655,13 +660,12 @@ fun CreateContentBottomSheet(
                     fontWeight = FontWeight.Bold
                 )
 
+                val canPost = attachments.isNotEmpty() || postText.isNotBlank()
                 Text(
                     text = "Post",
-                    color = if (postText.isNotBlank()) Color.Blue else Color.Gray,
+                    color = if (canPost) Color.Blue else Color.Gray,
                     fontWeight = FontWeight.Medium,
-                    modifier = Modifier.clickable(
-                        enabled = postText.isNotBlank()
-                    ) {
+                    modifier = Modifier.clickable(enabled = canPost) {
                         onPost(postText, attachments)
                     }
                 )

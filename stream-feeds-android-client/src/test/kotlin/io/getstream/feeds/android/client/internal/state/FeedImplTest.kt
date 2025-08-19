@@ -3,8 +3,11 @@ package io.getstream.feeds.android.client.internal.state
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.FeedAddActivityRequest
+import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
+import io.getstream.feeds.android.client.internal.repository.CommentsRepository
+import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -14,13 +17,14 @@ import org.junit.Test
 
 internal class FeedImplTest {
     private val activitiesRepository: ActivitiesRepository = mockk(relaxed = true)
+    private val commentsRepository: CommentsRepository = mockk(relaxed = true)
 
     private val feed = FeedImpl(
         query = FeedQuery(group = "group", id = "id"),
         currentUserId = "user",
         activitiesRepository = activitiesRepository,
         bookmarksRepository = mockk(),
-        commentsRepository = mockk(),
+        commentsRepository = commentsRepository,
         feedsRepository = mockk(),
         pollsRepository = mockk(),
         subscriptionManager = mockk(relaxed = true)
@@ -37,5 +41,17 @@ internal class FeedImplTest {
 
         coVerify { activitiesRepository.addActivity(request, attachmentUploadProgress) }
         assertEquals(listOf(activityData), feed.state.activities.value)
+    }
+
+    @Test
+    fun `on addComment, delegate to repository`() = runTest {
+        val request = ActivityAddCommentRequest(activityId = "activityId", comment = "Comment")
+        val progress = { _: FeedUploadPayload, _: Double -> }
+        val commentData = commentData("id")
+        coEvery { commentsRepository.addComment(any(), any()) } returns Result.success(commentData)
+
+        feed.addComment(request, progress)
+
+        coVerify { commentsRepository.addComment(request, progress) }
     }
 }

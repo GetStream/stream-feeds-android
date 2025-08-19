@@ -22,6 +22,7 @@ import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.sample.components.LoadingScreen
 import io.getstream.feeds.android.sample.feed.FeedsScreen
 import io.getstream.feeds.android.sample.login.LoginScreen
+import io.getstream.feeds.android.sample.ui.theme.AppTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -34,11 +35,13 @@ class MainActivity : ComponentActivity() {
             val bottomSheetNavigator = rememberBottomSheetNavigator()
             val navController = rememberNavController(bottomSheetNavigator)
 
-            ModalBottomSheetLayout(
-                bottomSheetNavigator = bottomSheetNavigator,
-                sheetShape = MaterialTheme.shapes.large
-            ) {
-                DestinationsNavHost(NavGraphs.root, navController = navController)
+            AppTheme {
+                ModalBottomSheetLayout(
+                    bottomSheetNavigator = bottomSheetNavigator,
+                    sheetShape = MaterialTheme.shapes.large
+                ) {
+                    DestinationsNavHost(NavGraphs.root, navController = navController)
+                }
             }
         }
     }

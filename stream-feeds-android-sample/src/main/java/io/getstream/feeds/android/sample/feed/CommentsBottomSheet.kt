@@ -1,8 +1,8 @@
 package io.getstream.feeds.android.sample.feed
 
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -34,14 +36,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
+import io.getstream.feeds.android.sample.R
 import io.getstream.feeds.android.sample.ui.theme.LighterGray
 import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
+import io.getstream.feeds.android.sample.ui.util.rippleClickable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,7 +71,7 @@ private fun ColumnScope.CommentsBottomSheetContent(
     comments: List<ThreadedCommentData>,
     onLoadMore: () -> Unit,
     onLikeClick: (ThreadedCommentData) -> Unit,
-    onPostComment: (text: String, parentCommentId: String?) -> Unit,
+    onPostComment: (text: String, parentCommentId: String?, attachmentUris: List<Uri>) -> Unit,
 ) {
     var createCommentData: CreateCommentData? by remember { mutableStateOf(null) }
     var expandedCommentId: String? by remember { mutableStateOf(null) }
@@ -76,10 +80,16 @@ private fun ColumnScope.CommentsBottomSheetContent(
         text = "Comments",
         fontWeight = FontWeight.Bold,
         fontSize = 20.sp,
-        modifier = Modifier.align(Alignment.CenterHorizontally),
+        modifier = Modifier
+            .align(Alignment.CenterHorizontally)
+            .padding(bottom = 16.dp),
     )
 
-    Box(Modifier.fillMaxWidth()) {
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = 300.dp)
+    ) {
         val lazyListState = rememberLazyListState()
 
         ScrolledToBottomEffect(lazyListState, action = onLoadMore)
@@ -97,6 +107,11 @@ private fun ColumnScope.CommentsBottomSheetContent(
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 )
             }
+
+            // Spacer to ensure the FAB doesn't cover the last comment
+            item {
+                Spacer(Modifier.height(64.dp))
+            }
         }
 
         FloatingActionButton(
@@ -105,8 +120,6 @@ private fun ColumnScope.CommentsBottomSheetContent(
                 .align(Alignment.BottomEnd)
                 .padding(16.dp),
             shape = CircleShape,
-            containerColor = Color.Blue,
-            contentColor = Color.White,
         ) {
             Icon(
                 imageVector = Icons.Filled.Add,
@@ -120,7 +133,7 @@ private fun ColumnScope.CommentsBottomSheetContent(
         CreateContentBottomSheet(
             onDismiss = { createCommentData = null },
             onPost = { text, attachments ->
-                onPostComment(text, createCommentData?.replyParentId)
+                onPostComment(text, createCommentData?.replyParentId, attachments)
                 createCommentData = null
             }
         )
@@ -143,7 +156,8 @@ private fun Comment(
             Modifier
                 .background(LighterGray, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(data.user.name.orEmpty(), fontWeight = FontWeight.SemiBold)
             Text(data.text.orEmpty())
@@ -151,25 +165,47 @@ private fun Comment(
 
         Row(
             Modifier
-                .padding(top = 8.dp, start = 16.dp, end = 16.dp)
+                .padding(top = 4.dp, start = 4.dp, end = 4.dp)
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             val hasOwnHeart = data.ownReactions.any { it.type == "heart" }
 
             Text(
-                text = "Like",
-                modifier = Modifier.clickable { onLikeClick(data) },
-                color = if (hasOwnHeart) Color.Red else Color.Unspecified
+                text = if (hasOwnHeart) "Unlike" else "Like",
+                modifier = Modifier
+                    .rippleClickable { onLikeClick(data) }
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
             )
             Text(
                 text = "Reply",
-                modifier = Modifier.clickable(onClick = { onReplyClick(data.id) })
+                modifier = Modifier
+                    .rippleClickable { onReplyClick(data.id) }
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
             )
             Spacer(Modifier.weight(1f))
+
+            if (data.replyCount > 0) {
+                Text(
+                    text = "Replies (${data.replyCount}) ",
+                    modifier = Modifier
+                        .rippleClickable(onClick = onExpandClick)
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                )
+            }
+
+            val heartId = if (hasOwnHeart) {
+                R.drawable.favorite_filled_24
+            } else {
+                R.drawable.favorite_24
+            }
+            Icon(
+                painter = painterResource(heartId),
+                contentDescription = null
+            )
             Text(
-                text = "Replies (${data.replyCount}) ",
-                modifier = Modifier.clickable(onClick = onExpandClick),
+                text = data.reactionGroups["heart"]?.count?.toString() ?: "0",
+                modifier = Modifier.padding(start = 4.dp)
             )
         }
 

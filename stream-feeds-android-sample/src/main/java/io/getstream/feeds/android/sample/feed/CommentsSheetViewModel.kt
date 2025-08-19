@@ -1,18 +1,27 @@
 package io.getstream.feeds.android.sample.feed
 
+import android.content.Context
+import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.qualifiers.ApplicationContext
+import io.getstream.feeds.android.client.api.file.FeedUploadPayload
+import io.getstream.feeds.android.client.api.file.FileType
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
 import io.getstream.feeds.android.client.api.state.Activity
 import io.getstream.feeds.android.client.api.state.ActivityState
 import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
+import io.getstream.feeds.android.sample.util.copyToCache
+import io.getstream.feeds.android.sample.util.deleteFiles
 import io.getstream.feeds.android.sample.utils.logResult
 import kotlinx.coroutines.launch
 
 class CommentsSheetViewModel(
-    private val activity: Activity
+    private val activity: Activity,
+    @ApplicationContext private val context: Context,
 ) : ViewModel() {
 
     private var canLoadMoreComments = true
@@ -47,22 +56,44 @@ class CommentsSheetViewModel(
         }
     }
 
-    fun onPostComment(text: String, replyParentId: String?) {
+    fun onPostComment(text: String, replyParentId: String?, attachments: List<Uri>) {
         viewModelScope.launch {
-            val request = ActivityAddCommentRequest(
-                comment = text,
-                parentId = replyParentId,
-                createNotificationActivity = true,
-            )
-            activity.addComment(request)
+            val attachmentFiles = context.copyToCache(attachments).getOrElse { error ->
+                Log.e(TAG, "Failed to copy attachments", error)
+                return@launch
+            }
+
+            activity
+                .addComment(
+                    ActivityAddCommentRequest(
+                        comment = text,
+                        activityId = activity.activityId,
+                        parentId = replyParentId,
+                        createNotificationActivity = true,
+                        attachmentUploads = attachmentFiles.map {
+                            FeedUploadPayload(
+                                file = it,
+                                type = FileType.Image("jpeg"),
+                            )
+                        }
+                    ),
+                    attachmentUploadProgress = { file, progress ->
+                        Log.d(TAG, "Uploading attachment: ${file.type}, progress: $progress")
+                    }
+                )
                 .logResult(TAG, "Adding comment to activity: ${activity.activityId}")
+
+            deleteFiles(attachmentFiles)
         }
     }
 
-    class Factory(private val activity: Activity) : ViewModelProvider.Factory {
+    class Factory(
+        private val activity: Activity,
+        private val context: Context,
+    ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            CommentsSheetViewModel(activity) as T
+            CommentsSheetViewModel(activity, context) as T
     }
 
     companion object {

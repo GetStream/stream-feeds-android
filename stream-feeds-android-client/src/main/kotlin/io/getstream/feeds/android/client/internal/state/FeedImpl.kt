@@ -12,6 +12,7 @@ import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
+import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
 import io.getstream.feeds.android.client.api.state.Feed
 import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
@@ -29,7 +30,6 @@ import io.getstream.feeds.android.core.generated.models.AcceptFollowRequest
 import io.getstream.feeds.android.core.generated.models.AddActivityRequest
 import io.getstream.feeds.android.core.generated.models.AddBookmarkRequest
 import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
-import io.getstream.feeds.android.core.generated.models.AddCommentRequest
 import io.getstream.feeds.android.core.generated.models.AddReactionRequest
 import io.getstream.feeds.android.core.generated.models.CreatePollRequest
 import io.getstream.feeds.android.core.generated.models.FollowRequest
@@ -239,8 +239,11 @@ internal class FeedImpl(
         return commentsRepository.getComment(commentId)
     }
 
-    override suspend fun addComment(request: AddCommentRequest): Result<CommentData> {
-        return commentsRepository.addComment(request)
+    override suspend fun addComment(
+        request: ActivityAddCommentRequest,
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?
+    ): Result<CommentData> {
+        return commentsRepository.addComment(request, attachmentUploadProgress)
     }
 
     override suspend fun updateComment(
