@@ -23,6 +23,7 @@ import io.getstream.feeds.android.client.BuildConfig
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.Moderation
 import io.getstream.feeds.android.client.api.file.FeedUploader
+import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsConfig
@@ -109,6 +110,10 @@ import io.getstream.feeds.android.client.internal.state.PollListImpl
 import io.getstream.feeds.android.client.internal.state.PollVoteListImpl
 import io.getstream.feeds.android.core.generated.apis.ApiService
 import io.getstream.feeds.android.core.generated.infrastructure.Serializer
+import io.getstream.feeds.android.core.generated.models.ActivityRequest
+import io.getstream.feeds.android.core.generated.models.AddActivityRequest
+import io.getstream.feeds.android.core.generated.models.DeleteActivitiesRequest
+import io.getstream.feeds.android.core.generated.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.core.generated.models.WSEvent
 import io.getstream.feeds.android.core.generated.models.WSEventAdapter
 import io.getstream.log.AndroidStreamLogger
@@ -395,6 +400,22 @@ internal class FeedsClientImpl(
             activitiesRepository = activitiesRepository,
             subscriptionManager = socket,
         )
+
+    override suspend fun addActivity(request: AddActivityRequest): Result<ActivityData> {
+        return activitiesRepository.addActivity(request)
+    }
+
+    override suspend fun upsertActivities(
+        activities: List<ActivityRequest>,
+    ): Result<List<ActivityData>> {
+        return activitiesRepository.upsertActivities(activities)
+    }
+
+    override suspend fun deleteActivities(
+        request: DeleteActivitiesRequest,
+    ): Result<DeleteActivitiesResponse> {
+        return activitiesRepository.deleteActivities(request)
+    }
 
     override fun bookmarkList(query: BookmarksQuery): BookmarkList = BookmarkListImpl(
         query = query,

@@ -15,7 +15,10 @@ import io.getstream.feeds.android.client.api.state.query.toRequest
 import io.getstream.feeds.android.client.internal.file.uploadAll
 import io.getstream.feeds.android.core.generated.apis.ApiService
 import io.getstream.feeds.android.core.generated.models.ActivityRequest
+import io.getstream.feeds.android.core.generated.models.AddActivityRequest
 import io.getstream.feeds.android.core.generated.models.AddReactionRequest
+import io.getstream.feeds.android.core.generated.models.DeleteActivitiesRequest
+import io.getstream.feeds.android.core.generated.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.core.generated.models.MarkActivityRequest
 import io.getstream.feeds.android.core.generated.models.QueryActivityReactionsRequest
 import io.getstream.feeds.android.core.generated.models.UpdateActivityRequest
@@ -32,6 +35,12 @@ internal class ActivitiesRepositoryImpl(
     private val api: ApiService,
     private val uploader: FeedUploader,
 ) : ActivitiesRepository {
+
+    override suspend fun addActivity(
+        request: AddActivityRequest
+    ): Result<ActivityData> = runSafely {
+        api.addActivity(request).activity.toModel()
+    }
 
     override suspend fun addActivity(
         request: FeedAddActivityRequest,
@@ -53,6 +62,12 @@ internal class ActivitiesRepositoryImpl(
         hardDelete: Boolean
     ): Result<Unit> = runSafely {
         api.deleteActivity(activityId, hardDelete)
+    }
+
+    override suspend fun deleteActivities(
+        request: DeleteActivitiesRequest,
+    ): Result<DeleteActivitiesResponse> = runSafely {
+        api.deleteActivities(request)
     }
 
     override suspend fun getActivity(activityId: String): Result<ActivityData> = runSafely {

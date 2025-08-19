@@ -8,7 +8,10 @@ import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.core.generated.models.ActivityRequest
+import io.getstream.feeds.android.core.generated.models.AddActivityRequest
 import io.getstream.feeds.android.core.generated.models.AddReactionRequest
+import io.getstream.feeds.android.core.generated.models.DeleteActivitiesRequest
+import io.getstream.feeds.android.core.generated.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.core.generated.models.MarkActivityRequest
 import io.getstream.feeds.android.core.generated.models.QueryActivityReactionsRequest
 import io.getstream.feeds.android.core.generated.models.UpdateActivityRequest
@@ -18,6 +21,14 @@ import io.getstream.feeds.android.core.generated.models.UpdateActivityRequest
  * Performs requests and transforms API models to domain models.
  */
 internal interface ActivitiesRepository {
+
+    /**
+     * Adds a new activity to the feed.
+     *
+     * @param request The request containing the activity data to be added.
+     * @return A [Result] containing the added [ActivityData] or an error.
+     */
+    suspend fun addActivity(request: AddActivityRequest): Result<ActivityData>
 
     /**
      * Adds a new activity to the feed.
@@ -39,6 +50,14 @@ internal interface ActivitiesRepository {
      * @return A [Result] indicating success or failure.
      */
     suspend fun deleteActivity(activityId: String, hardDelete: Boolean): Result<Unit>
+
+    /**
+     * Deletes multiple activities based on the provided request.
+     *
+     * @param request The request containing the IDs of activities to be deleted.
+     * @return A [Result] indicating success or failure.
+     */
+    suspend fun deleteActivities(request: DeleteActivitiesRequest): Result<DeleteActivitiesResponse>
 
     /**
      * Retrieves an activity by its ID.
