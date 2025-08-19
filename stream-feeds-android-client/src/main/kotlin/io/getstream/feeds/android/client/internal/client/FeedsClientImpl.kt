@@ -150,7 +150,7 @@ internal fun createFeedsClient(
             logger.e(throwable) { "[clientScope] Uncaught exception in coroutine $coroutineContext: $throwable" }
         }
     // Setup network
-    val endpointConfig = EndpointConfig.STAGING // TODO: Make this configurable
+    val endpointConfig = EndpointConfig.PRODUCTION // TODO: Make this configurable
     val xStreamClient = XStreamClient.create(
         context = context,
         product = BuildConfig.PRODUCT_NAME,

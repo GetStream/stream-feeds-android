@@ -51,6 +51,6 @@ data class DemoAppConfig(
             }
         )
 
-        var Current: DemoAppConfig = Staging
+        var Current: DemoAppConfig = Production
     }
 }
