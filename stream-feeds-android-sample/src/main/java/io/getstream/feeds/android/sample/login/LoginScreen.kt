@@ -119,7 +119,7 @@ private fun UserLoginItem(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(credentials.user.imageURL)
                 .build(),
-            contentScale = ContentScale.FillBounds,
+            contentScale = ContentScale.Crop,
             contentDescription = null,
         )
 

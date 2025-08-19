@@ -23,6 +23,7 @@ import io.getstream.feeds.android.client.BuildConfig
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.Moderation
 import io.getstream.feeds.android.client.api.file.FeedUploader
+import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsConfig
@@ -75,6 +76,8 @@ import io.getstream.feeds.android.client.internal.repository.DevicesRepository
 import io.getstream.feeds.android.client.internal.repository.DevicesRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepositoryImpl
+import io.getstream.feeds.android.client.internal.repository.FilesRepository
+import io.getstream.feeds.android.client.internal.repository.FilesRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.ModerationRepository
 import io.getstream.feeds.android.client.internal.repository.ModerationRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
@@ -110,6 +113,10 @@ import io.getstream.feeds.android.client.internal.state.PollListImpl
 import io.getstream.feeds.android.client.internal.state.PollVoteListImpl
 import io.getstream.feeds.android.core.generated.apis.ApiService
 import io.getstream.feeds.android.core.generated.infrastructure.Serializer
+import io.getstream.feeds.android.core.generated.models.ActivityRequest
+import io.getstream.feeds.android.core.generated.models.AddActivityRequest
+import io.getstream.feeds.android.core.generated.models.DeleteActivitiesRequest
+import io.getstream.feeds.android.core.generated.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.core.generated.models.ListDevicesResponse
 import io.getstream.feeds.android.core.generated.models.WSEvent
 import io.getstream.feeds.android.core.generated.models.WSEventAdapter
@@ -154,7 +161,7 @@ internal fun createFeedsClient(
             logger.e(throwable) { "[clientScope] Uncaught exception in coroutine $coroutineContext: $throwable" }
         }
     // Setup network
-    val endpointConfig = EndpointConfig.STAGING // TODO: Make this configurable
+    val endpointConfig = EndpointConfig.PRODUCTION // TODO: Make this configurable
     val xStreamClient = XStreamClient.create(
         context = context,
         product = BuildConfig.PRODUCT_NAME,
@@ -242,6 +249,7 @@ internal fun createFeedsClient(
     val commentsRepository = CommentsRepositoryImpl(feedsApi, uploader)
     val devicesRepository = DevicesRepositoryImpl(feedsApi)
     val feedsRepository = FeedsRepositoryImpl(feedsApi)
+    val filesRepository = FilesRepositoryImpl(feedsApi)
     val moderationRepository = ModerationRepositoryImpl(feedsApi)
     val pollsRepository = PollsRepositoryImpl(feedsApi)
 
@@ -260,6 +268,7 @@ internal fun createFeedsClient(
         commentsRepository = commentsRepository,
         devicesRepository = devicesRepository,
         feedsRepository = feedsRepository,
+        filesRepository = filesRepository,
         moderationRepository = moderationRepository,
         pollsRepository = pollsRepository,
         moderation = moderation,
@@ -280,6 +289,7 @@ internal class FeedsClientImpl(
     private val commentsRepository: CommentsRepository,
     private val devicesRepository: DevicesRepository,
     private val feedsRepository: FeedsRepository,
+    private val filesRepository: FilesRepository,
     private val moderationRepository: ModerationRepository,
     private val pollsRepository: PollsRepository,
     override val moderation: Moderation,
@@ -398,6 +408,22 @@ internal class FeedsClientImpl(
             subscriptionManager = socket,
         )
 
+    override suspend fun addActivity(request: AddActivityRequest): Result<ActivityData> {
+        return activitiesRepository.addActivity(request)
+    }
+
+    override suspend fun upsertActivities(
+        activities: List<ActivityRequest>,
+    ): Result<List<ActivityData>> {
+        return activitiesRepository.upsertActivities(activities)
+    }
+
+    override suspend fun deleteActivities(
+        request: DeleteActivitiesRequest,
+    ): Result<DeleteActivitiesResponse> {
+        return activitiesRepository.deleteActivities(request)
+    }
+
     override fun bookmarkList(query: BookmarksQuery): BookmarkList = BookmarkListImpl(
         query = query,
         bookmarksRepository = bookmarksRepository,
@@ -485,10 +511,10 @@ internal class FeedsClientImpl(
     }
 
     override suspend fun deleteFile(url: String): Result<Unit> {
-        TODO("Not yet implemented")
+        return filesRepository.deleteFile(url)
     }
 
     override suspend fun deleteImage(url: String): Result<Unit> {
-        TODO("Not yet implemented")
+        return filesRepository.deleteImage(url)
     }
 }

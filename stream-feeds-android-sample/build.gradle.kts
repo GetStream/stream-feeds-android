@@ -1,3 +1,5 @@
+import io.getstream.feeds.android.Configuration
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -9,12 +11,12 @@ plugins {
 
 android {
     namespace = "io.getstream.feeds.android.sample"
-    compileSdk = 36
+    compileSdk = Configuration.compileSdk
 
     defaultConfig {
         applicationId = "io.getstream.feeds.android.sample"
-        minSdk = 24
-        targetSdk = 36
+        minSdk = Configuration.minSdk
+        targetSdk = Configuration.sampleTargetSdk
         versionCode = 1
         versionName = "1.0"
 

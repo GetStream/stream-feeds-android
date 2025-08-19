@@ -4,6 +4,7 @@ import android.content.Context
 import io.getstream.android.core.user.ApiKey
 import io.getstream.android.core.user.User
 import io.getstream.android.core.user.UserTokenProvider
+import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsConfig
@@ -40,6 +41,10 @@ import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
 import io.getstream.feeds.android.client.internal.client.createFeedsClient
+import io.getstream.feeds.android.core.generated.models.ActivityRequest
+import io.getstream.feeds.android.core.generated.models.AddActivityRequest
+import io.getstream.feeds.android.core.generated.models.DeleteActivitiesRequest
+import io.getstream.feeds.android.core.generated.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.core.generated.models.ListDevicesResponse
 
 
@@ -147,9 +152,6 @@ public interface FeedsClient {
 
     // TODO: Event subscription
 
-
-    // TODO: Activities operations
-
     /**
      * Creates an activity instance for the specified activity ID and feed ID.
      *
@@ -194,6 +196,32 @@ public interface FeedsClient {
      * of activity reactions.
      */
     public fun activityReactionList(query: ActivityReactionsQuery): ActivityReactionList
+
+    /**
+     * Adds a new activity to the specified feeds.
+     *
+     * @param request The request containing the activity data to be added.
+     * @return A [Result] containing the response with the added activity details if successful,
+     * or an error if the request fails.
+     */
+    public suspend fun addActivity(request: AddActivityRequest): Result<ActivityData>
+
+    /**
+     * Upserts (inserts or updates) multiple activities.
+     *
+     * @param activities The list of activities to be upserted.
+     * @return A [Result] containing a list of [ActivityData] representing the upserted activities
+     * if successful, or an error if the request fails.
+     */
+    public suspend fun upsertActivities(activities: List<ActivityRequest>): Result<List<ActivityData>>
+
+    /**
+     * Deletes multiple activities from the specified feeds.
+     *
+     * @param request The request containing the activities to delete.
+     * @return A [Result] indicating success or failure of the deletion operation.
+     */
+    public suspend fun deleteActivities(request: DeleteActivitiesRequest): Result<DeleteActivitiesResponse>
 
     /**
      * Creates a bookmark list instance based on the provided query.
