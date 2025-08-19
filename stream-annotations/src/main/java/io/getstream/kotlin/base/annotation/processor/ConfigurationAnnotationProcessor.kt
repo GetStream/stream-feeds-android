@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    https://github.com/GetStream/stream-android-base/blob/main/LICENSE
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,6 @@ import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import io.getstream.kotlin.base.annotation.marker.StreamConfiguration
 import io.getstream.kotlin.base.annotation.marker.StreamFactory
-import io.getstream.kotlin.base.annotation.marker.StreamInternalApi
 import io.getstream.kotlin.base.annotation.processor.AnnnotationDateParser.parseDate
 import java.io.OutputStreamWriter
 import java.time.LocalDate
@@ -92,7 +91,7 @@ class ConfigurationAnnotationProcessor(private val environment: SymbolProcessorE
             classDeclaration,
             configFunction,
             symbol.packageName.asString(),
-            environment.codeGenerator
+            environment.codeGenerator,
         )
     }
 
@@ -139,7 +138,7 @@ class ConfigurationAnnotationProcessor(private val environment: SymbolProcessorE
         val configureLambdaType =
             LambdaTypeName.get(
                 receiver = ClassName(packageName, scopeClassName),
-                returnType = Unit::class.asTypeName()
+                returnType = Unit::class.asTypeName(),
             )
 
         val rawReturnType =
@@ -173,7 +172,7 @@ class ConfigurationAnnotationProcessor(private val environment: SymbolProcessorE
 
     private fun addDeprecationAnnotations(
         classDeclaration: KSClassDeclaration,
-        builder: FunSpec.Builder
+        builder: FunSpec.Builder,
     ) {
         classDeclaration.annotations.forEach { annotation ->
             val annotationName = annotation.shortName.asString()
@@ -186,13 +185,13 @@ class ConfigurationAnnotationProcessor(private val environment: SymbolProcessorE
 
     private fun buildDeprecatedAnnotationSpec(
         annotation: KSAnnotation,
-        annotationName: String
+        annotationName: String,
     ): AnnotationSpec {
         val builder =
             AnnotationSpec.builder(Deprecated::class.asTypeName())
                 .addMember(
                     "message = %S",
-                    "This method is deprecated, choose a different streamConfiguration method that returns a StreamRetryPolicy"
+                    "This method is deprecated, choose a different streamConfiguration method that returns a StreamRetryPolicy",
                 )
 
         if (annotationName == "StreamDeprecated") {
@@ -220,7 +219,7 @@ class ConfigurationAnnotationProcessor(private val environment: SymbolProcessorE
         scopeClass: TypeSpec,
         configFunction: FunSpec,
         packageName: String,
-        codeGenerator: CodeGenerator
+        codeGenerator: CodeGenerator,
     ) {
         val fileSpec = FileSpec.builder(packageName, scopeClass.name!!).addType(scopeClass).build()
         val configFunPackageName = "$packageName.scope."
@@ -229,7 +228,7 @@ class ConfigurationAnnotationProcessor(private val environment: SymbolProcessorE
                 Dependencies.ALL_FILES,
                 configFunPackageName,
                 scopeClass.name!!,
-                "kt"
+                "kt",
             )
         OutputStreamWriter(file).use { writer -> fileSpec.writeTo(writer) }
         val factoryPackageName = "$packageName.factory"
@@ -243,7 +242,7 @@ class ConfigurationAnnotationProcessor(private val environment: SymbolProcessorE
                 Dependencies.ALL_FILES,
                 factoryPackageName,
                 scopeClass.name!! + "Factory",
-                "kt"
+                "kt",
             )
         OutputStreamWriter(fileConfigFunction).use { writer ->
             fileSpecConfigFunction.writeTo(writer)

@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.api.state
 
 import io.getstream.feeds.android.client.api.model.PollVoteData
@@ -32,25 +47,20 @@ import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
  */
 public interface PollVoteList {
 
-    /**
-     * The query used to fetch the poll votes.
-     */
+    /** The query used to fetch the poll votes. */
     public val query: PollVotesQuery
 
-    /**
-     * An observable object representing the current state of the poll vote list.
-     */
+    /** An observable object representing the current state of the poll vote list. */
     public val state: PollVoteListState
 
     /**
      * Fetches the initial list of poll votes based on the current query.
      *
-     * This method retrieves the first page of poll votes matching the query criteria.
-     * The results are automatically stored in the state and can be accessed via the [state.votes]
-     * property.
+     * This method retrieves the first page of poll votes matching the query criteria. The results
+     * are automatically stored in the state and can be accessed via the [state.votes] property.
      *
      * @return A [Result] containing a list of [PollVoteData] if successful, or an error if the
-     * request fails.
+     *   request fails.
      */
     public suspend fun get(): Result<List<PollVoteData>>
 
@@ -61,9 +71,9 @@ public interface PollVoteList {
      * query. The new poll votes are automatically merged with the existing ones in the state.
      *
      * @param limit The maximum number of poll votes to fetch. If null, the default limit from the
-     * API will be used.
+     *   API will be used.
      * @return A [Result] containing a list of [PollVoteData] if successful, or an error if the
-     * request fails. Returns an empty list if there are no more poll votes to fetch.
+     *   request fails. Returns an empty list if there are no more poll votes to fetch.
      */
     public suspend fun queryMorePollVotes(limit: Int? = null): Result<List<PollVoteData>>
 }

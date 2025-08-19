@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.BookmarkFolderData
@@ -16,14 +31,13 @@ import kotlinx.coroutines.flow.asStateFlow
  * An observable state object that manages the current state of a bookmark folder list.
  *
  * This class maintains the current list of bookmark folders, pagination information, and provides
- * real-time updates when bookmark folders are added, removed, or modified.
- * It automatically handles WebSocket events to keep the bookmark folder list synchronized.
+ * real-time updates when bookmark folders are added, removed, or modified. It automatically handles
+ * WebSocket events to keep the bookmark folder list synchronized.
  *
  * @property query The query used to fetch bookmark folders.
  */
-internal class BookmarkFolderListStateImpl(
-    override val query: BookmarkFoldersQuery
-): BookmarkFolderListMutableState {
+internal class BookmarkFolderListStateImpl(override val query: BookmarkFoldersQuery) :
+    BookmarkFolderListMutableState {
 
     private val _folders: MutableStateFlow<List<BookmarkFolderData>> = MutableStateFlow(emptyList())
 
@@ -43,7 +57,7 @@ internal class BookmarkFolderListStateImpl(
 
     override fun onQueryMoreBookmarkFolders(
         result: PaginationResult<BookmarkFolderData>,
-        queryConfig: QueryConfiguration<BookmarkFoldersSort>
+        queryConfig: QueryConfiguration<BookmarkFoldersSort>,
     ) {
         _pagination = result.pagination
         // Update the query configuration for future queries
@@ -58,28 +72,23 @@ internal class BookmarkFolderListStateImpl(
     }
 
     override fun onBookmarkFolderUpdated(folder: BookmarkFolderData) {
-        _folders.value = _folders.value.map {
-            if (it.id == folder.id) {
-                // Update the folder data
-                folder
-            } else {
-                it
+        _folders.value =
+            _folders.value.map {
+                if (it.id == folder.id) {
+                    // Update the folder data
+                    folder
+                } else {
+                    it
+                }
             }
-        }
     }
 }
 
-/**
- * A mutable state interface for managing the bookmark list state.
- *
- *
- */
-internal interface BookmarkFolderListMutableState : BookmarkFolderListState,
-    BookmarkFolderListStateUpdates
+/** A mutable state interface for managing the bookmark list state. */
+internal interface BookmarkFolderListMutableState :
+    BookmarkFolderListState, BookmarkFolderListStateUpdates
 
-/**
- * An interface that defines the methods for updating the state of a bookmark folder list.
- */
+/** An interface that defines the methods for updating the state of a bookmark folder list. */
 internal interface BookmarkFolderListStateUpdates {
 
     /**

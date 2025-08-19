@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.client.internal.model.mapping.toDate
@@ -52,77 +67,71 @@ public data class PollData(
     val updatedAt: Date,
     val voteCount: Int,
     val voteCountsByOption: Map<String, Int>,
-    val votingVisibility: String
+    val votingVisibility: String,
 )
 
 /**
- * Extension function to add a new option to the poll.
- * This function creates a new [PollData] instance with the new option added to the existing
- * options.
+ * Extension function to add a new option to the poll. This function creates a new [PollData]
+ * instance with the new option added to the existing options.
  *
  * @param option The [PollOptionData] to be added to the poll.
  * @return A new [PollData] instance with the added option.
  */
 internal fun PollData.addOption(option: PollOptionData): PollData {
-    return this.copy(
-        options = this.options.upsert(option, PollOptionData::id)
-    )
+    return this.copy(options = this.options.upsert(option, PollOptionData::id))
 }
 
 /**
- * Extension function to remove an option from the poll.
- * This function creates a new [PollData] instance with the specified option removed from the
- * existing options.
+ * Extension function to remove an option from the poll. This function creates a new [PollData]
+ * instance with the specified option removed from the existing options.
  *
  * @param optionId The ID of the option to remove.
  * @return A new [PollData] instance with the specified option removed.
  */
 internal fun PollData.removeOption(optionId: String): PollData {
-    return this.copy(
-        options = this.options.filter { it.id != optionId }
-    )
+    return this.copy(options = this.options.filter { it.id != optionId })
 }
 
 /**
- * Extension function to update an existing option in the poll.
- * This function creates a new [PollData] instance with the specified option updated in the
- * existing options.
+ * Extension function to update an existing option in the poll. This function creates a new
+ * [PollData] instance with the specified option updated in the existing options.
  *
  * @param option The [PollOptionData] to be updated in the poll.
  * @return A new [PollData] instance with the updated option.
  */
 internal fun PollData.updateOption(option: PollOptionData): PollData {
     return this.copy(
-        options = this.options.map {
-            if (it.id == option.id) {
-                option
-            } else {
-                it
+        options =
+            this.options.map {
+                if (it.id == option.id) {
+                    option
+                } else {
+                    it
+                }
             }
-        }
     )
 }
 
 internal fun PollData.castVote(vote: PollVoteData, currentUserId: String): PollData {
-    val updatedOwnVotes = if (vote.userId == currentUserId) {
-        this.ownVotes.upsert(vote, PollVoteData::id)
-    } else {
-        this.ownVotes
-    }
+    val updatedOwnVotes =
+        if (vote.userId == currentUserId) {
+            this.ownVotes.upsert(vote, PollVoteData::id)
+        } else {
+            this.ownVotes
+        }
     val votes = latestVotesByOption[vote.optionId].orEmpty()
     val updatedOptionVotes = votes.upsert(vote, PollVoteData::id)
     val voteCount = this.voteCountsByOption[vote.optionId] ?: 0
-    val updatedOptionVoteCounts = if (votes.size != updatedOptionVotes.size) {
-        voteCount + 1
-    } else {
-        voteCount
-    }
-    val updatedLatestVotesByOption = latestVotesByOption.toMutableMap().apply {
-        this[vote.optionId] = updatedOptionVotes
-    }
-    val updatedVoteCountsByOption = voteCountsByOption.toMutableMap().apply {
-        this[vote.optionId] = updatedOptionVoteCounts
-    }
+    val updatedOptionVoteCounts =
+        if (votes.size != updatedOptionVotes.size) {
+            voteCount + 1
+        } else {
+            voteCount
+        }
+    val updatedLatestVotesByOption =
+        latestVotesByOption.toMutableMap().apply { this[vote.optionId] = updatedOptionVotes }
+    val updatedVoteCountsByOption =
+        voteCountsByOption.toMutableMap().apply { this[vote.optionId] = updatedOptionVoteCounts }
     return this.copy(
         ownVotes = updatedOwnVotes,
         latestVotesByOption = updatedLatestVotesByOption,
@@ -134,33 +143,33 @@ internal fun PollData.castVote(vote: PollVoteData, currentUserId: String): PollD
 /**
  * Extension function to remove a vote from the poll.
  *
- * This function creates a new [PollData] instance with the specified vote removed from the
- * existing votes. If the vote belongs to the current user, it also updates the user's own votes.
+ * This function creates a new [PollData] instance with the specified vote removed from the existing
+ * votes. If the vote belongs to the current user, it also updates the user's own votes.
  *
  * @param vote The [PollVoteData] to be removed from the poll.
  * @param currentUserId The ID of the current user, used to determine if the vote belongs to them.
  * @return A new [PollData] instance with the specified vote removed.
  */
 internal fun PollData.removeVote(vote: PollVoteData, currentUserId: String): PollData {
-    val updatedOwnVotes = if (vote.userId == currentUserId) {
-        this.ownVotes.filter { it.id != vote.id }
-    } else {
-        this.ownVotes
-    }
+    val updatedOwnVotes =
+        if (vote.userId == currentUserId) {
+            this.ownVotes.filter { it.id != vote.id }
+        } else {
+            this.ownVotes
+        }
     val votes = latestVotesByOption[vote.optionId].orEmpty()
     val updatedOptionVotes = votes.filter { it.id != vote.id }
     val voteCount = this.voteCountsByOption[vote.optionId] ?: 0
-    val updatedOptionVoteCounts = if (votes.size != updatedOptionVotes.size) {
-        max(0, voteCount - 1)
-    } else {
-        voteCount
-    }
-    val updatedLatestVotesByOption = latestVotesByOption.toMutableMap().apply {
-        this[vote.optionId] = updatedOptionVotes
-    }
-    val updatedVoteCountsByOption = voteCountsByOption.toMutableMap().apply {
-        this[vote.optionId] = updatedOptionVoteCounts
-    }
+    val updatedOptionVoteCounts =
+        if (votes.size != updatedOptionVotes.size) {
+            max(0, voteCount - 1)
+        } else {
+            voteCount
+        }
+    val updatedLatestVotesByOption =
+        latestVotesByOption.toMutableMap().apply { this[vote.optionId] = updatedOptionVotes }
+    val updatedVoteCountsByOption =
+        voteCountsByOption.toMutableMap().apply { this[vote.optionId] = updatedOptionVoteCounts }
     return this.copy(
         ownVotes = updatedOwnVotes,
         latestVotesByOption = updatedLatestVotesByOption,
@@ -169,31 +178,29 @@ internal fun PollData.removeVote(vote: PollVoteData, currentUserId: String): Pol
     )
 }
 
-
-/**
- * Extension function to convert [PollResponseData] to [PollData].
- */
-internal fun PollResponseData.toModel(): PollData = PollData(
-    allowAnswers = allowAnswers,
-    allowUserSuggestedOptions = allowUserSuggestedOptions,
-    answersCount = answersCount,
-    createdAt = createdAt.toDate(),
-    createdBy = createdBy?.toModel(),
-    createdById = createdById,
-    custom = custom,
-    description = description,
-    enforceUniqueVote = enforceUniqueVote,
-    id = id,
-    isClosed = isClosed ?: false,
-    latestAnswers = latestAnswers.map { it.toModel() },
-    latestVotesByOption = latestVotesByOption.mapValues { it.value.map { vote -> vote.toModel() } },
-    maxVotesAllowed = maxVotesAllowed,
-    name = name,
-    options = options.map { it.toModel() },
-    ownVotes = ownVotes.map { it.toModel() },
-    updatedAt = updatedAt.toDate(),
-    voteCount = voteCount,
-    voteCountsByOption = voteCountsByOption,
-    votingVisibility = votingVisibility
-)
-
+/** Extension function to convert [PollResponseData] to [PollData]. */
+internal fun PollResponseData.toModel(): PollData =
+    PollData(
+        allowAnswers = allowAnswers,
+        allowUserSuggestedOptions = allowUserSuggestedOptions,
+        answersCount = answersCount,
+        createdAt = createdAt.toDate(),
+        createdBy = createdBy?.toModel(),
+        createdById = createdById,
+        custom = custom,
+        description = description,
+        enforceUniqueVote = enforceUniqueVote,
+        id = id,
+        isClosed = isClosed ?: false,
+        latestAnswers = latestAnswers.map { it.toModel() },
+        latestVotesByOption =
+            latestVotesByOption.mapValues { it.value.map { vote -> vote.toModel() } },
+        maxVotesAllowed = maxVotesAllowed,
+        name = name,
+        options = options.map { it.toModel() },
+        ownVotes = ownVotes.map { it.toModel() },
+        updatedAt = updatedAt.toDate(),
+        voteCount = voteCount,
+        voteCountsByOption = voteCountsByOption,
+        votingVisibility = votingVisibility,
+    )

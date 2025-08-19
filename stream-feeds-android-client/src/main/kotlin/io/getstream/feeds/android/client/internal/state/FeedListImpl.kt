@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.android.core.websocket.WebSocketConnectionState
@@ -19,24 +34,26 @@ import kotlin.collections.emptyList
  * @property query The query used to fetch feeds.
  * @property feedsRepository The repository used to fetch feeds.
  * @property subscriptionManager The manager for WebSocket subscriptions to receive real-time
- * updates.
+ *   updates.
  */
 internal class FeedListImpl(
     override val query: FeedsQuery,
     private val feedsRepository: FeedsRepository,
-    private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener>
-): FeedList {
+    private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener>,
+) : FeedList {
 
     init {
-        subscriptionManager.subscribe(object : FeedsSocketListener {
-            override fun onState(state: WebSocketConnectionState) {
-                // Not handled
-            }
+        subscriptionManager.subscribe(
+            object : FeedsSocketListener {
+                override fun onState(state: WebSocketConnectionState) {
+                    // Not handled
+                }
 
-            override fun onEvent(event: WSEvent) {
-                eventHandler.handleEvent(event)
+                override fun onEvent(event: WSEvent) {
+                    eventHandler.handleEvent(event)
+                }
             }
-        })
+        )
     }
 
     private val _state: FeedListStateImpl = FeedListStateImpl(query)
@@ -56,23 +73,22 @@ internal class FeedListImpl(
             // If there is no next cursor, return an empty list.
             return Result.success(emptyList())
         }
-        val nextQuery = FeedsQuery(
-            filter = _state.queryConfig?.filter,
-            sort = _state.queryConfig?.sort,
-            limit = limit ?: query.limit,
-            next = next,
-            previous = null,
-            watch = query.watch,
-        )
+        val nextQuery =
+            FeedsQuery(
+                filter = _state.queryConfig?.filter,
+                sort = _state.queryConfig?.sort,
+                limit = limit ?: query.limit,
+                next = next,
+                previous = null,
+                watch = query.watch,
+            )
         return queryFeeds(nextQuery)
     }
 
     private suspend fun queryFeeds(query: FeedsQuery): Result<List<FeedData>> {
-        return feedsRepository.queryFeeds(query)
-            .onSuccess {
-                _state.onQueryMoreFeeds(it, QueryConfiguration(query.filter, query.sort))
-            }.map {
-                it.models
-            }
+        return feedsRepository
+            .queryFeeds(query)
+            .onSuccess { _state.onQueryMoreFeeds(it, QueryConfiguration(query.filter, query.sort)) }
+            .map { it.models }
     }
 }

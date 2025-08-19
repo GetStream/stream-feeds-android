@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2014-2024 Stream.io Inc. All rights reserved.
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
  *
  * Licensed under the Stream License;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    https://github.com/GetStream/stream-video-android/blob/main/LICENSE
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,47 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-@file:Suppress(
-    "ArrayInDataClass",
-    "EnumEntryName",
-    "RemoveRedundantQualifierName",
-    "UnusedImport"
-)
+@file:Suppress("ArrayInDataClass", "EnumEntryName", "RemoveRedundantQualifierName", "UnusedImport")
 
 package io.getstream.feeds.android.core.generated.models
 
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.collections.*
-import kotlin.io.*
-import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonReader
-import com.squareup.moshi.JsonWriter
-import com.squareup.moshi.ToJson
+import kotlin.collections.*
+import kotlin.collections.Map
+import kotlin.io.*
 
-/**
- * 
- */
-
-data class ModerationActionConfig (
-    @Json(name = "action")
-    val action: kotlin.String,
-
-    @Json(name = "description")
-    val description: kotlin.String,
-
-    @Json(name = "entity_type")
-    val entityType: kotlin.String,
-
-    @Json(name = "icon")
-    val icon: kotlin.String,
-
-    @Json(name = "order")
-    val order: kotlin.Int,
-
-    @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap()
+/**  */
+data class ModerationActionConfig(
+    @Json(name = "action") val action: kotlin.String,
+    @Json(name = "description") val description: kotlin.String,
+    @Json(name = "entity_type") val entityType: kotlin.String,
+    @Json(name = "icon") val icon: kotlin.String,
+    @Json(name = "order") val order: kotlin.Int,
+    @Json(name = "custom") val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
 )

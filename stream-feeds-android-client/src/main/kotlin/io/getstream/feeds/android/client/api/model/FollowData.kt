@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.client.internal.model.mapping.toDate
@@ -11,8 +26,10 @@ import java.util.Date
  * @property custom A map of custom attributes associated with the follow.
  * @property followerRole The role of the follower in the follow relationship.
  * @property pushPreference The push notification preference for the follow.
- * @property requestAcceptedAt The date and time when the follow request was accepted, if applicable.
- * @property requestRejectedAt The date and time when the follow request was rejected, if applicable.
+ * @property requestAcceptedAt The date and time when the follow request was accepted, if
+ *   applicable.
+ * @property requestRejectedAt The date and time when the follow request was rejected, if
+ *   applicable.
  * @property sourceFeed The source feed that initiated the follow.
  * @property status The current status of the follow relationship.
  * @property targetFeed The target feed that is being followed.
@@ -33,8 +50,7 @@ public data class FollowData(
 
     /**
      * Unique identifier for the follow relationship, generated from the source and target feed IDs
-     * and the creation timestamp.
-     * Used for simpler identification of follow relationships.
+     * and the creation timestamp. Used for simpler identification of follow relationships.
      */
     public val id: String
         get() = "${sourceFeed.fid}${targetFeed.fid}${createdAt.time}"
@@ -64,56 +80,48 @@ public data class FollowData(
  */
 public sealed class FollowStatus(public val string: String) {
 
-    /**
-     * Represents a follow relationship that has been accepted.
-     */
+    /** Represents a follow relationship that has been accepted. */
     public object Accepted : FollowStatus("accepted")
 
-    /**
-     * Represents a follow relationship that is pending approval.
-     */
+    /** Represents a follow relationship that is pending approval. */
     public object Pending : FollowStatus("pending")
 
-    /**
-     * Represents a follow relationship that has been rejected.
-     */
+    /** Represents a follow relationship that has been rejected. */
     public object Rejected : FollowStatus("rejected")
 
-    /**
-     * Represents an unknown follow status.
-     */
+    /** Represents an unknown follow status. */
     public data class Unknown(val unknownValue: String) : FollowStatus(unknownValue)
 }
 
-/**
- * Converts a [FollowResponse] to a [FollowData] model.
- */
-internal fun FollowResponse.toModel(): FollowData = FollowData(
-    createdAt = createdAt.toDate(),
-    custom = custom,
-    followerRole = followerRole,
-    pushPreference = pushPreference.value,
-    requestAcceptedAt = requestAcceptedAt?.toDate(),
-    requestRejectedAt = requestRejectedAt?.toDate(),
-    sourceFeed = sourceFeed.toModel(),
-    status = when (status) {
+/** Converts a [FollowResponse] to a [FollowData] model. */
+internal fun FollowResponse.toModel(): FollowData =
+    FollowData(
+        createdAt = createdAt.toDate(),
+        custom = custom,
+        followerRole = followerRole,
+        pushPreference = pushPreference.value,
+        requestAcceptedAt = requestAcceptedAt?.toDate(),
+        requestRejectedAt = requestRejectedAt?.toDate(),
+        sourceFeed = sourceFeed.toModel(),
+        status =
+            when (status) {
+                FollowResponse.Status.Accepted -> FollowStatus.Accepted
+                FollowResponse.Status.Pending -> FollowStatus.Pending
+                FollowResponse.Status.Rejected -> FollowStatus.Rejected
+                is FollowResponse.Status.Unknown ->
+                    FollowStatus.Unknown(
+                        unknownValue = (status as FollowResponse.Status.Unknown).unknownValue
+                    )
+            },
+        targetFeed = targetFeed.toModel(),
+        updatedAt = updatedAt.toDate(),
+    )
+
+/** Converts a [FollowResponse.PushPreference] to a [String] representation. */
+internal fun FollowResponse.Status.toModel(): FollowStatus =
+    when (this) {
         FollowResponse.Status.Accepted -> FollowStatus.Accepted
         FollowResponse.Status.Pending -> FollowStatus.Pending
         FollowResponse.Status.Rejected -> FollowStatus.Rejected
-        is FollowResponse.Status.Unknown -> FollowStatus.Unknown(
-            unknownValue = (status as FollowResponse.Status.Unknown).unknownValue,
-        )
-    },
-    targetFeed = targetFeed.toModel(),
-    updatedAt = updatedAt.toDate(),
-)
-
-/**
- * Converts a [FollowResponse.PushPreference] to a [String] representation.
- */
-internal fun FollowResponse.Status.toModel(): FollowStatus = when (this) {
-    FollowResponse.Status.Accepted -> FollowStatus.Accepted
-    FollowResponse.Status.Pending -> FollowStatus.Pending
-    FollowResponse.Status.Rejected -> FollowStatus.Rejected
-    is FollowResponse.Status.Unknown -> FollowStatus.Unknown(unknownValue)
-}
+        is FollowResponse.Status.Unknown -> FollowStatus.Unknown(unknownValue)
+    }

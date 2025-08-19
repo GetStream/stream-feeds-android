@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.FeedData
@@ -21,9 +36,7 @@ import kotlinx.coroutines.flow.asStateFlow
  *
  * @property query The original query configuration used to fetch feeds.
  */
-internal class FeedListStateImpl(
-    override val query: FeedsQuery,
-): FeedListMutableState {
+internal class FeedListStateImpl(override val query: FeedsQuery) : FeedListMutableState {
 
     private val _feeds: MutableStateFlow<List<FeedData>> = MutableStateFlow(emptyList())
 
@@ -42,34 +55,34 @@ internal class FeedListStateImpl(
         get() = _pagination
 
     override fun onFeedUpdated(feed: FeedData) {
-        _feeds.value = _feeds.value.map {
-            if (it.fid == feed.fid) {
-                feed
-            } else {
-                it
+        _feeds.value =
+            _feeds.value.map {
+                if (it.fid == feed.fid) {
+                    feed
+                } else {
+                    it
+                }
             }
-        }
     }
 
     override fun onQueryMoreFeeds(
         result: PaginationResult<FeedData>,
-        queryConfig: QueryConfiguration<FeedsSort>
+        queryConfig: QueryConfiguration<FeedsSort>,
     ) {
         _pagination = result.pagination
         this.queryConfig = queryConfig
         // Merge the new feeds with the existing ones (keeping the sort order)
         _feeds.value = _feeds.value.mergeSorted(result.models, { it.fid.rawValue }, feedsSorting)
     }
-
 }
 
 /**
  * A mutable state interface for managing the feed list state.
  *
  * This interface combines the [FeedListState] for read access and [FeedListStateUpdates] for
- *  * write access, allowing for both querying and updating the feed list state.
+ * * write access, allowing for both querying and updating the feed list state.
  */
-internal interface FeedListMutableState: FeedListState, FeedListStateUpdates
+internal interface FeedListMutableState : FeedListState, FeedListStateUpdates
 
 /**
  * An interface for handling updates to the feed list state.
@@ -79,16 +92,12 @@ internal interface FeedListMutableState: FeedListState, FeedListStateUpdates
  */
 internal interface FeedListStateUpdates {
 
-    /**
-     * Handles updates to a specific feed.
-     */
+    /** Handles updates to a specific feed. */
     fun onFeedUpdated(feed: FeedData)
 
-    /**
-     * Handles the result of a query for more feeds.
-     */
+    /** Handles the result of a query for more feeds. */
     fun onQueryMoreFeeds(
         result: PaginationResult<FeedData>,
-        queryConfig: QueryConfiguration<FeedsSort>
+        queryConfig: QueryConfiguration<FeedsSort>,
     )
 }

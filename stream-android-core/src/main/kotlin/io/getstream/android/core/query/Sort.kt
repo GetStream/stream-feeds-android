@@ -1,43 +1,48 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.android.core.query
 
 import io.getstream.kotlin.base.annotation.marker.StreamInternalApi
 
 /**
- * The direction of a sort operation.
- * This enum defines whether a sort should be performed in ascending (forward) or
- * descending (reverse) order. The raw values correspond to the values expected by the remote API.
+ * The direction of a sort operation. This enum defines whether a sort should be performed in
+ * ascending (forward) or descending (reverse) order. The raw values correspond to the values
+ * expected by the remote API.
  */
 public enum class SortDirection(public val value: Int) {
-    /**
-     * Sort in ascending order (A to Z, 1 to 9, etc.).
-     */
+    /** Sort in ascending order (A to Z, 1 to 9, etc.). */
     FORWARD(1),
 
-    /**
-     * Sort in descending order (Z to A, 9 to 1, etc.).
-     */
-    REVERSE(-1);
+    /** Sort in descending order (Z to A, 9 to 1, etc.). */
+    REVERSE(-1),
 }
 
 /**
  * A sort configuration that combines a sort field with a direction.
  *
- * This class represents a complete sort specification that can be applied to collections
- * of the associated model type. It provides both local sorting capabilities and the ability
- * to generate remote API request parameters.
+ * This class represents a complete sort specification that can be applied to collections of the
+ * associated model type. It provides both local sorting capabilities and the ability to generate
+ * remote API request parameters.
  */
-public open class Sort<T>(
-    public val field: SortField<T>,
-    public val direction: SortDirection,
-): Comparator<T> {
+public open class Sort<T>(public val field: SortField<T>, public val direction: SortDirection) :
+    Comparator<T> {
 
-    /**
-     * Converts this sort configuration to a DTO map for API requests.
-     */
-    public fun toDto(): Map<String, Any> = mapOf(
-        "field" to field.remote,
-        "direction" to direction.value
-    )
+    /** Converts this sort configuration to a DTO map for API requests. */
+    public fun toDto(): Map<String, Any> =
+        mapOf("field" to field.remote, "direction" to direction.value)
 
     override fun compare(o1: T?, o2: T?): Int {
         return field.comparator.compare(o1, o2, direction)
@@ -47,19 +52,15 @@ public open class Sort<T>(
 /**
  * A protocol that defines a sortable field for a specific model type.
  *
- * This interface provides the foundation for creating sortable fields that can be used
- * both for local sorting and remote API requests. It includes a comparator for local
- * sorting operations and a remote string identifier for API communication.
+ * This interface provides the foundation for creating sortable fields that can be used both for
+ * local sorting and remote API requests. It includes a comparator for local sorting operations and
+ * a remote string identifier for API communication.
  */
 public interface SortField<T> {
-    /**
-     * A comparator that can be used for local sorting operations.
-     */
+    /** A comparator that can be used for local sorting operations. */
     public val comparator: AnySortComparator<T>
 
-    /**
-     * The string identifier used when sending sort parameters to the remote API.
-     */
+    /** The string identifier used when sending sort parameters to the remote API. */
     public val remote: String
 
     public companion object {
@@ -71,21 +72,18 @@ public interface SortField<T> {
          */
         public fun <T, V : Comparable<V>> create(
             remote: String,
-            localValue: (T) -> V
+            localValue: (T) -> V,
         ): SortField<T> = SortFieldImpl(remote, localValue)
     }
 }
 
-/**
- * Private implementation of SortField
- */
+/** Private implementation of SortField */
 internal class SortFieldImpl<T, V : Comparable<V>>(
     override val remote: String,
-    private val localValue: (T) -> V
+    private val localValue: (T) -> V,
 ) : SortField<T> {
 
-    override val comparator: AnySortComparator<T> =
-        SortComparator(localValue).toAny()
+    override val comparator: AnySortComparator<T> = SortComparator(localValue).toAny()
 }
 
 /**
@@ -99,9 +97,7 @@ internal class SortFieldImpl<T, V : Comparable<V>>(
  * @param V The type of the comparable value extracted from the model instances.
  * @property value A lambda that extracts a comparable value from a model instance.
  */
-public class SortComparator<T, V : Comparable<V>>(
-    public val value: (T) -> V
-) {
+public class SortComparator<T, V : Comparable<V>>(public val value: (T) -> V) {
 
     /**
      * Compares two model instances using the extracted values and sort direction.
@@ -136,16 +132,14 @@ public class SortComparator<T, V : Comparable<V>>(
 /**
  * A type-erased wrapper for sort comparators that can work with any model type.
  *
- * This class provides a way to store and use sort comparators without knowing their
- * specific generic type parameters. It's useful for creating collections of different
- * sort configurations that can all work with the same model type.
+ * This class provides a way to store and use sort comparators without knowing their specific
+ * generic type parameters. It's useful for creating collections of different sort configurations
+ * that can all work with the same model type.
  *
- * Type erased type avoids making SortField generic while keeping the underlying
- * value type intact (no runtime type checks while sorting).
+ * Type erased type avoids making SortField generic while keeping the underlying value type intact
+ * (no runtime type checks while sorting).
  */
-public class AnySortComparator<T>(
-    private val compare: (T?, T?, SortDirection) -> Int
-) {
+public class AnySortComparator<T>(private val compare: (T?, T?, SortDirection) -> Int) {
 
     /**
      * Creates a type-erased comparator from a specific comparator instance.
@@ -178,9 +172,8 @@ public fun <T> List<T>.sortedWith(sort: List<Sort<T>>): List<T> =
     sortedWith(CompositeComparator(sort))
 
 /**
- * A composite comparator that combines multiple sort comparators.
- * This class allows for sorting based on multiple criteria, where each comparator is applied in
- * sequence.
+ * A composite comparator that combines multiple sort comparators. This class allows for sorting
+ * based on multiple criteria, where each comparator is applied in sequence.
  *
  * This implementation mirrors the Swift Array.sorted(using:) extension behavior:
  * - Iterates through each sort comparator in order
@@ -191,8 +184,7 @@ public fun <T> List<T>.sortedWith(sort: List<Sort<T>>): List<T> =
  * @param comparators The list of comparators to be combined.
  */
 @StreamInternalApi
-public class CompositeComparator<T>(private val comparators: List<Comparator<T>>) :
-    Comparator<T> {
+public class CompositeComparator<T>(private val comparators: List<Comparator<T>>) : Comparator<T> {
 
     override fun compare(o1: T, o2: T): Int {
         for (comparator in comparators) {

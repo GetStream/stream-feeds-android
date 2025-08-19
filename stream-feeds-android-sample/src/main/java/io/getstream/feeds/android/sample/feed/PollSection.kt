@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.sample.feed
 
 import androidx.compose.foundation.background
@@ -29,10 +44,10 @@ import io.getstream.feeds.android.sample.ui.theme.LighterGray
 @Composable
 fun PollSection(activityId: String, poll: PollData, controller: FeedPollController) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(LighterGray, shape = RoundedCornerShape(16.dp))
-            .padding(16.dp),
+        modifier =
+            Modifier.fillMaxWidth()
+                .background(LighterGray, shape = RoundedCornerShape(16.dp))
+                .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         if (poll.name.isNotBlank()) {
@@ -40,9 +55,7 @@ fun PollSection(activityId: String, poll: PollData, controller: FeedPollControll
                 text = poll.name,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
             )
         }
         if (poll.description.isNotBlank()) {
@@ -50,9 +63,7 @@ fun PollSection(activityId: String, poll: PollData, controller: FeedPollControll
                 text = poll.description,
                 fontSize = 12.sp,
                 color = Color.Gray,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
             )
         }
 
@@ -72,26 +83,18 @@ fun PollSection(activityId: String, poll: PollData, controller: FeedPollControll
         }
 
         if (poll.allowUserSuggestedOptions) {
-            PollTextButton(
-                text = "Suggest an option",
-            )
+            PollTextButton(text = "Suggest an option")
         }
 
         if (poll.allowAnswers) {
-            PollTextButton(
-                text = "Add a comment",
-            )
+            PollTextButton(text = "Add a comment")
         }
 
         if (poll.answersCount > 0) {
-            PollTextButton(
-                text = "View comments",
-            )
+            PollTextButton(text = "View comments")
         }
 
-        PollTextButton(
-            text = "View Results",
-        )
+        PollTextButton(text = "View Results")
 
         // TODO [G.] show end vote button when appropriate
     }
@@ -100,9 +103,7 @@ fun PollSection(activityId: String, poll: PollData, controller: FeedPollControll
 @Composable
 fun PollTextButton(text: String, onClick: () -> Unit = {}) {
     CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
-        TextButton(onClick) {
-            Text(text = text)
-        }
+        TextButton(onClick) { Text(text = text) }
     }
 }
 
@@ -115,34 +116,22 @@ private fun PollOption(
     onClick: (String) -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
         verticalAlignment = Alignment.Top,
     ) {
         CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
-            RadioButton(
-                selected = voteData != null,
-                onClick = { onClick(option.id) },
-            )
+            RadioButton(selected = voteData != null, onClick = { onClick(option.id) })
         }
 
         Column(Modifier.padding(start = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Text(
-                    text = option.text,
-                )
-                Text(
-                    text = votes.toString(),
-                )
+                Text(text = option.text)
+                Text(text = votes.toString())
             }
-            LinearProgressIndicator(
-                progress = { ratio },
-                drawStopIndicator = {}
-            )
+            LinearProgressIndicator(progress = { ratio }, drawStopIndicator = {})
         }
     }
 }

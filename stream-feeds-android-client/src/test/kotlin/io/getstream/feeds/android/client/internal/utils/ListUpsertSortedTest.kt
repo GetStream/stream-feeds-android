@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.utils
 
 import io.getstream.android.core.query.Sort
@@ -9,23 +24,19 @@ import org.junit.Test
 
 internal class ListUpsertSortedTest {
 
-    data class TestUser(
-        val id: String,
-        val name: String,
-        val age: Int,
-        val score: Double
-    )
+    data class TestUser(val id: String, val name: String, val age: Int, val score: Double)
 
     // MARK: - Update Existing Element Tests (Comparator version)
 
     @Test
     fun testUpsertSorted_updateExistingElement_withRepositioning() {
         // Original list sorted by name
-        val originalList = listOf(
-            TestUser("1", "Alice", 25, 85.0),
-            TestUser("2", "Bob", 30, 90.0),
-            TestUser("3", "Charlie", 35, 80.0)
-        )
+        val originalList =
+            listOf(
+                TestUser("1", "Alice", 25, 85.0),
+                TestUser("2", "Bob", 30, 90.0),
+                TestUser("3", "Charlie", 35, 80.0),
+            )
 
         // Update Bob's name to "Zoe" - should move to end
         val updatedUser = TestUser("2", "Zoe", 31, 91.0)
@@ -42,11 +53,12 @@ internal class ListUpsertSortedTest {
     @Test
     fun testUpsertSorted_updateExistingElement_samePosition() {
         // Original list sorted by age
-        val originalList = listOf(
-            TestUser("1", "Alice", 25, 85.0),
-            TestUser("2", "Bob", 30, 90.0),
-            TestUser("3", "Charlie", 35, 80.0)
-        )
+        val originalList =
+            listOf(
+                TestUser("1", "Alice", 25, 85.0),
+                TestUser("2", "Bob", 30, 90.0),
+                TestUser("3", "Charlie", 35, 80.0),
+            )
 
         // Update Bob's score but keep same age (position shouldn't change)
         val updatedUser = TestUser("2", "Bob", 30, 95.0)
@@ -63,11 +75,12 @@ internal class ListUpsertSortedTest {
     @Test
     fun testUpsertSorted_updateExistingElement_moveToStart() {
         // Original list sorted by age
-        val originalList = listOf(
-            TestUser("1", "Alice", 25, 85.0),
-            TestUser("2", "Bob", 30, 90.0),
-            TestUser("3", "Charlie", 35, 80.0)
-        )
+        val originalList =
+            listOf(
+                TestUser("1", "Alice", 25, 85.0),
+                TestUser("2", "Bob", 30, 90.0),
+                TestUser("3", "Charlie", 35, 80.0),
+            )
 
         // Update Charlie to be youngest
         val updatedUser = TestUser("3", "Charlie", 20, 80.0)
@@ -85,10 +98,8 @@ internal class ListUpsertSortedTest {
 
     @Test
     fun testUpsertSorted_insertNewElement_atStart() {
-        val originalList = listOf(
-            TestUser("2", "Bob", 30, 90.0),
-            TestUser("3", "Charlie", 35, 80.0)
-        )
+        val originalList =
+            listOf(TestUser("2", "Bob", 30, 90.0), TestUser("3", "Charlie", 35, 80.0))
 
         val newUser = TestUser("1", "Alice", 25, 85.0)
         val ageComparator = compareBy<TestUser> { it.age }
@@ -103,10 +114,8 @@ internal class ListUpsertSortedTest {
 
     @Test
     fun testUpsertSorted_insertNewElement_atMiddle() {
-        val originalList = listOf(
-            TestUser("1", "Alice", 25, 85.0),
-            TestUser("3", "Charlie", 35, 80.0)
-        )
+        val originalList =
+            listOf(TestUser("1", "Alice", 25, 85.0), TestUser("3", "Charlie", 35, 80.0))
 
         val newUser = TestUser("2", "Bob", 30, 90.0)
         val ageComparator = compareBy<TestUser> { it.age }
@@ -121,10 +130,7 @@ internal class ListUpsertSortedTest {
 
     @Test
     fun testUpsertSorted_insertNewElement_atEnd() {
-        val originalList = listOf(
-            TestUser("1", "Alice", 25, 85.0),
-            TestUser("2", "Bob", 30, 90.0)
-        )
+        val originalList = listOf(TestUser("1", "Alice", 25, 85.0), TestUser("2", "Bob", 30, 90.0))
 
         val newUser = TestUser("3", "Charlie", 35, 80.0)
         val ageComparator = compareBy<TestUser> { it.age }
@@ -156,11 +162,12 @@ internal class ListUpsertSortedTest {
         val nameField = SortField.create<TestUser, String>("name") { it.name }
         val sort = listOf(Sort(nameField, SortDirection.FORWARD))
 
-        val originalList = listOf(
-            TestUser("1", "Alice", 25, 85.0),
-            TestUser("2", "Bob", 30, 90.0),
-            TestUser("3", "Charlie", 35, 80.0)
-        )
+        val originalList =
+            listOf(
+                TestUser("1", "Alice", 25, 85.0),
+                TestUser("2", "Bob", 30, 90.0),
+                TestUser("3", "Charlie", 35, 80.0),
+            )
 
         // Update Bob to Zoe - should move to end
         val updatedUser = TestUser("2", "Zoe", 31, 91.0)
@@ -177,10 +184,8 @@ internal class ListUpsertSortedTest {
         val ageField = SortField.create<TestUser, Int>("age") { it.age }
         val sort = listOf(Sort(ageField, SortDirection.FORWARD))
 
-        val originalList = listOf(
-            TestUser("1", "Alice", 25, 85.0),
-            TestUser("3", "Charlie", 35, 80.0)
-        )
+        val originalList =
+            listOf(TestUser("1", "Alice", 25, 85.0), TestUser("3", "Charlie", 35, 80.0))
 
         val newUser = TestUser("2", "Bob", 30, 90.0)
         val result = originalList.upsertSorted(newUser, { it.id }, sort)
@@ -195,16 +200,15 @@ internal class ListUpsertSortedTest {
     fun testUpsertSorted_multipleSort_primarySecondary() {
         val ageField = SortField.create<TestUser, Int>("age") { it.age }
         val nameField = SortField.create<TestUser, String>("name") { it.name }
-        val sort = listOf(
-            Sort(ageField, SortDirection.FORWARD),
-            Sort(nameField, SortDirection.FORWARD)
-        )
+        val sort =
+            listOf(Sort(ageField, SortDirection.FORWARD), Sort(nameField, SortDirection.FORWARD))
 
-        val originalList = listOf(
-            TestUser("1", "Alice", 25, 85.0),
-            TestUser("2", "Bob", 25, 90.0), // Same age as Alice
-            TestUser("3", "Charlie", 30, 80.0)
-        )
+        val originalList =
+            listOf(
+                TestUser("1", "Alice", 25, 85.0),
+                TestUser("2", "Bob", 25, 90.0), // Same age as Alice
+                TestUser("3", "Charlie", 30, 80.0),
+            )
 
         // Insert someone with same age as Alice/Bob but different name
         val newUser = TestUser("4", "Anna", 25, 88.0)
@@ -212,8 +216,8 @@ internal class ListUpsertSortedTest {
 
         assertEquals(4, result.size)
         assertEquals("Alice", result[0].name) // Age 25, name Alice
-        assertEquals("Anna", result[1].name)  // Age 25, name Anna
-        assertEquals("Bob", result[2].name)   // Age 25, name Bob
+        assertEquals("Anna", result[1].name) // Age 25, name Anna
+        assertEquals("Bob", result[2].name) // Age 25, name Bob
         assertEquals("Charlie", result[3].name) // Age 30
     }
 
@@ -222,11 +226,12 @@ internal class ListUpsertSortedTest {
         val scoreField = SortField.create<TestUser, Double>("score") { it.score }
         val sort = listOf(Sort(scoreField, SortDirection.REVERSE))
 
-        val originalList = listOf(
-            TestUser("1", "Alice", 25, 95.0),
-            TestUser("2", "Bob", 30, 85.0),
-            TestUser("3", "Charlie", 35, 75.0)
-        )
+        val originalList =
+            listOf(
+                TestUser("1", "Alice", 25, 95.0),
+                TestUser("2", "Bob", 30, 85.0),
+                TestUser("3", "Charlie", 35, 75.0),
+            )
 
         // Insert user with score that should go in middle
         val newUser = TestUser("4", "David", 28, 90.0)
@@ -272,11 +277,12 @@ internal class ListUpsertSortedTest {
         val ageField = SortField.create<TestUser, Int>("age") { it.age }
         val sort = listOf(Sort(ageField, SortDirection.FORWARD))
 
-        val originalList = listOf(
-            TestUser("1", "Alice", 25, 85.0),
-            TestUser("2", "Bob", 25, 90.0),
-            TestUser("3", "Charlie", 30, 80.0)
-        )
+        val originalList =
+            listOf(
+                TestUser("1", "Alice", 25, 85.0),
+                TestUser("2", "Bob", 25, 90.0),
+                TestUser("3", "Charlie", 30, 80.0),
+            )
 
         // Update Alice with same age - should preserve position
         val updatedUser = TestUser("1", "Alice Updated", 25, 87.0)
@@ -286,7 +292,7 @@ internal class ListUpsertSortedTest {
         assertEquals("Alice Updated", result[0].name)
         assertEquals("Bob", result[1].name)
         assertEquals("Charlie", result[2].name)
-        
+
         // Verify ages are still correct
         assertEquals(25, result[0].age)
         assertEquals(25, result[1].age)
@@ -296,12 +302,9 @@ internal class ListUpsertSortedTest {
     @Test
     fun testUpsertSorted_preservePositionWhenSortValueUnchanged() {
         val ageComparator = compareBy<TestUser> { it.age }
-        
+
         // Two items with same age (20) - Alice first, Bob second
-        val originalList = listOf(
-            TestUser("1", "Alice", 20, 85.0),
-            TestUser("2", "Bob", 20, 90.0)
-        )
+        val originalList = listOf(TestUser("1", "Alice", 20, 85.0), TestUser("2", "Bob", 20, 90.0))
 
         // Update Alice with same age but different score - should stay in position 0
         val updatedAlice = TestUser("1", "Alice Updated", 20, 95.0)
@@ -309,27 +312,24 @@ internal class ListUpsertSortedTest {
 
         assertEquals(2, result.size)
         assertEquals("Alice Updated", result[0].name) // Alice should remain in position 0
-        assertEquals("Bob", result[1].name)           // Bob should remain in position 1
+        assertEquals("Bob", result[1].name) // Bob should remain in position 1
         assertEquals(20, result[0].age)
-        assertEquals(95.0, result[0].score, 0.01)    // Score should be updated
+        assertEquals(95.0, result[0].score, 0.01) // Score should be updated
     }
 
     @Test
     fun testUpsertSorted_repositionWhenSortValueChanges() {
         val ageComparator = compareBy<TestUser> { it.age }
-        
+
         // Two items with same age (20) - Alice first, Bob second
-        val originalList = listOf(
-            TestUser("1", "Alice", 20, 85.0),
-            TestUser("2", "Bob", 20, 90.0)
-        )
+        val originalList = listOf(TestUser("1", "Alice", 20, 85.0), TestUser("2", "Bob", 20, 90.0))
 
         // Update Alice with different age (30) - should move to end
         val updatedAlice = TestUser("1", "Alice Updated", 30, 95.0)
         val result = originalList.upsertSorted(updatedAlice, { it.id }, ageComparator)
 
         assertEquals(2, result.size)
-        assertEquals("Bob", result[0].name)           // Bob should move to position 0
+        assertEquals("Bob", result[0].name) // Bob should move to position 0
         assertEquals("Alice Updated", result[1].name) // Alice should move to position 1
         assertEquals(20, result[0].age)
         assertEquals(30, result[1].age)
@@ -339,10 +339,7 @@ internal class ListUpsertSortedTest {
 
     @Test
     fun testUpsertSorted_originalListUnchanged_onUpdate() {
-        val originalList = listOf(
-            TestUser("1", "Alice", 25, 85.0),
-            TestUser("2", "Bob", 30, 90.0)
-        )
+        val originalList = listOf(TestUser("1", "Alice", 25, 85.0), TestUser("2", "Bob", 30, 90.0))
 
         val updatedUser = TestUser("1", "Alice Updated", 20, 87.0)
         val ageComparator = compareBy<TestUser> { it.age }
@@ -388,10 +385,10 @@ internal class ListUpsertSortedTest {
 
         // Insert younger user
         result = result.upsertSorted(TestUser("1", "Alice", 25, 85.0), { it.id }, sort)
-        
+
         // Insert older user
         result = result.upsertSorted(TestUser("3", "Charlie", 35, 80.0), { it.id }, sort)
-        
+
         // Update middle user to be oldest
         result = result.upsertSorted(TestUser("2", "Bob Updated", 40, 91.0), { it.id }, sort)
 
@@ -403,4 +400,4 @@ internal class ListUpsertSortedTest {
         assertEquals("Bob Updated", result[2].name)
         assertEquals(40, result[2].age)
     }
-} 
+}

@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.android.core.websocket.WebSocketConnectionState
@@ -45,8 +60,8 @@ import io.getstream.feeds.android.core.generated.models.WSEvent
 /**
  * A feed represents a collection of activities and provides methods to interact with them.
  *
- * The `Feed` class is the primary interface for working with feeds in the Stream Feeds SDK.
- * It provides functionality for:
+ * The `Feed` class is the primary interface for working with feeds in the Stream Feeds SDK. It
+ * provides functionality for:
  * - Creating and managing feed data
  * - Adding, updating, and deleting activities
  * - Managing comments, reactions, and bookmarks
@@ -68,7 +83,7 @@ import io.getstream.feeds.android.core.generated.models.WSEvent
  * @property feedsRepository The [FeedsRepository] used to manage feed data and operations.
  * @property pollsRepository The [PollsRepository] used to manage polls in the feed.
  * @property subscriptionManager The [StreamSubscriptionManager] used to manage WebSocket
- * subscriptions for feed events.
+ *   subscriptions for feed events.
  */
 internal class FeedImpl(
     private val query: FeedQuery,
@@ -82,28 +97,32 @@ internal class FeedImpl(
 ) : Feed {
 
     init {
-        subscriptionManager.subscribe(object : FeedsSocketListener {
-            override fun onState(state: WebSocketConnectionState) {
-                // Not relevant, rethink this
-            }
+        subscriptionManager.subscribe(
+            object : FeedsSocketListener {
+                override fun onState(state: WebSocketConnectionState) {
+                    // Not relevant, rethink this
+                }
 
-            override fun onEvent(event: WSEvent) {
-                eventHandler.handleEvent(event)
+                override fun onEvent(event: WSEvent) {
+                    eventHandler.handleEvent(event)
+                }
             }
-        })
+        )
     }
 
-    private val memberList: MemberListImpl = MemberListImpl(
-        query = MembersQuery(fid = query.fid),
-        feedsRepository = feedsRepository,
-        subscriptionManager = subscriptionManager,
-    )
+    private val memberList: MemberListImpl =
+        MemberListImpl(
+            query = MembersQuery(fid = query.fid),
+            feedsRepository = feedsRepository,
+            subscriptionManager = subscriptionManager,
+        )
 
-    private val _state: FeedStateImpl = FeedStateImpl(
-        feedQuery = query,
-        currentUserId = currentUserId,
-        memberListState = memberList.mutableState,
-    )
+    private val _state: FeedStateImpl =
+        FeedStateImpl(
+            feedQuery = query,
+            currentUserId = currentUserId,
+            memberListState = memberList.mutableState,
+        )
 
     private val eventHandler = FeedEventHandler(fid = fid, state = _state)
 
@@ -120,7 +139,8 @@ internal class FeedImpl(
         get() = _state
 
     override suspend fun getOrCreate(): Result<FeedData> {
-        return feedsRepository.getOrCreateFeed(query)
+        return feedsRepository
+            .getOrCreateFeed(query)
             .onSuccess { _state.onQueryFeed(it) }
             .map { it.feed }
     }
@@ -130,37 +150,39 @@ internal class FeedImpl(
     }
 
     override suspend fun updateFeed(request: UpdateFeedRequest): Result<FeedData> {
-        return feedsRepository.updateFeed(feedGroupId = group, feedId = id, request = request)
+        return feedsRepository
+            .updateFeed(feedGroupId = group, feedId = id, request = request)
             .onSuccess { _state.onFeedUpdated(it) }
     }
 
     override suspend fun deleteFeed(hardDelete: Boolean): Result<Unit> {
-        return feedsRepository.deleteFeed(feedGroupId = group, feedId = id, hardDelete = hardDelete)
+        return feedsRepository
+            .deleteFeed(feedGroupId = group, feedId = id, hardDelete = hardDelete)
             .onSuccess { _state.onFeedDeleted() }
     }
 
     override suspend fun addActivity(
         request: FeedAddActivityRequest,
-        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?,
     ): Result<ActivityData> {
-        return activitiesRepository.addActivity(request, attachmentUploadProgress)
-            .onSuccess { _state.onActivityAdded(it) }
+        return activitiesRepository.addActivity(request, attachmentUploadProgress).onSuccess {
+            _state.onActivityAdded(it)
+        }
     }
 
     override suspend fun updateActivity(
         id: String,
-        request: UpdateActivityRequest
+        request: UpdateActivityRequest,
     ): Result<ActivityData> {
-        return activitiesRepository.updateActivity(id, request)
-            .onSuccess { _state.onActivityUpdated(it) }
+        return activitiesRepository.updateActivity(id, request).onSuccess {
+            _state.onActivityUpdated(it)
+        }
     }
 
-    override suspend fun deleteActivity(
-        id: String,
-        hardDelete: Boolean
-    ): Result<Unit> {
-        return activitiesRepository.deleteActivity(id, hardDelete)
-            .onSuccess { _state.onActivityRemoved(id) }
+    override suspend fun deleteActivity(id: String, hardDelete: Boolean): Result<Unit> {
+        return activitiesRepository.deleteActivity(id, hardDelete).onSuccess {
+            _state.onActivityRemoved(id)
+        }
     }
 
     override suspend fun markActivity(request: MarkActivityRequest): Result<Unit> {
@@ -171,18 +193,17 @@ internal class FeedImpl(
         )
     }
 
-    override suspend fun repost(
-        activityId: String,
-        text: String?
-    ): Result<ActivityData> {
-        val request = AddActivityRequest(
-            type = "post",
-            text = text,
-            feeds = listOf(fid.rawValue),
-            parentId = activityId,
-        )
-        return activitiesRepository.addActivity(FeedAddActivityRequest(request))
-            .onSuccess { _state.onActivityAdded(it) }
+    override suspend fun repost(activityId: String, text: String?): Result<ActivityData> {
+        val request =
+            AddActivityRequest(
+                type = "post",
+                text = text,
+                feeds = listOf(fid.rawValue),
+                parentId = activityId,
+            )
+        return activitiesRepository.addActivity(FeedAddActivityRequest(request)).onSuccess {
+            _state.onActivityAdded(it)
+        }
     }
 
     override suspend fun queryMoreActivities(limit: Int?): Result<List<ActivityData>> {
@@ -192,46 +213,50 @@ internal class FeedImpl(
             // If there is no next cursor, return an empty list.
             return Result.success(emptyList())
         }
-        val query = FeedQuery(
-            fid = fid,
-            activityFilter = _state.activitiesQueryConfig?.filter,
-            activityLimit = limit ?: query.activityLimit,
-            activityNext = next,
-            activitySelectorOptions = null,
-            data = null,
-            externalRanking = null,
-            followerLimit = 0,
-            followingLimit = 0,
-            interestWeights = null,
-            memberLimit = 0,
-            view = null,
-            watch = query.watch,
-        )
-        return feedsRepository.getOrCreateFeed(query)
+        val query =
+            FeedQuery(
+                fid = fid,
+                activityFilter = _state.activitiesQueryConfig?.filter,
+                activityLimit = limit ?: query.activityLimit,
+                activityNext = next,
+                activitySelectorOptions = null,
+                data = null,
+                externalRanking = null,
+                followerLimit = 0,
+                followingLimit = 0,
+                interestWeights = null,
+                memberLimit = 0,
+                view = null,
+                watch = query.watch,
+            )
+        return feedsRepository
+            .getOrCreateFeed(query)
             .onSuccess { _state.onQueryMoreActivities(it.activities, it.activitiesQueryConfig) }
             .map { it.activities.models }
     }
 
     override suspend fun addBookmark(
         activityId: String,
-        request: AddBookmarkRequest
+        request: AddBookmarkRequest,
     ): Result<BookmarkData> {
-        return bookmarksRepository.addBookmark(activityId, request)
-            .onSuccess { _state.onBookmarkAdded(it) }
+        return bookmarksRepository.addBookmark(activityId, request).onSuccess {
+            _state.onBookmarkAdded(it)
+        }
     }
 
     override suspend fun updateBookmark(
         activityId: String,
-        request: UpdateBookmarkRequest
+        request: UpdateBookmarkRequest,
     ): Result<BookmarkData> {
         return bookmarksRepository.updateBookmark(activityId, request)
     }
 
     override suspend fun deleteBookmark(
         activityId: String,
-        folderId: String?
+        folderId: String?,
     ): Result<BookmarkData> {
-        return bookmarksRepository.deleteBookmark(activityId = activityId, folderId = folderId)
+        return bookmarksRepository
+            .deleteBookmark(activityId = activityId, folderId = folderId)
             .onSuccess { _state.onBookmarkRemoved(it) }
     }
 
@@ -241,14 +266,14 @@ internal class FeedImpl(
 
     override suspend fun addComment(
         request: ActivityAddCommentRequest,
-        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?,
     ): Result<CommentData> {
         return commentsRepository.addComment(request, attachmentUploadProgress)
     }
 
     override suspend fun updateComment(
         commentId: String,
-        request: UpdateCommentRequest
+        request: UpdateCommentRequest,
     ): Result<CommentData> {
         return commentsRepository.updateComment(commentId, request)
     }
@@ -265,50 +290,44 @@ internal class FeedImpl(
         targetFid: FeedId,
         createNotificationActivity: Boolean?,
         custom: Map<String, Any>?,
-        pushPreference: FollowRequest.PushPreference?
+        pushPreference: FollowRequest.PushPreference?,
     ): Result<FollowData> {
-        val request = FollowRequest(
-            createNotificationActivity = createNotificationActivity,
-            custom = custom,
-            pushPreference = pushPreference,
-            source = fid.rawValue,
-            target = targetFid.rawValue,
-        )
-        return feedsRepository.follow(request)
-            .onSuccess { _state.onFollowAdded(it) }
+        val request =
+            FollowRequest(
+                createNotificationActivity = createNotificationActivity,
+                custom = custom,
+                pushPreference = pushPreference,
+                source = fid.rawValue,
+                target = targetFid.rawValue,
+            )
+        return feedsRepository.follow(request).onSuccess { _state.onFollowAdded(it) }
     }
 
     override suspend fun unfollow(targetFid: FeedId): Result<Unit> {
-        return feedsRepository.unfollow(source = fid, target = targetFid)
-            .onSuccess { _state.onUnfollow(sourceFid = fid, targetFid = targetFid) }
+        return feedsRepository.unfollow(source = fid, target = targetFid).onSuccess {
+            _state.onUnfollow(sourceFid = fid, targetFid = targetFid)
+        }
     }
 
-    override suspend fun acceptFollow(
-        sourceFid: FeedId,
-        role: String?
-    ): Result<FollowData> {
-        val request = AcceptFollowRequest(
-            followerRole = role,
-            source = sourceFid.rawValue,
-            target = fid.rawValue,
-        )
-        return feedsRepository.acceptFollow(request)
-            .onSuccess { follow ->
-                _state.onFollowRequestRemoved(follow.id)
-                _state.onFollowAdded(follow)
-            }
+    override suspend fun acceptFollow(sourceFid: FeedId, role: String?): Result<FollowData> {
+        val request =
+            AcceptFollowRequest(
+                followerRole = role,
+                source = sourceFid.rawValue,
+                target = fid.rawValue,
+            )
+        return feedsRepository.acceptFollow(request).onSuccess { follow ->
+            _state.onFollowRequestRemoved(follow.id)
+            _state.onFollowAdded(follow)
+        }
     }
 
     override suspend fun rejectFollow(sourceFid: FeedId): Result<FollowData> {
-        val request = RejectFollowRequest(
-            source = sourceFid.rawValue,
-            target = fid.rawValue,
-        )
-        return feedsRepository.rejectFollow(request)
-            .onSuccess { follow ->
-                _state.onFollowRequestRemoved(follow.id)
-                _state.onFollowRemoved(follow)
-            }
+        val request = RejectFollowRequest(source = sourceFid.rawValue, target = fid.rawValue)
+        return feedsRepository.rejectFollow(request).onSuccess { follow ->
+            _state.onFollowRequestRemoved(follow.id)
+            _state.onFollowRemoved(follow)
+        }
     }
 
     override suspend fun queryFeedMembers(): Result<List<FeedMemberData>> {
@@ -319,14 +338,12 @@ internal class FeedImpl(
         return memberList.queryMoreMembers(limit)
     }
 
-    override suspend fun updateFeedMembers(request: UpdateFeedMembersRequest): Result<ModelUpdates<FeedMemberData>> {
-        return feedsRepository.updateFeedMembers(
-            feedGroupId = group,
-            feedId = id,
-            request = request,
-        ).onSuccess { updates ->
-            memberList.mutableState.onMembersUpdated(updates)
-        }
+    override suspend fun updateFeedMembers(
+        request: UpdateFeedMembersRequest
+    ): Result<ModelUpdates<FeedMemberData>> {
+        return feedsRepository
+            .updateFeedMembers(feedGroupId = group, feedId = id, request = request)
+            .onSuccess { updates -> memberList.mutableState.onMembersUpdated(updates) }
     }
 
     override suspend fun acceptFeedMember(): Result<FeedMemberData> {
@@ -339,44 +356,45 @@ internal class FeedImpl(
 
     override suspend fun addReaction(
         activityId: String,
-        request: AddReactionRequest
+        request: AddReactionRequest,
     ): Result<FeedsReactionData> {
         return activitiesRepository.addReaction(activityId, request)
     }
 
     override suspend fun deleteReaction(
         activityId: String,
-        type: String
+        type: String,
     ): Result<FeedsReactionData> {
         return activitiesRepository.deleteReaction(activityId = activityId, type = type)
     }
 
     override suspend fun addCommentReaction(
         commentId: String,
-        request: AddCommentReactionRequest
+        request: AddCommentReactionRequest,
     ): Result<FeedsReactionData> {
-        return commentsRepository.addCommentReaction(commentId, request)
-            .map { it.first }
+        return commentsRepository.addCommentReaction(commentId, request).map { it.first }
     }
 
     override suspend fun deleteCommentReaction(
         commentId: String,
-        type: String
+        type: String,
     ): Result<FeedsReactionData> {
-        return commentsRepository.deleteCommentReaction(commentId = commentId, type = type)
-            .map { it.first }
+        return commentsRepository.deleteCommentReaction(commentId = commentId, type = type).map {
+            it.first
+        }
     }
 
     override suspend fun createPoll(
         request: CreatePollRequest,
-        activityType: String
+        activityType: String,
     ): Result<ActivityData> {
         return pollsRepository.createPoll(request).flatMap { poll ->
-            val request = AddActivityRequest(
-                feeds = listOf(fid.rawValue),
-                pollId = poll.id,
-                type = activityType,
-            )
+            val request =
+                AddActivityRequest(
+                    feeds = listOf(fid.rawValue),
+                    pollId = poll.id,
+                    type = activityType,
+                )
             activitiesRepository.addActivity(FeedAddActivityRequest(request))
         }
     }
