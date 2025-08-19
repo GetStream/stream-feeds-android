@@ -16,7 +16,11 @@ import io.getstream.feeds.android.core.generated.models.QueryFollowsRequest
  * You can specify filters to narrow down results, sorting options, and pagination parameters.
  *
  * @property filter Optional filter to apply to the follows query. Use this to narrow down results
- * based on specific criteria.
+ * based on specific criteria. Supported filters:
+ * - field: `source_feed`, operators: `equal`, `in`
+ * - field: `target_feed`, operators: `equal`, `in`
+ * - field: `status`, operators: `equal`, `in`
+ * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
  * @property sort Array of sorting criteria to apply to the follows. If not specified, the API will
  * use its default sorting.
  * @property limit Maximum number of follows to return in a single request. If not specified, the

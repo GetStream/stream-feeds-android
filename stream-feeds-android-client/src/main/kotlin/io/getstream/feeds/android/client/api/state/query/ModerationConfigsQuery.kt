@@ -16,7 +16,11 @@ import io.getstream.feeds.android.core.generated.models.QueryModerationConfigsRe
  * This model defines the parameters used to fetch moderation configurations, including
  * pagination settings, sorting options, and filtering conditions.
  *
- * @property filter Filter conditions for the moderation configuration query.
+ * @property filter Filter conditions for the moderation configuration query. Supported filters:
+ * - field: `key`, operators: `equal`, `in`, `autocomplete`
+ * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `updated_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `team`, operators: `equal`, `in`
  * @property limit The maximum number of moderation configurations to return.
  * @property next The pagination cursor for fetching the next page of configurations.
  * @property previous The pagination cursor for fetching the previous page of configurations.

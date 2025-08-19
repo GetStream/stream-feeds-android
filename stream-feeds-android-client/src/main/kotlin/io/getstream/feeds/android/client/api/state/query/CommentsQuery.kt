@@ -35,7 +35,21 @@ import java.util.Date
  * @property Filter criteria for the comments query. This filter can be a simple single filter or a
  * complex combination of multiple filters using logical operators (`.and`, `.or`).
  * The filter determines which comments are included in the query results based on field values and
- * comparison operators.
+ * comparison operators. Supported filters:
+ * - field: `id`, operators: `equal`, `in`
+ * - field: `user_id`, operators: `equal`, `in`
+ * - field: `object_type`, operators: `equal`, `in`
+ * - field: `object_id`, operators: `equal`, `in`
+ * - field: `parent_id`, operators: `equal`, `in`
+ * - field: `comment_text`, operators: `q`
+ * - field: `status`, operators: `equal`, `in`
+ * - field: `upvote_count`, operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `downvote_count`, operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `reply_count`, operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `score`, operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `confidence_score`, operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `controversy_score`, operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
  * @property limit Maximum number of comments to return in a single request. If not specified, the
  * API will use its default limit.
  * @property next Pagination cursor for fetching the next page of results. This is typically

@@ -17,7 +17,10 @@ import io.getstream.feeds.android.core.generated.models.QueryActivityReactionsRe
  *
  * @property activityId The unique identifier of the activity to fetch reactions for.
  * @property filter Optional filter to apply to the activity reactions query. Use this to narrow down
- * results based on specific criteria.
+ * results based on specific criteria. Supported filters:
+ * - field: `reaction_type`, operators: `equal`, `in`
+ * - field: `user_id`, operators: `equal`, `in`
+ * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
  * @property limit Optional limit for the number of reactions to fetch. If not specified, the API will
  * use its default limit.
  * @property next Pagination cursor for fetching the next page of results. This is typically

@@ -12,7 +12,15 @@ import io.getstream.feeds.android.core.generated.models.PagerRequest
  * A query configuration for retrieving and managing feed data from Stream feeds.
  *
  * @param fid The unique identifier for the feed.
- * @param activityFilter Filter criteria for activities in the feed.
+ * @param activityFilter Filter criteria for activities in the feed. Supported filters:
+ * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `id`, operators: `equal`, `in`
+ * - field: `filter_tags`, operators: `equal`, `in`, `contains`
+ * - field: `popularity`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `search_data`, operators: `equal`, `q`, `autocomplete`
+ * - field: `text`, operators: `equal`, `q`, `autocomplete`
+ * - field: `type`, operators: `equal`, `in`
+ * - field: `user_id`, operators: `equal`, `in`
  * @param activityLimit Maximum number of activities to retrieve.
  * @param activityNext Pagination cursor for fetching the next page of activities.
  * @param activityPrevious Pagination cursor for fetching the previous page of activities.

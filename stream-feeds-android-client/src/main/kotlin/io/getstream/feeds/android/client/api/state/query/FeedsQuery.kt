@@ -26,7 +26,24 @@ import io.getstream.feeds.android.core.generated.models.QueryFeedsRequest
  * ```
  *
  * @property filter Optional filter to apply to the feeds query. Use this to narrow down results
- * based on specific criteria.
+ * based on specific criteria. Supported filters:
+ * - field: `id`, operators: `equal`, `in`
+ * - field: `group_id`, operators: `equal`, `in`
+ * - field: `feed`, operators: `equal`, `in`
+ * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `created_by_id`, operators: `equal`, `in`
+ * - field: `created_by.name`, operators: `equal`, `q`, `autocomplete`
+ * - field: `description`, operators: `equal`, `q`, `autocomplete`
+ * - field: `follower_count`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `following_count`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `member_count`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `members`, operators: `in`
+ * - field: `name`, operators: `equal`, `q`, `autocomplete`
+ * - field: `updated_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `visibility`, operators: `equal`, `in`
+ * - field: `following_users`, operators: `in`
+ * - field: `following_feeds`, operators: `in`
+ * - field: `filter_tags`, operators: `in`
  * @property sort Array of sorting criteria to apply to the feeds. If not specified, the API will
  * use its default sorting.
  * @property limit Maximum number of feeds to return in a single request. If not specified, the API
