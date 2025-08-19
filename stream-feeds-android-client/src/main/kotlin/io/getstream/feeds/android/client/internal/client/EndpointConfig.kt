@@ -25,14 +25,6 @@ internal data class EndpointConfig(
     companion object {
 
         /**
-         * Local environment.
-         */
-        val LOCALHOST = EndpointConfig(
-            httpUrl = "http://localhost:3030",
-            wsUrl = "ws://localhost:8800/api/v2/connect",
-        )
-
-        /**
          * Staging environment (frankfurt:c2).
          */
         val STAGING = EndpointConfig(

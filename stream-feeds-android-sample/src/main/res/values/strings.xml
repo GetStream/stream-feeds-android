@@ -1,6 +1,6 @@
 <resources>
     <string name="sdk_version_template">Stream SDK v %s</string>
-    <string name="app_name">stream-feeds-android</string>
+    <string name="app_name">Stream Feeds</string>
     <string name="user_login_screen_title">Welcome to Stream Feeds</string>
     <string name="user_login_screen_subtitle">Select a user to try the Android Feeds SDK</string>
 </resources>
