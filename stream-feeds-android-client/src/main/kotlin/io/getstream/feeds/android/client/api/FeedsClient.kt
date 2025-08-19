@@ -361,7 +361,7 @@ public interface FeedsClient {
      * Creates a new device for push notifications.
      *
      * @param id The unique identifier for the device.
-     * @param pushProvider The push notifications provider of the device (ex. Firebase, Huawei).
+     * @param pushProvider The push notifications provider of the device (e.g. Firebase, Huawei).
      * @param pushProviderName The name of the push provider.
      * @return A [Result] indicating success or failure of the device creation operation.
      */
