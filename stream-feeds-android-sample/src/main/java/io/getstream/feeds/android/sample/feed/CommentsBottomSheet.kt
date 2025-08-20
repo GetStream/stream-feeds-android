@@ -141,7 +141,7 @@ private fun ColumnScope.CommentsBottomSheetContent(
                 onPostComment(text, createCommentData?.replyParentId, attachments)
                 createCommentData = null
             },
-            onCreatePoll = {}
+            onCreatePoll = {},
         )
     }
 }

@@ -396,7 +396,7 @@ public interface FeedsClient {
      * Queries all devices associated with the current user.
      *
      * @return A [Result] containing a list of devices if successful, or an error if the request
-     * fails.
+     *   fails.
      */
     public suspend fun queryDevices(): Result<ListDevicesResponse>
 

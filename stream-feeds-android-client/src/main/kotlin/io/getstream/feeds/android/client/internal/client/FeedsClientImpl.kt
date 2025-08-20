@@ -531,7 +531,7 @@ internal class FeedsClientImpl(
     override suspend fun createDevice(
         id: String,
         pushProvider: PushNotificationsProvider,
-        pushProviderName: String
+        pushProviderName: String,
     ): Result<Unit> {
         return devicesRepository.createDevice(id, pushProvider, pushProviderName)
     }

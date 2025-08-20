@@ -148,18 +148,22 @@ class FeedViewModel(
 
     fun onCreatePoll(poll: PollFormData) {
         viewModelScope.launch {
-            val request = CreatePollRequest(
-                name = poll.question,
-                options = poll.options.map(::PollOptionInput),
-                allowAnswers = poll.allowComments,
-                allowUserSuggestedOptions = poll.allowSuggestingOptions,
-                enforceUniqueVote = !poll.allowMultipleAnswers,
-                maxVotesAllowed = poll.maxVotesPerPerson.toIntOrNull()
-                    .takeIf { poll.constrainMaxVotesPerPerson },
-                votingVisibility = if (poll.anonymousPoll) Anonymous else Public,
-            )
+            val request =
+                CreatePollRequest(
+                    name = poll.question,
+                    options = poll.options.map(::PollOptionInput),
+                    allowAnswers = poll.allowComments,
+                    allowUserSuggestedOptions = poll.allowSuggestingOptions,
+                    enforceUniqueVote = !poll.allowMultipleAnswers,
+                    maxVotesAllowed =
+                        poll.maxVotesPerPerson.toIntOrNull().takeIf {
+                            poll.constrainMaxVotesPerPerson
+                        },
+                    votingVisibility = if (poll.anonymousPoll) Anonymous else Public,
+                )
 
-            feed.createPoll(request = request, activityType = "activity")
+            feed
+                .createPoll(request = request, activityType = "activity")
                 .logResult(TAG, "Creating poll with question: ${poll.question}")
         }
     }

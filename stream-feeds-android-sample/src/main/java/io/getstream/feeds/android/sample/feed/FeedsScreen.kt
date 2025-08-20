@@ -510,7 +510,7 @@ fun EditPostDialog(initialText: String, onDismiss: () -> Unit, onSave: (String) 
 fun CreateContentBottomSheet(
     onDismiss: () -> Unit,
     onPost: (text: String, attachments: List<Uri>) -> Unit,
-    onCreatePoll: (PollFormData) -> Unit
+    onCreatePoll: (PollFormData) -> Unit,
 ) {
     var postText by remember { mutableStateOf("") }
     var attachments by remember { mutableStateOf<List<Uri>>(emptyList()) }

@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.sample.feed
 
 import androidx.compose.animation.AnimatedVisibility
@@ -63,7 +78,7 @@ fun CreatePollButton(onCreatePoll: (PollFormData) -> Unit) {
         ModalBottomSheet(
             onDismissRequest = { showPollBottomSheet = false },
             sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-            contentWindowInsets = { WindowInsets(16.dp, 16.dp, 16.dp, 16.dp) }
+            contentWindowInsets = { WindowInsets(16.dp, 16.dp, 16.dp, 16.dp) },
         ) {
             val scrollState = rememberScrollState()
 
@@ -79,7 +94,6 @@ fun CreatePollButton(onCreatePoll: (PollFormData) -> Unit) {
         }
     }
 }
-
 
 @Composable
 private fun ColumnScope.CreatePollBottomSheetContent(
@@ -97,21 +111,13 @@ private fun ColumnScope.CreatePollBottomSheetContent(
     var errorText by remember { mutableStateOf("") }
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp),
+        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        TextButton(onCancelClick) {
-            Text("Cancel")
-        }
+        TextButton(onCancelClick) { Text("Cancel") }
 
-        Text(
-            text = "Create Poll",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-        )
+        Text(text = "Create Poll", fontSize = 16.sp, fontWeight = FontWeight.Medium)
 
         TextButton(
             onClick = {
@@ -130,7 +136,7 @@ private fun ColumnScope.CreatePollBottomSheetContent(
                         maxVotesPerPerson = maxVotesPerPerson,
                         anonymousPoll = anonymousPoll,
                         allowSuggestingOptions = allowSuggestingOptions,
-                        allowComments = allowComments
+                        allowComments = allowComments,
                     )
                 )
             }
@@ -153,18 +159,16 @@ private fun ColumnScope.CreatePollBottomSheetContent(
         Text(
             text = errorText,
             modifier = Modifier.padding(bottom = 8.dp),
-            color = MaterialTheme.colorScheme.error
+            color = MaterialTheme.colorScheme.error,
         )
     }
 
-    options.forEachIndexed { index, option ->
-        PollOptionField(option, options, index)
-    }
+    options.forEachIndexed { index, option -> PollOptionField(option, options, index) }
 
-    val defaultSwitchModifier = Modifier
-        .padding(vertical = 8.dp)
-        .background(LighterGray, RoundedCornerShape(16.dp))
-        .padding(horizontal = 12.dp, vertical = 4.dp)
+    val defaultSwitchModifier =
+        Modifier.padding(vertical = 8.dp)
+            .background(LighterGray, RoundedCornerShape(16.dp))
+            .padding(horizontal = 12.dp, vertical = 4.dp)
 
     Column(defaultSwitchModifier) {
         TextSwitchRow(
@@ -185,9 +189,7 @@ private fun ColumnScope.CreatePollBottomSheetContent(
                         placeholder = { Text("Max votes") },
                         maxLines = 1,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier
-                            .weight(2f)
-                            .padding(bottom = 8.dp),
+                        modifier = Modifier.weight(2f).padding(bottom = 8.dp),
                         singleLine = true,
                     )
                 },
@@ -201,21 +203,21 @@ private fun ColumnScope.CreatePollBottomSheetContent(
         text = "Anonymous poll",
         checked = anonymousPoll,
         onCheckedChange = { anonymousPoll = it },
-        modifier = defaultSwitchModifier
+        modifier = defaultSwitchModifier,
     )
 
     TextSwitchRow(
         text = "Allow suggesting options",
         checked = allowSuggestingOptions,
         onCheckedChange = { allowSuggestingOptions = it },
-        modifier = defaultSwitchModifier
+        modifier = defaultSwitchModifier,
     )
 
     TextSwitchRow(
         text = "Allow comments",
         checked = allowComments,
         onCheckedChange = { allowComments = it },
-        modifier = defaultSwitchModifier
+        modifier = defaultSwitchModifier,
     )
 
     Spacer(Modifier.weight(1f))
@@ -226,7 +228,7 @@ private fun TextSwitchRow(
     text: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) = SwitchRow({ Text(text) }, checked, onCheckedChange, modifier)
 
 @Composable
@@ -234,32 +236,22 @@ private fun SwitchRow(
     content: @Composable RowScope.() -> Unit,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         content()
 
         Spacer(modifier = Modifier.weight(0.1f))
 
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-        )
+        Switch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }
 
 @Composable
-private fun PollOptionField(
-    option: String,
-    options: SnapshotStateList<String>,
-    index: Int
-) {
+private fun PollOptionField(option: String, options: SnapshotStateList<String>, index: Int) {
     Row(
         modifier = Modifier.padding(bottom = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         OutlinedTextField(
             value = option,
@@ -271,12 +263,12 @@ private fun PollOptionField(
                 }
             },
             placeholder = { Text("Add option") },
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
         if (options.size > 1) {
             IconButton(
                 onClick = { options.removeAt(index) },
-                modifier = Modifier.padding(start = 8.dp)
+                modifier = Modifier.padding(start = 8.dp),
             ) {
                 Icon(
                     painter = painterResource(R.drawable.close),
@@ -290,11 +282,7 @@ private fun PollOptionField(
 @Preview(showBackground = true)
 @Composable
 private fun CreatePollBottomSheetContentPreview() {
-    Column(
-        Modifier
-            .size(width = 400.dp, height = 800.dp)
-            .padding(16.dp)
-    ) {
+    Column(Modifier.size(width = 400.dp, height = 800.dp).padding(16.dp)) {
         CreatePollBottomSheetContent({}, {})
     }
 }
@@ -307,5 +295,5 @@ data class PollFormData(
     val maxVotesPerPerson: String,
     val anonymousPoll: Boolean,
     val allowSuggestingOptions: Boolean,
-    val allowComments: Boolean
+    val allowComments: Boolean,
 )
