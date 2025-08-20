@@ -1,10 +1,23 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.android.core.user
 
 import io.getstream.kotlin.base.annotation.marker.StreamInternalApi
 
-/**
- * Interface for managing user tokens in the Stream SDK.
- */
+/** Interface for managing user tokens in the Stream SDK. */
 @StreamInternalApi
 public interface TokenManager {
 
@@ -13,19 +26,13 @@ public interface TokenManager {
      */
     public fun ensureTokenLoaded()
 
-    /**
-     * Load a new token synchronously.
-     */
+    /** Load a new token synchronously. */
     public fun loadSync(): UserToken
 
-    /**
-     * Expire the current token.
-     */
+    /** Expire the current token. */
     public fun expireToken()
 
-    /**
-     * Check if a [UserTokenProvider] has been set.
-     */
+    /** Check if a [UserTokenProvider] has been set. */
     public fun hasTokenProvider(): Boolean
 
     /**
@@ -39,7 +46,7 @@ public interface TokenManager {
      * Get the last loaded token.
      *
      * @return The last loaded token. If the token was expired, an [UserToken.EMPTY] will be
-     * returned.
+     *   returned.
      */
     public fun getToken(): UserToken
 
@@ -51,15 +58,11 @@ public interface TokenManager {
     public fun hasToken(): Boolean
 }
 
-
-/**
- * Default implementation of [TokenManager] that manages user tokens.
- */
+/** Default implementation of [TokenManager] that manages user tokens. */
 @StreamInternalApi
 public class TokenManagerImpl : TokenManager {
 
-    @Volatile
-    private var token: UserToken = UserToken.EMPTY
+    @Volatile private var token: UserToken = UserToken.EMPTY
 
     private var provider: UserTokenProvider? = null
 

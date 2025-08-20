@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.sample.feed
 
 import android.content.Context
@@ -31,15 +46,15 @@ class CommentsSheetViewModel(
 
     init {
         viewModelScope.launch {
-            activity.get()
-                .logResult(TAG, "Loading activity: ${activity.activityId}")
+            activity.get().logResult(TAG, "Loading activity: ${activity.activityId}")
         }
     }
 
     fun onLoadMore() {
         if (!canLoadMoreComments) return
         viewModelScope.launch {
-            activity.queryMoreComments()
+            activity
+                .queryMoreComments()
                 .onSuccess { comments -> canLoadMoreComments = comments.isNotEmpty() }
                 .logResult(TAG, "Loading more comments for activity: ${activity.activityId}")
         }
@@ -48,19 +63,21 @@ class CommentsSheetViewModel(
     fun onLikeClick(comment: ThreadedCommentData) {
         viewModelScope.launch {
             if (comment.ownReactions.any { it.type == "heart" }) {
-                activity.deleteCommentReaction(comment.id, "heart")
-            } else {
-                activity.addCommentReaction(comment.id, AddCommentReactionRequest("heart"))
-            }.logResult(TAG, "Toggling heart reaction for comment: ${comment.id}")
+                    activity.deleteCommentReaction(comment.id, "heart")
+                } else {
+                    activity.addCommentReaction(comment.id, AddCommentReactionRequest("heart"))
+                }
+                .logResult(TAG, "Toggling heart reaction for comment: ${comment.id}")
         }
     }
 
     fun onPostComment(text: String, replyParentId: String?, attachments: List<Uri>) {
         viewModelScope.launch {
-            val attachmentFiles = context.copyToCache(attachments).getOrElse { error ->
-                Log.e(TAG, "Failed to copy attachments", error)
-                return@launch
-            }
+            val attachmentFiles =
+                context.copyToCache(attachments).getOrElse { error ->
+                    Log.e(TAG, "Failed to copy attachments", error)
+                    return@launch
+                }
 
             activity
                 .addComment(
@@ -68,16 +85,14 @@ class CommentsSheetViewModel(
                         comment = text,
                         activityId = activity.activityId,
                         parentId = replyParentId,
-                        attachmentUploads = attachmentFiles.map {
-                            FeedUploadPayload(
-                                file = it,
-                                type = FileType.Image("jpeg"),
-                            )
-                        }
+                        attachmentUploads =
+                            attachmentFiles.map {
+                                FeedUploadPayload(file = it, type = FileType.Image("jpeg"))
+                            },
                     ),
                     attachmentUploadProgress = { file, progress ->
                         Log.d(TAG, "Uploading attachment: ${file.type}, progress: $progress")
-                    }
+                    },
                 )
                 .logResult(TAG, "Adding comment to activity: ${activity.activityId}")
 
@@ -85,10 +100,8 @@ class CommentsSheetViewModel(
         }
     }
 
-    class Factory(
-        private val activity: Activity,
-        private val context: Context,
-    ) : ViewModelProvider.Factory {
+    class Factory(private val activity: Activity, private val context: Context) :
+        ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
             CommentsSheetViewModel(activity, context) as T

@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.utils
 
 import org.junit.Assert.assertEquals
@@ -6,21 +21,18 @@ import org.junit.Test
 
 internal class ListUpsertTest {
 
-    data class TestUser(
-        val id: String,
-        val name: String,
-        val age: Int
-    )
+    data class TestUser(val id: String, val name: String, val age: Int)
 
     // MARK: - Update Existing Element Tests
 
     @Test
     fun testUpsert_updateExistingElement() {
-        val originalList = listOf(
-            TestUser("1", "Alice", 25),
-            TestUser("2", "Bob", 30),
-            TestUser("3", "Charlie", 35)
-        )
+        val originalList =
+            listOf(
+                TestUser("1", "Alice", 25),
+                TestUser("2", "Bob", 30),
+                TestUser("3", "Charlie", 35),
+            )
 
         val updatedUser = TestUser("2", "Bob Updated", 31)
         val result = originalList.upsert(updatedUser) { it.id }
@@ -47,10 +59,7 @@ internal class ListUpsertTest {
 
     @Test
     fun testUpsert_insertNewElement_intoNonEmptyList() {
-        val originalList = listOf(
-            TestUser("1", "Alice", 25),
-            TestUser("2", "Bob", 30)
-        )
+        val originalList = listOf(TestUser("1", "Alice", 25), TestUser("2", "Bob", 30))
 
         val newUser = TestUser("3", "Charlie", 35)
         val result = originalList.upsert(newUser) { it.id }
@@ -65,10 +74,7 @@ internal class ListUpsertTest {
 
     @Test
     fun testUpsert_originalListUnchanged_onUpdate() {
-        val originalList = listOf(
-            TestUser("1", "Alice", 25),
-            TestUser("2", "Bob", 30)
-        )
+        val originalList = listOf(TestUser("1", "Alice", 25), TestUser("2", "Bob", 30))
 
         val updatedUser = TestUser("1", "Alice Updated", 26)
         val result = originalList.upsert(updatedUser) { it.id }
@@ -141,12 +147,13 @@ internal class ListUpsertTest {
 
     @Test
     fun testUpsert_preservesOriginalOrder_onUpdate() {
-        val originalList = listOf(
-            TestUser("1", "Alice", 25),
-            TestUser("2", "Bob", 30),
-            TestUser("3", "Charlie", 35),
-            TestUser("4", "David", 40)
-        )
+        val originalList =
+            listOf(
+                TestUser("1", "Alice", 25),
+                TestUser("2", "Bob", 30),
+                TestUser("3", "Charlie", 35),
+                TestUser("4", "David", 40),
+            )
 
         val updatedUser = TestUser("2", "Bob Updated", 31)
         val result = originalList.upsert(updatedUser) { it.id }
@@ -160,10 +167,7 @@ internal class ListUpsertTest {
 
     @Test
     fun testUpsert_appendsToEnd_onInsert() {
-        val originalList = listOf(
-            TestUser("1", "Alice", 25),
-            TestUser("2", "Bob", 30)
-        )
+        val originalList = listOf(TestUser("1", "Alice", 25), TestUser("2", "Bob", 30))
 
         val newUser = TestUser("3", "Charlie", 35)
         val result = originalList.upsert(newUser) { it.id }

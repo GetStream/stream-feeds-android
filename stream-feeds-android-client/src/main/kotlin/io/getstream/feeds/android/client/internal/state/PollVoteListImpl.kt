@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.android.core.websocket.WebSocketConnectionState
@@ -15,33 +30,35 @@ import io.getstream.feeds.android.core.generated.models.WSEvent
 /**
  * An implementation of [PollVoteList] that manages the state and queries for poll votes.
  *
- * This class provides methods to fetch the initial list of poll votes and to query more votes
- * using pagination. It maintains an internal state that tracks the current list of votes,
- * pagination information, and query configuration.
+ * This class provides methods to fetch the initial list of poll votes and to query more votes using
+ * pagination. It maintains an internal state that tracks the current list of votes, pagination
+ * information, and query configuration.
  *
  * @property query The query used to fetch poll votes.
  * @property repository The repository used to perform the actual data fetching.
  * @property subscriptionManager The manager for WebSocket subscriptions to receive real-time
- * updates.
+ *   updates.
  * @property _state The internal state object that holds the current state of the poll vote list.
  */
 internal class PollVoteListImpl(
     override val query: PollVotesQuery,
     private val repository: PollsRepository,
     private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener>,
-    private val _state: PollVoteListStateImpl = PollVoteListStateImpl(query)
+    private val _state: PollVoteListStateImpl = PollVoteListStateImpl(query),
 ) : PollVoteList {
 
     init {
-        subscriptionManager.subscribe(object : FeedsSocketListener {
-            override fun onState(state: WebSocketConnectionState) {
-                // Not relevant for this implementation
-            }
+        subscriptionManager.subscribe(
+            object : FeedsSocketListener {
+                override fun onState(state: WebSocketConnectionState) {
+                    // Not relevant for this implementation
+                }
 
-            override fun onEvent(event: WSEvent) {
-                eventHandler.handleEvent(event)
+                override fun onEvent(event: WSEvent) {
+                    eventHandler.handleEvent(event)
+                }
             }
-        })
+        )
     }
 
     private val eventHandler = PollVoteListEventHandler(query.pollId, _state)
@@ -59,25 +76,25 @@ internal class PollVoteListImpl(
             // No more pages to fetch, return an empty list
             return Result.success(emptyList())
         }
-        val nextQuery = PollVotesQuery(
-            pollId = query.pollId,
-            userId = query.userId,
-            filter = _state.queryConfig?.filter,
-            sort = _state.queryConfig?.sort,
-            limit = limit,
-            next = next,
-            previous = null,
-        )
+        val nextQuery =
+            PollVotesQuery(
+                pollId = query.pollId,
+                userId = query.userId,
+                filter = _state.queryConfig?.filter,
+                sort = _state.queryConfig?.sort,
+                limit = limit,
+                next = next,
+                previous = null,
+            )
         return queryPollVotes(nextQuery)
     }
 
     private suspend fun queryPollVotes(query: PollVotesQuery): Result<List<PollVoteData>> {
-        return repository.queryPollVotes(query)
+        return repository
+            .queryPollVotes(query)
             .onSuccess {
                 _state.onQueryMorePollVotes(it, QueryConfiguration(query.filter, query.sort))
             }
-            .map {
-                it.models
-            }
+            .map { it.models }
     }
 }

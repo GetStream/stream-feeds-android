@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.ActivityData
@@ -26,8 +41,8 @@ import kotlinx.coroutines.flow.asStateFlow
  * An observable state object that manages the activities list and handles real-time updates.
  *
  * [ActivityListState] provides a reactive interface for observing changes to the activities list,
- * including pagination state and real-time updates from WebSocket events. It automatically
- * handles sorting, merging, and updating activities as they change.
+ * including pagination state and real-time updates from WebSocket events. It automatically handles
+ * sorting, merging, and updating activities as they change.
  *
  * @property query The query configuration used for fetching activities.
  * @property currentUserId The ID of the current user.
@@ -55,7 +70,7 @@ internal class ActivityListStateImpl(
 
     override fun onQueryMoreActivities(
         result: PaginationResult<ActivityData>,
-        queryConfig: QueryConfiguration<ActivitiesSort>
+        queryConfig: QueryConfiguration<ActivitiesSort>,
     ) {
         _pagination = result.pagination
         // Update the query configuration for future queries
@@ -75,67 +90,73 @@ internal class ActivityListStateImpl(
     }
 
     override fun onBookmarkAdded(bookmark: BookmarkData) {
-        _activities.value = _activities.value.map { activity ->
-            if (activity.id == bookmark.activity.id) {
-                // If the activity matches the bookmark, add the bookmark to it
-                activity.addBookmark(bookmark, currentUserId)
-            } else {
-                activity
+        _activities.value =
+            _activities.value.map { activity ->
+                if (activity.id == bookmark.activity.id) {
+                    // If the activity matches the bookmark, add the bookmark to it
+                    activity.addBookmark(bookmark, currentUserId)
+                } else {
+                    activity
+                }
             }
-        }
     }
 
     override fun onBookmarkRemoved(bookmark: BookmarkData) {
-        _activities.value = _activities.value.map { activity ->
-            if (activity.id == bookmark.activity.id) {
-                // If the activity matches the bookmark, remove the bookmark from it
-                activity.deleteBookmark(bookmark, currentUserId)
-            } else {
-                activity
+        _activities.value =
+            _activities.value.map { activity ->
+                if (activity.id == bookmark.activity.id) {
+                    // If the activity matches the bookmark, remove the bookmark from it
+                    activity.deleteBookmark(bookmark, currentUserId)
+                } else {
+                    activity
+                }
             }
-        }
     }
 
     override fun onCommentAdded(comment: CommentData) {
-        _activities.value = _activities.value.map { activity ->
-            if (activity.id == comment.objectId) {
-                activity.addComment(comment)
-            } else {
-                activity
+        _activities.value =
+            _activities.value.map { activity ->
+                if (activity.id == comment.objectId) {
+                    activity.addComment(comment)
+                } else {
+                    activity
+                }
             }
-        }
     }
 
     override fun onCommentRemoved(comment: CommentData) {
-        _activities.value = _activities.value.map { activity ->
-            if (activity.id == comment.objectId) {
-                activity.removeComment(comment)
-            } else {
-                activity
+        _activities.value =
+            _activities.value.map { activity ->
+                if (activity.id == comment.objectId) {
+                    activity.removeComment(comment)
+                } else {
+                    activity
+                }
             }
-        }
     }
 
     override fun onReactionAdded(reaction: FeedsReactionData) {
-        _activities.value = _activities.value.map { activity ->
-            if (activity.id == reaction.activityId) {
-                // Add the reaction to the activity
-                activity.addReaction(reaction, currentUserId)
-            } else {
-                activity
+        _activities.value =
+            _activities.value.map { activity ->
+                if (activity.id == reaction.activityId) {
+                    // Add the reaction to the activity
+                    activity.addReaction(reaction, currentUserId)
+                } else {
+                    activity
+                }
             }
-        }
     }
 
     override fun onReactionRemoved(reaction: FeedsReactionData) {
-        _activities.value = _activities.value.map { activity ->
-            if (activity.id == reaction.activityId) {
-                // Remove the reaction from the activity
-                activity.removeReaction(reaction, currentUserId)
-            } else {
-                activity
+        _activities.value =
+            _activities.value.map { activity ->
+                if (activity.id == reaction.activityId) {
+                    // Remove the reaction from the activity
+                    activity.removeReaction(reaction, currentUserId)
+                } else {
+                    activity
+                }
             }
-        }
     }
 }
 
@@ -147,9 +168,7 @@ internal class ActivityListStateImpl(
  */
 internal interface ActivityListMutableState : ActivityListState, ActivityListStateUpdates
 
-/**
- * An interface that defines the methods for updating the state of an activity list.
- */
+/** An interface that defines the methods for updating the state of an activity list. */
 internal interface ActivityListStateUpdates {
 
     /**

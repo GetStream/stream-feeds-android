@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
@@ -26,18 +41,20 @@ internal class ActivityImplTest {
         every { state } returns commentListState
         every { mutableState } returns commentListState
     }
-    private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener> = mockk(relaxed = true)
+    private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener> =
+        mockk(relaxed = true)
 
-    private val activity = ActivityImpl(
-        activityId = "activityId",
-        fid = FeedId("feedId"),
-        currentUserId = "currentUserId",
-        activitiesRepository = activitiesRepository,
-        commentsRepository = commentsRepository,
-        pollsRepository = pollsRepository,
-        commentList = activityCommentListImpl,
-        subscriptionManager = subscriptionManager
-    )
+    private val activity =
+        ActivityImpl(
+            activityId = "activityId",
+            fid = FeedId("feedId"),
+            currentUserId = "currentUserId",
+            activitiesRepository = activitiesRepository,
+            commentsRepository = commentsRepository,
+            pollsRepository = pollsRepository,
+            commentList = activityCommentListImpl,
+            subscriptionManager = subscriptionManager,
+        )
 
     @Test
     fun `on addComment, delegate to repository and notify state`() = runTest {
@@ -56,18 +73,22 @@ internal class ActivityImplTest {
 
     @Test
     fun `on addCommentsBatch, delegate to repository and notify state`() = runTest {
-        val requests = listOf(
-            ActivityAddCommentRequest(activityId = "activityId", comment = "Comment 1"),
-            ActivityAddCommentRequest(activityId = "activityId", comment = "Comment 2"),
-        )
+        val requests =
+            listOf(
+                ActivityAddCommentRequest(activityId = "activityId", comment = "Comment 1"),
+                ActivityAddCommentRequest(activityId = "activityId", comment = "Comment 2"),
+            )
         val commentData = listOf(commentData("id1"), commentData("id2"))
-        coEvery { commentsRepository.addCommentsBatch(requests) } returns Result.success(commentData)
+        coEvery { commentsRepository.addCommentsBatch(requests) } returns
+            Result.success(commentData)
 
         activity.addCommentsBatch(requests)
 
         coVerify {
             commentsRepository.addCommentsBatch(requests)
-            commentData.forEach { data -> commentListState.onCommentAdded(ThreadedCommentData(data)) }
+            commentData.forEach { data ->
+                commentListState.onCommentAdded(ThreadedCommentData(data))
+            }
         }
     }
 }

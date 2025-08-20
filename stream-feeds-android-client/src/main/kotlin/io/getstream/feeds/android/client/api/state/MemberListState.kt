@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.api.state
 
 import io.getstream.feeds.android.client.api.model.FeedMemberData
@@ -9,8 +24,8 @@ import kotlinx.coroutines.flow.StateFlow
  * An observable state object that manages the current state of a member list.
  *
  * This class maintains maintains the current list of members, pagination information, and provides
- * real-time updates when members are added, removed, or modified.
- * It automatically handles WebSocket events to keep the member list synchronized.
+ * real-time updates when members are added, removed, or modified. It automatically handles
+ * WebSocket events to keep the member list synchronized.
  */
 public interface MemberListState {
 
@@ -33,7 +48,7 @@ public interface MemberListState {
     /**
      * Last pagination information from the most recent request.
      *
-     * Contains the `next` and `previous` cursor values that can be used  to fetch additional pages
+     * Contains the `next` and `previous` cursor values that can be used to fetch additional pages
      * of members.
      */
     public val pagination: PaginationData?

@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.android.core.query
 
 import io.getstream.kotlin.base.annotation.marker.StreamInternalApi
@@ -48,7 +63,7 @@ internal class FilterTest {
         val map = filter.toRequest()
         Assert.assertEquals(
             mapOf("status" to mapOf("\$in" to setOf("active", "pending", "completed"))),
-            map
+            map,
         )
     }
 
@@ -93,7 +108,7 @@ internal class FilterTest {
         val map = filter.toRequest()
         Assert.assertEquals(
             mapOf("metadata" to mapOf("\$path_exists" to "user.preferences.theme")),
-            map
+            map,
         )
     }
 
@@ -103,13 +118,9 @@ internal class FilterTest {
         val filter2 = GreaterThanFilter("likes", 10)
         val andFilter = AndFilter(setOf(filter1, filter2))
         val map = andFilter.toRequest()
-        
-        val expected = mapOf(
-            "\$and" to listOf(
-                mapOf("type" to "post"),
-                mapOf("likes" to mapOf("\$gt" to 10))
-            )
-        )
+
+        val expected =
+            mapOf("\$and" to listOf(mapOf("type" to "post"), mapOf("likes" to mapOf("\$gt" to 10))))
         Assert.assertEquals(expected, map)
     }
 
@@ -119,13 +130,9 @@ internal class FilterTest {
         val filter2 = EqualFilter("status", "draft")
         val orFilter = OrFilter(setOf(filter1, filter2))
         val map = orFilter.toRequest()
-        
-        val expected = mapOf(
-            "\$or" to listOf(
-                mapOf("status" to "published"),
-                mapOf("status" to "draft")
-            )
-        )
+
+        val expected =
+            mapOf("\$or" to listOf(mapOf("status" to "published"), mapOf("status" to "draft")))
         Assert.assertEquals(expected, map)
     }
 
@@ -134,22 +141,25 @@ internal class FilterTest {
         val filter1 = EqualFilter("type", "article")
         val filter2 = GreaterThanFilter("views", 100)
         val filter3 = ContainsFilter("tags", "featured")
-        
+
         val andFilter = AndFilter(setOf(filter1, filter2))
         val orFilter = OrFilter(setOf(andFilter, filter3))
         val map = orFilter.toRequest()
-        
-        val expected = mapOf(
-            "\$or" to listOf(
-                mapOf(
-                    "\$and" to listOf(
-                        mapOf("type" to "article"),
-                        mapOf("views" to mapOf("\$gt" to 100))
+
+        val expected =
+            mapOf(
+                "\$or" to
+                    listOf(
+                        mapOf(
+                            "\$and" to
+                                listOf(
+                                    mapOf("type" to "article"),
+                                    mapOf("views" to mapOf("\$gt" to 100)),
+                                )
+                        ),
+                        mapOf("tags" to mapOf("\$contains" to "featured")),
                     )
-                ),
-                mapOf("tags" to mapOf("\$contains" to "featured"))
             )
-        )
         Assert.assertEquals(expected, map)
     }
 }

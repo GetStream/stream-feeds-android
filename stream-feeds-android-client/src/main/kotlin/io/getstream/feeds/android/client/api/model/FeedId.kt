@@ -1,8 +1,22 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.api.model
 
 /**
- * A unique identifier for a feed in the Stream Feeds system.
- * A `FeedId` consists of two components:
+ * A unique identifier for a feed in the Stream Feeds system. A `FeedId` consists of two components:
  * - `group`: The feed group identifier (e.g., "user", "timeline", "notification")
  * - `id`: The specific feed identifier within that group
  *
@@ -17,6 +31,7 @@ package io.getstream.feeds.android.client.api.model
  * ```
  *
  * Creates a new feed identifier with the specified group and feed IDs.
+ *
  * @param group The feed group identifier (e.g., "user", "timeline")
  * @param id The specific feed identifier within the group
  */
@@ -55,16 +70,18 @@ public data class FeedId(
      *
      * @param rawValue The raw string representation of the feed ID
      */
-    public constructor(rawValue: String) : this(
+    public constructor(
+        rawValue: String
+    ) : this(
         group = rawValue.substringBefore(':', missingDelimiterValue = ""),
-        id = rawValue.substringAfter(':')
+        id = rawValue.substringAfter(':'),
     )
 
     /**
      * The complete feed identifier as a colon-separated string.
      *
-     * This is the canonical string representation of the feed ID, formatted as `"group:id"`.
-     * This value is used for API requests and serialization.
+     * This is the canonical string representation of the feed ID, formatted as `"group:id"`. This
+     * value is used for API requests and serialization.
      */
     public val rawValue: String = "$group:$id"
 }

@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.BookmarkData
@@ -17,18 +32,17 @@ import kotlinx.coroutines.flow.asStateFlow
  * An observable state object that manages the current state of a bookmark list.
  *
  * This class maintains the current list of bookmarks, pagination information, and provides
- * real-time updates when bookmarks or bookmark folders are added, removed, or modified.
- * It automatically handles WebSocket events to keep the bookmark list synchronized.
+ * real-time updates when bookmarks or bookmark folders are added, removed, or modified. It
+ * automatically handles WebSocket events to keep the bookmark list synchronized.
  *
  * @property query The query used to fetch bookmarks.
  */
-internal class BookmarkListStateImpl(
-    override val query: BookmarksQuery,
-): BookmarkListMutableState {
+internal class BookmarkListStateImpl(override val query: BookmarksQuery) :
+    BookmarkListMutableState {
 
     private val _bookmarks: MutableStateFlow<List<BookmarkData>> = MutableStateFlow(emptyList())
 
-    internal var queryConfig : QueryConfiguration<BookmarksSort>? = null
+    internal var queryConfig: QueryConfiguration<BookmarksSort>? = null
         private set
 
     private var _pagination: PaginationData? = null
@@ -44,7 +58,7 @@ internal class BookmarkListStateImpl(
 
     override fun onQueryMoreBookmarks(
         result: PaginationResult<BookmarkData>,
-        queryConfig: QueryConfiguration<BookmarksSort>
+        queryConfig: QueryConfiguration<BookmarksSort>,
     ) {
         _pagination = result.pagination
         // Update the query configuration for future queries
@@ -55,36 +69,39 @@ internal class BookmarkListStateImpl(
     }
 
     override fun onBookmarkFolderRemoved(folderId: String) {
-        _bookmarks.value = _bookmarks.value.map {
-            if (it.folder?.id == folderId) {
-                // Remove the folder reference from the bookmark
-                it.copy(folder = null)
-            } else {
-                it
+        _bookmarks.value =
+            _bookmarks.value.map {
+                if (it.folder?.id == folderId) {
+                    // Remove the folder reference from the bookmark
+                    it.copy(folder = null)
+                } else {
+                    it
+                }
             }
-        }
     }
 
     override fun onBookmarkFolderUpdated(folder: BookmarkFolderData) {
-        _bookmarks.value = _bookmarks.value.map { bookmark ->
-            if (bookmark.folder?.id == folder.id) {
-                // Update the folder reference in the bookmark
-                bookmark.copy(folder = folder)
-            } else {
-                bookmark
+        _bookmarks.value =
+            _bookmarks.value.map { bookmark ->
+                if (bookmark.folder?.id == folder.id) {
+                    // Update the folder reference in the bookmark
+                    bookmark.copy(folder = folder)
+                } else {
+                    bookmark
+                }
             }
-        }
     }
 
     override fun onBookmarkUpdated(bookmark: BookmarkData) {
-        _bookmarks.value = _bookmarks.value.map {
-            if (it.id == bookmark.id) {
-                // Update the bookmark with the new data
-                bookmark
-            } else {
-                it
+        _bookmarks.value =
+            _bookmarks.value.map {
+                if (it.id == bookmark.id) {
+                    // Update the bookmark with the new data
+                    bookmark
+                } else {
+                    it
+                }
             }
-        }
     }
 }
 
@@ -94,11 +111,9 @@ internal class BookmarkListStateImpl(
  * This interface combines the [BookmarkListState] for read access and [BookmarkListStateUpdates]
  * for write access, allowing for both querying and updating the bookmark list state.
  */
-internal interface BookmarkListMutableState: BookmarkListState, BookmarkListStateUpdates
+internal interface BookmarkListMutableState : BookmarkListState, BookmarkListStateUpdates
 
-/**
- * An interface that defines the methods for updating the state of a bookmark list.
- */
+/** An interface that defines the methods for updating the state of a bookmark list. */
 internal interface BookmarkListStateUpdates {
 
     fun onQueryMoreBookmarks(

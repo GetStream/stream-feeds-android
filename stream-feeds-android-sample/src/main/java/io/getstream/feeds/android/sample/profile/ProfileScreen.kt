@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.sample.profile
 
 import androidx.compose.foundation.BorderStroke
@@ -52,7 +67,7 @@ data class ProfileScreenArgs(val feedId: String) {
 
 @Destination<RootGraph>(
     style = DestinationStyleBottomSheet::class,
-    navArgs = ProfileScreenArgs::class
+    navArgs = ProfileScreenArgs::class,
 )
 @Composable
 fun ProfileScreen(navigator: DestinationsNavigator) {
@@ -68,12 +83,13 @@ fun ProfileScreen(navigator: DestinationsNavigator) {
             return
         }
 
-        is AsyncResource.Content -> ProfileScreen(
-            state = state.data,
-            followSuggestions = viewModel.followSuggestions,
-            onFollowClick = viewModel::follow,
-            onUnfollowClick = viewModel::unfollow,
-        )
+        is AsyncResource.Content ->
+            ProfileScreen(
+                state = state.data,
+                followSuggestions = viewModel.followSuggestions,
+                onFollowClick = viewModel::follow,
+                onUnfollowClick = viewModel::unfollow,
+            )
     }
 }
 
@@ -84,17 +100,12 @@ fun ProfileScreen(
     onFollowClick: (FeedId) -> Unit,
     onUnfollowClick: (FeedId) -> Unit,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .systemBarsPadding()
-            .padding(16.dp),
-    ) {
+    Column(modifier = Modifier.fillMaxSize().systemBarsPadding().padding(16.dp)) {
         Text(
             text = "Profile",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 16.dp),
         )
 
         // Feed members
@@ -105,9 +116,9 @@ fun ProfileScreen(
             itemContent = { member ->
                 Text(
                     text = "${member.user.name ?: member.user.id} (${member.role})",
-                    modifier = Modifier.padding(vertical = 4.dp)
+                    modifier = Modifier.padding(vertical = 4.dp),
                 )
-            }
+            },
         )
 
         // Follow requests
@@ -118,9 +129,9 @@ fun ProfileScreen(
             itemContent = {
                 Text(
                     text = it.sourceFeed.createdBy.run { name ?: id },
-                    modifier = Modifier.padding(vertical = 4.dp)
+                    modifier = Modifier.padding(vertical = 4.dp),
                 )
-            }
+            },
         )
 
         // Following
@@ -128,12 +139,7 @@ fun ProfileScreen(
             title = "Following:",
             emptyText = "Not following any feeds",
             items = state.following.collectAsStateWithLifecycle().value,
-            itemContent = {
-                FollowingItem(
-                    follow = it,
-                    onUnfollowClick = onUnfollowClick,
-                )
-            }
+            itemContent = { FollowingItem(follow = it, onUnfollowClick = onUnfollowClick) },
         )
 
         // Followers
@@ -144,9 +150,9 @@ fun ProfileScreen(
             itemContent = {
                 Text(
                     text = it.sourceFeed.createdBy.run { name ?: id },
-                    modifier = Modifier.padding(vertical = 4.dp)
+                    modifier = Modifier.padding(vertical = 4.dp),
                 )
-            }
+            },
         )
 
         // Follow suggestions
@@ -158,14 +164,12 @@ fun ProfileScreen(
                     FollowSuggestionItem(
                         owner = it.createdBy,
                         fid = it.fid,
-                        onFollowClick = onFollowClick
+                        onFollowClick = onFollowClick,
                     )
                 }
             }
         } else {
-            Text(
-                text = "-No follow suggestions-",
-            )
+            Text(text = "-No follow suggestions-")
         }
     }
 }
@@ -176,7 +180,7 @@ private fun SectionTitle(text: String) {
         text = text,
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp,
-        modifier = Modifier.padding(bottom = 8.dp)
+        modifier = Modifier.padding(bottom = 8.dp),
     )
 }
 
@@ -190,29 +194,18 @@ private fun <T> ProfileSection(
     SectionTitle(title)
 
     if (items.isNotEmpty()) {
-        items.forEach { item ->
-            itemContent(item)
-        }
+        items.forEach { item -> itemContent(item) }
     } else {
         Text(text = emptyText, color = Color.Gray)
     }
 
-    HorizontalDivider(
-        Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp)
-    )
+    HorizontalDivider(Modifier.fillMaxWidth().padding(vertical = 16.dp))
 }
 
 @Composable
-fun FollowingItem(
-    follow: FollowData,
-    onUnfollowClick: (FeedId) -> Unit,
-) {
+fun FollowingItem(follow: FollowData, onUnfollowClick: (FeedId) -> Unit) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
@@ -230,58 +223,43 @@ fun FollowingItem(
 }
 
 @Composable
-fun FollowSuggestionItem(
-    owner: UserData,
-    fid: FeedId,
-    onFollowClick: (FeedId) -> Unit,
-) {
+fun FollowSuggestionItem(owner: UserData, fid: FeedId, onFollowClick: (FeedId) -> Unit) {
     val context = LocalContext.current
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         AsyncImage(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape),
-            model = ImageRequest.Builder(context)
-                .data(owner.image)
-                .build(),
+            modifier = Modifier.size(40.dp).clip(CircleShape),
+            model = ImageRequest.Builder(context).data(owner.image).build(),
             contentDescription = null,
             contentScale = ContentScale.FillBounds,
         )
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = owner.name ?: owner.id,
                 modifier = Modifier.padding(start = 8.dp),
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
             if (!owner.name.isNullOrEmpty()) {
                 Text(
                     text = "@${owner.id}",
                     modifier = Modifier.padding(start = 8.dp),
                     fontSize = 14.sp,
-                    color = Color.Gray
+                    color = Color.Gray,
                 )
             }
         }
         Card(
-            modifier = Modifier
-                .padding(start = 8.dp)
-                .align(Alignment.CenterVertically),
+            modifier = Modifier.padding(start = 8.dp).align(Alignment.CenterVertically),
             shape = CircleShape,
             border = BorderStroke(1.dp, Color.Gray),
             colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-            onClick = { onFollowClick(fid) }
+            onClick = { onFollowClick(fid) },
         ) {
             Text(
                 text = "Follow",
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 fontSize = 14.sp,
-                color = Color.Blue
+                color = Color.Blue,
             )
         }
     }

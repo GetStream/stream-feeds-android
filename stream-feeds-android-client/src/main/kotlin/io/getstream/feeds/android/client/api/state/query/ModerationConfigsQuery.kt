@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.query.Filter
@@ -9,12 +24,11 @@ import io.getstream.feeds.android.client.api.model.ModerationConfigData
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.core.generated.models.QueryModerationConfigsRequest
 
-
 /**
  * A query configuration for fetching moderation configurations.
  *
- * This model defines the parameters used to fetch moderation configurations, including
- * pagination settings, sorting options, and filtering conditions.
+ * This model defines the parameters used to fetch moderation configurations, including pagination
+ * settings, sorting options, and filtering conditions.
  *
  * @property filter Filter conditions for the moderation configuration query. Supported filters:
  * - field: `key`, operators: `equal`, `in`, `autocomplete`
@@ -40,62 +54,62 @@ public data class ModerationConfigsQuery(
  * @param field The field by which to sort the moderation configurations.
  * @param direction The direction of the sort.
  */
-public class ModerationConfigSort(
-    field: ModerationConfigsSortField,
-    direction: SortDirection,
-) : Sort<ModerationConfigData>(field, direction) {
+public class ModerationConfigSort(field: ModerationConfigsSortField, direction: SortDirection) :
+    Sort<ModerationConfigData>(field, direction) {
 
     public companion object {
 
         /**
-         * The default sorting for moderation configuration queries.
-         * Sorts by creation date in descending order (newest first).
+         * The default sorting for moderation configuration queries. Sorts by creation date in
+         * descending order (newest first).
          */
-        public val Default: List<ModerationConfigSort> = listOf(
-            ModerationConfigSort(ModerationConfigsSortField.CreatedAt, SortDirection.REVERSE),
-        )
+        public val Default: List<ModerationConfigSort> =
+            listOf(
+                ModerationConfigSort(ModerationConfigsSortField.CreatedAt, SortDirection.REVERSE)
+            )
     }
 }
 
 /**
  * Represents a field that can be used for sorting moderation configurations.
  *
- * This type provides a type-safe way to specify which field should be used
- * when sorting moderation configuration results.
+ * This type provides a type-safe way to specify which field should be used when sorting moderation
+ * configuration results.
  */
 public sealed interface ModerationConfigsSortField : SortField<ModerationConfigData> {
 
     /**
-     * Sort by the unique key of the configuration.
-     * This field allows sorting configurations by their key (alphabetical order).
+     * Sort by the unique key of the configuration. This field allows sorting configurations by
+     * their key (alphabetical order).
      */
-    public data object Key : ModerationConfigsSortField,
+    public data object Key :
+        ModerationConfigsSortField,
         SortField<ModerationConfigData> by SortField.create("id", ModerationConfigData::key)
 
     /**
-     * Sort by the creation timestamp of the configuration.
-     * This field allows sorting configurations by when they were created (newest/oldest first).
+     * Sort by the creation timestamp of the configuration. This field allows sorting configurations
+     * by when they were created (newest/oldest first).
      */
-    public data object CreatedAt : ModerationConfigsSortField,
+    public data object CreatedAt :
+        ModerationConfigsSortField,
         SortField<ModerationConfigData> by SortField.create(
             "created_at",
-            ModerationConfigData::createdAt
+            ModerationConfigData::createdAt,
         )
 
     /**
-     * Sort by the last update timestamp of the configuration.
-     * This field allows sorting configurations by when they were last updated (newest/oldest first).
+     * Sort by the last update timestamp of the configuration. This field allows sorting
+     * configurations by when they were last updated (newest/oldest first).
      */
-    public data object UpdatedAt : ModerationConfigsSortField,
+    public data object UpdatedAt :
+        ModerationConfigsSortField,
         SortField<ModerationConfigData> by SortField.create(
             "updated_at",
-            ModerationConfigData::updatedAt
+            ModerationConfigData::updatedAt,
         )
 }
 
-/**
- * Converts this [ModerationConfigsQuery] to a [QueryModerationConfigsRequest].
- */
+/** Converts this [ModerationConfigsQuery] to a [QueryModerationConfigsRequest]. */
 internal fun ModerationConfigsQuery.toRequest(): QueryModerationConfigsRequest =
     QueryModerationConfigsRequest(
         filter = filter?.toRequest(),

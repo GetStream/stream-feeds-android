@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.sample.components
 
 import android.content.Intent
@@ -43,11 +58,12 @@ fun LinkText(
             // Add the clickable link
             pushStringAnnotation(tag = "URL", annotation = url)
             withStyle(
-                style = SpanStyle(
-                    color = Color.Blue,
-                    textDecoration = TextDecoration.Underline,
-                    fontWeight = FontWeight.Medium
-                )
+                style =
+                    SpanStyle(
+                        color = Color.Blue,
+                        textDecoration = TextDecoration.Underline,
+                        fontWeight = FontWeight.Medium,
+                    )
             ) {
                 append(linkText)
             }
@@ -65,34 +81,35 @@ fun LinkText(
     ClickableText(
         text = annotatedString,
         modifier = modifier,
-        style = androidx.compose.ui.text.TextStyle(
-            fontSize = fontSize,
-            color = color,
-            lineHeight = lineHeight
-        ),
+        style =
+            androidx.compose.ui.text.TextStyle(
+                fontSize = fontSize,
+                color = color,
+                lineHeight = lineHeight,
+            ),
         onClick = { offset ->
-            annotatedString.getStringAnnotations(
-                tag = "URL",
-                start = offset,
-                end = offset
-            ).firstOrNull()?.let { annotation ->
-                try {
-                    // Ensure URL has a proper protocol scheme
-                    val url = annotation.item
-                    val completeUrl = when {
-                        url.startsWith("http://") || url.startsWith("https://") -> url
-                        url.startsWith("www.") -> "https://$url"
-                        url.contains(".") && !url.contains("://") -> "https://$url"
-                        else -> url
-                    }
+            annotatedString
+                .getStringAnnotations(tag = "URL", start = offset, end = offset)
+                .firstOrNull()
+                ?.let { annotation ->
+                    try {
+                        // Ensure URL has a proper protocol scheme
+                        val url = annotation.item
+                        val completeUrl =
+                            when {
+                                url.startsWith("http://") || url.startsWith("https://") -> url
+                                url.startsWith("www.") -> "https://$url"
+                                url.contains(".") && !url.contains("://") -> "https://$url"
+                                else -> url
+                            }
 
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(completeUrl))
-                    context.startActivity(intent)
-                } catch (e: Exception) {
-                    // Handle error opening URL (e.g., invalid URL format)
-                    e.printStackTrace()
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(completeUrl))
+                        context.startActivity(intent)
+                    } catch (e: Exception) {
+                        // Handle error opening URL (e.g., invalid URL format)
+                        e.printStackTrace()
+                    }
                 }
-            }
-        }
+        },
     )
 }

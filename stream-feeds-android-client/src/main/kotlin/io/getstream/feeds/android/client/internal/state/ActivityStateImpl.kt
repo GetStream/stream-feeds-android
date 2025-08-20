@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.ActivityData
@@ -20,12 +35,11 @@ import kotlinx.coroutines.flow.asStateFlow
  * An observable object representing the current state of an activity.
  *
  * This class manages the state of a single activity including its comments, poll data, and
- * real-time updates.
- * It automatically updates when WebSocket events are received and provides change handlers for
- * state modifications.
+ * real-time updates. It automatically updates when WebSocket events are received and provides
+ * change handlers for state modifications.
  *
  * @property activityCommentListState The mutable state for the list of comments associated with the
- * activity.
+ *   activity.
  */
 internal class ActivityStateImpl(
     private val currentUserId: String,
@@ -76,10 +90,7 @@ internal class ActivityStateImpl(
         _poll.value = _poll.value?.updateOption(option)
     }
 
-    override fun onPollVoteCasted(
-        vote: PollVoteData,
-        poll: PollData
-    ) {
+    override fun onPollVoteCasted(vote: PollVoteData, poll: PollData) {
         if (_poll.value?.id != poll.id) return
         _poll.value = poll
     }
@@ -89,18 +100,12 @@ internal class ActivityStateImpl(
         _poll.value = _poll.value?.castVote(vote, currentUserId)
     }
 
-    override fun onPollVoteChanged(
-        vote: PollVoteData,
-        poll: PollData
-    ) {
+    override fun onPollVoteChanged(vote: PollVoteData, poll: PollData) {
         if (_poll.value?.id != poll.id) return
         _poll.value = poll
     }
 
-    override fun onPollVoteRemoved(
-        vote: PollVoteData,
-        poll: PollData
-    ) {
+    override fun onPollVoteRemoved(vote: PollVoteData, poll: PollData) {
         if (_poll.value?.id != poll.id) return
         _poll.value = poll
     }
@@ -114,9 +119,9 @@ internal class ActivityStateImpl(
 /**
  * Mutable state interface for activity state management.
  *
- * This interface extends the [ActivityState] and [ActivityStateUpdates] interfaces to provide
- * a mutable state representation of an activity, allowing updates to the activity and its
- * associated poll data.
+ * This interface extends the [ActivityState] and [ActivityStateUpdates] interfaces to provide a
+ * mutable state representation of an activity, allowing updates to the activity and its associated
+ * poll data.
  */
 internal interface ActivityMutableState : ActivityState, ActivityStateUpdates
 

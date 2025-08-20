@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.query.Filter
@@ -12,13 +27,13 @@ import io.getstream.feeds.android.core.generated.models.QueryPollVotesRequest
 /**
  * A query for retrieving poll votes with filtering, sorting, and pagination options.
  *
- * Use this struct to configure how poll votes should be fetched from the Stream Feeds API.
- * You can specify filters to narrow down results, sorting options, and pagination parameters.
+ * Use this struct to configure how poll votes should be fetched from the Stream Feeds API. You can
+ * specify filters to narrow down results, sorting options, and pagination parameters.
  *
  * @property pollId The unique identifier of the poll to fetch votes for.
  * @param userId Optional user ID used for authentication.
  * @param filter Optional filter to apply to the poll votes query. Use this to narrow down results
- * based on specific criteria. Supported filters:
+ *   based on specific criteria. Supported filters:
  * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
  * - field: `id`, operators: `equal`, `in`
  * - field: `is_answer`, operators: `equal`
@@ -27,13 +42,13 @@ import io.getstream.feeds.android.core.generated.models.QueryPollVotesRequest
  * - field: `poll_id`, operators: `equal`, `in`
  * - field: `updated_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
  * @property limit Maximum number of poll votes to return in a single request. If not specified, the
- * API will use its default limit.
+ *   API will use its default limit.
  * @property next Pagination cursor for fetching the next page of results. This is typically
- * provided in the response of a previous request.
+ *   provided in the response of a previous request.
  * @property previous Pagination cursor for fetching the previous page of results. This is typically
- * provided in the response of a previous request.
+ *   provided in the response of a previous request.
  * @property sort Array of sorting criteria to apply to the poll votes. If not specified, the API
- * will use its default sorting.
+ *   will use its default sorting.
  */
 public data class PollVotesQuery(
     public val pollId: String,
@@ -42,7 +57,7 @@ public data class PollVotesQuery(
     public val limit: Int? = null,
     public val next: String? = null,
     public val previous: String? = null,
-    public val sort: List<PollVotesSort>? = null
+    public val sort: List<PollVotesSort>? = null,
 )
 
 /**
@@ -62,12 +77,11 @@ public class PollVotesSort(field: PollVotesSortField, direction: SortDirection) 
         /**
          * Default sorting configuration for poll votes.
          *
-         * This uses the `CreatedAt` field in reverse order, meaning the most recently created
-         * poll votes will appear first.
+         * This uses the `CreatedAt` field in reverse order, meaning the most recently created poll
+         * votes will appear first.
          */
-        public val Default: List<PollVotesSort> = listOf(
-            PollVotesSort(PollVotesSortField.CreatedAt, SortDirection.REVERSE)
-        )
+        public val Default: List<PollVotesSort> =
+            listOf(PollVotesSort(PollVotesSortField.CreatedAt, SortDirection.REVERSE))
     }
 }
 
@@ -80,37 +94,38 @@ public class PollVotesSort(field: PollVotesSortField, direction: SortDirection) 
 public sealed interface PollVotesSortField : SortField<PollVoteData> {
 
     /**
-     * Sort by the answer text of the poll option.
-     * This field allows sorting poll votes by the text content of the selected option.
+     * Sort by the answer text of the poll option. This field allows sorting poll votes by the text
+     * content of the selected option.
      */
-    public data object AnswerText : PollVotesSortField,
+    public data object AnswerText :
+        PollVotesSortField,
         SortField<PollVoteData> by SortField.create("answer_text", { it.answerText.orEmpty() })
 
     /**
-     * Sort by the unique identifier of the poll vote.
-     * This field allows sorting poll votes by their unique ID.
+     * Sort by the unique identifier of the poll vote. This field allows sorting poll votes by their
+     * unique ID.
      */
-    public data object Id : PollVotesSortField,
-        SortField<PollVoteData> by SortField.create("id", PollVoteData::id)
+    public data object Id :
+        PollVotesSortField, SortField<PollVoteData> by SortField.create("id", PollVoteData::id)
 
     /**
-     * Sort by the creation timestamp of the poll vote.
-     * This field allows sorting poll votes by when they were created (newest/oldest first).
+     * Sort by the creation timestamp of the poll vote. This field allows sorting poll votes by when
+     * they were created (newest/oldest first).
      */
-    public data object CreatedAt : PollVotesSortField,
+    public data object CreatedAt :
+        PollVotesSortField,
         SortField<PollVoteData> by SortField.create("created_at", PollVoteData::createdAt)
 
     /**
-     * Sort by the last update timestamp of the poll vote.
-     * This field allows sorting poll votes by when they were last updated (newest/oldest first).
+     * Sort by the last update timestamp of the poll vote. This field allows sorting poll votes by
+     * when they were last updated (newest/oldest first).
      */
-    public data object UpdatedAt : PollVotesSortField,
+    public data object UpdatedAt :
+        PollVotesSortField,
         SortField<PollVoteData> by SortField.create("updated_at", PollVoteData::updatedAt)
 }
 
-/**
- * Converts this [PollVotesQuery] to a [QueryPollVotesRequest].
- */
+/** Converts this [PollVotesQuery] to a [QueryPollVotesRequest]. */
 internal fun PollVotesQuery.toRequest(): QueryPollVotesRequest =
     QueryPollVotesRequest(
         filter = filter?.toRequest(),

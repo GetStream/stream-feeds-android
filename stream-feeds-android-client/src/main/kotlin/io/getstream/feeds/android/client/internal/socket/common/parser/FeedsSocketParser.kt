@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.socket.common.parser
 
 import io.getstream.android.core.parser.JsonParser
@@ -16,9 +31,7 @@ import io.getstream.feeds.android.core.generated.models.WSEvent
  */
 internal class FeedsEventParser(private val jsonParser: JsonParser) : GenericParser<Any, WSEvent> {
 
-    override fun encode(event: Any): Result<String> = runSafely {
-        jsonParser.toJson(event)
-    }
+    override fun encode(event: Any): Result<String> = runSafely { jsonParser.toJson(event) }
 
     override fun decode(raw: String): Result<WSEvent> = runSafely {
         val event = jsonParser.fromJson(raw, WSEvent::class.java)
@@ -31,8 +44,7 @@ internal class FeedsEventParser(private val jsonParser: JsonParser) : GenericPar
 
     private fun parseUnsupportedEvent(raw: String, unsupported: UnsupportedWSEvent): WSEvent? {
         return when (unsupported.type) {
-            EVENT_TYPE_CONNECTION_OK ->
-                jsonParser.fromJson(raw, ConnectedEvent::class.java)
+            EVENT_TYPE_CONNECTION_OK -> jsonParser.fromJson(raw, ConnectedEvent::class.java)
 
             EVENT_TYPE_CONNECTION_ERROR ->
                 jsonParser.fromJson(raw, ConnectionErrorEvent::class.java)

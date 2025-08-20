@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.feeds.android.client.api.model.PaginationResult
@@ -13,9 +28,7 @@ import io.getstream.feeds.android.core.generated.models.UpdatePollOptionRequest
 import io.getstream.feeds.android.core.generated.models.UpdatePollPartialRequest
 import io.getstream.feeds.android.core.generated.models.UpdatePollRequest
 
-/**
- * A repository for managing polls and poll votes.
- */
+/** A repository for managing polls and poll votes. */
 internal interface PollsRepository {
 
     /**
@@ -56,7 +69,7 @@ internal interface PollsRepository {
      */
     suspend fun updatePollPartial(
         pollId: String,
-        request: UpdatePollPartialRequest
+        request: UpdatePollPartialRequest,
     ): Result<PollData>
 
     /**
@@ -72,7 +85,10 @@ internal interface PollsRepository {
      * @param pollId The ID of the poll to which the option will be added.
      * @param request The request containing the details of the poll option to create.
      */
-    suspend fun createPollOption(pollId: String, request: CreatePollOptionRequest): Result<PollOptionData>
+    suspend fun createPollOption(
+        pollId: String,
+        request: CreatePollOptionRequest,
+    ): Result<PollOptionData>
 
     /**
      * Deletes a poll option by its ID.
@@ -93,7 +109,7 @@ internal interface PollsRepository {
     suspend fun getPollOption(
         pollId: String,
         optionId: String,
-        userId: String?
+        userId: String?,
     ): Result<PollOptionData>
 
     /**
@@ -146,6 +162,6 @@ internal interface PollsRepository {
         activityId: String,
         pollId: String,
         voteId: String,
-        userId: String? = null
+        userId: String? = null,
     ): Result<PollVoteData?>
 }
