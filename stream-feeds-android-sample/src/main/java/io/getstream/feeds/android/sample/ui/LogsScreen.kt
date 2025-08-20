@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.sample.ui
 
 import androidx.compose.foundation.layout.*
@@ -22,42 +37,35 @@ import java.util.*
 @Composable
 fun LogsScreen() {
     val logs by InMemoryLogger.logs.collectAsState()
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Logs") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    ),
             )
         }
     ) { paddingValues ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(vertical = 16.dp)
+            contentPadding = PaddingValues(vertical = 16.dp),
         ) {
             if (logs.isEmpty()) {
                 item {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                         Text(
                             text = "No logs available",
                             style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
             } else {
-                items(logs.reversed()) { logEntry ->
-                    LogEntryCard(logEntry = logEntry)
-                }
+                items(logs.reversed()) { logEntry -> LogEntryCard(logEntry = logEntry) }
             }
         }
     }
@@ -67,52 +75,48 @@ fun LogsScreen() {
 private fun LogEntryCard(logEntry: LogEntry) {
     val backgroundColor = getPriorityBackgroundColor(logEntry.priority)
     val textColor = getPriorityTextColor(logEntry.priority)
-    
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = backgroundColor
-        )
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
     ) {
-        Column(
-            modifier = Modifier.padding(12.dp)
-        ) {
+        Column(modifier = Modifier.padding(12.dp)) {
             // Header with timestamp and priority
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = formatTimestamp(logEntry.timestamp),
                     style = MaterialTheme.typography.bodySmall,
-                    color = textColor.copy(alpha = 0.7f)
+                    color = textColor.copy(alpha = 0.7f),
                 )
-                
+
                 PriorityChip(priority = logEntry.priority)
             }
-            
+
             Spacer(modifier = Modifier.height(4.dp))
-            
+
             // Tag
             Text(
                 text = logEntry.tag,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
-                color = textColor
+                color = textColor,
             )
-            
+
             Spacer(modifier = Modifier.height(4.dp))
-            
+
             // Message
             Text(
                 text = logEntry.message,
                 style = MaterialTheme.typography.bodyMedium,
                 fontFamily = FontFamily.Monospace,
-                color = textColor
+                color = textColor,
             )
-            
+
             // Throwable (if present)
             logEntry.throwable?.let { throwable ->
                 Spacer(modifier = Modifier.height(8.dp))
@@ -120,13 +124,13 @@ private fun LogEntryCard(logEntry: LogEntry) {
                     text = "Exception: ${throwable.javaClass.simpleName}",
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Medium,
-                    color = Color.Red
+                    color = Color.Red,
                 )
                 Text(
                     text = throwable.message ?: "No message",
                     style = MaterialTheme.typography.bodySmall,
                     fontFamily = FontFamily.Monospace,
-                    color = Color.Red.copy(alpha = 0.8f)
+                    color = Color.Red.copy(alpha = 0.8f),
                 )
             }
         }
@@ -137,18 +141,18 @@ private fun LogEntryCard(logEntry: LogEntry) {
 private fun PriorityChip(priority: Priority) {
     val chipColor = getPriorityChipColor(priority)
     val chipTextColor = Color.White
-    
+
     Surface(
         shape = RoundedCornerShape(12.dp),
         color = chipColor,
-        modifier = Modifier.padding(horizontal = 2.dp)
+        modifier = Modifier.padding(horizontal = 2.dp),
     ) {
         Text(
             text = priority.name,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
             style = MaterialTheme.typography.labelSmall,
             color = chipTextColor,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
     }
 }

@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.common
 
 import io.getstream.android.core.result.runSafely
@@ -7,9 +22,7 @@ import io.getstream.feeds.android.client.internal.log.provideLogger
 import io.getstream.log.TaggedLogger
 import java.util.concurrent.ConcurrentHashMap
 
-/**
- * Internal interface for managing subscriptions to a stream of events.
- */
+/** Internal interface for managing subscriptions to a stream of events. */
 internal interface StreamSubscriptionManager<T : StreamSubscriber> {
 
     /**
@@ -36,17 +49,13 @@ internal interface StreamSubscriptionManager<T : StreamSubscriber> {
     fun forEach(block: (T) -> Unit): Result<Unit>
 }
 
-/**
- * Manages the subscribers of any object.
- */
+/** Manages the subscribers of any object. */
 internal class StreamSubscriptionManagerImpl<T : StreamSubscriber>(
     private val logger: TaggedLogger = provideLogger(tag = "SubscriptionManager"),
-    private val maxSubscriptions: Int = MAX_LISTENERS
+    private val maxSubscriptions: Int = MAX_LISTENERS,
 ) : StreamSubscriptionManager<T> {
     companion object {
-        /**
-         * Maximum number of listeners.
-         */
+        /** Maximum number of listeners. */
         internal const val MAX_LISTENERS = 250
     }
 
@@ -59,7 +68,8 @@ internal class StreamSubscriptionManagerImpl<T : StreamSubscriber>(
                 |[subscribe] Failed, too many subscribers (size: ${subscribers.size}, max: ${maxSubscriptions})
                 | - The default MAX_LISTENERS is 250. This limit is set to avoid mistakes and "loop" subscriptions.
                 | - If you intentionally need to go over 250 listeners, supply this in the configuration.
-                """".trimMargin()
+                """"
+                    .trimMargin()
             }
             throw IllegalStateException("Max listeners reached, unsubscribe some listeners.")
         }
@@ -76,7 +86,5 @@ internal class StreamSubscriptionManagerImpl<T : StreamSubscriber>(
         logger.v { "[clear] Cleared all subscribers" }
     }
 
-    override fun forEach(block: (T) -> Unit) = runSafely {
-        subscribers.keys.forEach(block)
-    }
+    override fun forEach(block: (T) -> Unit) = runSafely { subscribers.keys.forEach(block) }
 }

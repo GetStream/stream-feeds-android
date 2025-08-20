@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.api.state
 
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
@@ -6,9 +21,9 @@ import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQuery
 /**
  * A list of activity reactions that provides pagination, filtering, and real-time updates.
  *
- * This class manages a collection of reactions for a specific activity. It provides methods
- * to fetch reactions with pagination support and automatically handles real-time updates
- * when reactions are added or removed from the activity.
+ * This class manages a collection of reactions for a specific activity. It provides methods to
+ * fetch reactions with pagination support and automatically handles real-time updates when
+ * reactions are added or removed from the activity.
  *
  * ## Example:
  * ```kotlin
@@ -34,8 +49,8 @@ public interface ActivityReactionList {
     /**
      * The query configuration used to fetch activity reactions.
      *
-     * This contains the activity ID, filters, sorting options, and pagination parameters
-     * that define how reactions should be fetched and displayed.
+     * This contains the activity ID, filters, sorting options, and pagination parameters that
+     * define how reactions should be fetched and displayed.
      */
     public val query: ActivityReactionsQuery
 
@@ -43,8 +58,8 @@ public interface ActivityReactionList {
      * An observable object representing the current state of the activity reaction list.
      *
      * This state object contains the current reactions, pagination information, and loading state.
-     * You can observe changes to this state to update your UI when reactions are added, removed,
-     * or when new pages are loaded.
+     * You can observe changes to this state to update your UI when reactions are added, removed, or
+     * when new pages are loaded.
      */
     public val state: ActivityReactionListState
 
@@ -56,7 +71,7 @@ public interface ActivityReactionList {
      * [state.reactions].
      *
      * @return A [Result] containing a list of [FeedsReactionData] if successful, or an error if the
-     * request fails.
+     *   request fails.
      */
     public suspend fun get(): Result<List<FeedsReactionData>>
 
@@ -67,7 +82,7 @@ public interface ActivityReactionList {
      * pagination cursor from the previous request to fetch the next page of results.
      *
      * @return A [Result] containing a list of [FeedsReactionData] if successful, or an error if the
-     * request fails. Returns an empty list if there are no more reactions to fetch.
+     *   request fails. Returns an empty list if there are no more reactions to fetch.
      */
     public suspend fun queryMoreReactions(limit: Int? = null): Result<List<FeedsReactionData>>
 }

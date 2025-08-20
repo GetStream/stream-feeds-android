@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.api.state
 
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
@@ -27,8 +42,8 @@ import io.getstream.feeds.android.core.generated.models.UpdateFeedRequest
 /**
  * A feed represents a collection of activities and provides methods to interact with them.
  *
- * The `Feed` class is the primary interface for working with feeds in the Stream Feeds SDK.
- * It provides functionality for:
+ * The `Feed` class is the primary interface for working with feeds in the Stream Feeds SDK. It
+ * provides functionality for:
  * - Creating and managing feed data
  * - Adding, updating, and deleting activities
  * - Managing comments, reactions, and bookmarks
@@ -51,9 +66,7 @@ public interface Feed {
      */
     public val fid: FeedId
 
-    /**
-     * An observable object representing the current state of the feed.
-     */
+    /** An observable object representing the current state of the feed. */
     public val state: FeedState
 
     /**
@@ -64,13 +77,13 @@ public interface Feed {
      * other feed information.
      *
      * @return A [Result] containing the [FeedData] if successful, or an error if the operation
-     * fails.
+     *   fails.
      */
     public suspend fun getOrCreate(): Result<FeedData>
 
     /**
-     * Stops watching the feed.
-     * When this method is called, you will not receive any web socket events for the feed anymore.
+     * Stops watching the feed. When this method is called, you will not receive any web socket
+     * events for the feed anymore.
      *
      * @return A [Result] indicating success or failure of the stop operation.
      */
@@ -81,7 +94,7 @@ public interface Feed {
      *
      * @param request The update request containing the new feed data.
      * @return A [Result] containing the updated [FeedData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun updateFeed(request: UpdateFeedRequest): Result<FeedData>
 
@@ -89,7 +102,7 @@ public interface Feed {
      * Deletes the feed.
      *
      * @param hardDelete If `true`, the feed will be permanently deleted. If `false`, it will be
-     * soft deleted. (default is `false`).
+     *   soft deleted. (default is `false`).
      * @return A [Result] indicating success or failure of the deletion operation.
      */
     public suspend fun deleteFeed(hardDelete: Boolean = false): Result<Unit>
@@ -99,7 +112,7 @@ public interface Feed {
      *
      * @param request The request containing the activity data to add.
      * @return A [Result] containing the added [ActivityData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun addActivity(
         request: FeedAddActivityRequest,
@@ -112,11 +125,11 @@ public interface Feed {
      * @param id The unique identifier of the activity to update.
      * @param request The request containing the updated activity data.
      * @return A [Result] containing the updated [ActivityData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun updateActivity(
         id: String,
-        request: UpdateActivityRequest
+        request: UpdateActivityRequest,
     ): Result<ActivityData>
 
     /**
@@ -124,7 +137,7 @@ public interface Feed {
      *
      * @param id The unique identifier of the activity to delete.
      * @param hardDelete If `true`, the activity will be permanently deleted. If `false`, it will be
-     * soft deleted. (default is `false`)
+     *   soft deleted. (default is `false`)
      * @return A [Result] indicating success or failure of the deletion operation.
      */
     public suspend fun deleteActivity(id: String, hardDelete: Boolean = false): Result<Unit>
@@ -143,17 +156,17 @@ public interface Feed {
      * @param activityId The unique identifier of the activity to repost.
      * @param text Optional text to add to the repost.
      * @return A [Result] containing the reposted [ActivityData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun repost(activityId: String, text: String?): Result<ActivityData>
 
     /**
      * Loads more activities using the next page token from the previous query.
      *
-     * @param limit Optional limit for the number of activities to load. If `null`,
-     * uses the default limit.
+     * @param limit Optional limit for the number of activities to load. If `null`, uses the default
+     *   limit.
      * @return A [Result] containing a list of additional [ActivityData] if successful, or an error
-     * if the operation fails.
+     *   if the operation fails.
      */
     public suspend fun queryMoreActivities(limit: Int? = null): Result<List<ActivityData>>
 
@@ -163,11 +176,11 @@ public interface Feed {
      * @param activityId The unique identifier of the activity to bookmark.
      * @param request Additional details of for the bookmark.
      * @return A [Result] containing the created [BookmarkData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun addBookmark(
         activityId: String,
-        request: AddBookmarkRequest = AddBookmarkRequest()
+        request: AddBookmarkRequest = AddBookmarkRequest(),
     ): Result<BookmarkData>
 
     /**
@@ -193,11 +206,11 @@ public interface Feed {
      * @param activityId The unique identifier of the activity whose bookmark should be updated.
      * @param request The update request containing the new bookmark properties to apply.
      * @return A [Result] containing the updated [BookmarkData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun updateBookmark(
         activityId: String,
-        request: UpdateBookmarkRequest
+        request: UpdateBookmarkRequest,
     ): Result<BookmarkData>
 
     /**
@@ -205,13 +218,13 @@ public interface Feed {
      *
      * @param activityId The unique identifier of the activity to remove from bookmarks.
      * @param folderId Optional folder identifier. If provided, removes the bookmark from the
-     * specific folder.
+     *   specific folder.
      * @return A [Result] containing the deleted [BookmarkData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun deleteBookmark(
         activityId: String,
-        folderId: String? = null
+        folderId: String? = null,
     ): Result<BookmarkData>
 
     /**
@@ -219,7 +232,7 @@ public interface Feed {
      *
      * @param commentId The unique identifier of the comment to retrieve.
      * @return A [Result] containing the [CommentData] if successful, or an error if the operation
-     * fails.
+     *   fails.
      */
     public suspend fun getComment(commentId: String): Result<CommentData>
 
@@ -228,7 +241,7 @@ public interface Feed {
      *
      * @param request The request containing the comment data to add.
      * @return A [Result] containing the added [CommentData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun addComment(
         request: ActivityAddCommentRequest,
@@ -238,13 +251,13 @@ public interface Feed {
     /**
      * Updates an existing comment with the provided request data.
      *
-     * This method allows you to modify the content and properties of an existing comment.
-     * You can update the comment text, attachments, or other comment-specific data.
+     * This method allows you to modify the content and properties of an existing comment. You can
+     * update the comment text, attachments, or other comment-specific data.
      *
      * @param commentId The unique identifier of the comment to update.
      * @param request The request containing the updated comment data.
      * @return A [Result] containing the updated [CommentData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun updateComment(
         commentId: String,
@@ -256,7 +269,7 @@ public interface Feed {
      *
      * @param commentId The unique identifier of the comment to remove.
      * @param hardDelete If `true`, the comment will be permanently deleted. Otherwise, it will be
-     * soft-deleted.
+     *   soft-deleted.
      * @return A [Result] indicating success or failure of the deletion operation.
      */
     public suspend fun deleteComment(commentId: String, hardDelete: Boolean? = null): Result<Unit>
@@ -265,9 +278,9 @@ public interface Feed {
      * Queries for feed suggestions that the current user might want to follow.
      *
      * @param limit Optional limit for the number of suggestions to return. If `null`, uses the
-     * default limit.
+     *   default limit.
      * @return A [Result] containing a list of [FeedData] representing the suggested feeds if
-     * successful, or an error if the operation fails.
+     *   successful, or an error if the operation fails.
      */
     public suspend fun queryFollowSuggestions(limit: Int?): Result<List<FeedData>>
 
@@ -300,7 +313,7 @@ public interface Feed {
      * @param sourceFid The feed identifier of the requested feed.
      * @param role The role for the requesting feed.
      * @return A [Result] containing the accepted[FollowData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun acceptFollow(sourceFid: FeedId, role: String? = null): Result<FollowData>
 
@@ -309,7 +322,7 @@ public interface Feed {
      *
      * @param sourceFid The feed identifier of the requested feed.
      * @return A [Result] containing the rejected [FollowData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun rejectFollow(sourceFid: FeedId): Result<FollowData>
 
@@ -321,7 +334,7 @@ public interface Feed {
      * [state.members] property.
      *
      * @return A [Result] containing a list of [FeedMemberData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun queryFeedMembers(): Result<List<FeedMemberData>>
 
@@ -332,9 +345,9 @@ public interface Feed {
      * request. If no more members are available, an empty list is returned.
      *
      * @param limit Optional limit for the number of members to fetch. If not specified, uses the
-     * limit from the original query.
+     *   limit from the original query.
      * @return A [Result] containing a list of additional [FeedMemberData] if successful, or an
-     * error if the operation fails. Returns an empty array if no more members are available.
+     *   error if the operation fails. Returns an empty array if no more members are available.
      */
     public suspend fun queryMoreFeedMembers(limit: Int? = null): Result<List<FeedMemberData>>
 
@@ -342,18 +355,18 @@ public interface Feed {
      * Updates feed members based on the provided request.
      *
      * @param request The update request containing the member changes to apply.
-     * @return A [Result] containing the updated [FeedMemberData] if successful, or an
-     * error if the operation fails.
+     * @return A [Result] containing the updated [FeedMemberData] if successful, or an error if the
+     *   operation fails.
      */
     public suspend fun updateFeedMembers(
-        request: UpdateFeedMembersRequest,
+        request: UpdateFeedMembersRequest
     ): Result<ModelUpdates<FeedMemberData>>
 
     /**
      * Accepts a feed member invitation.
      *
      * @return A [Result] containing the accepted [FeedMemberData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun acceptFeedMember(): Result<FeedMemberData>
 
@@ -361,7 +374,7 @@ public interface Feed {
      * Rejects a feed member invitation.
      *
      * @return A [Result] containing the rejected [FeedMemberData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun rejectFeedMember(): Result<FeedMemberData>
 
@@ -371,7 +384,7 @@ public interface Feed {
      * @param activityId The unique identifier of the activity to react to.
      * @param request The request containing the reaction data.
      * @return A [Result] containing the added [FeedsReactionData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun addReaction(
         activityId: String,
@@ -384,7 +397,7 @@ public interface Feed {
      * @param activityId The unique identifier of the activity from which to delete the reaction.
      * @param type The type of reaction to delete.
      * @return A [Result] containing the deleted [FeedsReactionData] if successful, or an error if
-     * the operation fails.
+     *   the operation fails.
      */
     public suspend fun deleteReaction(activityId: String, type: String): Result<FeedsReactionData>
 
@@ -394,7 +407,7 @@ public interface Feed {
      * @param commentId The unique identifier of the comment to react to.
      * @param request The request containing the reaction data.
      * @return A [Result] containing the added [FeedsReactionData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun addCommentReaction(
         commentId: String,
@@ -407,7 +420,7 @@ public interface Feed {
      * @param commentId The unique identifier of the comment from which to delete the reaction.
      * @param type The type of reaction to delete.
      * @return A [Result] containing the deleted [FeedsReactionData] if successful, or an error if
-     * the operation fails.
+     *   the operation fails.
      */
     public suspend fun deleteCommentReaction(
         commentId: String,
@@ -420,7 +433,7 @@ public interface Feed {
      * @param request The request containing the poll data to create.
      * @param activityType The type of activity to create for the poll.
      * @return A [Result] containing the created [ActivityData] with poll if successful, or an error
-     * if the operation fails.
+     *   if the operation fails.
      */
     public suspend fun createPoll(
         request: CreatePollRequest,

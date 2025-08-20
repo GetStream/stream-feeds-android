@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.android.core.websocket.WebSocketConnectionState
@@ -16,15 +31,15 @@ import io.getstream.feeds.android.core.generated.models.WSEvent
 /**
  * A list of activity reactions that provides pagination, filtering, and real-time updates.
  *
- * This class manages a collection of reactions for a specific activity. It provides methods
- * to fetch reactions with pagination support and automatically handles real-time updates
- * when reactions are added or removed from the activity.
+ * This class manages a collection of reactions for a specific activity. It provides methods to
+ * fetch reactions with pagination support and automatically handles real-time updates when
+ * reactions are added or removed from the activity.
  *
  * @property query The query configuration used to fetch activity reactions.
  * @property activitiesRepository The repository used to perform network operations for activity
- * reactions.
+ *   reactions.
  * @property subscriptionManager The manager for WebSocket subscriptions to receive real-time
- * updates.
+ *   updates.
  */
 internal class ActivityReactionListImpl(
     override val query: ActivityReactionsQuery,
@@ -33,20 +48,22 @@ internal class ActivityReactionListImpl(
 ) : ActivityReactionList {
 
     init {
-        subscriptionManager.subscribe(object : FeedsSocketListener {
-            override fun onState(state: WebSocketConnectionState) {
-                // Not relevant, rethink this
-            }
+        subscriptionManager.subscribe(
+            object : FeedsSocketListener {
+                override fun onState(state: WebSocketConnectionState) {
+                    // Not relevant, rethink this
+                }
 
-            override fun onEvent(event: WSEvent) {
-                eventHandler.handleEvent(event)
+                override fun onEvent(event: WSEvent) {
+                    eventHandler.handleEvent(event)
+                }
             }
-        })
+        )
     }
 
     private val _state = ActivityReactionListStateImpl(query)
 
-    private val eventHandler = ActivityReactionListEventHandler(query.activityId,  _state)
+    private val eventHandler = ActivityReactionListEventHandler(query.activityId, _state)
 
     override val state: ActivityReactionListState
         get() = _state
@@ -61,29 +78,29 @@ internal class ActivityReactionListImpl(
             // If there is no next cursor, return an empty list.
             return Result.success(emptyList())
         }
-        val nextQuery = ActivityReactionsQuery(
-            activityId = query.activityId,
-            filter = _state.queryConfig?.filter,
-            sort = _state.queryConfig?.sort,
-            limit = limit,
-            next = next,
-            previous = null,
-        )
+        val nextQuery =
+            ActivityReactionsQuery(
+                activityId = query.activityId,
+                filter = _state.queryConfig?.filter,
+                sort = _state.queryConfig?.sort,
+                limit = limit,
+                next = next,
+                previous = null,
+            )
         return queryActivityReactions(nextQuery)
     }
 
     private suspend fun queryActivityReactions(
-        query: ActivityReactionsQuery,
+        query: ActivityReactionsQuery
     ): Result<List<FeedsReactionData>> {
-        return activitiesRepository.queryActivityReactions(query.activityId, query.toRequest())
+        return activitiesRepository
+            .queryActivityReactions(query.activityId, query.toRequest())
             .onSuccess {
                 _state.onQueryMoreActivityReactions(
                     result = it,
                     queryConfig = QueryConfiguration(query.filter, query.sort),
                 )
             }
-            .map {
-                it.models
-            }
+            .map { it.models }
     }
 }

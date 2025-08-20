@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.android.core.result.runSafely
@@ -38,7 +53,7 @@ internal class CommentsRepositoryImpl(
 ) : CommentsRepository {
 
     override suspend fun queryComments(
-        query: CommentsQuery,
+        query: CommentsQuery
     ): Result<PaginationResult<CommentData>> = runSafely {
         val response = api.queryComments(query.toRequest())
         PaginationResult(
@@ -48,17 +63,18 @@ internal class CommentsRepositoryImpl(
     }
 
     override suspend fun getComments(
-        query: ActivityCommentsQuery,
+        query: ActivityCommentsQuery
     ): Result<PaginationResult<ThreadedCommentData>> = runSafely {
-        val response = api.getComments(
-            objectId = query.objectId,
-            objectType = query.objectType,
-            depth = query.depth,
-            sort = query.sort?.toRequest()?.value,
-            limit = query.limit,
-            next = query.next,
-            prev = query.previous,
-        )
+        val response =
+            api.getComments(
+                objectId = query.objectId,
+                objectType = query.objectType,
+                depth = query.depth,
+                sort = query.sort?.toRequest()?.value,
+                limit = query.limit,
+                next = query.next,
+                prev = query.previous,
+            )
         PaginationResult(
             models = response.comments.map { it.toModel() },
             pagination = PaginationData(response.next, response.prev),
@@ -67,7 +83,7 @@ internal class CommentsRepositoryImpl(
 
     override suspend fun addComment(
         request: ActivityAddCommentRequest,
-        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?,
     ): Result<CommentData> = runSafely {
         val newRequest = uploadAttachmentsAndUpdateRequest(request, attachmentUploadProgress)
         api.addComment(newRequest).comment.toModel()
@@ -75,13 +91,17 @@ internal class CommentsRepositoryImpl(
 
     override suspend fun addCommentsBatch(
         requests: List<ActivityAddCommentRequest>,
-        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?,
     ): Result<List<CommentData>> = runSafely {
-        val newRequests = coroutineScope {
-            requests.map { request ->
-                async { uploadAttachmentsAndUpdateRequest(request, attachmentUploadProgress) }
-            }
-        }.awaitAll()
+        val newRequests =
+            coroutineScope {
+                    requests.map { request ->
+                        async {
+                            uploadAttachmentsAndUpdateRequest(request, attachmentUploadProgress)
+                        }
+                    }
+                }
+                .awaitAll()
 
         val batchRequest = AddCommentsBatchRequest(newRequests)
 
@@ -90,23 +110,22 @@ internal class CommentsRepositoryImpl(
 
     private suspend fun uploadAttachmentsAndUpdateRequest(
         request: ActivityAddCommentRequest,
-        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?
+        attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?,
     ): AddCommentRequest {
-        val uploadedAttachments = uploader.uploadAll(
-            files = request.attachmentUploads,
-            attachmentUploadProgress = attachmentUploadProgress
-        )
+        val uploadedAttachments =
+            uploader.uploadAll(
+                files = request.attachmentUploads,
+                attachmentUploadProgress = attachmentUploadProgress,
+            )
         return request.request.copy(
             attachments = request.request.attachments.orEmpty() + uploadedAttachments
         )
     }
 
-    override suspend fun deleteComment(
-        commentId: String,
-        hardDelete: Boolean?,
-    ): Result<Unit> = runSafely {
-        api.deleteComment(commentId, hardDelete)
-    }
+    override suspend fun deleteComment(commentId: String, hardDelete: Boolean?): Result<Unit> =
+        runSafely {
+            api.deleteComment(commentId, hardDelete)
+        }
 
     override suspend fun getComment(commentId: String): Result<CommentData> = runSafely {
         api.getComment(commentId).comment.toModel()
@@ -115,9 +134,7 @@ internal class CommentsRepositoryImpl(
     override suspend fun updateComment(
         commentId: String,
         request: UpdateCommentRequest,
-    ): Result<CommentData> = runSafely {
-        api.updateComment(commentId, request).comment.toModel()
-    }
+    ): Result<CommentData> = runSafely { api.updateComment(commentId, request).comment.toModel() }
 
     override suspend fun addCommentReaction(
         commentId: String,
@@ -147,17 +164,18 @@ internal class CommentsRepositoryImpl(
     }
 
     override suspend fun getCommentReplies(
-        query: CommentRepliesQuery,
+        query: CommentRepliesQuery
     ): Result<PaginationResult<ThreadedCommentData>> = runSafely {
-        val response = api.getCommentReplies(
-            id = query.commentId,
-            depth = query.depth,
-            limit = query.limit,
-            next = query.next,
-            prev = query.previous,
-            repliesLimit = query.repliesLimit,
-            sort = query.sort?.toRequest()?.value,
-        )
+        val response =
+            api.getCommentReplies(
+                id = query.commentId,
+                depth = query.depth,
+                limit = query.limit,
+                next = query.next,
+                prev = query.previous,
+                repliesLimit = query.repliesLimit,
+                sort = query.sort?.toRequest()?.value,
+            )
         PaginationResult(
             models = response.comments.map { it.toModel() },
             pagination = PaginationData(response.next, response.prev),

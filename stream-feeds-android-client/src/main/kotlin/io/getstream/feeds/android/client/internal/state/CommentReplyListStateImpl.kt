@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.CommentData
@@ -19,9 +34,9 @@ import kotlinx.coroutines.flow.asStateFlow
 /**
  * An observable object representing the current state of a comment's reply list.
  *
- * This class manages the state of replies for a specific comment, including
- * the list of replies, pagination information, and real-time updates from
- * WebSocket events. It automatically handles reply updates and reaction changes.
+ * This class manages the state of replies for a specific comment, including the list of replies,
+ * pagination information, and real-time updates from WebSocket events. It automatically handles
+ * reply updates and reaction changes.
  *
  * @property query The query configuration used to fetch replies.
  * @property currentUserId The ID of the current user, used for reaction management.
@@ -31,7 +46,8 @@ internal class CommentReplyListStateImpl(
     private val currentUserId: String,
 ) : CommentReplyListMutableState {
 
-    private val _replies: MutableStateFlow<List<ThreadedCommentData>> = MutableStateFlow(emptyList())
+    private val _replies: MutableStateFlow<List<ThreadedCommentData>> =
+        MutableStateFlow(emptyList())
 
     private var _pagination: PaginationData? = null
 
@@ -54,9 +70,7 @@ internal class CommentReplyListStateImpl(
             // Comment is not a reply, ignore it
             return
         }
-        _replies.value = _replies.value.map {
-            addNestedReply(it, comment)
-        }
+        _replies.value = _replies.value.map { addNestedReply(it, comment) }
     }
 
     override fun onCommentRemoved(commentId: String) {
@@ -66,39 +80,27 @@ internal class CommentReplyListStateImpl(
             _replies.value = filteredTopLevel
         } else {
             // It might be a nested reply, search and remove recursively
-            _replies.value = _replies.value.map { parent ->
-                removeNestedReply(parent, commentId)
-            }
+            _replies.value = _replies.value.map { parent -> removeNestedReply(parent, commentId) }
         }
     }
 
     override fun onCommentUpdated(comment: CommentData) {
-        _replies.value = _replies.value.map { parent ->
-            updateNestedReply(parent, comment)
-        }
+        _replies.value = _replies.value.map { parent -> updateNestedReply(parent, comment) }
     }
 
-    override fun onCommentReactionAdded(
-        commentId: String,
-        reaction: FeedsReactionData
-    ) {
-        _replies.value = _replies.value.map { parent ->
-            addNestedReplyReaction(parent, commentId, reaction)
-        }
+    override fun onCommentReactionAdded(commentId: String, reaction: FeedsReactionData) {
+        _replies.value =
+            _replies.value.map { parent -> addNestedReplyReaction(parent, commentId, reaction) }
     }
 
-    override fun onCommentReactionRemoved(
-        commentId: String,
-        reaction: FeedsReactionData
-    ) {
-        _replies.value = _replies.value.map { parent ->
-            removeNestedReplyReaction(parent, commentId, reaction)
-        }
+    override fun onCommentReactionRemoved(commentId: String, reaction: FeedsReactionData) {
+        _replies.value =
+            _replies.value.map { parent -> removeNestedReplyReaction(parent, commentId, reaction) }
     }
 
     private fun addNestedReply(
         parent: ThreadedCommentData,
-        reply: ThreadedCommentData
+        reply: ThreadedCommentData,
     ): ThreadedCommentData {
         // If this comment is the parent, add the reply directly
         if (parent.id == reply.parentId) {
@@ -109,16 +111,12 @@ internal class CommentReplyListStateImpl(
             return parent
         }
         // Otherwise, recursively search for the parent in the replies
-        return parent.copy(
-            replies = parent.replies.map { child ->
-                addNestedReply(child, reply)
-            }
-        )
+        return parent.copy(replies = parent.replies.map { child -> addNestedReply(child, reply) })
     }
 
     private fun removeNestedReply(
         comment: ThreadedCommentData,
-        commentIdToRemove: String
+        commentIdToRemove: String,
     ): ThreadedCommentData {
         // If this comment has no replies, nothing to remove
         if (comment.replies.isNullOrEmpty()) {
@@ -128,22 +126,17 @@ internal class CommentReplyListStateImpl(
         val filteredReplies = comment.replies.filter { it.id != commentIdToRemove }
         if (filteredReplies.size != comment.replies.size) {
             // Found and removed a direct child, update reply count
-            return comment.copy(
-                replies = filteredReplies,
-                replyCount = comment.replyCount - 1
-            )
+            return comment.copy(replies = filteredReplies, replyCount = comment.replyCount - 1)
         }
         // If not found, recursively check each reply
         return comment.copy(
-            replies = comment.replies.map { child ->
-                removeNestedReply(child, commentIdToRemove)
-            }
+            replies = comment.replies.map { child -> removeNestedReply(child, commentIdToRemove) }
         )
     }
 
     private fun updateNestedReply(
         parent: ThreadedCommentData,
-        updatedComment: CommentData
+        updatedComment: CommentData,
     ): ThreadedCommentData {
         // If this comment is the parent, update it directly
         if (parent.id == updatedComment.id) {
@@ -155,16 +148,14 @@ internal class CommentReplyListStateImpl(
         }
         // Otherwise, recursively search for the comment to update in the replies
         return parent.copy(
-            replies = parent.replies.map { child ->
-                updateNestedReply(child, updatedComment)
-            }
+            replies = parent.replies.map { child -> updateNestedReply(child, updatedComment) }
         )
     }
 
     private fun addNestedReplyReaction(
         parent: ThreadedCommentData,
         commentId: String,
-        reaction: FeedsReactionData
+        reaction: FeedsReactionData,
     ): ThreadedCommentData {
         // If this comment is the parent, add the reaction directly
         if (parent.id == commentId) {
@@ -176,16 +167,15 @@ internal class CommentReplyListStateImpl(
         }
         // Otherwise, recursively search for the comment in the replies
         return parent.copy(
-            replies = parent.replies.map { child ->
-                addNestedReplyReaction(child, commentId, reaction)
-            }
+            replies =
+                parent.replies.map { child -> addNestedReplyReaction(child, commentId, reaction) }
         )
     }
 
     private fun removeNestedReplyReaction(
         parent: ThreadedCommentData,
         commentId: String,
-        reaction: FeedsReactionData
+        reaction: FeedsReactionData,
     ): ThreadedCommentData {
         // If this comment is the parent, remove the reaction directly
         if (parent.id == commentId) {
@@ -197,18 +187,17 @@ internal class CommentReplyListStateImpl(
         }
         // Otherwise, recursively search for the comment in the replies
         return parent.copy(
-            replies = parent.replies.map { child ->
-                removeNestedReplyReaction(child, commentId, reaction)
-            }
+            replies =
+                parent.replies.map { child ->
+                    removeNestedReplyReaction(child, commentId, reaction)
+                }
         )
     }
 }
 
-/**
- * A mutable state interface for managing the state of a comment reply list.
- */
-internal interface CommentReplyListMutableState : CommentReplyListState,
-    CommentReplyListStateUpdates
+/** A mutable state interface for managing the state of a comment reply list. */
+internal interface CommentReplyListMutableState :
+    CommentReplyListState, CommentReplyListStateUpdates
 
 /**
  * An interface that defines the methods for handling updates to the state of a comment reply list.

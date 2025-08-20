@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.query.Filter
@@ -12,8 +27,8 @@ import io.getstream.feeds.android.core.generated.models.QueryActivitiesRequest
 /**
  * A query for retrieving activities with filtering, sorting, and pagination options.
  *
- * Use this model to configure how activities should be fetched from the Stream Feeds API.
- * You can specify filters to narrow down results, sorting options, and pagination parameters.
+ * Use this model to configure how activities should be fetched from the Stream Feeds API. You can
+ * specify filters to narrow down results, sorting options, and pagination parameters.
  *
  * Example usage:
  * ```kotlin
@@ -56,46 +71,46 @@ public class ActivitiesSort(field: ActivitiesSortField, direction: SortDirection
         /**
          * Default sorting configuration for activities.
          *
-         * This uses the `CreatedAt` field in reverse order, meaning the most recent activities
-         * will appear first.
+         * This uses the `CreatedAt` field in reverse order, meaning the most recent activities will
+         * appear first.
          */
-        public val Default: List<ActivitiesSort> = listOf(
-            ActivitiesSort(ActivitiesSortField.CreatedAt, SortDirection.REVERSE)
-        )
+        public val Default: List<ActivitiesSort> =
+            listOf(ActivitiesSort(ActivitiesSortField.CreatedAt, SortDirection.REVERSE))
     }
 }
 
 /**
  * Defines the fields by which activities can be sorted.
  *
- * This interface extends [SortField] and provides specific fields for sorting feed data.
- * Each field corresponds to a property of the [ActivityData] model, allowing for flexible
- * sorting options when querying activities.
+ * This interface extends [SortField] and provides specific fields for sorting feed data. Each field
+ * corresponds to a property of the [ActivityData] model, allowing for flexible sorting options when
+ * querying activities.
  */
 public sealed interface ActivitiesSortField : SortField<ActivityData> {
 
     /**
-     * Sort by the creation timestamp of the activity.
-     * This field allows sorting activities by when they were created (newest/oldest first).
+     * Sort by the creation timestamp of the activity. This field allows sorting activities by when
+     * they were created (newest/oldest first).
      */
-    public data object CreatedAt : ActivitiesSortField,
+    public data object CreatedAt :
+        ActivitiesSortField,
         SortField<ActivityData> by SortField.create("created_at", ActivityData::createdAt)
 
     /**
-     * Sort by the popularity score of the activity.
-     * This field allows sorting activities by popularity (most/least popular first).
+     * Sort by the popularity score of the activity. This field allows sorting activities by
+     * popularity (most/least popular first).
      */
-    public data object Popularity : ActivitiesSortField,
+    public data object Popularity :
+        ActivitiesSortField,
         SortField<ActivityData> by SortField.create("popularity", ActivityData::popularity)
 }
 
-/**
- * Converts the [ActivitiesQuery] to a [QueryActivitiesRequest].
- */
-internal fun ActivitiesQuery.toRequest(): QueryActivitiesRequest = QueryActivitiesRequest(
-    filter = filter?.toRequest(),
-    sort = sort?.map { it.toRequest() },
-    limit = limit,
-    next = next,
-    prev = previous,
-)
+/** Converts the [ActivitiesQuery] to a [QueryActivitiesRequest]. */
+internal fun ActivitiesQuery.toRequest(): QueryActivitiesRequest =
+    QueryActivitiesRequest(
+        filter = filter?.toRequest(),
+        sort = sort?.map { it.toRequest() },
+        limit = limit,
+        next = next,
+        prev = previous,
+    )

@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.android.core.query
 
 import io.getstream.kotlin.base.annotation.marker.StreamInternalApi
@@ -9,11 +24,7 @@ import org.junit.Test
 internal class SortTest {
 
     // Test data classes
-    data class TestUser(
-        val name: String?,
-        val age: Int?,
-        val score: Double?
-    )
+    data class TestUser(val name: String?, val age: Int?, val score: Double?)
 
     @Test
     fun testSortDirection_values() {
@@ -54,10 +65,7 @@ internal class SortTest {
         val sort = Sort(nameField, SortDirection.FORWARD)
 
         val dto = sort.toDto()
-        val expected = mapOf(
-            "field" to "name",
-            "direction" to 1
-        )
+        val expected = mapOf("field" to "name", "direction" to 1)
 
         assertEquals(expected, dto)
     }
@@ -68,10 +76,7 @@ internal class SortTest {
         val sort = Sort(ageField, SortDirection.REVERSE)
 
         val dto = sort.toDto()
-        val expected = mapOf(
-            "field" to "age",
-            "direction" to -1
-        )
+        val expected = mapOf("field" to "age", "direction" to -1)
 
         assertEquals(expected, dto)
     }
@@ -81,11 +86,12 @@ internal class SortTest {
         val nameField = SortField.create<TestUser, String>("name") { it.name ?: "" }
         val sort = Sort(nameField, SortDirection.FORWARD)
 
-        val users = listOf(
-            TestUser("Charlie", 35, 78.0),
-            TestUser("Alice", 25, 85.5),
-            TestUser("Bob", 30, 92.0)
-        )
+        val users =
+            listOf(
+                TestUser("Charlie", 35, 78.0),
+                TestUser("Alice", 25, 85.5),
+                TestUser("Bob", 30, 92.0),
+            )
 
         val sortedUsers = users.sortedWith(sort)
 
@@ -99,11 +105,12 @@ internal class SortTest {
         val nameField = SortField.create<TestUser, String>("name") { it.name ?: "" }
         val sort = Sort(nameField, SortDirection.REVERSE)
 
-        val users = listOf(
-            TestUser("Alice", 25, 85.5),
-            TestUser("Charlie", 35, 78.0),
-            TestUser("Bob", 30, 92.0)
-        )
+        val users =
+            listOf(
+                TestUser("Alice", 25, 85.5),
+                TestUser("Charlie", 35, 78.0),
+                TestUser("Bob", 30, 92.0),
+            )
 
         val sortedUsers = users.sortedWith(sort)
 
@@ -117,11 +124,12 @@ internal class SortTest {
         val ageField = SortField.create<TestUser, Int>("age") { it.age ?: 0 }
         val sort = Sort(ageField, SortDirection.FORWARD)
 
-        val users = listOf(
-            TestUser("Charlie", 35, 78.0),
-            TestUser("Alice", 25, 85.5),
-            TestUser("Bob", 30, 92.0)
-        )
+        val users =
+            listOf(
+                TestUser("Charlie", 35, 78.0),
+                TestUser("Alice", 25, 85.5),
+                TestUser("Bob", 30, 92.0),
+            )
 
         val sortedUsers = users.sortedWith(sort)
 
@@ -135,11 +143,12 @@ internal class SortTest {
         val ageField = SortField.create<TestUser, Int>("age") { it.age ?: 0 }
         val sort = Sort(ageField, SortDirection.REVERSE)
 
-        val users = listOf(
-            TestUser("Alice", 25, 85.5),
-            TestUser("Charlie", 35, 78.0),
-            TestUser("Bob", 30, 92.0)
-        )
+        val users =
+            listOf(
+                TestUser("Alice", 25, 85.5),
+                TestUser("Charlie", 35, 78.0),
+                TestUser("Bob", 30, 92.0),
+            )
 
         val sortedUsers = users.sortedWith(sort)
 
@@ -153,11 +162,12 @@ internal class SortTest {
         val scoreField = SortField.create<TestUser, Double>("score") { it.score ?: 0.0 }
         val sort = Sort(scoreField, SortDirection.FORWARD)
 
-        val users = listOf(
-            TestUser("Alice", 25, 85.5),
-            TestUser("Charlie", 35, 78.0),
-            TestUser("Bob", 30, 92.0)
-        )
+        val users =
+            listOf(
+                TestUser("Alice", 25, 85.5),
+                TestUser("Charlie", 35, 78.0),
+                TestUser("Bob", 30, 92.0),
+            )
 
         val sortedUsers = users.sortedWith(sort)
 
@@ -171,11 +181,8 @@ internal class SortTest {
         val nameField = SortField.create<TestUser, String>("name") { it.name ?: "" }
         val sort = Sort(nameField, SortDirection.FORWARD)
 
-        val users = listOf(
-            TestUser("Bob", 30, 92.0),
-            TestUser(null, 25, 85.5),
-            TestUser("Alice", 35, 78.0)
-        )
+        val users =
+            listOf(TestUser("Bob", 30, 92.0), TestUser(null, 25, 85.5), TestUser("Alice", 35, 78.0))
 
         val sortedUsers = users.sortedWith(sort)
 
@@ -190,11 +197,8 @@ internal class SortTest {
         val nameField = SortField.create<TestUser, String>("name") { it.name ?: "" }
         val sort = Sort(nameField, SortDirection.REVERSE)
 
-        val users = listOf(
-            TestUser("Alice", 25, 85.5),
-            TestUser(null, 30, 92.0),
-            TestUser("Bob", 35, 78.0)
-        )
+        val users =
+            listOf(TestUser("Alice", 25, 85.5), TestUser(null, 30, 92.0), TestUser("Bob", 35, 78.0))
 
         val sortedUsers = users.sortedWith(sort)
 
@@ -312,17 +316,16 @@ internal class SortTest {
         val ageField = SortField.create<TestUser, Int>("age") { it.age ?: 0 }
         val nameField = SortField.create<TestUser, String>("name") { it.name ?: "" }
 
-        val sorts = listOf(
-            Sort(ageField, SortDirection.FORWARD),
-            Sort(nameField, SortDirection.FORWARD)
-        )
+        val sorts =
+            listOf(Sort(ageField, SortDirection.FORWARD), Sort(nameField, SortDirection.FORWARD))
 
-        val users = listOf(
-            TestUser("Charlie", 25, 78.0),
-            TestUser("Alice", 25, 85.5),  // Same age as Charlie
-            TestUser("Bob", 30, 92.0),
-            TestUser("David", 25, 88.0)   // Same age as Charlie and Alice
-        )
+        val users =
+            listOf(
+                TestUser("Charlie", 25, 78.0),
+                TestUser("Alice", 25, 85.5), // Same age as Charlie
+                TestUser("Bob", 30, 92.0),
+                TestUser("David", 25, 88.0), // Same age as Charlie and Alice
+            )
 
         val sortedUsers = users.sortedWith(sorts)
 
@@ -342,21 +345,24 @@ internal class SortTest {
         val ageField = SortField.create<TestUser, Int>("age") { it.age ?: 0 }
         val scoreField = SortField.create<TestUser, Double>("score") { it.score ?: 0.0 }
 
-        val sorts = listOf(
-            Sort(ageField, SortDirection.FORWARD),      // Age ascending
-            Sort(scoreField, SortDirection.REVERSE)     // Score descending
-        )
+        val sorts =
+            listOf(
+                Sort(ageField, SortDirection.FORWARD), // Age ascending
+                Sort(scoreField, SortDirection.REVERSE), // Score descending
+            )
 
-        val users = listOf(
-            TestUser("Alice", 25, 85.5),
-            TestUser("Bob", 30, 92.0),
-            TestUser("Charlie", 25, 95.0),   // Same age as Alice, higher score
-            TestUser("David", 25, 75.0)      // Same age as Alice, lower score
-        )
+        val users =
+            listOf(
+                TestUser("Alice", 25, 85.5),
+                TestUser("Bob", 30, 92.0),
+                TestUser("Charlie", 25, 95.0), // Same age as Alice, higher score
+                TestUser("David", 25, 75.0), // Same age as Alice, lower score
+            )
 
         val sortedUsers = users.sortedWith(sorts)
 
-        // Should be sorted first by age (25, 25, 25, 30), then by score descending (95.0, 85.5, 75.0, 92.0)
+        // Should be sorted first by age (25, 25, 25, 30), then by score descending (95.0, 85.5,
+        // 75.0, 92.0)
         assertEquals(25, sortedUsers[0].age)
         assertEquals(95.0, sortedUsers[0].score)
         assertEquals("Charlie", sortedUsers[0].name)
@@ -380,21 +386,14 @@ internal class SortTest {
         val nameField = SortField.create<TestUser, String>("name") { it.name ?: "" }
 
         // First sort: age first, then name
-        val sortsAgeFirst = listOf(
-            Sort(ageField, SortDirection.FORWARD),
-            Sort(nameField, SortDirection.FORWARD)
-        )
+        val sortsAgeFirst =
+            listOf(Sort(ageField, SortDirection.FORWARD), Sort(nameField, SortDirection.FORWARD))
 
         // Second sort: name first, then age
-        val sortsNameFirst = listOf(
-            Sort(nameField, SortDirection.FORWARD),
-            Sort(ageField, SortDirection.FORWARD)
-        )
+        val sortsNameFirst =
+            listOf(Sort(nameField, SortDirection.FORWARD), Sort(ageField, SortDirection.FORWARD))
 
-        val users = listOf(
-            TestUser("Bob", 25, 92.0),
-            TestUser("Alice", 30, 85.5)
-        )
+        val users = listOf(TestUser("Bob", 25, 92.0), TestUser("Alice", 30, 85.5))
 
         val sortedByAgeFirst = users.sortedWith(sortsAgeFirst)
         val sortedByNameFirst = users.sortedWith(sortsNameFirst)
@@ -414,35 +413,39 @@ internal class SortTest {
         val scoreField = SortField.create<TestUser, Double>("score") { it.score ?: 0.0 }
         val nameField = SortField.create<TestUser, String>("name") { it.name ?: "" }
 
-        val sorts = listOf(
-            Sort(ageField, SortDirection.FORWARD),
-            Sort(scoreField, SortDirection.FORWARD),
-            Sort(nameField, SortDirection.FORWARD)
-        )
+        val sorts =
+            listOf(
+                Sort(ageField, SortDirection.FORWARD),
+                Sort(scoreField, SortDirection.FORWARD),
+                Sort(nameField, SortDirection.FORWARD),
+            )
 
-        val users = listOf(
-            TestUser("Charlie", 25, 85.0),
-            TestUser("Bob", 25, 85.0),      // Same age and score as Charlie
-            TestUser("Alice", 25, 90.0),    // Same age, higher score
-            TestUser("David", 30, 80.0)     // Different age
-        )
+        val users =
+            listOf(
+                TestUser("Charlie", 25, 85.0),
+                TestUser("Bob", 25, 85.0), // Same age and score as Charlie
+                TestUser("Alice", 25, 90.0), // Same age, higher score
+                TestUser("David", 30, 80.0), // Different age
+            )
 
         val sortedUsers = users.sortedWith(sorts)
 
-        // Should be sorted by age (25, 25, 25, 30), then score (85.0, 85.0, 90.0, 80.0), then name (Bob, Charlie, Alice, David)
-        assertEquals("Bob", sortedUsers[0].name)  // age=25, score=85.0, name=Bob
-        assertEquals("Charlie", sortedUsers[1].name)    // age=25, score=85.0, name=Charlie
+        // Should be sorted by age (25, 25, 25, 30), then score (85.0, 85.0, 90.0, 80.0), then name
+        // (Bob, Charlie, Alice, David)
+        assertEquals("Bob", sortedUsers[0].name) // age=25, score=85.0, name=Bob
+        assertEquals("Charlie", sortedUsers[1].name) // age=25, score=85.0, name=Charlie
         assertEquals("Alice", sortedUsers[2].name) // age=25, score=90.0, name=Alice
-        assertEquals("David", sortedUsers[3].name)  // age=30
+        assertEquals("David", sortedUsers[3].name) // age=30
     }
 
     @Test
     fun testList_sortedWith_emptySortList() {
-        val users = listOf(
-            TestUser("Charlie", 35, 78.0),
-            TestUser("Alice", 25, 85.5),
-            TestUser("Bob", 30, 92.0)
-        )
+        val users =
+            listOf(
+                TestUser("Charlie", 35, 78.0),
+                TestUser("Alice", 25, 85.5),
+                TestUser("Bob", 30, 92.0),
+            )
 
         val sortedUsers = users.sortedWith(emptyList())
 
@@ -457,11 +460,12 @@ internal class SortTest {
         val nameField = SortField.create<TestUser, String>("name") { it.name ?: "" }
         val sorts = listOf(Sort(nameField, SortDirection.FORWARD))
 
-        val users = listOf(
-            TestUser("Charlie", 35, 78.0),
-            TestUser("Alice", 25, 85.5),
-            TestUser("Bob", 30, 92.0)
-        )
+        val users =
+            listOf(
+                TestUser("Charlie", 35, 78.0),
+                TestUser("Alice", 25, 85.5),
+                TestUser("Bob", 30, 92.0),
+            )
 
         val sortedUsers = users.sortedWith(sorts)
 
@@ -470,4 +474,4 @@ internal class SortTest {
         assertEquals("Bob", sortedUsers[1].name)
         assertEquals("Charlie", sortedUsers[2].name)
     }
-} 
+}

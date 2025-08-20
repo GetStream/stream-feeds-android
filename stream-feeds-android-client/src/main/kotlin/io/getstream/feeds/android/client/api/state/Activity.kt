@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.api.state
 
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
@@ -21,33 +36,27 @@ import io.getstream.feeds.android.core.generated.models.UpdatePollRequest
 /**
  * A class representing a single activity in a feed.
  *
- * This class provides methods to interact with an activity including fetching its data,
- * managing comments, handling reactions, and working with polls. It maintains an observable state
- * that automatically updates when WebSocket events are received.
+ * This class provides methods to interact with an activity including fetching its data, managing
+ * comments, handling reactions, and working with polls. It maintains an observable state that
+ * automatically updates when WebSocket events are received.
  */
 public interface Activity {
 
-    /**
-     * The unique identifier of this activity.
-     */
+    /** The unique identifier of this activity. */
     public val activityId: String
 
-    /**
-     * The feed id for the activity.
-     */
+    /** The feed id for the activity. */
     public val fid: FeedId
 
-    /**
-     * An observable object representing the current state of the activity.
-     */
+    /** An observable object representing the current state of the activity. */
     public val state: ActivityState
 
     /**
-     * Fetches the current state of the activity.
-     * This method retrieves the latest activity data from the server and updates the local state.
+     * Fetches the current state of the activity. This method retrieves the latest activity data
+     * from the server and updates the local state.
      *
      * @return A [Result] containing the current [ActivityData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun get(): Result<ActivityData>
 
@@ -55,21 +64,20 @@ public interface Activity {
      * Queries comments for this activity.
      *
      * @return A [Result] containing a list of [ThreadedCommentData] if successful, or an error if
-     * the operation fails.
+     *   the operation fails.
      */
     public suspend fun queryComments(): Result<List<ThreadedCommentData>>
 
     /**
      * Loads the next page of comments if more are available.
      *
-     * This method fetches additional comments using the pagination information
-     * from the previous request. If no more comments are available, an empty
-     * array is returned.
+     * This method fetches additional comments using the pagination information from the previous
+     * request. If no more comments are available, an empty array is returned.
      *
      * @param limit Optional limit for the number of comments to fetch. If not specified, uses the
-     * limit from the original query.
+     *   limit from the original query.
      * @return A [Result] containing a list of [ThreadedCommentData] if successful, or an error if
-     * the operation fails. If no more comments are available, an empty list is returned.
+     *   the operation fails. If no more comments are available, an empty list is returned.
      */
     public suspend fun queryMoreComments(limit: Int? = null): Result<List<ThreadedCommentData>>
 
@@ -78,7 +86,7 @@ public interface Activity {
      *
      * @param commentId The unique identifier of the comment to retrieve.
      * @return A [Result] containing the [CommentData] if successful, or an error if the operation
-     * fails.
+     *   fails.
      */
     public suspend fun getComment(commentId: String): Result<CommentData>
 
@@ -87,7 +95,7 @@ public interface Activity {
      *
      * @param request The request object containing the details of the comment to be added.
      * @return A [Result] containing the newly created [CommentData] if successful, or an error if
-     * the operation fails.
+     *   the operation fails.
      */
     public suspend fun addComment(
         request: ActivityAddCommentRequest,
@@ -98,9 +106,9 @@ public interface Activity {
      * Adds multiple comments to the activity in a single batch operation.
      *
      * @param requests A list of [ActivityAddCommentRequest] objects, each representing a comment to
-     * be added.
+     *   be added.
      * @return A [Result] containing a list of [CommentData] for each successfully added comment, or
-     * an error if the operation fails.
+     *   an error if the operation fails.
      */
     public suspend fun addCommentsBatch(
         requests: List<ActivityAddCommentRequest>,
@@ -112,7 +120,7 @@ public interface Activity {
      *
      * @param commentId The unique identifier of the comment to be deleted.
      * @param hardDelete If true, the comment will be permanently deleted. Otherwise, it will be
-     * soft-deleted.
+     *   soft-deleted.
      * @return A [Result] indicating success or failure of the deletion operation.
      */
     public suspend fun deleteComment(commentId: String, hardDelete: Boolean? = null): Result<Unit>
@@ -123,7 +131,7 @@ public interface Activity {
      * @param commentId The unique identifier of the comment to be updated.
      * @param request The request object containing the updated details of the comment.
      * @return A [Result] containing the updated [CommentData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun updateComment(
         commentId: String,
@@ -136,7 +144,7 @@ public interface Activity {
      * @param commentId The unique identifier of the comment to which the reaction is added.
      * @param request The request object containing the details of the reaction to be added.
      * @return A [Result] containing the [FeedsReactionData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun addCommentReaction(
         commentId: String,
@@ -149,7 +157,7 @@ public interface Activity {
      * @param commentId The unique identifier of the comment from which the reaction is removed.
      * @param type The type of the reaction to be removed.
      * @return A [Result] containing the updated [FeedsReactionData] if successful, or an error if
-     * the operation fails.
+     *   the operation fails.
      */
     public suspend fun deleteCommentReaction(
         commentId: String,
@@ -174,7 +182,7 @@ public interface Activity {
      * Closes a poll, preventing further votes.
      *
      * @return A [Result] containing the updated [PollData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun closePoll(): Result<PollData>
 
@@ -191,7 +199,7 @@ public interface Activity {
      *
      * @param userId Optional user identifier for user-specific poll data.
      * @return A [Result] containing the [PollData] if successful, or an error if the operation
-     * fails.
+     *   fails.
      */
     public suspend fun getPoll(userId: String? = null): Result<PollData>
 
@@ -200,7 +208,7 @@ public interface Activity {
      *
      * @param request The request containing the partial update data.
      * @return A [Result] containing the updated [PollData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun updatePollPartial(request: UpdatePollPartialRequest): Result<PollData>
 
@@ -209,7 +217,7 @@ public interface Activity {
      *
      * @param request The request containing the update data.
      * @return A [Result] containing the updated [PollData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun updatePoll(request: UpdatePollRequest): Result<PollData>
 
@@ -218,7 +226,7 @@ public interface Activity {
      *
      * @param request The request containing the details of the poll option to be created.
      * @return A [Result] containing the newly created [PollOptionData] if successful, or an error
-     * if the operation fails.
+     *   if the operation fails.
      */
     public suspend fun createPollOption(request: CreatePollOptionRequest): Result<PollOptionData>
 
@@ -237,7 +245,7 @@ public interface Activity {
      * @param optionId The unique identifier of the poll option to retrieve.
      * @param userId Optional user identifier for user-specific poll option data.
      * @return A [Result] containing the [PollOptionData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun getPollOption(
         optionId: String,
@@ -249,7 +257,7 @@ public interface Activity {
      *
      * @param request The request containing the updated details of the poll option.
      * @return A [Result] containing the updated [PollOptionData] if successful, or an error if the
-     * operation fails.
+     *   operation fails.
      */
     public suspend fun updatePollOption(request: UpdatePollOptionRequest): Result<PollOptionData>
 
@@ -258,7 +266,7 @@ public interface Activity {
      *
      * @param request The request containing the vote data.
      * @return A [Result] containing the updated [PollVoteData] if successful, 'null' if the vote
-     * was not created, or an error if the operation fails.
+     *   was not created, or an error if the operation fails.
      */
     public suspend fun castPollVote(request: CastPollVoteRequest): Result<PollVoteData?>
 
@@ -268,7 +276,7 @@ public interface Activity {
      * @param voteId The unique identifier of the vote to be removed.
      * @param userId Optional user identifier for authorization.
      * @return A [Result] containing the deleted [PollVoteData] if successful, 'null' if the vote
-     * was not found, or an error if the operation fails.
+     *   was not found, or an error if the operation fails.
      */
     public suspend fun deletePollVote(voteId: String, userId: String? = null): Result<PollVoteData?>
 }

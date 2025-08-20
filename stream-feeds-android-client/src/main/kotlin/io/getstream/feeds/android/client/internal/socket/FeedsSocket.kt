@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.socket
 
 import io.getstream.android.core.error.APIError
@@ -22,18 +37,16 @@ import io.getstream.feeds.android.client.internal.socket.events.ConnectionErrorE
 import io.getstream.feeds.android.core.generated.models.HealthCheckEvent
 import io.getstream.feeds.android.core.generated.models.WSEvent
 import io.getstream.log.TaggedLogger
-import kotlinx.coroutines.suspendCancellableCoroutine
-import okhttp3.Response
 import java.io.IOException
 import kotlin.coroutines.resume
-
+import kotlinx.coroutines.suspendCancellableCoroutine
+import okhttp3.Response
 
 /**
  * Listener interface for Feeds socket events.
  *
- * This interface defines methods to handle socket state changes and events.
- * Implement this interface to receive updates about the socket connection state
- * and incoming events.
+ * This interface defines methods to handle socket state changes and events. Implement this
+ * interface to receive updates about the socket connection state and incoming events.
  */
 internal interface FeedsSocketListener : StreamSubscriber {
 
@@ -69,7 +82,7 @@ internal data class ConnectUserData(
     val image: String? = null,
     val invisible: Boolean = false,
     val language: String? = null,
-    val custom: Map<String, Any?>? = null
+    val custom: Map<String, Any?>? = null,
 )
 
 /**
@@ -117,9 +130,8 @@ internal data class FeedsSocketConfig(
 )
 
 /**
- * A websocket client for the Feeds service.
- * This class manages the connection to the Feeds service, its disconnections and handles incoming
- * events.
+ * A websocket client for the Feeds service. This class manages the connection to the Feeds service,
+ * its disconnections and handles incoming events.
  *
  * It implements the [StreamSubscriptionManager] to manage subscriptions to socket events.
  *
@@ -152,40 +164,44 @@ internal class FeedsSocket(
     private var messageSubscription: StreamSubscription? = null
     private var connectedEvent: ConnectedEvent? = null
 
-    private val eventListener = object : StreamWebSocketListener {
+    private val eventListener =
+        object : StreamWebSocketListener {
 
-        override fun onMessage(text: String) {
-            logger.v { "[onMessage] Socket message: $text" }
-            debounceProcessor.onMessage(text)
-        }
+            override fun onMessage(text: String) {
+                logger.v { "[onMessage] Socket message: $text" }
+                debounceProcessor.onMessage(text)
+            }
 
-        override fun onFailure(t: Throwable, response: Response?) {
-            logger.e(t) { "[onFailure] Socket failure. ${t.message}" }
-            val state = connectionState
-            connectionState = if (state is WebSocketConnectionState.Disconnecting) {
-                WebSocketConnectionState.Disconnected(state.source)
-            } else {
-                WebSocketConnectionState.Disconnected(DisconnectionSource.SystemInitiated)
+            override fun onFailure(t: Throwable, response: Response?) {
+                logger.e(t) { "[onFailure] Socket failure. ${t.message}" }
+                val state = connectionState
+                connectionState =
+                    if (state is WebSocketConnectionState.Disconnecting) {
+                        WebSocketConnectionState.Disconnected(state.source)
+                    } else {
+                        WebSocketConnectionState.Disconnected(DisconnectionSource.SystemInitiated)
+                    }
+                cleanup(t)
             }
-            cleanup(t)
-        }
 
-        override fun onClosed(code: Int, reason: String) {
-            val error = if (code == StreamWebSocket.CLOSE_SOCKET_CODE) {
-                null
-            } else {
-                IOException("Socket closed. Code: $code, Reason: $reason")
+            override fun onClosed(code: Int, reason: String) {
+                val error =
+                    if (code == StreamWebSocket.CLOSE_SOCKET_CODE) {
+                        null
+                    } else {
+                        IOException("Socket closed. Code: $code, Reason: $reason")
+                    }
+                val state = connectionState
+                connectionState =
+                    if (state is WebSocketConnectionState.Disconnecting) {
+                        WebSocketConnectionState.Disconnected(state.source)
+                    } else {
+                        WebSocketConnectionState.Disconnected(DisconnectionSource.SystemInitiated)
+                    }
+                cleanup(error)
+                logger.e { "[onClosed] Socket closed. Code: $code, Reason: $reason" }
             }
-            val state = connectionState
-            connectionState = if (state is WebSocketConnectionState.Disconnecting) {
-                WebSocketConnectionState.Disconnected(state.source)
-            } else {
-                WebSocketConnectionState.Disconnected(DisconnectionSource.SystemInitiated)
-            }
-            cleanup(error)
-            logger.e { "[onClosed] Socket closed. Code: $code, Reason: $reason" }
         }
-    }
 
     // region: API
     /**
@@ -235,120 +251,152 @@ internal class FeedsSocket(
                 if (continuation.isActive && !continuation.isCompleted) {
                     connectionState =
                         WebSocketConnectionState.Disconnected(DisconnectionSource.SystemInitiated)
-                    continuation.resume(WebSocketConnectionState.Disconnected(DisconnectionSource.SystemInitiated))
+                    continuation.resume(
+                        WebSocketConnectionState.Disconnected(DisconnectionSource.SystemInitiated)
+                    )
                 }
             }
             val apiFailure: (APIError) -> Unit = { apiError ->
                 subscription?.cancel()
                 if (continuation.isActive && !continuation.isCompleted) {
-                    connectionState = WebSocketConnectionState.Disconnected(
-                        DisconnectionSource.ServerInitiated(apiError)
-                    )
+                    connectionState =
+                        WebSocketConnectionState.Disconnected(
+                            DisconnectionSource.ServerInitiated(apiError)
+                        )
                     continuation.resume(
                         WebSocketConnectionState.Disconnected(
-                            DisconnectionSource.ServerInitiated(
-                                apiError
-                            )
+                            DisconnectionSource.ServerInitiated(apiError)
                         )
                     )
                 }
             }
             val openSocket: () -> Unit = {
                 connectionState = WebSocketConnectionState.Connecting
-                internalSocket.open(config.socketConfig)
-                    .recover { throwable ->
-                        logger.e { "[connect] Failed to open socket. ${throwable.message}" }
-                        continuation.resumeWith(Result.failure(throwable))
-                    }
+                internalSocket.open(config.socketConfig).recover { throwable ->
+                    logger.e { "[connect] Failed to open socket. ${throwable.message}" }
+                    continuation.resumeWith(Result.failure(throwable))
+                }
             }
             val connect: () -> Unit = {
                 connectionState = WebSocketConnectionState.Authenticating
-                val authRequest = WSAuthMessageRequest(
-                    products = listOf("feeds"),
-                    token = data.token,
-                    userDetails = ConnectUserDetailsRequest(
-                        id = data.userId,
-                        image = data.image,
-                        invisible = data.invisible,
-                        language = data.language,
-                        name = data.name,
-                        custom = data.custom
+                val authRequest =
+                    WSAuthMessageRequest(
+                        products = listOf("feeds"),
+                        token = data.token,
+                        userDetails =
+                            ConnectUserDetailsRequest(
+                                id = data.userId,
+                                image = data.image,
+                                invisible = data.invisible,
+                                language = data.language,
+                                name = data.name,
+                                custom = data.custom,
+                            ),
                     )
-                )
-                eventParser.encode(authRequest).mapCatching {
-                    logger.v { "[onOpen] Sending auth request: $it" }
-                    internalSocket.send(it)
-                }.recover {
-                    logger.e(it) { "[onOpen] Failed to serialize auth request. ${it.message}" }
-                    failure(it)
-                }
+                eventParser
+                    .encode(authRequest)
+                    .mapCatching {
+                        logger.v { "[onOpen] Sending auth request: $it" }
+                        internalSocket.send(it)
+                    }
+                    .recover {
+                        logger.e(it) { "[onOpen] Failed to serialize auth request. ${it.message}" }
+                        failure(it)
+                    }
             }
 
             // Subscribe for events
-            messageSubscription = internalSocket.subscribe(eventListener).onFailure { throwable ->
-                logger.e { "[connect] Failed to subscribe for events, will not receive `ConnectedEvent`. ${throwable.message}" }
-                failure(throwable)
-            }.getOrNull()
+            messageSubscription =
+                internalSocket
+                    .subscribe(eventListener)
+                    .onFailure { throwable ->
+                        logger.e {
+                            "[connect] Failed to subscribe for events, will not receive `ConnectedEvent`. ${throwable.message}"
+                        }
+                        failure(throwable)
+                    }
+                    .getOrNull()
 
             // Add socket listener that just handles the connect, after which we can remove it
-            val connectListener = object : StreamWebSocketListener {
+            val connectListener =
+                object : StreamWebSocketListener {
 
-                override fun onOpen(response: Response) {
-                    if (response.code == 101) {
-                        logger.d { "[onOpen] Socket opened" }
-                        connect()
-                    } else {
-                        val err =
-                            IllegalStateException("Failed to open socket. Code: ${response.code}")
-                        logger.e(err) { "[onOpen] Socket failed to open. Code: ${response.code}" }
-                        failure(err)
-                    }
-                }
-
-                override fun onMessage(text: String) {
-                    logger.d { "[onMessage] Socket message (string): $text" }
-                    eventParser.decode(text).map { authResponse ->
-                        when (authResponse) {
-                            // Handle `ConnectedEvent`
-                            is ConnectedEvent -> {
-                                logger.v { "[onMessage] Handling connected event: $authResponse" }
-                                val me = authResponse.me
-                                val connectedUser = StreamConnectedUser(
-                                    me.createdAt,
-                                    me.id,
-                                    me.language,
-                                    me.role,
-                                    me.updatedAt,
-                                    me.blockedUserIds ?: emptyList(),
-                                    me.teams,
-                                    me.custom,
-                                    me.deactivatedAt,
-                                    me.deletedAt,
-                                    me.image,
-                                    me.lastActive,
-                                    me.name,
+                    override fun onOpen(response: Response) {
+                        if (response.code == 101) {
+                            logger.d { "[onOpen] Socket opened" }
+                            connect()
+                        } else {
+                            val err =
+                                IllegalStateException(
+                                    "Failed to open socket. Code: ${response.code}"
                                 )
-                                connectedEvent = authResponse
-                                success(connectedUser, authResponse.connectionId)
+                            logger.e(err) {
+                                "[onOpen] Socket failed to open. Code: ${response.code}"
                             }
-
-                            // Handle `ConnectionErrorEvent`
-                            is ConnectionErrorEvent -> {
-                                logger.e { "[onMessage] Socket connection recoverable error: $authResponse" }
-                                apiFailure(authResponse.error)
-                            }
+                            failure(err)
                         }
-                    }.recover {
-                        logger.e(it) { "[onMessage] Failed to deserialize socket message. ${it.message}" }
-                        failure(it)
+                    }
+
+                    override fun onMessage(text: String) {
+                        logger.d { "[onMessage] Socket message (string): $text" }
+                        eventParser
+                            .decode(text)
+                            .map { authResponse ->
+                                when (authResponse) {
+                                    // Handle `ConnectedEvent`
+                                    is ConnectedEvent -> {
+                                        logger.v {
+                                            "[onMessage] Handling connected event: $authResponse"
+                                        }
+                                        val me = authResponse.me
+                                        val connectedUser =
+                                            StreamConnectedUser(
+                                                me.createdAt,
+                                                me.id,
+                                                me.language,
+                                                me.role,
+                                                me.updatedAt,
+                                                me.blockedUserIds ?: emptyList(),
+                                                me.teams,
+                                                me.custom,
+                                                me.deactivatedAt,
+                                                me.deletedAt,
+                                                me.image,
+                                                me.lastActive,
+                                                me.name,
+                                            )
+                                        connectedEvent = authResponse
+                                        success(connectedUser, authResponse.connectionId)
+                                    }
+
+                                    // Handle `ConnectionErrorEvent`
+                                    is ConnectionErrorEvent -> {
+                                        logger.e {
+                                            "[onMessage] Socket connection recoverable error: $authResponse"
+                                        }
+                                        apiFailure(authResponse.error)
+                                    }
+                                }
+                            }
+                            .recover {
+                                logger.e(it) {
+                                    "[onMessage] Failed to deserialize socket message. ${it.message}"
+                                }
+                                failure(it)
+                            }
                     }
                 }
-            }
 
-            subscription = internalSocket.subscribe(connectListener).onFailure { throwable ->
-                logger.e { "[connect] Failed to subscribe for events, will not receive `ConnectedEvent`. ${throwable.message}" }
-                failure(throwable)
-            }.getOrNull()
+            subscription =
+                internalSocket
+                    .subscribe(connectListener)
+                    .onFailure { throwable ->
+                        logger.e {
+                            "[connect] Failed to subscribe for events, will not receive `ConnectedEvent`. ${throwable.message}"
+                        }
+                        failure(throwable)
+                    }
+                    .getOrNull()
 
             openSocket()
         }
@@ -360,10 +408,10 @@ internal class FeedsSocket(
             val healthCheckEvent = connectedEvent?.copy()
             if (healthCheckEvent != null) {
                 logger.v { "[onInterval] Socket health check sending: $connectedEvent" }
-                eventParser.encode(healthCheckEvent)
-                    .onSuccess { text ->
-                        internalSocket.send(text)
-                    }.onFailure {
+                eventParser
+                    .encode(healthCheckEvent)
+                    .onSuccess { text -> internalSocket.send(text) }
+                    .onFailure {
                         logger.e(it) { "[onInterval] Socket health check failed. ${it.message}" }
                     }
             } else {
@@ -382,30 +430,32 @@ internal class FeedsSocket(
             logger.v { "[onBatch] Socket batch (delay: $delay ms, buffer size: $count): $batch" }
             healthMonitor.ack()
             batch.forEach { message ->
-                eventParser.decode(message)
+                eventParser
+                    .decode(message)
                     .onSuccess { event ->
                         logger.d { "[onBatch] Parsed event: ${event.getWSEventType()}" }
                         if (event !is HealthCheckEvent) {
                             subscriptionManager.forEach { it.onEvent(event) }
                         }
                         if (event is ConnectionErrorEvent) {
-                            connectionState = WebSocketConnectionState.Disconnecting(
-                                DisconnectionSource.ServerInitiated(event.error)
-                            )
+                            connectionState =
+                                WebSocketConnectionState.Disconnecting(
+                                    DisconnectionSource.ServerInitiated(event.error)
+                                )
                         }
                     }
                     .onFailure {
                         // Attempt to parse as APIError
-                        jsonParser.fromJsonOrError(message, APIErrorContainer::class.java)
+                        jsonParser
+                            .fromJsonOrError(message, APIErrorContainer::class.java)
                             .onSuccess { apiError ->
                                 logger.e { "[onBatch] Parsed error event: ${apiError.error}" }
-                                connectionState = WebSocketConnectionState.Disconnecting(
-                                    DisconnectionSource.ServerInitiated(apiError.error)
-                                )
+                                connectionState =
+                                    WebSocketConnectionState.Disconnecting(
+                                        DisconnectionSource.ServerInitiated(apiError.error)
+                                    )
                             }
-                            .onFailure {
-                                logger.i { "[onBatch] Failed to parse $message" }
-                            }
+                            .onFailure { logger.i { "[onBatch] Failed to parse $message" } }
                     }
             }
         }

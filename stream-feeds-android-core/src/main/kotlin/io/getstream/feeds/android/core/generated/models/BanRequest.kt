@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2014-2024 Stream.io Inc. All rights reserved.
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
  *
  * Licensed under the Stream License;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    https://github.com/GetStream/stream-video-android/blob/main/LICENSE
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,80 +13,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-@file:Suppress(
-    "ArrayInDataClass",
-    "EnumEntryName",
-    "RemoveRedundantQualifierName",
-    "UnusedImport"
-)
+@file:Suppress("ArrayInDataClass", "EnumEntryName", "RemoveRedundantQualifierName", "UnusedImport")
 
 package io.getstream.feeds.android.core.generated.models
 
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.collections.*
-import kotlin.io.*
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
+import kotlin.collections.*
+import kotlin.io.*
 
-/**
- * 
- */
-
-data class BanRequest (
-    @Json(name = "target_user_id")
-    val targetUserId: kotlin.String,
-
-    @Json(name = "banned_by_id")
-    val bannedById: kotlin.String? = null,
-
-    @Json(name = "channel_cid")
-    val channelCid: kotlin.String? = null,
-
-    @Json(name = "delete_messages")
-    val deleteMessages: DeleteMessages? = null,
-
-    @Json(name = "ip_ban")
-    val ipBan: kotlin.Boolean? = null,
-
-    @Json(name = "reason")
-    val reason: kotlin.String? = null,
-
-    @Json(name = "shadow")
-    val shadow: kotlin.Boolean? = null,
-
-    @Json(name = "timeout")
-    val timeout: kotlin.Int? = null,
-
+/**  */
+data class BanRequest(
+    @Json(name = "target_user_id") val targetUserId: kotlin.String,
+    @Json(name = "banned_by_id") val bannedById: kotlin.String? = null,
+    @Json(name = "channel_cid") val channelCid: kotlin.String? = null,
+    @Json(name = "delete_messages") val deleteMessages: DeleteMessages? = null,
+    @Json(name = "ip_ban") val ipBan: kotlin.Boolean? = null,
+    @Json(name = "reason") val reason: kotlin.String? = null,
+    @Json(name = "shadow") val shadow: kotlin.Boolean? = null,
+    @Json(name = "timeout") val timeout: kotlin.Int? = null,
     @Json(name = "banned_by")
-    val bannedBy: io.getstream.feeds.android.core.generated.models.UserRequest? = null
-)
-{
-    
-    /**
-    * DeleteMessages Enum
-    */
-    sealed class DeleteMessages(val value: kotlin.String) {
-            override fun toString(): String = value
+    val bannedBy: io.getstream.feeds.android.core.generated.models.UserRequest? = null,
+) {
 
-            companion object {
-                fun fromString(s: kotlin.String): DeleteMessages = when (s) {
+    /** DeleteMessages Enum */
+    sealed class DeleteMessages(val value: kotlin.String) {
+        override fun toString(): String = value
+
+        companion object {
+            fun fromString(s: kotlin.String): DeleteMessages =
+                when (s) {
                     "hard" -> Hard
                     "pruning" -> Pruning
                     "soft" -> Soft
                     else -> Unknown(s)
                 }
-            }
-            object Hard : DeleteMessages("hard")
-            object Pruning : DeleteMessages("pruning")
-            object Soft : DeleteMessages("soft")
-            data class Unknown(val unknownValue: kotlin.String) : DeleteMessages(unknownValue)
-        
+        }
+
+        object Hard : DeleteMessages("hard")
+
+        object Pruning : DeleteMessages("pruning")
+
+        object Soft : DeleteMessages("soft")
+
+        data class Unknown(val unknownValue: kotlin.String) : DeleteMessages(unknownValue)
 
         class DeleteMessagesAdapter : JsonAdapter<DeleteMessages>() {
             @FromJson
@@ -100,5 +74,5 @@ data class BanRequest (
                 writer.value(value?.value)
             }
         }
-    }    
+    }
 }

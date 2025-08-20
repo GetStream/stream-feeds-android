@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.ModerationConfigData
@@ -34,23 +49,25 @@ internal class ModerationConfigListImpl(
             // No more pages to load
             return Result.success(emptyList())
         }
-        val nextQuery = ModerationConfigsQuery(
-            filter = _state.queryConfig?.filter,
-            sort = _state.queryConfig?.sort,
-            limit = limit,
-            next = next,
-            previous = null,
-        )
+        val nextQuery =
+            ModerationConfigsQuery(
+                filter = _state.queryConfig?.filter,
+                sort = _state.queryConfig?.sort,
+                limit = limit,
+                next = next,
+                previous = null,
+            )
         return queryConfigs(nextQuery)
     }
 
-    private suspend fun queryConfigs(query: ModerationConfigsQuery): Result<List<ModerationConfigData>> {
-        return moderationRepository.queryModerationConfigs(query)
+    private suspend fun queryConfigs(
+        query: ModerationConfigsQuery
+    ): Result<List<ModerationConfigData>> {
+        return moderationRepository
+            .queryModerationConfigs(query)
             .onSuccess {
                 _state.onLoadMoreConfigs(it, QueryConfiguration(query.filter, query.sort))
             }
-            .map {
-                it.models
-            }
+            .map { it.models }
     }
 }

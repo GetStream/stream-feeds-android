@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2014-2024 Stream.io Inc. All rights reserved.
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
  *
  * Licensed under the Stream License;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    https://github.com/GetStream/stream-video-android/blob/main/LICENSE
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,57 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-@file:Suppress(
-    "ArrayInDataClass",
-    "EnumEntryName",
-    "RemoveRedundantQualifierName",
-    "UnusedImport"
-)
+@file:Suppress("ArrayInDataClass", "EnumEntryName", "RemoveRedundantQualifierName", "UnusedImport")
 
 package io.getstream.feeds.android.core.generated.models
 
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.collections.*
-import kotlin.io.*
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
+import kotlin.collections.*
+import kotlin.collections.Map
+import kotlin.io.*
 
-/**
- * 
- */
+/**  */
+data class LayoutSettings(
+    @Json(name = "external_app_url") val externalAppUrl: kotlin.String,
+    @Json(name = "external_css_url") val externalCssUrl: kotlin.String,
+    @Json(name = "name") val name: Name,
+    @Json(name = "detect_orientation") val detectOrientation: kotlin.Boolean? = null,
+    @Json(name = "options") val options: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+) {
 
-data class LayoutSettings (
-    @Json(name = "external_app_url")
-    val externalAppUrl: kotlin.String,
-
-    @Json(name = "external_css_url")
-    val externalCssUrl: kotlin.String,
-
-    @Json(name = "name")
-    val name: Name,
-
-    @Json(name = "detect_orientation")
-    val detectOrientation: kotlin.Boolean? = null,
-
-    @Json(name = "options")
-    val options: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap()
-)
-{
-    
-    /**
-    * Name Enum
-    */
+    /** Name Enum */
     sealed class Name(val value: kotlin.String) {
-            override fun toString(): String = value
+        override fun toString(): String = value
 
-            companion object {
-                fun fromString(s: kotlin.String): Name = when (s) {
+        companion object {
+            fun fromString(s: kotlin.String): Name =
+                when (s) {
                     "custom" -> Custom
                     "grid" -> Grid
                     "mobile" -> Mobile
@@ -71,14 +50,19 @@ data class LayoutSettings (
                     "spotlight" -> Spotlight
                     else -> Unknown(s)
                 }
-            }
-            object Custom : Name("custom")
-            object Grid : Name("grid")
-            object Mobile : Name("mobile")
-            object SingleParticipant : Name("single-participant")
-            object Spotlight : Name("spotlight")
-            data class Unknown(val unknownValue: kotlin.String) : Name(unknownValue)
-        
+        }
+
+        object Custom : Name("custom")
+
+        object Grid : Name("grid")
+
+        object Mobile : Name("mobile")
+
+        object SingleParticipant : Name("single-participant")
+
+        object Spotlight : Name("spotlight")
+
+        data class Unknown(val unknownValue: kotlin.String) : Name(unknownValue)
 
         class NameAdapter : JsonAdapter<Name>() {
             @FromJson
@@ -92,5 +76,5 @@ data class LayoutSettings (
                 writer.value(value?.value)
             }
         }
-    }    
+    }
 }
