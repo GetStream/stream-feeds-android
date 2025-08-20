@@ -249,7 +249,7 @@ fun FeedsScreenToolbar(
         // Right side - Action buttons
         Row(verticalAlignment = Alignment.CenterVertically) {
             NotificationIcon(hasUnseen = hasUnseenNotifications, onClick = onNotificationsClick)
-            ProfileButton(onClick = onProfileClick)
+            ProfileIcon(onClick = onProfileClick)
         }
     }
 }
@@ -279,7 +279,7 @@ private fun NotificationIcon(hasUnseen: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-private fun ProfileButton(onClick: () -> Unit) {
+private fun ProfileIcon(onClick: () -> Unit) {
     IconButton(onClick = onClick, modifier = Modifier.size(40.dp)) {
         Icon(
             painter = painterResource(R.drawable.profile_24),
