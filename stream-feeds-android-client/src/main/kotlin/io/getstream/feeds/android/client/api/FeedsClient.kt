@@ -19,6 +19,7 @@ import android.content.Context
 import io.getstream.android.core.user.ApiKey
 import io.getstream.android.core.user.User
 import io.getstream.android.core.user.UserTokenProvider
+import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.FeedId
@@ -413,6 +414,37 @@ public interface FeedsClient {
      * @return A [Result] indicating success or failure of the deletion operation.
      */
     public suspend fun deleteImage(url: String): Result<Unit>
+
+    /**
+     * Provides the API key used for authentication and service access.
+     *
+     * This API key is the same one that was passed in the [FeedsConfig] provided during client
+     * initialization.
+     *
+     * @return The [ApiKey] associated with this client.
+     */
+    public val apiKey: ApiKey
+
+    /**
+     * Provides the user associated with this client.
+     *
+     * This user is the same one that was passed during client initialization. It represents the
+     * authenticated user for whom the client operates.
+     *
+     * @return The [User] associated with this client.
+     */
+    public val user: User
+
+    /**
+     * Provides an instance of [FeedUploader] for uploading files.
+     *
+     * This uploader is the same as the one passed in the [FeedsConfig] provided during client
+     * initialization. If none was provided, a default uploader will be used that uploads files
+     * to the Stream CDN.
+     *
+     * @return An instance of [FeedUploader] that can be used to upload files.
+     */
+    public val uploader: FeedUploader
 
     /**
      * Provides an instance of [Moderation] for managing moderation-related operations.

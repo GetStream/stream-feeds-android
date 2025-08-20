@@ -298,6 +298,7 @@ internal fun createFeedsClient(
         filesRepository = filesRepository,
         moderationRepository = moderationRepository,
         pollsRepository = pollsRepository,
+        uploader = uploader,
         moderation = moderation,
         clientState = clientState,
         logger = logger,
@@ -305,8 +306,8 @@ internal fun createFeedsClient(
 }
 
 internal class FeedsClientImpl(
-    private val apiKey: ApiKey,
-    private val user: User,
+    override val apiKey: ApiKey,
+    override val user: User,
     private val tokenManager: TokenManager,
     private val socket: FeedsSocket,
     private val connectionRecoveryHandler: ConnectionRecoveryHandler,
@@ -318,6 +319,7 @@ internal class FeedsClientImpl(
     private val filesRepository: FilesRepository,
     private val moderationRepository: ModerationRepository,
     private val pollsRepository: PollsRepository,
+    override val uploader: FeedUploader,
     override val moderation: Moderation,
     private val clientState: FeedsClientStateImpl, // TODO: Expose
     private val logger: TaggedLogger = provideLogger(tag = "Client"),
