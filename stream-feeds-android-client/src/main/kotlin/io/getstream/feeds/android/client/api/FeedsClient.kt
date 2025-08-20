@@ -24,6 +24,7 @@ import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsConfig
+import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
 import io.getstream.feeds.android.client.api.state.Activity
 import io.getstream.feeds.android.client.api.state.ActivityCommentList
 import io.getstream.feeds.android.client.api.state.ActivityList
@@ -60,6 +61,7 @@ import io.getstream.feeds.android.core.generated.models.ActivityRequest
 import io.getstream.feeds.android.core.generated.models.AddActivityRequest
 import io.getstream.feeds.android.core.generated.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.core.generated.models.DeleteActivitiesResponse
+import io.getstream.feeds.android.core.generated.models.ListDevicesResponse
 
 /** Single entry point for interacting with the Stream Feeds service. */
 public interface FeedsClient {
@@ -391,7 +393,35 @@ public interface FeedsClient {
      */
     public suspend fun getApp(): Result<AppData>
 
-    // TODO: Devices API
+    /**
+     * Queries all devices associated with the current user.
+     *
+     * @return A [Result] containing a list of devices if successful, or an error if the request
+     *   fails.
+     */
+    public suspend fun queryDevices(): Result<ListDevicesResponse>
+
+    /**
+     * Creates a new device for push notifications.
+     *
+     * @param id The unique identifier for the device.
+     * @param pushProvider The push notifications provider of the device (e.g. Firebase, Huawei).
+     * @param pushProviderName The name of the push provider.
+     * @return A [Result] indicating success or failure of the device creation operation.
+     */
+    public suspend fun createDevice(
+        id: String,
+        pushProvider: PushNotificationsProvider,
+        pushProviderName: String,
+    ): Result<Unit>
+
+    /**
+     * Deletes a device by its unique identifier.
+     *
+     * @param id The unique identifier of the device to be deleted.
+     * @return A [Result] indicating success or failure of the deletion operation.
+     */
+    public suspend fun deleteDevice(id: String): Result<Unit>
 
     /**
      * Deletes a previously uploaded file from the CDN.
