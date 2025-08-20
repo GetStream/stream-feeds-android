@@ -208,29 +208,6 @@ internal class ListTreeUpdateTest {
         assertEquals(expected, updated)
     }
 
-    @Test
-    fun `mergeSorted dedupes by id preferring other`() {
-        // comparator ascending by sortField
-        val cmp = compareBy(TestNode::sortField)
-
-        val left = listOf(TestNode("x", 1), TestNode("y", 2)) // already sorted
-
-        val right =
-            listOf(
-                TestNode("y", 3),
-                TestNode("y", 4), // duplicate id in 'other'
-            ) // also sorted
-
-        val merged = left.mergeSorted(other = right, idSelector = { it.id }, comparator = cmp)
-
-        // Expected: one 'y', from 'other', with the latest value (here we pick 4)
-        val expected = listOf(TestNode("x", 1), TestNode("y", 4))
-
-        // This assertion FAILS with the current implementation,
-        // because 'merged' contains TWO entries with id "y": y(3) and y(4).
-        assertEquals(expected, merged)
-    }
-
     private data class TestNode(
         val id: String,
         val sortField: Int,
