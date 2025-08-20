@@ -35,6 +35,10 @@ import io.getstream.feeds.android.client.api.model.FeedVisibility
 import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.core.generated.models.AddReactionRequest
+import io.getstream.feeds.android.core.generated.models.CreatePollRequest
+import io.getstream.feeds.android.core.generated.models.CreatePollRequest.VotingVisibility.Anonymous
+import io.getstream.feeds.android.core.generated.models.CreatePollRequest.VotingVisibility.Public
+import io.getstream.feeds.android.core.generated.models.PollOptionInput
 import io.getstream.feeds.android.core.generated.models.UpdateActivityRequest
 import io.getstream.feeds.android.sample.util.copyToCache
 import io.getstream.feeds.android.sample.util.deleteFiles
@@ -139,6 +143,24 @@ class FeedViewModel(
                 .logResult(TAG, "Creating activity with text: $text")
 
             deleteFiles(attachmentFiles)
+        }
+    }
+
+    fun onCreatePoll(poll: PollFormData) {
+        viewModelScope.launch {
+            val request = CreatePollRequest(
+                name = poll.question,
+                options = poll.options.map(::PollOptionInput),
+                allowAnswers = poll.allowComments,
+                allowUserSuggestedOptions = poll.allowSuggestingOptions,
+                enforceUniqueVote = !poll.allowMultipleAnswers,
+                maxVotesAllowed = poll.maxVotesPerPerson.toIntOrNull()
+                    .takeIf { poll.constrainMaxVotesPerPerson },
+                votingVisibility = if (poll.anonymousPoll) Anonymous else Public,
+            )
+
+            feed.createPoll(request = request, activityType = "activity")
+                .logResult(TAG, "Creating poll with question: ${poll.question}")
         }
     }
 
