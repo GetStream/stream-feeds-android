@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
@@ -17,8 +32,8 @@ import io.getstream.feeds.android.core.generated.models.QueryActivityReactionsRe
 import io.getstream.feeds.android.core.generated.models.UpdateActivityRequest
 
 /**
- * Represents the repository for managing activities.
- * Performs requests and transforms API models to domain models.
+ * Represents the repository for managing activities. Performs requests and transforms API models to
+ * domain models.
  */
 internal interface ActivitiesRepository {
 
@@ -46,7 +61,7 @@ internal interface ActivitiesRepository {
      *
      * @param activityId The ID of the activity to be deleted.
      * @param hardDelete If true, the activity will be permanently deleted; otherwise, it will be
-     * soft-deleted.
+     *   soft-deleted.
      * @return A [Result] indicating success or failure.
      */
     suspend fun deleteActivity(activityId: String, hardDelete: Boolean): Result<Unit>
@@ -76,7 +91,7 @@ internal interface ActivitiesRepository {
      */
     suspend fun updateActivity(
         activityId: String,
-        request: UpdateActivityRequest
+        request: UpdateActivityRequest,
     ): Result<ActivityData>
 
     /**
@@ -116,7 +131,7 @@ internal interface ActivitiesRepository {
     suspend fun markActivity(
         feedGroupId: String,
         feedId: String,
-        request: MarkActivityRequest
+        request: MarkActivityRequest,
     ): Result<Unit>
 
     /**
@@ -136,7 +151,7 @@ internal interface ActivitiesRepository {
      */
     suspend fun addReaction(
         activityId: String,
-        request: AddReactionRequest
+        request: AddReactionRequest,
     ): Result<FeedsReactionData>
 
     /**
@@ -157,6 +172,6 @@ internal interface ActivitiesRepository {
      */
     suspend fun queryActivityReactions(
         activityId: String,
-        request: QueryActivityReactionsRequest
+        request: QueryActivityReactionsRequest,
     ): Result<PaginationResult<FeedsReactionData>>
 }

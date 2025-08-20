@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.api.state
 
 import io.getstream.feeds.android.client.api.model.ActivityData
@@ -14,70 +29,46 @@ import kotlinx.coroutines.flow.StateFlow
 /**
  * An observable object representing the current state of a feed.
  *
- * This class manages the state of a feed including activities, followers, members, and
- * pagination information. It automatically updates when WebSocket events are received and provides
- * change handlers for state modifications.
+ * This class manages the state of a feed including activities, followers, members, and pagination
+ * information. It automatically updates when WebSocket events are received and provides change
+ * handlers for state modifications.
  */
 public interface FeedState {
 
-    /**
-     * The unique identifier for the feed.
-     */
+    /** The unique identifier for the feed. */
     public val fid: FeedId
 
-    /**
-     * The query used to create the feed.
-     */
+    /** The query used to create the feed. */
     public val feedQuery: FeedQuery
 
-    /**
-     * The list of activities in the feed, sorted by default sorting criteria.
-     */
+    /** The list of activities in the feed, sorted by default sorting criteria. */
     public val activities: StateFlow<List<ActivityData>>
 
-    /**
-     * The feed data containing feed metadata and configuration.
-     */
+    /** The feed data containing feed metadata and configuration. */
     public val feed: StateFlow<FeedData?>
 
-    /**
-     * The list of followers for this feed.
-     */
+    /** The list of followers for this feed. */
     public val followers: StateFlow<List<FollowData>>
 
-    /**
-     * The list of feeds that this feed is following.
-     */
+    /** The list of feeds that this feed is following. */
     public val following: StateFlow<List<FollowData>>
 
-    /**
-     * The list of pending follow requests for this feed.
-     */
+    /** The list of pending follow requests for this feed. */
     public val followRequests: StateFlow<List<FollowData>>
 
-    /**
-     * The list of members in this feed.
-     */
+    /** The list of members in this feed. */
     public val members: StateFlow<List<FeedMemberData>>
 
-    /**
-     * The capabilities that the current user has for this feed.
-     */
+    /** The capabilities that the current user has for this feed. */
     public val ownCapabilities: StateFlow<List<FeedOwnCapability>>
 
-    /**
-     * The list of pinned activities and its pinning state.
-     */
+    /** The list of pinned activities and its pinning state. */
     public val pinnedActivities: StateFlow<List<ActivityPinData>>
 
-    /**
-     * Pagination information for activities queries.
-     */
+    /** Pagination information for activities queries. */
     public val activitiesPagination: PaginationData?
 
-    /**
-     * Indicates whether there are more activities available to load.
-     */
+    /** Indicates whether there are more activities available to load. */
     public val canLoadMoreActivities: Boolean
         get() = activitiesPagination?.next != null
 }

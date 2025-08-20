@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.CommentData
@@ -23,9 +38,9 @@ import kotlinx.coroutines.flow.update
 /**
  * A class representing a paginated list of comments for a specific activity.
  *
- * This class provides methods to fetch and manage comments for an activity, including
- * pagination support and real-time updates through WebSocket events. It maintains an
- * observable state that automatically updates when comment-related events are received.
+ * This class provides methods to fetch and manage comments for an activity, including pagination
+ * support and real-time updates through WebSocket events. It maintains an observable state that
+ * automatically updates when comment-related events are received.
  */
 internal class ActivityCommentListStateImpl(
     override val query: ActivityCommentsQuery,
@@ -95,19 +110,13 @@ internal class ActivityCommentListStateImpl(
         }
     }
 
-    override fun onCommentReactionAdded(
-        commentId: String,
-        reaction: FeedsReactionData
-    ) {
+    override fun onCommentReactionAdded(commentId: String, reaction: FeedsReactionData) {
         _comments.update { current ->
             current.map { comment -> addCommentReaction(comment, commentId, reaction) }
         }
     }
 
-    override fun onCommentReactionRemoved(
-        commentId: String,
-        reaction: FeedsReactionData
-    ) {
+    override fun onCommentReactionRemoved(commentId: String, reaction: FeedsReactionData) {
         _comments.update { current ->
             current.map { comment -> removeCommentReaction(comment, commentId, reaction) }
         }
@@ -115,7 +124,7 @@ internal class ActivityCommentListStateImpl(
 
     private fun addNestedReply(
         parent: ThreadedCommentData,
-        reply: ThreadedCommentData
+        reply: ThreadedCommentData,
     ): ThreadedCommentData {
         // If this comment is the parent, add the reply directly
         if (parent.id == reply.parentId) {
@@ -124,9 +133,7 @@ internal class ActivityCommentListStateImpl(
         // If this comment has replies, recursively search through them
         val replies = parent.replies
         if (!replies.isNullOrEmpty()) {
-            val updatedReplies = replies.map { replyComment ->
-                addNestedReply(replyComment, reply)
-            }
+            val updatedReplies = replies.map { replyComment -> addNestedReply(replyComment, reply) }
             return parent.copy(replies = updatedReplies)
         }
         // No matching parent found in this subtree, return unchanged
@@ -135,7 +142,7 @@ internal class ActivityCommentListStateImpl(
 
     private fun removeCommentFromReplies(
         comment: ThreadedCommentData,
-        commentIdToRemove: String
+        commentIdToRemove: String,
     ): ThreadedCommentData {
         // If this comment has no replies, nothing to remove
         if (comment.replies.isNullOrEmpty()) {
@@ -146,16 +153,12 @@ internal class ActivityCommentListStateImpl(
         val filteredReplies = comment.replies.filter { it.id != commentIdToRemove }
         if (filteredReplies.size != comment.replies.size) {
             // Found and removed a direct child, update reply count
-            return comment.copy(
-                replies = filteredReplies,
-                replyCount = comment.replyCount - 1
-            )
+            return comment.copy(replies = filteredReplies, replyCount = comment.replyCount - 1)
         }
 
         // The comment wasn't a direct child, search recursively in nested replies
-        val updatedReplies = comment.replies.map { reply ->
-            removeCommentFromReplies(reply, commentIdToRemove)
-        }
+        val updatedReplies =
+            comment.replies.map { reply -> removeCommentFromReplies(reply, commentIdToRemove) }
 
         return comment.copy(replies = updatedReplies)
     }
@@ -174,16 +177,15 @@ internal class ActivityCommentListStateImpl(
             return comment
         }
         // Recursively search through replies
-        val updatedReplies = comment.replies.map { reply ->
-            addCommentReaction(reply, targetId, reaction)
-        }
+        val updatedReplies =
+            comment.replies.map { reply -> addCommentReaction(reply, targetId, reaction) }
         return comment.copy(replies = updatedReplies)
     }
 
     private fun removeCommentReaction(
         comment: ThreadedCommentData,
         targetId: String,
-        reaction: FeedsReactionData
+        reaction: FeedsReactionData,
     ): ThreadedCommentData {
         if (comment.id == targetId) {
             // If this comment matches the target, remove the reaction
@@ -194,22 +196,17 @@ internal class ActivityCommentListStateImpl(
             return comment
         }
         // Recursively search through replies
-        val updatedReplies = comment.replies.map { reply ->
-            removeCommentReaction(reply, targetId, reaction)
-        }
+        val updatedReplies =
+            comment.replies.map { reply -> removeCommentReaction(reply, targetId, reaction) }
         return comment.copy(replies = updatedReplies)
     }
 }
 
-/**
- * A mutable state interface for managing the state of an activity comment list.
- */
-internal interface ActivityCommentListMutableState : ActivityCommentListState,
-    ActivityCommentListStateUpdates
+/** A mutable state interface for managing the state of an activity comment list. */
+internal interface ActivityCommentListMutableState :
+    ActivityCommentListState, ActivityCommentListStateUpdates
 
-/**
- * An interface that defines the methods for updating the state of an activity comment list.
- */
+/** An interface that defines the methods for updating the state of an activity comment list. */
 internal interface ActivityCommentListStateUpdates {
 
     /**

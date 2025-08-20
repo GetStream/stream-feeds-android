@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.sample.login
 
 import androidx.compose.foundation.Image
@@ -44,9 +59,7 @@ fun LoginScreen(
     onCredentialsSelected: (UserCredentials) -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .systemBarsPadding(),
+        modifier = Modifier.fillMaxSize().systemBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(Modifier.height(32.dp))
@@ -74,11 +87,7 @@ fun LoginScreen(
         )
 
         Spacer(Modifier.height(20.dp))
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        ) {
+        LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f)) {
             items(credentials) { item ->
                 UserLoginItem(item, onCredentialsSelected)
                 DividerItem()
@@ -101,32 +110,28 @@ private fun UserLoginItem(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(64.dp)
-            .clickable(
-                onClick = { onClick(credentials) },
-                indication = ripple(),
-                interactionSource = remember { MutableInteractionSource() },
-            )
-            .padding(horizontal = 16.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(64.dp)
+                .clickable(
+                    onClick = { onClick(credentials) },
+                    indication = ripple(),
+                    interactionSource = remember { MutableInteractionSource() },
+                )
+                .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AsyncImage(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape),
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(credentials.user.imageURL)
-                .build(),
+            modifier = Modifier.size(40.dp).clip(CircleShape),
+            model =
+                ImageRequest.Builder(LocalContext.current).data(credentials.user.imageURL).build(),
             contentScale = ContentScale.Crop,
             contentDescription = null,
         )
 
         Text(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 16.dp),
+            modifier = Modifier.weight(1f).padding(start = 16.dp),
             text = credentials.user.name ?: credentials.user.id,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
@@ -143,14 +148,11 @@ private fun UserLoginItem(
 
 @Composable
 private fun DividerItem() {
-    HorizontalDivider(
-        thickness = 0.5.dp,
-        color = Color.Gray,
-    )
+    HorizontalDivider(thickness = 0.5.dp, color = Color.Gray)
 }
 
 @Preview
 @Composable
 private fun LoginScreenPreview() {
-    LoginScreen {  }
+    LoginScreen {}
 }

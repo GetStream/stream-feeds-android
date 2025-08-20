@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.query.Filter
@@ -13,20 +28,20 @@ import io.getstream.feeds.android.core.generated.models.QueryFeedMembersRequest
 /**
  * A query for retrieving feed members with filtering, sorting, and pagination options.
  *
- * Use this class to configure how feed members should be fetched from the Stream Feeds API.
- * You can specify filters to narrow down results, sorting options, and pagination parameters.
+ * Use this class to configure how feed members should be fetched from the Stream Feeds API. You can
+ * specify filters to narrow down results, sorting options, and pagination parameters.
  *
  * @property fid The feed ID to fetch members for.
  * @property filter Optional filter to apply to the members query. Use this to narrow down results
- * based on specific criteria.
+ *   based on specific criteria.
  * @property sort Array of sorting criteria to apply to the members. If not specified, the API will
- * use its default sorting.
+ *   use its default sorting.
  * @property limit Maximum number of members to return in a single request. If not specified, the
- * API will use its default limit.
+ *   API will use its default limit.
  * @property next Pagination cursor for fetching the next page of results. This is typically
- * provided in the response of a previous request.
+ *   provided in the response of a previous request.
  * @property previous Pagination cursor for fetching the previous page of results. This is typically
- * provided in the response of a previous request.
+ *   provided in the response of a previous request.
  */
 public data class MembersQuery(
     public val fid: FeedId,
@@ -36,7 +51,6 @@ public data class MembersQuery(
     public val next: String? = null,
     public val previous: String? = null,
 )
-
 
 /**
  * Represents a sorting operation for feed members.
@@ -52,12 +66,11 @@ public class MembersSort(field: MembersSortField, direction: SortDirection) :
         /**
          * Default sorting configuration for feed members.
          *
-         * This uses the `CreatedAt` field in reverse order, meaning the most recently added
-         * members will appear first.
+         * This uses the `CreatedAt` field in reverse order, meaning the most recently added members
+         * will appear first.
          */
-        public val Default: List<MembersSort> = listOf(
-            MembersSort(MembersSortField.CreatedAt, SortDirection.REVERSE)
-        )
+        public val Default: List<MembersSort> =
+            listOf(MembersSort(MembersSortField.CreatedAt, SortDirection.REVERSE))
     }
 }
 
@@ -70,34 +83,35 @@ public class MembersSort(field: MembersSortField, direction: SortDirection) :
 public sealed interface MembersSortField : SortField<FeedMemberData> {
 
     /**
-     * Sort by the creation timestamp of the member.
-     * This field allows sorting members by when they were added to the feed (newest/oldest first).
+     * Sort by the creation timestamp of the member. This field allows sorting members by when they
+     * were added to the feed (newest/oldest first).
      */
-    public data object CreatedAt : MembersSortField,
+    public data object CreatedAt :
+        MembersSortField,
         SortField<FeedMemberData> by SortField.create("created_at", FeedMemberData::createdAt)
 
     /**
-     * Sort by the last update timestamp of the member.
-     * This field allows sorting members by when they were last updated (newest/oldest first).
+     * Sort by the last update timestamp of the member. This field allows sorting members by when
+     * they were last updated (newest/oldest first).
      */
-    public data object UpdatedAt : MembersSortField,
+    public data object UpdatedAt :
+        MembersSortField,
         SortField<FeedMemberData> by SortField.create("updated_at", FeedMemberData::updatedAt)
 
     /**
-     * Sort by the user ID of the member.
-     * This field allows sorting members alphabetically by user ID.
+     * Sort by the user ID of the member. This field allows sorting members alphabetically by user
+     * ID.
      */
-    public data object UserId : MembersSortField,
-        SortField<FeedMemberData> by SortField.create("user_id", { it.user.id })
+    public data object UserId :
+        MembersSortField, SortField<FeedMemberData> by SortField.create("user_id", { it.user.id })
 }
 
-/**
- * Converts a [MembersQuery] to a [QueryFeedMembersRequest].
- */
-internal fun MembersQuery.toRequest(): QueryFeedMembersRequest = QueryFeedMembersRequest(
-    limit = limit,
-    next = next,
-    prev = previous,
-    sort = sort?.map { it.toRequest() },
-    filter = filter?.toRequest(),
-)
+/** Converts a [MembersQuery] to a [QueryFeedMembersRequest]. */
+internal fun MembersQuery.toRequest(): QueryFeedMembersRequest =
+    QueryFeedMembersRequest(
+        limit = limit,
+        next = next,
+        prev = previous,
+        sort = sort?.map { it.toRequest() },
+        filter = filter?.toRequest(),
+    )

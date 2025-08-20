@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2014-2024 Stream.io Inc. All rights reserved.
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
  *
  * Licensed under the Stream License;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    https://github.com/GetStream/stream-video-android/blob/main/LICENSE
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,66 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-@file:Suppress(
-    "ArrayInDataClass",
-    "EnumEntryName",
-    "RemoveRedundantQualifierName",
-    "UnusedImport"
-)
+@file:Suppress("ArrayInDataClass", "EnumEntryName", "RemoveRedundantQualifierName", "UnusedImport")
 
 package io.getstream.feeds.android.core.generated.models
 
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.collections.*
-import kotlin.io.*
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
+import kotlin.collections.*
+import kotlin.collections.Map
+import kotlin.io.*
 
-/**
- * 
- */
-
-data class FollowRequest (
-    @Json(name = "source")
-    val source: kotlin.String,
-
-    @Json(name = "target")
-    val target: kotlin.String,
-
+/**  */
+data class FollowRequest(
+    @Json(name = "source") val source: kotlin.String,
+    @Json(name = "target") val target: kotlin.String,
     @Json(name = "create_notification_activity")
     val createNotificationActivity: kotlin.Boolean? = null,
+    @Json(name = "push_preference") val pushPreference: PushPreference? = null,
+    @Json(name = "custom") val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+) {
 
-    @Json(name = "push_preference")
-    val pushPreference: PushPreference? = null,
-
-    @Json(name = "custom")
-    val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap()
-)
-{
-    
-    /**
-    * PushPreference Enum
-    */
+    /** PushPreference Enum */
     sealed class PushPreference(val value: kotlin.String) {
-            override fun toString(): String = value
+        override fun toString(): String = value
 
-            companion object {
-                fun fromString(s: kotlin.String): PushPreference = when (s) {
+        companion object {
+            fun fromString(s: kotlin.String): PushPreference =
+                when (s) {
                     "all" -> All
                     "none" -> None
                     else -> Unknown(s)
                 }
-            }
-            object All : PushPreference("all")
-            object None : PushPreference("none")
-            data class Unknown(val unknownValue: kotlin.String) : PushPreference(unknownValue)
-        
+        }
+
+        object All : PushPreference("all")
+
+        object None : PushPreference("none")
+
+        data class Unknown(val unknownValue: kotlin.String) : PushPreference(unknownValue)
 
         class PushPreferenceAdapter : JsonAdapter<PushPreference>() {
             @FromJson
@@ -86,5 +68,5 @@ data class FollowRequest (
                 writer.value(value?.value)
             }
         }
-    }    
+    }
 }

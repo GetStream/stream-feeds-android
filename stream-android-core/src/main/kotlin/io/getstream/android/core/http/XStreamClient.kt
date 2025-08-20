@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.android.core.http
 
 import android.content.Context
@@ -8,10 +23,9 @@ import io.getstream.kotlin.base.annotation.marker.StreamInternalApi
 /**
  * Utility class for creating the `X-Stream-Client` header value.
  *
- * This class generates a standardized client identification string that includes
- * information about the product, operating system, device, and application.
- * The generated string is used in HTTP headers to identify the client making
- * requests to Stream services.
+ * This class generates a standardized client identification string that includes information about
+ * the product, operating system, device, and application. The generated string is used in HTTP
+ * headers to identify the client making requests to Stream services.
  *
  * The format of the generated string is:
  * ```
@@ -31,21 +45,19 @@ public class XStreamClient private constructor(public val value: String) {
         /**
          * Generates a standardized client identification string for the X-Stream-Client header.
          *
-         * This method collects various pieces of information about the client environment
-         * and formats them into a pipe-separated string that can be used to identify
-         * the client in HTTP requests to Stream services.
+         * This method collects various pieces of information about the client environment and
+         * formats them into a pipe-separated string that can be used to identify the client in HTTP
+         * requests to Stream services.
          *
          * @param context The Android context used to retrieve application information
          * @param product The name of the Stream product (e.g., "stream-feeds-android")
          * @param productVersion The version of the Stream product
-         * @param app Optional custom application name. If null, the app name will be
-         *            automatically retrieved from the application manifest
-         * @param appVersion Optional custom application version. If null, the app version
-         *                   will be automatically retrieved from the package information
-         *
+         * @param app Optional custom application name. If null, the app name will be automatically
+         *   retrieved from the application manifest
+         * @param appVersion Optional custom application version. If null, the app version will be
+         *   automatically retrieved from the package information
          * @return A formatted string containing client identification information in the format:
-         *         `{product}-{version}|os={os}|api_version={api}|device_model={device}|app={app}|app_version={version}`
-         *
+         *   `{product}-{version}|os={os}|api_version={api}|device_model={device}|app={app}|app_version={version}`
          * @see getAppName For automatic app name retrieval
          * @see getAppVersion For automatic app version retrieval
          */
@@ -74,7 +86,6 @@ public class XStreamClient private constructor(public val value: String) {
 
         /**
          * Retrieves the application's name as displayed in the launcher.
-         *
          * - If the application label is not available, it falls back to `nonLocalizedLabel`.
          * - If both are unavailable, it returns `"UnknownApp"`.
          *
@@ -98,10 +109,11 @@ public class XStreamClient private constructor(public val value: String) {
          */
         private fun getAppVersion(context: Context): String {
             return runSafely {
-                context.packageManager
-                    ?.getPackageInfo(context.packageName ?: return@runSafely null, 0)
-                    ?.versionName
-            }.getOrNull() ?: "nameNotFound"
+                    context.packageManager
+                        ?.getPackageInfo(context.packageName ?: return@runSafely null, 0)
+                        ?.versionName
+                }
+                .getOrNull() ?: "nameNotFound"
         }
     }
 }

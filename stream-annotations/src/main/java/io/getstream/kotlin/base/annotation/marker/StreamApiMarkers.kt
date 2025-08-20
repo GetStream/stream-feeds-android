@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    https://github.com/GetStream/stream-android-base/blob/main/LICENSE
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ package io.getstream.kotlin.base.annotation.marker
 @RequiresOptIn(
     message =
         "This is internal API for the Stream SDKs. Do not depend on this API in your own client code. " +
-                "These functions may have breaking changes without notice. Usage by integrators is discouraged. Use at your own risk.",
+            "These functions may have breaking changes without notice. Usage by integrators is discouraged. Use at your own risk.",
     level = RequiresOptIn.Level.ERROR,
 )
 annotation class StreamInternalApi
@@ -37,7 +37,7 @@ annotation class StreamInternalApi
 @RequiresOptIn(
     message =
         "This API is experimental and may be changed or removed in future releases. " +
-                "Usage by integrators is discouraged. Use at your own risk.",
+            "Usage by integrators is discouraged. Use at your own risk.",
     level = RequiresOptIn.Level.ERROR,
 )
 annotation class StreamExperimentalApi
@@ -54,7 +54,7 @@ annotation class StreamExperimentalApi
 @RequiresOptIn(
     message =
         "This is a delicate api, you should make sure to understand the implications of using this API." +
-                "These functions may have breaking changes without notice. Usage by integrators is discouraged. Use at your own risk.",
+            "These functions may have breaking changes without notice. Usage by integrators is discouraged. Use at your own risk.",
     level = RequiresOptIn.Level.ERROR,
 )
 annotation class StreamDelicateApi(val message: String = "")
@@ -69,8 +69,9 @@ annotation class StreamDelicateApi(val message: String = "")
 )
 @Retention(AnnotationRetention.BINARY)
 @RequiresOptIn(
-    message = "Usage of this API is an error. Use alternative APIs instead. The usage of this API breaks the SDK functionality.",
-    level = RequiresOptIn.Level.ERROR
+    message =
+        "Usage of this API is an error. Use alternative APIs instead. The usage of this API breaks the SDK functionality.",
+    level = RequiresOptIn.Level.ERROR,
 )
 annotation class StreamErrorUsage
 
