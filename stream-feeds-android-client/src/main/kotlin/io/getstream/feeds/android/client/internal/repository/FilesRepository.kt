@@ -1,0 +1,36 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.getstream.feeds.android.client.internal.repository
+
+/** Repository for managing files on the server. */
+internal interface FilesRepository {
+
+    /**
+     * Deletes a file from the server using its URL.
+     *
+     * @param url The URL of the file to be deleted.
+     * @return A [Result] indicating success or failure of the deletion operation.
+     */
+    suspend fun deleteFile(url: String): Result<Unit>
+
+    /**
+     * Deletes an image from the server using its URL.
+     *
+     * @param url The URL of the image to be deleted.
+     * @return A [Result] indicating success or failure of the deletion operation.
+     */
+    suspend fun deleteImage(url: String): Result<Unit>
+}

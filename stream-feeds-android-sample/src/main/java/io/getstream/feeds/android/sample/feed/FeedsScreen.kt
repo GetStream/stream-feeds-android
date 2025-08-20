@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.sample.feed
 
 import android.net.Uri
@@ -84,22 +99,13 @@ fun FeedsScreen(
     currentUserId: String,
     navigator: DestinationsNavigator,
     onLogout: () -> Unit,
-    viewModel: FeedViewModel = viewModel(
-        factory = feedViewModelFactory(
-            currentUserId,
-            fid,
-            feedsClient
-        )
-    )
+    viewModel: FeedViewModel =
+        viewModel(factory = feedViewModelFactory(currentUserId, fid, feedsClient)),
 ) {
     var showLogoutConfirmation by remember { mutableStateOf(false) }
     var showCreatePostBottomSheet by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .systemBarsPadding(),
-    ) {
+    Column(modifier = Modifier.fillMaxSize().systemBarsPadding()) {
         // Toolbar
         val notificationStatus by viewModel.notificationState.notificationStatus.collectAsStateWithLifecycle()
         FeedsScreenToolbar(
@@ -112,15 +118,14 @@ fun FeedsScreen(
                 navigator.navigate(NotificationsScreenDestination(NotificationsScreenArgs(fid.rawValue)))
             },
             onProfileClick = {
-                navigator.navigate(ProfileScreenDestination(ProfileScreenArgs(feedId = fid.rawValue)))
-            }
+                navigator.navigate(
+                    ProfileScreenDestination(ProfileScreenArgs(feedId = fid.rawValue))
+                )
+            },
         )
 
         // Toolbar divider
-        HorizontalDivider(
-            color = Color.Gray.copy(alpha = 0.1f),
-            thickness = 1.dp
-        )
+        HorizontalDivider(color = Color.Gray.copy(alpha = 0.1f), thickness = 1.dp)
 
         Box(modifier = Modifier.fillMaxSize()) {
             // Feed content
@@ -185,7 +190,7 @@ fun FeedsScreen(
                     Icon(
                         painter = painterResource(R.drawable.add_24),
                         contentDescription = "Add Activity",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(24.dp),
                     )
                 }
             }
@@ -196,7 +201,7 @@ fun FeedsScreen(
                     onConfirm = {
                         showLogoutConfirmation = false
                         onLogout()
-                    }
+                    },
                 )
             }
 
@@ -207,8 +212,11 @@ fun FeedsScreen(
                     onPost = { postText, attachments ->
                         showCreatePostBottomSheet = false
                         viewModel.onCreatePost(postText, attachments)
-                    }
-                )
+                    },
+                onCreatePoll = {
+                    showCreatePostBottomSheet = false
+                    viewModel.onCreatePoll(it)
+                },)
             }
         }
     }
@@ -223,17 +231,13 @@ fun FeedsScreenToolbar(
     onProfileClick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Left side - Avatar
         UserAvatar(
             avatarUrl = avatarUrl,
-            modifier = Modifier
-                .size(36.dp)
-                .clickable(onClick = onUserAvatarClick)
+            modifier = Modifier.size(36.dp).clickable(onClick = onUserAvatarClick),
         )
 
         // Center - Title (using weight to ensure perfect centering)
@@ -243,7 +247,7 @@ fun FeedsScreenToolbar(
             fontWeight = FontWeight.Bold,
             color = Color.Black,
             textAlign = TextAlign.Center,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
 
         // Right side - Action buttons
@@ -301,7 +305,7 @@ private fun ProfileButton(
             painter = painterResource(R.drawable.profile_24),
             contentDescription = "Profile",
             tint = Color(0xFF1976D2), // Material Blue 700
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(24.dp),
         )
     }
 }
@@ -349,41 +353,32 @@ fun ActivityContent(
     // Check if current user is the author
     val isCurrentUserAuthor = data.user.id == currentUserId
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .combinedClickable(
-                indication = null,
-                interactionSource = null,
-                onClick = { /* Regular click - do nothing */ },
-                onLongClick = if (isCurrentUserAuthor) {
-                    {
-                        hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                        showContextMenu = true
-                    }
-                } else null
-            )
-            .padding(horizontal = 16.dp, vertical = 12.dp)
+        modifier =
+            Modifier.fillMaxWidth()
+                .combinedClickable(
+                    indication = null,
+                    interactionSource = null,
+                    onClick = { /* Regular click - do nothing */ },
+                    onLongClick =
+                        if (isCurrentUserAuthor) {
+                            {
+                                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                                showContextMenu = true
+                            }
+                        } else null,
+                )
+                .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.Top,
-        ) {
-            UserAvatar(
-                avatarUrl = user.image,
-                modifier = Modifier.size(40.dp)
-            )
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
+            UserAvatar(avatarUrl = user.image, modifier = Modifier.size(40.dp))
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 12.dp)
-            ) {
+            Column(modifier = Modifier.fillMaxWidth().padding(start = 12.dp)) {
                 Text(
                     text = user.name ?: user.id,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.Black,
-                    modifier = Modifier.padding(bottom = 4.dp)
+                    modifier = Modifier.padding(bottom = 4.dp),
                 )
 
                 if (text.isNotBlank()) {
@@ -392,7 +387,7 @@ fun ActivityContent(
                         fontSize = 14.sp,
                         color = Color.Black.copy(alpha = 0.8f),
                         lineHeight = 20.sp,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        modifier = Modifier.padding(bottom = 8.dp),
                     )
                 }
 
@@ -419,7 +414,7 @@ fun ActivityContent(
                 onConfirm = { message ->
                     onRepostClick(message)
                     showRepostDialog = false
-                }
+                },
             )
         }
 
@@ -435,7 +430,7 @@ fun ActivityContent(
                 onDelete = {
                     onDeleteClick()
                     showContextMenu = false
-                }
+                },
             )
         }
 
@@ -447,7 +442,7 @@ fun ActivityContent(
                 onSave = { editedText ->
                     onEditSave(editedText)
                     showEditDialog = false
-                }
+                },
             )
         }
 
@@ -455,24 +450,22 @@ fun ActivityContent(
             val context = LocalContext.current
             CommentsBottomSheet(
                 // TODO [G.] migrate to Compose navigation
-                viewModel = remember {
-                    CommentsSheetViewModel
-                        .Factory(
-                            feedsClient.activity(activityId = data.id, fid = feedId),
-                            context.applicationContext
-                        )
-                        .create(CommentsSheetViewModel::class.java)
-                },
+                viewModel =
+                    remember {
+                        CommentsSheetViewModel.Factory(
+                                feedsClient.activity(activityId = data.id, fid = feedId),
+                                context.applicationContext,
+                            )
+                            .create(CommentsSheetViewModel::class.java)
+                    },
                 onDismiss = { showCommentsBottomSheet = false },
             )
         }
         // Add divider between activities for better separation
         HorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
+            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
             color = Color.Gray.copy(alpha = 0.2f),
-            thickness = 1.dp
+            thickness = 1.dp,
         )
     }
 }
@@ -481,27 +474,23 @@ fun ActivityContent(
 private fun AttachmentsSection(attachments: List<Attachment>) {
     if (attachments.size == 1) {
         AsyncImage(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(240.dp)
-                .padding(top = 8.dp)
-                .clip(RoundedCornerShape(12.dp)),
+            modifier =
+                Modifier.fillMaxWidth()
+                    .height(240.dp)
+                    .padding(top = 8.dp)
+                    .clip(RoundedCornerShape(12.dp)),
             model = attachments.first().assetUrl,
             contentDescription = "Activity image",
             contentScale = ContentScale.Crop,
         )
     } else if (attachments.size > 1) {
         LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(attachments) { attachment ->
                 AsyncImage(
-                    modifier = Modifier
-                        .size(160.dp)
-                        .clip(RoundedCornerShape(12.dp)),
+                    modifier = Modifier.size(160.dp).clip(RoundedCornerShape(12.dp)),
                     model = attachment.assetUrl,
                     contentDescription = "Activity image",
                     contentScale = ContentScale.Crop,
@@ -516,93 +505,70 @@ fun ActivityContextMenuDialog(
     showEdit: Boolean,
     onDismiss: () -> Unit,
     onEdit: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = {
-            Text(
-                text = "Post Options",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
-        },
+        title = { Text(text = "Post Options", fontWeight = FontWeight.Bold, fontSize = 16.sp) },
         text = {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
                 if (showEdit) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onEdit() }
-                            .padding(vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier =
+                            Modifier.fillMaxWidth()
+                                .clickable { onEdit() }
+                                .padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.edit_24),
                             contentDescription = "Edit",
                             tint = Color.Black,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(24.dp),
                         )
                         Text(
                             text = "Edit Post",
                             fontSize = 16.sp,
-                            modifier = Modifier.padding(start = 16.dp)
+                            modifier = Modifier.padding(start = 16.dp),
                         )
                     }
 
                     // Divider between Edit and Delete
-                    HorizontalDivider(
-                        color = Color.Gray.copy(alpha = 0.3f),
-                        thickness = 1.dp
-                    )
+                    HorizontalDivider(color = Color.Gray.copy(alpha = 0.3f), thickness = 1.dp)
                 }
 
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onDelete() }
-                        .padding(vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier =
+                        Modifier.fillMaxWidth().clickable { onDelete() }.padding(vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.delete_24),
                         contentDescription = "Delete",
                         tint = Color.Red,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(24.dp),
                     )
                     Text(
                         text = "Delete Post",
                         fontSize = 16.sp,
                         color = Color.Red,
-                        modifier = Modifier.padding(start = 16.dp)
+                        modifier = Modifier.padding(start = 16.dp),
                     )
                 }
             }
         },
         confirmButton = {},
-        dismissButton = {}
+        dismissButton = {},
     )
 }
 
 @Composable
-fun EditPostDialog(
-    initialText: String,
-    onDismiss: () -> Unit,
-    onSave: (String) -> Unit
-) {
+fun EditPostDialog(initialText: String, onDismiss: () -> Unit, onSave: (String) -> Unit) {
     var editText by remember { mutableStateOf(initialText) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = {
-            Text(
-                text = "Edit Post",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
-        },
+        title = { Text(text = "Edit Post", fontWeight = FontWeight.Bold, fontSize = 16.sp) },
         text = {
             OutlinedTextField(
                 value = editText,
@@ -610,21 +576,11 @@ fun EditPostDialog(
                 placeholder = { Text("What's on your mind?") },
                 modifier = Modifier.fillMaxWidth(),
                 maxLines = 5,
-                minLines = 3
+                minLines = 3,
             )
         },
-        confirmButton = {
-            Button(
-                onClick = { onSave(editText) }
-            ) {
-                Text("Save")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
+        confirmButton = { Button(onClick = { onSave(editText) }) { Text("Save") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
     )
 }
 
@@ -632,7 +588,8 @@ fun EditPostDialog(
 @Composable
 fun CreateContentBottomSheet(
     onDismiss: () -> Unit,
-    onPost: (text: String, attachments: List<Uri>) -> Unit
+    onPost: (text: String, attachments: List<Uri>) -> Unit,
+    onCreatePoll: (PollFormData) -> Unit,
 ) {
     var postText by remember { mutableStateOf("") }
     var attachments by remember { mutableStateOf<List<Uri>>(emptyList()) }
@@ -641,33 +598,24 @@ fun CreateContentBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = bottomSheetState,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
+        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
             // Header
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text = "Create Post",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                Text(text = "Create Post", fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
                 val canPost = attachments.isNotEmpty() || postText.isNotBlank()
                 Text(
                     text = "Post",
                     color = if (canPost) Color.Blue else Color.Gray,
                     fontWeight = FontWeight.Medium,
-                    modifier = Modifier.clickable(enabled = canPost) {
-                        onPost(postText, attachments)
-                    }
+                    modifier =
+                        Modifier.clickable(enabled = canPost) { onPost(postText, attachments) },
                 )
             }
 
@@ -676,26 +624,22 @@ fun CreateContentBottomSheet(
                 value = postText,
                 onValueChange = { postText = it },
                 placeholder = { Text("Add post") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
                 minLines = 3,
-                maxLines = 6
+                maxLines = 6,
             )
 
             // Bottom toolbar with image attachment option
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                 horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 val hasAttachments = attachments.isNotEmpty()
 
                 AttachmentButton(
                     hasAttachment = hasAttachments,
-                    onAttachmentsSelected = { uris -> attachments = uris }
+                    onAttachmentsSelected = { uris -> attachments = uris },
                 )
 
                 if (hasAttachments) {
@@ -703,9 +647,11 @@ fun CreateContentBottomSheet(
                         text = "Attachment selected",
                         fontSize = 12.sp,
                         color = Color.Gray,
-                        modifier = Modifier.padding(start = 8.dp)
+                        modifier = Modifier.padding(start = 8.dp),
                     )
                 }
+
+                CreatePollButton(onCreatePoll)
             }
         }
     }
@@ -728,7 +674,7 @@ private fun AttachmentButton(
             painter = painterResource(android.R.drawable.ic_menu_gallery),
             contentDescription = "Add Image/Video",
             tint = if (hasAttachment) Color.Blue else Color.Gray,
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(24.dp),
         )
     }
 }
@@ -739,11 +685,7 @@ fun LogoutConfirmationDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
         onDismissRequest = onDismiss,
         title = { Text(text = "Logout") },
         text = { Text("Are you sure you want to logout?") },
-        confirmButton = {
-            Button(onClick = onConfirm) { Text("Confirm") }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
-        },
+        confirmButton = { Button(onClick = onConfirm) { Text("Confirm") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
     )
 }

@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.socket.common.debounce
 
 import io.getstream.android.core.result.runSafely
@@ -14,8 +29,8 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withTimeoutOrNull
 
 /**
- * Buffers items sent via [onMessage], and whenever either
- * it emits that batch (in arrival order) via your provided [onBatch] handler.
+ * Buffers items sent via [onMessage], and whenever either it emits that batch (in arrival order)
+ * via your provided [onBatch] handler.
  *
  * @param scope The coroutine scope to use for the debounce processor.
  * @param batchSize The maximum number of items to buffer before emitting a batch.
@@ -31,19 +46,11 @@ internal class DebounceProcessor<T>(
     private var batchHandler: suspend (List<T>, Long, Int) -> Unit = { _, _, _ -> }
     private var actor: SendChannel<T>? = null
 
-    /**
-     * Starts the debounce processor.
-     */
+    /** Starts the debounce processor. */
     @OptIn(ObsoleteCoroutinesApi::class)
-    fun start() = runSafely {
-        actor = scope.actor(capacity = Channel.UNLIMITED) {
-            batchingLoop()
-        }
-    }
+    fun start() = runSafely { actor = scope.actor(capacity = Channel.UNLIMITED) { batchingLoop() } }
 
-    /**
-     * Stops the debounce processor.
-     */
+    /** Stops the debounce processor. */
     @OptIn(DelicateCoroutinesApi::class)
     fun stop() = runSafely {
         if (actor?.isClosedForSend == false) {
@@ -52,8 +59,7 @@ internal class DebounceProcessor<T>(
     }
 
     /**
-     * Registers a handler for batches of items.
-     * First lambda parameter is the batch of items,
+     * Registers a handler for batches of items. First lambda parameter is the batch of items,
      * second lambda parameter is the debounce time in milliseconds that was applied for this batch,
      * third lambda parameter is the total size of the buffered events.
      *
@@ -104,7 +110,7 @@ internal class DebounceProcessor<T>(
     private suspend fun ActorScope<T>.collectUntilTimeout(
         startTime: Long,
         windowMs: Long,
-        buffer: MutableList<T>
+        buffer: MutableList<T>,
     ) {
         while (buffer.size < batchSize) {
             val elapsed = System.currentTimeMillis() - startTime

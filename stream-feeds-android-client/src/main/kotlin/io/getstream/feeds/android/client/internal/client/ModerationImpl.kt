@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.client
 
 import io.getstream.feeds.android.client.api.Moderation
@@ -25,8 +40,8 @@ import io.getstream.feeds.android.core.generated.models.UpsertConfigRequest
 import io.getstream.feeds.android.core.generated.models.UpsertConfigResponse
 
 /**
- * Default implementation of [Moderation] interface.
- * Uses [ModerationRepository] to perform moderation operations.
+ * Default implementation of [Moderation] interface. Uses [ModerationRepository] to perform
+ * moderation operations.
  *
  * @param moderationRepository The repository used for moderation operations.
  */
@@ -41,14 +56,14 @@ internal class ModerationImpl(private val moderationRepository: ModerationReposi
     }
 
     override suspend fun blockUser(
-        blockUserRequest: BlockUsersRequest,
+        blockUserRequest: BlockUsersRequest
     ): Result<BlockUsersResponse> {
         return moderationRepository.blockUser(blockUserRequest)
     }
 
     override suspend fun unblockUser(
-        unblockUserRequest: UnblockUsersRequest,
-        ): Result<UnblockUsersResponse> {
+        unblockUserRequest: UnblockUsersRequest
+    ): Result<UnblockUsersResponse> {
         return moderationRepository.unblockUser(unblockUserRequest)
     }
 
@@ -61,39 +76,36 @@ internal class ModerationImpl(private val moderationRepository: ModerationReposi
     }
 
     override suspend fun submitAction(
-        submitActionRequest: SubmitActionRequest,
+        submitActionRequest: SubmitActionRequest
     ): Result<SubmitActionResponse> {
         return moderationRepository.submitAction(submitActionRequest)
     }
 
     override suspend fun queryReviewQueue(
-        queryReviewQueueRequest: QueryReviewQueueRequest,
+        queryReviewQueueRequest: QueryReviewQueueRequest
     ): Result<QueryReviewQueueResponse> {
         return moderationRepository.queryReviewQueue(queryReviewQueueRequest)
     }
 
     override suspend fun upsertConfig(
-        upsertConfigRequest: UpsertConfigRequest,
+        upsertConfigRequest: UpsertConfigRequest
     ): Result<UpsertConfigResponse> {
         return moderationRepository.upsertConfig(upsertConfigRequest)
     }
 
     override suspend fun deleteConfig(
         key: String,
-        team: String?
+        team: String?,
     ): Result<DeleteModerationConfigResponse> {
         return moderationRepository.deleteConfig(key, team)
     }
 
-    override suspend fun getConfig(
-        key: String,
-        team: String?
-    ): Result<GetConfigResponse> {
+    override suspend fun getConfig(key: String, team: String?): Result<GetConfigResponse> {
         return moderationRepository.getConfig(key, team)
     }
 
     override suspend fun queryModerationConfigs(
-        queryModerationConfigsRequest: QueryModerationConfigsRequest,
+        queryModerationConfigsRequest: QueryModerationConfigsRequest
     ): Result<QueryModerationConfigsResponse> {
         return moderationRepository.queryModerationConfigs(queryModerationConfigsRequest)
     }

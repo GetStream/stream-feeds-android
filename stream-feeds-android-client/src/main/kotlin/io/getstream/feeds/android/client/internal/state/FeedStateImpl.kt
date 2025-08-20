@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.android.core.query.Sort
@@ -138,22 +153,23 @@ internal class FeedStateImpl(
     }
 
     override fun onActivityAdded(activity: ActivityData) {
-        _activities.value = _activities.value
-            .upsertSorted(activity, ActivityData::id, activitiesSorting)
+        _activities.value =
+            _activities.value.upsertSorted(activity, ActivityData::id, activitiesSorting)
     }
 
     override fun onActivityUpdated(activity: ActivityData) {
         // Update the activities list
-        _activities.value = _activities.value
-            .upsertSorted(activity, ActivityData::id, activitiesSorting)
+        _activities.value =
+            _activities.value.upsertSorted(activity, ActivityData::id, activitiesSorting)
         // Update the pinned activities if the activity is pinned
-        _pinnedActivities.value = _pinnedActivities.value.map { pin ->
-            if (pin.activity.id == activity.id) {
-                pin.copy(activity = activity)
-            } else {
-                pin
+        _pinnedActivities.value =
+            _pinnedActivities.value.map { pin ->
+                if (pin.activity.id == activity.id) {
+                    pin.copy(activity = activity)
+                } else {
+                    pin
+                }
             }
-        }
     }
 
     override fun onActivityRemoved(activity: ActivityData) {
@@ -177,43 +193,47 @@ internal class FeedStateImpl(
     }
 
     override fun onBookmarkAdded(bookmark: BookmarkData) {
-        _activities.value = _activities.value.map {
-            if (it.id == bookmark.activity.id) {
-                it.addBookmark(bookmark, currentUserId)
-            } else {
-                it
+        _activities.value =
+            _activities.value.map {
+                if (it.id == bookmark.activity.id) {
+                    it.addBookmark(bookmark, currentUserId)
+                } else {
+                    it
+                }
             }
-        }
     }
 
     override fun onBookmarkRemoved(bookmark: BookmarkData) {
-        _activities.value = _activities.value.map {
-            if (it.id == bookmark.activity.id) {
-                it.deleteBookmark(bookmark, currentUserId)
-            } else {
-                it
+        _activities.value =
+            _activities.value.map {
+                if (it.id == bookmark.activity.id) {
+                    it.deleteBookmark(bookmark, currentUserId)
+                } else {
+                    it
+                }
             }
-        }
     }
 
     override fun onCommentAdded(comment: CommentData) {
-        _activities.value = _activities.value.map {
-            if (it.id == comment.objectId) {
-                it.addComment(comment)
-            } else {
-                it
+        _activities.value =
+            _activities.value.map {
+                if (it.id == comment.objectId) {
+                    it.addComment(comment)
+                } else {
+                    it
+                }
             }
-        }
     }
 
     override fun onCommentRemoved(comment: CommentData) {
-        _activities.value = _activities.value.map {
-            if (it.id == comment.objectId) {
-                it.removeComment(comment)
-            } else {
-                it
+        _activities.value =
+            _activities.value.map {
+                if (it.id == comment.objectId) {
+                    it.removeComment(comment)
+                } else {
+                    it
+                }
             }
-        }
     }
 
     override fun onFeedDeleted() {
@@ -244,9 +264,10 @@ internal class FeedStateImpl(
     }
 
     override fun onUnfollow(sourceFid: FeedId, targetFid: FeedId) {
-        _following.value = _following.value.filterNot {
-            it.sourceFeed.id == sourceFid.id && it.targetFeed.id == targetFid.id
-        }
+        _following.value =
+            _following.value.filterNot {
+                it.sourceFeed.id == sourceFid.id && it.targetFeed.id == targetFid.id
+            }
     }
 
     override fun onFollowRequestRemoved(id: String) {
@@ -254,23 +275,25 @@ internal class FeedStateImpl(
     }
 
     override fun onReactionAdded(reaction: FeedsReactionData) {
-        _activities.value = _activities.value.map { activity ->
-            if (activity.id == reaction.activityId) {
-                activity.addReaction(reaction, currentUserId)
-            } else {
-                activity
+        _activities.value =
+            _activities.value.map { activity ->
+                if (activity.id == reaction.activityId) {
+                    activity.addReaction(reaction, currentUserId)
+                } else {
+                    activity
+                }
             }
-        }
     }
 
     override fun onReactionRemoved(reaction: FeedsReactionData) {
-        _activities.value = _activities.value.map { activity ->
-            if (activity.id == reaction.activityId) {
-                activity.removeReaction(reaction, currentUserId)
-            } else {
-                activity
+        _activities.value =
+            _activities.value.map { activity ->
+                if (activity.id == reaction.activityId) {
+                    activity.removeReaction(reaction, currentUserId)
+                } else {
+                    activity
+                }
             }
-        }
     }
 
     override fun onNotificationFeedUpdated(
@@ -318,8 +341,8 @@ internal class FeedStateImpl(
 /**
  * A mutable state interface for managing feed state updates.
  *
- * This interface combines the [FeedState] for read access and [FeedStateUpdates] for
- * write access to the feed state.
+ * This interface combines the [FeedState] for read access and [FeedStateUpdates] for write access
+ * to the feed state.
  */
 internal interface FeedMutableState : FeedState, FeedStateUpdates
 
@@ -331,112 +354,70 @@ internal interface FeedMutableState : FeedState, FeedStateUpdates
  */
 internal interface FeedStateUpdates {
 
-    /**
-     * Handles the result of a query for the feed.
-     */
+    /** Handles the result of a query for the feed. */
     fun onQueryFeed(result: GetOrCreateInfo)
 
-    /**
-     * Handles the result of a query for more activities.
-     */
+    /** Handles the result of a query for more activities. */
     fun onQueryMoreActivities(
         result: PaginationResult<ActivityData>,
         queryConfig: QueryConfiguration<ActivitiesSort>,
     )
 
-    /**
-     * Handles updates to the feed state when activity is added.
-     */
+    /** Handles updates to the feed state when activity is added. */
     fun onActivityAdded(activity: ActivityData)
 
-    /**
-     * Handles updates to the feed state when activity is updated.
-     */
+    /** Handles updates to the feed state when activity is updated. */
     fun onActivityUpdated(activity: ActivityData)
 
-    /**
-     * Handles updates to the feed state when activity is removed.
-     */
+    /** Handles updates to the feed state when activity is removed. */
     fun onActivityRemoved(activity: ActivityData)
 
-    /**
-     * Handles updates to the feed state when an activity is removed.
-     */
+    /** Handles updates to the feed state when an activity is removed. */
     fun onActivityRemoved(activityId: String)
 
-    /**
-     * Handles updates to the feed state when an activity is pinned.
-     */
+    /** Handles updates to the feed state when an activity is pinned. */
     fun onActivityPinned(activityPin: ActivityPinData)
 
-    /**
-     * Handles updates to the feed state when an activity is unpinned.
-     */
+    /** Handles updates to the feed state when an activity is unpinned. */
     fun onActivityUnpinned(activityId: String)
 
-    /**
-     * Handles updates to the feed state when a bookmark is added or removed.
-     */
+    /** Handles updates to the feed state when a bookmark is added or removed. */
     fun onBookmarkAdded(bookmark: BookmarkData)
 
-    /**
-     * Handles updates to the feed state when a bookmark is removed.
-     */
+    /** Handles updates to the feed state when a bookmark is removed. */
     fun onBookmarkRemoved(bookmark: BookmarkData)
 
-    /**
-     * Handles updates to the feed state when a comment is added or removed.
-     */
+    /** Handles updates to the feed state when a comment is added or removed. */
     fun onCommentAdded(comment: CommentData)
 
-    /**
-     * Handles updates to the feed state when a comment is removed.
-     */
+    /** Handles updates to the feed state when a comment is removed. */
     fun onCommentRemoved(comment: CommentData)
 
-    /**
-     * Handles updates to the feed state when the feed is deleted.
-     */
+    /** Handles updates to the feed state when the feed is deleted. */
     fun onFeedDeleted()
 
-    /**
-     * Handles updates to the feed state when the feed is updated.
-     */
+    /** Handles updates to the feed state when the feed is updated. */
     fun onFeedUpdated(feed: FeedData)
 
-    /**
-     * Handles updates to the feed state when a follow is added.
-     */
+    /** Handles updates to the feed state when a follow is added. */
     fun onFollowAdded(follow: FollowData)
 
-    /**
-     * Handles updates to the feed state when a follow is removed.
-     */
+    /** Handles updates to the feed state when a follow is removed. */
     fun onFollowRemoved(follow: FollowData)
 
-    /**
-     * Handles updates to the feed state when a follow is updated.
-     */
+    /** Handles updates to the feed state when a follow is updated. */
     fun onFollowUpdated(follow: FollowData)
 
-    /**
-     * Handles updates to the feed state when feed is unfollowed.
-     */
+    /** Handles updates to the feed state when feed is unfollowed. */
     fun onUnfollow(sourceFid: FeedId, targetFid: FeedId)
 
-    /**
-     * Handles updates to the feed state when a follow request is removed.
-     */
+    /** Handles updates to the feed state when a follow request is removed. */
     fun onFollowRequestRemoved(id: String)
 
-    /**
-     * Handles updates to the feed state when a reaction is added.
-     */
+    /** Handles updates to the feed state when a reaction is added. */
     fun onReactionAdded(reaction: FeedsReactionData)
 
-    /**
-     * Handles updates to the feed state when a reaction is removed.
-     */
+    /** Handles updates to the feed state when a reaction is removed. */
     fun onReactionRemoved(reaction: FeedsReactionData)
 
     /**

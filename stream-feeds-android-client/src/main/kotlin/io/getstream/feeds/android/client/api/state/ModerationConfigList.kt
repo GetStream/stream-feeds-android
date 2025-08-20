@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.api.state
 
 import io.getstream.feeds.android.client.api.model.ModerationConfigData
@@ -28,35 +43,32 @@ import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
  */
 public interface ModerationConfigList {
 
-    /**
-     * The query configuration used to fetch configurations.
-     */
+    /** The query configuration used to fetch configurations. */
     public val query: ModerationConfigsQuery
 
     /**
      * An observable object representing the current state of the configuration list.
      *
-     * This property provides access to the current configurations, pagination information,
-     * and real-time updates. The state automatically updates when WebSocket events
-     * are received for configuration additions, updates, and deletions.
+     * This property provides access to the current configurations, pagination information, and
+     * real-time updates. The state automatically updates when WebSocket events are received for
+     * configuration additions, updates, and deletions.
      */
     public val state: ModerationConfigListState
 
     /**
      * Fetches the initial set of moderation configurations.
      *
-     * This method retrieves the first page of configurations based on the query configuration.
-     * The results are automatically stored in the state and can be accessed through
-     * the [state.configs] property.
+     * This method retrieves the first page of configurations based on the query configuration. The
+     * results are automatically stored in the state and can be accessed through the [state.configs]
+     * property.
      */
     public suspend fun get(): Result<List<ModerationConfigData>>
 
     /**
      * Loads the next page of configurations if more are available.
      *
-     * This method fetches additional configurations using the pagination information
-     * from the previous request. If no more configurations are available, an empty
-     * array is returned.
+     * This method fetches additional configurations using the pagination information from the
+     * previous request. If no more configurations are available, an empty array is returned.
      */
     public suspend fun queryMoreConfigs(limit: Int? = null): Result<List<ModerationConfigData>>
 }

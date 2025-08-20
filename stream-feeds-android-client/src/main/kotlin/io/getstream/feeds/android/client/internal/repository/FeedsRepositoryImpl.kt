@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.android.core.query.sortedWith
@@ -36,34 +51,31 @@ internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepositor
     override suspend fun getOrCreateFeed(query: FeedQuery): Result<GetOrCreateInfo> = runSafely {
         val fid = query.fid
         val request = query.toRequest()
-        val response = api.getOrCreateFeed(
-            feedGroupId = fid.group,
-            feedId = fid.id,
-            getOrCreateFeedRequest = request,
-        )
+        val response =
+            api.getOrCreateFeed(
+                feedGroupId = fid.group,
+                feedId = fid.id,
+                getOrCreateFeedRequest = request,
+            )
         val rawFollowers = response.followers.map { it.toModel() }
         GetOrCreateInfo(
-            activities = PaginationResult(
-                models = response.activities
-                    .map { it.toModel() }
-                    .sortedWith(ActivitiesSort.Default),
-                pagination = PaginationData(
-                    next = response.next,
-                    previous = response.prev
-                )
-            ),
-            activitiesQueryConfig = QueryConfiguration(
-                filter = query.activityFilter,
-                sort = ActivitiesSort.Default,
-            ),
+            activities =
+                PaginationResult(
+                    models =
+                        response.activities.map { it.toModel() }.sortedWith(ActivitiesSort.Default),
+                    pagination = PaginationData(next = response.next, previous = response.prev),
+                ),
+            activitiesQueryConfig =
+                QueryConfiguration(filter = query.activityFilter, sort = ActivitiesSort.Default),
             feed = response.feed.toModel(),
             followers = rawFollowers.filter { it.isFollowerOf(fid) },
             following = response.following.map { it.toModel() }.filter { it.isFollowing(fid) },
             followRequests = rawFollowers.filter { it.isFollowRequest },
-            members = PaginationResult(
-                models = response.members.map { it.toModel() },
-                pagination = response.memberPagination?.toModel() ?: PaginationData.EMPTY,
-            ),
+            members =
+                PaginationResult(
+                    models = response.members.map { it.toModel() },
+                    pagination = response.memberPagination?.toModel() ?: PaginationData.EMPTY,
+                ),
             ownCapabilities = response.ownCapabilities,
             pinnedActivities = response.pinnedActivities.map { it.toModel() },
             aggregatedActivities = response.aggregatedActivities.map { it.toModel() },
@@ -78,7 +90,7 @@ internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepositor
     override suspend fun deleteFeed(
         feedGroupId: String,
         feedId: String,
-        hardDelete: Boolean
+        hardDelete: Boolean,
     ): Result<Unit> = runSafely {
         api.deleteFeed(feedGroupId = feedGroupId, feedId = feedId, hardDelete = hardDelete)
     }
@@ -86,13 +98,11 @@ internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepositor
     override suspend fun updateFeed(
         feedGroupId: String,
         feedId: String,
-        request: UpdateFeedRequest
+        request: UpdateFeedRequest,
     ): Result<FeedData> = runSafely {
-        api.updateFeed(
-            feedGroupId = feedGroupId,
-            feedId = feedId,
-            updateFeedRequest = request
-        ).feed.toModel()
+        api.updateFeed(feedGroupId = feedGroupId, feedId = feedId, updateFeedRequest = request)
+            .feed
+            .toModel()
     }
 
     override suspend fun queryFeeds(query: FeedsQuery): Result<PaginationResult<FeedData>> =
@@ -106,31 +116,27 @@ internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepositor
 
     override suspend fun queryFollowSuggestions(
         feedGroupId: String,
-        limit: Int?
+        limit: Int?,
     ): Result<List<FeedData>> = runSafely {
-        api.getFollowSuggestions(feedGroupId = feedGroupId, limit = limit)
-            .suggestions
-            .map { it.toModel() }
+        api.getFollowSuggestions(feedGroupId = feedGroupId, limit = limit).suggestions.map {
+            it.toModel()
+        }
     }
 
     override suspend fun queryFollows(
         request: QueryFollowsRequest
-    ): Result<PaginationResult<FollowData>> =
-        runSafely {
-            val response = api.queryFollows(request)
-            val follows = response.follows.map { it.toModel() }
-            val pagination = PaginationData(next = response.next, previous = response.prev)
-            PaginationResult(follows, pagination)
-        }
+    ): Result<PaginationResult<FollowData>> = runSafely {
+        val response = api.queryFollows(request)
+        val follows = response.follows.map { it.toModel() }
+        val pagination = PaginationData(next = response.next, previous = response.prev)
+        PaginationResult(follows, pagination)
+    }
 
     override suspend fun follow(request: FollowRequest): Result<FollowData> = runSafely {
         api.follow(request).follow.toModel()
     }
 
-    override suspend fun unfollow(
-        source: FeedId,
-        target: FeedId
-    ): Result<Unit> = runSafely {
+    override suspend fun unfollow(source: FeedId, target: FeedId): Result<Unit> = runSafely {
         api.unfollow(source = source.rawValue, target = target.rawValue)
     }
 
@@ -147,13 +153,14 @@ internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepositor
     override suspend fun updateFeedMembers(
         feedGroupId: String,
         feedId: String,
-        request: UpdateFeedMembersRequest
+        request: UpdateFeedMembersRequest,
     ): Result<ModelUpdates<FeedMemberData>> = runSafely {
-        val response = api.updateFeedMembers(
-            feedGroupId = feedGroupId,
-            feedId = feedId,
-            updateFeedMembersRequest = request
-        )
+        val response =
+            api.updateFeedMembers(
+                feedGroupId = feedGroupId,
+                feedId = feedId,
+                updateFeedMembersRequest = request,
+            )
         val added = response.added.map { it.toModel() }
         val removedIds = response.removedIds
         val updated = response.updated.map { it.toModel() }
@@ -162,14 +169,14 @@ internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepositor
 
     override suspend fun acceptFeedMember(
         feedGroupId: String,
-        feedId: String
+        feedId: String,
     ): Result<FeedMemberData> = runSafely {
         api.acceptFeedMemberInvite(feedGroupId = feedGroupId, feedId = feedId).member.toModel()
     }
 
     override suspend fun rejectFeedMember(
         feedGroupId: String,
-        feedId: String
+        feedId: String,
     ): Result<FeedMemberData> = runSafely {
         api.rejectFeedMemberInvite(feedGroupId = feedGroupId, feedId = feedId).member.toModel()
     }
@@ -177,13 +184,14 @@ internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepositor
     override suspend fun queryFeedMembers(
         feedGroupId: String,
         feedId: String,
-        request: QueryFeedMembersRequest
+        request: QueryFeedMembersRequest,
     ): Result<PaginationResult<FeedMemberData>> = runSafely {
-        val response = api.queryFeedMembers(
-            feedGroupId = feedGroupId,
-            feedId = feedId,
-            queryFeedMembersRequest = request
-        )
+        val response =
+            api.queryFeedMembers(
+                feedGroupId = feedGroupId,
+                feedId = feedId,
+                queryFeedMembersRequest = request,
+            )
         val members = response.members.map { it.toModel() }
         val pagination = PaginationData(next = response.next, previous = response.prev)
         PaginationResult(members, pagination)

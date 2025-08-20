@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.api.state
 
 import io.getstream.feeds.android.client.api.model.FollowData
@@ -6,9 +21,8 @@ import io.getstream.feeds.android.client.api.state.query.FollowsQuery
 /**
  * A class that manages a paginated list of feed members.
  *
- * [FollowList] provides functionality to query and paginate through follows.
- * It maintains the current state of the follow list and provides methods to load more follows
- * when available.
+ * [FollowList] provides functionality to query and paginate through follows. It maintains the
+ * current state of the follow list and provides methods to load more follows when available.
  *
  * ## Example:
  * ```kotlin
@@ -35,8 +49,8 @@ public interface FollowList {
     /**
      * The query configuration used to fetch follows.
      *
-     * This contains the filters, sorting options, and pagination parameters that define
-     * which follows are retrieved and how they are ordered.
+     * This contains the filters, sorting options, and pagination parameters that define which
+     * follows are retrieved and how they are ordered.
      */
     public val query: FollowsQuery
 
@@ -57,7 +71,7 @@ public interface FollowList {
      * [state.follows] property.
      *
      * @return A [Result] containing a list of [FollowData] if successful, or an error if the
-     * request fails.
+     *   request fails.
      */
     public suspend fun get(): Result<List<FollowData>>
 
@@ -68,9 +82,9 @@ public interface FollowList {
      * request. If no more follows are available, an empty array is returned.
      *
      * @param limit Optional limit for the number of follows to return. If not specified, the API
-     * will use its default limit.
+     *   will use its default limit.
      * @return A [Result] containing a list of [FollowData] if successful, or an error if the
-     * request fails or there are no more follows to load.
+     *   request fails or there are no more follows to load.
      */
     public suspend fun queryMoreFollows(limit: Int? = null): Result<List<FollowData>>
 }

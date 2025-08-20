@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.sample.profile
 
 import android.util.Log
@@ -14,6 +29,7 @@ import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.util.map
 import io.getstream.feeds.android.sample.util.notNull
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -25,30 +41,36 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor(
-    loginManager: LoginManager,
-    savedStateHandle: SavedStateHandle,
-) : ViewModel() {
+class ProfileViewModel
+@Inject
+constructor(loginManager: LoginManager, savedStateHandle: SavedStateHandle) : ViewModel() {
 
     private val fid = ProfileScreenDestination.argsFrom(savedStateHandle).fid
 
-    private val profileFeedQuery = FeedQuery(
-        fid = fid,
-        activityLimit = 0, // We don't need activities for the profile feed
-        followerLimit = 10, // Load first 10 followers
-        followingLimit = 10, // Load first 10 followings
-    )
+    private val profileFeedQuery =
+        FeedQuery(
+            fid = fid,
+            activityLimit = 0, // We don't need activities for the profile feed
+            followerLimit = 10, // Load first 10 followers
+            followingLimit = 10, // Load first 10 followings
+        )
 
-    private val feed = flow {
-        emit(AsyncResource.notNull(loginManager.currentState()?.client?.feed(profileFeedQuery)))
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
+    private val feed =
+        flow {
+                emit(
+                    AsyncResource.notNull(
+                        loginManager.currentState()?.client?.feed(profileFeedQuery)
+                    )
+                )
+            }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
-    val state = feed
-        .map { loadingState -> loadingState.map(Feed::state) }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
+    val state =
+        feed
+            .map { loadingState -> loadingState.map(Feed::state) }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
     private val _followSuggestions: MutableStateFlow<List<FeedData>> = MutableStateFlow(emptyList())
     val followSuggestions: StateFlow<List<FeedData>> = _followSuggestions.asStateFlow()
@@ -57,14 +79,9 @@ class ProfileViewModel @Inject constructor(
         onFeedLoaded {
             getOrCreate()
                 .onSuccess {
-                    queryFollowSuggestions(limit = 10)
-                        .onSuccess {
-                            _followSuggestions.value = it
-                        }
+                    queryFollowSuggestions(limit = 10).onSuccess { _followSuggestions.value = it }
                 }
-                .onFailure {
-                    Log.e(TAG, "Failed to get or create feed: $fid", it)
-                }
+                .onFailure { Log.e(TAG, "Failed to get or create feed: $fid", it) }
         }
     }
 
@@ -77,30 +94,21 @@ class ProfileViewModel @Inject constructor(
                         it.filter { suggestion -> suggestion.fid != feedId }
                     }
                 }
-                .onFailure {
-                    Log.e(TAG, "Failed to follow feed: $feedId", it)
-                }
+                .onFailure { Log.e(TAG, "Failed to follow feed: $feedId", it) }
         }
     }
 
     fun unfollow(feedId: FeedId) {
         onFeedLoaded {
             unfollow(feedId)
-                .onSuccess {
-                    Log.d(TAG, "Successfully unfollowed feed: $it")
-                }
-                .onFailure {
-                    Log.e(TAG, "Failed to unfollow feed: $feedId", it)
-                }
+                .onSuccess { Log.d(TAG, "Successfully unfollowed feed: $it") }
+                .onFailure { Log.e(TAG, "Failed to unfollow feed: $feedId", it) }
         }
     }
 
     private fun onFeedLoaded(block: suspend Feed.() -> Unit) {
         viewModelScope.launch {
-            feed.filterIsInstance<AsyncResource.Content<Feed>>()
-                .first()
-                .data
-                .block()
+            feed.filterIsInstance<AsyncResource.Content<Feed>>().first().data.block()
         }
     }
 

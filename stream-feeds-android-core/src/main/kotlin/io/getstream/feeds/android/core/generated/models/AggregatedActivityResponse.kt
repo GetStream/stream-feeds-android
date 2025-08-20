@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2014-2024 Stream.io Inc. All rights reserved.
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
  *
  * Licensed under the Stream License;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    https://github.com/GetStream/stream-video-android/blob/main/LICENSE
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,50 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-@file:Suppress(
-    "ArrayInDataClass",
-    "EnumEntryName",
-    "RemoveRedundantQualifierName",
-    "UnusedImport"
-)
+@file:Suppress("ArrayInDataClass", "EnumEntryName", "RemoveRedundantQualifierName", "UnusedImport")
 
 package io.getstream.feeds.android.core.generated.models
 
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.collections.*
-import kotlin.io.*
-import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonReader
-import com.squareup.moshi.JsonWriter
-import com.squareup.moshi.ToJson
+import kotlin.collections.*
+import kotlin.collections.List
+import kotlin.io.*
 
-/**
- * 
- */
-
-data class AggregatedActivityResponse (
-    @Json(name = "activity_count")
-    val activityCount: kotlin.Int,
-
-    @Json(name = "created_at")
-    val createdAt: org.threeten.bp.OffsetDateTime,
-
-    @Json(name = "group")
-    val group: kotlin.String,
-
-    @Json(name = "score")
-    val score: kotlin.Float,
-
-    @Json(name = "updated_at")
-    val updatedAt: org.threeten.bp.OffsetDateTime,
-
-    @Json(name = "user_count")
-    val userCount: kotlin.Int,
-
+/**  */
+data class AggregatedActivityResponse(
+    @Json(name = "activity_count") val activityCount: kotlin.Int,
+    @Json(name = "created_at") val createdAt: org.threeten.bp.OffsetDateTime,
+    @Json(name = "group") val group: kotlin.String,
+    @Json(name = "score") val score: kotlin.Float,
+    @Json(name = "updated_at") val updatedAt: org.threeten.bp.OffsetDateTime,
+    @Json(name = "user_count") val userCount: kotlin.Int,
     @Json(name = "activities")
-    val activities: kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ActivityResponse> = emptyList()
+    val activities:
+        kotlin.collections.List<io.getstream.feeds.android.core.generated.models.ActivityResponse> =
+        emptyList(),
 )

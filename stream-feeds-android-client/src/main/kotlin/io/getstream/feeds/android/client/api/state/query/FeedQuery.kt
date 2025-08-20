@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.query.Filter
@@ -12,7 +27,16 @@ import io.getstream.feeds.android.core.generated.models.PagerRequest
  * A query configuration for retrieving and managing feed data from Stream feeds.
  *
  * @param fid The unique identifier for the feed.
- * @param activityFilter Filter criteria for activities in the feed.
+ * @param activityFilter Filter criteria for activities in the feed. Supported filters:
+ * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `id`, operators: `equal`, `in`
+ * - field: `filter_tags`, operators: `equal`, `in`, `contains`
+ * - field: `popularity`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `search_data`, operators: `equal`, `q`, `autocomplete`
+ * - field: `text`, operators: `equal`, `q`, `autocomplete`
+ * - field: `type`, operators: `equal`, `in`
+ * - field: `user_id`, operators: `equal`, `in`
+ *
  * @param activityLimit Maximum number of activities to retrieve.
  * @param activityNext Pagination cursor for fetching the next page of activities.
  * @param activityPrevious Pagination cursor for fetching the previous page of activities.
@@ -23,8 +47,8 @@ import io.getstream.feeds.android.core.generated.models.PagerRequest
  * @param followingLimit Maximum number of following users to retrieve.
  * @param interestWeights Weights for different interests to influence activity ranking.
  * @param memberLimit Maximum number of feed members to retrieve.
- * @param view Overwrite the default ranking or aggregation logic for this feed (for example:
- * good for split testing).
+ * @param view Overwrite the default ranking or aggregation logic for this feed (for example: good
+ *   for split testing).
  * @param watch If true, subscribes to web-socket events for this feed.
  */
 public data class FeedQuery(
@@ -61,7 +85,7 @@ public data class FeedQuery(
      * @param interestWeights Weights for different interests to influence activity ranking.
      * @param memberLimit Maximum number of feed members to retrieve.
      * @param view Overwrite the default ranking or aggregation logic for this feed (for example:
-     * good for split testing).
+     *   good for split testing).
      * @param watch If true, subscribes to web-socket events for this feed.
      */
     public constructor(
@@ -79,6 +103,7 @@ public data class FeedQuery(
         interestWeights: Map<String, Float>? = null,
         memberLimit: Int? = null,
         view: String? = null,
+        watch: Boolean = true,
     ) : this(
         fid = FeedId(group = group, id = id),
         activityFilter = activityFilter,
@@ -93,6 +118,7 @@ public data class FeedQuery(
         interestWeights = interestWeights,
         memberLimit = memberLimit,
         view = view,
+        watch = watch,
     )
 }
 
@@ -101,18 +127,19 @@ public data class FeedQuery(
  *
  * @return A [GetOrCreateFeedRequest] representing the feed query.
  */
-internal fun FeedQuery.toRequest(): GetOrCreateFeedRequest = GetOrCreateFeedRequest(
-    limit = activityLimit,
-    next = activityNext,
-    prev = activityPrevious,
-    view = view,
-    watch = watch,
-    activitySelectorOptions = activitySelectorOptions,
-    data = data?.toRequest(),
-    externalRanking = externalRanking,
-    filter = activityFilter?.toRequest(),
-    followersPagination = followerLimit?.let { PagerRequest(it) },
-    followingPagination = followingLimit?.let { PagerRequest(it) },
-    interestWeights = interestWeights,
-    memberPagination = memberLimit?.let { PagerRequest(it) },
-)
+internal fun FeedQuery.toRequest(): GetOrCreateFeedRequest =
+    GetOrCreateFeedRequest(
+        limit = activityLimit,
+        next = activityNext,
+        prev = activityPrevious,
+        view = view,
+        watch = watch,
+        activitySelectorOptions = activitySelectorOptions,
+        data = data?.toRequest(),
+        externalRanking = externalRanking,
+        filter = activityFilter?.toRequest(),
+        followersPagination = followerLimit?.let { PagerRequest(it) },
+        followingPagination = followingLimit?.let { PagerRequest(it) },
+        interestWeights = interestWeights,
+        memberPagination = memberLimit?.let { PagerRequest(it) },
+    )

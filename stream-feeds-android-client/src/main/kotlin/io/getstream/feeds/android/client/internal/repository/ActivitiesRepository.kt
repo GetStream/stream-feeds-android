@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
@@ -8,16 +23,27 @@ import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.core.generated.models.ActivityRequest
+import io.getstream.feeds.android.core.generated.models.AddActivityRequest
 import io.getstream.feeds.android.core.generated.models.AddReactionRequest
+import io.getstream.feeds.android.core.generated.models.DeleteActivitiesRequest
+import io.getstream.feeds.android.core.generated.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.core.generated.models.MarkActivityRequest
 import io.getstream.feeds.android.core.generated.models.QueryActivityReactionsRequest
 import io.getstream.feeds.android.core.generated.models.UpdateActivityRequest
 
 /**
- * Represents the repository for managing activities.
- * Performs requests and transforms API models to domain models.
+ * Represents the repository for managing activities. Performs requests and transforms API models to
+ * domain models.
  */
 internal interface ActivitiesRepository {
+
+    /**
+     * Adds a new activity to the feed.
+     *
+     * @param request The request containing the activity data to be added.
+     * @return A [Result] containing the added [ActivityData] or an error.
+     */
+    suspend fun addActivity(request: AddActivityRequest): Result<ActivityData>
 
     /**
      * Adds a new activity to the feed.
@@ -35,10 +61,18 @@ internal interface ActivitiesRepository {
      *
      * @param activityId The ID of the activity to be deleted.
      * @param hardDelete If true, the activity will be permanently deleted; otherwise, it will be
-     * soft-deleted.
+     *   soft-deleted.
      * @return A [Result] indicating success or failure.
      */
     suspend fun deleteActivity(activityId: String, hardDelete: Boolean): Result<Unit>
+
+    /**
+     * Deletes multiple activities based on the provided request.
+     *
+     * @param request The request containing the IDs of activities to be deleted.
+     * @return A [Result] indicating success or failure.
+     */
+    suspend fun deleteActivities(request: DeleteActivitiesRequest): Result<DeleteActivitiesResponse>
 
     /**
      * Retrieves an activity by its ID.
@@ -57,10 +91,8 @@ internal interface ActivitiesRepository {
      */
     suspend fun updateActivity(
         activityId: String,
-        request: UpdateActivityRequest
+        request: UpdateActivityRequest,
     ): Result<ActivityData>
-
-    // TODO: suspend fun uploadAttachmentPayloads()
 
     /**
      * Upserts a list of activities.
@@ -99,7 +131,7 @@ internal interface ActivitiesRepository {
     suspend fun markActivity(
         feedGroupId: String,
         feedId: String,
-        request: MarkActivityRequest
+        request: MarkActivityRequest,
     ): Result<Unit>
 
     /**
@@ -119,7 +151,7 @@ internal interface ActivitiesRepository {
      */
     suspend fun addReaction(
         activityId: String,
-        request: AddReactionRequest
+        request: AddReactionRequest,
     ): Result<FeedsReactionData>
 
     /**
@@ -140,6 +172,6 @@ internal interface ActivitiesRepository {
      */
     suspend fun queryActivityReactions(
         activityId: String,
-        request: QueryActivityReactionsRequest
+        request: QueryActivityReactionsRequest,
     ): Result<PaginationResult<FeedsReactionData>>
 }

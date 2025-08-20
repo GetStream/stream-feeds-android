@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.client
 
 import android.content.Context
@@ -23,9 +38,11 @@ import io.getstream.feeds.android.client.BuildConfig
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.Moderation
 import io.getstream.feeds.android.client.api.file.FeedUploader
+import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsConfig
+import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
 import io.getstream.feeds.android.client.api.state.Activity
 import io.getstream.feeds.android.client.api.state.ActivityCommentList
 import io.getstream.feeds.android.client.api.state.ActivityList
@@ -70,8 +87,12 @@ import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepositoryImpl
+import io.getstream.feeds.android.client.internal.repository.DevicesRepository
+import io.getstream.feeds.android.client.internal.repository.DevicesRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepositoryImpl
+import io.getstream.feeds.android.client.internal.repository.FilesRepository
+import io.getstream.feeds.android.client.internal.repository.FilesRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.ModerationRepository
 import io.getstream.feeds.android.client.internal.repository.ModerationRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
@@ -107,6 +128,11 @@ import io.getstream.feeds.android.client.internal.state.PollListImpl
 import io.getstream.feeds.android.client.internal.state.PollVoteListImpl
 import io.getstream.feeds.android.core.generated.apis.ApiService
 import io.getstream.feeds.android.core.generated.infrastructure.Serializer
+import io.getstream.feeds.android.core.generated.models.ActivityRequest
+import io.getstream.feeds.android.core.generated.models.AddActivityRequest
+import io.getstream.feeds.android.core.generated.models.DeleteActivitiesRequest
+import io.getstream.feeds.android.core.generated.models.DeleteActivitiesResponse
+import io.getstream.feeds.android.core.generated.models.ListDevicesResponse
 import io.getstream.feeds.android.core.generated.models.WSEvent
 import io.getstream.feeds.android.core.generated.models.WSEventAdapter
 import io.getstream.log.AndroidStreamLogger
@@ -146,64 +172,80 @@ internal fun createFeedsClient(
 
     // Setup coroutine scope for the client
     val clientScope =
-        CoroutineScope(Dispatchers.Default) + SupervisorJob() + CoroutineExceptionHandler { coroutineContext, throwable ->
-            logger.e(throwable) { "[clientScope] Uncaught exception in coroutine $coroutineContext: $throwable" }
-        }
+        CoroutineScope(Dispatchers.Default) +
+            SupervisorJob() +
+            CoroutineExceptionHandler { coroutineContext, throwable ->
+                logger.e(throwable) {
+                    "[clientScope] Uncaught exception in coroutine $coroutineContext: $throwable"
+                }
+            }
     // Setup network
     val endpointConfig = EndpointConfig.PRODUCTION // TODO: Make this configurable
-    val xStreamClient = XStreamClient.create(
-        context = context,
-        product = BuildConfig.PRODUCT_NAME,
-        productVersion = BuildConfig.PRODUCT_VERSION,
-    )
+    val xStreamClient =
+        XStreamClient.create(
+            context = context,
+            product = BuildConfig.PRODUCT_NAME,
+            productVersion = BuildConfig.PRODUCT_VERSION,
+        )
     // Socket configuration
-    val socket = FeedsSocket(
-        config = FeedsSocketConfig(
-            socketConfig = StreamSocketConfig(
-                url = endpointConfig.wsUrl,
-                apiKey = apiKey,
-                authType = "jwt",
-                xStreamClient = xStreamClient,
-            ),
-            connectUserData = ConnectUserData(
-                userId = user.id,
-                token = tokenManager.getToken().rawValue,
-                name = user.name,
-                image = user.imageURL,
-                custom = user.customData,
-            ),
-        ),
-        healthMonitor = StreamHealthMonitor(scope = clientScope),
-        internalSocket = StreamWebSocketImpl(
-            socketFactory = StreamWebSocketFactory(),
+    val socket =
+        FeedsSocket(
+            config =
+                FeedsSocketConfig(
+                    socketConfig =
+                        StreamSocketConfig(
+                            url = endpointConfig.wsUrl,
+                            apiKey = apiKey,
+                            authType = "jwt",
+                            xStreamClient = xStreamClient,
+                        ),
+                    connectUserData =
+                        ConnectUserData(
+                            userId = user.id,
+                            token = tokenManager.getToken().rawValue,
+                            name = user.name,
+                            image = user.imageURL,
+                            custom = user.customData,
+                        ),
+                ),
+            healthMonitor = StreamHealthMonitor(scope = clientScope),
+            internalSocket =
+                StreamWebSocketImpl(
+                    socketFactory = StreamWebSocketFactory(),
+                    subscriptionManager = StreamSubscriptionManagerImpl(),
+                ),
+            jsonParser = MoshiJsonParser(Serializer.moshiBuilder.add(WSEventAdapter()).build()),
+            debounceProcessor = DebounceProcessor(scope = clientScope),
             subscriptionManager = StreamSubscriptionManagerImpl(),
-        ),
-        jsonParser = MoshiJsonParser(Serializer.moshiBuilder.add(WSEventAdapter()).build()),
-        debounceProcessor = DebounceProcessor(scope = clientScope),
-        subscriptionManager = StreamSubscriptionManagerImpl(),
-    )
-    val connectionRecoveryHandler = ConnectionRecoveryHandler(
-        scope = clientScope,
-        socket = socket,
-        lifecycleObserver = StreamLifecycleObserver(
+        )
+    val connectionRecoveryHandler =
+        ConnectionRecoveryHandler(
             scope = clientScope,
-            lifecycle = ProcessLifecycleOwner.get().lifecycle,
-        ),
-        networkStateProvider = NetworkStateProvider(
-            scope = clientScope,
-            connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager,
-        ),
-        keepConnectionAliveInBackground = false,
-        reconnectStrategy = DefaultRetryStrategy(),
-    )
+            socket = socket,
+            lifecycleObserver =
+                StreamLifecycleObserver(
+                    scope = clientScope,
+                    lifecycle = ProcessLifecycleOwner.get().lifecycle,
+                ),
+            networkStateProvider =
+                NetworkStateProvider(
+                    scope = clientScope,
+                    connectivityManager =
+                        context.getSystemService(Context.CONNECTIVITY_SERVICE)
+                            as ConnectivityManager,
+                ),
+            keepConnectionAliveInBackground = false,
+            reconnectStrategy = DefaultRetryStrategy(),
+        )
     val clientState = FeedsClientStateImpl()
     // HTTP Configuration
     val jsonParser = MoshiJsonParser(Serializer.moshi)
-    val authInterceptor = AuthInterceptor(
-        tokenManager = tokenManager,
-        jsonParser = jsonParser,
-        authType = user.type.rawValue
-    )
+    val authInterceptor =
+        AuthInterceptor(
+            tokenManager = tokenManager,
+            jsonParser = jsonParser,
+            authType = user.type.rawValue,
+        )
     val connectionIdInterceptor = ConnectionIdInterceptor {
         val connectionState = clientState.connectionState
         if (connectionState !is WebSocketConnectionState.Connected) {
@@ -212,31 +254,35 @@ internal fun createFeedsClient(
         }
         connectionState.connectionId
     }
-    val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(ApiKeyInterceptor(apiKey))
-        .addInterceptor(HeadersInterceptor(xStreamClient))
-        .addInterceptor(ApiErrorInterceptor(jsonParser))
-        .apply {
-            if (user.type != UserAuthType.ANONYMOUS) {
-                addInterceptor(connectionIdInterceptor)
+    val okHttpClient =
+        OkHttpClient.Builder()
+            .addInterceptor(ApiKeyInterceptor(apiKey))
+            .addInterceptor(HeadersInterceptor(xStreamClient))
+            .addInterceptor(ApiErrorInterceptor(jsonParser))
+            .apply {
+                if (user.type != UserAuthType.ANONYMOUS) {
+                    addInterceptor(connectionIdInterceptor)
+                }
             }
-        }
-        .addInterceptor(authInterceptor)
-        .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-        .build()
-    val retrofit = Retrofit.Builder()
-        .baseUrl(endpointConfig.httpUrl)
-        .client(okHttpClient)
-        .addConverterFactory(ScalarsConverterFactory.create())
-        .addConverterFactory(MoshiConverterFactory.create(Serializer.moshi))
-        .build()
+            .addInterceptor(authInterceptor)
+            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+            .build()
+    val retrofit =
+        Retrofit.Builder()
+            .baseUrl(endpointConfig.httpUrl)
+            .client(okHttpClient)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create(Serializer.moshi))
+            .build()
     val feedsApi: ApiService = retrofit.create()
     val uploader: FeedUploader = config.customUploader ?: StreamFeedUploader(retrofit.create())
     val activitiesRepository = ActivitiesRepositoryImpl(feedsApi, uploader)
     val appRepository = AppRepositoryImpl(feedsApi)
     val bookmarksRepository = BookmarksRepositoryImpl(feedsApi)
     val commentsRepository = CommentsRepositoryImpl(feedsApi, uploader)
+    val devicesRepository = DevicesRepositoryImpl(feedsApi)
     val feedsRepository = FeedsRepositoryImpl(feedsApi)
+    val filesRepository = FilesRepositoryImpl(feedsApi)
     val moderationRepository = ModerationRepositoryImpl(feedsApi)
     val pollsRepository = PollsRepositoryImpl(feedsApi)
 
@@ -253,9 +299,12 @@ internal fun createFeedsClient(
         appRepository = appRepository,
         bookmarksRepository = bookmarksRepository,
         commentsRepository = commentsRepository,
+        devicesRepository = devicesRepository,
         feedsRepository = feedsRepository,
+        filesRepository = filesRepository,
         moderationRepository = moderationRepository,
         pollsRepository = pollsRepository,
+        uploader = uploader,
         moderation = moderation,
         clientState = clientState,
         logger = logger,
@@ -263,8 +312,8 @@ internal fun createFeedsClient(
 }
 
 internal class FeedsClientImpl(
-    private val apiKey: ApiKey,
-    private val user: User,
+    override val apiKey: ApiKey,
+    override val user: User,
     private val tokenManager: TokenManager,
     private val socket: FeedsSocket,
     private val connectionRecoveryHandler: ConnectionRecoveryHandler,
@@ -272,25 +321,29 @@ internal class FeedsClientImpl(
     private val appRepository: AppRepository,
     private val bookmarksRepository: BookmarksRepository,
     private val commentsRepository: CommentsRepository,
+    private val devicesRepository: DevicesRepository,
     private val feedsRepository: FeedsRepository,
+    private val filesRepository: FilesRepository,
     private val moderationRepository: ModerationRepository,
     private val pollsRepository: PollsRepository,
+    override val uploader: FeedUploader,
     override val moderation: Moderation,
     private val clientState: FeedsClientStateImpl, // TODO: Expose
-    private val logger: TaggedLogger = provideLogger(tag = "Client")
+    private val logger: TaggedLogger = provideLogger(tag = "Client"),
 ) : FeedsClient {
 
-    private val socketListener: FeedsSocketListener = object : FeedsSocketListener {
-        override fun onState(state: WebSocketConnectionState) {
-            logger.d { "[onState] $state" }
-            clientState.setConnectionState(state)
-        }
+    private val socketListener: FeedsSocketListener =
+        object : FeedsSocketListener {
+            override fun onState(state: WebSocketConnectionState) {
+                logger.d { "[onState] $state" }
+                clientState.setConnectionState(state)
+            }
 
-        override fun onEvent(event: WSEvent) {
-            logger.d { "[onEvent] $event" }
-            // TODO: Implementation
+            override fun onEvent(event: WSEvent) {
+                logger.d { "[onEvent] $event" }
+                // TODO: Implementation
+            }
         }
-    }
 
     init {
         socket.subscribe(socketListener)
@@ -307,21 +360,20 @@ internal class FeedsClientImpl(
         }
         tokenManager.ensureTokenLoaded()
         val token = tokenManager.getToken().rawValue
-        val connectUserData = ConnectUserData(
-            userId = user.id,
-            token = token,
-            name = user.name,
-            image = user.imageURL,
-            custom = user.customData,
-        )
+        val connectUserData =
+            ConnectUserData(
+                userId = user.id,
+                token = token,
+                name = user.name,
+                image = user.imageURL,
+                custom = user.customData,
+            )
         connectionRecoveryHandler.start()
         val connectionState = socket.connect(connectUserData)
         // TODO: Implement guards for multiple connections
         return when (connectionState) {
             is WebSocketConnectionState.Connected -> Result.success(Unit)
-            else -> Result.failure(
-                IllegalStateException("Failed to connect: $connectionState")
-            )
+            else -> Result.failure(IllegalStateException("Failed to connect: $connectionState"))
         }
     }
 
@@ -334,55 +386,58 @@ internal class FeedsClientImpl(
 
     override fun feed(fid: FeedId): Feed = feed(FeedQuery(fid))
 
-    override fun feed(query: FeedQuery): Feed = FeedImpl(
-        query = query,
-        currentUserId = user.id,
-        activitiesRepository = activitiesRepository,
-        bookmarksRepository = bookmarksRepository,
-        commentsRepository = commentsRepository,
-        feedsRepository = feedsRepository,
-        pollsRepository = pollsRepository,
-        subscriptionManager = socket,
-    )
-
-    override fun feedList(query: FeedsQuery): FeedList = FeedListImpl(
-        query = query,
-        feedsRepository = feedsRepository,
-        subscriptionManager = socket,
-    )
-
-    override fun followList(query: FollowsQuery): FollowList = FollowListImpl(
-        query = query,
-        feedsRepository = feedsRepository,
-        subscriptionManager = socket,
-    )
-
-    override fun activity(activityId: String, fid: FeedId): Activity = ActivityImpl(
-        activityId = activityId,
-        fid = fid,
-        currentUserId = user.id,
-        activitiesRepository = activitiesRepository,
-        commentsRepository = commentsRepository,
-        pollsRepository = pollsRepository,
-        subscriptionManager = socket,
-        commentList = ActivityCommentListImpl(
-            query = ActivityCommentsQuery(
-                objectId = activityId,
-                objectType = "activity",
-                depth = 3,
-            ),
+    override fun feed(query: FeedQuery): Feed =
+        FeedImpl(
+            query = query,
             currentUserId = user.id,
+            activitiesRepository = activitiesRepository,
+            bookmarksRepository = bookmarksRepository,
             commentsRepository = commentsRepository,
+            feedsRepository = feedsRepository,
+            pollsRepository = pollsRepository,
             subscriptionManager = socket,
-        ),
-    )
+        )
 
-    override fun activityList(query: ActivitiesQuery): ActivityList = ActivityListImpl(
-        query = query,
-        currentUserId = user.id,
-        activitiesRepository = activitiesRepository,
-        subscriptionManager = socket,
-    )
+    override fun feedList(query: FeedsQuery): FeedList =
+        FeedListImpl(query = query, feedsRepository = feedsRepository, subscriptionManager = socket)
+
+    override fun followList(query: FollowsQuery): FollowList =
+        FollowListImpl(
+            query = query,
+            feedsRepository = feedsRepository,
+            subscriptionManager = socket,
+        )
+
+    override fun activity(activityId: String, fid: FeedId): Activity =
+        ActivityImpl(
+            activityId = activityId,
+            fid = fid,
+            currentUserId = user.id,
+            activitiesRepository = activitiesRepository,
+            commentsRepository = commentsRepository,
+            pollsRepository = pollsRepository,
+            subscriptionManager = socket,
+            commentList =
+                ActivityCommentListImpl(
+                    query =
+                        ActivityCommentsQuery(
+                            objectId = activityId,
+                            objectType = "activity",
+                            depth = 3,
+                        ),
+                    currentUserId = user.id,
+                    commentsRepository = commentsRepository,
+                    subscriptionManager = socket,
+                ),
+        )
+
+    override fun activityList(query: ActivitiesQuery): ActivityList =
+        ActivityListImpl(
+            query = query,
+            currentUserId = user.id,
+            activitiesRepository = activitiesRepository,
+            subscriptionManager = socket,
+        )
 
     override fun activityReactionList(query: ActivityReactionsQuery): ActivityReactionList =
         ActivityReactionListImpl(
@@ -391,11 +446,28 @@ internal class FeedsClientImpl(
             subscriptionManager = socket,
         )
 
-    override fun bookmarkList(query: BookmarksQuery): BookmarkList = BookmarkListImpl(
-        query = query,
-        bookmarksRepository = bookmarksRepository,
-        subscriptionManager = socket,
-    )
+    override suspend fun addActivity(request: AddActivityRequest): Result<ActivityData> {
+        return activitiesRepository.addActivity(request)
+    }
+
+    override suspend fun upsertActivities(
+        activities: List<ActivityRequest>
+    ): Result<List<ActivityData>> {
+        return activitiesRepository.upsertActivities(activities)
+    }
+
+    override suspend fun deleteActivities(
+        request: DeleteActivitiesRequest
+    ): Result<DeleteActivitiesResponse> {
+        return activitiesRepository.deleteActivities(request)
+    }
+
+    override fun bookmarkList(query: BookmarksQuery): BookmarkList =
+        BookmarkListImpl(
+            query = query,
+            bookmarksRepository = bookmarksRepository,
+            subscriptionManager = socket,
+        )
 
     override fun bookmarkFolderList(query: BookmarkFoldersQuery): BookmarkFolderList =
         BookmarkFolderListImpl(
@@ -404,11 +476,12 @@ internal class FeedsClientImpl(
             subscriptionManager = socket,
         )
 
-    override fun commentList(query: CommentsQuery): CommentList = CommentListImpl(
-        query = query,
-        commentsRepository = commentsRepository,
-        subscriptionManager = socket,
-    )
+    override fun commentList(query: CommentsQuery): CommentList =
+        CommentListImpl(
+            query = query,
+            commentsRepository = commentsRepository,
+            subscriptionManager = socket,
+        )
 
     override fun activityCommentList(query: ActivityCommentsQuery): ActivityCommentList =
         ActivityCommentListImpl(
@@ -433,39 +506,47 @@ internal class FeedsClientImpl(
             subscriptionManager = socket,
         )
 
-    override fun memberList(query: MembersQuery): MemberList = MemberListImpl(
-        query = query,
-        feedsRepository = feedsRepository,
-        subscriptionManager = socket,
-    )
+    override fun memberList(query: MembersQuery): MemberList =
+        MemberListImpl(
+            query = query,
+            feedsRepository = feedsRepository,
+            subscriptionManager = socket,
+        )
 
-    override fun pollVoteList(query: PollVotesQuery): PollVoteList = PollVoteListImpl(
-        query = query,
-        repository = pollsRepository,
-        subscriptionManager = socket,
-    )
+    override fun pollVoteList(query: PollVotesQuery): PollVoteList =
+        PollVoteListImpl(query = query, repository = pollsRepository, subscriptionManager = socket)
 
-    override fun pollList(query: PollsQuery): PollList = PollListImpl(
-        query = query,
-        pollsRepository = pollsRepository,
-        subscriptionManager = socket,
-    )
+    override fun pollList(query: PollsQuery): PollList =
+        PollListImpl(query = query, pollsRepository = pollsRepository, subscriptionManager = socket)
 
     override fun moderationConfigList(query: ModerationConfigsQuery): ModerationConfigList =
-        ModerationConfigListImpl(
-            query = query,
-            moderationRepository = moderationRepository,
-        )
+        ModerationConfigListImpl(query = query, moderationRepository = moderationRepository)
 
     override suspend fun getApp(): Result<AppData> {
         return appRepository.getApp()
     }
 
+    override suspend fun queryDevices(): Result<ListDevicesResponse> {
+        return devicesRepository.queryDevices()
+    }
+
+    override suspend fun createDevice(
+        id: String,
+        pushProvider: PushNotificationsProvider,
+        pushProviderName: String,
+    ): Result<Unit> {
+        return devicesRepository.createDevice(id, pushProvider, pushProviderName)
+    }
+
+    override suspend fun deleteDevice(id: String): Result<Unit> {
+        return devicesRepository.deleteDevice(id)
+    }
+
     override suspend fun deleteFile(url: String): Result<Unit> {
-        TODO("Not yet implemented")
+        return filesRepository.deleteFile(url)
     }
 
     override suspend fun deleteImage(url: String): Result<Unit> {
-        TODO("Not yet implemented")
+        return filesRepository.deleteImage(url)
     }
 }

@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.arturbosch.detekt)
 }
 
 apply(from = "$rootDir/scripts/android.gradle")
@@ -63,6 +64,8 @@ dependencies {
     testImplementation(libs.mockk)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    detektPlugins(libs.detekt.formatting)
 
     // Networking
     implementation(libs.moshi)

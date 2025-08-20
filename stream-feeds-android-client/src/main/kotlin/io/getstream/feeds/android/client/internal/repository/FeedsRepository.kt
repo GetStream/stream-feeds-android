@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.feeds.android.client.api.model.ActivityData
@@ -24,8 +39,8 @@ import io.getstream.feeds.android.core.generated.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.core.generated.models.UpdateFeedRequest
 
 /**
- * Represents the repository for managing feeds.
- * Performs requests and transforms API models to domain models.
+ * Represents the repository for managing feeds. Performs requests and transforms API models to
+ * domain models.
  */
 internal interface FeedsRepository {
 
@@ -44,7 +59,7 @@ internal interface FeedsRepository {
     suspend fun updateFeed(
         feedGroupId: String,
         feedId: String,
-        request: UpdateFeedRequest
+        request: UpdateFeedRequest,
     ): Result<FeedData>
 
     // END: Manging the feed
@@ -76,7 +91,7 @@ internal interface FeedsRepository {
     suspend fun updateFeedMembers(
         feedGroupId: String,
         feedId: String,
-        request: UpdateFeedMembersRequest
+        request: UpdateFeedMembersRequest,
     ): Result<ModelUpdates<FeedMemberData>>
 
     suspend fun acceptFeedMember(feedGroupId: String, feedId: String): Result<FeedMemberData>
@@ -86,7 +101,7 @@ internal interface FeedsRepository {
     suspend fun queryFeedMembers(
         feedGroupId: String,
         feedId: String,
-        request: QueryFeedMembersRequest
+        request: QueryFeedMembersRequest,
     ): Result<PaginationResult<FeedMemberData>>
 
     // END: Members
