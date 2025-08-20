@@ -416,6 +416,26 @@ public interface FeedsClient {
     public suspend fun deleteImage(url: String): Result<Unit>
 
     /**
+     * Provides the API key used for authentication and service access.
+     *
+     * This API key is the same one that was passed in the [FeedsConfig] provided during client
+     * initialization.
+     *
+     * @return The [ApiKey] associated with this client.
+     */
+    public val apiKey: ApiKey
+
+    /**
+     * Provides the user associated with this client.
+     *
+     * This user is the same one that was passed during client initialization. It represents the
+     * authenticated user for whom the client operates.
+     *
+     * @return The [User] associated with this client.
+     */
+    public val user: User
+
+    /**
      * Provides an instance of [FeedUploader] for uploading files.
      *
      * This uploader is the same as the one passed in the [FeedsConfig] provided during client

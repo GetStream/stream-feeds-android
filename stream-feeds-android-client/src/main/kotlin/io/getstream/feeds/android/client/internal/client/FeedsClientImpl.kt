@@ -306,8 +306,8 @@ internal fun createFeedsClient(
 }
 
 internal class FeedsClientImpl(
-    private val apiKey: ApiKey,
-    private val user: User,
+    override val apiKey: ApiKey,
+    override val user: User,
     private val tokenManager: TokenManager,
     private val socket: FeedsSocket,
     private val connectionRecoveryHandler: ConnectionRecoveryHandler,
