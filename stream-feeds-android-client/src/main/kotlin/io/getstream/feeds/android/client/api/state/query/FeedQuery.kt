@@ -94,6 +94,7 @@ public data class FeedQuery(
         interestWeights: Map<String, Float>? = null,
         memberLimit: Int? = null,
         view: String? = null,
+        watch: Boolean = true,
     ) : this(
         fid = FeedId(group = group, id = id),
         activityFilter = activityFilter,
@@ -108,6 +109,7 @@ public data class FeedQuery(
         interestWeights = interestWeights,
         memberLimit = memberLimit,
         view = view,
+        watch = watch,
     )
 }
 
