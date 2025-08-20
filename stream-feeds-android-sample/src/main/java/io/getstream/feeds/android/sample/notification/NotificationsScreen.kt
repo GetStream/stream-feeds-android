@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.sample.notification
 
 import androidx.compose.foundation.background
@@ -45,7 +60,7 @@ data class NotificationsScreenArgs(val feedId: String) {
 
 @Destination<RootGraph>(
     style = DestinationStyleBottomSheet::class,
-    navArgs = NotificationsScreenArgs::class
+    navArgs = NotificationsScreenArgs::class,
 )
 @Composable
 fun NotificationsScreen(navigator: DestinationsNavigator) {
@@ -53,49 +68,44 @@ fun NotificationsScreen(navigator: DestinationsNavigator) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     when (val state = state) {
         AsyncResource.Loading -> LoadingScreen()
-        AsyncResource.Error ->  {
+        AsyncResource.Error -> {
             LaunchedEffect(Unit) { navigator.popBackStack() }
             return
         }
-        is AsyncResource.Content -> NotificationsScreen(
-            state = state.data,
-            onMarkAggregatedActivityRead = viewModel::onMarkAggregatedActivityRead,
-            onMarkAllRead = viewModel::onMarkAllRead,
-        )
+        is AsyncResource.Content ->
+            NotificationsScreen(
+                state = state.data,
+                onMarkAllSeen = viewModel::onMarkAllSeen,
+                onMarkAggregatedActivityRead = viewModel::onMarkAggregatedActivityRead,
+                onMarkAllRead = viewModel::onMarkAllRead,
+            )
     }
 }
 
 @Composable
 private fun NotificationsScreen(
     state: FeedState,
+    onMarkAllSeen: () -> Unit,
     onMarkAggregatedActivityRead: (AggregatedActivityData) -> Unit,
     onMarkAllRead: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .systemBarsPadding()
-            .padding(16.dp),
-    ) {
+    Column(modifier = Modifier.fillMaxSize().systemBarsPadding().padding(16.dp)) {
         // Title
         Text(
             text = "Notifications",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 16.dp),
         )
-        
-        // Mark all read button
+
         val notificationStatus by state.notificationStatus.collectAsStateWithLifecycle()
+        // Mark all read button
         if ((notificationStatus?.unread ?: 0) > 0) {
-            Button(
-                onClick = onMarkAllRead,
-                modifier = Modifier.padding(bottom = 16.dp)
-            ) {
+            Button(onClick = onMarkAllRead, modifier = Modifier.padding(bottom = 16.dp)) {
                 Text("Mark all read")
             }
         }
-        
+
         // Notifications
         val activities by state.aggregatedActivities.collectAsStateWithLifecycle()
         LazyColumn {
@@ -108,6 +118,14 @@ private fun NotificationsScreen(
                 )
             }
         }
+
+        // Mark all notifications (aggregated activities) as seen when the screen is opened
+        val unseen = notificationStatus?.unseen ?: 0
+        LaunchedEffect(unseen) {
+            if (unseen > 0) {
+                onMarkAllSeen()
+            }
+        }
     }
 }
 
@@ -118,28 +136,18 @@ private fun NotificationItem(
     onMarkRead: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                enabled = !isActivityRead,
-                onClick = onMarkRead,
-            )
-            .padding(vertical = 8.dp),
+        modifier =
+            Modifier.fillMaxWidth()
+                .clickable(enabled = !isActivityRead, onClick = onMarkRead)
+                .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        UserAvatar(data.activities.firstOrNull()?.user?.image)
+        UserAvatar(data.activities.lastOrNull()?.user?.image)
         Spacer(Modifier.width(8.dp))
-        Text(
-            text = data.displayText,
-            modifier = Modifier.weight(1f)
-        )
+        Text(text = data.displayText, modifier = Modifier.weight(1f))
         if (!isActivityRead) {
             Spacer(Modifier.width(8.dp))
-            Box(
-                modifier = Modifier
-                    .size(8.dp)
-                    .background(Color.Red, CircleShape)
-            )
+            Box(modifier = Modifier.size(8.dp).background(Color.Red, CircleShape))
         }
     }
 }
@@ -147,14 +155,15 @@ private fun NotificationItem(
 private val AggregatedActivityData.displayText: String
     get() {
         if (activities.isEmpty()) return ""
-        val firstUser = activities.first().user.name ?: "Someone"
+        val firstUser = activities.last().user.name ?: "Someone"
         val actionText = displayTextForAggregationType(activities.first().type)
         val otherUsers = if (userCount == 2) "other" else "others"
-        val text = if (userCount > 1) {
-            "$firstUser and ${userCount - 1} $otherUsers $actionText"
-        } else {
-            "$firstUser $actionText"
-        }
+        val text =
+            if (userCount > 1) {
+                "$firstUser and ${userCount - 1} $otherUsers $actionText"
+            } else {
+                "$firstUser $actionText"
+            }
         return text
     }
 

@@ -65,8 +65,9 @@ class CommentsSheetViewModel(
             if (comment.ownReactions.any { it.type == "heart" }) {
                     activity.deleteCommentReaction(comment.id, "heart")
                 } else {
-                    val request = AddCommentReactionRequest("heart", createNotificationActivity = true)
-                activity.addCommentReaction(comment.id, request)
+                    val request =
+                        AddCommentReactionRequest("heart", createNotificationActivity = true)
+                    activity.addCommentReaction(comment.id, request)
                 }
                 .logResult(TAG, "Toggling heart reaction for comment: ${comment.id}")
         }

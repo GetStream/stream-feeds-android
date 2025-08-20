@@ -107,15 +107,18 @@ fun FeedsScreen(
 
     Column(modifier = Modifier.fillMaxSize().systemBarsPadding()) {
         // Toolbar
-        val notificationStatus by viewModel.notificationState.notificationStatus.collectAsStateWithLifecycle()
+        val notificationStatus by
+            viewModel.notificationState.notificationStatus.collectAsStateWithLifecycle()
         FeedsScreenToolbar(
             avatarUrl = avatarUrl,
-            hasUnreadNotifications = (notificationStatus?.unread ?: 0) > 0,
+            hasUnseenNotifications = (notificationStatus?.unseen ?: 0) > 0,
             onUserAvatarClick = { showLogoutConfirmation = true },
             onNotificationsClick = {
                 // Open notifications screen ()
                 val fid = FeedId("notification", currentUserId)
-                navigator.navigate(NotificationsScreenDestination(NotificationsScreenArgs(fid.rawValue)))
+                navigator.navigate(
+                    NotificationsScreenDestination(NotificationsScreenArgs(fid.rawValue))
+                )
             },
             onProfileClick = {
                 navigator.navigate(
@@ -142,7 +145,8 @@ fun FeedsScreen(
                         if (activity.parent != null) {
                             val repostText = activity.text?.let { ": $it" }.orEmpty()
                             Text(
-                                text = "${activity.user.name ?: activity.user.id} reposted$repostText",
+                                text =
+                                    "${activity.user.name ?: activity.user.id} reposted$repostText",
                                 fontStyle = FontStyle.Italic,
                                 modifier = Modifier.padding(16.dp),
                             )
@@ -159,30 +163,21 @@ fun FeedsScreen(
                             currentUserId = currentUserId,
                             onHeartClick = { viewModel.onHeartClick(activity) },
                             onRepostClick = { message ->
-                                viewModel.onRepostClick(
-                                    activity,
-                                    message
-                                )
+                                viewModel.onRepostClick(activity, message)
                             },
                             onBookmarkClick = { viewModel.onBookmarkClick(activity) },
                             onDeleteClick = { viewModel.onDeleteClick(activity.id) },
                             onEditSave = { viewModel.onEditActivity(activity.id, it) },
                             pollSection = { poll ->
-                                PollSection(
-                                    activity.id,
-                                    poll,
-                                    viewModel.pollController
-                                )
-                            }
+                                PollSection(activity.id, poll, viewModel.pollController)
+                            },
                         )
                     }
                 }
 
                 FloatingActionButton(
                     onClick = { showCreatePostBottomSheet = true },
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(16.dp),
+                    modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
                     shape = CircleShape,
                     containerColor = Color.Blue,
                     contentColor = Color.White,
@@ -213,10 +208,11 @@ fun FeedsScreen(
                         showCreatePostBottomSheet = false
                         viewModel.onCreatePost(postText, attachments)
                     },
-                onCreatePoll = {
-                    showCreatePostBottomSheet = false
-                    viewModel.onCreatePoll(it)
-                },)
+                    onCreatePoll = {
+                        showCreatePostBottomSheet = false
+                        viewModel.onCreatePoll(it)
+                    },
+                )
             }
         }
     }
@@ -225,7 +221,7 @@ fun FeedsScreen(
 @Composable
 fun FeedsScreenToolbar(
     avatarUrl: String?,
-    hasUnreadNotifications: Boolean,
+    hasUnseenNotifications: Boolean,
     onUserAvatarClick: () -> Unit,
     onNotificationsClick: () -> Unit,
     onProfileClick: () -> Unit,
@@ -252,41 +248,30 @@ fun FeedsScreenToolbar(
 
         // Right side - Action buttons
         Row(verticalAlignment = Alignment.CenterVertically) {
-            NotificationIcon(
-                hasUnread = hasUnreadNotifications,
-                onClick = onNotificationsClick,
-            )
-            ProfileButton(
-                onClick = onProfileClick,
-            )
+            NotificationIcon(hasUnseen = hasUnseenNotifications, onClick = onNotificationsClick)
+            ProfileButton(onClick = onProfileClick)
         }
     }
 }
 
 @Composable
-private fun NotificationIcon(
-    hasUnread: Boolean,
-    onClick: () -> Unit
-) {
-    IconButton(
-        onClick = onClick,
-        modifier = Modifier.size(40.dp)
-    ) {
+private fun NotificationIcon(hasUnseen: Boolean, onClick: () -> Unit) {
+    IconButton(onClick = onClick, modifier = Modifier.size(40.dp)) {
         Box {
             Icon(
                 painter = painterResource(R.drawable.notifications_24),
                 contentDescription = "Notifications",
                 tint = Color(0xFF1976D2),
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(24.dp),
             )
-            // Red indicator for unread notifications
-            if (hasUnread) {
+            // Red indicator for unseen notifications
+            if (hasUnseen) {
                 Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .clip(CircleShape)
-                        .background(Color.Red)
-                        .align(Alignment.TopEnd)
+                    modifier =
+                        Modifier.size(8.dp)
+                            .clip(CircleShape)
+                            .background(Color.Red)
+                            .align(Alignment.TopEnd)
                 )
             }
         }
@@ -294,13 +279,8 @@ private fun NotificationIcon(
 }
 
 @Composable
-private fun ProfileButton(
-    onClick: () -> Unit
-) {
-    IconButton(
-        onClick = onClick,
-        modifier = Modifier.size(40.dp)
-    ) {
+private fun ProfileButton(onClick: () -> Unit) {
+    IconButton(onClick = onClick, modifier = Modifier.size(40.dp)) {
         Icon(
             painter = painterResource(R.drawable.profile_24),
             contentDescription = "Profile",
@@ -312,17 +292,12 @@ private fun ProfileButton(
 
 @Composable
 fun EmptyContent() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
-    ) {
+    Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
         Text(
             text = "No activities yet. Start by creating a post!",
             fontSize = 16.sp,
             color = Color.Gray,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
     }
 }
@@ -658,10 +633,7 @@ fun CreateContentBottomSheet(
 }
 
 @Composable
-private fun AttachmentButton(
-    hasAttachment: Boolean,
-    onAttachmentsSelected: (List<Uri>) -> Unit
-) {
+private fun AttachmentButton(hasAttachment: Boolean, onAttachmentsSelected: (List<Uri>) -> Unit) {
     val activityLauncher =
         rememberLauncherForActivityResult(PickMultipleVisualMedia(), onAttachmentsSelected)
 

@@ -77,12 +77,8 @@ class FeedViewModel(
         get() = notificationFeed.state
 
     init {
-        viewModelScope.launch {
-            feed.getOrCreate()
-        }
-        viewModelScope.launch {
-            notificationFeed.getOrCreate()
-        }
+        viewModelScope.launch { feed.getOrCreate() }
+        viewModelScope.launch { notificationFeed.getOrCreate() }
     }
 
     fun onLoadMore() {
@@ -97,7 +93,8 @@ class FeedViewModel(
             // Add 'heart' reaction
             viewModelScope.launch {
                 val request = AddReactionRequest("heart", createNotificationActivity = true)
-                feed.addReaction(activity.id, request) }
+                feed.addReaction(activity.id, request)
+            }
         } else {
             // Remove 'heart' reaction
             viewModelScope.launch { feed.deleteReaction(activity.id, "heart") }
