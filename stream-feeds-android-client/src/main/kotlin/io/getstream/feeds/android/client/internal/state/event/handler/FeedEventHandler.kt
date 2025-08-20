@@ -160,8 +160,8 @@ internal class FeedEventHandler(private val fid: FeedId, private val state: Feed
             is NotificationFeedUpdatedEvent -> {
                 if (event.fid == fid.rawValue) {
                     state.onNotificationFeedUpdated(
-                        aggregatedActivities = event.aggregatedActivities?.map { it.toModel() }
-                            .orEmpty(),
+                        aggregatedActivities =
+                            event.aggregatedActivities?.map { it.toModel() }.orEmpty(),
                         notificationStatus = event.notificationStatus,
                     )
                 }

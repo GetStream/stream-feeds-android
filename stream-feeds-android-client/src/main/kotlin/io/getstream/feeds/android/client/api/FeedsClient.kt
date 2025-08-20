@@ -469,8 +469,8 @@ public interface FeedsClient {
      * Provides an instance of [FeedUploader] for uploading files.
      *
      * This uploader is the same as the one passed in the [FeedsConfig] provided during client
-     * initialization. If none was provided, a default uploader will be used that uploads files
-     * to the Stream CDN.
+     * initialization. If none was provided, a default uploader will be used that uploads files to
+     * the Stream CDN.
      *
      * @return An instance of [FeedUploader] that can be used to upload files.
      */

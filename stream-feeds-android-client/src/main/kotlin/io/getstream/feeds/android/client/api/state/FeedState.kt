@@ -46,14 +46,10 @@ public interface FeedState {
     /** The list of activities in the feed, sorted by default sorting criteria. */
     public val activities: StateFlow<List<ActivityData>>
 
-    /**
-     * The list of aggregated activities in the feed.
-     */
+    /** The list of aggregated activities in the feed. */
     public val aggregatedActivities: StateFlow<List<AggregatedActivityData>>
 
-    /**
-     * The feed data containing feed metadata and configuration.
-     */
+    /** The feed data containing feed metadata and configuration. */
     public val feed: StateFlow<FeedData?>
 
     /** The list of followers for this feed. */
@@ -74,14 +70,10 @@ public interface FeedState {
     /** The list of pinned activities and its pinning state. */
     public val pinnedActivities: StateFlow<List<ActivityPinData>>
 
-    /**
-     * Returns information about the notification status (read / seen activities).
-     */
+    /** Returns information about the notification status (read / seen activities). */
     public val notificationStatus: StateFlow<NotificationStatusResponse?>
 
-    /**
-     * Pagination information for activities queries.
-     */
+    /** Pagination information for activities queries. */
     public val activitiesPagination: PaginationData?
 
     /** Indicates whether there are more activities available to load. */

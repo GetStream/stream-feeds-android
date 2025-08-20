@@ -298,9 +298,13 @@ internal class FeedStateImpl(
 
     override fun onNotificationFeedUpdated(
         aggregatedActivities: List<AggregatedActivityData>,
-        notificationStatus: NotificationStatusResponse?
+        notificationStatus: NotificationStatusResponse?,
     ) {
-        _aggregatedActivities.value = aggregatedActivities
+        // TODO: [PV] The enrichWithUserData is a workaround because we don't get the full user data
+        //  in the aggregated activities. Remove this method if this is fixed on BE, or remove the
+        //  comment if this is the expected behaviour.
+        //  See: [FEEDS-684]
+        _aggregatedActivities.value = enrichWithUserData(aggregatedActivities)
         _notificationStatus.value = notificationStatus
     }
 
@@ -323,6 +327,22 @@ internal class FeedStateImpl(
     private fun updateFollow(follow: FollowData) {
         removeFollow(follow)
         addFollow(follow)
+    }
+
+    private fun enrichWithUserData(
+        aggregatedActivities: List<AggregatedActivityData>
+    ): List<AggregatedActivityData> {
+        // The _activities state flow should contain the full user data for activities, because it
+        // will be delivered either via the initial query or via WebSocket events.
+        val knownUsers = _activities.value.map { it.user }
+        return aggregatedActivities.map {
+            val activities =
+                it.activities.map {
+                    val user = knownUsers.find { user -> user.id == it.user.id } ?: it.user
+                    it.copy(user = user)
+                }
+            it.copy(activities = activities)
+        }
     }
 
     override fun onPollChanged(id: String, data: PollData?) {
