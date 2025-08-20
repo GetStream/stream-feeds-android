@@ -36,6 +36,7 @@ import io.getstream.feeds.android.core.generated.models.PagerRequest
  * - field: `text`, operators: `equal`, `q`, `autocomplete`
  * - field: `type`, operators: `equal`, `in`
  * - field: `user_id`, operators: `equal`, `in`
+ *
  * @param activityLimit Maximum number of activities to retrieve.
  * @param activityNext Pagination cursor for fetching the next page of activities.
  * @param activityPrevious Pagination cursor for fetching the previous page of activities.

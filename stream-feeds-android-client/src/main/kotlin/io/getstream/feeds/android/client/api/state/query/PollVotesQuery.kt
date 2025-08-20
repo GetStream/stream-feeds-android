@@ -41,6 +41,7 @@ import io.getstream.feeds.android.core.generated.models.QueryPollVotesRequest
  * - field: `user_id`, operators: `equal`, `in`
  * - field: `poll_id`, operators: `equal`, `in`
  * - field: `updated_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ *
  * @property limit Maximum number of poll votes to return in a single request. If not specified, the
  *   API will use its default limit.
  * @property next Pagination cursor for fetching the next page of results. This is typically

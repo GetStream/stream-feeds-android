@@ -36,6 +36,7 @@ import io.getstream.feeds.android.core.generated.models.QueryActivityReactionsRe
  * - field: `reaction_type`, operators: `equal`, `in`
  * - field: `user_id`, operators: `equal`, `in`
  * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ *
  * @property limit Optional limit for the number of reactions to fetch. If not specified, the API
  *   will use its default limit.
  * @property next Pagination cursor for fetching the next page of results. This is typically

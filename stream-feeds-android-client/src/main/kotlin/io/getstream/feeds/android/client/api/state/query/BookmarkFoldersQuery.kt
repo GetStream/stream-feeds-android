@@ -37,6 +37,7 @@ import io.getstream.feeds.android.core.generated.models.QueryBookmarkFoldersRequ
  * - field: `user_id`, operators: `equal`, `in`
  * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
  * - field: `updated_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ *
  * @property sort Array of sorting criteria to apply to the bookmark folders. If not specified, the
  *   API will use its default sorting.
  * @property limit Maximum number of bookmark folders to return in a single request. If not

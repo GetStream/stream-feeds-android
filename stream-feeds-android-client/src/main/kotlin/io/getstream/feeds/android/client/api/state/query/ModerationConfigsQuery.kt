@@ -35,6 +35,7 @@ import io.getstream.feeds.android.core.generated.models.QueryModerationConfigsRe
  * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
  * - field: `updated_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
  * - field: `team`, operators: `equal`, `in`
+ *
  * @property limit The maximum number of moderation configurations to return.
  * @property next The pagination cursor for fetching the next page of configurations.
  * @property previous The pagination cursor for fetching the previous page of configurations.

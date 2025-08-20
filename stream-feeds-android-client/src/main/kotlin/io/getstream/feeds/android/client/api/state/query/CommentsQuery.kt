@@ -66,6 +66,7 @@ import java.util.Date
  * - field: `confidence_score`, operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
  * - field: `controversy_score`, operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
  * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ *
  * @property limit Maximum number of comments to return in a single request. If not specified, the
  *   API will use its default limit.
  * @property next Pagination cursor for fetching the next page of results. This is typically

@@ -41,6 +41,7 @@ import io.getstream.feeds.android.core.generated.models.QueryFeedMembersRequest
  * - field: `user_id`, operators: `equal`, `in`
  * - field: `fid`, operators: `equal`, `in`
  * - field: `request`, operators: `equal`
+ *
  * @property sort Array of sorting criteria to apply to the members. If not specified, the API will
  *   use its default sorting.
  * @property limit Maximum number of members to return in a single request. If not specified, the

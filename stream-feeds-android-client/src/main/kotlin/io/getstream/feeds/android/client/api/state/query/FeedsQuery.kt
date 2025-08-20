@@ -49,7 +49,8 @@ import io.getstream.feeds.android.core.generated.models.QueryFeedsRequest
  * - field: `created_by.name`, operators: `equal`, `q`, `autocomplete`
  * - field: `description`, operators: `equal`, `q`, `autocomplete`
  * - field: `follower_count`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `following_count`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `following_count`, operators: `equal`, `greater`, `greaterOrEqual`, `less`,
+ *   `lessOrEqual`
  * - field: `member_count`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
  * - field: `members`, operators: `in`
  * - field: `name`, operators: `equal`, `q`, `autocomplete`
@@ -58,6 +59,7 @@ import io.getstream.feeds.android.core.generated.models.QueryFeedsRequest
  * - field: `following_users`, operators: `in`
  * - field: `following_feeds`, operators: `in`
  * - field: `filter_tags`, operators: `equal`, `in`, `contains`
+ *
  * @property sort Array of sorting criteria to apply to the feeds. If not specified, the API will
  *   use its default sorting.
  * @property limit Maximum number of feeds to return in a single request. If not specified, the API

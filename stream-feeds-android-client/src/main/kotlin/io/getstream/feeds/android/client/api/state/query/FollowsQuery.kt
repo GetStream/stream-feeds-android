@@ -36,6 +36,7 @@ import io.getstream.feeds.android.core.generated.models.QueryFollowsRequest
  * - field: `target_feed`, operators: `equal`, `in`
  * - field: `status`, operators: `equal`, `in`
  * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ *
  * @property sort Array of sorting criteria to apply to the follows. If not specified, the API will
  *   use its default sorting.
  * @property limit Maximum number of follows to return in a single request. If not specified, the
