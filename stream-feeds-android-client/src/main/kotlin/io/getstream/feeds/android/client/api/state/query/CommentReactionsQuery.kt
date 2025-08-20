@@ -37,7 +37,11 @@ import io.getstream.feeds.android.core.generated.models.QueryCommentReactionsReq
  *
  * @param commentId The unique identifier of the comment to fetch reactions for.
  * @param filter Optional filter criteria to apply to the reactions. Use this to narrow down results
- *   based on specific criteria.
+ *   based on specific criteria. Supported filters:
+ * - field: `reaction_type`, operators: `equal`, `in`
+ * - field: `user_id`, operators: `equal`, `in`
+ * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ *
  * @param limit The maximum number of reactions to return in a single request. If not specified, the
  *   API will use its default limit.
  * @param next Pagination cursor for fetching the next page of results. This is typically provided

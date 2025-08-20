@@ -31,7 +31,19 @@ import io.getstream.feeds.android.core.generated.models.QueryPollsRequest
  * specify filters to narrow down results, sorting options, and pagination parameters.
  *
  * @property filter Optional filter to apply to the polls query. Use this to narrow down results
- *   based on specific criteria.
+ *   based on specific criteria. Supported filters:
+ * - field: `allow_answers`, operators: `equal`
+ * - field: `allow_user_suggested_options`, operators: `equal`
+ * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `created_by_id`, operators: `equal`, `in`
+ * - field: `id`, operators: `equal`, `in`
+ * - field: `is_closed`, operators: `equal`
+ * - field: `max_votes_allowed`, operators: `equal`, `greater`, `greaterOrEqual`, `less`,
+ *   `lessOrEqual`
+ * - field: `name`, operators: `equal`, `in`
+ * - field: `updated_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `voting_visibility`, operators: `equal`
+ *
  * @property limit Maximum number of polls to return in a single request. If not specified, the API
  *   will use its default limit.
  * @param next Pagination cursor for fetching the next page of results. This is typically provided

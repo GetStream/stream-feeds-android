@@ -37,17 +37,27 @@ import io.getstream.feeds.android.core.generated.models.QueryActivitiesRequest
  *   sort = listOf(ActivitiesSort(ActivitiesSortField.CreatedAt, SortDirection.REVERSE)),
  *   limit = 20,
  * )
+ * ```
  *
  * @property filter Optional filter to apply to the activities query. Use this to narrow down
- * results based on specific criteria.
+ *   results based on specific criteria. Supported filters:
+ * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `id`, operators: `equal`, `in`
+ * - field: `filter_tags`, operators: `equal`, `in`, `contains`
+ * - field: `popularity`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `search_data`, operators: `equal`, `q`, `autocomplete`
+ * - field: `text`, operators: `equal`, `q`, `autocomplete`
+ * - field: `type`, operators: `equal`, `in`
+ * - field: `user_id`, operators: `equal`, `in`
+ *
  * @property sort Array of sorting criteria to apply to the activities. If not specified, the API
- * will use its default sorting.
- * @property limit Maximum number of activities to return in a single request. If not specified,
- * the API will use its default limit.
+ *   will use its default sorting.
+ * @property limit Maximum number of activities to return in a single request. If not specified, the
+ *   API will use its default limit.
  * @property next Pagination cursor for fetching the next page of results. This is typically
- * provided in the response of a previous request.
+ *   provided in the response of a previous request.
  * @property previous Pagination cursor for fetching the previous page of results. This is typically
- * provided in the response of a previous request.
+ *   provided in the response of a previous request.
  */
 public data class ActivitiesQuery(
     public val filter: Filter? = null,

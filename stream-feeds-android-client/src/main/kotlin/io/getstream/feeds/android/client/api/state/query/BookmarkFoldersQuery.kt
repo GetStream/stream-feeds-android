@@ -31,7 +31,13 @@ import io.getstream.feeds.android.core.generated.models.QueryBookmarkFoldersRequ
  * You can specify filters to narrow down results, sorting options, and pagination parameters.
  *
  * @property filter Optional filter to apply to the bookmark folders query. Use this to narrow down
- *   results based on specific criteria.
+ *   results based on specific criteria. Supported filters:
+ * - field: `folder_id`, operators: `equal`, `in`
+ * - field: `folder_name`, operators: `equal`, `in`, `contains`
+ * - field: `user_id`, operators: `equal`, `in`
+ * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `updated_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ *
  * @property sort Array of sorting criteria to apply to the bookmark folders. If not specified, the
  *   API will use its default sorting.
  * @property limit Maximum number of bookmark folders to return in a single request. If not

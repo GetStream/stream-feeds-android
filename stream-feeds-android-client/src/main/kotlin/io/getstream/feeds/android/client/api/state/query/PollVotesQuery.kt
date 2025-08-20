@@ -33,7 +33,15 @@ import io.getstream.feeds.android.core.generated.models.QueryPollVotesRequest
  * @property pollId The unique identifier of the poll to fetch votes for.
  * @param userId Optional user ID used for authentication.
  * @param filter Optional filter to apply to the poll votes query. Use this to narrow down results
- *   based on specific criteria.
+ *   based on specific criteria. Supported filters:
+ * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `id`, operators: `equal`, `in`
+ * - field: `is_answer`, operators: `equal`
+ * - field: `option_id`, operators: `equal`, `in`, `exists`
+ * - field: `user_id`, operators: `equal`, `in`
+ * - field: `poll_id`, operators: `equal`, `in`
+ * - field: `updated_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ *
  * @property limit Maximum number of poll votes to return in a single request. If not specified, the
  *   API will use its default limit.
  * @property next Pagination cursor for fetching the next page of results. This is typically

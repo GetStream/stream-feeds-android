@@ -31,7 +31,13 @@ import io.getstream.feeds.android.core.generated.models.QueryBookmarksRequest
  * specify filters to narrow down results, sorting options, and pagination parameters.
  *
  * @property filter Optional filter to apply to the bookmarks query. Use this to narrow down results
- *   based on specific criteria.
+ *   based on specific criteria. Supported filters:
+ * - field: `activity_id`, operators: `equal`, `in`
+ * - field: `folder_id`, operators: `equal`, `in`, `exists`
+ * - field: `user_id`, operators: `equal`, `in`
+ * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `updated_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ *
  * @property sort Array of sorting criteria to apply to the bookmarks. If not specified, the API
  *   will use its default sorting.
  * @property limit Maximum number of bookmarks to return in a single request. If not specified, the

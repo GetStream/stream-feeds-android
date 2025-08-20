@@ -33,7 +33,15 @@ import io.getstream.feeds.android.core.generated.models.QueryFeedMembersRequest
  *
  * @property fid The feed ID to fetch members for.
  * @property filter Optional filter to apply to the members query. Use this to narrow down results
- *   based on specific criteria.
+ *   based on specific criteria. Supported filters:
+ * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `role`, operators: `equal`, `in`
+ * - field: `status`, operators: `equal`, `in`
+ * - field: `updated_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+ * - field: `user_id`, operators: `equal`, `in`
+ * - field: `fid`, operators: `equal`, `in`
+ * - field: `request`, operators: `equal`
+ *
  * @property sort Array of sorting criteria to apply to the members. If not specified, the API will
  *   use its default sorting.
  * @property limit Maximum number of members to return in a single request. If not specified, the
