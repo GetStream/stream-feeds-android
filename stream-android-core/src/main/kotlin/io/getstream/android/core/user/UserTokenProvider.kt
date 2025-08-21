@@ -15,8 +15,9 @@
  */
 package io.getstream.android.core.user
 
-import androidx.annotation.WorkerThread
 import io.getstream.kotlin.base.annotation.marker.StreamInternalApi
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /**
  * Provides a token used to authenticate the user with Stream Chat API. The SDK doesn't refresh the
@@ -31,7 +32,7 @@ public interface UserTokenProvider {
      *
      * @return The valid JWT token.
      */
-    @WorkerThread public fun loadToken(): UserToken
+    public suspend fun loadToken(): UserToken
 }
 
 /**
@@ -44,11 +45,14 @@ public interface UserTokenProvider {
 public class CacheableUserTokenProvider(private val provider: UserTokenProvider) :
     UserTokenProvider {
 
-    @Volatile private var cachedToken: UserToken = UserToken.EMPTY
+    @Volatile
+    private var cachedToken: UserToken = UserToken.EMPTY
 
-    override fun loadToken(): UserToken {
+    private val mutex = Mutex()
+
+    override suspend fun loadToken(): UserToken {
         val currentToken = cachedToken
-        return synchronized(this) {
+        return mutex.withLock {
             cachedToken.takeIf { it != currentToken }
                 ?: provider.loadToken().also { cachedToken = it }
         }

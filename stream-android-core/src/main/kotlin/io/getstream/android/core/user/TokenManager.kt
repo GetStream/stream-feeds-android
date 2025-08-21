@@ -16,6 +16,7 @@
 package io.getstream.android.core.user
 
 import io.getstream.kotlin.base.annotation.marker.StreamInternalApi
+import kotlinx.coroutines.runBlocking
 
 /** Interface for managing user tokens in the Stream SDK. */
 @StreamInternalApi
@@ -62,7 +63,8 @@ public interface TokenManager {
 @StreamInternalApi
 public class TokenManagerImpl : TokenManager {
 
-    @Volatile private var token: UserToken = UserToken.EMPTY
+    @Volatile
+    private var token: UserToken = UserToken.EMPTY
 
     private var provider: UserTokenProvider? = null
 
@@ -73,7 +75,7 @@ public class TokenManagerImpl : TokenManager {
     }
 
     override fun loadSync(): UserToken {
-        val token = provider?.loadToken() ?: UserToken.EMPTY
+        val token = provider?.run { runBlocking { loadToken() } } ?: UserToken.EMPTY
         this.token = token
         return token
     }

@@ -26,11 +26,11 @@ import io.getstream.android.core.user.User
 import io.getstream.android.core.user.UserTokenProvider
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.sample.DemoAppConfig
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class LoginManager
@@ -87,7 +87,7 @@ constructor(
                 user = credentials.user,
                 tokenProvider =
                     object : UserTokenProvider {
-                        override fun loadToken() = credentials.userToken
+                        override suspend fun loadToken() = credentials.userToken
                     },
             )
 
