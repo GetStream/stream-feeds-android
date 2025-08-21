@@ -74,6 +74,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
+import com.ramcosta.composedestinations.generated.destinations.CommentsBottomSheetDestination
 import com.ramcosta.composedestinations.generated.destinations.NotificationsScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -154,13 +155,19 @@ fun FeedsScreen(
 
                         val baseActivity = activity.parent ?: activity
                         ActivityContent(
-                            feedsClient = feedsClient,
-                            feedId = fid,
+
                             user = baseActivity.user,
                             text = baseActivity.text.orEmpty(),
                             attachments = baseActivity.attachments,
                             data = activity,
-                            currentUserId = currentUserId,
+                            currentUserId = currentUserId,onCommentClick = {
+                            navigator.navigate(
+                                CommentsBottomSheetDestination(
+                                    feedId = fid.rawValue,
+                                    activityId = activity.id
+                                )
+                            )
+                        },
                             onHeartClick = { viewModel.onHeartClick(activity) },
                             onRepostClick = { message ->
                                 viewModel.onRepostClick(activity, message)
@@ -305,13 +312,12 @@ fun EmptyContent() {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ActivityContent(
-    feedsClient: FeedsClient,
-    feedId: FeedId,
     user: UserData,
     text: String,
     attachments: List<Attachment>,
     data: ActivityData,
     currentUserId: String,
+    onCommentClick: () -> Unit,
     onHeartClick: () -> Unit,
     onRepostClick: (String?) -> Unit,
     onBookmarkClick: () -> Unit,
@@ -319,7 +325,6 @@ fun ActivityContent(
     onEditSave: ((String) -> Unit),
     pollSection: @Composable (PollData) -> Unit,
 ) {
-    var showCommentsBottomSheet by remember { mutableStateOf(false) }
     var showRepostDialog by remember { mutableStateOf(false) }
     var showContextMenu by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
@@ -376,7 +381,7 @@ fun ActivityContent(
         // Action buttons row
         ActivityActions(
             activity = data,
-            onCommentClick = { showCommentsBottomSheet = true },
+            onCommentClick = onCommentClick,
             onHeartClick = onHeartClick,
             onRepostClick = { showRepostDialog = true },
             onBookmarkClick = onBookmarkClick,
@@ -421,21 +426,6 @@ fun ActivityContent(
             )
         }
 
-        if (showCommentsBottomSheet) {
-            val context = LocalContext.current
-            CommentsBottomSheet(
-                // TODO [G.] migrate to Compose navigation
-                viewModel =
-                    remember {
-                        CommentsSheetViewModel.Factory(
-                                feedsClient.activity(activityId = data.id, fid = feedId),
-                                context.applicationContext,
-                            )
-                            .create(CommentsSheetViewModel::class.java)
-                    },
-                onDismiss = { showCommentsBottomSheet = false },
-            )
-        }
         // Add divider between activities for better separation
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
