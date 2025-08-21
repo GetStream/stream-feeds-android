@@ -15,6 +15,12 @@
  */
 package io.getstream.feeds.android.sample.util
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+
 sealed interface AsyncResource<out T> {
     data object Loading : AsyncResource<Nothing>
 
@@ -37,3 +43,15 @@ inline fun <T : Any, R : Any> AsyncResource<T>.map(transform: (T) -> R): AsyncRe
         is AsyncResource.Error -> AsyncResource.Error
         is AsyncResource.Content -> AsyncResource.Content(transform(data))
     }
+
+suspend inline fun <T, R> Flow<AsyncResource<T>>.withFirstContent(block: suspend T.() -> R): R =
+    filterIsInstance<AsyncResource.Content<T>>()
+        .first()
+        .data
+        .block()
+
+fun <T> Flow<AsyncResource<T>>.withFirstContent(scope: CoroutineScope, block: suspend T.() -> Unit) {
+    scope.launch {
+        withFirstContent(block)
+    }
+}

@@ -18,93 +18,107 @@ package io.getstream.feeds.android.sample.feed
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.ramcosta.composedestinations.generated.destinations.CommentsBottomSheetDestination
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.file.FileType
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
 import io.getstream.feeds.android.client.api.state.Activity
-import io.getstream.feeds.android.client.api.state.ActivityState
 import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
+import io.getstream.feeds.android.sample.login.LoginManager
+import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.util.copyToCache
 import io.getstream.feeds.android.sample.util.deleteFiles
+import io.getstream.feeds.android.sample.util.map
+import io.getstream.feeds.android.sample.util.notNull
+import io.getstream.feeds.android.sample.util.withFirstContent
 import io.getstream.feeds.android.sample.utils.logResult
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import javax.inject.Inject
 
-class CommentsSheetViewModel(
-    private val activity: Activity,
+@HiltViewModel
+class CommentsSheetViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
+    loginManager: LoginManager,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
+    private val args = CommentsBottomSheetDestination.argsFrom(savedStateHandle)
     private var canLoadMoreComments = true
 
-    val state: ActivityState
-        get() = activity.state
+    private val activity = flow {
+        val activity = loginManager.currentState()
+            ?.client
+            ?.activity(activityId = args.activityId, fid = args.fid)
+        emit(AsyncResource.notNull(activity))
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
+
+    val state = activity
+        .map { loadingState -> loadingState.map(Activity::state) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
     init {
-        viewModelScope.launch {
-            activity.get().logResult(TAG, "Loading activity: ${activity.activityId}")
+        activity.withFirstContent(viewModelScope) {
+            get().logResult(TAG, "Loading activity: $activityId")
         }
     }
 
     fun onLoadMore() {
         if (!canLoadMoreComments) return
-        viewModelScope.launch {
-            activity
-                .queryMoreComments()
+        activity.withFirstContent(viewModelScope) {
+            queryMoreComments()
                 .onSuccess { comments -> canLoadMoreComments = comments.isNotEmpty() }
-                .logResult(TAG, "Loading more comments for activity: ${activity.activityId}")
+                .logResult(TAG, "Loading more comments for activity: $activityId")
         }
     }
 
     fun onLikeClick(comment: ThreadedCommentData) {
-        viewModelScope.launch {
+        activity.withFirstContent(viewModelScope) {
             if (comment.ownReactions.any { it.type == "heart" }) {
-                    activity.deleteCommentReaction(comment.id, "heart")
+                    deleteCommentReaction(comment.id, "heart")
                 } else {
-                    activity.addCommentReaction(comment.id, AddCommentReactionRequest("heart"))
+                    addCommentReaction(comment.id, AddCommentReactionRequest("heart"))
                 }
                 .logResult(TAG, "Toggling heart reaction for comment: ${comment.id}")
         }
     }
 
     fun onPostComment(text: String, replyParentId: String?, attachments: List<Uri>) {
-        viewModelScope.launch {
+        activity.withFirstContent(viewModelScope) {
             val attachmentFiles =
                 context.copyToCache(attachments).getOrElse { error ->
                     Log.e(TAG, "Failed to copy attachments", error)
-                    return@launch
+                    return@withFirstContent
                 }
 
-            activity
-                .addComment(
-                    ActivityAddCommentRequest(
-                        comment = text,
-                        activityId = activity.activityId,
-                        parentId = replyParentId,
-                        attachmentUploads =
-                            attachmentFiles.map {
-                                FeedUploadPayload(file = it, type = FileType.Image("jpeg"))
-                            },
-                    ),
-                    attachmentUploadProgress = { file, progress ->
-                        Log.d(TAG, "Uploading attachment: ${file.type}, progress: $progress")
+            addComment(
+                ActivityAddCommentRequest(
+                    comment = text,
+                    activityId = activityId,
+                    parentId = replyParentId,
+                    attachmentUploads = attachmentFiles.map {
+                        FeedUploadPayload(
+                            file = it,
+                            type = FileType.Image("jpeg")
+                        )
                     },
-                )
-                .logResult(TAG, "Adding comment to activity: ${activity.activityId}")
+                ),
+                attachmentUploadProgress = { file, progress ->
+                    Log.d(TAG, "Uploading attachment: ${file.type}, progress: $progress")
+                },
+            )
+                .logResult(TAG, "Adding comment to activity: $activityId")
 
             deleteFiles(attachmentFiles)
         }
-    }
-
-    class Factory(private val activity: Activity, private val context: Context) :
-        ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            CommentsSheetViewModel(activity, context) as T
     }
 
     companion object {
