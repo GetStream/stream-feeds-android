@@ -15,27 +15,27 @@
  */
 package io.getstream.feeds.android.client.api
 
-import io.getstream.feeds.android.core.generated.models.BanRequest
-import io.getstream.feeds.android.core.generated.models.BanResponse
-import io.getstream.feeds.android.core.generated.models.BlockUsersRequest
-import io.getstream.feeds.android.core.generated.models.BlockUsersResponse
-import io.getstream.feeds.android.core.generated.models.DeleteModerationConfigResponse
-import io.getstream.feeds.android.core.generated.models.FlagRequest
-import io.getstream.feeds.android.core.generated.models.FlagResponse
-import io.getstream.feeds.android.core.generated.models.GetBlockedUsersResponse
-import io.getstream.feeds.android.core.generated.models.GetConfigResponse
-import io.getstream.feeds.android.core.generated.models.MuteRequest
-import io.getstream.feeds.android.core.generated.models.MuteResponse
-import io.getstream.feeds.android.core.generated.models.QueryModerationConfigsRequest
-import io.getstream.feeds.android.core.generated.models.QueryModerationConfigsResponse
-import io.getstream.feeds.android.core.generated.models.QueryReviewQueueRequest
-import io.getstream.feeds.android.core.generated.models.QueryReviewQueueResponse
-import io.getstream.feeds.android.core.generated.models.SubmitActionRequest
-import io.getstream.feeds.android.core.generated.models.SubmitActionResponse
-import io.getstream.feeds.android.core.generated.models.UnblockUsersRequest
-import io.getstream.feeds.android.core.generated.models.UnblockUsersResponse
-import io.getstream.feeds.android.core.generated.models.UpsertConfigRequest
-import io.getstream.feeds.android.core.generated.models.UpsertConfigResponse
+import io.getstream.feeds.android.network.models.BanRequest
+import io.getstream.feeds.android.network.models.BanResponse
+import io.getstream.feeds.android.network.models.BlockUsersRequest
+import io.getstream.feeds.android.network.models.BlockUsersResponse
+import io.getstream.feeds.android.network.models.DeleteModerationConfigResponse
+import io.getstream.feeds.android.network.models.FlagRequest
+import io.getstream.feeds.android.network.models.FlagResponse
+import io.getstream.feeds.android.network.models.GetBlockedUsersResponse
+import io.getstream.feeds.android.network.models.GetConfigResponse
+import io.getstream.feeds.android.network.models.MuteRequest
+import io.getstream.feeds.android.network.models.MuteResponse
+import io.getstream.feeds.android.network.models.QueryModerationConfigsRequest
+import io.getstream.feeds.android.network.models.QueryModerationConfigsResponse
+import io.getstream.feeds.android.network.models.QueryReviewQueueRequest
+import io.getstream.feeds.android.network.models.QueryReviewQueueResponse
+import io.getstream.feeds.android.network.models.SubmitActionRequest
+import io.getstream.feeds.android.network.models.SubmitActionResponse
+import io.getstream.feeds.android.network.models.UnblockUsersRequest
+import io.getstream.feeds.android.network.models.UnblockUsersResponse
+import io.getstream.feeds.android.network.models.UpsertConfigRequest
+import io.getstream.feeds.android.network.models.UpsertConfigResponse
 
 /** Controller exposing moderation functionalities. */
 public interface Moderation {

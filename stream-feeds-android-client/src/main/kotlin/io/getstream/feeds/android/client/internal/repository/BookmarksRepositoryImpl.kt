@@ -24,18 +24,18 @@ import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersQuery
 import io.getstream.feeds.android.client.api.state.query.BookmarksQuery
 import io.getstream.feeds.android.client.api.state.query.toRequest
-import io.getstream.feeds.android.core.generated.apis.ApiService
-import io.getstream.feeds.android.core.generated.models.AddBookmarkRequest
-import io.getstream.feeds.android.core.generated.models.UpdateBookmarkRequest
+import io.getstream.feeds.android.network.apis.FeedsApi
+import io.getstream.feeds.android.network.models.AddBookmarkRequest
+import io.getstream.feeds.android.network.models.UpdateBookmarkRequest
 
 /**
  * Default implementation of the [BookmarksRepository] interface.
  *
- * Uses the provided [ApiService] to perform network requests related to bookmarks.
+ * Uses the provided [FeedsApi] to perform network requests related to bookmarks.
  *
  * @property api The API service used to perform network requests.
  */
-internal class BookmarksRepositoryImpl(private val api: ApiService) : BookmarksRepository {
+internal class BookmarksRepositoryImpl(private val api: FeedsApi) : BookmarksRepository {
 
     override suspend fun queryBookmarks(
         query: BookmarksQuery

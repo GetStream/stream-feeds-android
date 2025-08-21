@@ -15,11 +15,10 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.client.internal.model.mapping.toDate
 import io.getstream.feeds.android.client.internal.utils.upsert
-import io.getstream.feeds.android.core.generated.models.ActivityLocation
-import io.getstream.feeds.android.core.generated.models.ActivityResponse
-import io.getstream.feeds.android.core.generated.models.Attachment
+import io.getstream.feeds.android.network.models.ActivityLocation
+import io.getstream.feeds.android.network.models.ActivityResponse
+import io.getstream.feeds.android.network.models.Attachment
 import java.util.Date
 import kotlin.math.max
 
@@ -153,12 +152,12 @@ internal fun ActivityResponse.toModel(): ActivityData =
         bookmarkCount = bookmarkCount,
         commentCount = commentCount,
         comments = comments.map { it.toModel() },
-        createdAt = createdAt.toDate(),
+        createdAt = createdAt,
         currentFeed = currentFeed?.toModel(),
         custom = custom,
-        deletedAt = deletedAt?.let { Date(it.toInstant().toEpochMilli()) },
-        editedAt = editedAt?.let { Date(it.toInstant().toEpochMilli()) },
-        expiresAt = expiresAt?.let { Date(it.toInstant().toEpochMilli()) },
+        deletedAt = deletedAt,
+        editedAt = editedAt,
+        expiresAt = expiresAt,
         feeds = feeds,
         filterTags = filterTags,
         id = id,
@@ -180,7 +179,7 @@ internal fun ActivityResponse.toModel(): ActivityData =
         shareCount = shareCount,
         text = text,
         type = type,
-        updatedAt = updatedAt.toDate(),
+        updatedAt = updatedAt,
         user = user.toModel(),
         visibility = visibility.toModel(),
         visibilityTag = visibilityTag,

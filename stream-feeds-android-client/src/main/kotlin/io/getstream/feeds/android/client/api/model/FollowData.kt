@@ -15,8 +15,7 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.client.internal.model.mapping.toDate
-import io.getstream.feeds.android.core.generated.models.FollowResponse
+import io.getstream.feeds.android.network.models.FollowResponse
 import java.util.Date
 
 /**
@@ -96,12 +95,12 @@ public sealed class FollowStatus(public val string: String) {
 /** Converts a [FollowResponse] to a [FollowData] model. */
 internal fun FollowResponse.toModel(): FollowData =
     FollowData(
-        createdAt = createdAt.toDate(),
+        createdAt = createdAt,
         custom = custom,
         followerRole = followerRole,
         pushPreference = pushPreference.value,
-        requestAcceptedAt = requestAcceptedAt?.toDate(),
-        requestRejectedAt = requestRejectedAt?.toDate(),
+        requestAcceptedAt = requestAcceptedAt,
+        requestRejectedAt = requestRejectedAt,
         sourceFeed = sourceFeed.toModel(),
         status =
             when (status) {
@@ -114,7 +113,7 @@ internal fun FollowResponse.toModel(): FollowData =
                     )
             },
         targetFeed = targetFeed.toModel(),
-        updatedAt = updatedAt.toDate(),
+        updatedAt = updatedAt,
     )
 
 /** Converts a [FollowResponse.PushPreference] to a [String] representation. */

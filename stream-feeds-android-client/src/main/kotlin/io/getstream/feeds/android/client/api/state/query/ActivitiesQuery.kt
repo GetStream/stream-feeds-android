@@ -22,7 +22,7 @@ import io.getstream.android.core.query.SortField
 import io.getstream.android.core.query.toRequest
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
-import io.getstream.feeds.android.core.generated.models.QueryActivitiesRequest
+import io.getstream.feeds.android.network.models.QueryActivitiesRequest
 
 /**
  * A query for retrieving activities with filtering, sorting, and pagination options.

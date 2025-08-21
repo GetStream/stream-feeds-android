@@ -18,15 +18,15 @@ package io.getstream.feeds.android.client.internal.repository
 import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.toModel
-import io.getstream.feeds.android.core.generated.apis.ApiService
+import io.getstream.feeds.android.network.apis.FeedsApi
 
 /**
- * Default implementation of the [AppRepository]. Uses the [ApiService] to fetch application
+ * Default implementation of the [AppRepository]. Uses the [FeedsApi] to fetch application
  * configuration data. Caches the result to avoid multiple network calls for the same data.
  *
  * @property api The API service used to fetch application data.
  */
-internal class AppRepositoryImpl(private val api: ApiService) : AppRepository {
+internal class AppRepositoryImpl(private val api: FeedsApi) : AppRepository {
 
     private var cachedAppData: AppData? = null
 

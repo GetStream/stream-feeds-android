@@ -23,7 +23,7 @@ import io.getstream.android.core.query.toRequest
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
-import io.getstream.feeds.android.core.generated.models.QueryFeedMembersRequest
+import io.getstream.feeds.android.network.models.QueryFeedMembersRequest
 
 /**
  * A query for retrieving feed members with filtering, sorting, and pagination options.

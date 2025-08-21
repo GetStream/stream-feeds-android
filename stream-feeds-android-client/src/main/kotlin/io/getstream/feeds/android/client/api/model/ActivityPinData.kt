@@ -15,9 +15,8 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.client.internal.model.mapping.toDate
-import io.getstream.feeds.android.core.generated.models.ActivityPinResponse
-import io.getstream.feeds.android.core.generated.models.PinActivityResponse
+import io.getstream.feeds.android.network.models.ActivityPinResponse
+import io.getstream.feeds.android.network.models.PinActivityResponse
 import java.util.Date
 
 /**
@@ -58,9 +57,9 @@ public data class ActivityPinData(
 internal fun ActivityPinResponse.toModel(): ActivityPinData =
     ActivityPinData(
         activity = activity.toModel(),
-        createdAt = Date(createdAt.toInstant().toEpochMilli()),
+        createdAt = createdAt,
         fid = FeedId(feed),
-        updatedAt = Date(updatedAt.toInstant().toEpochMilli()),
+        updatedAt = createdAt,
         userId = user.id,
     )
 
@@ -73,8 +72,8 @@ internal fun ActivityPinResponse.toModel(): ActivityPinData =
 internal fun PinActivityResponse.toModel(): ActivityPinData =
     ActivityPinData(
         activity = activity.toModel(),
-        createdAt = createdAt.toDate(),
+        createdAt = createdAt,
         fid = FeedId(feed),
-        updatedAt = createdAt.toDate(), // no updated_at
+        updatedAt = createdAt, // no updated_at
         userId = userId,
     )

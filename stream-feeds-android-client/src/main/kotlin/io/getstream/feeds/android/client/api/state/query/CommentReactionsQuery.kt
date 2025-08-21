@@ -22,7 +22,7 @@ import io.getstream.android.core.query.SortField
 import io.getstream.android.core.query.toRequest
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
-import io.getstream.feeds.android.core.generated.models.QueryCommentReactionsRequest
+import io.getstream.feeds.android.network.models.QueryCommentReactionsRequest
 
 /**
  * A query configuration for fetching reactions for a specific comment.

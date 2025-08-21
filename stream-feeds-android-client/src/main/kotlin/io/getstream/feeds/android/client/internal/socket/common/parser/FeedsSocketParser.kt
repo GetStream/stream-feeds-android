@@ -21,8 +21,8 @@ import io.getstream.feeds.android.client.internal.socket.events.ConnectedEvent
 import io.getstream.feeds.android.client.internal.socket.events.ConnectionErrorEvent
 import io.getstream.feeds.android.client.internal.socket.events.EVENT_TYPE_CONNECTION_ERROR
 import io.getstream.feeds.android.client.internal.socket.events.EVENT_TYPE_CONNECTION_OK
-import io.getstream.feeds.android.core.generated.models.UnsupportedWSEvent
-import io.getstream.feeds.android.core.generated.models.WSEvent
+import io.getstream.feeds.android.network.models.UnsupportedWSEvent
+import io.getstream.feeds.android.network.models.WSEvent
 
 /**
  * Parser for WebSocket events in the Feeds client.

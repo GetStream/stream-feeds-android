@@ -25,8 +25,8 @@ import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
-import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
-import io.getstream.feeds.android.core.generated.models.UpdateCommentRequest
+import io.getstream.feeds.android.network.models.AddCommentReactionRequest
+import io.getstream.feeds.android.network.models.UpdateCommentRequest
 
 /**
  * A repository for managing comments.

@@ -62,7 +62,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -81,7 +80,7 @@ import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.UserData
-import io.getstream.feeds.android.core.generated.models.Attachment
+import io.getstream.feeds.android.network.models.Attachment
 import io.getstream.feeds.android.sample.R
 import io.getstream.feeds.android.sample.components.LinkText
 import io.getstream.feeds.android.sample.components.UserAvatar
@@ -148,7 +147,7 @@ fun FeedsScreen(
                             navigator.navigate(
                                 CommentsBottomSheetDestination(
                                     feedId = fid.rawValue,
-                                    activityId = activity.id
+                                    activityId = activity.id,
                                 )
                             )
                         },

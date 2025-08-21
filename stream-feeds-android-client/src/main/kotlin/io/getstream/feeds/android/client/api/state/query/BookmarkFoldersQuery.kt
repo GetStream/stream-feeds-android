@@ -22,7 +22,7 @@ import io.getstream.android.core.query.SortField
 import io.getstream.android.core.query.toRequest
 import io.getstream.feeds.android.client.api.model.BookmarkFolderData
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
-import io.getstream.feeds.android.core.generated.models.QueryBookmarkFoldersRequest
+import io.getstream.feeds.android.network.models.QueryBookmarkFoldersRequest
 
 /**
  * A query for retrieving bookmark folders with filtering, sorting, and pagination options.

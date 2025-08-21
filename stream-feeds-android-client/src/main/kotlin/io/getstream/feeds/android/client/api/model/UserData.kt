@@ -15,8 +15,7 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.client.internal.model.mapping.toDate
-import io.getstream.feeds.android.core.generated.models.UserResponse
+import io.getstream.feeds.android.network.models.UserResponse
 import java.util.Date
 
 /**
@@ -64,18 +63,18 @@ internal fun UserResponse.toModel(): UserData =
     UserData(
         banned = banned,
         blockedUserIds = blockedUserIds,
-        createdAt = createdAt.toDate(),
+        createdAt = createdAt,
         custom = custom,
-        deactivatedAt = deactivatedAt?.toDate(),
-        deletedAt = deletedAt?.toDate(),
+        deactivatedAt = deactivatedAt,
+        deletedAt = deletedAt,
         id = id,
         image = image,
         language = language,
-        lastActive = lastActive?.toDate(),
+        lastActive = lastActive,
         name = name,
         online = online,
-        revokeTokensIssuedBefore = revokeTokensIssuedBefore?.toDate(),
+        revokeTokensIssuedBefore = revokeTokensIssuedBefore,
         role = role,
         teams = teams,
-        updatedAt = updatedAt.toDate(),
+        updatedAt = updatedAt,
     )

@@ -16,26 +16,24 @@
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
-import io.getstream.feeds.android.core.generated.apis.ApiService
-import io.getstream.feeds.android.core.generated.models.CreateDeviceRequest
-import io.getstream.feeds.android.core.generated.models.DeviceResponse
-import io.getstream.feeds.android.core.generated.models.ListDevicesResponse
-import io.getstream.feeds.android.core.generated.models.Response
+import io.getstream.feeds.android.network.apis.FeedsApi
+import io.getstream.feeds.android.network.models.CreateDeviceRequest
+import io.getstream.feeds.android.network.models.DeviceResponse
+import io.getstream.feeds.android.network.models.ListDevicesResponse
+import io.getstream.feeds.android.network.models.Response
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import java.util.Date
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import org.threeten.bp.Instant
-import org.threeten.bp.OffsetDateTime
-import org.threeten.bp.ZoneId
 
 internal class DevicesRepositoryImplTest {
 
-    private val apiService: ApiService = mockk()
-    private val repository = DevicesRepositoryImpl(api = apiService)
+    private val feedsApi: FeedsApi = mockk()
+    private val repository = DevicesRepositoryImpl(api = feedsApi)
 
     @Test
     fun `queryDevices should return success when api listDevices returns result`() = runTest {
@@ -46,14 +44,14 @@ internal class DevicesRepositoryImplTest {
                 devices =
                     listOf(
                         DeviceResponse(
-                            createdAt = OffsetDateTime.ofInstant(Instant.now(), ZoneId.of("UTC")),
+                            createdAt = Date(),
                             id = "device-1",
                             pushProvider = "firebase",
                             userId = "user-1",
                         )
                     ),
             )
-        coEvery { apiService.listDevices() } returns expectedResponse
+        coEvery { feedsApi.listDevices() } returns expectedResponse
 
         // When
         val result = repository.queryDevices()
@@ -61,14 +59,14 @@ internal class DevicesRepositoryImplTest {
         // Then
         assertTrue(result.isSuccess)
         assertEquals(expectedResponse, result.getOrNull())
-        coVerify(exactly = 1) { apiService.listDevices() }
+        coVerify(exactly = 1) { feedsApi.listDevices() }
     }
 
     @Test
     fun `queryDevices should return failure when api listDevices throws exception`() = runTest {
         // Given
         val expectedException = RuntimeException("API Error")
-        coEvery { apiService.listDevices() } throws expectedException
+        coEvery { feedsApi.listDevices() } throws expectedException
 
         // When
         val result = repository.queryDevices()
@@ -76,7 +74,7 @@ internal class DevicesRepositoryImplTest {
         // Then
         assertTrue(result.isFailure)
         assertEquals(expectedException, result.exceptionOrNull())
-        coVerify(exactly = 1) { apiService.listDevices() }
+        coVerify(exactly = 1) { feedsApi.listDevices() }
     }
 
     @Test
@@ -94,7 +92,7 @@ internal class DevicesRepositoryImplTest {
                     pushProviderName = pushProviderName,
                 )
 
-            coEvery { apiService.createDevice(expectedRequest) } returns Response("")
+            coEvery { feedsApi.createDevice(expectedRequest) } returns Response("")
 
             // When
             val result =
@@ -107,7 +105,7 @@ internal class DevicesRepositoryImplTest {
             // Then
             assertTrue(result.isSuccess)
             assertEquals(Unit, result.getOrNull())
-            coVerify(exactly = 1) { apiService.createDevice(expectedRequest) }
+            coVerify(exactly = 1) { feedsApi.createDevice(expectedRequest) }
         }
 
     @Test
@@ -125,7 +123,7 @@ internal class DevicesRepositoryImplTest {
                 pushProviderName = pushProviderName,
             )
 
-        coEvery { apiService.createDevice(expectedRequest) } throws expectedException
+        coEvery { feedsApi.createDevice(expectedRequest) } throws expectedException
 
         // When
         val result =
@@ -138,7 +136,7 @@ internal class DevicesRepositoryImplTest {
         // Then
         assertTrue(result.isFailure)
         assertEquals(expectedException, result.exceptionOrNull())
-        coVerify(exactly = 1) { apiService.createDevice(expectedRequest) }
+        coVerify(exactly = 1) { feedsApi.createDevice(expectedRequest) }
     }
 
     @Test
@@ -161,7 +159,7 @@ internal class DevicesRepositoryImplTest {
         val exception = result.exceptionOrNull()
         assertTrue(exception is IllegalStateException)
         assertEquals("Device id must not be empty when trying to set device.", exception?.message)
-        coVerify(exactly = 0) { apiService.createDevice(any()) }
+        coVerify(exactly = 0) { feedsApi.createDevice(any()) }
     }
 
     @Test
@@ -184,7 +182,7 @@ internal class DevicesRepositoryImplTest {
         val exception = result.exceptionOrNull()
         assertTrue(exception is IllegalStateException)
         assertEquals("Device id must not be empty when trying to set device.", exception?.message)
-        coVerify(exactly = 0) { apiService.createDevice(any()) }
+        coVerify(exactly = 0) { feedsApi.createDevice(any()) }
     }
 
     @Test
@@ -201,7 +199,7 @@ internal class DevicesRepositoryImplTest {
                 pushProviderName = pushProviderName,
             )
 
-        coEvery { apiService.createDevice(expectedRequest) } returns Response("")
+        coEvery { feedsApi.createDevice(expectedRequest) } returns Response("")
 
         val result =
             repository.createDevice(
@@ -211,7 +209,7 @@ internal class DevicesRepositoryImplTest {
             )
 
         assertTrue(result.isSuccess)
-        coVerify(exactly = 1) { apiService.createDevice(expectedRequest) }
+        coVerify(exactly = 1) { feedsApi.createDevice(expectedRequest) }
     }
 
     @Test
@@ -228,7 +226,7 @@ internal class DevicesRepositoryImplTest {
                 pushProviderName = pushProviderName,
             )
 
-        coEvery { apiService.createDevice(expectedRequest) } returns Response("")
+        coEvery { feedsApi.createDevice(expectedRequest) } returns Response("")
 
         val result =
             repository.createDevice(
@@ -238,7 +236,7 @@ internal class DevicesRepositoryImplTest {
             )
 
         assertTrue(result.isSuccess)
-        coVerify(exactly = 1) { apiService.createDevice(expectedRequest) }
+        coVerify(exactly = 1) { feedsApi.createDevice(expectedRequest) }
     }
 
     @Test
@@ -246,7 +244,7 @@ internal class DevicesRepositoryImplTest {
         runTest {
             // Given
             val deviceId = "test-device-id"
-            coEvery { apiService.deleteDevice(deviceId) } returns Response("")
+            coEvery { feedsApi.deleteDevice(deviceId) } returns Response("")
 
             // When
             val result = repository.deleteDevice(deviceId)
@@ -254,7 +252,7 @@ internal class DevicesRepositoryImplTest {
             // Then
             assertTrue(result.isSuccess)
             assertEquals(Unit, result.getOrNull())
-            coVerify(exactly = 1) { apiService.deleteDevice(deviceId) }
+            coVerify(exactly = 1) { feedsApi.deleteDevice(deviceId) }
         }
 
     @Test
@@ -262,7 +260,7 @@ internal class DevicesRepositoryImplTest {
         // Given
         val deviceId = "test-device-id"
         val expectedException = RuntimeException("Delete device failed")
-        coEvery { apiService.deleteDevice(deviceId) } throws expectedException
+        coEvery { feedsApi.deleteDevice(deviceId) } throws expectedException
 
         // When
         val result = repository.deleteDevice(deviceId)
@@ -270,6 +268,6 @@ internal class DevicesRepositoryImplTest {
         // Then
         assertTrue(result.isFailure)
         assertEquals(expectedException, result.exceptionOrNull())
-        coVerify(exactly = 1) { apiService.deleteDevice(deviceId) }
+        coVerify(exactly = 1) { feedsApi.deleteDevice(deviceId) }
     }
 }

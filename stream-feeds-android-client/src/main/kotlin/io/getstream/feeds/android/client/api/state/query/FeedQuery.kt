@@ -20,8 +20,8 @@ import io.getstream.android.core.query.toRequest
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedInputData
 import io.getstream.feeds.android.client.api.model.toRequest
-import io.getstream.feeds.android.core.generated.models.GetOrCreateFeedRequest
-import io.getstream.feeds.android.core.generated.models.PagerRequest
+import io.getstream.feeds.android.network.models.GetOrCreateFeedRequest
+import io.getstream.feeds.android.network.models.PagerRequest
 
 /**
  * A query configuration for retrieving and managing feed data from Stream feeds.

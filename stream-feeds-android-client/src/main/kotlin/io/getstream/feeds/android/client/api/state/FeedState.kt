@@ -23,7 +23,7 @@ import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
-import io.getstream.feeds.android.core.generated.models.FeedOwnCapability
+import io.getstream.feeds.android.network.models.FeedOwnCapability
 import kotlinx.coroutines.flow.StateFlow
 
 /**

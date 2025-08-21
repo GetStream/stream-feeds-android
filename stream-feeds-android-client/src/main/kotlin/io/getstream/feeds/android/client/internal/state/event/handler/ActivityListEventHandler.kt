@@ -17,14 +17,14 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.ActivityListStateUpdates
-import io.getstream.feeds.android.core.generated.models.ActivityDeletedEvent
-import io.getstream.feeds.android.core.generated.models.ActivityReactionAddedEvent
-import io.getstream.feeds.android.core.generated.models.ActivityReactionDeletedEvent
-import io.getstream.feeds.android.core.generated.models.BookmarkAddedEvent
-import io.getstream.feeds.android.core.generated.models.BookmarkDeletedEvent
-import io.getstream.feeds.android.core.generated.models.CommentAddedEvent
-import io.getstream.feeds.android.core.generated.models.CommentDeletedEvent
-import io.getstream.feeds.android.core.generated.models.WSEvent
+import io.getstream.feeds.android.network.models.ActivityDeletedEvent
+import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
+import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
+import io.getstream.feeds.android.network.models.BookmarkAddedEvent
+import io.getstream.feeds.android.network.models.BookmarkDeletedEvent
+import io.getstream.feeds.android.network.models.CommentAddedEvent
+import io.getstream.feeds.android.network.models.CommentDeletedEvent
+import io.getstream.feeds.android.network.models.WSEvent
 
 internal class ActivityListEventHandler(private val state: ActivityListStateUpdates) :
     StateEventHandler {

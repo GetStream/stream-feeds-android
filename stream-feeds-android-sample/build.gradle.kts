@@ -47,7 +47,6 @@ android {
 dependencies {
     // Feeds Client
     implementation(project(":stream-feeds-android-client"))
-    implementation(project(":stream-feeds-android-core"))
     // Stream Log
     implementation(libs.stream.log)
     // Coil

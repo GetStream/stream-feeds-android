@@ -15,7 +15,7 @@
  */
 package io.getstream.feeds.android.client.internal.file
 
-import io.getstream.feeds.android.core.generated.models.FileUploadResponse
+import io.getstream.feeds.android.network.models.FileUploadResponse
 import okhttp3.MultipartBody
 import retrofit2.http.Multipart
 import retrofit2.http.POST

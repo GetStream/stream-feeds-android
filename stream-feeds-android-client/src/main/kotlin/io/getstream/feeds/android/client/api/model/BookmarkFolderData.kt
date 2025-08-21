@@ -15,8 +15,7 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.client.internal.model.mapping.toDate
-import io.getstream.feeds.android.core.generated.models.BookmarkFolderResponse
+import io.getstream.feeds.android.network.models.BookmarkFolderResponse
 import java.util.Date
 
 /**
@@ -39,9 +38,9 @@ public data class BookmarkFolderData(
 /** Converts a [BookmarkFolderResponse] to a [BookmarkFolderData] model. */
 internal fun BookmarkFolderResponse.toModel(): BookmarkFolderData =
     BookmarkFolderData(
-        createdAt = createdAt.toDate(),
+        createdAt = createdAt,
         custom = custom,
         id = id,
         name = name,
-        updatedAt = updatedAt.toDate(),
+        updatedAt = updatedAt,
     )

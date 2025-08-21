@@ -22,7 +22,7 @@ import io.getstream.android.core.websocket.WebSocketConnectionState
 import io.getstream.feeds.android.client.internal.log.provideLogger
 import io.getstream.feeds.android.client.internal.socket.FeedsSocket
 import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
-import io.getstream.feeds.android.core.generated.models.WSEvent
+import io.getstream.feeds.android.network.models.WSEvent
 import io.getstream.log.TaggedLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

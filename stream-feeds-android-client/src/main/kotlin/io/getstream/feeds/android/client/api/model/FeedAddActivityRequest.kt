@@ -16,9 +16,9 @@
 package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
-import io.getstream.feeds.android.core.generated.models.ActivityLocation
-import io.getstream.feeds.android.core.generated.models.AddActivityRequest
-import io.getstream.feeds.android.core.generated.models.Attachment
+import io.getstream.feeds.android.network.models.ActivityLocation
+import io.getstream.feeds.android.network.models.AddActivityRequest
+import io.getstream.feeds.android.network.models.Attachment
 
 public data class FeedAddActivityRequest
 internal constructor(

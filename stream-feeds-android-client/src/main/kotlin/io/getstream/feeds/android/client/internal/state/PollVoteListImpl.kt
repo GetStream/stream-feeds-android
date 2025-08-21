@@ -25,7 +25,7 @@ import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManag
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
 import io.getstream.feeds.android.client.internal.state.event.handler.PollVoteListEventHandler
-import io.getstream.feeds.android.core.generated.models.WSEvent
+import io.getstream.feeds.android.network.models.WSEvent
 
 /**
  * An implementation of [PollVoteList] that manages the state and queries for poll votes.

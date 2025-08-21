@@ -22,7 +22,7 @@ import io.getstream.android.core.query.SortField
 import io.getstream.android.core.query.toRequest
 import io.getstream.feeds.android.client.api.model.ModerationConfigData
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
-import io.getstream.feeds.android.core.generated.models.QueryModerationConfigsRequest
+import io.getstream.feeds.android.network.models.QueryModerationConfigsRequest
 
 /**
  * A query configuration for fetching moderation configurations.

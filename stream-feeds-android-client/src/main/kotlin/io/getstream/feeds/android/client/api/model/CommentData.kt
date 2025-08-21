@@ -16,10 +16,9 @@
 package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.client.api.state.query.CommentsSortDataFields
-import io.getstream.feeds.android.client.internal.model.mapping.toDate
-import io.getstream.feeds.android.core.generated.models.Attachment
-import io.getstream.feeds.android.core.generated.models.CommentResponse
-import io.getstream.feeds.android.core.generated.models.RepliesMeta
+import io.getstream.feeds.android.network.models.Attachment
+import io.getstream.feeds.android.network.models.CommentResponse
+import io.getstream.feeds.android.network.models.RepliesMeta
 import java.util.Date
 
 /**
@@ -130,9 +129,9 @@ internal fun CommentResponse.toModel(): CommentData =
         attachments = attachments,
         confidenceScore = confidenceScore,
         controversyScore = controversyScore,
-        createdAt = createdAt.toDate(),
+        createdAt = createdAt,
         custom = custom ?: emptyMap(),
-        deletedAt = deletedAt?.toDate(),
+        deletedAt = deletedAt,
         downvoteCount = downvoteCount,
         id = id,
         latestReactions = latestReactions?.map { it.toModel() }.orEmpty(),
@@ -150,7 +149,7 @@ internal fun CommentResponse.toModel(): CommentData =
         score = score,
         status = status,
         text = text,
-        updatedAt = updatedAt.toDate(),
+        updatedAt = updatedAt,
         upvoteCount = upvoteCount,
         user = user.toModel(),
     )

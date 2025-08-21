@@ -20,10 +20,10 @@ import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.file.FileType
 import io.getstream.feeds.android.client.api.file.UploadedFile
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
-import io.getstream.feeds.android.core.generated.apis.ApiService
-import io.getstream.feeds.android.core.generated.models.AddCommentRequest
-import io.getstream.feeds.android.core.generated.models.AddCommentsBatchRequest
-import io.getstream.feeds.android.core.generated.models.Attachment
+import io.getstream.feeds.android.network.apis.FeedsApi
+import io.getstream.feeds.android.network.models.AddCommentRequest
+import io.getstream.feeds.android.network.models.AddCommentsBatchRequest
+import io.getstream.feeds.android.network.models.Attachment
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -33,10 +33,10 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 internal class CommentsRepositoryImplTest {
-    private val apiService: ApiService = mockk()
+    private val feedsApi: FeedsApi = mockk()
     private val uploader: FeedUploader = mockk()
 
-    private val repository = CommentsRepositoryImpl(api = apiService, uploader = uploader)
+    private val repository = CommentsRepositoryImpl(api = feedsApi, uploader = uploader)
 
     @Test
     fun `on addComment, upload attachments and send api request`() = runTest {
@@ -70,7 +70,7 @@ internal class CommentsRepositoryImplTest {
 
         coVerify {
             attachmentUploads.forEach { localFile -> uploader.upload(localFile) }
-            apiService.addComment(expectedAddCommentRequest)
+            feedsApi.addComment(expectedAddCommentRequest)
         }
     }
 
@@ -92,7 +92,7 @@ internal class CommentsRepositoryImplTest {
         val result = repository.addComment(request)
 
         assertEquals("Upload failed", result.exceptionOrNull()?.message)
-        coVerify(exactly = 0) { apiService.addActivity(any()) }
+        coVerify(exactly = 0) { feedsApi.addActivity(any()) }
     }
 
     @Test
@@ -144,7 +144,7 @@ internal class CommentsRepositoryImplTest {
         coVerify {
             uploader.upload(payload1)
             uploader.upload(payload2)
-            apiService.addCommentsBatch(AddCommentsBatchRequest(expectedRequests))
+            feedsApi.addCommentsBatch(AddCommentsBatchRequest(expectedRequests))
         }
     }
 
