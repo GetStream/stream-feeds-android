@@ -45,13 +45,11 @@ inline fun <T : Any, R : Any> AsyncResource<T>.map(transform: (T) -> R): AsyncRe
     }
 
 suspend inline fun <T, R> Flow<AsyncResource<T>>.withFirstContent(block: suspend T.() -> R): R =
-    filterIsInstance<AsyncResource.Content<T>>()
-        .first()
-        .data
-        .block()
+    filterIsInstance<AsyncResource.Content<T>>().first().data.block()
 
-fun <T> Flow<AsyncResource<T>>.withFirstContent(scope: CoroutineScope, block: suspend T.() -> Unit) {
-    scope.launch {
-        withFirstContent(block)
-    }
+fun <T> Flow<AsyncResource<T>>.withFirstContent(
+    scope: CoroutineScope,
+    block: suspend T.() -> Unit,
+) {
+    scope.launch { withFirstContent(block) }
 }

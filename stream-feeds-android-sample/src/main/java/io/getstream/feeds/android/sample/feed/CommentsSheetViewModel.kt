@@ -38,14 +38,16 @@ import io.getstream.feeds.android.sample.util.map
 import io.getstream.feeds.android.sample.util.notNull
 import io.getstream.feeds.android.sample.util.withFirstContent
 import io.getstream.feeds.android.sample.utils.logResult
+import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import javax.inject.Inject
 
 @HiltViewModel
-class CommentsSheetViewModel @Inject constructor(
+class CommentsSheetViewModel
+@Inject
+constructor(
     @ApplicationContext private val context: Context,
     loginManager: LoginManager,
     savedStateHandle: SavedStateHandle,
@@ -54,16 +56,21 @@ class CommentsSheetViewModel @Inject constructor(
     private val args = CommentsBottomSheetDestination.argsFrom(savedStateHandle)
     private var canLoadMoreComments = true
 
-    private val activity = flow {
-        val activity = loginManager.currentState()
-            ?.client
-            ?.activity(activityId = args.activityId, fid = args.fid)
-        emit(AsyncResource.notNull(activity))
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
+    private val activity =
+        flow {
+                val activity =
+                    loginManager
+                        .currentState()
+                        ?.client
+                        ?.activity(activityId = args.activityId, fid = args.fid)
+                emit(AsyncResource.notNull(activity))
+            }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
-    val state = activity
-        .map { loadingState -> loadingState.map(Activity::state) }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
+    val state =
+        activity
+            .map { loadingState -> loadingState.map(Activity::state) }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
     init {
         activity.withFirstContent(viewModelScope) {
@@ -87,7 +94,7 @@ class CommentsSheetViewModel @Inject constructor(
                 } else {
                     val request =
                         AddCommentReactionRequest("heart", createNotificationActivity = true)
-                    activity.addCommentReaction(comment.id, request)
+                    addCommentReaction(comment.id, request)
                 }
                 .logResult(TAG, "Toggling heart reaction for comment: ${comment.id}")
         }
@@ -102,21 +109,20 @@ class CommentsSheetViewModel @Inject constructor(
                 }
 
             addComment(
-                ActivityAddCommentRequest(
-                    comment = text,
-                    activityId = activityId,
-                    parentId = replyParentId,
-                    createNotificationActivity = true,
+                    ActivityAddCommentRequest(
+                        comment = text,
+                        activityId = activityId,
+                        parentId = replyParentId,
+                        createNotificationActivity = true,
                         attachmentUploads =
                             attachmentFiles.map {
-                                FeedUploadPayload(file = it, type = FileType.Image("jpeg")
-                        )
+                                FeedUploadPayload(file = it, type = FileType.Image("jpeg"))
+                            },
+                    ),
+                    attachmentUploadProgress = { file, progress ->
+                        Log.d(TAG, "Uploading attachment: ${file.type}, progress: $progress")
                     },
-                ),
-                attachmentUploadProgress = { file, progress ->
-                    Log.d(TAG, "Uploading attachment: ${file.type}, progress: $progress")
-                },
-            )
+                )
                 .logResult(TAG, "Adding comment to activity: $activityId")
 
             deleteFiles(attachmentFiles)

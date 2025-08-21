@@ -63,7 +63,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -155,19 +154,19 @@ fun FeedsScreen(
 
                         val baseActivity = activity.parent ?: activity
                         ActivityContent(
-
                             user = baseActivity.user,
                             text = baseActivity.text.orEmpty(),
                             attachments = baseActivity.attachments,
                             data = activity,
-                            currentUserId = currentUserId,onCommentClick = {
-                            navigator.navigate(
-                                CommentsBottomSheetDestination(
-                                    feedId = fid.rawValue,
-                                    activityId = activity.id
+                            currentUserId = currentUserId,
+                            onCommentClick = {
+                                navigator.navigate(
+                                    CommentsBottomSheetDestination(
+                                        feedId = fid.rawValue,
+                                        activityId = activity.id,
+                                    )
                                 )
-                            )
-                        },
+                            },
                             onHeartClick = { viewModel.onHeartClick(activity) },
                             onRepostClick = { message ->
                                 viewModel.onRepostClick(activity, message)
