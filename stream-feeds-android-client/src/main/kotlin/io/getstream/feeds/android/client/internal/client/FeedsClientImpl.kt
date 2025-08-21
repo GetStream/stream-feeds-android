@@ -141,6 +141,8 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.plus
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -340,7 +342,6 @@ internal class FeedsClientImpl(
 
             override fun onEvent(event: WSEvent) {
                 logger.d { "[onEvent] $event" }
-                // TODO: Implementation
             }
         }
 
@@ -375,6 +376,19 @@ internal class FeedsClientImpl(
     override suspend fun disconnect(): Result<Unit> {
         connectionRecoveryHandler.stop()
         return socket.disconnect(DisconnectionSource.UserInitiated)
+    }
+
+    override fun events() = callbackFlow {
+        val listener = object : FeedsSocketListener {
+            override fun onState(state: WebSocketConnectionState) {}
+
+            override fun onEvent(event: WSEvent) {
+                trySend(event)
+            }
+        }
+        val subscription = socket.subscribe(listener)
+
+        awaitClose { subscription.getOrNull()?.cancel() }
     }
 
     override fun feed(group: String, id: String): Feed = feed(FeedId(group, id))
