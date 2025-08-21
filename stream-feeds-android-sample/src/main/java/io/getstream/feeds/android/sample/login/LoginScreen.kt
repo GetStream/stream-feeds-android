@@ -30,7 +30,6 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -38,20 +37,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
 import io.getstream.feeds.android.client.BuildConfig
 import io.getstream.feeds.android.sample.R
+import io.getstream.feeds.android.sample.components.UserAvatar
 
 @Composable
 fun LoginScreen(
@@ -122,13 +117,7 @@ private fun UserLoginItem(
                 .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        AsyncImage(
-            modifier = Modifier.size(40.dp).clip(CircleShape),
-            model =
-                ImageRequest.Builder(LocalContext.current).data(credentials.user.imageURL).build(),
-            contentScale = ContentScale.Crop,
-            contentDescription = null,
-        )
+        UserAvatar(credentials.user.imageURL, Modifier.size(40.dp))
 
         Text(
             modifier = Modifier.weight(1f).padding(start = 16.dp),
@@ -151,7 +140,7 @@ private fun DividerItem() {
     HorizontalDivider(thickness = 0.5.dp, color = Color.Gray)
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun LoginScreenPreview() {
     LoginScreen {}

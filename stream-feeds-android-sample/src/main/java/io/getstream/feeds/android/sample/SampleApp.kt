@@ -16,6 +16,15 @@
 package io.getstream.feeds.android.sample
 
 import android.app.Application
+import coil3.SingletonImageLoader
 import dagger.hilt.android.HiltAndroidApp
+import io.getstream.feeds.android.sample.ui.CoilImageLoaderFactory
 
-@HiltAndroidApp class SampleApp : Application()
+@HiltAndroidApp
+class SampleApp : Application() {
+    override fun onCreate() {
+        super.onCreate()
+
+        SingletonImageLoader.setSafe(CoilImageLoaderFactory())
+    }
+}
