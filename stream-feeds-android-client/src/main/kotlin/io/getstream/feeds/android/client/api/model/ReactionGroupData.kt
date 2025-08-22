@@ -15,8 +15,7 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.client.internal.model.mapping.toDate
-import io.getstream.feeds.android.core.generated.models.ReactionGroupResponse
+import io.getstream.feeds.android.network.models.ReactionGroupResponse
 import java.util.Date
 
 /**
@@ -73,6 +72,6 @@ internal fun ReactionGroupData.increment(date: Date): ReactionGroupData {
 internal fun ReactionGroupResponse.toModel(): ReactionGroupData =
     ReactionGroupData(
         count = count,
-        firstReactionAt = firstReactionAt.toDate(),
-        lastReactionAt = lastReactionAt.toDate(),
+        firstReactionAt = firstReactionAt,
+        lastReactionAt = lastReactionAt,
     )

@@ -20,9 +20,9 @@ import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.file.FileType
 import io.getstream.feeds.android.client.api.file.UploadedFile
 import io.getstream.feeds.android.client.api.model.FeedAddActivityRequest
-import io.getstream.feeds.android.core.generated.apis.ApiService
-import io.getstream.feeds.android.core.generated.models.AddActivityRequest
-import io.getstream.feeds.android.core.generated.models.Attachment
+import io.getstream.feeds.android.network.apis.FeedsApi
+import io.getstream.feeds.android.network.models.AddActivityRequest
+import io.getstream.feeds.android.network.models.Attachment
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -32,10 +32,10 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 internal class ActivitiesRepositoryImplTest {
-    private val apiService: ApiService = mockk()
+    private val feedsApi: FeedsApi = mockk()
     private val uploader: FeedUploader = mockk()
 
-    private val repository = ActivitiesRepositoryImpl(api = apiService, uploader = uploader)
+    private val repository = ActivitiesRepositoryImpl(api = feedsApi, uploader = uploader)
 
     @Test
     fun `on addActivity, upload attachments and send api request`() = runTest {
@@ -76,7 +76,7 @@ internal class ActivitiesRepositoryImplTest {
         repository.addActivity(request)
 
         attachmentUploads.forEach { localFile -> coVerify { uploader.upload(localFile) } }
-        coVerify { apiService.addActivity(expectedAddActivityRequest) }
+        coVerify { feedsApi.addActivity(expectedAddActivityRequest) }
     }
 
     @Test
@@ -93,6 +93,6 @@ internal class ActivitiesRepositoryImplTest {
         val result = repository.addActivity(request)
 
         assertEquals("Upload failed", result.exceptionOrNull()?.message)
-        coVerify(exactly = 0) { apiService.addActivity(any()) }
+        coVerify(exactly = 0) { feedsApi.addActivity(any()) }
     }
 }

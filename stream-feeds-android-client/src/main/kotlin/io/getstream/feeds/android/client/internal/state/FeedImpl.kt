@@ -41,21 +41,21 @@ import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
 import io.getstream.feeds.android.client.internal.state.event.handler.FeedEventHandler
 import io.getstream.feeds.android.client.internal.utils.flatMap
-import io.getstream.feeds.android.core.generated.models.AcceptFollowRequest
-import io.getstream.feeds.android.core.generated.models.AddActivityRequest
-import io.getstream.feeds.android.core.generated.models.AddBookmarkRequest
-import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
-import io.getstream.feeds.android.core.generated.models.AddReactionRequest
-import io.getstream.feeds.android.core.generated.models.CreatePollRequest
-import io.getstream.feeds.android.core.generated.models.FollowRequest
-import io.getstream.feeds.android.core.generated.models.MarkActivityRequest
-import io.getstream.feeds.android.core.generated.models.RejectFollowRequest
-import io.getstream.feeds.android.core.generated.models.UpdateActivityRequest
-import io.getstream.feeds.android.core.generated.models.UpdateBookmarkRequest
-import io.getstream.feeds.android.core.generated.models.UpdateCommentRequest
-import io.getstream.feeds.android.core.generated.models.UpdateFeedMembersRequest
-import io.getstream.feeds.android.core.generated.models.UpdateFeedRequest
-import io.getstream.feeds.android.core.generated.models.WSEvent
+import io.getstream.feeds.android.network.models.AcceptFollowRequest
+import io.getstream.feeds.android.network.models.AddActivityRequest
+import io.getstream.feeds.android.network.models.AddBookmarkRequest
+import io.getstream.feeds.android.network.models.AddCommentReactionRequest
+import io.getstream.feeds.android.network.models.AddReactionRequest
+import io.getstream.feeds.android.network.models.CreatePollRequest
+import io.getstream.feeds.android.network.models.FollowRequest
+import io.getstream.feeds.android.network.models.MarkActivityRequest
+import io.getstream.feeds.android.network.models.RejectFollowRequest
+import io.getstream.feeds.android.network.models.UpdateActivityRequest
+import io.getstream.feeds.android.network.models.UpdateBookmarkRequest
+import io.getstream.feeds.android.network.models.UpdateCommentRequest
+import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
+import io.getstream.feeds.android.network.models.UpdateFeedRequest
+import io.getstream.feeds.android.network.models.WSEvent
 
 /**
  * A feed represents a collection of activities and provides methods to interact with them.

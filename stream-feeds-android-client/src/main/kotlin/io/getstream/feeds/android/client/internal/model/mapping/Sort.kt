@@ -16,7 +16,7 @@
 package io.getstream.feeds.android.client.internal.model.mapping
 
 import io.getstream.android.core.query.Sort
-import io.getstream.feeds.android.core.generated.models.SortParamRequest
+import io.getstream.feeds.android.network.models.SortParamRequest
 
 /**
  * Converts a [Sort] operation to a [SortParamRequest] for use in API requests.

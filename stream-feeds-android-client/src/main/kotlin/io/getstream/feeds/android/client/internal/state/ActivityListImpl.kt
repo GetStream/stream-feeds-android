@@ -25,7 +25,7 @@ import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManag
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
 import io.getstream.feeds.android.client.internal.state.event.handler.ActivityListEventHandler
-import io.getstream.feeds.android.core.generated.models.WSEvent
+import io.getstream.feeds.android.network.models.WSEvent
 
 /**
  * A paginated list of activities that supports real-time updates and filtering.

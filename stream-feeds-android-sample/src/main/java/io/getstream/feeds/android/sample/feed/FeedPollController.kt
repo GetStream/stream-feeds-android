@@ -18,8 +18,8 @@ package io.getstream.feeds.android.sample.feed
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.Activity
-import io.getstream.feeds.android.core.generated.models.CastPollVoteRequest
-import io.getstream.feeds.android.core.generated.models.VoteData
+import io.getstream.feeds.android.network.models.CastPollVoteRequest
+import io.getstream.feeds.android.network.models.VoteData
 import io.getstream.feeds.android.sample.utils.logResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

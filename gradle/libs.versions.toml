@@ -27,7 +27,6 @@ retrofit = "2.12.0"
 symbolProcessingApi = "2.0.21-1.0.28"
 streamLog = "1.3.2"
 streamPush = "1.3.1"
-threetenabp = "1.4.7"
 lifecycleProcess = "2.9.1"
 lifecycleViewModelCompose = "2.4.0"
 spotless = "7.2.1"
@@ -78,7 +77,6 @@ retrofit-moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", v
 retrofit-scalars = { group = "com.squareup.retrofit2", name = "converter-scalars", version.ref = "retrofit" }
 stream-log = { group = "io.getstream", name = "stream-log", version.ref = "streamLog" }
 stream-push-delegate = { module = "io.getstream:stream-android-push-delegate", version.ref = "streamPush" }
-threetenabp = { group = "com.jakewharton.threetenabp", name = "threetenabp", version.ref = "threetenabp" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 
 

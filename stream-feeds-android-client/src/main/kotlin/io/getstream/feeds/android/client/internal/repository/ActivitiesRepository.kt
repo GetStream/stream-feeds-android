@@ -22,14 +22,14 @@ import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
-import io.getstream.feeds.android.core.generated.models.ActivityRequest
-import io.getstream.feeds.android.core.generated.models.AddActivityRequest
-import io.getstream.feeds.android.core.generated.models.AddReactionRequest
-import io.getstream.feeds.android.core.generated.models.DeleteActivitiesRequest
-import io.getstream.feeds.android.core.generated.models.DeleteActivitiesResponse
-import io.getstream.feeds.android.core.generated.models.MarkActivityRequest
-import io.getstream.feeds.android.core.generated.models.QueryActivityReactionsRequest
-import io.getstream.feeds.android.core.generated.models.UpdateActivityRequest
+import io.getstream.feeds.android.network.models.ActivityRequest
+import io.getstream.feeds.android.network.models.AddActivityRequest
+import io.getstream.feeds.android.network.models.AddReactionRequest
+import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
+import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
+import io.getstream.feeds.android.network.models.MarkActivityRequest
+import io.getstream.feeds.android.network.models.QueryActivityReactionsRequest
+import io.getstream.feeds.android.network.models.UpdateActivityRequest
 
 /**
  * Represents the repository for managing activities. Performs requests and transforms API models to

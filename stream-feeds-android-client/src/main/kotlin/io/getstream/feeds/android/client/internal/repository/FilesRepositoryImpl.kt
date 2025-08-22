@@ -16,14 +16,14 @@
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.android.core.result.runSafely
-import io.getstream.feeds.android.core.generated.apis.ApiService
+import io.getstream.feeds.android.network.apis.FeedsApi
 
 /**
- * Default implementation of [FilesRepository]. Uses [ApiService] to perform file operations.
+ * Default implementation of [FilesRepository]. Uses [FeedsApi] to perform file operations.
  *
  * @property api The API service used for file operations.
  */
-internal class FilesRepositoryImpl(private val api: ApiService) : FilesRepository {
+internal class FilesRepositoryImpl(private val api: FeedsApi) : FilesRepository {
 
     override suspend fun deleteFile(url: String): Result<Unit> = runSafely { api.deleteFile(url) }
 

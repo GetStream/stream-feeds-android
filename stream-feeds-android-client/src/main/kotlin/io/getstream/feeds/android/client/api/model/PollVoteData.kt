@@ -15,8 +15,7 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.client.internal.model.mapping.toDate
-import io.getstream.feeds.android.core.generated.models.PollVoteResponseData
+import io.getstream.feeds.android.network.models.PollVoteResponseData
 import java.util.Date
 
 /**
@@ -48,12 +47,12 @@ public data class PollVoteData(
 internal fun PollVoteResponseData.toModel(): PollVoteData =
     PollVoteData(
         answerText = answerText,
-        createdAt = createdAt.toDate(),
+        createdAt = createdAt,
         id = id,
         isAnswer = isAnswer,
         optionId = optionId,
         pollId = pollId,
-        updatedAt = updatedAt.toDate(),
+        updatedAt = updatedAt,
         user = user?.toModel(),
         userId = userId,
     )

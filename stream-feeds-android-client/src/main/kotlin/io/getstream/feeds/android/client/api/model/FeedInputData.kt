@@ -15,7 +15,7 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.core.generated.models.FeedInput
+import io.getstream.feeds.android.network.models.FeedInput
 
 /**
  * A data model representing input for creating or updating a feed in the Stream Feeds system.

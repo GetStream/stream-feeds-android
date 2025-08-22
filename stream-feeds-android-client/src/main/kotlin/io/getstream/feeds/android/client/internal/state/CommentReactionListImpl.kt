@@ -25,7 +25,7 @@ import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManag
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
 import io.getstream.feeds.android.client.internal.state.event.handler.CommentReactionListEventHandler
-import io.getstream.feeds.android.core.generated.models.WSEvent
+import io.getstream.feeds.android.network.models.WSEvent
 
 /**
  * A class representing a paginated list of reactions for a specific comment.

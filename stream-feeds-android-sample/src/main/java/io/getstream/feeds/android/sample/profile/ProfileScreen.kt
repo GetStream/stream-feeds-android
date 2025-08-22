@@ -37,17 +37,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
@@ -58,6 +53,7 @@ import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.UserData
 import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.sample.components.LoadingScreen
+import io.getstream.feeds.android.sample.components.UserAvatar
 import io.getstream.feeds.android.sample.util.AsyncResource
 import kotlinx.coroutines.flow.StateFlow
 
@@ -224,13 +220,10 @@ fun FollowingItem(follow: FollowData, onUnfollowClick: (FeedId) -> Unit) {
 
 @Composable
 fun FollowSuggestionItem(owner: UserData, fid: FeedId, onFollowClick: (FeedId) -> Unit) {
-    val context = LocalContext.current
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        AsyncImage(
-            modifier = Modifier.size(40.dp).clip(CircleShape),
-            model = ImageRequest.Builder(context).data(owner.image).build(),
-            contentDescription = null,
-            contentScale = ContentScale.FillBounds,
+        UserAvatar(
+            avatarUrl = owner.image,
+            modifier = Modifier.size(40.dp),
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(

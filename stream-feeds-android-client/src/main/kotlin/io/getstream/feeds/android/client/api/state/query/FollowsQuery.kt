@@ -22,7 +22,7 @@ import io.getstream.android.core.query.SortField
 import io.getstream.android.core.query.toRequest
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
-import io.getstream.feeds.android.core.generated.models.QueryFollowsRequest
+import io.getstream.feeds.android.network.models.QueryFollowsRequest
 
 /**
  * A query for retrieving follows with filtering, sorting, and pagination options.

@@ -25,22 +25,22 @@ import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
 import io.getstream.feeds.android.client.api.state.query.toRequest
-import io.getstream.feeds.android.core.generated.apis.ApiService
-import io.getstream.feeds.android.core.generated.models.CastPollVoteRequest
-import io.getstream.feeds.android.core.generated.models.CreatePollOptionRequest
-import io.getstream.feeds.android.core.generated.models.CreatePollRequest
-import io.getstream.feeds.android.core.generated.models.UpdatePollOptionRequest
-import io.getstream.feeds.android.core.generated.models.UpdatePollPartialRequest
-import io.getstream.feeds.android.core.generated.models.UpdatePollRequest
+import io.getstream.feeds.android.network.apis.FeedsApi
+import io.getstream.feeds.android.network.models.CastPollVoteRequest
+import io.getstream.feeds.android.network.models.CreatePollOptionRequest
+import io.getstream.feeds.android.network.models.CreatePollRequest
+import io.getstream.feeds.android.network.models.UpdatePollOptionRequest
+import io.getstream.feeds.android.network.models.UpdatePollPartialRequest
+import io.getstream.feeds.android.network.models.UpdatePollRequest
 
 /**
  * Default implementation of [PollsRepository].
  *
- * Uses [ApiService] to perform network operations.
+ * Uses [FeedsApi] to perform network operations.
  *
  * @param api The API service to use for network operations.
  */
-internal class PollsRepositoryImpl(private val api: ApiService) : PollsRepository {
+internal class PollsRepositoryImpl(private val api: FeedsApi) : PollsRepository {
 
     override suspend fun closePoll(pollId: String): Result<PollData> = runSafely {
         val request = UpdatePollPartialRequest(set = mapOf("is_closed" to true))

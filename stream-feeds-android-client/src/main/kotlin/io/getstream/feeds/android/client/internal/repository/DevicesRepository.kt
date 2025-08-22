@@ -16,7 +16,7 @@
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
-import io.getstream.feeds.android.core.generated.models.ListDevicesResponse
+import io.getstream.feeds.android.network.models.ListDevicesResponse
 
 /** Repository interface for managing push devices associated with the current user. */
 internal interface DevicesRepository {

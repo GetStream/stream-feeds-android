@@ -43,8 +43,8 @@ import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
-import io.getstream.feeds.android.core.generated.models.FeedOwnCapability
-import io.getstream.feeds.android.core.generated.models.NotificationStatusResponse
+import io.getstream.feeds.android.network.models.FeedOwnCapability
+import io.getstream.feeds.android.network.models.NotificationStatusResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

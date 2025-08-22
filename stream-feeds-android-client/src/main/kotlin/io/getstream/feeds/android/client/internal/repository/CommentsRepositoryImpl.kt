@@ -31,11 +31,11 @@ import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
 import io.getstream.feeds.android.client.api.state.query.toRequest
 import io.getstream.feeds.android.client.internal.file.uploadAll
-import io.getstream.feeds.android.core.generated.apis.ApiService
-import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
-import io.getstream.feeds.android.core.generated.models.AddCommentRequest
-import io.getstream.feeds.android.core.generated.models.AddCommentsBatchRequest
-import io.getstream.feeds.android.core.generated.models.UpdateCommentRequest
+import io.getstream.feeds.android.network.apis.FeedsApi
+import io.getstream.feeds.android.network.models.AddCommentReactionRequest
+import io.getstream.feeds.android.network.models.AddCommentRequest
+import io.getstream.feeds.android.network.models.AddCommentsBatchRequest
+import io.getstream.feeds.android.network.models.UpdateCommentRequest
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -43,12 +43,12 @@ import kotlinx.coroutines.coroutineScope
 /**
  * Default implementation of the [CommentsRepository] interface.
  *
- * Uses the provided [ApiService] to perform network requests related to comments.
+ * Uses the provided [FeedsApi] to perform network requests related to comments.
  *
  * @property api The API service used to perform network requests.
  */
 internal class CommentsRepositoryImpl(
-    private val api: ApiService,
+    private val api: FeedsApi,
     private val uploader: FeedUploader,
 ) : CommentsRepository {
 

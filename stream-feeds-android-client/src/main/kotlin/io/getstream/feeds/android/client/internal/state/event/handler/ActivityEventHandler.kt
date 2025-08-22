@@ -18,13 +18,13 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.ActivityStateUpdates
-import io.getstream.feeds.android.core.generated.models.PollClosedFeedEvent
-import io.getstream.feeds.android.core.generated.models.PollDeletedFeedEvent
-import io.getstream.feeds.android.core.generated.models.PollUpdatedFeedEvent
-import io.getstream.feeds.android.core.generated.models.PollVoteCastedFeedEvent
-import io.getstream.feeds.android.core.generated.models.PollVoteChangedFeedEvent
-import io.getstream.feeds.android.core.generated.models.PollVoteRemovedFeedEvent
-import io.getstream.feeds.android.core.generated.models.WSEvent
+import io.getstream.feeds.android.network.models.PollClosedFeedEvent
+import io.getstream.feeds.android.network.models.PollDeletedFeedEvent
+import io.getstream.feeds.android.network.models.PollUpdatedFeedEvent
+import io.getstream.feeds.android.network.models.PollVoteCastedFeedEvent
+import io.getstream.feeds.android.network.models.PollVoteChangedFeedEvent
+import io.getstream.feeds.android.network.models.PollVoteRemovedFeedEvent
+import io.getstream.feeds.android.network.models.WSEvent
 
 /**
  * This class handles activity-related WebSocket events and updates the activity state accordingly.

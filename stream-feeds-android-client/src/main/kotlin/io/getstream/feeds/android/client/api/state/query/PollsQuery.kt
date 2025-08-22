@@ -22,7 +22,7 @@ import io.getstream.android.core.query.SortField
 import io.getstream.android.core.query.toRequest
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
-import io.getstream.feeds.android.core.generated.models.QueryPollsRequest
+import io.getstream.feeds.android.network.models.QueryPollsRequest
 
 /**
  * A query for retrieving polls with filtering, sorting, and pagination options.

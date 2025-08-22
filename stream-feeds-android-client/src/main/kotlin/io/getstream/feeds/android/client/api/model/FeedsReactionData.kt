@@ -15,8 +15,7 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.client.internal.model.mapping.toDate
-import io.getstream.feeds.android.core.generated.models.FeedsReactionResponse
+import io.getstream.feeds.android.network.models.FeedsReactionResponse
 import java.util.Date
 
 /**
@@ -47,9 +46,9 @@ public data class FeedsReactionData(
 internal fun FeedsReactionResponse.toModel(): FeedsReactionData =
     FeedsReactionData(
         activityId = activityId,
-        createdAt = createdAt.toDate(),
+        createdAt = createdAt,
         custom = custom,
         type = type,
-        updatedAt = updatedAt.toDate(),
+        updatedAt = updatedAt,
         user = user.toModel(),
     )

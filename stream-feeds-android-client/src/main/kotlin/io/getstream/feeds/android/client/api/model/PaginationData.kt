@@ -15,7 +15,7 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.core.generated.models.PagerResponse
+import io.getstream.feeds.android.network.models.PagerResponse
 
 /**
  * Data class representing pagination information for a paginated response.

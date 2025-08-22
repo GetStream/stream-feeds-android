@@ -18,12 +18,12 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.ActivityCommentListStateUpdates
-import io.getstream.feeds.android.core.generated.models.CommentAddedEvent
-import io.getstream.feeds.android.core.generated.models.CommentDeletedEvent
-import io.getstream.feeds.android.core.generated.models.CommentReactionAddedEvent
-import io.getstream.feeds.android.core.generated.models.CommentReactionDeletedEvent
-import io.getstream.feeds.android.core.generated.models.CommentUpdatedEvent
-import io.getstream.feeds.android.core.generated.models.WSEvent
+import io.getstream.feeds.android.network.models.CommentAddedEvent
+import io.getstream.feeds.android.network.models.CommentDeletedEvent
+import io.getstream.feeds.android.network.models.CommentReactionAddedEvent
+import io.getstream.feeds.android.network.models.CommentReactionDeletedEvent
+import io.getstream.feeds.android.network.models.CommentUpdatedEvent
+import io.getstream.feeds.android.network.models.WSEvent
 
 internal class ActivityCommentListEventHandler(
     private val objectId: String,

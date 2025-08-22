@@ -15,7 +15,7 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.core.generated.models.FeedMemberRequest
+import io.getstream.feeds.android.network.models.FeedMemberRequest
 
 /**
  * A data model representing a request to add or update a member in a feed.
