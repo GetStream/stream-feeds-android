@@ -78,6 +78,8 @@ internal class FeedsRepositoryImpl(private val api: FeedsApi) : FeedsRepository 
                 ),
             ownCapabilities = response.ownCapabilities,
             pinnedActivities = response.pinnedActivities.map { it.toModel() },
+            aggregatedActivities = response.aggregatedActivities.map { it.toModel() },
+            notificationStatus = response.notificationStatus,
         )
     }
 

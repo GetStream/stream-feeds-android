@@ -17,6 +17,7 @@ package io.getstream.feeds.android.client.api.state
 
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.ActivityPinData
+import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
@@ -24,6 +25,7 @@ import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.network.models.FeedOwnCapability
+import io.getstream.feeds.android.network.models.NotificationStatusResponse
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -43,6 +45,9 @@ public interface FeedState {
 
     /** The list of activities in the feed, sorted by default sorting criteria. */
     public val activities: StateFlow<List<ActivityData>>
+
+    /** The list of aggregated activities in the feed. */
+    public val aggregatedActivities: StateFlow<List<AggregatedActivityData>>
 
     /** The feed data containing feed metadata and configuration. */
     public val feed: StateFlow<FeedData?>
@@ -64,6 +69,9 @@ public interface FeedState {
 
     /** The list of pinned activities and its pinning state. */
     public val pinnedActivities: StateFlow<List<ActivityPinData>>
+
+    /** Returns information about the notification status (read / seen activities). */
+    public val notificationStatus: StateFlow<NotificationStatusResponse?>
 
     /** Pagination information for activities queries. */
     public val activitiesPagination: PaginationData?

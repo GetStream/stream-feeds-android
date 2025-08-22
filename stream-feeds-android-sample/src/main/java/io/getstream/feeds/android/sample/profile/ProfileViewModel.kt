@@ -85,7 +85,7 @@ constructor(loginManager: LoginManager, savedStateHandle: SavedStateHandle) : Vi
 
     fun follow(feedId: FeedId) {
         feed.withFirstContent(viewModelScope) {
-            follow(feedId)
+            follow(feedId, createNotificationActivity = true)
                 .onSuccess {
                     // Update the follow suggestions after following a feed
                     _followSuggestions.update {

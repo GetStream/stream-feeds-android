@@ -92,7 +92,9 @@ constructor(
             if (comment.ownReactions.any { it.type == "heart" }) {
                     deleteCommentReaction(comment.id, "heart")
                 } else {
-                    addCommentReaction(comment.id, AddCommentReactionRequest("heart"))
+                    val request =
+                        AddCommentReactionRequest("heart", createNotificationActivity = true)
+                    addCommentReaction(comment.id, request)
                 }
                 .logResult(TAG, "Toggling heart reaction for comment: ${comment.id}")
         }
@@ -111,6 +113,7 @@ constructor(
                         comment = text,
                         activityId = activityId,
                         parentId = replyParentId,
+                        createNotificationActivity = true,
                         attachmentUploads =
                             attachmentFiles.map {
                                 FeedUploadPayload(file = it, type = FileType.Image("jpeg"))

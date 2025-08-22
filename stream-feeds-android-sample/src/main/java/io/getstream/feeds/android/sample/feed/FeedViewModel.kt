@@ -54,6 +54,7 @@ class FeedViewModel(
 
     val pollController = FeedPollController(viewModelScope, feedsClient, fid)
 
+    // User feed
     private val query =
         FeedQuery(
             fid = fid,
@@ -65,13 +66,19 @@ class FeedViewModel(
         )
     private val feed = feedsClient.feed(query)
 
+    // Notification feed
+    private val notificationFid = FeedId("notification", currentUserId)
+    private val notificationFeed = feedsClient.feed(notificationFid)
+
     val state: FeedState
         get() = feed.state
 
+    val notificationState: FeedState
+        get() = notificationFeed.state
+
     init {
-        viewModelScope.launch {
-            feed.getOrCreate().logResult(TAG, "Getting or creating feed: $fid")
-        }
+        viewModelScope.launch { feed.getOrCreate() }
+        viewModelScope.launch { notificationFeed.getOrCreate() }
     }
 
     fun onLoadMore() {
@@ -84,7 +91,10 @@ class FeedViewModel(
     fun onHeartClick(activity: ActivityData) {
         if (activity.ownReactions.isEmpty()) {
             // Add 'heart' reaction
-            viewModelScope.launch { feed.addReaction(activity.id, AddReactionRequest("heart")) }
+            viewModelScope.launch {
+                val request = AddReactionRequest("heart", createNotificationActivity = true)
+                feed.addReaction(activity.id, request)
+            }
         } else {
             // Remove 'heart' reaction
             viewModelScope.launch { feed.deleteReaction(activity.id, "heart") }

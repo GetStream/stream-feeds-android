@@ -34,6 +34,7 @@ import io.getstream.feeds.android.network.models.FeedUpdatedEvent
 import io.getstream.feeds.android.network.models.FollowCreatedEvent
 import io.getstream.feeds.android.network.models.FollowDeletedEvent
 import io.getstream.feeds.android.network.models.FollowUpdatedEvent
+import io.getstream.feeds.android.network.models.NotificationFeedUpdatedEvent
 import io.getstream.feeds.android.network.models.PollClosedFeedEvent
 import io.getstream.feeds.android.network.models.PollDeletedFeedEvent
 import io.getstream.feeds.android.network.models.PollUpdatedFeedEvent
@@ -153,6 +154,16 @@ internal class FeedEventHandler(private val fid: FeedId, private val state: Feed
             is FollowUpdatedEvent -> {
                 if (event.fid == fid.rawValue) {
                     state.onFollowUpdated(event.follow.toModel())
+                }
+            }
+
+            is NotificationFeedUpdatedEvent -> {
+                if (event.fid == fid.rawValue) {
+                    state.onNotificationFeedUpdated(
+                        aggregatedActivities =
+                            event.aggregatedActivities?.map { it.toModel() }.orEmpty(),
+                        notificationStatus = event.notificationStatus,
+                    )
                 }
             }
 

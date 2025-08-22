@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.state
 import io.getstream.android.core.query.Sort
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.ActivityPinData
+import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedData
@@ -43,6 +44,7 @@ import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import io.getstream.feeds.android.network.models.FeedOwnCapability
+import io.getstream.feeds.android.network.models.NotificationStatusResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -65,6 +67,8 @@ internal class FeedStateImpl(
 ) : FeedMutableState {
 
     private val _activities: MutableStateFlow<List<ActivityData>> = MutableStateFlow(emptyList())
+    private val _aggregatedActivities: MutableStateFlow<List<AggregatedActivityData>> =
+        MutableStateFlow(emptyList())
     private val _feed: MutableStateFlow<FeedData?> = MutableStateFlow(null)
     private val _followers: MutableStateFlow<List<FollowData>> = MutableStateFlow(emptyList())
     private val _following: MutableStateFlow<List<FollowData>> = MutableStateFlow(emptyList())
@@ -73,6 +77,8 @@ internal class FeedStateImpl(
         MutableStateFlow(emptyList())
     private val _pinnedActivities: MutableStateFlow<List<ActivityPinData>> =
         MutableStateFlow(emptyList())
+    private val _notificationStatus: MutableStateFlow<NotificationStatusResponse?> =
+        MutableStateFlow(null)
 
     private var _activitiesPagination: PaginationData? = null
 
@@ -87,6 +93,9 @@ internal class FeedStateImpl(
 
     override val activities: StateFlow<List<ActivityData>>
         get() = _activities.asStateFlow()
+
+    override val aggregatedActivities: StateFlow<List<AggregatedActivityData>>
+        get() = _aggregatedActivities.asStateFlow()
 
     override val feed: StateFlow<FeedData?>
         get() = _feed.asStateFlow()
@@ -109,6 +118,9 @@ internal class FeedStateImpl(
     override val pinnedActivities: StateFlow<List<ActivityPinData>>
         get() = _pinnedActivities.asStateFlow()
 
+    override val notificationStatus: StateFlow<NotificationStatusResponse?>
+        get() = _notificationStatus.asStateFlow()
+
     override val activitiesPagination: PaginationData?
         get() = _activitiesPagination
 
@@ -116,12 +128,14 @@ internal class FeedStateImpl(
         _activities.value = result.activities.models
         _activitiesPagination = result.activities.pagination
         activitiesQueryConfig = result.activitiesQueryConfig
+        _aggregatedActivities.value = result.aggregatedActivities
         _feed.value = result.feed
         _followers.value = result.followers
         _following.value = result.following
         _followRequests.value = result.followRequests
         _ownCapabilities.value = result.ownCapabilities
         _pinnedActivities.value = result.pinnedActivities
+        _notificationStatus.value = result.notificationStatus
 
         // Members are managed by the paginated list
         memberListState.onQueryMoreMembers(result.members, QueryConfiguration(null, null))
@@ -282,6 +296,18 @@ internal class FeedStateImpl(
             }
     }
 
+    override fun onNotificationFeedUpdated(
+        aggregatedActivities: List<AggregatedActivityData>,
+        notificationStatus: NotificationStatusResponse?,
+    ) {
+        // TODO: [PV] The enrichWithUserData is a workaround because we don't get the full user data
+        //  in the aggregated activities. Remove this method if this is fixed on BE, or remove the
+        //  comment if this is the expected behaviour.
+        //  See: [FEEDS-684]
+        _aggregatedActivities.value = enrichWithUserData(aggregatedActivities)
+        _notificationStatus.value = notificationStatus
+    }
+
     private fun addFollow(follow: FollowData) {
         if (follow.isFollowRequest) {
             _followRequests.update { it.upsert(follow, FollowData::id) }
@@ -301,6 +327,22 @@ internal class FeedStateImpl(
     private fun updateFollow(follow: FollowData) {
         removeFollow(follow)
         addFollow(follow)
+    }
+
+    private fun enrichWithUserData(
+        aggregatedActivities: List<AggregatedActivityData>
+    ): List<AggregatedActivityData> {
+        // The _activities state flow should contain the full user data for activities, because it
+        // will be delivered either via the initial query or via WebSocket events.
+        val knownUsers = _activities.value.map { it.user }
+        return aggregatedActivities.map {
+            val activities =
+                it.activities.map {
+                    val user = knownUsers.find { user -> user.id == it.user.id } ?: it.user
+                    it.copy(user = user)
+                }
+            it.copy(activities = activities)
+        }
     }
 
     override fun onPollChanged(id: String, data: PollData?) {
@@ -405,4 +447,15 @@ internal interface FeedStateUpdates {
      * @param data The updated poll data, or null if the poll was removed.
      */
     fun onPollChanged(id: String, data: PollData?)
+
+    /**
+     * Handles updates to a notification feed.
+     *
+     * @param aggregatedActivities The list of aggregated activities in the notification feed.
+     * @param notificationStatus The current notification status.
+     */
+    fun onNotificationFeedUpdated(
+        aggregatedActivities: List<AggregatedActivityData>,
+        notificationStatus: NotificationStatusResponse?,
+    )
 }
