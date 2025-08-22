@@ -18,7 +18,7 @@ package io.getstream.feeds.android.client.internal.file
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.file.FileType
 import io.getstream.feeds.android.client.api.file.UploadedFile
-import io.getstream.feeds.android.core.generated.models.FileUploadResponse
+import io.getstream.feeds.android.network.models.FileUploadResponse
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.verify

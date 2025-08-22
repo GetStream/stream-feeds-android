@@ -34,10 +34,11 @@ import io.getstream.feeds.android.client.internal.socket.common.monitor.StreamHe
 import io.getstream.feeds.android.client.internal.socket.common.parser.FeedsEventParser
 import io.getstream.feeds.android.client.internal.socket.events.ConnectedEvent
 import io.getstream.feeds.android.client.internal.socket.events.ConnectionErrorEvent
-import io.getstream.feeds.android.core.generated.models.HealthCheckEvent
-import io.getstream.feeds.android.core.generated.models.WSEvent
+import io.getstream.feeds.android.network.models.HealthCheckEvent
+import io.getstream.feeds.android.network.models.WSEvent
 import io.getstream.log.TaggedLogger
 import java.io.IOException
+import java.util.Date
 import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Response
@@ -103,18 +104,18 @@ internal data class ConnectUserData(
  * @property name Optional name of the user.
  */
 internal data class StreamConnectedUser(
-    val createdAt: org.threeten.bp.OffsetDateTime,
+    val createdAt: Date,
     val id: String,
     val language: String,
     val role: String,
-    val updatedAt: org.threeten.bp.OffsetDateTime,
+    val updatedAt: Date,
     val blockedUserIds: List<String>,
     val teams: List<String>,
     val custom: Map<String, Any?> = emptyMap(),
-    val deactivatedAt: org.threeten.bp.OffsetDateTime? = null,
-    val deletedAt: org.threeten.bp.OffsetDateTime? = null,
+    val deactivatedAt: Date? = null,
+    val deletedAt: Date? = null,
     val image: String? = null,
-    val lastActive: org.threeten.bp.OffsetDateTime? = null,
+    val lastActive: Date? = null,
     val name: String? = null,
 )
 

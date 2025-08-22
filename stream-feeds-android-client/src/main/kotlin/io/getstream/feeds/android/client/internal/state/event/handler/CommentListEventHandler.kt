@@ -17,8 +17,8 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.CommentListStateUpdates
-import io.getstream.feeds.android.core.generated.models.CommentUpdatedEvent
-import io.getstream.feeds.android.core.generated.models.WSEvent
+import io.getstream.feeds.android.network.models.CommentUpdatedEvent
+import io.getstream.feeds.android.network.models.WSEvent
 
 internal class CommentListEventHandler(private val state: CommentListStateUpdates) :
     StateEventHandler {

@@ -27,14 +27,14 @@ import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
-import io.getstream.feeds.android.core.generated.models.AcceptFollowRequest
-import io.getstream.feeds.android.core.generated.models.FeedOwnCapability
-import io.getstream.feeds.android.core.generated.models.FollowRequest
-import io.getstream.feeds.android.core.generated.models.QueryFeedMembersRequest
-import io.getstream.feeds.android.core.generated.models.QueryFollowsRequest
-import io.getstream.feeds.android.core.generated.models.RejectFollowRequest
-import io.getstream.feeds.android.core.generated.models.UpdateFeedMembersRequest
-import io.getstream.feeds.android.core.generated.models.UpdateFeedRequest
+import io.getstream.feeds.android.network.models.AcceptFollowRequest
+import io.getstream.feeds.android.network.models.FeedOwnCapability
+import io.getstream.feeds.android.network.models.FollowRequest
+import io.getstream.feeds.android.network.models.QueryFeedMembersRequest
+import io.getstream.feeds.android.network.models.QueryFollowsRequest
+import io.getstream.feeds.android.network.models.RejectFollowRequest
+import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
+import io.getstream.feeds.android.network.models.UpdateFeedRequest
 
 /**
  * Represents the repository for managing feeds. Performs requests and transforms API models to

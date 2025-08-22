@@ -17,7 +17,7 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.query.Filter
 import io.getstream.android.core.query.toRequest
-import io.getstream.feeds.android.core.generated.models.QueryCommentsRequest
+import io.getstream.feeds.android.network.models.QueryCommentsRequest
 import java.util.Date
 
 /**

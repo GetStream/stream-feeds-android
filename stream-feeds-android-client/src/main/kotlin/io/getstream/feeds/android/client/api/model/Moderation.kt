@@ -15,7 +15,7 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.core.generated.models.ModerationV2Response
+import io.getstream.feeds.android.network.models.ModerationV2Response
 
 /**
  * Model representing content moderation results from Stream's moderation system.

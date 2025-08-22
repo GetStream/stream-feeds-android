@@ -62,12 +62,12 @@ import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomS
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
-import io.getstream.feeds.android.sample.components.LoadingScreen
 import io.getstream.feeds.android.sample.R
+import io.getstream.feeds.android.sample.components.LoadingScreen
 import io.getstream.feeds.android.sample.ui.theme.LighterGray
 import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
-import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.ui.util.rippleClickable
+import io.getstream.feeds.android.sample.util.AsyncResource
 
 data class CommentsSheetArgs(val feedId: String, val activityId: String) {
     val fid = FeedId(feedId)
@@ -75,7 +75,7 @@ data class CommentsSheetArgs(val feedId: String, val activityId: String) {
 
 @Destination<RootGraph>(
     style = DestinationStyleBottomSheet::class,
-    navArgs = CommentsSheetArgs::class
+    navArgs = CommentsSheetArgs::class,
 )
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

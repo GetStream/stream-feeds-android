@@ -16,12 +16,11 @@
 package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.client.api.state.query.CommentsSortDataFields
-import io.getstream.feeds.android.client.internal.model.mapping.toDate
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
-import io.getstream.feeds.android.core.generated.models.Attachment
-import io.getstream.feeds.android.core.generated.models.RepliesMeta
-import io.getstream.feeds.android.core.generated.models.ThreadedCommentResponse
+import io.getstream.feeds.android.network.models.Attachment
+import io.getstream.feeds.android.network.models.RepliesMeta
+import io.getstream.feeds.android.network.models.ThreadedCommentResponse
 import java.util.Date
 
 /**
@@ -327,9 +326,9 @@ internal fun ThreadedCommentResponse.toModel(): ThreadedCommentData =
         attachments = attachments,
         confidenceScore = confidenceScore,
         controversyScore = controversyScore,
-        createdAt = createdAt.toDate(),
+        createdAt = createdAt,
         custom = custom,
-        deletedAt = deletedAt?.toDate(),
+        deletedAt = deletedAt,
         downvoteCount = downvoteCount,
         id = id,
         latestReactions = latestReactions?.map { it.toModel() }.orEmpty(),
@@ -347,7 +346,7 @@ internal fun ThreadedCommentResponse.toModel(): ThreadedCommentData =
         score = score,
         status = status,
         text = text,
-        updatedAt = updatedAt.toDate(),
+        updatedAt = updatedAt,
         upvoteCount = upvoteCount,
         user = user.toModel(),
     )

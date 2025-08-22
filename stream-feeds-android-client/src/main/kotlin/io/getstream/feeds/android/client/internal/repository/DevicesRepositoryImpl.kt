@@ -17,9 +17,9 @@ package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
-import io.getstream.feeds.android.core.generated.apis.ApiService
-import io.getstream.feeds.android.core.generated.models.CreateDeviceRequest
-import io.getstream.feeds.android.core.generated.models.ListDevicesResponse
+import io.getstream.feeds.android.network.apis.FeedsApi
+import io.getstream.feeds.android.network.models.CreateDeviceRequest
+import io.getstream.feeds.android.network.models.ListDevicesResponse
 
 /**
  * Default implementation of the [DevicesRepository] interface. Uses the provided [ApiService] to
@@ -27,7 +27,7 @@ import io.getstream.feeds.android.core.generated.models.ListDevicesResponse
  *
  * @property api The API service used to perform network requests.
  */
-internal class DevicesRepositoryImpl(private val api: ApiService) : DevicesRepository {
+internal class DevicesRepositoryImpl(private val api: FeedsApi) : DevicesRepository {
 
     override suspend fun queryDevices(): Result<ListDevicesResponse> = runSafely {
         api.listDevices()

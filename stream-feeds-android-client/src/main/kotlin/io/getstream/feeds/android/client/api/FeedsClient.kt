@@ -57,11 +57,11 @@ import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
 import io.getstream.feeds.android.client.internal.client.createFeedsClient
-import io.getstream.feeds.android.core.generated.models.ActivityRequest
-import io.getstream.feeds.android.core.generated.models.AddActivityRequest
-import io.getstream.feeds.android.core.generated.models.DeleteActivitiesRequest
-import io.getstream.feeds.android.core.generated.models.DeleteActivitiesResponse
-import io.getstream.feeds.android.core.generated.models.ListDevicesResponse
+import io.getstream.feeds.android.network.models.ActivityRequest
+import io.getstream.feeds.android.network.models.AddActivityRequest
+import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
+import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
+import io.getstream.feeds.android.network.models.ListDevicesResponse
 
 /** Single entry point for interacting with the Stream Feeds service. */
 public interface FeedsClient {
@@ -469,8 +469,8 @@ public interface FeedsClient {
      * Provides an instance of [FeedUploader] for uploading files.
      *
      * This uploader is the same as the one passed in the [FeedsConfig] provided during client
-     * initialization. If none was provided, a default uploader will be used that uploads files
-     * to the Stream CDN.
+     * initialization. If none was provided, a default uploader will be used that uploads files to
+     * the Stream CDN.
      *
      * @return An instance of [FeedUploader] that can be used to upload files.
      */

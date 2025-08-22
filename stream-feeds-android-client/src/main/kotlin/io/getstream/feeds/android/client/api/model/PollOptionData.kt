@@ -15,7 +15,7 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.core.generated.models.PollOptionResponseData
+import io.getstream.feeds.android.network.models.PollOptionResponseData
 
 /**
  * Data class representing a poll option.

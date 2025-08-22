@@ -35,14 +35,14 @@ import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
 import io.getstream.feeds.android.client.internal.state.event.handler.ActivityEventHandler
 import io.getstream.feeds.android.client.internal.utils.flatMap
-import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
-import io.getstream.feeds.android.core.generated.models.CastPollVoteRequest
-import io.getstream.feeds.android.core.generated.models.CreatePollOptionRequest
-import io.getstream.feeds.android.core.generated.models.UpdateCommentRequest
-import io.getstream.feeds.android.core.generated.models.UpdatePollOptionRequest
-import io.getstream.feeds.android.core.generated.models.UpdatePollPartialRequest
-import io.getstream.feeds.android.core.generated.models.UpdatePollRequest
-import io.getstream.feeds.android.core.generated.models.WSEvent
+import io.getstream.feeds.android.network.models.AddCommentReactionRequest
+import io.getstream.feeds.android.network.models.CastPollVoteRequest
+import io.getstream.feeds.android.network.models.CreatePollOptionRequest
+import io.getstream.feeds.android.network.models.UpdateCommentRequest
+import io.getstream.feeds.android.network.models.UpdatePollOptionRequest
+import io.getstream.feeds.android.network.models.UpdatePollPartialRequest
+import io.getstream.feeds.android.network.models.UpdatePollRequest
+import io.getstream.feeds.android.network.models.WSEvent
 
 /**
  * A class representing a single activity in a feed.

@@ -30,23 +30,23 @@ import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.client.api.state.query.toRequest
-import io.getstream.feeds.android.core.generated.apis.ApiService
-import io.getstream.feeds.android.core.generated.models.AcceptFollowRequest
-import io.getstream.feeds.android.core.generated.models.FollowRequest
-import io.getstream.feeds.android.core.generated.models.QueryFeedMembersRequest
-import io.getstream.feeds.android.core.generated.models.QueryFollowsRequest
-import io.getstream.feeds.android.core.generated.models.RejectFollowRequest
-import io.getstream.feeds.android.core.generated.models.UpdateFeedMembersRequest
-import io.getstream.feeds.android.core.generated.models.UpdateFeedRequest
+import io.getstream.feeds.android.network.apis.FeedsApi
+import io.getstream.feeds.android.network.models.AcceptFollowRequest
+import io.getstream.feeds.android.network.models.FollowRequest
+import io.getstream.feeds.android.network.models.QueryFeedMembersRequest
+import io.getstream.feeds.android.network.models.QueryFollowsRequest
+import io.getstream.feeds.android.network.models.RejectFollowRequest
+import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
+import io.getstream.feeds.android.network.models.UpdateFeedRequest
 
 /**
  * Default implementation of the [FeedsRepository] interface.
  *
- * Uses the provided [ApiService] to perform network requests related to feeds.
+ * Uses the provided [FeedsApi] to perform network requests related to feeds.
  *
  * @property api The API service used to perform network requests.
  */
-internal class FeedsRepositoryImpl(private val api: ApiService) : FeedsRepository {
+internal class FeedsRepositoryImpl(private val api: FeedsApi) : FeedsRepository {
 
     override suspend fun getOrCreateFeed(query: FeedQuery): Result<GetOrCreateInfo> = runSafely {
         val fid = query.fid

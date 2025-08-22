@@ -17,9 +17,9 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.PollVoteListStateUpdates
-import io.getstream.feeds.android.core.generated.models.PollVoteChangedFeedEvent
-import io.getstream.feeds.android.core.generated.models.PollVoteRemovedFeedEvent
-import io.getstream.feeds.android.core.generated.models.WSEvent
+import io.getstream.feeds.android.network.models.PollVoteChangedFeedEvent
+import io.getstream.feeds.android.network.models.PollVoteRemovedFeedEvent
+import io.getstream.feeds.android.network.models.WSEvent
 
 /**
  * Handles events related to poll vote lists in the feed state.

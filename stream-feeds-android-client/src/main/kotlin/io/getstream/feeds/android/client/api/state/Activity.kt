@@ -25,13 +25,13 @@ import io.getstream.feeds.android.client.api.model.PollOptionData
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
-import io.getstream.feeds.android.core.generated.models.AddCommentReactionRequest
-import io.getstream.feeds.android.core.generated.models.CastPollVoteRequest
-import io.getstream.feeds.android.core.generated.models.CreatePollOptionRequest
-import io.getstream.feeds.android.core.generated.models.UpdateCommentRequest
-import io.getstream.feeds.android.core.generated.models.UpdatePollOptionRequest
-import io.getstream.feeds.android.core.generated.models.UpdatePollPartialRequest
-import io.getstream.feeds.android.core.generated.models.UpdatePollRequest
+import io.getstream.feeds.android.network.models.AddCommentReactionRequest
+import io.getstream.feeds.android.network.models.CastPollVoteRequest
+import io.getstream.feeds.android.network.models.CreatePollOptionRequest
+import io.getstream.feeds.android.network.models.UpdateCommentRequest
+import io.getstream.feeds.android.network.models.UpdatePollOptionRequest
+import io.getstream.feeds.android.network.models.UpdatePollPartialRequest
+import io.getstream.feeds.android.network.models.UpdatePollRequest
 
 /**
  * A class representing a single activity in a feed.

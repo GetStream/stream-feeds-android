@@ -15,7 +15,7 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.core.generated.models.WSEvent
+import io.getstream.feeds.android.network.models.WSEvent
 
 /**
  * An interface for handling state events in the Stream Feeds Android client. Implementations of

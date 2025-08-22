@@ -28,26 +28,26 @@ import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.api.state.query.toRequest
 import io.getstream.feeds.android.client.internal.file.uploadAll
-import io.getstream.feeds.android.core.generated.apis.ApiService
-import io.getstream.feeds.android.core.generated.models.ActivityRequest
-import io.getstream.feeds.android.core.generated.models.AddActivityRequest
-import io.getstream.feeds.android.core.generated.models.AddReactionRequest
-import io.getstream.feeds.android.core.generated.models.DeleteActivitiesRequest
-import io.getstream.feeds.android.core.generated.models.DeleteActivitiesResponse
-import io.getstream.feeds.android.core.generated.models.MarkActivityRequest
-import io.getstream.feeds.android.core.generated.models.QueryActivityReactionsRequest
-import io.getstream.feeds.android.core.generated.models.UpdateActivityRequest
-import io.getstream.feeds.android.core.generated.models.UpsertActivitiesRequest
+import io.getstream.feeds.android.network.apis.FeedsApi
+import io.getstream.feeds.android.network.models.ActivityRequest
+import io.getstream.feeds.android.network.models.AddActivityRequest
+import io.getstream.feeds.android.network.models.AddReactionRequest
+import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
+import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
+import io.getstream.feeds.android.network.models.MarkActivityRequest
+import io.getstream.feeds.android.network.models.QueryActivityReactionsRequest
+import io.getstream.feeds.android.network.models.UpdateActivityRequest
+import io.getstream.feeds.android.network.models.UpsertActivitiesRequest
 
 /**
  * Default implementation of the [ActivitiesRepository] interface.
  *
- * Uses the provided [ApiService] to perform network requests related to activities.
+ * Uses the provided [FeedsApi] to perform network requests related to activities.
  *
  * @property api The API service used to perform network requests.
  */
 internal class ActivitiesRepositoryImpl(
-    private val api: ApiService,
+    private val api: FeedsApi,
     private val uploader: FeedUploader,
 ) : ActivitiesRepository {
 

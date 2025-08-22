@@ -15,16 +15,15 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.client.internal.model.mapping.toDate
-import io.getstream.feeds.android.core.generated.models.AIImageConfig
-import io.getstream.feeds.android.core.generated.models.AITextConfig
-import io.getstream.feeds.android.core.generated.models.AIVideoConfig
-import io.getstream.feeds.android.core.generated.models.AutomodPlatformCircumventionConfig
-import io.getstream.feeds.android.core.generated.models.AutomodSemanticFiltersConfig
-import io.getstream.feeds.android.core.generated.models.AutomodToxicityConfig
-import io.getstream.feeds.android.core.generated.models.BlockListConfig
-import io.getstream.feeds.android.core.generated.models.ConfigResponse
-import io.getstream.feeds.android.core.generated.models.VelocityFilterConfig
+import io.getstream.feeds.android.network.models.AIImageConfig
+import io.getstream.feeds.android.network.models.AITextConfig
+import io.getstream.feeds.android.network.models.AIVideoConfig
+import io.getstream.feeds.android.network.models.AutomodPlatformCircumventionConfig
+import io.getstream.feeds.android.network.models.AutomodSemanticFiltersConfig
+import io.getstream.feeds.android.network.models.AutomodToxicityConfig
+import io.getstream.feeds.android.network.models.BlockListConfig
+import io.getstream.feeds.android.network.models.ConfigResponse
+import io.getstream.feeds.android.network.models.VelocityFilterConfig
 import java.util.Date
 
 public data class ModerationConfigData(
@@ -57,9 +56,9 @@ internal fun ConfigResponse.toModel(): ModerationConfigData =
         automodSemanticFiltersConfig = automodSemanticFiltersConfig,
         automodToxicityConfig = automodToxicityConfig,
         blockListConfig = blockListConfig,
-        createdAt = createdAt.toDate(),
+        createdAt = createdAt,
         key = key,
         team = team,
-        updatedAt = updatedAt.toDate(),
+        updatedAt = updatedAt,
         velocityFilterConfig = velocityFilterConfig,
     )

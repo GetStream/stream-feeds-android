@@ -15,8 +15,7 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.client.internal.model.mapping.toDate
-import io.getstream.feeds.android.core.generated.models.FeedMemberResponse
+import io.getstream.feeds.android.network.models.FeedMemberResponse
 import java.util.Date
 
 /**
@@ -70,13 +69,13 @@ public sealed class FeedMemberStatus(public val value: String) {
 /** Converts a [FeedMemberResponse] to a [FeedMemberData] model. */
 internal fun FeedMemberResponse.toModel() =
     FeedMemberData(
-        createdAt = createdAt.toDate(),
+        createdAt = createdAt,
         custom = custom,
-        inviteAcceptedAt = inviteAcceptedAt?.toDate(),
-        inviteRejectedAt = inviteRejectedAt?.toDate(),
+        inviteAcceptedAt = inviteAcceptedAt,
+        inviteRejectedAt = inviteRejectedAt,
         role = role,
         status = status.toModel(),
-        updatedAt = updatedAt.toDate(),
+        updatedAt = updatedAt,
         user = user.toModel(),
     )
 

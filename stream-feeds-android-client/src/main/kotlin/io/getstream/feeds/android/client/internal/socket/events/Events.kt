@@ -18,8 +18,9 @@ package io.getstream.feeds.android.client.internal.socket.events
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import io.getstream.android.core.error.APIError
-import io.getstream.feeds.android.core.generated.models.OwnUserResponse
-import io.getstream.feeds.android.core.generated.models.WSEvent
+import io.getstream.feeds.android.network.models.OwnUserResponse
+import io.getstream.feeds.android.network.models.WSEvent
+import java.util.Date
 
 /**
  * Represents the "connection.ok" event type.
@@ -64,7 +65,7 @@ internal data class ConnectedEvent(
 @JsonClass(generateAdapter = true)
 internal data class ConnectionErrorEvent(
     @Json(name = "connection_id") val connectionId: String,
-    @Json(name = "created_at") val createdAt: org.threeten.bp.OffsetDateTime,
+    @Json(name = "created_at") val createdAt: Date,
     @Json(name = "error") val error: APIError,
     @Json(name = "type") val type: String,
 ) : WSEvent {

@@ -21,12 +21,12 @@ import io.getstream.feeds.android.client.api.model.PollOptionData
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
-import io.getstream.feeds.android.core.generated.models.CastPollVoteRequest
-import io.getstream.feeds.android.core.generated.models.CreatePollOptionRequest
-import io.getstream.feeds.android.core.generated.models.CreatePollRequest
-import io.getstream.feeds.android.core.generated.models.UpdatePollOptionRequest
-import io.getstream.feeds.android.core.generated.models.UpdatePollPartialRequest
-import io.getstream.feeds.android.core.generated.models.UpdatePollRequest
+import io.getstream.feeds.android.network.models.CastPollVoteRequest
+import io.getstream.feeds.android.network.models.CreatePollOptionRequest
+import io.getstream.feeds.android.network.models.CreatePollRequest
+import io.getstream.feeds.android.network.models.UpdatePollOptionRequest
+import io.getstream.feeds.android.network.models.UpdatePollPartialRequest
+import io.getstream.feeds.android.network.models.UpdatePollRequest
 
 /** A repository for managing polls and poll votes. */
 internal interface PollsRepository {

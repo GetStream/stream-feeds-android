@@ -54,18 +54,15 @@ tasks.withType<KotlinCompile>().configureEach {
 }
 
 dependencies {
+    // Stream
+    api(project(":stream-android-core"))
+    api(project(":stream-feeds-android-network"))
+    implementation(project(":stream-annotations"))
+    implementation(libs.stream.log)
 
+    // Android
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
     implementation(libs.androidx.lifecycle.process)
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.mockk)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-
-    detektPlugins(libs.detekt.formatting)
 
     // Networking
     implementation(libs.moshi)
@@ -75,13 +72,13 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit.moshi)
     implementation(libs.retrofit.scalars)
-    implementation(libs.threetenabp)
     ksp(libs.moshi.codegen)
 
-    // Stream
-    api(project(":stream-android-core"))
-    implementation(project(":stream-annotations"))
-    implementation(project(":stream-feeds-android-core"))
-    implementation(libs.stream.log)
-//    implementation(libs.stream.push.delegate)
+    // Detekt
+    detektPlugins(libs.detekt.formatting)
+
+    // Test
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
 }

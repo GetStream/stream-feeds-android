@@ -18,7 +18,7 @@ package io.getstream.feeds.android.client.internal.file
 import io.getstream.feeds.android.client.api.file.UploadContext
 import io.getstream.feeds.android.client.api.file.UploadPayload
 import io.getstream.feeds.android.client.api.file.Uploader
-import io.getstream.feeds.android.core.generated.models.Attachment
+import io.getstream.feeds.android.network.models.Attachment
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope

@@ -15,7 +15,7 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.core.generated.models.AppResponseFields
+import io.getstream.feeds.android.network.models.AppResponseFields
 
 /**
  * Data class representing application data configuration.

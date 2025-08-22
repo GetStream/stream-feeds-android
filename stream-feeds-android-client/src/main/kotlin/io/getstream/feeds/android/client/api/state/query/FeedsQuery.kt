@@ -22,7 +22,7 @@ import io.getstream.android.core.query.SortField
 import io.getstream.android.core.query.toRequest
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
-import io.getstream.feeds.android.core.generated.models.QueryFeedsRequest
+import io.getstream.feeds.android.network.models.QueryFeedsRequest
 
 /**
  * A query for retrieving feeds with filtering, sorting, and pagination options.

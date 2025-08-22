@@ -15,9 +15,8 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.client.internal.model.mapping.toDate
 import io.getstream.feeds.android.client.internal.utils.upsert
-import io.getstream.feeds.android.core.generated.models.PollResponseData
+import io.getstream.feeds.android.network.models.PollResponseData
 import java.util.Date
 import kotlin.math.max
 
@@ -184,7 +183,7 @@ internal fun PollResponseData.toModel(): PollData =
         allowAnswers = allowAnswers,
         allowUserSuggestedOptions = allowUserSuggestedOptions,
         answersCount = answersCount,
-        createdAt = createdAt.toDate(),
+        createdAt = createdAt,
         createdBy = createdBy?.toModel(),
         createdById = createdById,
         custom = custom,
@@ -199,7 +198,7 @@ internal fun PollResponseData.toModel(): PollData =
         name = name,
         options = options.map { it.toModel() },
         ownVotes = ownVotes.map { it.toModel() },
-        updatedAt = updatedAt.toDate(),
+        updatedAt = updatedAt,
         voteCount = voteCount,
         voteCountsByOption = voteCountsByOption,
         votingVisibility = votingVisibility,

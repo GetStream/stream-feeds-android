@@ -15,8 +15,8 @@
  */
 package io.getstream.feeds.android.client.internal.repository
 
-import io.getstream.feeds.android.core.generated.apis.ApiService
-import io.getstream.feeds.android.core.generated.models.Response
+import io.getstream.feeds.android.network.apis.FeedsApi
+import io.getstream.feeds.android.network.models.Response
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -27,20 +27,20 @@ import org.junit.Test
 
 internal class FilesRepositoryImplTest {
 
-    private val apiService: ApiService = mockk()
+    private val feedsApi: FeedsApi = mockk()
 
-    private val repository = FilesRepositoryImpl(api = apiService)
+    private val repository = FilesRepositoryImpl(api = feedsApi)
 
     @Test
     fun `deleteFile on success returns success result`() = runTest {
         val fileUrl = "https://example.com/file.jpg"
 
-        coEvery { apiService.deleteFile(fileUrl) } returns Response("")
+        coEvery { feedsApi.deleteFile(fileUrl) } returns Response("")
 
         val result = repository.deleteFile(fileUrl)
 
         assertTrue(result.isSuccess)
-        coVerify { apiService.deleteFile(fileUrl) }
+        coVerify { feedsApi.deleteFile(fileUrl) }
     }
 
     @Test
@@ -48,25 +48,25 @@ internal class FilesRepositoryImplTest {
         val fileUrl = "https://example.com/file.jpg"
         val exception = Exception("File deletion failed")
 
-        coEvery { apiService.deleteFile(fileUrl) } throws exception
+        coEvery { feedsApi.deleteFile(fileUrl) } throws exception
 
         val result = repository.deleteFile(fileUrl)
 
         assertTrue(result.isFailure)
         assertEquals("File deletion failed", result.exceptionOrNull()?.message)
-        coVerify { apiService.deleteFile(fileUrl) }
+        coVerify { feedsApi.deleteFile(fileUrl) }
     }
 
     @Test
     fun `deleteImage on success returns success result`() = runTest {
         val imageUrl = "https://example.com/image.png"
 
-        coEvery { apiService.deleteImage(imageUrl) } returns Response("")
+        coEvery { feedsApi.deleteImage(imageUrl) } returns Response("")
 
         val result = repository.deleteImage(imageUrl)
 
         assertTrue(result.isSuccess)
-        coVerify { apiService.deleteImage(imageUrl) }
+        coVerify { feedsApi.deleteImage(imageUrl) }
     }
 
     @Test
@@ -74,12 +74,12 @@ internal class FilesRepositoryImplTest {
         val imageUrl = "https://example.com/image.png"
         val exception = Exception("Image deletion failed")
 
-        coEvery { apiService.deleteImage(imageUrl) } throws exception
+        coEvery { feedsApi.deleteImage(imageUrl) } throws exception
 
         val result = repository.deleteImage(imageUrl)
 
         assertTrue(result.isFailure)
         assertEquals("Image deletion failed", result.exceptionOrNull()?.message)
-        coVerify { apiService.deleteImage(imageUrl) }
+        coVerify { feedsApi.deleteImage(imageUrl) }
     }
 }

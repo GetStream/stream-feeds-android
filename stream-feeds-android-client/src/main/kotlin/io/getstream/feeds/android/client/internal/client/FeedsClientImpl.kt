@@ -74,7 +74,6 @@ import io.getstream.feeds.android.client.api.state.query.MembersQuery
 import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
-import io.getstream.feeds.android.client.api.subscribe.StreamSubscription
 import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManagerImpl
 import io.getstream.feeds.android.client.internal.file.StreamFeedUploader
 import io.getstream.feeds.android.client.internal.http.interceptor.ApiErrorInterceptor
@@ -126,15 +125,15 @@ import io.getstream.feeds.android.client.internal.state.MemberListImpl
 import io.getstream.feeds.android.client.internal.state.ModerationConfigListImpl
 import io.getstream.feeds.android.client.internal.state.PollListImpl
 import io.getstream.feeds.android.client.internal.state.PollVoteListImpl
-import io.getstream.feeds.android.core.generated.apis.ApiService
-import io.getstream.feeds.android.core.generated.infrastructure.Serializer
-import io.getstream.feeds.android.core.generated.models.ActivityRequest
-import io.getstream.feeds.android.core.generated.models.AddActivityRequest
-import io.getstream.feeds.android.core.generated.models.DeleteActivitiesRequest
-import io.getstream.feeds.android.core.generated.models.DeleteActivitiesResponse
-import io.getstream.feeds.android.core.generated.models.ListDevicesResponse
-import io.getstream.feeds.android.core.generated.models.WSEvent
-import io.getstream.feeds.android.core.generated.models.WSEventAdapter
+import io.getstream.feeds.android.network.apis.FeedsApi
+import io.getstream.feeds.android.network.infrastructure.Serializer
+import io.getstream.feeds.android.network.models.ActivityRequest
+import io.getstream.feeds.android.network.models.AddActivityRequest
+import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
+import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
+import io.getstream.feeds.android.network.models.ListDevicesResponse
+import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.network.models.WSEventAdapter
 import io.getstream.log.AndroidStreamLogger
 import io.getstream.log.StreamLog
 import io.getstream.log.TaggedLogger
@@ -274,7 +273,7 @@ internal fun createFeedsClient(
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(MoshiConverterFactory.create(Serializer.moshi))
             .build()
-    val feedsApi: ApiService = retrofit.create()
+    val feedsApi: FeedsApi = retrofit.create()
     val uploader: FeedUploader = config.customUploader ?: StreamFeedUploader(retrofit.create())
     val activitiesRepository = ActivitiesRepositoryImpl(feedsApi, uploader)
     val appRepository = AppRepositoryImpl(feedsApi)
@@ -347,10 +346,6 @@ internal class FeedsClientImpl(
 
     init {
         socket.subscribe(socketListener)
-    }
-
-    public fun subscribe(listener: FeedsSocketListener): Result<StreamSubscription> {
-        return socket.subscribe(listener)
     }
 
     override suspend fun connect(): Result<Unit> {

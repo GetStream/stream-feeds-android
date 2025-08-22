@@ -15,7 +15,7 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.core.generated.models.FileUploadConfig
+import io.getstream.feeds.android.network.models.FileUploadConfig
 
 /**
  * Data class representing file upload configuration.

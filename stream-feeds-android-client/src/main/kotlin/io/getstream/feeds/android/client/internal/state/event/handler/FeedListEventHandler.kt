@@ -17,8 +17,8 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.FeedListStateUpdates
-import io.getstream.feeds.android.core.generated.models.FeedUpdatedEvent
-import io.getstream.feeds.android.core.generated.models.WSEvent
+import io.getstream.feeds.android.network.models.FeedUpdatedEvent
+import io.getstream.feeds.android.network.models.WSEvent
 
 internal class FeedListEventHandler(private val state: FeedListStateUpdates) : StateEventHandler {
 
