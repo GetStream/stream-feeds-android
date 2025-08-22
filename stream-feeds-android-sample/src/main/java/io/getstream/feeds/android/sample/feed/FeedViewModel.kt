@@ -27,6 +27,7 @@ import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.file.FileType
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.FeedAddActivityRequest
+import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedInputData
 import io.getstream.feeds.android.client.api.model.FeedMemberRequestData
 import io.getstream.feeds.android.client.api.model.FeedVisibility
@@ -48,9 +49,10 @@ import io.getstream.feeds.android.sample.util.notNull
 import io.getstream.feeds.android.sample.util.withFirstContent
 import io.getstream.feeds.android.sample.utils.logResult
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
@@ -71,7 +73,7 @@ class FeedViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
     val state = feed
-        .map { loadingState -> loadingState.map(Feed::state) }
+        .map { asyncResource -> asyncResource.map(Feed::state) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
     val pollController = FeedPollController(
@@ -81,19 +83,24 @@ class FeedViewModel @Inject constructor(
     )
 
     // Notification feed
-    private val notificationFid = FeedId("notification", currentUserId)
-    private val notificationFeed = feedsClient.feed(notificationFid)
+    private val notificationFid = FeedId("notification", args.userId)
+    private val notificationFeed = userState
+        .map { asyncResource ->
+            asyncResource.map { userState -> userState.client.feed(FeedQuery(notificationFid)) }
+        }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
-    val state: FeedState
-        get() = feed.state
-
-    val notificationState: FeedState
-        get() = notificationFeed.state
+    val notificationStatus = notificationFeed
+        .flatMapLatest { it.getOrNull()?.state?.notificationStatus ?: emptyFlow() }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     init {
-        feed.withFirstContent(viewModelScope) { getOrCreate()
-                }
-        viewModelScope.launch { notificationFeed.getOrCreate() }
+        feed.withFirstContent(viewModelScope) {
+            getOrCreate()
+        }
+        notificationFeed.withFirstContent(viewModelScope) {
+            getOrCreate()
+        }
     }
 
     fun onLoadMore() {

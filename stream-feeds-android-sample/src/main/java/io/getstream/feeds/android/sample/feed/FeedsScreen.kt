@@ -129,17 +129,19 @@ private fun FeedsScreenContent(
     var showLogoutConfirmation by remember { mutableStateOf(false) }
     var showCreatePostBottomSheet by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxSize().systemBarsPadding()) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .systemBarsPadding()) {
         // Toolbar
-        val notificationStatus by
-            viewModel.notificationState.notificationStatus.collectAsStateWithLifecycle()
+        val notificationStatus by viewModel.notificationStatus.collectAsStateWithLifecycle()
+
         FeedsScreenToolbar(
             avatarUrl = args.avatarUrl,
             hasUnseenNotifications = (notificationStatus?.unseen ?: 0) > 0,
             onUserAvatarClick = { showLogoutConfirmation = true },
             onNotificationsClick = {
                 // Open notifications screen ()
-                val fid = FeedId("notification", currentUserId)
+                val fid = FeedId("notification", args.userId)
                 navigator.navigate(
                     NotificationsScreenDestination(NotificationsScreenArgs(fid.rawValue))
                 )
@@ -207,7 +209,9 @@ private fun FeedsScreenContent(
 
                 FloatingActionButton(
                     onClick = { showCreatePostBottomSheet = true },
-                    modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp),
                     shape = CircleShape,
                     containerColor = Color.Blue,
                     contentColor = Color.White,
@@ -226,10 +230,10 @@ private fun FeedsScreenContent(
                     onConfirm = {
                         showLogoutConfirmation = false
                         navigator.navigate(MainScreenDestination(logout = true)) {
-                        popUpTo(NavGraphs.root) {
-                            inclusive = true
+                            popUpTo(NavGraphs.root) {
+                                inclusive = true
+                            }
                         }
-                    }
                     },
                 )
             }
@@ -261,13 +265,17 @@ fun FeedsScreenToolbar(
     onProfileClick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Left side - Avatar
         UserAvatar(
             avatarUrl = avatarUrl,
-            modifier = Modifier.size(36.dp).clickable(onClick = onUserAvatarClick),
+            modifier = Modifier
+                .size(36.dp)
+                .clickable(onClick = onUserAvatarClick),
         )
 
         // Center - Title (using weight to ensure perfect centering)
@@ -302,7 +310,8 @@ private fun NotificationIcon(hasUnseen: Boolean, onClick: () -> Unit) {
             if (hasUnseen) {
                 Box(
                     modifier =
-                        Modifier.size(8.dp)
+                        Modifier
+                            .size(8.dp)
                             .clip(CircleShape)
                             .background(Color.Red)
                             .align(Alignment.TopEnd)
@@ -326,7 +335,11 @@ private fun ProfileIcon(onClick: () -> Unit) {
 
 @Composable
 fun EmptyContent() {
-    Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp), contentAlignment = Alignment.Center
+    ) {
         Text(
             text = "No activities yet. Start by creating a post!",
             fontSize = 16.sp,
@@ -361,7 +374,8 @@ fun ActivityContent(
     val isCurrentUserAuthor = data.user.id == currentUserId
     Column(
         modifier =
-            Modifier.fillMaxWidth()
+            Modifier
+                .fillMaxWidth()
                 .combinedClickable(
                     indication = null,
                     interactionSource = null,
@@ -379,7 +393,11 @@ fun ActivityContent(
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
             UserAvatar(avatarUrl = user.image, modifier = Modifier.size(40.dp))
 
-            Column(modifier = Modifier.fillMaxWidth().padding(start = 12.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp)
+            ) {
                 Text(
                     text = user.name ?: user.id,
                     fontSize = 16.sp,
@@ -455,7 +473,9 @@ fun ActivityContent(
 
         // Add divider between activities for better separation
         HorizontalDivider(
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
             color = Color.Gray.copy(alpha = 0.2f),
             thickness = 1.dp,
         )
@@ -467,7 +487,8 @@ private fun AttachmentsSection(attachments: List<Attachment>) {
     if (attachments.size == 1) {
         AsyncImage(
             modifier =
-                Modifier.fillMaxWidth()
+                Modifier
+                    .fillMaxWidth()
                     .height(240.dp)
                     .padding(top = 8.dp)
                     .clip(RoundedCornerShape(12.dp)),
@@ -477,12 +498,16 @@ private fun AttachmentsSection(attachments: List<Attachment>) {
         )
     } else if (attachments.size > 1) {
         LazyRow(
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(attachments) { attachment ->
                 AsyncImage(
-                    modifier = Modifier.size(160.dp).clip(RoundedCornerShape(12.dp)),
+                    modifier = Modifier
+                        .size(160.dp)
+                        .clip(RoundedCornerShape(12.dp)),
                     model = attachment.assetUrl,
                     contentDescription = "Activity image",
                     contentScale = ContentScale.Crop,
@@ -507,7 +532,8 @@ fun ActivityContextMenuDialog(
                 if (showEdit) {
                     Row(
                         modifier =
-                            Modifier.fillMaxWidth()
+                            Modifier
+                                .fillMaxWidth()
                                 .clickable { onEdit() }
                                 .padding(vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -531,7 +557,10 @@ fun ActivityContextMenuDialog(
 
                 Row(
                     modifier =
-                        Modifier.fillMaxWidth().clickable { onDelete() }.padding(vertical = 12.dp),
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onDelete() }
+                            .padding(vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
@@ -592,7 +621,11 @@ fun CreateContentBottomSheet(
         sheetState = bottomSheetState,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
             // Header
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -616,14 +649,18 @@ fun CreateContentBottomSheet(
                 value = postText,
                 onValueChange = { postText = it },
                 placeholder = { Text("Add post") },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
                 minLines = 3,
                 maxLines = 6,
             )
 
             // Bottom toolbar with image attachment option
             Row(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
