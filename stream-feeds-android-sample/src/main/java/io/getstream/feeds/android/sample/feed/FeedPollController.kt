@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 
 class FeedPollController(
     private val scope: CoroutineScope,
-    private val feedsClient: FeedsClient,
+    private val feedsClient: () -> FeedsClient?,
     private val fid: FeedId,
 ) {
     private val activities: MutableMap<String, Activity> = mutableMapOf()
@@ -37,17 +37,22 @@ class FeedPollController(
 
     private suspend fun castVote(activityId: String, answerText: String?, optionId: String?) {
         activity(activityId)
-            .castPollVote(
+            ?.castPollVote(
                 CastPollVoteRequest(VoteData(answerText = answerText, optionId = optionId))
             )
-            .logResult(
+            ?.logResult(
                 TAG,
                 "Casting vote for $activityId with answer $answerText and optionId $optionId",
             )
     }
 
-    private fun activity(id: String): Activity =
-        activities.getOrPut(id) { feedsClient.activity(activityId = id, fid = fid) }
+    private fun activity(id: String): Activity? {
+        activities[id]?.let { return it }
+
+        return feedsClient()
+            ?.activity(activityId = id, fid = fid)
+            ?.also { activities[id] = it }
+    }
 
     companion object {
         private const val TAG = "PollController"

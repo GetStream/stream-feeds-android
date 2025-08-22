@@ -53,6 +53,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,59 +71,84 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.CommentsBottomSheetDestination
+import com.ramcosta.composedestinations.generated.destinations.MainScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.NotificationsScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.UserData
+import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.network.models.Attachment
 import io.getstream.feeds.android.sample.R
 import io.getstream.feeds.android.sample.components.LinkText
+import io.getstream.feeds.android.sample.components.LoadingScreen
 import io.getstream.feeds.android.sample.components.UserAvatar
 import io.getstream.feeds.android.sample.notification.NotificationsScreenArgs
-import io.getstream.feeds.android.sample.profile.ProfileScreenArgs
 import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
+import io.getstream.feeds.android.sample.util.AsyncResource
 
+data class FeedsScreenArgs(val feedId: String, val avatarUrl: String?, val userId: String) {
+    val fid = FeedId(feedId)
+}
+
+@Destination<RootGraph>(navArgs = FeedsScreenArgs::class)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FeedsScreen(
-    fid: FeedId,
-    feedsClient: FeedsClient,
-    avatarUrl: String?,
-    currentUserId: String,
+fun FeedsScreen(args: FeedsScreenArgs, navigator: DestinationsNavigator) {
+    val viewModel = hiltViewModel<FeedViewModel>()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    when (val state = state) {
+        AsyncResource.Loading -> LoadingScreen()
+
+        AsyncResource.Error -> {
+            LaunchedEffect(Unit) { navigator.popBackStack() }
+            return
+        }
+
+        is AsyncResource.Content -> FeedsScreenContent(args, navigator, state.data, viewModel)
+    }
+}
+
+@Composable
+private fun FeedsScreenContent(
+    args: FeedsScreenArgs,
     navigator: DestinationsNavigator,
-    onLogout: () -> Unit,
-    viewModel: FeedViewModel =
-        viewModel(factory = feedViewModelFactory(currentUserId, fid, feedsClient)),
+    state: FeedState,
+    viewModel: FeedViewModel
 ) {
     var showLogoutConfirmation by remember { mutableStateOf(false) }
     var showCreatePostBottomSheet by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxSize().systemBarsPadding()) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .systemBarsPadding()) {
         // Toolbar
-        val notificationStatus by
-            viewModel.notificationState.notificationStatus.collectAsStateWithLifecycle()
+        val notificationStatus by viewModel.notificationStatus.collectAsStateWithLifecycle()
+
         FeedsScreenToolbar(
-            avatarUrl = avatarUrl,
+            avatarUrl = args.avatarUrl,
             hasUnseenNotifications = (notificationStatus?.unseen ?: 0) > 0,
             onUserAvatarClick = { showLogoutConfirmation = true },
             onNotificationsClick = {
                 // Open notifications screen ()
-                val fid = FeedId("notification", currentUserId)
+                val fid = FeedId("notification", args.userId)
                 navigator.navigate(
                     NotificationsScreenDestination(NotificationsScreenArgs(fid.rawValue))
                 )
             },
             onProfileClick = {
                 navigator.navigate(
-                    ProfileScreenDestination(ProfileScreenArgs(feedId = fid.rawValue))
+                    ProfileScreenDestination(feedId = args.feedId)
                 )
             },
         )
@@ -132,7 +158,7 @@ fun FeedsScreen(
 
         Box(modifier = Modifier.fillMaxSize()) {
             // Feed content
-            val activities by viewModel.state.activities.collectAsStateWithLifecycle()
+            val activities by state.activities.collectAsStateWithLifecycle()
             val listState = rememberLazyListState()
 
             if (activities.isEmpty()) {
@@ -158,11 +184,11 @@ fun FeedsScreen(
                             text = baseActivity.text.orEmpty(),
                             attachments = baseActivity.attachments,
                             data = activity,
-                            currentUserId = currentUserId,
+                            currentUserId = args.userId,
                             onCommentClick = {
                                 navigator.navigate(
                                     CommentsBottomSheetDestination(
-                                        feedId = fid.rawValue,
+                                        feedId = args.fid.rawValue,
                                         activityId = activity.id,
                                     )
                                 )
@@ -183,7 +209,9 @@ fun FeedsScreen(
 
                 FloatingActionButton(
                     onClick = { showCreatePostBottomSheet = true },
-                    modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp),
                     shape = CircleShape,
                     containerColor = Color.Blue,
                     contentColor = Color.White,
@@ -201,7 +229,11 @@ fun FeedsScreen(
                     onDismiss = { showLogoutConfirmation = false },
                     onConfirm = {
                         showLogoutConfirmation = false
-                        onLogout()
+                        navigator.navigate(MainScreenDestination(logout = true)) {
+                            popUpTo(NavGraphs.root) {
+                                inclusive = true
+                            }
+                        }
                     },
                 )
             }
@@ -233,13 +265,17 @@ fun FeedsScreenToolbar(
     onProfileClick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Left side - Avatar
         UserAvatar(
             avatarUrl = avatarUrl,
-            modifier = Modifier.size(36.dp).clickable(onClick = onUserAvatarClick),
+            modifier = Modifier
+                .size(36.dp)
+                .clickable(onClick = onUserAvatarClick),
         )
 
         // Center - Title (using weight to ensure perfect centering)
@@ -274,7 +310,8 @@ private fun NotificationIcon(hasUnseen: Boolean, onClick: () -> Unit) {
             if (hasUnseen) {
                 Box(
                     modifier =
-                        Modifier.size(8.dp)
+                        Modifier
+                            .size(8.dp)
                             .clip(CircleShape)
                             .background(Color.Red)
                             .align(Alignment.TopEnd)
@@ -298,7 +335,11 @@ private fun ProfileIcon(onClick: () -> Unit) {
 
 @Composable
 fun EmptyContent() {
-    Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp), contentAlignment = Alignment.Center
+    ) {
         Text(
             text = "No activities yet. Start by creating a post!",
             fontSize = 16.sp,
@@ -333,7 +374,8 @@ fun ActivityContent(
     val isCurrentUserAuthor = data.user.id == currentUserId
     Column(
         modifier =
-            Modifier.fillMaxWidth()
+            Modifier
+                .fillMaxWidth()
                 .combinedClickable(
                     indication = null,
                     interactionSource = null,
@@ -351,7 +393,11 @@ fun ActivityContent(
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
             UserAvatar(avatarUrl = user.image, modifier = Modifier.size(40.dp))
 
-            Column(modifier = Modifier.fillMaxWidth().padding(start = 12.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp)
+            ) {
                 Text(
                     text = user.name ?: user.id,
                     fontSize = 16.sp,
@@ -427,7 +473,9 @@ fun ActivityContent(
 
         // Add divider between activities for better separation
         HorizontalDivider(
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
             color = Color.Gray.copy(alpha = 0.2f),
             thickness = 1.dp,
         )
@@ -439,7 +487,8 @@ private fun AttachmentsSection(attachments: List<Attachment>) {
     if (attachments.size == 1) {
         AsyncImage(
             modifier =
-                Modifier.fillMaxWidth()
+                Modifier
+                    .fillMaxWidth()
                     .height(240.dp)
                     .padding(top = 8.dp)
                     .clip(RoundedCornerShape(12.dp)),
@@ -449,12 +498,16 @@ private fun AttachmentsSection(attachments: List<Attachment>) {
         )
     } else if (attachments.size > 1) {
         LazyRow(
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(attachments) { attachment ->
                 AsyncImage(
-                    modifier = Modifier.size(160.dp).clip(RoundedCornerShape(12.dp)),
+                    modifier = Modifier
+                        .size(160.dp)
+                        .clip(RoundedCornerShape(12.dp)),
                     model = attachment.assetUrl,
                     contentDescription = "Activity image",
                     contentScale = ContentScale.Crop,
@@ -479,7 +532,8 @@ fun ActivityContextMenuDialog(
                 if (showEdit) {
                     Row(
                         modifier =
-                            Modifier.fillMaxWidth()
+                            Modifier
+                                .fillMaxWidth()
                                 .clickable { onEdit() }
                                 .padding(vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -503,7 +557,10 @@ fun ActivityContextMenuDialog(
 
                 Row(
                     modifier =
-                        Modifier.fillMaxWidth().clickable { onDelete() }.padding(vertical = 12.dp),
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onDelete() }
+                            .padding(vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
@@ -564,7 +621,11 @@ fun CreateContentBottomSheet(
         sheetState = bottomSheetState,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
             // Header
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -588,14 +649,18 @@ fun CreateContentBottomSheet(
                 value = postText,
                 onValueChange = { postText = it },
                 placeholder = { Text("Add post") },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
                 minLines = 3,
                 maxLines = 6,
             )
 
             // Bottom toolbar with image attachment option
             Row(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
             ) {

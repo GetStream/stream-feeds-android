@@ -44,6 +44,8 @@ inline fun <T : Any, R : Any> AsyncResource<T>.map(transform: (T) -> R): AsyncRe
         is AsyncResource.Content -> AsyncResource.Content(transform(data))
     }
 
+fun <T> AsyncResource<T>.getOrNull(): T? = (this as? AsyncResource.Content)?.data
+
 suspend inline fun <T, R> Flow<AsyncResource<T>>.withFirstContent(block: suspend T.() -> R): R =
     filterIsInstance<AsyncResource.Content<T>>().first().data.block()
 
