@@ -215,7 +215,7 @@ internal fun ThreadedCommentData.removeReaction(
 ): ThreadedCommentData {
     val ownReaction = reaction.user.id == currentUserId
     val updatedOwnReactions =
-        if (reaction.user.id == currentUserId) {
+        if (ownReaction) {
             this.ownReactions.filter { it.id != reaction.id }
         } else {
             this.ownReactions
