@@ -22,18 +22,13 @@ import io.getstream.feeds.android.network.models.CastPollVoteRequest
 import io.getstream.feeds.android.network.models.VoteData
 import io.getstream.feeds.android.sample.utils.logResult
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 
 class FeedPollController(
     private val scope: CoroutineScope,
-    feedsClient: Flow<FeedsClient>,
+    private val feedsClient: () -> FeedsClient?,
     private val fid: FeedId,
 ) {
-    private val client = feedsClient.shareIn(scope, SharingStarted.Eagerly, replay = 1)
     private val activities: MutableMap<String, Activity> = mutableMapOf()
 
     fun onPollOptionSelected(activityId: String, optionId: String) {
@@ -42,17 +37,21 @@ class FeedPollController(
 
     private suspend fun castVote(activityId: String, answerText: String?, optionId: String?) {
         activity(activityId)
-            .castPollVote(
+            ?.castPollVote(
                 CastPollVoteRequest(VoteData(answerText = answerText, optionId = optionId))
             )
-            .logResult(
+            ?.logResult(
                 TAG,
                 "Casting vote for $activityId with answer $answerText and optionId $optionId",
             )
     }
 
-    private suspend fun activity(id: String): Activity = activities.getOrPut(id) {
-        client.first().activity(activityId = id, fid = fid)
+    private fun activity(id: String): Activity? {
+        activities[id]?.let { return it }
+
+        return feedsClient()
+            ?.activity(activityId = id, fid = fid)
+            ?.also { activities[id] = it }
     }
 
     companion object {

@@ -76,7 +76,7 @@ class FeedViewModel @Inject constructor(
 
     val pollController = FeedPollController(
         scope = viewModelScope,
-        feedsClient = userState.mapNotNull { it.getOrNull()?.client },
+        feedsClient = { userState.value.getOrNull()?.client },
         fid = args.fid
     )
 
