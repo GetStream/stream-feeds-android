@@ -62,6 +62,9 @@ import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.network.models.ListDevicesResponse
+import io.getstream.feeds.android.network.models.WSEvent
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 
 /** Single entry point for interacting with the Stream Feeds service. */
 public interface FeedsClient {
@@ -78,6 +81,19 @@ public interface FeedsClient {
 
     /** Disconnects the current [FeedsClient]. */
     public suspend fun disconnect(): Result<Unit>
+
+    /**
+     * Creates and returns a flow that emits WebSocket events.
+     *
+     * This flow provides real-time updates for events to which the client is subscribed. For example, if you query a
+     * feed, you'll receive updates related to that feed, such as new activities, reactions, comments, etc.
+     *
+     * **Note:** This flow drops events if the consumer cannot keep up (backpressure). To prevent
+     * this, consider applying your preferred strategy using the `.buffer()` operator.
+     *
+     * @return A [SharedFlow] of [WSEvent] that emits events from the WebSocket connection.
+     */
+    public fun events(): Flow<WSEvent>
 
     /**
      * Creates a feed instance for the specified group and id.
