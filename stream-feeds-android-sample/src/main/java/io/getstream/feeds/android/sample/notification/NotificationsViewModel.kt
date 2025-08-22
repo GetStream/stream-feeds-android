@@ -22,7 +22,7 @@ import com.ramcosta.composedestinations.generated.destinations.NotificationsScre
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.state.Feed
-import io.getstream.feeds.android.core.generated.models.MarkActivityRequest
+import io.getstream.feeds.android.network.models.MarkActivityRequest
 import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.util.map

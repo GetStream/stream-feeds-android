@@ -15,8 +15,7 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.client.internal.model.mapping.toDate
-import io.getstream.feeds.android.core.generated.models.AggregatedActivityResponse
+import io.getstream.feeds.android.network.models.AggregatedActivityResponse
 import java.util.Date
 
 /**
@@ -59,10 +58,10 @@ internal fun AggregatedActivityResponse.toModel(): AggregatedActivityData {
     return AggregatedActivityData(
         activities = activities.map { it.toModel() },
         activityCount = activityCount,
-        createdAt = createdAt.toDate(),
+        createdAt = createdAt,
         group = group,
         score = score,
-        updatedAt = updatedAt.toDate(),
+        updatedAt = updatedAt,
         userCount = userCount,
     )
 }
