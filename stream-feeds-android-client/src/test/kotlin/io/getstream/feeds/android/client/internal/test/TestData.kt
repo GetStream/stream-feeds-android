@@ -16,6 +16,8 @@
 package io.getstream.feeds.android.client.internal.test
 
 import io.getstream.feeds.android.client.api.model.CommentData
+import io.getstream.feeds.android.client.api.model.FeedsReactionData
+import io.getstream.feeds.android.client.api.model.ReactionGroupData
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.model.UserData
 import java.util.Date
@@ -93,7 +95,34 @@ internal object TestData {
         )
     }
 
-    private fun userData(id: String): UserData =
+    fun feedsReactionData(
+        activityId: String = "activity-1",
+        type: String = "like",
+        userId: String = "user-1",
+        createdAt: Date = Date(1000),
+        updatedAt: Date = Date(1000),
+    ): FeedsReactionData =
+        FeedsReactionData(
+            activityId = activityId,
+            createdAt = createdAt,
+            custom = null,
+            type = type,
+            updatedAt = updatedAt,
+            user = userData(userId),
+        )
+
+    fun reactionGroupData(
+        count: Int = 1,
+        firstReactionAt: Date = Date(1000),
+        lastReactionAt: Date = Date(1000),
+    ): ReactionGroupData =
+        ReactionGroupData(
+            count = count,
+            firstReactionAt = firstReactionAt,
+            lastReactionAt = lastReactionAt,
+        )
+
+    fun userData(id: String): UserData =
         UserData(
             banned = false,
             blockedUserIds = emptyList(),
