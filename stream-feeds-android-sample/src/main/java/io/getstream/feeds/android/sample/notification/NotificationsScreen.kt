@@ -173,6 +173,6 @@ private fun displayTextForAggregationType(type: String): String {
         "comment_reaction" -> "reacted on your comment"
         "reaction" -> "reacted on your activity"
         "follow" -> "followed you"
-        else -> ""
+        else -> "interacted with your activity"
     }
 }
