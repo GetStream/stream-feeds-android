@@ -41,6 +41,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -64,7 +65,6 @@ import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.sample.R
 import io.getstream.feeds.android.sample.components.LoadingScreen
-import io.getstream.feeds.android.sample.ui.theme.LighterGray
 import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
 import io.getstream.feeds.android.sample.ui.util.rippleClickable
 import io.getstream.feeds.android.sample.util.AsyncResource
@@ -185,7 +185,10 @@ private fun Comment(
 
     Column(modifier.width(IntrinsicSize.Max)) {
         Column(
-            Modifier.background(LighterGray, shape = RoundedCornerShape(16.dp))
+            Modifier.background(
+                    MaterialTheme.colorScheme.secondaryContainer,
+                    shape = RoundedCornerShape(16.dp),
+                )
                 .padding(16.dp)
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(4.dp),

@@ -58,7 +58,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.getstream.feeds.android.sample.R
-import io.getstream.feeds.android.sample.ui.theme.LighterGray
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -167,7 +166,7 @@ private fun ColumnScope.CreatePollBottomSheetContent(
 
     val defaultSwitchModifier =
         Modifier.padding(vertical = 8.dp)
-            .background(LighterGray, RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
             .padding(horizontal = 12.dp, vertical = 4.dp)
 
     Column(defaultSwitchModifier) {

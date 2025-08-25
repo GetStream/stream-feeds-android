@@ -60,17 +60,12 @@ fun LoginScreen(
 ) {
     Scaffold { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
+            modifier = Modifier.fillMaxSize().padding(padding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             LoginHeader()
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
+            LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f)
             ) {
                 items(credentials) { item ->
                     UserLoginItem(item, onCredentialsSelected)

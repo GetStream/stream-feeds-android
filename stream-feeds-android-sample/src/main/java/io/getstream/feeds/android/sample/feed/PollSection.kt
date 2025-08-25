@@ -26,6 +26,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -51,7 +52,6 @@ import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollOptionData
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.sample.poll.PollResultsScreen
-import io.getstream.feeds.android.sample.ui.theme.LighterGray
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,9 +64,11 @@ fun PollSection(
 ) {
     Column(
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .background(LighterGray, shape = RoundedCornerShape(16.dp))
+            Modifier.fillMaxWidth()
+                .background(
+                    MaterialTheme.colorScheme.secondaryContainer,
+                    shape = RoundedCornerShape(16.dp),
+                )
                 .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -75,9 +77,7 @@ fun PollSection(
                 text = poll.name,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
             )
         }
         if (poll.isClosed) {
@@ -85,16 +85,14 @@ fun PollSection(
                 text = "Vote ended",
                 fontSize = 12.sp,
                 color = Color.Gray,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
             )
         }
 
         val ownVotes = remember(poll.ownVotes) { poll.ownVotes.associateBy(PollVoteData::optionId) }
 
         poll.options.forEach { option ->
-            val votes = poll.voteCountsByOption.getOrDefault(option.id, 0)
+            val votes = poll.voteCountsByOption.getOrElse(option.id) { 0 }
             val ratio = votes.toFloat() / poll.voteCount.coerceAtLeast(1)
 
             PollOption(
@@ -125,10 +123,7 @@ fun PollSection(
         ViewResultsButton(poll, controller)
 
         if (!poll.isClosed && poll.createdById == currentUserId) {
-            PollTextButton(
-                text = "Close Poll",
-                onClick = { controller.onClose(activityId) }
-            )
+            PollTextButton(text = "Close Poll", onClick = { controller.onClose(activityId) })
         }
     }
 }
@@ -150,9 +145,7 @@ private fun PollOption(
     onClick: (String) -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
         verticalAlignment = Alignment.Top,
     ) {
         if (enabled) {
@@ -172,7 +165,7 @@ private fun PollOption(
             LinearProgressIndicator(
                 progress = { ratio },
                 drawStopIndicator = {},
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }
@@ -204,10 +197,7 @@ private fun ViewResultsButton(poll: PollData, controller: FeedPollController) {
 private fun AddCommentButton(onSubmit: (String) -> Unit) {
     var showCommentDialog by remember { mutableStateOf(false) }
 
-    PollTextButton(
-        text = "Add a comment",
-        onClick = { showCommentDialog = true }
-    )
+    PollTextButton(text = "Add a comment", onClick = { showCommentDialog = true })
 
     if (showCommentDialog) {
         InputAlertDialog(
@@ -216,7 +206,7 @@ private fun AddCommentButton(onSubmit: (String) -> Unit) {
             onSubmit = { comment ->
                 onSubmit(comment)
                 showCommentDialog = false
-            }
+            },
         )
     }
 }
@@ -225,10 +215,7 @@ private fun AddCommentButton(onSubmit: (String) -> Unit) {
 fun SuggestOptionButton(onSubmit: (String) -> Unit) {
     var showOptionSuggestDialog by remember { mutableStateOf(false) }
 
-    PollTextButton(
-        text = "Suggest an option",
-        onClick = { showOptionSuggestDialog = true },
-    )
+    PollTextButton(text = "Suggest an option", onClick = { showOptionSuggestDialog = true })
 
     if (showOptionSuggestDialog) {
         InputAlertDialog(
@@ -237,7 +224,7 @@ fun SuggestOptionButton(onSubmit: (String) -> Unit) {
             onSubmit = { option ->
                 onSubmit(option)
                 showOptionSuggestDialog = false
-            }
+            },
         )
     }
 }
@@ -254,19 +241,10 @@ private fun InputAlertDialog(
     AlertDialog(
         onDismissRequest,
         title = { Text(title) },
-        text = {
-            OutlinedTextField(value = input, onValueChange = { input = it })
-        },
-        dismissButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text("Cancel")
-            }
-        },
+        text = { OutlinedTextField(value = input, onValueChange = { input = it }) },
+        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancel") } },
         confirmButton = {
-            TextButton(
-                onClick = { onSubmit(input) },
-                enabled = input.isNotBlank()
-            ) {
+            TextButton(onClick = { onSubmit(input) }, enabled = input.isNotBlank()) {
                 Text("Submit")
             }
         },
