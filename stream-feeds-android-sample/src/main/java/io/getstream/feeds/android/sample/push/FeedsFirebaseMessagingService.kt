@@ -15,12 +15,14 @@
  */
 package io.getstream.feeds.android.sample.push
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
+import android.Manifest
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
+import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import io.getstream.feeds.android.sample.MainActivity
@@ -54,6 +56,13 @@ class FeedsFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     private fun showNotification(title: String, body: String) {
+        // Only proceed if notification permission is granted or not required
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+
         // Create notification channel for Android 8.0 and higher
         createNotificationChannel()
 
@@ -83,25 +92,21 @@ class FeedsFirebaseMessagingService : FirebaseMessagingService() {
                 .build()
 
         // Show the notification
-        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(NOTIFICATION_ID, notification)
+        NotificationManagerCompat.from(this).notify(NOTIFICATION_ID, notification)
     }
 
     private fun createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel =
-                NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance).apply {
-                    description = CHANNEL_DESCRIPTION
-                    enableLights(true)
-                    enableVibration(true)
-                }
+        // Create the NotificationChannel
+        val importance = NotificationManagerCompat.IMPORTANCE_HIGH
+        val channel =
+            NotificationChannelCompat.Builder(CHANNEL_ID, importance)
+                .setName(CHANNEL_NAME)
+                .setDescription(CHANNEL_DESCRIPTION)
+                .setLightsEnabled(true)
+                .setVibrationEnabled(true)
+                .build()
 
-            // Register the channel with the system
-            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
+        // Register the channel with the system
+        NotificationManagerCompat.from(this).createNotificationChannel(channel)
     }
 }
