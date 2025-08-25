@@ -16,31 +16,32 @@
 package io.getstream.feeds.android.sample.components
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 
 @Composable
 fun LinkText(
     text: String,
     modifier: Modifier = Modifier,
-    fontSize: androidx.compose.ui.unit.TextUnit = 14.sp,
-    color: Color = Color.Black,
-    lineHeight: androidx.compose.ui.unit.TextUnit = 20.sp,
+    fontSize: TextUnit = 14.sp,
+    lineHeight: TextUnit = 20.sp,
 ) {
     val context = LocalContext.current
 
     // Regex to match markdown links: [text](url)
-    val markdownLinkPattern = Regex("""\[([^\]]+)\]\(([^)]+)\)""")
+    val markdownLinkPattern = Regex("""\[([^]]+)]\(([^)]+)\)""")
 
     val annotatedString = buildAnnotatedString {
         var lastIndex = 0
@@ -60,7 +61,7 @@ fun LinkText(
             withStyle(
                 style =
                     SpanStyle(
-                        color = Color.Blue,
+                        color = MaterialTheme.colorScheme.primary,
                         textDecoration = TextDecoration.Underline,
                         fontWeight = FontWeight.Medium,
                     )
@@ -81,12 +82,7 @@ fun LinkText(
     ClickableText(
         text = annotatedString,
         modifier = modifier,
-        style =
-            androidx.compose.ui.text.TextStyle(
-                fontSize = fontSize,
-                color = color,
-                lineHeight = lineHeight,
-            ),
+        style = TextStyle(fontSize = fontSize, lineHeight = lineHeight),
         onClick = { offset ->
             annotatedString
                 .getStringAnnotations(tag = "URL", start = offset, end = offset)
@@ -103,7 +99,7 @@ fun LinkText(
                                 else -> url
                             }
 
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(completeUrl))
+                        val intent = Intent(Intent.ACTION_VIEW, completeUrl.toUri())
                         context.startActivity(intent)
                     } catch (e: Exception) {
                         // Handle error opening URL (e.g., invalid URL format)

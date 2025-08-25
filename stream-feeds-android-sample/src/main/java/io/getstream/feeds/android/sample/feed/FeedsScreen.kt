@@ -229,8 +229,6 @@ private fun FeedsScreenContent(
                         .align(Alignment.BottomEnd)
                         .padding(16.dp),
                     shape = CircleShape,
-                    containerColor = Color.Blue,
-                    contentColor = Color.White,
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.add_24),
@@ -426,7 +424,6 @@ fun ActivityContent(
                     LinkText(
                         text = text,
                         fontSize = 14.sp,
-                        color = Color.Black.copy(alpha = 0.8f),
                         lineHeight = 20.sp,
                         modifier = Modifier.padding(bottom = 8.dp),
                     )
