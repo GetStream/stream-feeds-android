@@ -21,28 +21,25 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -61,120 +58,106 @@ fun LoginScreen(
     credentials: List<UserCredentials> = UserCredentials.BuiltIn,
     onCredentialsSelected: (UserCredentials) -> Unit,
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize().systemBarsPadding(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Spacer(Modifier.height(32.dp))
-        Image(
-            modifier = Modifier.size(width = 80.dp, height = 40.dp),
-            painter = painterResource(R.drawable.ic_stream),
-            contentDescription = null,
-        )
+    Scaffold { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            LoginHeader()
 
-        Spacer(Modifier.height(12.dp))
-        Text(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            text = stringResource(R.string.user_login_screen_title),
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black,
-        )
-
-        Spacer(Modifier.height(12.dp))
-        Text(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            text = stringResource(R.string.user_login_screen_subtitle),
-            fontSize = 14.sp,
-            color = Color.DarkGray,
-        )
-
-        Spacer(Modifier.height(20.dp))
-        LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f)) {
-            items(credentials) { item ->
-                UserLoginItem(item, onCredentialsSelected)
-                DividerItem()
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                items(credentials) { item ->
+                    UserLoginItem(item, onCredentialsSelected)
+                    HorizontalDivider(thickness = 0.5.dp)
+                }
             }
+
+            Text(
+                modifier = Modifier.padding(16.dp),
+                text = stringResource(R.string.sdk_version_template, BuildConfig.PRODUCT_VERSION),
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.secondary,
+            )
         }
 
-        Text(
-            modifier = Modifier.padding(16.dp),
-            text = stringResource(R.string.sdk_version_template, BuildConfig.PRODUCT_VERSION),
-            fontSize = 14.sp,
-            color = Color.Gray,
-        )
-    }
+        // Request notification permission on Android 13+
+        val context = LocalContext.current
 
-    // Request notification permission on Android 13+
-    val context = LocalContext.current
+        // Permission launcher for notification permission
+        val notificationPermissionLauncher =
+            rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.RequestPermission(),
+                onResult = {
+                    /* No need to handle.
+                    In your app, don't call FeedsClient#createDevice() if the permission is not granted.
+                    */
+                },
+            )
 
-    // Permission launcher for notification permission
-    val notificationPermissionLauncher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestPermission(),
-            onResult = {
-                /* No need to handle.
-                In your app, don't call FeedsClient#createDevice() if the permission is not granted.
-                */
-            },
-        )
+        // Request notification permission on launch (Android 13+)
+        LaunchedEffect(Unit) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val hasPermission =
+                    ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.POST_NOTIFICATIONS,
+                    ) == PermissionChecker.PERMISSION_GRANTED
 
-    // Request notification permission on launch (Android 13+)
-    LaunchedEffect(Unit) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val hasPermission =
-                ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.POST_NOTIFICATIONS,
-                ) == PermissionChecker.PERMISSION_GRANTED
-
-            if (!hasPermission) {
-                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                if (!hasPermission) {
+                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
             }
         }
     }
 }
 
 @Composable
-private fun UserLoginItem(
-    credentials: UserCredentials,
-    onClick: (UserCredentials) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .height(64.dp)
-                .clickable(
-                    onClick = { onClick(credentials) },
-                    indication = ripple(),
-                    interactionSource = remember { MutableInteractionSource() },
-                )
-                .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        UserAvatar(credentials.user.imageURL)
+private fun LoginHeader() {
+    Spacer(Modifier.height(32.dp))
+    Image(
+        modifier = Modifier.size(width = 80.dp, height = 40.dp),
+        painter = painterResource(R.drawable.ic_stream),
+        contentDescription = null,
+    )
 
-        Text(
-            modifier = Modifier.weight(1f).padding(start = 16.dp),
-            text = credentials.user.name ?: credentials.user.id,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black,
-        )
+    Spacer(Modifier.height(12.dp))
+    Text(
+        modifier = Modifier.padding(horizontal = 16.dp),
+        text = stringResource(R.string.user_login_screen_title),
+        fontSize = 22.sp,
+        fontWeight = FontWeight.Bold,
+    )
 
-        Image(
-            modifier = Modifier.wrapContentSize(),
-            painter = painterResource(id = R.drawable.ic_arrow_right),
-            contentDescription = null,
-        )
-    }
+    Spacer(Modifier.height(12.dp))
+    Text(
+        modifier = Modifier.padding(horizontal = 16.dp),
+        text = stringResource(R.string.user_login_screen_subtitle),
+        fontSize = 14.sp,
+        color = MaterialTheme.colorScheme.secondary,
+    )
+
+    Spacer(Modifier.height(20.dp))
 }
 
 @Composable
-private fun DividerItem() {
-    HorizontalDivider(thickness = 0.5.dp, color = Color.Gray)
+private fun UserLoginItem(credentials: UserCredentials, onClick: (UserCredentials) -> Unit) {
+    ListItem(
+        headlineContent = { Text(text = credentials.user.name ?: credentials.user.id) },
+        leadingContent = { UserAvatar(credentials.user.imageURL) },
+        trailingContent = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow_right),
+                contentDescription = null,
+            )
+        },
+        modifier = Modifier.clickable { onClick(credentials) },
+    )
 }
 
 @Preview(showBackground = true)
