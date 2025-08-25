@@ -55,9 +55,7 @@ tasks.withType<KotlinCompile>().configureEach {
 
 dependencies {
     // Stream
-    api(project(":stream-android-core"))
     api(project(":stream-feeds-android-network"))
-    implementation(project(":stream-annotations"))
     implementation(libs.stream.log)
 
     // Android
