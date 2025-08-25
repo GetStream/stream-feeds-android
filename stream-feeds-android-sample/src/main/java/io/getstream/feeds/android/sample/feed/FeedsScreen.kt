@@ -47,6 +47,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHost
@@ -554,7 +555,6 @@ fun ActivityContextMenuDialog(
                         Icon(
                             painter = painterResource(R.drawable.edit_24),
                             contentDescription = "Edit",
-                            tint = Color.Black,
                             modifier = Modifier.size(24.dp),
                         )
                         Text(
@@ -579,13 +579,13 @@ fun ActivityContextMenuDialog(
                     Icon(
                         painter = painterResource(R.drawable.delete_24),
                         contentDescription = "Delete",
-                        tint = Color.Red,
+                        tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(24.dp),
                     )
                     Text(
                         text = "Delete Post",
                         fontSize = 16.sp,
-                        color = Color.Red,
+                        color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(start = 16.dp),
                     )
                 }
@@ -637,7 +637,7 @@ fun CreateContentBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(horizontal = 16.dp)
         ) {
             // Header
             Row(
@@ -648,13 +648,9 @@ fun CreateContentBottomSheet(
                 Text(text = "Create Post", fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
                 val canPost = attachments.isNotEmpty() || postText.isNotBlank()
-                Text(
-                    text = "Post",
-                    color = if (canPost) Color.Blue else Color.Gray,
-                    fontWeight = FontWeight.Medium,
-                    modifier =
-                        Modifier.clickable(enabled = canPost) { onPost(postText, attachments) },
-                )
+                TextButton(onClick = { onPost(postText, attachments) }, enabled = canPost) {
+                    Text(text = "Post", fontWeight = FontWeight.Medium)
+                }
             }
 
             // Text Input
@@ -688,7 +684,6 @@ fun CreateContentBottomSheet(
                     Text(
                         text = "Attachment selected",
                         fontSize = 12.sp,
-                        color = Color.Gray,
                         modifier = Modifier.padding(start = 8.dp),
                     )
                 }
@@ -712,7 +707,7 @@ private fun AttachmentButton(hasAttachment: Boolean, onAttachmentsSelected: (Lis
         Icon(
             painter = painterResource(android.R.drawable.ic_menu_gallery),
             contentDescription = "Add Image/Video",
-            tint = if (hasAttachment) Color.Blue else Color.Gray,
+            tint = if (hasAttachment) MaterialTheme.colorScheme.onSurface else Color.Unspecified,
             modifier = Modifier.size(24.dp),
         )
     }
