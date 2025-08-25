@@ -46,7 +46,7 @@ tasks.withType<KotlinCompile>().configureEach {
                 "-progressive",
                 "-Xconsistent-data-class-copy-visibility",
                 "-Xexplicit-api=strict",
-                "-opt-in=io.getstream.kotlin.base.annotation.marker.StreamInternalApi",
+                "-opt-in=io.getstream.android.core.annotations.StreamCoreApi,io.getstream.android.core.annotations.StreamInternalApi",
             ),
         )
         jvmTarget.set(JvmTarget.JVM_11)
@@ -56,6 +56,9 @@ tasks.withType<KotlinCompile>().configureEach {
 dependencies {
     // Stream
     api(project(":stream-feeds-android-network"))
+
+    api(libs.stream.android.core)
+    implementation(libs.stream.android.annotations)
     implementation(libs.stream.log)
 
     // Android
