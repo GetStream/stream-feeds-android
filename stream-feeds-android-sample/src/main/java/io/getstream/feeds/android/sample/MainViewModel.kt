@@ -18,21 +18,29 @@ package io.getstream.feeds.android.sample
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.messaging.FirebaseMessaging
 import com.ramcosta.composedestinations.generated.destinations.MainScreenDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.getstream.android.core.user.User
 import io.getstream.feeds.android.client.api.FeedsClient
+import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
 import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.login.UserCredentials
+import io.getstream.feeds.android.sample.utils.logResult
+import javax.inject.Inject
+import kotlin.coroutines.resume
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class MainViewModel
+@Inject
+constructor(
     private val loginManager: LoginManager,
+    private val firebaseMessaging: FirebaseMessaging,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -44,6 +52,10 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            // Unregister the device for push notifications if logging out
+            if (args.logout) {
+                loginManager.currentState()?.let { state -> deleteDevice(state.client) }
+            }
             if (args.logout) {
                 loginManager.logout()
             }
@@ -59,14 +71,56 @@ class MainViewModel @Inject constructor(
     fun connect(credentials: UserCredentials) {
         viewModelScope.launch {
             _viewState.value = ViewState.Loading
-            _viewState.value =
+            val viewState =
                 loginManager
                     .login(credentials)
                     .fold(
                         onSuccess = { ViewState.LoggedIn(it.client, it.user) },
                         onFailure = { ViewState.LoggedOut },
                     )
+            // If the user is logged in, register the device for push notifications
+            if (viewState is ViewState.LoggedIn) {
+                registerDevice(viewState.client)
+            }
+            _viewState.value = viewState
         }
+    }
+
+    private suspend fun registerDevice(client: FeedsClient) {
+        getFirebaseToken().logResult(TAG, "[registerDevice] getFirebaseToken").onSuccess { token ->
+            client
+                .createDevice(
+                    id = token,
+                    pushProvider = PushNotificationsProvider.FIREBASE,
+                    pushProviderName = "feeds-android-firebase",
+                )
+                .logResult(TAG, "createDevice")
+        }
+    }
+
+    private fun deleteDevice(client: FeedsClient) {
+        viewModelScope.launch {
+            getFirebaseToken().logResult(TAG, "[deleteDevice] getFirebaseToken").onSuccess { token
+                ->
+                client.deleteDevice(token).logResult(TAG, "deleteDevice")
+            }
+        }
+    }
+
+    private suspend fun getFirebaseToken(): Result<String> = suspendCancellableCoroutine {
+        firebaseMessaging.token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result
+                it.resume(Result.success(token))
+            } else {
+                val exception = task.exception ?: Exception("Unknown error getting FCM token")
+                it.resume(Result.failure(exception))
+            }
+        }
+    }
+
+    companion object {
+        private const val TAG = "MainViewModel"
     }
 }
 
