@@ -20,7 +20,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ramcosta.composedestinations.generated.destinations.MainScreenDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.getstream.android.core.user.User
+import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.login.UserCredentials

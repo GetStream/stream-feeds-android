@@ -15,16 +15,15 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
-import io.getstream.android.core.websocket.WebSocketConnectionState
+import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.FeedList
 import io.getstream.feeds.android.client.api.state.FeedListState
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
-import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManager
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
-import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
 import io.getstream.feeds.android.client.internal.state.event.handler.FeedListEventHandler
+import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.network.models.WSEvent
 import kotlin.collections.emptyList
 
@@ -39,16 +38,12 @@ import kotlin.collections.emptyList
 internal class FeedListImpl(
     override val query: FeedsQuery,
     private val feedsRepository: FeedsRepository,
-    private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener>,
+    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
 ) : FeedList {
 
     init {
         subscriptionManager.subscribe(
-            object : FeedsSocketListener {
-                override fun onState(state: WebSocketConnectionState) {
-                    // Not handled
-                }
-
+            object : FeedsEventListener {
                 override fun onEvent(event: WSEvent) {
                     eventHandler.handleEvent(event)
                 }

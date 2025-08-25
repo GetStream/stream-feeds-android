@@ -32,5 +32,5 @@ public sealed interface FileType {
  *
  * @return `true` if this instance is an image, `false` otherwise.
  */
-public val FileType.isImage
+public val FileType.isImage: Boolean
     get() = this is FileType.Image

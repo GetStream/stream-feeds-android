@@ -15,15 +15,15 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
+import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
-import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManager
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
-import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
+import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -41,7 +41,7 @@ internal class ActivityImplTest {
         every { state } returns commentListState
         every { mutableState } returns commentListState
     }
-    private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener> =
+    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> =
         mockk(relaxed = true)
 
     private val activity =

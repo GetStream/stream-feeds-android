@@ -15,8 +15,8 @@
  */
 package io.getstream.feeds.android.client.api.state.query
 
-import io.getstream.android.core.query.Filter
-import io.getstream.android.core.query.toRequest
+import io.getstream.feeds.android.client.api.query.Filter
+import io.getstream.feeds.android.client.api.query.toRequest
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedInputData
 import io.getstream.feeds.android.client.api.model.toRequest

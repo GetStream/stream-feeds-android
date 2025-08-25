@@ -15,11 +15,11 @@
  */
 package io.getstream.feeds.android.sample.login
 
-import io.getstream.android.core.user.User
-import io.getstream.android.core.user.UserToken
+import io.getstream.android.core.api.model.value.StreamToken
+import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.sample.DemoAppConfig
 
-data class UserCredentials(val user: User, val userToken: UserToken) {
+data class UserCredentials(val user: User, val userToken: StreamToken) {
 
     val id: String
         get() = user.id
@@ -35,7 +35,7 @@ data class UserCredentials(val user: User, val userToken: UserToken) {
                         imageURL =
                             "https://ca.slack-edge.com/T02RM6X6B-U07LDJZRUTG-a4129fed05b6-512",
                     ),
-                userToken = UserToken(DemoAppConfig.Current.token("petar")),
+                userToken = StreamToken.fromString(DemoAppConfig.Current.token("petar")),
             )
         val Gian =
             UserCredentials(
@@ -46,7 +46,7 @@ data class UserCredentials(val user: User, val userToken: UserToken) {
                         imageURL =
                             "https://ca.slack-edge.com/T02RM6X6B-U09645WUWQ3-a89200afc9fd-512",
                     ),
-                userToken = UserToken(DemoAppConfig.Current.token("gian")),
+                userToken = StreamToken.fromString(DemoAppConfig.Current.token("gian")),
             )
         val Luke =
             UserCredentials(
@@ -57,7 +57,7 @@ data class UserCredentials(val user: User, val userToken: UserToken) {
                         imageURL =
                             "https://vignette.wikia.nocookie.net/starwars/images/2/20/LukeTLJ.jpg",
                     ),
-                userToken = UserToken(DemoAppConfig.Current.token("luke_skywalker")),
+                userToken = StreamToken.fromString(DemoAppConfig.Current.token("luke_skywalker")),
             )
         val Leia =
             UserCredentials(
@@ -68,7 +68,7 @@ data class UserCredentials(val user: User, val userToken: UserToken) {
                         imageURL =
                             "https://vignette.wikia.nocookie.net/starwars/images/f/fc/Leia_Organa_TLJ.png",
                     ),
-                userToken = UserToken(DemoAppConfig.Current.token("leia_organa")),
+                userToken = StreamToken.fromString(DemoAppConfig.Current.token("leia_organa")),
             )
         val Han =
             UserCredentials(
@@ -79,7 +79,7 @@ data class UserCredentials(val user: User, val userToken: UserToken) {
                         imageURL =
                             "https://vignette.wikia.nocookie.net/starwars/images/e/e2/TFAHanSolo.png",
                     ),
-                userToken = UserToken(DemoAppConfig.Current.token("han_solo")),
+                userToken = StreamToken.fromString(DemoAppConfig.Current.token("han_solo")),
             )
         val Lando =
             UserCredentials(
@@ -90,7 +90,7 @@ data class UserCredentials(val user: User, val userToken: UserToken) {
                         imageURL =
                             "https://vignette.wikia.nocookie.net/starwars/images/8/8f/Lando_ROTJ.png",
                     ),
-                userToken = UserToken(DemoAppConfig.Current.token("lando_calrissian")),
+                userToken = StreamToken.fromString(DemoAppConfig.Current.token("lando_calrissian")),
             )
         val Chewbacca =
             UserCredentials(
@@ -101,7 +101,7 @@ data class UserCredentials(val user: User, val userToken: UserToken) {
                         imageURL =
                             "https://vignette.wikia.nocookie.net/starwars/images/4/48/Chewbacca_TLJ.png",
                     ),
-                userToken = UserToken(DemoAppConfig.Current.token("chewbacca")),
+                userToken = StreamToken.fromString(DemoAppConfig.Current.token("chewbacca")),
             )
         val C3PO =
             UserCredentials(
@@ -112,7 +112,7 @@ data class UserCredentials(val user: User, val userToken: UserToken) {
                         imageURL =
                             "https://vignette.wikia.nocookie.net/starwars/images/3/3f/C-3PO_TLJ_Card_Trader_Award_Card.png",
                     ),
-                userToken = UserToken(DemoAppConfig.Current.token("c3po")),
+                userToken = StreamToken.fromString(DemoAppConfig.Current.token("c3po")),
             )
         val R2D2 =
             UserCredentials(
@@ -123,7 +123,7 @@ data class UserCredentials(val user: User, val userToken: UserToken) {
                         imageURL =
                             "https://vignette.wikia.nocookie.net/starwars/images/e/eb/ArtooTFA2-Fathead.png",
                     ),
-                userToken = UserToken(DemoAppConfig.Current.token("r2d2")),
+                userToken = StreamToken.fromString(DemoAppConfig.Current.token("r2d2")),
             )
         val Anakin =
             UserCredentials(
@@ -134,7 +134,7 @@ data class UserCredentials(val user: User, val userToken: UserToken) {
                         imageURL =
                             "https://vignette.wikia.nocookie.net/starwars/images/6/6f/Anakin_Skywalker_RotS.png",
                     ),
-                userToken = UserToken(DemoAppConfig.Current.token("anakin_skywalker")),
+                userToken = StreamToken.fromString(DemoAppConfig.Current.token("anakin_skywalker")),
             )
         val ObiWan =
             UserCredentials(
@@ -145,7 +145,7 @@ data class UserCredentials(val user: User, val userToken: UserToken) {
                         imageURL =
                             "https://vignette.wikia.nocookie.net/starwars/images/4/4e/ObiWanHS-SWE.jpg",
                     ),
-                userToken = UserToken(DemoAppConfig.Current.token("obi_wan_kenobi")),
+                userToken = StreamToken.fromString(DemoAppConfig.Current.token("obi_wan_kenobi")),
             )
         val Padme =
             UserCredentials(
@@ -156,7 +156,7 @@ data class UserCredentials(val user: User, val userToken: UserToken) {
                         imageURL =
                             "https://vignette.wikia.nocookie.net/starwars/images/b/b2/Padmegreenscrshot.jpg",
                     ),
-                userToken = UserToken(DemoAppConfig.Current.token("padme_amidala")),
+                userToken = StreamToken.fromString(DemoAppConfig.Current.token("padme_amidala")),
             )
         val QuiGon =
             UserCredentials(
@@ -167,7 +167,7 @@ data class UserCredentials(val user: User, val userToken: UserToken) {
                         imageURL =
                             "https://vignette.wikia.nocookie.net/starwars/images/f/f6/Qui-Gon_Jinn_Headshot_TPM.jpg",
                     ),
-                userToken = UserToken(DemoAppConfig.Current.token("qui_gon_jinn")),
+                userToken = StreamToken.fromString(DemoAppConfig.Current.token("qui_gon_jinn")),
             )
 
         val BuiltIn =

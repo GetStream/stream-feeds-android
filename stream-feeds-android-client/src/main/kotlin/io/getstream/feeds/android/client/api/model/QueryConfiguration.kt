@@ -15,8 +15,8 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.android.core.query.Filter
-import io.getstream.android.core.query.Sort
+import io.getstream.feeds.android.client.api.query.Filter
+import io.getstream.feeds.android.client.api.query.Sort
 
 /**
  * Wrapper around the query configuration consisting of a [Filter] and a list of [Sort] operations.

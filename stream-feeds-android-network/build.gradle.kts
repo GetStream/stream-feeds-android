@@ -45,7 +45,6 @@ tasks.withType<KotlinCompile>().configureEach {
 }
 
 dependencies {
-    implementation(libs.stream.android.core)
     // Network
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin)

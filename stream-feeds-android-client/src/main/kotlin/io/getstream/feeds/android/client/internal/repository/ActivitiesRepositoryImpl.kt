@@ -15,6 +15,7 @@
  */
 package io.getstream.feeds.android.client.internal.repository
 
+import io.getstream.android.core.api.processing.StreamSingleFlightProcessor
 import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.file.FeedUploader

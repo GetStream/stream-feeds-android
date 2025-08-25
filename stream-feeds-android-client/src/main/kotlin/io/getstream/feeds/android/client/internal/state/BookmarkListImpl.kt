@@ -15,16 +15,15 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
-import io.getstream.android.core.websocket.WebSocketConnectionState
+import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.BookmarkList
 import io.getstream.feeds.android.client.api.state.BookmarkListState
 import io.getstream.feeds.android.client.api.state.query.BookmarksQuery
-import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManager
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
-import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
 import io.getstream.feeds.android.client.internal.state.event.handler.BookmarkListEventHandler
+import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.network.models.WSEvent
 
 /**
@@ -41,16 +40,12 @@ import io.getstream.feeds.android.network.models.WSEvent
 internal class BookmarkListImpl(
     override val query: BookmarksQuery,
     private val bookmarksRepository: BookmarksRepository,
-    private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener>,
+    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
 ) : BookmarkList {
 
     init {
         subscriptionManager.subscribe(
-            object : FeedsSocketListener {
-                override fun onState(state: WebSocketConnectionState) {
-                    // Not relevant, rethink this
-                }
-
+            object : FeedsEventListener {
                 override fun onEvent(event: WSEvent) {
                     eventHandler.handleEvent(event)
                 }

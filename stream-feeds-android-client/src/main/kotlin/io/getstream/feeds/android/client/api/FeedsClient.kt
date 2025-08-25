@@ -16,9 +16,11 @@
 package io.getstream.feeds.android.client.api
 
 import android.content.Context
-import io.getstream.android.core.user.ApiKey
-import io.getstream.android.core.user.User
-import io.getstream.android.core.user.UserTokenProvider
+import io.getstream.android.core.api.authentication.StreamTokenProvider
+import io.getstream.android.core.api.model.connection.StreamConnectedUser
+import io.getstream.android.core.api.model.connection.StreamConnectionState
+import io.getstream.android.core.api.model.value.StreamApiKey
+import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.AppData
@@ -65,6 +67,7 @@ import io.getstream.feeds.android.network.models.ListDevicesResponse
 import io.getstream.feeds.android.network.models.WSEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /** Single entry point for interacting with the Stream Feeds service. */
 public interface FeedsClient {
@@ -77,23 +80,10 @@ public interface FeedsClient {
      *
      * @return A [Result] indicating success or failure of the connection attempt.
      */
-    public suspend fun connect(): Result<Unit>
+    public suspend fun connect(): Result<StreamConnectedUser>
 
     /** Disconnects the current [FeedsClient]. */
     public suspend fun disconnect(): Result<Unit>
-
-    /**
-     * Creates and returns a flow that emits WebSocket events.
-     *
-     * This flow provides real-time updates for events to which the client is subscribed. For example, if you query a
-     * feed, you'll receive updates related to that feed, such as new activities, reactions, comments, etc.
-     *
-     * **Note:** This flow drops events if the consumer cannot keep up (backpressure). To prevent
-     * this, consider applying your preferred strategy using the `.buffer()` operator.
-     *
-     * @return A [SharedFlow] of [WSEvent] that emits events from the WebSocket connection.
-     */
-    public fun events(): Flow<WSEvent>
 
     /**
      * Creates a feed instance for the specified group and id.
@@ -467,9 +457,9 @@ public interface FeedsClient {
      * This API key is the same one that was passed in the [FeedsConfig] provided during client
      * initialization.
      *
-     * @return The [ApiKey] associated with this client.
+     * @return The [StreamApiKey] associated with this client.
      */
-    public val apiKey: ApiKey
+    public val apiKey: StreamApiKey
 
     /**
      * Provides the user associated with this client.
@@ -500,6 +490,10 @@ public interface FeedsClient {
      *   unblocking users.
      */
     public val moderation: Moderation
+
+    public val state: StateFlow<StreamConnectionState>
+
+    public val events: Flow<WSEvent>
 }
 
 /**
@@ -513,9 +507,9 @@ public interface FeedsClient {
  */
 public fun FeedsClient(
     context: Context,
-    apiKey: ApiKey,
+    apiKey: StreamApiKey,
     user: User,
-    tokenProvider: UserTokenProvider,
+    tokenProvider: StreamTokenProvider,
     config: FeedsConfig = FeedsConfig(),
 ): FeedsClient =
     createFeedsClient(
