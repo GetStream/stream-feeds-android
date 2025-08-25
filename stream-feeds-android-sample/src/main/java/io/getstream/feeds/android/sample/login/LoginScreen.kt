@@ -154,7 +154,7 @@ private fun UserLoginItem(
                 .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        UserAvatar(credentials.user.imageURL, Modifier.size(40.dp))
+        UserAvatar(credentials.user.imageURL)
 
         Text(
             modifier = Modifier.weight(1f).padding(start = 16.dp),

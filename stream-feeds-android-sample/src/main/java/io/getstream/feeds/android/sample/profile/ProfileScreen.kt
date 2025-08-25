@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -221,10 +220,7 @@ fun FollowingItem(follow: FollowData, onUnfollowClick: (FeedId) -> Unit) {
 @Composable
 fun FollowSuggestionItem(owner: UserData, fid: FeedId, onFollowClick: (FeedId) -> Unit) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        UserAvatar(
-            avatarUrl = owner.image,
-            modifier = Modifier.size(40.dp),
-        )
+        UserAvatar(owner.image)
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = owner.name ?: owner.id,

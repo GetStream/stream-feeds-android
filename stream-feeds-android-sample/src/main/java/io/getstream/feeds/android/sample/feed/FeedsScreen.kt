@@ -407,7 +407,7 @@ fun ActivityContent(
                 .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
-            UserAvatar(avatarUrl = user.image, modifier = Modifier.size(40.dp))
+            UserAvatar(avatarUrl = user.image)
 
             Column(
                 modifier = Modifier
