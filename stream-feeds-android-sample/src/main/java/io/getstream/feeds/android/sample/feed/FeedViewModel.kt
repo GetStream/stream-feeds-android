@@ -48,7 +48,9 @@ import io.getstream.feeds.android.sample.util.map
 import io.getstream.feeds.android.sample.util.notNull
 import io.getstream.feeds.android.sample.util.withFirstContent
 import io.getstream.feeds.android.sample.utils.logResult
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -94,9 +96,13 @@ class FeedViewModel @Inject constructor(
         .flatMapLatest { it.getOrNull()?.state?.notificationStatus ?: emptyFlow() }
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
+    private val errorChannel = Channel<String>()
+    val error = errorChannel.consumeAsFlow()
+
     init {
         feed.withFirstContent(viewModelScope) {
             getOrCreate()
+                .notifyOnFailure { "Error getting the feed" }
         }
         notificationFeed.withFirstContent(viewModelScope) {
             getOrCreate()
@@ -108,6 +114,7 @@ class FeedViewModel @Inject constructor(
             if (!state.canLoadMoreActivities) return@withFirstContent
             queryMoreActivities()
                 .logResult(TAG, "Loading more activities for feed: $fid")
+                .notifyOnFailure { "Failed to load more activities" }
         }
     }
 
@@ -117,11 +124,13 @@ class FeedViewModel @Inject constructor(
             feed.withFirstContent(viewModelScope) {
                 val request = AddReactionRequest("heart", createNotificationActivity = true)
                 addReaction(activity.id, request)
+                    .notifyOnFailure { "Failed to add reaction" }
             }
         } else {
             // Remove 'heart' reaction
             feed.withFirstContent(viewModelScope) {
                 deleteReaction(activity.id, "heart")
+                    .notifyOnFailure { "Failed to delete reaction" }
             }
         }
     }
@@ -129,6 +138,7 @@ class FeedViewModel @Inject constructor(
     fun onRepostClick(activity: ActivityData, text: String?) {
         feed.withFirstContent(viewModelScope) {
             repost(activity.id, text = text)
+                .notifyOnFailure { "Failed to repost activity" }
         }
     }
 
@@ -137,11 +147,13 @@ class FeedViewModel @Inject constructor(
             // Add bookmark
             feed.withFirstContent(viewModelScope) {
                 addBookmark(activity.id)
+                    .notifyOnFailure { "Failed to add bookmark" }
             }
         } else {
             // Remove bookmark
             feed.withFirstContent(viewModelScope) {
                 deleteBookmark(activity.id)
+                    .notifyOnFailure { "Failed to delete bookmark" }
             }
         }
     }
@@ -150,6 +162,7 @@ class FeedViewModel @Inject constructor(
         feed.withFirstContent(viewModelScope) {
             deleteActivity(activityId)
                 .logResult(TAG, "Deleting activity: $activityId")
+                .notifyOnFailure { "Failed to delete activity" }
         }
     }
 
@@ -157,15 +170,18 @@ class FeedViewModel @Inject constructor(
         feed.withFirstContent(viewModelScope) {
             updateActivity(activityId, UpdateActivityRequest(text = text))
                 .logResult(TAG, "Updating activity: $activityId with text: $text")
+                .notifyOnFailure { "Failed to edit activity" }
         }
     }
 
     fun onCreatePost(text: String, attachments: List<Uri>) {
         feed.withFirstContent(viewModelScope) {
-            val attachmentFiles = application.copyToCache(attachments).getOrElse { error ->
-                Log.e(TAG, "Failed to copy attachments", error)
-                return@withFirstContent
-            }
+            val attachmentFiles = application.copyToCache(attachments)
+                .notifyOnFailure { "Failed to copy attachments" }
+                .getOrElse { error ->
+                    Log.e(TAG, "Failed to copy attachments", error)
+                    return@withFirstContent
+                }
 
             addActivity(
                 FeedAddActivityRequest(
@@ -180,6 +196,7 @@ class FeedViewModel @Inject constructor(
                     Log.d(TAG, "Uploading attachment: ${file.type}, progress: $progress")
                 }
             ).logResult(TAG, "Creating activity with text: $text")
+                .notifyOnFailure { "Failed to create post" }
 
             deleteFiles(attachmentFiles)
         }
@@ -200,6 +217,7 @@ class FeedViewModel @Inject constructor(
 
             createPoll(request = request, activityType = "activity")
                 .logResult(TAG, "Creating poll with question: ${poll.question}")
+                .notifyOnFailure { "Failed to create poll" }
         }
     }
 
@@ -214,6 +232,9 @@ class FeedViewModel @Inject constructor(
 
         return userState.client.feed(query)
     }
+
+    private suspend inline fun <T> Result<T>.notifyOnFailure(message: () -> String) =
+        onFailure { errorChannel.send("${message()}: ${it.message}") }
 
     companion object {
         private const val TAG = "FeedViewModel"
