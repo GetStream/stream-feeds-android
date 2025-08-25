@@ -15,11 +15,6 @@
  */
 package io.getstream.feeds.android.sample.feed
 
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts.PickMultipleVisualMedia
-import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -48,13 +43,11 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -137,7 +130,7 @@ private fun FeedsScreenContent(
     args: FeedsScreenArgs,
     navigator: DestinationsNavigator,
     state: FeedState,
-    viewModel: FeedViewModel
+    viewModel: FeedViewModel,
 ) {
     var showLogoutConfirmation by remember { mutableStateOf(false) }
     var showCreatePostBottomSheet by remember { mutableStateOf(false) }
@@ -256,14 +249,17 @@ private fun FeedsScreenContent(
             // Create Post Bottom Sheet
             if (showCreatePostBottomSheet) {
                 CreateContentBottomSheet(
+                    title = "Create post",
                     onDismiss = { showCreatePostBottomSheet = false },
                     onPost = { postText, attachments ->
                         showCreatePostBottomSheet = false
                         viewModel.onCreatePost(postText, attachments)
                     },
-                    onCreatePoll = {
-                        showCreatePostBottomSheet = false
-                        viewModel.onCreatePoll(it)
+                    extraActions = {
+                        CreatePollButton { formData ->
+                            showCreatePostBottomSheet = false
+                            viewModel.onCreatePoll(formData)
+                        }
                     },
                 )
             }
@@ -616,101 +612,6 @@ fun EditPostDialog(initialText: String, onDismiss: () -> Unit, onSave: (String) 
         confirmButton = { Button(onClick = { onSave(editText) }) { Text("Save") } },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
     )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CreateContentBottomSheet(
-    onDismiss: () -> Unit,
-    onPost: (text: String, attachments: List<Uri>) -> Unit,
-    onCreatePoll: (PollFormData) -> Unit,
-) {
-    var postText by remember { mutableStateOf("") }
-    var attachments by remember { mutableStateOf<List<Uri>>(emptyList()) }
-    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = bottomSheetState,
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        ) {
-            // Header
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(text = "Create Post", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-
-                val canPost = attachments.isNotEmpty() || postText.isNotBlank()
-                TextButton(onClick = { onPost(postText, attachments) }, enabled = canPost) {
-                    Text(text = "Post", fontWeight = FontWeight.Medium)
-                }
-            }
-
-            // Text Input
-            OutlinedTextField(
-                value = postText,
-                onValueChange = { postText = it },
-                placeholder = { Text("Add post") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                minLines = 3,
-                maxLines = 6,
-            )
-
-            // Bottom toolbar with image attachment option
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                val hasAttachments = attachments.isNotEmpty()
-
-                AttachmentButton(
-                    hasAttachment = hasAttachments,
-                    onAttachmentsSelected = { uris -> attachments = uris },
-                )
-
-                if (hasAttachments) {
-                    Text(
-                        text = "Attachment selected",
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(start = 8.dp),
-                    )
-                }
-
-                CreatePollButton(onCreatePoll)
-            }
-        }
-    }
-}
-
-@Composable
-private fun AttachmentButton(hasAttachment: Boolean, onAttachmentsSelected: (List<Uri>) -> Unit) {
-    val activityLauncher =
-        rememberLauncherForActivityResult(PickMultipleVisualMedia(), onAttachmentsSelected)
-
-    IconButton(
-        onClick = {
-            activityLauncher.launch(PickVisualMediaRequest(mediaType = PickVisualMedia.ImageOnly))
-        }
-    ) {
-        Icon(
-            painter = painterResource(android.R.drawable.ic_menu_gallery),
-            contentDescription = "Add Image/Video",
-            tint = if (hasAttachment) MaterialTheme.colorScheme.onSurface else Color.Unspecified,
-            modifier = Modifier.size(24.dp),
-        )
-    }
 }
 
 @Composable
