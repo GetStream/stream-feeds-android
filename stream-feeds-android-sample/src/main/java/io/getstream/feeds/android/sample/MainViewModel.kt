@@ -23,7 +23,6 @@ import com.ramcosta.composedestinations.generated.destinations.MainScreenDestina
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.getstream.feeds.android.client.api.model.User
 import io.getstream.android.core.result.runSafely
-import io.getstream.android.core.user.User
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
 import io.getstream.feeds.android.sample.login.LoginManager
