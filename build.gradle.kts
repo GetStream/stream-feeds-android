@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.arturbosch.detekt) apply true
     alias(libs.plugins.spotless) apply true
+    id("com.google.gms.google-services") version "4.4.3" apply false
 }
 
 spotless {

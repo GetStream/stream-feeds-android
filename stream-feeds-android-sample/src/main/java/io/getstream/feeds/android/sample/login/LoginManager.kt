@@ -28,11 +28,11 @@ import io.getstream.android.core.api.model.value.StreamUserId
 import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.sample.DemoAppConfig
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class LoginManager

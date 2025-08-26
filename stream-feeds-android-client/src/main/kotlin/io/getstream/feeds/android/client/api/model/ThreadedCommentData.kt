@@ -170,20 +170,29 @@ internal fun ThreadedCommentData.addReaction(
     reaction: FeedsReactionData,
     currentUserId: String,
 ): ThreadedCommentData {
-    val updatedLatestReactions = latestReactions.upsert(reaction, FeedsReactionData::id)
-    val reactionGroup =
-        this.reactionGroups[reaction.type]
-            ?: ReactionGroupData(count = 1, reaction.createdAt, reaction.createdAt)
-    val updatedReactionGroup = reactionGroup.increment(reaction.createdAt)
-    val updatedReactionGroups =
-        this.reactionGroups.toMutableMap().apply { this[reaction.type] = updatedReactionGroup }
-    val updatedReactionCount = updatedReactionGroups.values.sumOf(ReactionGroupData::count)
+    val ownReaction = reaction.user.id == currentUserId
     val updatedOwnReactions =
-        if (reaction.user.id == currentUserId) {
+        if (ownReaction) {
             ownReactions.upsert(reaction, FeedsReactionData::id)
         } else {
             ownReactions
         }
+    val inserted = updatedOwnReactions.size > ownReactions.size
+    val updatedLatestReactions = latestReactions.upsert(reaction, FeedsReactionData::id)
+    val reactionGroup =
+        this.reactionGroups[reaction.type]
+            ?: ReactionGroupData(count = 1, reaction.createdAt, reaction.createdAt)
+    // Increment the count if:
+    // 1. The reaction is from another user (not own reaction)
+    // 2. The reaction is from the current user, but it's a new reaction (not an update of existing)
+    val updatedReactionGroup = if (!ownReaction || inserted) {
+        reactionGroup.increment(reaction.createdAt)
+    } else {
+        reactionGroup
+    }
+    val updatedReactionGroups =
+        this.reactionGroups.toMutableMap().apply { this[reaction.type] = updatedReactionGroup }
+    val updatedReactionCount = updatedReactionGroups.values.sumOf(ReactionGroupData::count)
     return this.copy(
         latestReactions = updatedLatestReactions,
         reactionGroups = updatedReactionGroups,
@@ -204,13 +213,15 @@ internal fun ThreadedCommentData.removeReaction(
     reaction: FeedsReactionData,
     currentUserId: String,
 ): ThreadedCommentData {
-    val updatedLatestReactions = this.latestReactions.filter { it.id != reaction.id }
+    val ownReaction = reaction.user.id == currentUserId
     val updatedOwnReactions =
-        if (reaction.user.id == currentUserId) {
+        if (ownReaction) {
             this.ownReactions.filter { it.id != reaction.id }
         } else {
             this.ownReactions
         }
+    val removed = updatedOwnReactions.size < this.ownReactions.size
+    val updatedLatestReactions = this.latestReactions.filter { it.id != reaction.id }
     val reactionGroup = this.reactionGroups[reaction.type]
     if (reactionGroup == null) {
         // If there is no reaction group for this type, just update latest and own reactions.
@@ -220,7 +231,14 @@ internal fun ThreadedCommentData.removeReaction(
             ownReactions = updatedOwnReactions,
         )
     }
-    val updatedReactionGroup = reactionGroup.decrement(reaction.createdAt)
+    // Decrement the count if:
+    // 1. The reaction is from another user (not own reaction)
+    // 2. The reaction is from the current user, and it was already present
+    val updatedReactionGroup = if (!ownReaction || removed) {
+        reactionGroup.decrement(reaction.createdAt)
+    } else {
+        reactionGroup
+    }
     val updatedReactionGroups =
         if (updatedReactionGroup.isEmpty) {
             this.reactionGroups - reaction.type // Remove empty group

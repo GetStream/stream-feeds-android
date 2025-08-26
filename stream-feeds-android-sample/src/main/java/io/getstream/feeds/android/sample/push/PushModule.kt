@@ -13,21 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getstream.feeds.android.sample.components
+package io.getstream.feeds.android.sample.push
 
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import coil3.compose.AsyncImage
+import com.google.firebase.messaging.FirebaseMessaging
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
-@Composable
-fun UserAvatar(avatarUrl: String?, modifier: Modifier = Modifier) {
-    AsyncImage(
-        modifier = modifier.clip(CircleShape),
-        model = avatarUrl,
-        contentDescription = null,
-        contentScale = ContentScale.FillBounds,
-    )
+/** Hilt module to provide [FirebaseMessaging] instance. */
+@Module
+@InstallIn(SingletonComponent::class)
+object PushModule {
+
+    @[Provides Singleton]
+    fun provideFirebaseMessaging(): FirebaseMessaging = FirebaseMessaging.getInstance()
 }

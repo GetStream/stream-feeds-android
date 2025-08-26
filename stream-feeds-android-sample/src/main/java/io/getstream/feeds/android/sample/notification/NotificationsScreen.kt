@@ -170,8 +170,9 @@ private val AggregatedActivityData.displayText: String
 private fun displayTextForAggregationType(type: String): String {
     return when (type) {
         "comment" -> "commented on your activity"
+        "comment_reaction" -> "reacted on your comment"
         "reaction" -> "reacted on your activity"
         "follow" -> "followed you"
-        else -> ""
+        else -> "interacted with your activity"
     }
 }

@@ -1,5 +1,6 @@
 [versions]
 agp = "8.11.1"
+firebaseBom = "33.16.0"
 hilt = "2.57"
 hiltNavigationCompose = "1.2.0"
 kotlin = "2.2.0"
@@ -57,6 +58,8 @@ coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version
 composeDestinations-core = { module = "io.github.raamcosta.compose-destinations:core", version.ref = "composeDestinations" }
 composeDestinations-ksp = { module = "io.github.raamcosta.compose-destinations:ksp", version.ref = "composeDestinations" }
 composeDestinations-bottomSheet = { module = "io.github.raamcosta.compose-destinations:bottom-sheet", version.ref = "composeDestinations" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 google-symbolprocessingapi = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "symbolProcessingApi" }
 hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
