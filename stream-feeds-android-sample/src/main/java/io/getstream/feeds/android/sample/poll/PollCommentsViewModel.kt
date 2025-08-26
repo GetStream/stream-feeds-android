@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ramcosta.composedestinations.generated.destinations.PollCommentsScreenDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.getstream.android.core.query.Filters
+import io.getstream.feeds.android.client.api.query.Filters
 import io.getstream.feeds.android.client.api.state.PollVoteList
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.sample.login.LoginManager
