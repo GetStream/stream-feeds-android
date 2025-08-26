@@ -43,11 +43,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.ramcosta.composedestinations.generated.destinations.PollCommentsScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollOptionData
 import io.getstream.feeds.android.client.api.model.PollVoteData
+import io.getstream.feeds.android.sample.poll.PollResultsScreen
 import io.getstream.feeds.android.sample.ui.theme.LighterGray
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -119,7 +122,7 @@ fun PollSection(
             )
         }
 
-        PollTextButton(text = "View results")
+        ViewResultsButton(poll, controller)
 
         if (!poll.isClosed && poll.createdById == currentUserId) {
             PollTextButton(
@@ -170,6 +173,28 @@ private fun PollOption(
                 progress = { ratio },
                 drawStopIndicator = {},
                 modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+private fun ViewResultsButton(poll: PollData, controller: FeedPollController) {
+    var showResultsScreen by remember { mutableStateOf(false) }
+
+    PollTextButton(
+        text = "View results",
+        onClick = { showResultsScreen = true }
+    )
+
+    if (showResultsScreen) {
+        Dialog(
+            onDismissRequest = { showResultsScreen = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            PollResultsScreen(
+                poll = poll,
+                onCloseClick = { showResultsScreen = false }
             )
         }
     }
