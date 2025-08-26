@@ -24,7 +24,6 @@ import io.getstream.feeds.android.client.api.state.query.PollsQuery
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.PollListEventHandler
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
-import io.getstream.feeds.android.network.models.WSEvent
 
 /**
  * Implementation of [PollList] that manages the state of a list of polls.
@@ -46,20 +45,14 @@ internal class PollListImpl(
     private val _state: PollListStateImpl = PollListStateImpl(query),
 ) : PollList {
 
-    init {
-        subscriptionManager.subscribe(
-            object : FeedsEventListener {
-                override fun onEvent(event: WSEvent) {
-                    eventHandler.handleEvent(event)
-                }
-            }
-        )
-    }
+    override val state: PollListState
+        get() = _state
 
     private val eventHandler = PollListEventHandler(_state)
 
-    override val state: PollListState
-        get() = _state
+    init {
+        subscriptionManager.subscribe(eventHandler)
+    }
 
     override suspend fun get(): Result<List<PollData>> {
         return queryPolls(query)

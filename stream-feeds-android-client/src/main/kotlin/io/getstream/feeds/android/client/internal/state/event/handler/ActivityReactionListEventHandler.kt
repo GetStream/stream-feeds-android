@@ -17,15 +17,16 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.ActivityReactionListStateUpdates
+import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
 import io.getstream.feeds.android.network.models.WSEvent
 
 internal class ActivityReactionListEventHandler(
     private val activityId: String,
     private val state: ActivityReactionListStateUpdates,
-) : StateEventHandler {
+) : FeedsEventListener {
 
-    override fun handleEvent(event: WSEvent) {
+    override fun onEvent(event: WSEvent) {
         when (event) {
             is ActivityReactionDeletedEvent -> {
                 if (event.activity.id == activityId) {

@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.ActivityCommentListStateUpdates
+import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.network.models.CommentAddedEvent
 import io.getstream.feeds.android.network.models.CommentDeletedEvent
 import io.getstream.feeds.android.network.models.CommentReactionAddedEvent
@@ -29,9 +30,9 @@ internal class ActivityCommentListEventHandler(
     private val objectId: String,
     private val objectType: String,
     private val state: ActivityCommentListStateUpdates,
-) : StateEventHandler {
+) : FeedsEventListener {
 
-    override fun handleEvent(event: WSEvent) {
+    override fun onEvent(event: WSEvent) {
         when (event) {
             is CommentAddedEvent -> {
                 if (event.comment.objectId == objectId && event.comment.objectType == objectType) {

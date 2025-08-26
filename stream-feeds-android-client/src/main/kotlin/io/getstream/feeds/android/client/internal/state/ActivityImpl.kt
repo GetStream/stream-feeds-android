@@ -41,7 +41,6 @@ import io.getstream.feeds.android.network.models.UpdateCommentRequest
 import io.getstream.feeds.android.network.models.UpdatePollOptionRequest
 import io.getstream.feeds.android.network.models.UpdatePollPartialRequest
 import io.getstream.feeds.android.network.models.UpdatePollRequest
-import io.getstream.feeds.android.network.models.WSEvent
 
 /**
  * A class representing a single activity in a feed.
@@ -73,19 +72,13 @@ internal class ActivityImpl(
     private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
 ) : Activity {
 
-    init {
-        subscriptionManager.subscribe(
-            object : FeedsEventListener {
-                override fun onEvent(event: WSEvent) {
-                    eventHandler.handleEvent(event)
-                }
-            }
-        )
-    }
-
     private val _state: ActivityStateImpl = ActivityStateImpl(currentUserId, commentList.state)
 
     private val eventHandler = ActivityEventHandler(fid = fid, state = _state)
+
+    init {
+        subscriptionManager.subscribe(eventHandler)
+    }
 
     override val state: ActivityState
         get() = _state
@@ -125,8 +118,7 @@ internal class ActivityImpl(
         requests: List<ActivityAddCommentRequest>,
         attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?,
     ): Result<List<CommentData>> {
-        return commentsRepository.addCommentsBatch(requests, attachmentUploadProgress).onSuccess {
-            comments ->
+        return commentsRepository.addCommentsBatch(requests, attachmentUploadProgress).onSuccess { comments ->
             val threadedComments = comments.map(::ThreadedCommentData)
             threadedComments.forEach { threadedComment ->
                 commentList.mutableState.onCommentAdded(threadedComment)

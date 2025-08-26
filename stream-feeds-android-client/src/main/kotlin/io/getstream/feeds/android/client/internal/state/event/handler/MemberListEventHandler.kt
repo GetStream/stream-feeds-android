@@ -17,13 +17,14 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.MemberListStateUpdates
+import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.network.models.FeedMemberRemovedEvent
 import io.getstream.feeds.android.network.models.FeedMemberUpdatedEvent
 import io.getstream.feeds.android.network.models.WSEvent
 
 internal class MemberListEventHandler(private val state: MemberListStateUpdates) :
-    StateEventHandler {
-    override fun handleEvent(event: WSEvent) {
+    FeedsEventListener {
+    override fun onEvent(event: WSEvent) {
         when (event) {
             is FeedMemberRemovedEvent -> {
                 state.onMemberRemoved(event.memberId)

@@ -54,7 +54,6 @@ import io.getstream.feeds.android.network.models.UpdateBookmarkRequest
 import io.getstream.feeds.android.network.models.UpdateCommentRequest
 import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.network.models.UpdateFeedRequest
-import io.getstream.feeds.android.network.models.WSEvent
 
 /**
  * A feed represents a collection of activities and provides methods to interact with them.
@@ -95,17 +94,6 @@ internal class FeedImpl(
     private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
 ) : Feed {
 
-    private var eventListener: FeedsEventListener
-
-    init {
-        eventListener = object : FeedsEventListener {
-            override fun onEvent(event: WSEvent) {
-                eventHandler.handleEvent(event)
-            }
-        }
-        subscriptionManager.subscribe(eventListener)
-    }
-
     private val memberList: MemberListImpl =
         MemberListImpl(
             query = MembersQuery(fid = query.fid),
@@ -121,6 +109,10 @@ internal class FeedImpl(
         )
 
     private val eventHandler = FeedEventHandler(fid = fid, state = _state)
+
+    init {
+        subscriptionManager.subscribe(eventHandler)
+    }
 
     private val group: String
         get() = fid.group

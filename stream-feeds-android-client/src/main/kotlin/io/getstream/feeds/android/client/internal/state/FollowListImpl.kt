@@ -25,7 +25,6 @@ import io.getstream.feeds.android.client.api.state.query.toRequest
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.FollowListEventHandler
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
-import io.getstream.feeds.android.network.models.WSEvent
 
 /**
  * A class that manages a paginated list of follows.
@@ -44,19 +43,13 @@ internal class FollowListImpl(
     private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
 ) : FollowList {
 
-    init {
-        subscriptionManager.subscribe(
-            object : FeedsEventListener {
-                override fun onEvent(event: WSEvent) {
-                    eventHandler.handleEvent(event)
-                }
-            }
-        )
-    }
-
     private val _state: FollowListStateImpl = FollowListStateImpl(query)
 
     private val eventHandler = FollowListEventHandler(_state)
+
+    init {
+        subscriptionManager.subscribe(eventHandler)
+    }
 
     override val state: FollowListState
         get() = _state

@@ -24,7 +24,6 @@ import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.ActivityListEventHandler
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
-import io.getstream.feeds.android.network.models.WSEvent
 
 /**
  * A paginated list of activities that supports real-time updates and filtering.
@@ -46,19 +45,13 @@ internal class ActivityListImpl(
     private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
 ) : ActivityList {
 
-    init {
-        subscriptionManager.subscribe(
-            object : FeedsEventListener {
-                override fun onEvent(event: WSEvent) {
-                    eventHandler.handleEvent(event)
-                }
-            }
-        )
-    }
-
     private val _state: ActivityListStateImpl = ActivityListStateImpl(query, currentUserId)
 
     private val eventHandler = ActivityListEventHandler(state = _state)
+
+    init {
+        subscriptionManager.subscribe(eventHandler)
+    }
 
     override val state: ActivityListState
         get() = _state

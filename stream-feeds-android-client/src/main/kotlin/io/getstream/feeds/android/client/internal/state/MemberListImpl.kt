@@ -25,7 +25,6 @@ import io.getstream.feeds.android.client.api.state.query.toRequest
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.MemberListEventHandler
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
-import io.getstream.feeds.android.network.models.WSEvent
 
 /**
  * A class that manages a paginated list of feed members.
@@ -44,19 +43,13 @@ internal class MemberListImpl(
     private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
 ) : MemberList {
 
-    init {
-        subscriptionManager.subscribe(
-            object : FeedsEventListener {
-                override fun onEvent(event: WSEvent) {
-                    eventHandler.handleEvent(event)
-                }
-            }
-        )
-    }
-
     private val _state: MemberListStateImpl = MemberListStateImpl(query)
 
     private val eventHandler = MemberListEventHandler(_state)
+
+    init {
+        subscriptionManager.subscribe(eventHandler)
+    }
 
     override val state: MemberListState
         get() = _state

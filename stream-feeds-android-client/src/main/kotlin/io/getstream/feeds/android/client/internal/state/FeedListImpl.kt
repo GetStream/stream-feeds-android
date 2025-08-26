@@ -24,8 +24,6 @@ import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.FeedListEventHandler
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
-import io.getstream.feeds.android.network.models.WSEvent
-import kotlin.collections.emptyList
 
 /**
  * Represents a list of feeds with a query and state.
@@ -41,19 +39,13 @@ internal class FeedListImpl(
     private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
 ) : FeedList {
 
-    init {
-        subscriptionManager.subscribe(
-            object : FeedsEventListener {
-                override fun onEvent(event: WSEvent) {
-                    eventHandler.handleEvent(event)
-                }
-            }
-        )
-    }
-
     private val _state: FeedListStateImpl = FeedListStateImpl(query)
 
     private val eventHandler = FeedListEventHandler(_state)
+
+    init {
+        subscriptionManager.subscribe(eventHandler)
+    }
 
     override val state: FeedListState
         get() = _state
