@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -37,7 +38,6 @@ import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.sample.R
 import io.getstream.feeds.android.sample.components.LoadingScreen
 import io.getstream.feeds.android.sample.components.UserAvatar
-import io.getstream.feeds.android.sample.ui.theme.LighterGray
 import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
 import io.getstream.feeds.android.sample.util.AsyncResource
 
@@ -112,7 +112,7 @@ private fun PollCommentsScreen(
 private fun PollCommentItem(vote: PollVoteData) {
     Column(
         Modifier
-            .background(LighterGray, RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
             .padding(16.dp)
             .fillMaxWidth()
     ) {

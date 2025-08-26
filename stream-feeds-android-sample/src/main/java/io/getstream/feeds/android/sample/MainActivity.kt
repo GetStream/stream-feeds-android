@@ -19,12 +19,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.navigation.ModalBottomSheetLayout
 import androidx.compose.material.navigation.rememberBottomSheetNavigator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
@@ -70,25 +73,27 @@ fun MainScreen(navigator: DestinationsNavigator) {
     val viewModel = hiltViewModel<MainViewModel>()
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
-    when (val viewState = viewState) {
-        is ViewState.Loading -> {
-            LoadingScreen()
-        }
+    Surface(Modifier.fillMaxSize()) {
+        when (val viewState = viewState) {
+            is ViewState.Loading -> {
+                LoadingScreen()
+            }
 
-        is ViewState.LoggedOut -> {
-            LoginScreen(onCredentialsSelected = viewModel::connect)
-        }
+            is ViewState.LoggedOut -> {
+                LoginScreen(onCredentialsSelected = viewModel::connect)
+            }
 
-        is ViewState.LoggedIn -> {
-            LaunchedEffect(Unit) {
-                val args = FeedsScreenArgs(
-                    feedId = FeedId("user", viewState.user.id).rawValue,
-                    avatarUrl = viewState.user.imageURL,
-                    userId = viewState.user.id,
-                )
-                navigator.navigate(FeedsScreenDestination(args)) {
-                    popUpTo(NavGraphs.root) {
-                        inclusive = true
+            is ViewState.LoggedIn -> {
+                LaunchedEffect(Unit) {
+                    val args = FeedsScreenArgs(
+                        feedId = FeedId("user", viewState.user.id).rawValue,
+                        avatarUrl = viewState.user.imageURL,
+                        userId = viewState.user.id,
+                    )
+                    navigator.navigate(FeedsScreenDestination(args)) {
+                        popUpTo(NavGraphs.root) {
+                            inclusive = true
+                        }
                     }
                 }
             }

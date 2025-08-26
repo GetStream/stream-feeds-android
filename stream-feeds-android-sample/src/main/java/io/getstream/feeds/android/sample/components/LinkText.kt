@@ -15,32 +15,32 @@
  */
 package io.getstream.feeds.android.sample.components
 
-import android.content.Intent
-import android.net.Uri
-import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.withLink
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 
 @Composable
 fun LinkText(
     text: String,
     modifier: Modifier = Modifier,
-    fontSize: androidx.compose.ui.unit.TextUnit = 14.sp,
-    color: Color = Color.Black,
-    lineHeight: androidx.compose.ui.unit.TextUnit = 20.sp,
+    fontSize: TextUnit = 14.sp,
+    lineHeight: TextUnit = 20.sp,
 ) {
     val context = LocalContext.current
 
     // Regex to match markdown links: [text](url)
-    val markdownLinkPattern = Regex("""\[([^\]]+)\]\(([^)]+)\)""")
+    val markdownLinkPattern = Regex("""\[([^]]+)]\(([^)]+)\)""")
 
     val annotatedString = buildAnnotatedString {
         var lastIndex = 0
@@ -56,18 +56,21 @@ fun LinkText(
             }
 
             // Add the clickable link
-            pushStringAnnotation(tag = "URL", annotation = url)
-            withStyle(
-                style =
-                    SpanStyle(
-                        color = Color.Blue,
-                        textDecoration = TextDecoration.Underline,
-                        fontWeight = FontWeight.Medium,
-                    )
+            withLink(
+                LinkAnnotation.Url(
+                    url = url,
+                    styles =
+                        TextLinkStyles(
+                            SpanStyle(
+                                color = MaterialTheme.colorScheme.primary,
+                                textDecoration = TextDecoration.Underline,
+                                fontWeight = FontWeight.Medium,
+                            )
+                        ),
+                )
             ) {
                 append(linkText)
             }
-            pop()
 
             lastIndex = end
         }
@@ -78,38 +81,5 @@ fun LinkText(
         }
     }
 
-    ClickableText(
-        text = annotatedString,
-        modifier = modifier,
-        style =
-            androidx.compose.ui.text.TextStyle(
-                fontSize = fontSize,
-                color = color,
-                lineHeight = lineHeight,
-            ),
-        onClick = { offset ->
-            annotatedString
-                .getStringAnnotations(tag = "URL", start = offset, end = offset)
-                .firstOrNull()
-                ?.let { annotation ->
-                    try {
-                        // Ensure URL has a proper protocol scheme
-                        val url = annotation.item
-                        val completeUrl =
-                            when {
-                                url.startsWith("http://") || url.startsWith("https://") -> url
-                                url.startsWith("www.") -> "https://$url"
-                                url.contains(".") && !url.contains("://") -> "https://$url"
-                                else -> url
-                            }
-
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(completeUrl))
-                        context.startActivity(intent)
-                    } catch (e: Exception) {
-                        // Handle error opening URL (e.g., invalid URL format)
-                        e.printStackTrace()
-                    }
-                }
-        },
-    )
+    Text(text = annotatedString, modifier = modifier, fontSize = fontSize, lineHeight = lineHeight)
 }

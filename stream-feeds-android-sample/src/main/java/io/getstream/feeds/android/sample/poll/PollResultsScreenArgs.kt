@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -26,7 +27,6 @@ import io.getstream.feeds.android.client.api.model.PollOptionData
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.sample.R
 import io.getstream.feeds.android.sample.components.UserAvatar
-import io.getstream.feeds.android.sample.ui.theme.LighterGray
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +52,7 @@ fun PollResultsScreen(poll: PollData, onCloseClick: () -> Unit) {
             Text(
                 text = poll.name,
                 modifier = Modifier
-                    .background(LighterGray, RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
                     .padding(16.dp)
                     .fillMaxWidth(),
                 fontSize = 16.sp,
@@ -78,7 +78,7 @@ private fun OptionResultItem(
 ) {
     Column(
         Modifier
-            .background(LighterGray, RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
