@@ -95,15 +95,15 @@ internal class FeedImpl(
     private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
 ) : Feed {
 
-    init {
-        subscriptionManager.subscribe(
-            object : FeedsEventListener {
+    private var eventListener: FeedsEventListener
 
-                override fun onEvent(event: WSEvent) {
-                    eventHandler.handleEvent(event)
-                }
+    init {
+        eventListener = object : FeedsEventListener {
+            override fun onEvent(event: WSEvent) {
+                eventHandler.handleEvent(event)
             }
-        )
+        }
+        subscriptionManager.subscribe(eventListener)
     }
 
     private val memberList: MemberListImpl =

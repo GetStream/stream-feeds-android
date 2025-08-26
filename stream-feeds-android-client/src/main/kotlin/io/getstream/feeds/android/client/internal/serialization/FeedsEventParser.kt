@@ -1,7 +1,7 @@
 package io.getstream.feeds.android.client.internal.serialization
 
 import io.getstream.android.core.api.serialization.StreamJsonSerialization
-import io.getstream.android.core.api.serialization.StreamProductEventSerialization
+import io.getstream.android.core.api.serialization.StreamEventSerialization
 import io.getstream.feeds.android.network.models.WSEvent
 
 /**
@@ -10,7 +10,7 @@ import io.getstream.feeds.android.network.models.WSEvent
  * @property jsonParser The JSON parser used to serialize and deserialize events.
  */
 internal class FeedsEventParser(private val jsonParser: StreamJsonSerialization) :
-    StreamProductEventSerialization<WSEvent> {
+    StreamEventSerialization<WSEvent> {
 
     override fun serialize(data: WSEvent): Result<String> = jsonParser.toJson(data)
 

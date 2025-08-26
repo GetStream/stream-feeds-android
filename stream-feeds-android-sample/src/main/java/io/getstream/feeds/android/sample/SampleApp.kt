@@ -24,7 +24,6 @@ import io.getstream.feeds.android.sample.ui.CoilImageLoaderFactory
 class SampleApp : Application() {
     override fun onCreate() {
         super.onCreate()
-
         SingletonImageLoader.setSafe(CoilImageLoaderFactory())
     }
 }

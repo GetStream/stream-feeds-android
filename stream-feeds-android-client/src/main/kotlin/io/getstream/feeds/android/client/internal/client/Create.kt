@@ -19,7 +19,7 @@ import io.getstream.android.core.api.processing.StreamBatcher
 import io.getstream.android.core.api.processing.StreamRetryProcessor
 import io.getstream.android.core.api.processing.StreamSerialProcessingQueue
 import io.getstream.android.core.api.processing.StreamSingleFlightProcessor
-import io.getstream.android.core.api.serialization.StreamProductEventSerialization
+import io.getstream.android.core.api.serialization.StreamEventSerialization
 import io.getstream.android.core.api.socket.StreamConnectionIdHolder
 import io.getstream.android.core.api.socket.StreamWebSocketFactory
 import io.getstream.android.core.api.socket.listeners.StreamClientListener
@@ -131,7 +131,7 @@ internal fun createStreamCoreClient(
         ),
         serializationConfig =
             StreamClientSerializationConfig.default(
-                object : StreamProductEventSerialization<WSEvent> {
+                object : StreamEventSerialization<WSEvent> {
                     override fun serialize(data: WSEvent): Result<String> =
                         feedsMoshiJsonParser.toJson(data)
 
@@ -267,7 +267,10 @@ internal fun createFeedsClient(
         uploader = uploader,
         moderation = moderation,
         coreClient = client,
-        feedsEventsSubscriptionManager = StreamSubscriptionManager(logProvider.taggedLogger("FeedEventSubscriptions")),
+        feedsEventsSubscriptionManager = StreamSubscriptionManager(logProvider.taggedLogger("FeedEventSubscriptions"),
+            maxStrongSubscriptions = Integer.MAX_VALUE,
+            maxWeakSubscriptions = Integer.MAX_VALUE,
+        ),
         logger = logger,
     )
 }
