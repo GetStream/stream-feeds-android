@@ -20,8 +20,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ramcosta.composedestinations.generated.destinations.PollCommentsScreenDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.getstream.feeds.android.client.api.query.Filters
+import io.getstream.feeds.android.client.api.query.equal
 import io.getstream.feeds.android.client.api.state.PollVoteList
+import io.getstream.feeds.android.client.api.state.query.PollVotesFilterField
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.util.AsyncResource
@@ -29,11 +30,11 @@ import io.getstream.feeds.android.sample.util.map
 import io.getstream.feeds.android.sample.util.notNull
 import io.getstream.feeds.android.sample.util.withFirstContent
 import io.getstream.feeds.android.sample.utils.logResult
-import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import javax.inject.Inject
 
 @HiltViewModel
 class PollCommentsViewModel
@@ -72,7 +73,7 @@ constructor(loginManager: LoginManager, savedStateHandle: SavedStateHandle) : Vi
             PollVotesQuery(
                 pollId = pollId,
                 userId = userState.user.id,
-                filter = Filters.equal("is_answer", true),
+                filter = PollVotesFilterField.IsAnswer.equal(true),
             )
         return userState.client.pollVoteList(query)
     }

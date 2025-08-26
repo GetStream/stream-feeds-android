@@ -20,6 +20,7 @@ import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.BookmarkFolderListState
+import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersFilterField
 import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersQuery
 import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
@@ -41,7 +42,8 @@ internal class BookmarkFolderListStateImpl(override val query: BookmarkFoldersQu
 
     private val _folders: MutableStateFlow<List<BookmarkFolderData>> = MutableStateFlow(emptyList())
 
-    internal var queryConfig: QueryConfiguration<BookmarkFoldersSort>? = null
+    internal var queryConfig: QueryConfiguration<BookmarkFoldersFilterField, BookmarkFoldersSort>? =
+        null
         private set
 
     private var _pagination: PaginationData? = null
@@ -57,7 +59,7 @@ internal class BookmarkFolderListStateImpl(override val query: BookmarkFoldersQu
 
     override fun onQueryMoreBookmarkFolders(
         result: PaginationResult<BookmarkFolderData>,
-        queryConfig: QueryConfiguration<BookmarkFoldersSort>,
+        queryConfig: QueryConfiguration<BookmarkFoldersFilterField, BookmarkFoldersSort>,
     ) {
         _pagination = result.pagination
         // Update the query configuration for future queries
@@ -98,7 +100,7 @@ internal interface BookmarkFolderListStateUpdates {
      */
     fun onQueryMoreBookmarkFolders(
         result: PaginationResult<BookmarkFolderData>,
-        queryConfig: QueryConfiguration<BookmarkFoldersSort>,
+        queryConfig: QueryConfiguration<BookmarkFoldersFilterField, BookmarkFoldersSort>,
     )
 
     /**

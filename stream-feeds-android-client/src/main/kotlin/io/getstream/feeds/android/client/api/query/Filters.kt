@@ -25,7 +25,7 @@ public object Filters {
      * @param value The value to check equality against.
      * @return A filter that matches when the field equals the specified value.
      */
-    public fun equal(field: String, value: Any): Filter = EqualFilter(field, value)
+    public fun <T : FilterField> equal(field: T, value: Any): Filter<T> = EqualFilter(field, value)
 
     /**
      * Creates a filter that checks if a field is greater than a specific value.
@@ -34,7 +34,8 @@ public object Filters {
      * @param value The value to check against.
      * @return A filter that matches when the field is greater than the specified value.
      */
-    public fun greater(field: String, value: Any): Filter = GreaterThanFilter(field, value)
+    public fun <T : FilterField> greater(field: T, value: Any): Filter<T> =
+        GreaterThanFilter(field, value)
 
     /**
      * Creates a filter that checks if a field is greater than or equal to a specific value.
@@ -43,7 +44,7 @@ public object Filters {
      * @param value The value to check against.
      * @return A filter that matches when the field is greater than or equal to the specified value.
      */
-    public fun greaterOrEqual(field: String, value: Any): Filter =
+    public fun <T : FilterField> greaterOrEqual(field: T, value: Any): Filter<T> =
         GreaterThanOrEqualFilter(field, value)
 
     /**
@@ -53,7 +54,8 @@ public object Filters {
      * @param value The value to check against.
      * @return A filter that matches when the field is less than the specified value.
      */
-    public fun less(field: String, value: Any): Filter = LessThanFilter(field, value)
+    public fun <T : FilterField> less(field: T, value: Any): Filter<T> =
+        LessThanFilter(field, value)
 
     /**
      * Creates a filter that checks if a field is less than or equal to a specific value.
@@ -62,7 +64,8 @@ public object Filters {
      * @param value The value to check against.
      * @return A filter that matches when the field is less than or equal to the specified value.
      */
-    public fun lessOrEqual(field: String, value: Any): Filter = LessThanOrEqualFilter(field, value)
+    public fun <T : FilterField> lessOrEqual(field: T, value: Any): Filter<T> =
+        LessThanOrEqualFilter(field, value)
 
     /**
      * Creates a filter that checks if a field's value is in a specific list of values.
@@ -71,7 +74,8 @@ public object Filters {
      * @param values The list of values to check against.
      * @return A filter that matches when the field's value is in the specified array.
      */
-    public fun `in`(field: String, values: List<Any>): Filter = InFilter(field, values.toSet())
+    public fun <T : FilterField> `in`(field: T, values: Set<Any>): Filter<T> =
+        InFilter(field, values)
 
     /**
      * Creates a filter that performs a full-text query on a field.
@@ -80,7 +84,8 @@ public object Filters {
      * @param value The query string to search for.
      * @return A filter that matches based on the full-text query.
      */
-    public fun query(field: String, value: String): Filter = QueryFilter(field, value)
+    public fun <T : FilterField> query(field: T, value: String): Filter<T> =
+        QueryFilter(field, value)
 
     /**
      * Creates a filter that performs autocomplete matching on a field.
@@ -89,7 +94,8 @@ public object Filters {
      * @param value The string to autocomplete against.
      * @return A filter that matches based on autocomplete functionality.
      */
-    public fun autocomplete(field: String, value: String): Filter = AutocompleteFilter(field, value)
+    public fun <T : FilterField> autocomplete(field: T, value: String): Filter<T> =
+        AutocompleteFilter(field, value)
 
     /**
      * Creates a filter that checks if a field exists or doesn't exist.
@@ -98,7 +104,8 @@ public object Filters {
      * @param value 'true' to check if the field exists, 'false' to check if it doesn't exist.
      * @return A filter that matches when the field exists.
      */
-    public fun exists(field: String, value: Boolean): Filter = ExistsFilter(field, value)
+    public fun <T : FilterField> exists(field: T, value: Boolean): Filter<T> =
+        ExistsFilter(field, value)
 
     /**
      * Creates a filter that combines multiple filters with a logical AND operation.
@@ -106,15 +113,17 @@ public object Filters {
      * @param filters The filters to combine.
      * @return A filter that matches when all provided filters match.
      */
-    public fun and(vararg filters: Filter): Filter = AndFilter(filters.toSet())
+    public fun <T : FilterField> and(vararg filters: Filter<T>): Filter<T> =
+        AndFilter(filters.toSet())
 
     /**
      * Creates a filter that combines multiple filters with a logical OR operation.
      *
-     * @param filter The filters to combine.
+     * @param filters The filters to combine.
      * @return A filter that matches when any of the specified filters match.
      */
-    public fun or(vararg filter: Filter): Filter = OrFilter(filter.toSet())
+    public fun <T : FilterField> or(vararg filters: Filter<T>): Filter<T> =
+        OrFilter(filters.toSet())
 
     /**
      * Creates a filter that checks if a field contains a specific value.
@@ -123,7 +132,8 @@ public object Filters {
      * @param value The value to check for within the field.
      * @return A filter that matches when the field contains the specified value.
      */
-    public fun contains(field: String, value: Any): Filter = ContainsFilter(field, value)
+    public fun <T : FilterField> contains(field: T, value: Any): Filter<T> =
+        ContainsFilter(field, value)
 
     /**
      * Creates a filter that checks if a specific path exists within a field.
@@ -132,5 +142,48 @@ public object Filters {
      * @param value The path to check for existence.
      * @return A filter that matches when the specified path exists in the field.
      */
-    public fun pathExists(field: String, value: String): Filter = PathExistsFilter(field, value)
+    public fun <T : FilterField> pathExists(field: T, value: String): Filter<T> =
+        PathExistsFilter(field, value)
 }
+
+/** @see Filters.equal */
+public fun <T : FilterField> T.equal(value: Any): Filter<T> = EqualFilter(this, value)
+
+/** @see Filters.greater */
+public fun <T : FilterField> T.greater(value: Any): Filter<T> = GreaterThanFilter(this, value)
+
+/** @see Filters.greaterOrEqual */
+public fun <T : FilterField> T.greaterOrEqual(value: Any): Filter<T> =
+    GreaterThanOrEqualFilter(this, value)
+
+/** @see Filters.less */
+public fun <T : FilterField> T.less(value: Any): Filter<T> = LessThanFilter(this, value)
+
+/** @see Filters.lessOrEqual */
+public fun <T : FilterField> T.lessOrEqual(value: Any): Filter<T> =
+    LessThanOrEqualFilter(this, value)
+
+/** @see Filters.in */
+public fun <T : FilterField> T.`in`(values: List<Any>): Filter<T> = InFilter(this, values.toSet())
+
+/** @see Filters.in */
+public fun <T : FilterField> T.`in`(vararg values: Any): Filter<T> = InFilter(this, values.toSet())
+
+/** @see Filters.query */
+public fun <T : FilterField> T.query(value: String): Filter<T> = QueryFilter(this, value)
+
+/** @see Filters.autocomplete */
+public fun <T : FilterField> T.autocomplete(value: String): Filter<T> =
+    AutocompleteFilter(this, value)
+
+/** @see Filters.exists */
+public fun <T : FilterField> T.exists(): Filter<T> = ExistsFilter(this, true)
+
+/** @see Filters.exists */
+public fun <T : FilterField> T.doesNotExist(): Filter<T> = ExistsFilter(this, false)
+
+/** @see Filters.contains */
+public fun <T : FilterField> T.contains(value: Any): Filter<T> = ContainsFilter(this, value)
+
+/** @see Filters.pathExists */
+public fun <T : FilterField> T.pathExists(value: String): Filter<T> = PathExistsFilter(this, value)

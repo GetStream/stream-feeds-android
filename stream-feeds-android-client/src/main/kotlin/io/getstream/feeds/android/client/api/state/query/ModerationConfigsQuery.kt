@@ -16,7 +16,9 @@
 package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.feeds.android.client.api.model.ModerationConfigData
+import io.getstream.feeds.android.client.api.query.DefaultFilterField
 import io.getstream.feeds.android.client.api.query.Filter
+import io.getstream.feeds.android.client.api.query.FilterField
 import io.getstream.feeds.android.client.api.query.Sort
 import io.getstream.feeds.android.client.api.query.SortDirection
 import io.getstream.feeds.android.client.api.query.SortField
@@ -30,24 +32,55 @@ import io.getstream.feeds.android.network.models.QueryModerationConfigsRequest
  * This model defines the parameters used to fetch moderation configurations, including pagination
  * settings, sorting options, and filtering conditions.
  *
- * @property filter Filter conditions for the moderation configuration query. Supported filters:
- * - field: `key`, operators: `equal`, `in`, `autocomplete`
- * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `updated_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `team`, operators: `equal`, `in`
- *
+ * @property filter Filter conditions for the moderation configuration query. See
+ *   [ModerationConfigsFilterField] for available filter fields and their supported operators.
  * @property limit The maximum number of moderation configurations to return.
  * @property next The pagination cursor for fetching the next page of configurations.
  * @property previous The pagination cursor for fetching the previous page of configurations.
  * @property sort The sorting criteria for configurations.
  */
 public data class ModerationConfigsQuery(
-    public val filter: Filter? = null,
+    public val filter: ModerationConfigsFilter? = null,
     public val limit: Int? = null,
     public val next: String? = null,
     public val previous: String? = null,
     public val sort: List<ModerationConfigSort>? = null,
 )
+
+public typealias ModerationConfigsFilter = Filter<ModerationConfigsFilterField>
+
+public interface ModerationConfigsFilterField : FilterField {
+    /**
+     * Filter by configuration key.
+     *
+     * Supported operators: `equal`, `in`, `autocomplete`
+     */
+    public data object Key : ModerationConfigsFilterField, DefaultFilterField("key")
+
+    /**
+     * Filter by creation timestamp.
+     *
+     * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+     */
+    public data object CreatedAt : ModerationConfigsFilterField, DefaultFilterField("created_at")
+
+    /**
+     * Filter by last update timestamp.
+     *
+     * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+     */
+    public data object UpdatedAt : ModerationConfigsFilterField, DefaultFilterField("updated_at")
+
+    /**
+     * Filter by team.
+     *
+     * Supported operators: `equal`, `in`
+     */
+    public data object Team : ModerationConfigsFilterField, DefaultFilterField("team")
+
+    /** Filter by any arbitrary field name not covered by the predefined filter fields. */
+    public data class Raw(override val raw: String) : ModerationConfigsFilterField
+}
 
 /**
  * Represents a sorting configuration for querying moderation configurations.

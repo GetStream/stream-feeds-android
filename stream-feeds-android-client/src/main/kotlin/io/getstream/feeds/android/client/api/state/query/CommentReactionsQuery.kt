@@ -16,7 +16,9 @@
 package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
+import io.getstream.feeds.android.client.api.query.DefaultFilterField
 import io.getstream.feeds.android.client.api.query.Filter
+import io.getstream.feeds.android.client.api.query.FilterField
 import io.getstream.feeds.android.client.api.query.Sort
 import io.getstream.feeds.android.client.api.query.SortDirection
 import io.getstream.feeds.android.client.api.query.SortField
@@ -37,11 +39,8 @@ import io.getstream.feeds.android.network.models.QueryCommentReactionsRequest
  *
  * @param commentId The unique identifier of the comment to fetch reactions for.
  * @param filter Optional filter criteria to apply to the reactions. Use this to narrow down results
- *   based on specific criteria. Supported filters:
- * - field: `reaction_type`, operators: `equal`, `in`
- * - field: `user_id`, operators: `equal`, `in`
- * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- *
+ *   based on specific criteria. See [CommentReactionsFilterField] for available filter fields and
+ *   their supported operators.
  * @param limit The maximum number of reactions to return in a single request. If not specified, the
  *   API will use its default limit.
  * @param next Pagination cursor for fetching the next page of results. This is typically provided
@@ -53,12 +52,41 @@ import io.getstream.feeds.android.network.models.QueryCommentReactionsRequest
  */
 public data class CommentReactionsQuery(
     public val commentId: String,
-    public val filter: Filter? = null,
+    public val filter: CommentReactionsFilter? = null,
     public val limit: Int? = null,
     public val next: String? = null,
     public val previous: String? = null,
     public val sort: List<CommentReactionsSort>? = null,
 )
+
+public typealias CommentReactionsFilter = Filter<CommentReactionsFilterField>
+
+public interface CommentReactionsFilterField : FilterField {
+    /**
+     * Filter by reaction type.
+     *
+     * Supported operators: `equal`, `in`
+     */
+    public data object ReactionType :
+        CommentReactionsFilterField, DefaultFilterField("reaction_type")
+
+    /**
+     * Filter by user ID.
+     *
+     * Supported operators: `equal`, `in`
+     */
+    public data object UserId : CommentReactionsFilterField, DefaultFilterField("user_id")
+
+    /**
+     * Filter by creation timestamp.
+     *
+     * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+     */
+    public data object CreatedAt : CommentReactionsFilterField, DefaultFilterField("created_at")
+
+    /** Filter by any arbitrary field name not covered by the predefined filter fields. */
+    public data class Raw(override val raw: String) : CommentReactionsFilterField
+}
 
 /**
  * A sort configuration for comment reactions.

@@ -16,6 +16,7 @@
 package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.client.api.query.Filter
+import io.getstream.feeds.android.client.api.query.FilterField
 import io.getstream.feeds.android.client.api.query.Sort
 
 /**
@@ -24,4 +25,7 @@ import io.getstream.feeds.android.client.api.query.Sort
  * @property filter The filter for the query.
  * @property sort The list of sorting operations for the query.
  */
-internal data class QueryConfiguration<S : Sort<*>>(val filter: Filter?, val sort: List<S>?)
+internal data class QueryConfiguration<F : FilterField, S : Sort<*>>(
+    val filter: Filter<F>?,
+    val sort: List<S>?,
+)

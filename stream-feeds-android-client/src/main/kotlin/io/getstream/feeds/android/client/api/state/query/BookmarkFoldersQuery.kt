@@ -16,7 +16,9 @@
 package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.feeds.android.client.api.model.BookmarkFolderData
+import io.getstream.feeds.android.client.api.query.DefaultFilterField
 import io.getstream.feeds.android.client.api.query.Filter
+import io.getstream.feeds.android.client.api.query.FilterField
 import io.getstream.feeds.android.client.api.query.Sort
 import io.getstream.feeds.android.client.api.query.SortDirection
 import io.getstream.feeds.android.client.api.query.SortField
@@ -31,13 +33,8 @@ import io.getstream.feeds.android.network.models.QueryBookmarkFoldersRequest
  * You can specify filters to narrow down results, sorting options, and pagination parameters.
  *
  * @property filter Optional filter to apply to the bookmark folders query. Use this to narrow down
- *   results based on specific criteria. Supported filters:
- * - field: `folder_id`, operators: `equal`, `in`
- * - field: `folder_name`, operators: `equal`, `in`, `contains`
- * - field: `user_id`, operators: `equal`, `in`
- * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `updated_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- *
+ *   results based on specific criteria. See [BookmarkFoldersFilterField] for available filter
+ *   fields and their supported operators.
  * @property sort Array of sorting criteria to apply to the bookmark folders. If not specified, the
  *   API will use its default sorting.
  * @property limit Maximum number of bookmark folders to return in a single request. If not
@@ -48,12 +45,54 @@ import io.getstream.feeds.android.network.models.QueryBookmarkFoldersRequest
  *   provided in the response of a previous request.
  */
 public data class BookmarkFoldersQuery(
-    public val filter: Filter? = null,
+    public val filter: BookmarkFoldersFilter? = null,
     public val sort: List<BookmarkFoldersSort>? = null,
     public val limit: Int? = null,
     public val next: String? = null,
     public val previous: String? = null,
 )
+
+public typealias BookmarkFoldersFilter = Filter<BookmarkFoldersFilterField>
+
+public interface BookmarkFoldersFilterField : FilterField {
+    /**
+     * Filter by folder ID.
+     *
+     * Supported operators: `equal`, `in`
+     */
+    public data object FolderId : BookmarkFoldersFilterField, DefaultFilterField("folder_id")
+
+    /**
+     * Filter by folder name.
+     *
+     * Supported operators: `equal`, `in`, `contains`
+     */
+    public data object FolderName : BookmarkFoldersFilterField, DefaultFilterField("folder_name")
+
+    /**
+     * Filter by user ID.
+     *
+     * Supported operators: `equal`, `in`
+     */
+    public data object UserId : BookmarkFoldersFilterField, DefaultFilterField("user_id")
+
+    /**
+     * Filter by creation timestamp.
+     *
+     * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+     */
+    public data object CreatedAt : BookmarkFoldersFilterField, DefaultFilterField("created_at")
+
+    /**
+     * Filter by last update timestamp.
+     *
+     * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+     */
+    public data object UpdatedAt : BookmarkFoldersFilterField, DefaultFilterField("updated_at")
+
+    /** Filter by any arbitrary field name not covered by the predefined filter fields. */
+    public data class Raw(override val raw: String) : BookmarkFoldersFilterField
+}
 
 /**
  * Represents a sorting operation for bookmark folders.

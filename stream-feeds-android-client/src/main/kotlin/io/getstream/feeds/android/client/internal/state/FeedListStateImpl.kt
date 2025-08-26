@@ -20,6 +20,7 @@ import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.FeedListState
+import io.getstream.feeds.android.client.api.state.query.FeedsFilterField
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.client.api.state.query.FeedsSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
@@ -42,7 +43,7 @@ internal class FeedListStateImpl(override val query: FeedsQuery) : FeedListMutab
 
     private var _pagination: PaginationData? = null
 
-    internal var queryConfig: QueryConfiguration<FeedsSort>? = null
+    internal var queryConfig: QueryConfiguration<FeedsFilterField, FeedsSort>? = null
         private set
 
     private val feedsSorting: List<FeedsSort>
@@ -67,7 +68,7 @@ internal class FeedListStateImpl(override val query: FeedsQuery) : FeedListMutab
 
     override fun onQueryMoreFeeds(
         result: PaginationResult<FeedData>,
-        queryConfig: QueryConfiguration<FeedsSort>,
+        queryConfig: QueryConfiguration<FeedsFilterField, FeedsSort>,
     ) {
         _pagination = result.pagination
         this.queryConfig = queryConfig
@@ -98,6 +99,6 @@ internal interface FeedListStateUpdates {
     /** Handles the result of a query for more feeds. */
     fun onQueryMoreFeeds(
         result: PaginationResult<FeedData>,
-        queryConfig: QueryConfiguration<FeedsSort>,
+        queryConfig: QueryConfiguration<FeedsFilterField, FeedsSort>,
     )
 }

@@ -20,6 +20,7 @@ import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.ActivityReactionListState
+import io.getstream.feeds.android.client.api.state.query.ActivityReactionsFilterField
 import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.ActivityReactionsSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
@@ -42,7 +43,9 @@ internal class ActivityReactionListStateImpl(override val query: ActivityReactio
     private val _reactions: MutableStateFlow<List<FeedsReactionData>> =
         MutableStateFlow(emptyList())
 
-    internal var queryConfig: QueryConfiguration<ActivityReactionsSort>? = null
+    internal var queryConfig:
+        QueryConfiguration<ActivityReactionsFilterField, ActivityReactionsSort>? =
+        null
         private set
 
     private var _pagination: PaginationData? = null
@@ -58,7 +61,7 @@ internal class ActivityReactionListStateImpl(override val query: ActivityReactio
 
     override fun onQueryMoreActivityReactions(
         result: PaginationResult<FeedsReactionData>,
-        queryConfig: QueryConfiguration<ActivityReactionsSort>,
+        queryConfig: QueryConfiguration<ActivityReactionsFilterField, ActivityReactionsSort>,
     ) {
         _pagination = result.pagination
         // Update the query configuration for future queries
@@ -95,7 +98,7 @@ internal interface ActivityReactionListStateUpdates {
      */
     fun onQueryMoreActivityReactions(
         result: PaginationResult<FeedsReactionData>,
-        queryConfig: QueryConfiguration<ActivityReactionsSort>,
+        queryConfig: QueryConfiguration<ActivityReactionsFilterField, ActivityReactionsSort>,
     )
 
     /**
