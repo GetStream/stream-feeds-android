@@ -50,7 +50,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -58,7 +57,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.getstream.feeds.android.sample.R
-import io.getstream.feeds.android.sample.ui.theme.LighterGray
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,7 +67,6 @@ fun CreatePollButton(onCreatePoll: (PollFormData) -> Unit) {
         Icon(
             painter = painterResource(R.drawable.poll),
             contentDescription = "Create Poll",
-            tint = Color.Gray,
             modifier = Modifier.size(24.dp),
         )
     }
@@ -167,7 +164,7 @@ private fun ColumnScope.CreatePollBottomSheetContent(
 
     val defaultSwitchModifier =
         Modifier.padding(vertical = 8.dp)
-            .background(LighterGray, RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
             .padding(horizontal = 12.dp, vertical = 4.dp)
 
     Column(defaultSwitchModifier) {

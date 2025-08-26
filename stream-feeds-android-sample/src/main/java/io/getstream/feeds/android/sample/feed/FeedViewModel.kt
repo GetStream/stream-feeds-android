@@ -50,11 +50,11 @@ import io.getstream.feeds.android.sample.util.withFirstContent
 import io.getstream.feeds.android.sample.utils.logResult
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
@@ -97,7 +97,7 @@ class FeedViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val errorChannel = Channel<String>()
-    val error = errorChannel.consumeAsFlow()
+    val error = errorChannel.receiveAsFlow()
 
     init {
         feed.withFirstContent(viewModelScope) {

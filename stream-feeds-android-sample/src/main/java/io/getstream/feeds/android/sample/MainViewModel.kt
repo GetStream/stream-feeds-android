@@ -22,18 +22,19 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.ramcosta.composedestinations.generated.destinations.MainScreenDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.getstream.feeds.android.client.api.model.User
+import io.getstream.android.core.result.runSafely
+import io.getstream.android.core.user.User
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
 import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.login.UserCredentials
 import io.getstream.feeds.android.sample.utils.logResult
-import javax.inject.Inject
-import kotlin.coroutines.resume
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel
@@ -107,16 +108,8 @@ constructor(
         }
     }
 
-    private suspend fun getFirebaseToken(): Result<String> = suspendCancellableCoroutine {
-        firebaseMessaging.token.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val token = task.result
-                it.resume(Result.success(token))
-            } else {
-                val exception = task.exception ?: Exception("Unknown error getting FCM token")
-                it.resume(Result.failure(exception))
-            }
-        }
+    private suspend fun getFirebaseToken(): Result<String> = runSafely {
+        firebaseMessaging.token.await()
     }
 
     companion object {

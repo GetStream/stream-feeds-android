@@ -26,6 +26,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -38,17 +39,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.ramcosta.composedestinations.generated.destinations.PollCommentsScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollOptionData
 import io.getstream.feeds.android.client.api.model.PollVoteData
-import io.getstream.feeds.android.sample.ui.theme.LighterGray
+import io.getstream.feeds.android.sample.poll.PollResultsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,9 +63,11 @@ fun PollSection(
 ) {
     Column(
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .background(LighterGray, shape = RoundedCornerShape(16.dp))
+            Modifier.fillMaxWidth()
+                .background(
+                    MaterialTheme.colorScheme.secondaryContainer,
+                    shape = RoundedCornerShape(16.dp),
+                )
                 .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -72,26 +76,22 @@ fun PollSection(
                 text = poll.name,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
             )
         }
         if (poll.isClosed) {
             Text(
                 text = "Vote ended",
                 fontSize = 12.sp,
-                color = Color.Gray,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
             )
         }
 
         val ownVotes = remember(poll.ownVotes) { poll.ownVotes.associateBy(PollVoteData::optionId) }
 
         poll.options.forEach { option ->
-            val votes = poll.voteCountsByOption.getOrDefault(option.id, 0)
+            val votes = poll.voteCountsByOption.getOrElse(option.id) { 0 }
             val ratio = votes.toFloat() / poll.voteCount.coerceAtLeast(1)
 
             PollOption(
@@ -119,13 +119,10 @@ fun PollSection(
             )
         }
 
-        PollTextButton(text = "View results")
+        ViewResultsButton(poll, controller)
 
         if (!poll.isClosed && poll.createdById == currentUserId) {
-            PollTextButton(
-                text = "Close Poll",
-                onClick = { controller.onClose(activityId) }
-            )
+            PollTextButton(text = "Close Poll", onClick = { controller.onClose(activityId) })
         }
     }
 }
@@ -147,9 +144,7 @@ private fun PollOption(
     onClick: (String) -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
         verticalAlignment = Alignment.Top,
     ) {
         if (enabled) {
@@ -169,7 +164,29 @@ private fun PollOption(
             LinearProgressIndicator(
                 progress = { ratio },
                 drawStopIndicator = {},
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+}
+
+@Composable
+private fun ViewResultsButton(poll: PollData, controller: FeedPollController) {
+    var showResultsScreen by remember { mutableStateOf(false) }
+
+    PollTextButton(
+        text = "View results",
+        onClick = { showResultsScreen = true }
+    )
+
+    if (showResultsScreen) {
+        Dialog(
+            onDismissRequest = { showResultsScreen = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            PollResultsScreen(
+                poll = poll,
+                onCloseClick = { showResultsScreen = false }
             )
         }
     }
@@ -179,10 +196,7 @@ private fun PollOption(
 private fun AddCommentButton(onSubmit: (String) -> Unit) {
     var showCommentDialog by remember { mutableStateOf(false) }
 
-    PollTextButton(
-        text = "Add a comment",
-        onClick = { showCommentDialog = true }
-    )
+    PollTextButton(text = "Add a comment", onClick = { showCommentDialog = true })
 
     if (showCommentDialog) {
         InputAlertDialog(
@@ -191,7 +205,7 @@ private fun AddCommentButton(onSubmit: (String) -> Unit) {
             onSubmit = { comment ->
                 onSubmit(comment)
                 showCommentDialog = false
-            }
+            },
         )
     }
 }
@@ -200,10 +214,7 @@ private fun AddCommentButton(onSubmit: (String) -> Unit) {
 fun SuggestOptionButton(onSubmit: (String) -> Unit) {
     var showOptionSuggestDialog by remember { mutableStateOf(false) }
 
-    PollTextButton(
-        text = "Suggest an option",
-        onClick = { showOptionSuggestDialog = true },
-    )
+    PollTextButton(text = "Suggest an option", onClick = { showOptionSuggestDialog = true })
 
     if (showOptionSuggestDialog) {
         InputAlertDialog(
@@ -212,7 +223,7 @@ fun SuggestOptionButton(onSubmit: (String) -> Unit) {
             onSubmit = { option ->
                 onSubmit(option)
                 showOptionSuggestDialog = false
-            }
+            },
         )
     }
 }
@@ -229,19 +240,10 @@ private fun InputAlertDialog(
     AlertDialog(
         onDismissRequest,
         title = { Text(title) },
-        text = {
-            OutlinedTextField(value = input, onValueChange = { input = it })
-        },
-        dismissButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text("Cancel")
-            }
-        },
+        text = { OutlinedTextField(value = input, onValueChange = { input = it }) },
+        dismissButton = { TextButton(onClick = onDismissRequest) { Text("Cancel") } },
         confirmButton = {
-            TextButton(
-                onClick = { onSubmit(input) },
-                enabled = input.isNotBlank()
-            ) {
+            TextButton(onClick = { onSubmit(input) }, enabled = input.isNotBlank()) {
                 Text("Submit")
             }
         },
