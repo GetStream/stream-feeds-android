@@ -23,8 +23,8 @@ import kotlin.io.*
 
 /**  */
 public data class BanOptions(
-    @Json(name = "duration") public val duration: kotlin.Int,
-    @Json(name = "ip_ban") public val ipBan: kotlin.Boolean,
-    @Json(name = "reason") public val reason: kotlin.String,
-    @Json(name = "shadow_ban") public val shadowBan: kotlin.Boolean,
+    @Json(name = "duration") public val duration: kotlin.Int? = null,
+    @Json(name = "ip_ban") public val ipBan: kotlin.Boolean? = null,
+    @Json(name = "reason") public val reason: kotlin.String? = null,
+    @Json(name = "shadow_ban") public val shadowBan: kotlin.Boolean? = null,
 )

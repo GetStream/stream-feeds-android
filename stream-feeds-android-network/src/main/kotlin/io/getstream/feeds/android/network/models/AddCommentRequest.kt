@@ -31,6 +31,7 @@ public data class AddCommentRequest(
     @Json(name = "create_notification_activity")
     public val createNotificationActivity: kotlin.Boolean? = null,
     @Json(name = "parent_id") public val parentId: kotlin.String? = null,
+    @Json(name = "skip_push") public val skipPush: kotlin.Boolean? = null,
     @Json(name = "attachments")
     public val attachments:
         kotlin.collections.List<io.getstream.feeds.android.network.models.Attachment>? =

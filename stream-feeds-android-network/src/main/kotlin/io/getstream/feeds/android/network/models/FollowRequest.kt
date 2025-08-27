@@ -34,6 +34,7 @@ public data class FollowRequest(
     @Json(name = "create_notification_activity")
     public val createNotificationActivity: kotlin.Boolean? = null,
     @Json(name = "push_preference") public val pushPreference: PushPreference? = null,
+    @Json(name = "skip_push") public val skipPush: kotlin.Boolean? = null,
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
 ) {
