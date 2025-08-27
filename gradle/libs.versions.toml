@@ -25,7 +25,7 @@ moshi = "1.15.2"
 navigationCompose = "2.9.3"
 okhttp = "4.12.0"
 retrofit = "2.12.0"
-streamAndroidCore = "0.0.1"
+streamAndroidCore = "0.1.0"
 symbolProcessingApi = "2.2.0-2.0.2"
 streamLog = "1.3.2"
 streamPush = "1.3.1"
@@ -82,8 +82,8 @@ okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor",
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
 retrofit-scalars = { group = "com.squareup.retrofit2", name = "converter-scalars", version.ref = "retrofit" }
-stream-android-annotations = { module = "io.getstream.android:stream-android-annotations", version.ref = "streamAndroidCore" }
-stream-android-core = { module = "io.getstream.android:stream-android-core", version.ref = "streamAndroidCore" }
+stream-android-annotations = { group = "io.getstream", name = "stream-android-core-annotations", version.ref = "streamAndroidCore" }
+stream-android-core = { group = "io.getstream", name = "stream-android-core", version.ref = "streamAndroidCore" }
 stream-log = { group = "io.getstream", name = "stream-log", version.ref = "streamLog" }
 stream-push-delegate = { module = "io.getstream:stream-android-push-delegate", version.ref = "streamPush" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
