@@ -1,3 +1,4 @@
+import io.getstream.feeds.android.Configuration
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -7,6 +8,13 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
+rootProject.extra.apply {
+    set("PUBLISH_GROUP_ID", Configuration.artifactGroup)
+    set("PUBLISH_ARTIFACT_ID", "stream-feeds-android-network")
+    set("PUBLISH_VERSION", rootProject.extra.get("rootVersionName"))
+}
+
+apply(from = "${rootDir}/scripts/publish-module.gradle")
 apply(from = "$rootDir/scripts/android.gradle")
 
 android {
@@ -28,6 +36,10 @@ android {
         debug {
             consumerProguardFiles("consumer-rules.pro")
         }
+    }
+
+    publishing {
+        singleVariant("release") { }
     }
 }
 
