@@ -10,7 +10,7 @@ plugins {
 apply(from = "$rootDir/scripts/android.gradle")
 
 android {
-    namespace = "io.getstream.feeds.android.core"
+    namespace = "io.getstream.feeds.android.network"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
