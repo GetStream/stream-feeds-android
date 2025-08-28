@@ -19,6 +19,7 @@ import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
+import io.getstream.feeds.android.client.api.state.query.PollVotesFilterField
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollVotesSort
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
@@ -45,7 +46,7 @@ internal class PollVoteListStateImplTest {
                 models = votes,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = PollVotesSort.Default)
+        val queryConfig = QueryConfiguration<PollVotesFilterField, PollVotesSort>(filter = null, sort = PollVotesSort.Default)
 
         pollVoteListState.onQueryMorePollVotes(paginationResult, queryConfig)
 
@@ -63,7 +64,7 @@ internal class PollVoteListStateImplTest {
                 models = initialVotes,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = PollVotesSort.Default)
+        val queryConfig = QueryConfiguration<PollVotesFilterField, PollVotesSort>(filter = null, sort = PollVotesSort.Default)
         pollVoteListState.onQueryMorePollVotes(paginationResult, queryConfig)
 
         val updatedVote =
@@ -83,7 +84,7 @@ internal class PollVoteListStateImplTest {
                 models = initialVotes,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = PollVotesSort.Default)
+        val queryConfig = QueryConfiguration<PollVotesFilterField, PollVotesSort>(filter = null, sort = PollVotesSort.Default)
         pollVoteListState.onQueryMorePollVotes(paginationResult, queryConfig)
 
         pollVoteListState.pollVoteRemoved(initialVotes.first().id)
@@ -101,7 +102,7 @@ internal class PollVoteListStateImplTest {
                 models = initialVotes,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = PollVotesSort.Default)
+        val queryConfig = QueryConfiguration<PollVotesFilterField, PollVotesSort>(filter = null, sort = PollVotesSort.Default)
         pollVoteListState.onQueryMorePollVotes(paginationResult, queryConfig)
 
         val nonExistentVote = pollVoteData("non-existent", "poll-1", "option-1", "user-3")

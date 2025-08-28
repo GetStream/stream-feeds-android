@@ -19,6 +19,7 @@ import io.getstream.feeds.android.client.api.model.ModerationConfigData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
+import io.getstream.feeds.android.client.api.state.query.ModerationConfigsFilterField
 import io.getstream.feeds.android.client.api.state.query.ModerationConfigSort
 import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
 import io.getstream.feeds.android.client.internal.test.TestData.moderationConfigData
@@ -45,7 +46,7 @@ internal class ModerationConfigListStateImplTest {
                 models = configs,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = ModerationConfigSort.Default)
+        val queryConfig = QueryConfiguration<ModerationConfigsFilterField, ModerationConfigSort>(filter = null, sort = ModerationConfigSort.Default)
 
         moderationConfigListState.onLoadMoreConfigs(paginationResult, queryConfig)
 

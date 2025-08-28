@@ -19,6 +19,7 @@ import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
+import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
@@ -49,7 +50,7 @@ internal class ActivityListStateImplTest {
                 models = activities,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = ActivitiesSort.Default)
+        val queryConfig = QueryConfiguration<ActivitiesFilterField, ActivitiesSort>(filter = null, sort = ActivitiesSort.Default)
 
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
@@ -66,7 +67,7 @@ internal class ActivityListStateImplTest {
                 models = initialActivities,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = ActivitiesSort.Default)
+        val queryConfig = QueryConfiguration<ActivitiesFilterField, ActivitiesSort>(filter = null, sort = ActivitiesSort.Default)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
         val updatedActivity = activityData("activity-1", text = "Updated activity")
@@ -84,7 +85,7 @@ internal class ActivityListStateImplTest {
                 models = initialActivities,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = ActivitiesSort.Default)
+        val queryConfig = QueryConfiguration<ActivitiesFilterField, ActivitiesSort>(filter = null, sort = ActivitiesSort.Default)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
         activityListState.onActivityRemoved(initialActivities[0])
@@ -101,7 +102,7 @@ internal class ActivityListStateImplTest {
                 models = initialActivities,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = ActivitiesSort.Default)
+        val queryConfig = QueryConfiguration<ActivitiesFilterField, ActivitiesSort>(filter = null, sort = ActivitiesSort.Default)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
         val bookmark = bookmarkData("activity-1", currentUserId)
@@ -119,7 +120,7 @@ internal class ActivityListStateImplTest {
                 models = initialActivities,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = ActivitiesSort.Default)
+        val queryConfig = QueryConfiguration<ActivitiesFilterField, ActivitiesSort>(filter = null, sort = ActivitiesSort.Default)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
         val bookmark = bookmarkData("activity-1", currentUserId)
@@ -138,7 +139,7 @@ internal class ActivityListStateImplTest {
                 models = initialActivities,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = ActivitiesSort.Default)
+        val queryConfig = QueryConfiguration<ActivitiesFilterField, ActivitiesSort>(filter = null, sort = ActivitiesSort.Default)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
         val comment = commentData("comment-1", objectId = "activity-1")
@@ -156,7 +157,7 @@ internal class ActivityListStateImplTest {
                 models = initialActivities,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = ActivitiesSort.Default)
+        val queryConfig = QueryConfiguration<ActivitiesFilterField, ActivitiesSort>(filter = null, sort = ActivitiesSort.Default)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
         val comment = commentData("comment-1", objectId = "activity-1")
@@ -175,7 +176,7 @@ internal class ActivityListStateImplTest {
                 models = initialActivities,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = ActivitiesSort.Default)
+        val queryConfig = QueryConfiguration<ActivitiesFilterField, ActivitiesSort>(filter = null, sort = ActivitiesSort.Default)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
         val reaction = feedsReactionData("activity-1", "like", currentUserId)
@@ -193,7 +194,7 @@ internal class ActivityListStateImplTest {
                 models = initialActivities,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = ActivitiesSort.Default)
+        val queryConfig = QueryConfiguration<ActivitiesFilterField, ActivitiesSort>(filter = null, sort = ActivitiesSort.Default)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
         val reaction = feedsReactionData("activity-1", "like", currentUserId)
