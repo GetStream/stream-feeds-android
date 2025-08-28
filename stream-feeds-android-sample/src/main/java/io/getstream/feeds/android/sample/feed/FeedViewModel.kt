@@ -48,6 +48,7 @@ import io.getstream.feeds.android.sample.util.map
 import io.getstream.feeds.android.sample.util.notNull
 import io.getstream.feeds.android.sample.util.withFirstContent
 import io.getstream.feeds.android.sample.utils.logResult
+import javax.inject.Inject
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.emptyFlow
@@ -56,57 +57,60 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
-import javax.inject.Inject
 
 @HiltViewModel
-class FeedViewModel @Inject constructor(
+class FeedViewModel
+@Inject
+constructor(
     private val application: Application,
     loginManager: LoginManager,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val args = FeedsScreenDestination.argsFrom(savedStateHandle)
 
-    private val userState = flow {
-        emit(AsyncResource.notNull(loginManager.currentState()))
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
+    private val userState =
+        flow { emit(AsyncResource.notNull(loginManager.currentState())) }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
-    private val feed = userState
-        .map { it.map(::getFeed) }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
+    private val feed =
+        userState
+            .map { it.map(::getFeed) }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
-    val state = feed
-        .map { asyncResource -> asyncResource.map(Feed::state) }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
+    val state =
+        feed
+            .map { asyncResource -> asyncResource.map(Feed::state) }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
-    val pollController = FeedPollController(
-        scope = viewModelScope,
-        feedsClient = { userState.value.getOrNull()?.client },
-        fid = args.fid
-    )
+    val pollController =
+        FeedPollController(
+            scope = viewModelScope,
+            feedsClient = { userState.value.getOrNull()?.client },
+            fid = args.fid,
+        )
 
     // Notification feed
     private val notificationFid = FeedId("notification", args.userId)
-    private val notificationFeed = userState
-        .map { asyncResource ->
-            asyncResource.map { userState -> userState.client.feed(FeedQuery(notificationFid)) }
-        }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
+    private val notificationFeed =
+        userState
+            .map { asyncResource ->
+                asyncResource.map { userState -> userState.client.feed(FeedQuery(notificationFid)) }
+            }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
-    val notificationStatus = notificationFeed
-        .flatMapLatest { it.getOrNull()?.state?.notificationStatus ?: emptyFlow() }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+    val notificationStatus =
+        notificationFeed
+            .flatMapLatest { it.getOrNull()?.state?.notificationStatus ?: emptyFlow() }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val errorChannel = Channel<String>()
     val error = errorChannel.receiveAsFlow()
 
     init {
         feed.withFirstContent(viewModelScope) {
-            getOrCreate()
-                .notifyOnFailure { "Error getting the feed" }
+            getOrCreate().notifyOnFailure { "Error getting the feed" }
         }
-        notificationFeed.withFirstContent(viewModelScope) {
-            getOrCreate()
-        }
+        notificationFeed.withFirstContent(viewModelScope) { getOrCreate() }
     }
 
     fun onLoadMore() {
@@ -123,22 +127,19 @@ class FeedViewModel @Inject constructor(
             // Add 'heart' reaction
             feed.withFirstContent(viewModelScope) {
                 val request = AddReactionRequest("heart", createNotificationActivity = true)
-                addReaction(activity.id, request)
-                    .notifyOnFailure { "Failed to add reaction" }
+                addReaction(activity.id, request).notifyOnFailure { "Failed to add reaction" }
             }
         } else {
             // Remove 'heart' reaction
             feed.withFirstContent(viewModelScope) {
-                deleteReaction(activity.id, "heart")
-                    .notifyOnFailure { "Failed to delete reaction" }
+                deleteReaction(activity.id, "heart").notifyOnFailure { "Failed to delete reaction" }
             }
         }
     }
 
     fun onRepostClick(activity: ActivityData, text: String?) {
         feed.withFirstContent(viewModelScope) {
-            repost(activity.id, text = text)
-                .notifyOnFailure { "Failed to repost activity" }
+            repost(activity.id, text = text).notifyOnFailure { "Failed to repost activity" }
         }
     }
 
@@ -146,14 +147,12 @@ class FeedViewModel @Inject constructor(
         if (activity.ownBookmarks.isEmpty()) {
             // Add bookmark
             feed.withFirstContent(viewModelScope) {
-                addBookmark(activity.id)
-                    .notifyOnFailure { "Failed to add bookmark" }
+                addBookmark(activity.id).notifyOnFailure { "Failed to add bookmark" }
             }
         } else {
             // Remove bookmark
             feed.withFirstContent(viewModelScope) {
-                deleteBookmark(activity.id)
-                    .notifyOnFailure { "Failed to delete bookmark" }
+                deleteBookmark(activity.id).notifyOnFailure { "Failed to delete bookmark" }
             }
         }
     }
@@ -176,26 +175,28 @@ class FeedViewModel @Inject constructor(
 
     fun onCreatePost(text: String, attachments: List<Uri>) {
         feed.withFirstContent(viewModelScope) {
-            val attachmentFiles = application.copyToCache(attachments)
-                .notifyOnFailure { "Failed to copy attachments" }
-                .getOrElse { error ->
-                    Log.e(TAG, "Failed to copy attachments", error)
-                    return@withFirstContent
-                }
+            val attachmentFiles =
+                application
+                    .copyToCache(attachments)
+                    .notifyOnFailure { "Failed to copy attachments" }
+                    .getOrElse { error ->
+                        Log.e(TAG, "Failed to copy attachments", error)
+                        return@withFirstContent
+                    }
 
             addActivity(
-                FeedAddActivityRequest(
-                    type = "activity",
-                    text = text,
-                    feeds = listOf(fid.rawValue),
-                    attachmentUploads = attachmentFiles.map {
-                        FeedUploadPayload(it, FileType.Image("jpeg"))
-                    }
-                ),
-                attachmentUploadProgress = { file, progress ->
-                    Log.d(TAG, "Uploading attachment: ${file.type}, progress: $progress")
-                }
-            ).logResult(TAG, "Creating activity with text: $text")
+                    FeedAddActivityRequest(
+                        type = "activity",
+                        text = text,
+                        feeds = listOf(fid.rawValue),
+                        attachmentUploads =
+                            attachmentFiles.map { FeedUploadPayload(it, FileType.Image("jpeg")) },
+                    ),
+                    attachmentUploadProgress = { file, progress ->
+                        Log.d(TAG, "Uploading attachment: ${file.type}, progress: $progress")
+                    },
+                )
+                .logResult(TAG, "Creating activity with text: $text")
                 .notifyOnFailure { "Failed to create post" }
 
             deleteFiles(attachmentFiles)
@@ -204,16 +205,19 @@ class FeedViewModel @Inject constructor(
 
     fun onCreatePoll(poll: PollFormData) {
         feed.withFirstContent(viewModelScope) {
-            val request = CreatePollRequest(
-                name = poll.question,
-                options = poll.options.map(::PollOptionInput),
-                allowAnswers = poll.allowComments,
-                allowUserSuggestedOptions = poll.allowSuggestingOptions,
-                enforceUniqueVote = !poll.allowMultipleAnswers,
-                maxVotesAllowed = poll.maxVotesPerPerson.toIntOrNull()
-                    .takeIf { poll.constrainMaxVotesPerPerson },
-                votingVisibility = if (poll.anonymousPoll) Anonymous else Public,
-            )
+            val request =
+                CreatePollRequest(
+                    name = poll.question,
+                    options = poll.options.map(::PollOptionInput),
+                    allowAnswers = poll.allowComments,
+                    allowUserSuggestedOptions = poll.allowSuggestingOptions,
+                    enforceUniqueVote = !poll.allowMultipleAnswers,
+                    maxVotesAllowed =
+                        poll.maxVotesPerPerson.toIntOrNull().takeIf {
+                            poll.constrainMaxVotesPerPerson
+                        },
+                    votingVisibility = if (poll.anonymousPoll) Anonymous else Public,
+                )
 
             createPoll(request = request, activityType = "activity")
                 .logResult(TAG, "Creating poll with question: ${poll.question}")
@@ -222,19 +226,22 @@ class FeedViewModel @Inject constructor(
     }
 
     private fun getFeed(userState: LoginManager.UserState): Feed {
-        val query = FeedQuery(
-            fid = args.fid,
-            data = FeedInputData(
-                members = listOf(FeedMemberRequestData(userState.user.id)),
-                visibility = FeedVisibility.Public,
+        val query =
+            FeedQuery(
+                fid = args.fid,
+                data =
+                    FeedInputData(
+                        members = listOf(FeedMemberRequestData(userState.user.id)),
+                        visibility = FeedVisibility.Public,
+                    ),
             )
-        )
 
         return userState.client.feed(query)
     }
 
-    private suspend inline fun <T> Result<T>.notifyOnFailure(message: () -> String) =
-        onFailure { errorChannel.send("${message()}: ${it.message}") }
+    private suspend inline fun <T> Result<T>.notifyOnFailure(message: () -> String) = onFailure {
+        errorChannel.send("${message()}: ${it.message}")
+    }
 
     companion object {
         private const val TAG = "FeedViewModel"

@@ -15,18 +15,16 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
-import io.getstream.android.core.websocket.WebSocketConnectionState
+import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.FollowList
 import io.getstream.feeds.android.client.api.state.FollowListState
 import io.getstream.feeds.android.client.api.state.query.FollowsQuery
 import io.getstream.feeds.android.client.api.state.query.toRequest
-import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManager
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
-import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
 import io.getstream.feeds.android.client.internal.state.event.handler.FollowListEventHandler
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 
 /**
  * A class that manages a paginated list of follows.
@@ -42,26 +40,16 @@ import io.getstream.feeds.android.network.models.WSEvent
 internal class FollowListImpl(
     override val query: FollowsQuery,
     private val feedsRepository: FeedsRepository,
-    private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener>,
+    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
 ) : FollowList {
-
-    init {
-        subscriptionManager.subscribe(
-            object : FeedsSocketListener {
-                override fun onState(state: WebSocketConnectionState) {
-                    // Not relevant, rethink this
-                }
-
-                override fun onEvent(event: WSEvent) {
-                    eventHandler.handleEvent(event)
-                }
-            }
-        )
-    }
 
     private val _state: FollowListStateImpl = FollowListStateImpl(query)
 
     private val eventHandler = FollowListEventHandler(_state)
+
+    init {
+        subscriptionManager.subscribe(eventHandler)
+    }
 
     override val state: FollowListState
         get() = _state

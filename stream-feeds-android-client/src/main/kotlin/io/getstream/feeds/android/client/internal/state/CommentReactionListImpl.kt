@@ -15,17 +15,15 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
-import io.getstream.android.core.websocket.WebSocketConnectionState
+import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.CommentReactionList
 import io.getstream.feeds.android.client.api.state.CommentReactionListState
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
-import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManager
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
-import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
 import io.getstream.feeds.android.client.internal.state.event.handler.CommentReactionListEventHandler
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 
 /**
  * A class representing a paginated list of reactions for a specific comment.
@@ -42,26 +40,16 @@ import io.getstream.feeds.android.network.models.WSEvent
 internal class CommentReactionListImpl(
     override val query: CommentReactionsQuery,
     private val commentsRepository: CommentsRepository,
-    private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener>,
+    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
 ) : CommentReactionList {
-
-    init {
-        subscriptionManager.subscribe(
-            object : FeedsSocketListener {
-                override fun onState(state: WebSocketConnectionState) {
-                    // Not relevant, rethink this
-                }
-
-                override fun onEvent(event: WSEvent) {
-                    eventHandler.handleEvent(event)
-                }
-            }
-        )
-    }
 
     private val _state: CommentReactionListStateImpl = CommentReactionListStateImpl(query)
 
     private val eventHandler = CommentReactionListEventHandler(_state)
+
+    init {
+        subscriptionManager.subscribe(eventHandler)
+    }
 
     override val state: CommentReactionListState
         get() = _state

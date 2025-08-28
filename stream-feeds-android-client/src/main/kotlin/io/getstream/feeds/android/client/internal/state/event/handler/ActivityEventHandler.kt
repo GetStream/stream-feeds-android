@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.ActivityStateUpdates
+import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.network.models.PollClosedFeedEvent
 import io.getstream.feeds.android.network.models.PollDeletedFeedEvent
 import io.getstream.feeds.android.network.models.PollUpdatedFeedEvent
@@ -37,14 +38,14 @@ import io.getstream.feeds.android.network.models.WSEvent
 internal class ActivityEventHandler(
     private val fid: FeedId,
     private val state: ActivityStateUpdates,
-) : StateEventHandler {
+) : FeedsEventListener {
 
     /**
      * Processes a WebSocket event and updates the activity state.
      *
      * @param event The WebSocket event to process.
      */
-    override fun handleEvent(event: WSEvent) {
+    override fun onEvent(event: WSEvent) {
         when (event) {
             is PollClosedFeedEvent -> {
                 if (event.fid != fid.rawValue) return

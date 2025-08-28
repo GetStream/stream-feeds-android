@@ -21,10 +21,12 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.getstream.android.core.user.ApiKey
-import io.getstream.android.core.user.User
-import io.getstream.android.core.user.UserTokenProvider
+import io.getstream.android.core.api.authentication.StreamTokenProvider
+import io.getstream.android.core.api.model.value.StreamApiKey
+import io.getstream.android.core.api.model.value.StreamToken
+import io.getstream.android.core.api.model.value.StreamUserId
 import io.getstream.feeds.android.client.api.FeedsClient
+import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.sample.DemoAppConfig
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -83,11 +85,13 @@ constructor(
         val client =
             FeedsClient(
                 context = context,
-                apiKey = ApiKey(DemoAppConfig.Current.apiKey),
+                apiKey = StreamApiKey.fromString(DemoAppConfig.Current.apiKey),
                 user = credentials.user,
                 tokenProvider =
-                    object : UserTokenProvider {
-                        override suspend fun loadToken() = credentials.userToken
+                    object : StreamTokenProvider {
+                        override suspend fun loadToken(userId: StreamUserId): StreamToken {
+                            return credentials.userToken
+                        }
                     },
             )
 

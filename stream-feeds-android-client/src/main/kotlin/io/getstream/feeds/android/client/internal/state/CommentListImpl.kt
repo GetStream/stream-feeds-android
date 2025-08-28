@@ -15,16 +15,14 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
-import io.getstream.android.core.websocket.WebSocketConnectionState
+import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.state.CommentList
 import io.getstream.feeds.android.client.api.state.CommentListState
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
-import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManager
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
-import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
 import io.getstream.feeds.android.client.internal.state.event.handler.CommentListEventHandler
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 
 /**
  * A class representing a paginated list of comments for a specific query.
@@ -41,26 +39,16 @@ import io.getstream.feeds.android.network.models.WSEvent
 internal class CommentListImpl(
     override val query: CommentsQuery,
     private val commentsRepository: CommentsRepository,
-    private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener>,
+    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
 ) : CommentList {
-
-    init {
-        subscriptionManager.subscribe(
-            object : FeedsSocketListener {
-                override fun onState(state: WebSocketConnectionState) {
-                    // Not relevant, rethink this
-                }
-
-                override fun onEvent(event: WSEvent) {
-                    eventHandler.handleEvent(event)
-                }
-            }
-        )
-    }
 
     private val _state: CommentListStateImpl = CommentListStateImpl(query)
 
     private val eventHandler = CommentListEventHandler(_state)
+
+    init {
+        subscriptionManager.subscribe(eventHandler)
+    }
 
     override val state: CommentListState
         get() = _state

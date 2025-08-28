@@ -15,17 +15,15 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
-import io.getstream.android.core.websocket.WebSocketConnectionState
+import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.model.BookmarkFolderData
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.BookmarkFolderList
 import io.getstream.feeds.android.client.api.state.BookmarkFolderListState
 import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersQuery
-import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManager
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
-import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
 import io.getstream.feeds.android.client.internal.state.event.handler.BookmarkFolderListEventHandler
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 
 /**
  * A class that manages a paginated list of bookmark folders.
@@ -42,26 +40,16 @@ import io.getstream.feeds.android.network.models.WSEvent
 internal class BookmarkFolderListImpl(
     override val query: BookmarkFoldersQuery,
     private val bookmarksRepository: BookmarksRepository,
-    private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener>,
+    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
 ) : BookmarkFolderList {
-
-    init {
-        subscriptionManager.subscribe(
-            object : FeedsSocketListener {
-                override fun onState(state: WebSocketConnectionState) {
-                    // Not relevant, rethink this
-                }
-
-                override fun onEvent(event: WSEvent) {
-                    eventHandler.handleEvent(event)
-                }
-            }
-        )
-    }
 
     private val _state: BookmarkFolderListStateImpl = BookmarkFolderListStateImpl(query)
 
     private val eventHandler = BookmarkFolderListEventHandler(_state)
+
+    init {
+        subscriptionManager.subscribe(eventHandler)
+    }
 
     override val state: BookmarkFolderListState
         get() = _state

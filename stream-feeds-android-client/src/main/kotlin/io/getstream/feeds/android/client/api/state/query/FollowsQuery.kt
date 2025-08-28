@@ -15,12 +15,12 @@
  */
 package io.getstream.feeds.android.client.api.state.query
 
-import io.getstream.android.core.query.Filter
-import io.getstream.android.core.query.Sort
-import io.getstream.android.core.query.SortDirection
-import io.getstream.android.core.query.SortField
-import io.getstream.android.core.query.toRequest
 import io.getstream.feeds.android.client.api.model.FollowData
+import io.getstream.feeds.android.client.api.query.Filter
+import io.getstream.feeds.android.client.api.query.Sort
+import io.getstream.feeds.android.client.api.query.SortDirection
+import io.getstream.feeds.android.client.api.query.SortField
+import io.getstream.feeds.android.client.api.query.toRequest
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.network.models.QueryFollowsRequest
 

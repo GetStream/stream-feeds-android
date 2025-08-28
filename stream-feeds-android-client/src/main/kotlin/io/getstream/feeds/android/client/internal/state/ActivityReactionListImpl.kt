@@ -15,18 +15,16 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
-import io.getstream.android.core.websocket.WebSocketConnectionState
+import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.ActivityReactionList
 import io.getstream.feeds.android.client.api.state.ActivityReactionListState
 import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.toRequest
-import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManager
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
-import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
 import io.getstream.feeds.android.client.internal.state.event.handler.ActivityReactionListEventHandler
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 
 /**
  * A list of activity reactions that provides pagination, filtering, and real-time updates.
@@ -44,26 +42,16 @@ import io.getstream.feeds.android.network.models.WSEvent
 internal class ActivityReactionListImpl(
     override val query: ActivityReactionsQuery,
     private val activitiesRepository: ActivitiesRepository,
-    private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener>,
+    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
 ) : ActivityReactionList {
-
-    init {
-        subscriptionManager.subscribe(
-            object : FeedsSocketListener {
-                override fun onState(state: WebSocketConnectionState) {
-                    // Not relevant, rethink this
-                }
-
-                override fun onEvent(event: WSEvent) {
-                    eventHandler.handleEvent(event)
-                }
-            }
-        )
-    }
 
     private val _state = ActivityReactionListStateImpl(query)
 
     private val eventHandler = ActivityReactionListEventHandler(query.activityId, _state)
+
+    init {
+        subscriptionManager.subscribe(eventHandler)
+    }
 
     override val state: ActivityReactionListState
         get() = _state

@@ -15,17 +15,15 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
-import io.getstream.android.core.websocket.WebSocketConnectionState
+import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.PollVoteList
 import io.getstream.feeds.android.client.api.state.PollVoteListState
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
-import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManager
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
-import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
 import io.getstream.feeds.android.client.internal.state.event.handler.PollVoteListEventHandler
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 
 /**
  * An implementation of [PollVoteList] that manages the state and queries for poll votes.
@@ -43,25 +41,15 @@ import io.getstream.feeds.android.network.models.WSEvent
 internal class PollVoteListImpl(
     override val query: PollVotesQuery,
     private val repository: PollsRepository,
-    private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener>,
+    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
     private val _state: PollVoteListStateImpl = PollVoteListStateImpl(query),
 ) : PollVoteList {
 
-    init {
-        subscriptionManager.subscribe(
-            object : FeedsSocketListener {
-                override fun onState(state: WebSocketConnectionState) {
-                    // Not relevant for this implementation
-                }
-
-                override fun onEvent(event: WSEvent) {
-                    eventHandler.handleEvent(event)
-                }
-            }
-        )
-    }
-
     private val eventHandler = PollVoteListEventHandler(query.pollId, _state)
+
+    init {
+        subscriptionManager.subscribe(eventHandler)
+    }
 
     override val state: PollVoteListState
         get() = _state

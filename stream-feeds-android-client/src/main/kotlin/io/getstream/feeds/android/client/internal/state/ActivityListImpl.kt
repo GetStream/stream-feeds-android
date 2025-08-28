@@ -15,17 +15,15 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
-import io.getstream.android.core.websocket.WebSocketConnectionState
+import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.ActivityList
 import io.getstream.feeds.android.client.api.state.ActivityListState
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
-import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManager
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
-import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
 import io.getstream.feeds.android.client.internal.state.event.handler.ActivityListEventHandler
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 
 /**
  * A paginated list of activities that supports real-time updates and filtering.
@@ -44,26 +42,16 @@ internal class ActivityListImpl(
     override val query: ActivitiesQuery,
     private val currentUserId: String,
     private val activitiesRepository: ActivitiesRepository,
-    private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener>,
+    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
 ) : ActivityList {
-
-    init {
-        subscriptionManager.subscribe(
-            object : FeedsSocketListener {
-                override fun onState(state: WebSocketConnectionState) {
-                    // Not relevant, rethink this
-                }
-
-                override fun onEvent(event: WSEvent) {
-                    eventHandler.handleEvent(event)
-                }
-            }
-        )
-    }
 
     private val _state: ActivityListStateImpl = ActivityListStateImpl(query, currentUserId)
 
     private val eventHandler = ActivityListEventHandler(state = _state)
+
+    init {
+        subscriptionManager.subscribe(eventHandler)
+    }
 
     override val state: ActivityListState
         get() = _state

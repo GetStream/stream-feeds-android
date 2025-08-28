@@ -18,6 +18,7 @@
 package io.getstream.feeds.android.network.infrastructure
 
 import com.squareup.moshi.Moshi
+import io.getstream.feeds.android.network.models.WSEventAdapter
 
 public object Serializer {
     @JvmStatic
@@ -222,6 +223,7 @@ public object Serializer {
             .add(io.getstream.feeds.android.network.infrastructure.URIAdapter())
             .add(io.getstream.feeds.android.network.infrastructure.UUIDAdapter())
             .add(io.getstream.feeds.android.network.infrastructure.JavaUtilDateTimeAdapter())
+            .add(WSEventAdapter())
             .addLast(com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory())
 
     @JvmStatic public val moshi: Moshi by lazy { moshiBuilder.build() }

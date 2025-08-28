@@ -15,7 +15,7 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
-import io.getstream.android.core.websocket.WebSocketConnectionState
+import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.BookmarkData
@@ -32,14 +32,13 @@ import io.getstream.feeds.android.client.api.state.Feed
 import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.api.state.query.MembersQuery
-import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManager
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
-import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
 import io.getstream.feeds.android.client.internal.state.event.handler.FeedEventHandler
+import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.client.internal.utils.flatMap
 import io.getstream.feeds.android.network.models.AcceptFollowRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
@@ -55,7 +54,6 @@ import io.getstream.feeds.android.network.models.UpdateBookmarkRequest
 import io.getstream.feeds.android.network.models.UpdateCommentRequest
 import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.network.models.UpdateFeedRequest
-import io.getstream.feeds.android.network.models.WSEvent
 
 /**
  * A feed represents a collection of activities and provides methods to interact with them.
@@ -93,22 +91,8 @@ internal class FeedImpl(
     private val commentsRepository: CommentsRepository,
     private val feedsRepository: FeedsRepository,
     private val pollsRepository: PollsRepository,
-    private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener>,
+    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
 ) : Feed {
-
-    init {
-        subscriptionManager.subscribe(
-            object : FeedsSocketListener {
-                override fun onState(state: WebSocketConnectionState) {
-                    // Not relevant, rethink this
-                }
-
-                override fun onEvent(event: WSEvent) {
-                    eventHandler.handleEvent(event)
-                }
-            }
-        )
-    }
 
     private val memberList: MemberListImpl =
         MemberListImpl(
@@ -125,6 +109,10 @@ internal class FeedImpl(
         )
 
     private val eventHandler = FeedEventHandler(fid = fid, state = _state)
+
+    init {
+        subscriptionManager.subscribe(eventHandler)
+    }
 
     private val group: String
         get() = fid.group

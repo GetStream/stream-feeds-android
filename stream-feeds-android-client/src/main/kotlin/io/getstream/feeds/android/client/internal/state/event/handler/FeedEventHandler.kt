@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.FeedStateUpdates
+import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.network.models.ActivityAddedEvent
 import io.getstream.feeds.android.network.models.ActivityDeletedEvent
 import io.getstream.feeds.android.network.models.ActivityPinnedEvent
@@ -52,14 +53,14 @@ import io.getstream.feeds.android.network.models.WSEvent
  * @property state The instance that manages updates to the feed state.
  */
 internal class FeedEventHandler(private val fid: FeedId, private val state: FeedStateUpdates) :
-    StateEventHandler {
+    FeedsEventListener {
 
     /**
      * Processes a WebSocket event and updates the feed state.
      *
      * @param event The WebSocket event to process.
      */
-    override fun handleEvent(event: WSEvent) {
+    override fun onEvent(event: WSEvent) {
         when (event) {
             is ActivityAddedEvent -> {
                 if (event.fid == fid.rawValue) {

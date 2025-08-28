@@ -15,16 +15,14 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
-import io.getstream.android.core.websocket.WebSocketConnectionState
+import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.state.ActivityCommentList
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
-import io.getstream.feeds.android.client.internal.common.StreamSubscriptionManager
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
-import io.getstream.feeds.android.client.internal.socket.FeedsSocketListener
 import io.getstream.feeds.android.client.internal.state.event.handler.ActivityCommentListEventHandler
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 
 /**
  * A paginated list of activities that supports real-time updates and filtering.
@@ -41,22 +39,8 @@ internal class ActivityCommentListImpl(
     override val query: ActivityCommentsQuery,
     private val currentUserId: String,
     private val commentsRepository: CommentsRepository,
-    private val subscriptionManager: StreamSubscriptionManager<FeedsSocketListener>,
+    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
 ) : ActivityCommentList {
-
-    init {
-        subscriptionManager.subscribe(
-            object : FeedsSocketListener {
-                override fun onState(state: WebSocketConnectionState) {
-                    // Not relevant, rethink this
-                }
-
-                override fun onEvent(event: WSEvent) {
-                    eventHandler.handleEvent(event)
-                }
-            }
-        )
-    }
 
     private val _state: ActivityCommentListStateImpl =
         ActivityCommentListStateImpl(query, currentUserId)
@@ -67,6 +51,10 @@ internal class ActivityCommentListImpl(
             objectType = query.objectType,
             state = _state,
         )
+
+    init {
+        subscriptionManager.subscribe(eventHandler)
+    }
 
     override val state: ActivityCommentListState
         get() = _state

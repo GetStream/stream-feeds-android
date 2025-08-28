@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.sample.poll
 
 import androidx.compose.foundation.background
@@ -58,7 +73,7 @@ fun PollCommentsScreen(navigator: DestinationsNavigator) {
                     IconButton(onClick = navigator::popBackStack) {
                         Icon(painterResource(R.drawable.close), contentDescription = "Close")
                     }
-                }
+                },
             )
         }
     ) { padding ->
@@ -79,7 +94,7 @@ fun PollCommentsScreen(navigator: DestinationsNavigator) {
                 PollCommentsScreen(
                     votes = votes,
                     onLoadMore = viewModel::onLoadMore,
-                    modifier = Modifier.padding(padding)
+                    modifier = Modifier.padding(padding),
                 )
             }
         }
@@ -102,17 +117,14 @@ private fun PollCommentsScreen(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        items(votes) { vote ->
-            PollCommentItem(vote)
-        }
+        items(votes) { vote -> PollCommentItem(vote) }
     }
 }
 
 @Composable
 private fun PollCommentItem(vote: PollVoteData) {
     Column(
-        Modifier
-            .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
+        Modifier.background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
             .padding(16.dp)
             .fillMaxWidth()
     ) {
@@ -121,20 +133,11 @@ private fun PollCommentItem(vote: PollVoteData) {
         vote.user?.let { user ->
             Row(
                 modifier = Modifier.padding(top = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                UserAvatar(
-                    user.image,
-                    Modifier
-                        .padding(end = 8.dp)
-                        .size(32.dp)
-                )
+                UserAvatar(user.image, Modifier.padding(end = 8.dp).size(32.dp))
 
-                Text(
-                    text = user.name.orEmpty(),
-                    fontSize = 16.sp,
-                    modifier = Modifier.weight(1f),
-                )
+                Text(text = user.name.orEmpty(), fontSize = 16.sp, modifier = Modifier.weight(1f))
             }
         }
     }

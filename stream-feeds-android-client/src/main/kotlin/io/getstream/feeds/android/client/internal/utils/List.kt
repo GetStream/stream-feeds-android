@@ -15,9 +15,8 @@
  */
 package io.getstream.feeds.android.client.internal.utils
 
-import io.getstream.android.core.query.CompositeComparator
-import io.getstream.android.core.query.Sort
-import okhttp3.internal.toImmutableList
+import io.getstream.feeds.android.client.api.query.CompositeComparator
+import io.getstream.feeds.android.client.api.query.Sort
 
 /**
  * Updates an existing element in the list or inserts a new one if not found.
@@ -70,6 +69,10 @@ internal fun <T> MutableList<T>.insertSorted(element: T, comparator: Comparator<
         }
     this.add(index, element)
     return this.toImmutableList()
+}
+
+private fun <T> MutableList<T>.toImmutableList(): List<T> {
+    return this.toList()
 }
 
 /**
@@ -296,7 +299,7 @@ internal fun <T> List<T>.treeUpdateFirst(
 ): List<T> {
 
     return internalTreeUpdate(matcher, childrenSelector, updateElement, updateChildren, comparator)
-        ?.toImmutableList() ?: this
+        ?: this
 }
 
 /**

@@ -17,13 +17,14 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.FollowListStateUpdates
+import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.network.models.FollowUpdatedEvent
 import io.getstream.feeds.android.network.models.WSEvent
 
 internal class FollowListEventHandler(private val state: FollowListStateUpdates) :
-    StateEventHandler {
+    FeedsEventListener {
 
-    override fun handleEvent(event: WSEvent) {
+    override fun onEvent(event: WSEvent) {
         when (event) {
             is FollowUpdatedEvent -> {
                 state.onFollowUpdated(event.follow.toModel())

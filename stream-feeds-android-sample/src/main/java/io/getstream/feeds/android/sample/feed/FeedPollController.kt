@@ -70,11 +70,11 @@ class FeedPollController(
     }
 
     private fun activity(id: String): Activity? {
-        activities[id]?.let { return it }
+        activities[id]?.let {
+            return it
+        }
 
-        return feedsClient()
-            ?.activity(activityId = id, fid = fid)
-            ?.also { activities[id] = it }
+        return feedsClient()?.activity(activityId = id, fid = fid)?.also { activities[id] = it }
     }
 
     companion object {

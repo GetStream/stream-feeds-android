@@ -174,20 +174,14 @@ private fun PollOption(
 private fun ViewResultsButton(poll: PollData, controller: FeedPollController) {
     var showResultsScreen by remember { mutableStateOf(false) }
 
-    PollTextButton(
-        text = "View results",
-        onClick = { showResultsScreen = true }
-    )
+    PollTextButton(text = "View results", onClick = { showResultsScreen = true })
 
     if (showResultsScreen) {
         Dialog(
             onDismissRequest = { showResultsScreen = false },
-            properties = DialogProperties(usePlatformDefaultWidth = false)
+            properties = DialogProperties(usePlatformDefaultWidth = false),
         ) {
-            PollResultsScreen(
-                poll = poll,
-                onCloseClick = { showResultsScreen = false }
-            )
+            PollResultsScreen(poll = poll, onCloseClick = { showResultsScreen = false })
         }
     }
 }
