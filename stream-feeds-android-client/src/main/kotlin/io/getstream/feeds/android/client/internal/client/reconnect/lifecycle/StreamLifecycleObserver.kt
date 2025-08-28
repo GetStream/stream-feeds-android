@@ -35,8 +35,7 @@ import kotlinx.coroutines.withContext
  * @param scope The [CoroutineScope] used to launch coroutines for notifying listeners
  * @param lifecycle The [Lifecycle] to observe for lifecycle events
  */
-@StreamInternalApi
-public class StreamLifecycleObserver(
+internal class StreamLifecycleObserver(
     private val scope: CoroutineScope,
     private val lifecycle: Lifecycle,
 ) : DefaultLifecycleObserver {
