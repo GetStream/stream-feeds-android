@@ -18,7 +18,6 @@ package io.getstream.feeds.android.client.internal.client.reconnect.lifecycle
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import io.getstream.android.core.annotations.StreamInternalApi
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
