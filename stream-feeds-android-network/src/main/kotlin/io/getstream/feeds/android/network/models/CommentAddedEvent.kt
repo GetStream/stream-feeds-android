@@ -26,6 +26,8 @@ import kotlin.io.*
 public data class CommentAddedEvent(
     @Json(name = "created_at") public val createdAt: java.util.Date,
     @Json(name = "fid") public val fid: kotlin.String,
+    @Json(name = "activity")
+    public val activity: io.getstream.feeds.android.network.models.ActivityResponse,
     @Json(name = "comment")
     public val comment: io.getstream.feeds.android.network.models.CommentResponse,
     @Json(name = "custom")

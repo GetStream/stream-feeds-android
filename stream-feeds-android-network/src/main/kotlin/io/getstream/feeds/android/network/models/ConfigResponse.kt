@@ -50,9 +50,6 @@ public data class ConfigResponse(
     public val blockListConfig: io.getstream.feeds.android.network.models.BlockListConfig? = null,
     @Json(name = "llm_config")
     public val llmConfig: io.getstream.feeds.android.network.models.LLMConfig? = null,
-    @Json(name = "rule_builder_config")
-    public val ruleBuilderConfig: io.getstream.feeds.android.network.models.RuleBuilderConfig? =
-        null,
     @Json(name = "velocity_filter_config")
     public val velocityFilterConfig:
         io.getstream.feeds.android.network.models.VelocityFilterConfig? =

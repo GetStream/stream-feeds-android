@@ -29,6 +29,7 @@ public data class LLMConfig(
     @Json(name = "rules")
     public val rules: kotlin.collections.List<io.getstream.feeds.android.network.models.LLMRule> =
         emptyList(),
+    @Json(name = "app_context") public val appContext: kotlin.String? = null,
     @Json(name = "async") public val async: kotlin.Boolean? = null,
     @Json(name = "severity_descriptions")
     public val severityDescriptions: kotlin.collections.Map<kotlin.String, kotlin.String>? =
