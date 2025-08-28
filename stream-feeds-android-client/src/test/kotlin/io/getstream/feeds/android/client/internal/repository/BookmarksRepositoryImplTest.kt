@@ -48,7 +48,7 @@ internal class BookmarksRepositoryImplTest {
             apiFunction = { feedsApi.addBookmark("activity-1", request) },
             repositoryCall = { repository.addBookmark("activity-1", request) },
             apiResult = apiResult,
-            repositoryResult = apiResult.bookmark.toModel()
+            repositoryResult = apiResult.bookmark.toModel(),
         )
     }
 
@@ -60,7 +60,7 @@ internal class BookmarksRepositoryImplTest {
             apiFunction = { feedsApi.deleteBookmark("activity-1", "folder-1") },
             repositoryCall = { repository.deleteBookmark("activity-1", "folder-1") },
             apiResult = apiResult,
-            repositoryResult = apiResult.bookmark.toModel()
+            repositoryResult = apiResult.bookmark.toModel(),
         )
     }
 
@@ -72,7 +72,7 @@ internal class BookmarksRepositoryImplTest {
             apiFunction = { feedsApi.deleteBookmark("activity-1", null) },
             repositoryCall = { repository.deleteBookmark("activity-1", null) },
             apiResult = apiResult,
-            repositoryResult = apiResult.bookmark.toModel()
+            repositoryResult = apiResult.bookmark.toModel(),
         )
     }
 
@@ -85,7 +85,7 @@ internal class BookmarksRepositoryImplTest {
             apiFunction = { feedsApi.updateBookmark("activity-1", request) },
             repositoryCall = { repository.updateBookmark("activity-1", request) },
             apiResult = apiResult,
-            repositoryResult = apiResult.bookmark.toModel()
+            repositoryResult = apiResult.bookmark.toModel(),
         )
     }
 
@@ -94,21 +94,23 @@ internal class BookmarksRepositoryImplTest {
         val query = io.getstream.feeds.android.client.api.state.query.BookmarksQuery()
         val request = query.toRequest()
 
-        val apiResult = QueryBookmarksResponse(
-            duration = "duration",
-            bookmarks = listOf(bookmarkResponse()),
-            next = "next",
-            prev = "prev"
-        )
+        val apiResult =
+            QueryBookmarksResponse(
+                duration = "duration",
+                bookmarks = listOf(bookmarkResponse()),
+                next = "next",
+                prev = "prev",
+            )
 
         testDelegation(
             apiFunction = { feedsApi.queryBookmarks(request) },
             repositoryCall = { repository.queryBookmarks(query) },
             apiResult = apiResult,
-            repositoryResult = PaginationResult(
-                models = listOf(bookmarkResponse().toModel()),
-                pagination = PaginationData(next = "next", previous = "prev")
-            )
+            repositoryResult =
+                PaginationResult(
+                    models = listOf(bookmarkResponse().toModel()),
+                    pagination = PaginationData(next = "next", previous = "prev"),
+                ),
         )
     }
 
@@ -117,21 +119,23 @@ internal class BookmarksRepositoryImplTest {
         val query = BookmarkFoldersQuery()
         val request = query.toRequest()
 
-        val apiResult = QueryBookmarkFoldersResponse(
-            duration = "duration",
-            bookmarkFolders = listOf(bookmarkFolderResponse()),
-            next = "next",
-            prev = "prev"
-        )
+        val apiResult =
+            QueryBookmarkFoldersResponse(
+                duration = "duration",
+                bookmarkFolders = listOf(bookmarkFolderResponse()),
+                next = "next",
+                prev = "prev",
+            )
 
         testDelegation(
             apiFunction = { feedsApi.queryBookmarkFolders(request) },
             repositoryCall = { repository.queryBookmarkFolders(query) },
             apiResult = apiResult,
-            repositoryResult = PaginationResult(
-                models = listOf(bookmarkFolderResponse().toModel()),
-                pagination = PaginationData(next = "next", previous = "prev")
-            )
+            repositoryResult =
+                PaginationResult(
+                    models = listOf(bookmarkFolderResponse().toModel()),
+                    pagination = PaginationData(next = "next", previous = "prev"),
+                ),
         )
     }
 }

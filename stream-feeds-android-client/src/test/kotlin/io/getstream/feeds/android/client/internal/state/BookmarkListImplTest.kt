@@ -32,20 +32,23 @@ import org.junit.Test
 
 internal class BookmarkListImplTest {
     private val bookmarksRepository: BookmarksRepository = mockk()
-    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> = mockk(relaxed = true)
+    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> =
+        mockk(relaxed = true)
     private val query = BookmarksQuery(limit = 10)
 
-    private val bookmarkList = BookmarkListImpl(
-        query = query,
-        bookmarksRepository = bookmarksRepository,
-        subscriptionManager = subscriptionManager
-    )
+    private val bookmarkList =
+        BookmarkListImpl(
+            query = query,
+            bookmarksRepository = bookmarksRepository,
+            subscriptionManager = subscriptionManager,
+        )
 
     @Test
     fun `on get, then return bookmarks and update state`() = runTest {
         val bookmarks = listOf(bookmarkData("bookmark-1"), bookmarkData("bookmark-2"))
         val paginationResult = createPaginationResult(bookmarks, next = "next-cursor")
-        coEvery { bookmarksRepository.queryBookmarks(query) } returns Result.success(paginationResult)
+        coEvery { bookmarksRepository.queryBookmarks(query) } returns
+            Result.success(paginationResult)
 
         val result = bookmarkList.get()
 
@@ -58,12 +61,14 @@ internal class BookmarkListImplTest {
         setupInitialState()
 
         val moreBookmarks = listOf(bookmarkData("bookmark-2"), bookmarkData("bookmark-3"))
-        val morePaginationResult = createPaginationResult(
-            bookmarks = moreBookmarks,
-            next = "next-cursor-2",
-            previous = "next-cursor"
-        )
-        coEvery { bookmarksRepository.queryBookmarks(any()) } returns Result.success(morePaginationResult)
+        val morePaginationResult =
+            createPaginationResult(
+                bookmarks = moreBookmarks,
+                next = "next-cursor-2",
+                previous = "next-cursor",
+            )
+        coEvery { bookmarksRepository.queryBookmarks(any()) } returns
+            Result.success(morePaginationResult)
 
         val result = bookmarkList.queryMoreBookmarks()
 
@@ -87,11 +92,10 @@ internal class BookmarkListImplTest {
 
         val customLimit = 5
         val moreBookmarks = listOf(bookmarkData("bookmark-2"))
-        val morePaginationResult = createPaginationResult(
-            bookmarks = moreBookmarks,
-            previous = "next-cursor"
-        )
-        coEvery { bookmarksRepository.queryBookmarks(any()) } returns Result.success(morePaginationResult)
+        val morePaginationResult =
+            createPaginationResult(bookmarks = moreBookmarks, previous = "next-cursor")
+        coEvery { bookmarksRepository.queryBookmarks(any()) } returns
+            Result.success(morePaginationResult)
 
         val result = bookmarkList.queryMoreBookmarks(customLimit)
 
@@ -101,20 +105,23 @@ internal class BookmarkListImplTest {
 
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialBookmarks = listOf(bookmarkData("bookmark-1"))
-        val initialPaginationResult = PaginationResult(
-            models = initialBookmarks,
-            pagination = PaginationData(next = nextCursor, previous = null)
-        )
-        coEvery { bookmarksRepository.queryBookmarks(query) } returns Result.success(initialPaginationResult)
+        val initialPaginationResult =
+            PaginationResult(
+                models = initialBookmarks,
+                pagination = PaginationData(next = nextCursor, previous = null),
+            )
+        coEvery { bookmarksRepository.queryBookmarks(query) } returns
+            Result.success(initialPaginationResult)
         bookmarkList.get()
     }
 
     private fun createPaginationResult(
         bookmarks: List<BookmarkData>,
         next: String? = null,
-        previous: String? = null
-    ) = PaginationResult(
-        models = bookmarks,
-        pagination = PaginationData(next = next, previous = previous)
-    )
+        previous: String? = null,
+    ) =
+        PaginationResult(
+            models = bookmarks,
+            pagination = PaginationData(next = next, previous = previous),
+        )
 }

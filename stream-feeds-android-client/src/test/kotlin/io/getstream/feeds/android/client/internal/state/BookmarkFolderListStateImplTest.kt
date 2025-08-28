@@ -40,10 +40,11 @@ internal class BookmarkFolderListStateImplTest {
     @Test
     fun `on queryMoreBookmarkFolders, then update folders and pagination`() = runTest {
         val folders = listOf(bookmarkFolderData(), bookmarkFolderData("folder-2", "Test Folder 2"))
-        val paginationResult = PaginationResult(
-            models = folders,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = folders,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = BookmarkFoldersSort.Default)
 
         bookmarkFolderListState.onQueryMoreBookmarkFolders(paginationResult, queryConfig)
@@ -55,14 +56,13 @@ internal class BookmarkFolderListStateImplTest {
 
     @Test
     fun `on bookmarkFolderUpdated, then update specific folder`() = runTest {
-        val initialFolders = listOf(
-            bookmarkFolderData(),
-            bookmarkFolderData("folder-2", "Test Folder 2")
-        )
-        val paginationResult = PaginationResult(
-            models = initialFolders,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val initialFolders =
+            listOf(bookmarkFolderData(), bookmarkFolderData("folder-2", "Test Folder 2"))
+        val paginationResult =
+            PaginationResult(
+                models = initialFolders,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = BookmarkFoldersSort.Default)
         bookmarkFolderListState.onQueryMoreBookmarkFolders(paginationResult, queryConfig)
 
@@ -76,18 +76,14 @@ internal class BookmarkFolderListStateImplTest {
 
     @Test
     fun `on bookmarkFolderRemoved, then remove specific folder`() = runTest {
-        val initialFolders = listOf(
-            bookmarkFolderData(),
-            bookmarkFolderData("folder-2", "Test Folder 2")
-        )
-        val paginationResult = PaginationResult(
-            models = initialFolders,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
-        val queryConfig = QueryConfiguration(
-            filter = null,
-            sort = BookmarkFoldersSort.Default
-        )
+        val initialFolders =
+            listOf(bookmarkFolderData(), bookmarkFolderData("folder-2", "Test Folder 2"))
+        val paginationResult =
+            PaginationResult(
+                models = initialFolders,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
+        val queryConfig = QueryConfiguration(filter = null, sort = BookmarkFoldersSort.Default)
         bookmarkFolderListState.onQueryMoreBookmarkFolders(paginationResult, queryConfig)
 
         bookmarkFolderListState.onBookmarkFolderRemoved(initialFolders[0].id)

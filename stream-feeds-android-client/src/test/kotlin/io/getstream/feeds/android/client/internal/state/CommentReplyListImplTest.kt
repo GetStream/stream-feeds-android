@@ -32,22 +32,25 @@ import org.junit.Test
 
 internal class CommentReplyListImplTest {
     private val commentsRepository: CommentsRepository = mockk()
-    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> = mockk(relaxed = true)
+    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> =
+        mockk(relaxed = true)
     private val currentUserId = "user-1"
     private val query = CommentRepliesQuery(commentId = "comment-1", limit = 10)
 
-    private val commentReplyList = CommentReplyListImpl(
-        query = query,
-        currentUserId = currentUserId,
-        commentsRepository = commentsRepository,
-        subscriptionManager = subscriptionManager
-    )
+    private val commentReplyList =
+        CommentReplyListImpl(
+            query = query,
+            currentUserId = currentUserId,
+            commentsRepository = commentsRepository,
+            subscriptionManager = subscriptionManager,
+        )
 
     @Test
     fun `on get, then return replies and update state`() = runTest {
         val replies = listOf(threadedCommentData("reply-1"), threadedCommentData("reply-2"))
         val paginationResult = createPaginationResult(replies, next = "next-cursor")
-        coEvery { commentsRepository.getCommentReplies(query) } returns Result.success(paginationResult)
+        coEvery { commentsRepository.getCommentReplies(query) } returns
+            Result.success(paginationResult)
 
         val result = commentReplyList.get()
 
@@ -60,12 +63,14 @@ internal class CommentReplyListImplTest {
         setupInitialState()
 
         val moreReplies = listOf(threadedCommentData("reply-2"), threadedCommentData("reply-3"))
-        val morePaginationResult = createPaginationResult(
-            replies = moreReplies,
-            next = "next-cursor-2",
-            previous = "next-cursor"
-        )
-        coEvery { commentsRepository.getCommentReplies(any()) } returns Result.success(morePaginationResult)
+        val morePaginationResult =
+            createPaginationResult(
+                replies = moreReplies,
+                next = "next-cursor-2",
+                previous = "next-cursor",
+            )
+        coEvery { commentsRepository.getCommentReplies(any()) } returns
+            Result.success(morePaginationResult)
 
         val result = commentReplyList.queryMoreReplies()
 
@@ -89,11 +94,10 @@ internal class CommentReplyListImplTest {
 
         val customLimit = 5
         val moreReplies = listOf(threadedCommentData("reply-2"))
-        val morePaginationResult = createPaginationResult(
-            replies = moreReplies,
-            previous = "next-cursor"
-        )
-        coEvery { commentsRepository.getCommentReplies(any()) } returns Result.success(morePaginationResult)
+        val morePaginationResult =
+            createPaginationResult(replies = moreReplies, previous = "next-cursor")
+        coEvery { commentsRepository.getCommentReplies(any()) } returns
+            Result.success(morePaginationResult)
 
         val result = commentReplyList.queryMoreReplies(customLimit)
 
@@ -103,20 +107,23 @@ internal class CommentReplyListImplTest {
 
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialReplies = listOf(threadedCommentData("reply-1"))
-        val initialPaginationResult = PaginationResult(
-            models = initialReplies,
-            pagination = PaginationData(next = nextCursor, previous = null)
-        )
-        coEvery { commentsRepository.getCommentReplies(query) } returns Result.success(initialPaginationResult)
+        val initialPaginationResult =
+            PaginationResult(
+                models = initialReplies,
+                pagination = PaginationData(next = nextCursor, previous = null),
+            )
+        coEvery { commentsRepository.getCommentReplies(query) } returns
+            Result.success(initialPaginationResult)
         commentReplyList.get()
     }
 
     private fun createPaginationResult(
         replies: List<ThreadedCommentData>,
         next: String? = null,
-        previous: String? = null
-    ) = PaginationResult(
-        models = replies,
-        pagination = PaginationData(next = next, previous = previous)
-    )
+        previous: String? = null,
+    ) =
+        PaginationResult(
+            models = replies,
+            pagination = PaginationData(next = next, previous = previous),
+        )
 }

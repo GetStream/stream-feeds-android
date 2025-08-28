@@ -40,10 +40,11 @@ internal class FollowListStateImplTest {
     @Test
     fun `on queryMoreFollows, then update follows and pagination`() = runTest {
         val follows = listOf(followData(), followData("user-2", "user-3"))
-        val paginationResult = PaginationResult(
-            models = follows,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = follows,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = FollowsSort.Default)
 
         followListState.onQueryMoreFollows(paginationResult, queryConfig)
@@ -56,18 +57,20 @@ internal class FollowListStateImplTest {
     @Test
     fun `on followUpdated, then update specific follow`() = runTest {
         val initialFollows = listOf(followData(), followData("user-2", "user-3"))
-        val paginationResult = PaginationResult(
-            models = initialFollows,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = initialFollows,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = FollowsSort.Default)
         followListState.onQueryMoreFollows(paginationResult, queryConfig)
 
-        val updatedFollow = followData(
-            sourceUserId = "user-1",
-            targetUserId = "user-2",
-            createdAt = java.util.Date(1000)
-        )
+        val updatedFollow =
+            followData(
+                sourceUserId = "user-1",
+                targetUserId = "user-2",
+                createdAt = java.util.Date(1000),
+            )
         followListState.onFollowUpdated(updatedFollow)
 
         val updatedFollows = followListState.follows.value
@@ -79,10 +82,11 @@ internal class FollowListStateImplTest {
     fun `on followUpdated with non-existent follow, then keep existing follows unchanged`() =
         runTest {
             val initialFollows = listOf(followData(), followData("user-2", "user-3"))
-            val paginationResult = PaginationResult(
-                models = initialFollows,
-                pagination = PaginationData(next = "next-cursor", previous = null)
-            )
+            val paginationResult =
+                PaginationResult(
+                    models = initialFollows,
+                    pagination = PaginationData(next = "next-cursor", previous = null),
+                )
             val queryConfig = QueryConfiguration(filter = null, sort = FollowsSort.Default)
             followListState.onQueryMoreFollows(paginationResult, queryConfig)
 

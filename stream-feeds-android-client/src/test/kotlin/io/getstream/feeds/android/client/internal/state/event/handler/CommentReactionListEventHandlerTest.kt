@@ -24,8 +24,8 @@ import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Test
 import java.util.Date
+import org.junit.Test
 
 internal class CommentReactionListEventHandlerTest {
     private val state: CommentReactionListStateUpdates = mockk(relaxed = true)
@@ -36,13 +36,14 @@ internal class CommentReactionListEventHandlerTest {
     fun `on CommentReactionDeletedEvent, then call onReactionRemoved`() {
         val reaction = feedsReactionResponse()
         val comment = commentResponse()
-        val event = CommentReactionDeletedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            comment = comment,
-            reaction = reaction,
-            type = "feeds.comment.reaction.deleted"
-        )
+        val event =
+            CommentReactionDeletedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                comment = comment,
+                reaction = reaction,
+                type = "feeds.comment.reaction.deleted",
+            )
 
         handler.onEvent(event)
 
@@ -51,9 +52,10 @@ internal class CommentReactionListEventHandlerTest {
 
     @Test
     fun `on unknown event, then do nothing`() {
-        val unknownEvent = object : WSEvent {
-            override fun getWSEventType(): String = "unknown.event"
-        }
+        val unknownEvent =
+            object : WSEvent {
+                override fun getWSEventType(): String = "unknown.event"
+            }
 
         handler.onEvent(unknownEvent)
 

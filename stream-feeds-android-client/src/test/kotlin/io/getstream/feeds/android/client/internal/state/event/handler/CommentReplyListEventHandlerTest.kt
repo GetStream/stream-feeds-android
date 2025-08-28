@@ -30,8 +30,8 @@ import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Test
 import java.util.Date
+import org.junit.Test
 
 internal class CommentReplyListEventHandlerTest {
     private val state: CommentReplyListStateUpdates = mockk(relaxed = true)
@@ -41,13 +41,14 @@ internal class CommentReplyListEventHandlerTest {
     @Test
     fun `on CommentAddedEvent, then call onCommentAdded`() {
         val comment = commentResponse()
-        val event = CommentAddedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            comment = comment,
-            activity = activityResponse(),
-            type = "feeds.comment.added"
-        )
+        val event =
+            CommentAddedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                comment = comment,
+                activity = activityResponse(),
+                type = "feeds.comment.added",
+            )
 
         handler.onEvent(event)
 
@@ -57,12 +58,13 @@ internal class CommentReplyListEventHandlerTest {
     @Test
     fun `on CommentDeletedEvent, then call onCommentRemoved`() {
         val comment = commentResponse()
-        val event = CommentDeletedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            comment = comment,
-            type = "feeds.comment.deleted"
-        )
+        val event =
+            CommentDeletedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                comment = comment,
+                type = "feeds.comment.deleted",
+            )
 
         handler.onEvent(event)
 
@@ -72,12 +74,13 @@ internal class CommentReplyListEventHandlerTest {
     @Test
     fun `on CommentUpdatedEvent, then call onCommentUpdated`() {
         val comment = commentResponse()
-        val event = CommentUpdatedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            comment = comment,
-            type = "feeds.comment.updated"
-        )
+        val event =
+            CommentUpdatedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                comment = comment,
+                type = "feeds.comment.updated",
+            )
 
         handler.onEvent(event)
 
@@ -88,14 +91,15 @@ internal class CommentReplyListEventHandlerTest {
     fun `on CommentReactionAddedEvent, then call onCommentReactionAdded`() {
         val comment = commentResponse()
         val reaction = feedsReactionResponse()
-        val event = CommentReactionAddedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            activity = activityResponse(),
-            comment = comment,
-            reaction = reaction,
-            type = "feeds.comment.reaction.added"
-        )
+        val event =
+            CommentReactionAddedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                activity = activityResponse(),
+                comment = comment,
+                reaction = reaction,
+                type = "feeds.comment.reaction.added",
+            )
 
         handler.onEvent(event)
 
@@ -106,13 +110,14 @@ internal class CommentReplyListEventHandlerTest {
     fun `on CommentReactionDeletedEvent, then call onCommentReactionRemoved`() {
         val comment = commentResponse()
         val reaction = feedsReactionResponse()
-        val event = CommentReactionDeletedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            comment = comment,
-            reaction = reaction,
-            type = "feeds.comment.reaction.deleted"
-        )
+        val event =
+            CommentReactionDeletedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                comment = comment,
+                reaction = reaction,
+                type = "feeds.comment.reaction.deleted",
+            )
 
         handler.onEvent(event)
 
@@ -121,9 +126,10 @@ internal class CommentReplyListEventHandlerTest {
 
     @Test
     fun `on unknown event, then do nothing`() {
-        val unknownEvent = object : WSEvent {
-            override fun getWSEventType(): String = "unknown.event"
-        }
+        val unknownEvent =
+            object : WSEvent {
+                override fun getWSEventType(): String = "unknown.event"
+            }
 
         handler.onEvent(unknownEvent)
 

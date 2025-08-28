@@ -39,7 +39,7 @@ internal class PollsRepositoryImplTest {
             apiFunction = { feedsApi.createPoll(request) },
             repositoryCall = { repository.createPoll(request) },
             apiResult = apiResult,
-            repositoryResult = apiResult.poll.toModel()
+            repositoryResult = apiResult.poll.toModel(),
         )
     }
 
@@ -51,7 +51,7 @@ internal class PollsRepositoryImplTest {
             apiFunction = { feedsApi.getPoll("pollId", "userId") },
             repositoryCall = { repository.getPoll("pollId", "userId") },
             apiResult = apiResult,
-            repositoryResult = apiResult.poll.toModel()
+            repositoryResult = apiResult.poll.toModel(),
         )
     }
 
@@ -64,7 +64,7 @@ internal class PollsRepositoryImplTest {
             apiFunction = { feedsApi.updatePoll(request) },
             repositoryCall = { repository.updatePoll(request) },
             apiResult = apiResult,
-            repositoryResult = apiResult.poll.toModel()
+            repositoryResult = apiResult.poll.toModel(),
         )
     }
 
@@ -73,7 +73,7 @@ internal class PollsRepositoryImplTest {
         testDelegation(
             apiFunction = { feedsApi.deletePoll("pollId", "userId") },
             repositoryCall = { repository.deletePoll("pollId", "userId") },
-            apiResult = Unit
+            apiResult = Unit,
         )
     }
 }

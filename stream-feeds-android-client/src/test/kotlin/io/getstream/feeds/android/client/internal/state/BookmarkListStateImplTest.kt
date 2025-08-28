@@ -41,10 +41,11 @@ internal class BookmarkListStateImplTest {
     @Test
     fun `on queryMoreBookmarks, then update bookmarks and pagination`() = runTest {
         val bookmarks = listOf(bookmarkData(), bookmarkData("bookmark-2", "user-2"))
-        val paginationResult = PaginationResult(
-            models = bookmarks,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = bookmarks,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = BookmarksSort.Default)
 
         bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
@@ -57,10 +58,11 @@ internal class BookmarkListStateImplTest {
     @Test
     fun `on bookmarkUpdated, then update specific bookmark`() = runTest {
         val initialBookmarks = listOf(bookmarkData(), bookmarkData("bookmark-2", "user-2"))
-        val paginationResult = PaginationResult(
-            models = initialBookmarks,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = initialBookmarks,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = BookmarksSort.Default)
         bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
 
@@ -75,20 +77,20 @@ internal class BookmarkListStateImplTest {
     @Test
     fun `on bookmarkFolderUpdated, then update bookmarks with folder reference`() = runTest {
         val folder = bookmarkFolderData()
-        val initialBookmarks = listOf(
-            bookmarkData(folder = folder),
-            bookmarkData(
-                "activity-2", "user-2",
-                folder = bookmarkFolderData(
-                    "folder-2",
-                    "Folder 2"
-                )
+        val initialBookmarks =
+            listOf(
+                bookmarkData(folder = folder),
+                bookmarkData(
+                    "activity-2",
+                    "user-2",
+                    folder = bookmarkFolderData("folder-2", "Folder 2"),
+                ),
             )
-        )
-        val paginationResult = PaginationResult(
-            models = initialBookmarks,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = initialBookmarks,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = BookmarksSort.Default)
         bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
 
@@ -103,20 +105,20 @@ internal class BookmarkListStateImplTest {
     @Test
     fun `on bookmarkFolderRemoved, then remove folder reference from bookmarks`() = runTest {
         val folder = bookmarkFolderData()
-        val initialBookmarks = listOf(
-            bookmarkData(folder = folder),
-            bookmarkData(
-                "activity-2", "user-2",
-                folder = bookmarkFolderData(
-                    "folder-2",
-                    "Folder 2"
-                )
+        val initialBookmarks =
+            listOf(
+                bookmarkData(folder = folder),
+                bookmarkData(
+                    "activity-2",
+                    "user-2",
+                    folder = bookmarkFolderData("folder-2", "Folder 2"),
+                ),
             )
-        )
-        val paginationResult = PaginationResult(
-            models = initialBookmarks,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = initialBookmarks,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = BookmarksSort.Default)
         bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
 

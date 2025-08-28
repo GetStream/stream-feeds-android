@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.feeds.android.client.api.model.FeedId
@@ -50,31 +65,34 @@ internal class FeedsRepositoryImplTest {
         val apiResult = getOrCreateFeedResponse()
 
         testDelegation(
-            apiFunction = { feedsApi.getOrCreateFeed("user", "user-1", getOrCreateFeedRequest = request) },
+            apiFunction = {
+                feedsApi.getOrCreateFeed("user", "user-1", getOrCreateFeedRequest = request)
+            },
             repositoryCall = { repository.getOrCreateFeed(query) },
             apiResult = apiResult,
-            repositoryResult = GetOrCreateInfo(
-                activities = PaginationResult(
-                    models = emptyList(),
-                    pagination = PaginationData(next = "next", previous = "prev")
+            repositoryResult =
+                GetOrCreateInfo(
+                    activities =
+                        PaginationResult(
+                            models = emptyList(),
+                            pagination = PaginationData(next = "next", previous = "prev"),
+                        ),
+                    activitiesQueryConfig =
+                        QueryConfiguration(
+                            filter = query.activityFilter,
+                            sort = ActivitiesSort.Default,
+                        ),
+                    feed = apiResult.feed.toModel(),
+                    followers = emptyList(),
+                    following = emptyList(),
+                    followRequests = emptyList(),
+                    members =
+                        PaginationResult(models = emptyList(), pagination = PaginationData.EMPTY),
+                    ownCapabilities = emptyList(),
+                    pinnedActivities = emptyList(),
+                    aggregatedActivities = emptyList(),
+                    notificationStatus = null,
                 ),
-                activitiesQueryConfig = QueryConfiguration(
-                    filter = query.activityFilter,
-                    sort = ActivitiesSort.Default
-                ),
-                feed = apiResult.feed.toModel(),
-                followers = emptyList(),
-                following = emptyList(),
-                followRequests = emptyList(),
-                members = PaginationResult(
-                    models = emptyList(),
-                    pagination = PaginationData.EMPTY
-                ),
-                ownCapabilities = emptyList(),
-                pinnedActivities = emptyList(),
-                aggregatedActivities = emptyList(),
-                notificationStatus = null
-            )
         )
     }
 
@@ -105,7 +123,7 @@ internal class FeedsRepositoryImplTest {
             apiFunction = { feedsApi.updateFeed("user", "user-1", request) },
             repositoryCall = { repository.updateFeed("user", "user-1", request) },
             apiResult = apiResult,
-            repositoryResult = apiResult.feed.toModel()
+            repositoryResult = apiResult.feed.toModel(),
         )
     }
 
@@ -119,10 +137,11 @@ internal class FeedsRepositoryImplTest {
             apiFunction = { feedsApi.queryFeeds(queryFeedsRequest = request) },
             repositoryCall = { repository.queryFeeds(query) },
             apiResult = apiResult,
-            repositoryResult = PaginationResult(
-                models = listOf(feedResponse().toModel()),
-                pagination = PaginationData(next = "next", previous = "prev")
-            )
+            repositoryResult =
+                PaginationResult(
+                    models = listOf(feedResponse().toModel()),
+                    pagination = PaginationData(next = "next", previous = "prev"),
+                ),
         )
     }
 
@@ -134,7 +153,7 @@ internal class FeedsRepositoryImplTest {
             apiFunction = { feedsApi.getFollowSuggestions("user", 10) },
             repositoryCall = { repository.queryFollowSuggestions("user", 10) },
             apiResult = apiResult,
-            repositoryResult = listOf(feedResponse().toModel())
+            repositoryResult = listOf(feedResponse().toModel()),
         )
     }
 
@@ -147,10 +166,11 @@ internal class FeedsRepositoryImplTest {
             apiFunction = { feedsApi.queryFollows(request) },
             repositoryCall = { repository.queryFollows(request) },
             apiResult = apiResult,
-            repositoryResult = PaginationResult(
-                models = listOf(followResponse().toModel()),
-                pagination = PaginationData(next = "next", previous = "prev")
-            )
+            repositoryResult =
+                PaginationResult(
+                    models = listOf(followResponse().toModel()),
+                    pagination = PaginationData(next = "next", previous = "prev"),
+                ),
         )
     }
 
@@ -163,7 +183,7 @@ internal class FeedsRepositoryImplTest {
             apiFunction = { feedsApi.follow(request) },
             repositoryCall = { repository.follow(request) },
             apiResult = apiResult,
-            repositoryResult = apiResult.follow.toModel()
+            repositoryResult = apiResult.follow.toModel(),
         )
     }
 
@@ -176,7 +196,7 @@ internal class FeedsRepositoryImplTest {
             apiFunction = { feedsApi.unfollow("user:user-1", "user:user-2") },
             repositoryCall = { repository.unfollow(source, target) },
             apiResult = Unit,
-            repositoryResult = Unit
+            repositoryResult = Unit,
         )
     }
 
@@ -189,7 +209,7 @@ internal class FeedsRepositoryImplTest {
             apiFunction = { feedsApi.acceptFollow(request) },
             repositoryCall = { repository.acceptFollow(request) },
             apiResult = apiResult,
-            repositoryResult = apiResult.follow.toModel()
+            repositoryResult = apiResult.follow.toModel(),
         )
     }
 
@@ -202,7 +222,7 @@ internal class FeedsRepositoryImplTest {
             apiFunction = { feedsApi.rejectFollow(request) },
             repositoryCall = { repository.rejectFollow(request) },
             apiResult = apiResult,
-            repositoryResult = apiResult.follow.toModel()
+            repositoryResult = apiResult.follow.toModel(),
         )
     }
 
@@ -215,11 +235,12 @@ internal class FeedsRepositoryImplTest {
             apiFunction = { feedsApi.updateFeedMembers("user", "user-1", request) },
             repositoryCall = { repository.updateFeedMembers("user", "user-1", request) },
             apiResult = apiResult,
-            repositoryResult = ModelUpdates<FeedMemberData>(
-                added = emptyList(),
-                removedIds = emptyList(),
-                updated = emptyList()
-            )
+            repositoryResult =
+                ModelUpdates<FeedMemberData>(
+                    added = emptyList(),
+                    removedIds = emptyList(),
+                    updated = emptyList(),
+                ),
         )
     }
 
@@ -228,10 +249,12 @@ internal class FeedsRepositoryImplTest {
         val apiResult = acceptFeedMemberResponse()
 
         testDelegation(
-            apiFunction = { feedsApi.acceptFeedMemberInvite(feedGroupId = "user", feedId = "user-1") },
+            apiFunction = {
+                feedsApi.acceptFeedMemberInvite(feedGroupId = "user", feedId = "user-1")
+            },
             repositoryCall = { repository.acceptFeedMember("user", "user-1") },
             apiResult = apiResult,
-            repositoryResult = apiResult.member.toModel()
+            repositoryResult = apiResult.member.toModel(),
         )
     }
 
@@ -240,10 +263,12 @@ internal class FeedsRepositoryImplTest {
         val apiResult = rejectFeedMemberResponse()
 
         testDelegation(
-            apiFunction = { feedsApi.rejectFeedMemberInvite(feedGroupId = "user", feedId = "user-1") },
+            apiFunction = {
+                feedsApi.rejectFeedMemberInvite(feedGroupId = "user", feedId = "user-1")
+            },
             repositoryCall = { repository.rejectFeedMember("user", "user-1") },
             apiResult = apiResult,
-            repositoryResult = apiResult.member.toModel()
+            repositoryResult = apiResult.member.toModel(),
         )
     }
 
@@ -256,10 +281,11 @@ internal class FeedsRepositoryImplTest {
             apiFunction = { feedsApi.queryFeedMembers("user", "user-1", request) },
             repositoryCall = { repository.queryFeedMembers("user", "user-1", request) },
             apiResult = apiResult,
-            repositoryResult = PaginationResult(
-                models = listOf(feedMemberResponse().toModel()),
-                pagination = PaginationData(next = "next", previous = "prev")
-            )
+            repositoryResult =
+                PaginationResult(
+                    models = listOf(feedMemberResponse().toModel()),
+                    pagination = PaginationData(next = "next", previous = "prev"),
+                ),
         )
     }
 }

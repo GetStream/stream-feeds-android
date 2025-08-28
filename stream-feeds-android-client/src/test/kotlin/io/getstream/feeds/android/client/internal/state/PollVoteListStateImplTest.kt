@@ -40,10 +40,11 @@ internal class PollVoteListStateImplTest {
     @Test
     fun `on queryMorePollVotes, then update votes and pagination`() = runTest {
         val votes = listOf(pollVoteData(), pollVoteData("vote-2", "poll-1", "option-2", "user-2"))
-        val paginationResult = PaginationResult(
-            models = votes,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = votes,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = PollVotesSort.Default)
 
         pollVoteListState.onQueryMorePollVotes(paginationResult, queryConfig)
@@ -55,14 +56,13 @@ internal class PollVoteListStateImplTest {
 
     @Test
     fun `on pollVoteUpdated, then update specific vote`() = runTest {
-        val initialVotes = listOf(
-            pollVoteData(),
-            pollVoteData("vote-2", "poll-1", "option-2", "user-2")
-        )
-        val paginationResult = PaginationResult(
-            models = initialVotes,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val initialVotes =
+            listOf(pollVoteData(), pollVoteData("vote-2", "poll-1", "option-2", "user-2"))
+        val paginationResult =
+            PaginationResult(
+                models = initialVotes,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = PollVotesSort.Default)
         pollVoteListState.onQueryMorePollVotes(paginationResult, queryConfig)
 
@@ -76,14 +76,13 @@ internal class PollVoteListStateImplTest {
 
     @Test
     fun `on pollVoteRemoved, then remove specific vote`() = runTest {
-        val initialVotes = listOf(
-            pollVoteData(),
-            pollVoteData("vote-2", "poll-1", "option-2", "user-2")
-        )
-        val paginationResult = PaginationResult(
-            models = initialVotes,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val initialVotes =
+            listOf(pollVoteData(), pollVoteData("vote-2", "poll-1", "option-2", "user-2"))
+        val paginationResult =
+            PaginationResult(
+                models = initialVotes,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = PollVotesSort.Default)
         pollVoteListState.onQueryMorePollVotes(paginationResult, queryConfig)
 
@@ -95,14 +94,13 @@ internal class PollVoteListStateImplTest {
 
     @Test
     fun `on pollVoteUpdated with non-existent vote, then keep unchanged`() = runTest {
-        val initialVotes = listOf(
-            pollVoteData(),
-            pollVoteData("vote-2", "poll-1", "option-2", "user-2")
-        )
-        val paginationResult = PaginationResult(
-            models = initialVotes,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val initialVotes =
+            listOf(pollVoteData(), pollVoteData("vote-2", "poll-1", "option-2", "user-2"))
+        val paginationResult =
+            PaginationResult(
+                models = initialVotes,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = PollVotesSort.Default)
         pollVoteListState.onQueryMorePollVotes(paginationResult, queryConfig)
 

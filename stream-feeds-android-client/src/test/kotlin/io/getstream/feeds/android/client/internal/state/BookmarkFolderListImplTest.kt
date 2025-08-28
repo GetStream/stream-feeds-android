@@ -32,20 +32,23 @@ import org.junit.Test
 
 internal class BookmarkFolderListImplTest {
     private val bookmarksRepository: BookmarksRepository = mockk()
-    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> = mockk(relaxed = true)
+    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> =
+        mockk(relaxed = true)
     private val query = BookmarkFoldersQuery(limit = 10)
 
-    private val bookmarkFolderList = BookmarkFolderListImpl(
-        query = query,
-        bookmarksRepository = bookmarksRepository,
-        subscriptionManager = subscriptionManager
-    )
+    private val bookmarkFolderList =
+        BookmarkFolderListImpl(
+            query = query,
+            bookmarksRepository = bookmarksRepository,
+            subscriptionManager = subscriptionManager,
+        )
 
     @Test
     fun `on get, then return bookmark folders and update state`() = runTest {
         val folders = listOf(bookmarkFolderData("folder-1"), bookmarkFolderData("folder-2"))
         val paginationResult = createPaginationResult(folders, next = "next-cursor")
-        coEvery { bookmarksRepository.queryBookmarkFolders(query) } returns Result.success(paginationResult)
+        coEvery { bookmarksRepository.queryBookmarkFolders(query) } returns
+            Result.success(paginationResult)
 
         val result = bookmarkFolderList.get()
 
@@ -58,12 +61,14 @@ internal class BookmarkFolderListImplTest {
         setupInitialState()
 
         val moreFolders = listOf(bookmarkFolderData("folder-2"), bookmarkFolderData("folder-3"))
-        val morePaginationResult = createPaginationResult(
-            folders = moreFolders,
-            next = "next-cursor-2",
-            previous = "next-cursor"
-        )
-        coEvery { bookmarksRepository.queryBookmarkFolders(any()) } returns Result.success(morePaginationResult)
+        val morePaginationResult =
+            createPaginationResult(
+                folders = moreFolders,
+                next = "next-cursor-2",
+                previous = "next-cursor",
+            )
+        coEvery { bookmarksRepository.queryBookmarkFolders(any()) } returns
+            Result.success(morePaginationResult)
 
         val result = bookmarkFolderList.queryMoreBookmarkFolders()
 
@@ -87,11 +92,10 @@ internal class BookmarkFolderListImplTest {
 
         val customLimit = 5
         val moreFolders = listOf(bookmarkFolderData("folder-2"))
-        val morePaginationResult = createPaginationResult(
-            folders = moreFolders,
-            previous = "next-cursor"
-        )
-        coEvery { bookmarksRepository.queryBookmarkFolders(any()) } returns Result.success(morePaginationResult)
+        val morePaginationResult =
+            createPaginationResult(folders = moreFolders, previous = "next-cursor")
+        coEvery { bookmarksRepository.queryBookmarkFolders(any()) } returns
+            Result.success(morePaginationResult)
 
         val result = bookmarkFolderList.queryMoreBookmarkFolders(customLimit)
 
@@ -101,20 +105,23 @@ internal class BookmarkFolderListImplTest {
 
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialFolders = listOf(bookmarkFolderData("folder-1"))
-        val initialPaginationResult = PaginationResult(
-            models = initialFolders,
-            pagination = PaginationData(next = nextCursor, previous = null)
-        )
-        coEvery { bookmarksRepository.queryBookmarkFolders(query) } returns Result.success(initialPaginationResult)
+        val initialPaginationResult =
+            PaginationResult(
+                models = initialFolders,
+                pagination = PaginationData(next = nextCursor, previous = null),
+            )
+        coEvery { bookmarksRepository.queryBookmarkFolders(query) } returns
+            Result.success(initialPaginationResult)
         bookmarkFolderList.get()
     }
 
     private fun createPaginationResult(
         folders: List<BookmarkFolderData>,
         next: String? = null,
-        previous: String? = null
-    ) = PaginationResult(
-        models = folders,
-        pagination = PaginationData(next = next, previous = previous)
-    )
+        previous: String? = null,
+    ) =
+        PaginationResult(
+            models = folders,
+            pagination = PaginationData(next = next, previous = previous),
+        )
 }

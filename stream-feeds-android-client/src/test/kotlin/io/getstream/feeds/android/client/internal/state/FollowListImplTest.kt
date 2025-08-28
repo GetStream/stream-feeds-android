@@ -32,14 +32,16 @@ import org.junit.Test
 
 internal class FollowListImplTest {
     private val feedsRepository: FeedsRepository = mockk()
-    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> = mockk(relaxed = true)
+    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> =
+        mockk(relaxed = true)
     private val query = FollowsQuery(limit = 10)
 
-    private val followList = FollowListImpl(
-        query = query,
-        feedsRepository = feedsRepository,
-        subscriptionManager = subscriptionManager
-    )
+    private val followList =
+        FollowListImpl(
+            query = query,
+            feedsRepository = feedsRepository,
+            subscriptionManager = subscriptionManager,
+        )
 
     @Test
     fun `on get, then return follows and update state`() = runTest {
@@ -58,11 +60,12 @@ internal class FollowListImplTest {
         setupInitialState()
 
         val moreFollows = listOf(followData(), followData())
-        val morePaginationResult = createPaginationResult(
-            follows = moreFollows,
-            next = "next-cursor-2",
-            previous = "next-cursor"
-        )
+        val morePaginationResult =
+            createPaginationResult(
+                follows = moreFollows,
+                next = "next-cursor-2",
+                previous = "next-cursor",
+            )
         coEvery { feedsRepository.queryFollows(any()) } returns Result.success(morePaginationResult)
 
         val result = followList.queryMoreFollows()
@@ -87,10 +90,8 @@ internal class FollowListImplTest {
 
         val customLimit = 5
         val moreFollows = listOf(followData())
-        val morePaginationResult = createPaginationResult(
-            follows = moreFollows,
-            previous = "next-cursor"
-        )
+        val morePaginationResult =
+            createPaginationResult(follows = moreFollows, previous = "next-cursor")
         coEvery { feedsRepository.queryFollows(any()) } returns Result.success(morePaginationResult)
 
         val result = followList.queryMoreFollows(customLimit)
@@ -101,20 +102,23 @@ internal class FollowListImplTest {
 
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialFollows = listOf(followData())
-        val initialPaginationResult = PaginationResult(
-            models = initialFollows,
-            pagination = PaginationData(next = nextCursor, previous = null)
-        )
-        coEvery { feedsRepository.queryFollows(any()) } returns Result.success(initialPaginationResult)
+        val initialPaginationResult =
+            PaginationResult(
+                models = initialFollows,
+                pagination = PaginationData(next = nextCursor, previous = null),
+            )
+        coEvery { feedsRepository.queryFollows(any()) } returns
+            Result.success(initialPaginationResult)
         followList.get()
     }
 
     private fun createPaginationResult(
         follows: List<FollowData>,
         next: String? = null,
-        previous: String? = null
-    ) = PaginationResult(
-        models = follows,
-        pagination = PaginationData(next = next, previous = previous)
-    )
+        previous: String? = null,
+    ) =
+        PaginationResult(
+            models = follows,
+            pagination = PaginationData(next = next, previous = previous),
+        )
 }

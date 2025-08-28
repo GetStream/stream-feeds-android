@@ -32,27 +32,23 @@ import org.junit.Test
 
 internal class ActivityCommentListImplTest {
     private val commentsRepository: CommentsRepository = mockk()
-    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> = mockk(relaxed = true)
+    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> =
+        mockk(relaxed = true)
     private val currentUserId = "user-1"
-    private val query = ActivityCommentsQuery(
-        objectId = "activity-1",
-        objectType = "activity",
-        limit = 10
-    )
+    private val query =
+        ActivityCommentsQuery(objectId = "activity-1", objectType = "activity", limit = 10)
 
-    private val activityCommentList = ActivityCommentListImpl(
-        query = query,
-        currentUserId = currentUserId,
-        commentsRepository = commentsRepository,
-        subscriptionManager = subscriptionManager
-    )
+    private val activityCommentList =
+        ActivityCommentListImpl(
+            query = query,
+            currentUserId = currentUserId,
+            commentsRepository = commentsRepository,
+            subscriptionManager = subscriptionManager,
+        )
 
     @Test
     fun `on get, then return comments and update state`() = runTest {
-        val comments = listOf(
-            threadedCommentData("comment-1"),
-            threadedCommentData("comment-2")
-        )
+        val comments = listOf(threadedCommentData("comment-1"), threadedCommentData("comment-2"))
         val paginationResult = createPaginationResult(comments, next = "next-cursor")
         coEvery { commentsRepository.getComments(query) } returns Result.success(paginationResult)
 
@@ -66,16 +62,16 @@ internal class ActivityCommentListImplTest {
     fun `on queryMoreComments with next cursor, then query with next cursor`() = runTest {
         setupInitialState()
 
-        val moreComments = listOf(
-            threadedCommentData("comment-3"),
-            threadedCommentData("comment-4")
-        )
-        val morePaginationResult = createPaginationResult(
-            comments = moreComments,
-            next = "next-cursor-2",
-            previous = "next-cursor"
-        )
-        coEvery { commentsRepository.getComments(any()) } returns Result.success(morePaginationResult)
+        val moreComments =
+            listOf(threadedCommentData("comment-3"), threadedCommentData("comment-4"))
+        val morePaginationResult =
+            createPaginationResult(
+                comments = moreComments,
+                next = "next-cursor-2",
+                previous = "next-cursor",
+            )
+        coEvery { commentsRepository.getComments(any()) } returns
+            Result.success(morePaginationResult)
 
         val result = activityCommentList.queryMoreComments()
 
@@ -99,11 +95,10 @@ internal class ActivityCommentListImplTest {
 
         val customLimit = 5
         val moreComments = listOf(threadedCommentData("comment-3"))
-        val morePaginationResult = createPaginationResult(
-            comments = moreComments,
-            previous = "next-cursor"
-        )
-        coEvery { commentsRepository.getComments(any()) } returns Result.success(morePaginationResult)
+        val morePaginationResult =
+            createPaginationResult(comments = moreComments, previous = "next-cursor")
+        coEvery { commentsRepository.getComments(any()) } returns
+            Result.success(morePaginationResult)
 
         val result = activityCommentList.queryMoreComments(customLimit)
 
@@ -113,20 +108,23 @@ internal class ActivityCommentListImplTest {
 
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialComments = listOf(threadedCommentData("comment-1"))
-        val initialPaginationResult = PaginationResult(
-            models = initialComments,
-            pagination = PaginationData(next = nextCursor, previous = null)
-        )
-        coEvery { commentsRepository.getComments(query) } returns Result.success(initialPaginationResult)
+        val initialPaginationResult =
+            PaginationResult(
+                models = initialComments,
+                pagination = PaginationData(next = nextCursor, previous = null),
+            )
+        coEvery { commentsRepository.getComments(query) } returns
+            Result.success(initialPaginationResult)
         activityCommentList.get()
     }
 
     private fun createPaginationResult(
         comments: List<ThreadedCommentData>,
         next: String? = null,
-        previous: String? = null
-    ) = PaginationResult(
-        models = comments,
-        pagination = PaginationData(next = next, previous = previous)
-    )
+        previous: String? = null,
+    ) =
+        PaginationResult(
+            models = comments,
+            pagination = PaginationData(next = next, previous = previous),
+        )
 }

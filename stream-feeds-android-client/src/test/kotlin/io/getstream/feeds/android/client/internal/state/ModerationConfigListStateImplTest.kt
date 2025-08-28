@@ -40,10 +40,11 @@ internal class ModerationConfigListStateImplTest {
     @Test
     fun `on loadMoreConfigs, then update configs and pagination`() = runTest {
         val configs = listOf(moderationConfigData(), moderationConfigData("config-2", "team-2"))
-        val paginationResult = PaginationResult(
-            models = configs,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = configs,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = ModerationConfigSort.Default)
 
         moderationConfigListState.onLoadMoreConfigs(paginationResult, queryConfig)

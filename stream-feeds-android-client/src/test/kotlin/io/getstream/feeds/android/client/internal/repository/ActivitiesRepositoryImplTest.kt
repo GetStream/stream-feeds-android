@@ -51,10 +51,10 @@ import io.getstream.feeds.android.network.models.UpsertActivitiesResponse
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import java.io.File
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import java.io.File
 
 internal class ActivitiesRepositoryImplTest {
     private val feedsApi: FeedsApi = mockk()
@@ -127,7 +127,7 @@ internal class ActivitiesRepositoryImplTest {
             apiFunction = { feedsApi.deleteActivity("id", true) },
             repositoryCall = { repository.deleteActivity("id", true) },
             apiResult = DeleteActivityResponse("duration"),
-            repositoryResult = Unit
+            repositoryResult = Unit,
         )
     }
 
@@ -138,7 +138,7 @@ internal class ActivitiesRepositoryImplTest {
         testDelegation(
             apiFunction = { feedsApi.deleteActivities(request) },
             repositoryCall = { repository.deleteActivities(request) },
-            apiResult = DeleteActivitiesResponse("duration")
+            apiResult = DeleteActivitiesResponse("duration"),
         )
     }
 
@@ -150,7 +150,7 @@ internal class ActivitiesRepositoryImplTest {
             apiFunction = { feedsApi.getActivity("id") },
             repositoryCall = { repository.getActivity("id") },
             apiResult = apiResult,
-            repositoryResult = apiResult.activity.toModel()
+            repositoryResult = apiResult.activity.toModel(),
         )
     }
 
@@ -163,7 +163,7 @@ internal class ActivitiesRepositoryImplTest {
             apiFunction = { feedsApi.updateActivity("id", request) },
             repositoryCall = { repository.updateActivity("id", request) },
             apiResult = apiResult,
-            repositoryResult = apiResult.activity.toModel()
+            repositoryResult = apiResult.activity.toModel(),
         )
     }
 
@@ -173,7 +173,7 @@ internal class ActivitiesRepositoryImplTest {
             apiFunction = { feedsApi.upsertActivities(UpsertActivitiesRequest()) },
             repositoryCall = { repository.upsertActivities(emptyList()) },
             apiResult = UpsertActivitiesResponse("duration", emptyList()),
-            repositoryResult = emptyList<ActivityData>()
+            repositoryResult = emptyList<ActivityData>(),
         )
     }
 
@@ -187,7 +187,7 @@ internal class ActivitiesRepositoryImplTest {
             },
             repositoryCall = { repository.pin("id", FeedId("group", "feed")) },
             apiResult = apiResult,
-            repositoryResult = apiResult.activity.toModel()
+            repositoryResult = apiResult.activity.toModel(),
         )
     }
 
@@ -201,7 +201,7 @@ internal class ActivitiesRepositoryImplTest {
             },
             repositoryCall = { repository.unpin("id", FeedId("group", "feed")) },
             apiResult = apiResult,
-            repositoryResult = apiResult.activity.toModel()
+            repositoryResult = apiResult.activity.toModel(),
         )
     }
 
@@ -213,12 +213,12 @@ internal class ActivitiesRepositoryImplTest {
                 feedsApi.markActivity(
                     feedGroupId = "group",
                     feedId = "id",
-                    markActivityRequest = request
+                    markActivityRequest = request,
                 )
             },
             repositoryCall = { repository.markActivity("group", "id", request) },
             apiResult = Unit,
-            repositoryResult = Unit
+            repositoryResult = Unit,
         )
     }
 
@@ -231,23 +231,20 @@ internal class ActivitiesRepositoryImplTest {
             apiFunction = { feedsApi.addReaction("activityId", request) },
             repositoryCall = { repository.addReaction("activityId", request) },
             apiResult = apiResult,
-            repositoryResult = apiResult.reaction.toModel()
+            repositoryResult = apiResult.reaction.toModel(),
         )
     }
 
     @Test
     fun `on deleteReaction, delegate to api`() {
-        val apiResult = DeleteActivityReactionResponse(
-            "duration",
-            activityResponse(),
-            feedsReactionResponse()
-        )
+        val apiResult =
+            DeleteActivityReactionResponse("duration", activityResponse(), feedsReactionResponse())
 
         testDelegation(
             apiFunction = { feedsApi.deleteActivityReaction("activityId", "type") },
             repositoryCall = { repository.deleteReaction("activityId", "type") },
             apiResult = apiResult,
-            repositoryResult = apiResult.reaction.toModel()
+            repositoryResult = apiResult.reaction.toModel(),
         )
     }
 
@@ -259,10 +256,11 @@ internal class ActivitiesRepositoryImplTest {
             apiFunction = { feedsApi.queryActivityReactions("activityId", request) },
             repositoryCall = { repository.queryActivityReactions("activityId", request) },
             apiResult = QueryActivityReactionsResponse(duration = "duration"),
-            repositoryResult = PaginationResult(
-                models = emptyList<FeedsReactionData>(),
-                pagination = PaginationData()
-            )
+            repositoryResult =
+                PaginationResult(
+                    models = emptyList<FeedsReactionData>(),
+                    pagination = PaginationData(),
+                ),
         )
     }
 }

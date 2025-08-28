@@ -30,8 +30,8 @@ import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Test
 import java.util.Date
+import org.junit.Test
 
 internal class ActivityEventHandlerTest {
 
@@ -42,12 +42,13 @@ internal class ActivityEventHandlerTest {
     @Test
     fun `on PollClosedFeedEvent for matching feed, then call onPollClosed`() {
         val poll = pollResponseData()
-        val event = PollClosedFeedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            poll = poll,
-            type = "feeds.poll.closed"
-        )
+        val event =
+            PollClosedFeedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                poll = poll,
+                type = "feeds.poll.closed",
+            )
 
         handler.onEvent(event)
 
@@ -57,12 +58,13 @@ internal class ActivityEventHandlerTest {
     @Test
     fun `on PollClosedFeedEvent for different feed, then do not call onPollClosed`() {
         val poll = pollResponseData()
-        val event = PollClosedFeedEvent(
-            createdAt = Date(),
-            fid = "user:different-activity",
-            poll = poll,
-            type = "feeds.poll.closed"
-        )
+        val event =
+            PollClosedFeedEvent(
+                createdAt = Date(),
+                fid = "user:different-activity",
+                poll = poll,
+                type = "feeds.poll.closed",
+            )
 
         handler.onEvent(event)
 
@@ -72,12 +74,13 @@ internal class ActivityEventHandlerTest {
     @Test
     fun `on PollDeletedFeedEvent for matching feed, then call onPollDeleted`() {
         val poll = pollResponseData()
-        val event = PollDeletedFeedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            poll = poll,
-            type = "feeds.poll.deleted"
-        )
+        val event =
+            PollDeletedFeedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                poll = poll,
+                type = "feeds.poll.deleted",
+            )
 
         handler.onEvent(event)
 
@@ -87,12 +90,13 @@ internal class ActivityEventHandlerTest {
     @Test
     fun `on PollDeletedFeedEvent for different feed, then do not call onPollDeleted`() {
         val poll = pollResponseData()
-        val event = PollDeletedFeedEvent(
-            createdAt = Date(),
-            fid = "user:different-activity",
-            poll = poll,
-            type = "feeds.poll.deleted"
-        )
+        val event =
+            PollDeletedFeedEvent(
+                createdAt = Date(),
+                fid = "user:different-activity",
+                poll = poll,
+                type = "feeds.poll.deleted",
+            )
 
         handler.onEvent(event)
 
@@ -102,12 +106,13 @@ internal class ActivityEventHandlerTest {
     @Test
     fun `on PollUpdatedFeedEvent for matching feed, then call onPollUpdated`() {
         val poll = pollResponseData()
-        val event = PollUpdatedFeedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            poll = poll,
-            type = "feeds.poll.updated"
-        )
+        val event =
+            PollUpdatedFeedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                poll = poll,
+                type = "feeds.poll.updated",
+            )
 
         handler.onEvent(event)
 
@@ -117,12 +122,13 @@ internal class ActivityEventHandlerTest {
     @Test
     fun `on PollUpdatedFeedEvent for different feed, then do not call onPollUpdated`() {
         val poll = pollResponseData()
-        val event = PollUpdatedFeedEvent(
-            createdAt = Date(),
-            fid = "user:different-activity",
-            poll = poll,
-            type = "feeds.poll.updated"
-        )
+        val event =
+            PollUpdatedFeedEvent(
+                createdAt = Date(),
+                fid = "user:different-activity",
+                poll = poll,
+                type = "feeds.poll.updated",
+            )
 
         handler.onEvent(event)
 
@@ -133,13 +139,14 @@ internal class ActivityEventHandlerTest {
     fun `on PollVoteCastedFeedEvent for matching feed, then call onPollVoteCasted`() {
         val poll = pollResponseData()
         val pollVote = pollVoteResponseData()
-        val event = PollVoteCastedFeedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            poll = poll,
-            pollVote = pollVote,
-            type = "feeds.poll.vote.casted"
-        )
+        val event =
+            PollVoteCastedFeedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                poll = poll,
+                pollVote = pollVote,
+                type = "feeds.poll.vote.casted",
+            )
 
         handler.onEvent(event)
 
@@ -150,13 +157,14 @@ internal class ActivityEventHandlerTest {
     fun `on PollVoteCastedFeedEvent for different feed, then do not call onPollVoteCasted`() {
         val poll = pollResponseData()
         val pollVote = pollVoteResponseData()
-        val event = PollVoteCastedFeedEvent(
-            createdAt = Date(),
-            fid = "user:different-activity",
-            poll = poll,
-            pollVote = pollVote,
-            type = "feeds.poll.vote.casted"
-        )
+        val event =
+            PollVoteCastedFeedEvent(
+                createdAt = Date(),
+                fid = "user:different-activity",
+                poll = poll,
+                pollVote = pollVote,
+                type = "feeds.poll.vote.casted",
+            )
 
         handler.onEvent(event)
 
@@ -167,13 +175,14 @@ internal class ActivityEventHandlerTest {
     fun `on PollVoteChangedFeedEvent for matching feed, then call onPollVoteChanged`() {
         val poll = pollResponseData()
         val pollVote = pollVoteResponseData()
-        val event = PollVoteChangedFeedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            poll = poll,
-            pollVote = pollVote,
-            type = "feeds.poll.vote.changed"
-        )
+        val event =
+            PollVoteChangedFeedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                poll = poll,
+                pollVote = pollVote,
+                type = "feeds.poll.vote.changed",
+            )
 
         handler.onEvent(event)
 
@@ -184,13 +193,14 @@ internal class ActivityEventHandlerTest {
     fun `on PollVoteChangedFeedEvent for different feed, then do not call onPollVoteChanged`() {
         val poll = pollResponseData()
         val pollVote = pollVoteResponseData()
-        val event = PollVoteChangedFeedEvent(
-            createdAt = Date(),
-            fid = "user:different-activity",
-            poll = poll,
-            pollVote = pollVote,
-            type = "feeds.poll.vote.changed"
-        )
+        val event =
+            PollVoteChangedFeedEvent(
+                createdAt = Date(),
+                fid = "user:different-activity",
+                poll = poll,
+                pollVote = pollVote,
+                type = "feeds.poll.vote.changed",
+            )
 
         handler.onEvent(event)
 
@@ -201,13 +211,14 @@ internal class ActivityEventHandlerTest {
     fun `on PollVoteRemovedFeedEvent for matching feed, then call onPollVoteRemoved`() {
         val poll = pollResponseData()
         val pollVote = pollVoteResponseData()
-        val event = PollVoteRemovedFeedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            poll = poll,
-            pollVote = pollVote,
-            type = "feeds.poll.vote.removed"
-        )
+        val event =
+            PollVoteRemovedFeedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                poll = poll,
+                pollVote = pollVote,
+                type = "feeds.poll.vote.removed",
+            )
 
         handler.onEvent(event)
 
@@ -218,13 +229,14 @@ internal class ActivityEventHandlerTest {
     fun `on PollVoteRemovedFeedEvent for different feed, then do not call onPollVoteRemoved`() {
         val poll = pollResponseData()
         val pollVote = pollVoteResponseData()
-        val event = PollVoteRemovedFeedEvent(
-            createdAt = Date(),
-            fid = "user:different-activity",
-            poll = poll,
-            pollVote = pollVote,
-            type = "feeds.poll.vote.removed"
-        )
+        val event =
+            PollVoteRemovedFeedEvent(
+                createdAt = Date(),
+                fid = "user:different-activity",
+                poll = poll,
+                pollVote = pollVote,
+                type = "feeds.poll.vote.removed",
+            )
 
         handler.onEvent(event)
 
@@ -233,9 +245,10 @@ internal class ActivityEventHandlerTest {
 
     @Test
     fun `on unknown event, then do nothing`() {
-        val unknownEvent = object : WSEvent {
-            override fun getWSEventType(): String = "unknown.event"
-        }
+        val unknownEvent =
+            object : WSEvent {
+                override fun getWSEventType(): String = "unknown.event"
+            }
 
         handler.onEvent(unknownEvent)
 

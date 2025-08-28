@@ -44,10 +44,11 @@ internal class ActivityListStateImplTest {
     @Test
     fun `on queryMoreActivities, then update activities and pagination`() = runTest {
         val activities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult = PaginationResult(
-            models = activities,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = activities,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = ActivitiesSort.Default)
 
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
@@ -60,10 +61,11 @@ internal class ActivityListStateImplTest {
     @Test
     fun `on activityUpdated, then update specific activity`() = runTest {
         val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult = PaginationResult(
-            models = initialActivities,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = initialActivities,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = ActivitiesSort.Default)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
@@ -77,10 +79,11 @@ internal class ActivityListStateImplTest {
     @Test
     fun `on activityRemoved, then remove specific activity`() = runTest {
         val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult = PaginationResult(
-            models = initialActivities,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = initialActivities,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = ActivitiesSort.Default)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
@@ -93,10 +96,11 @@ internal class ActivityListStateImplTest {
     @Test
     fun `on bookmarkAdded, then add bookmark to activity`() = runTest {
         val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult = PaginationResult(
-            models = initialActivities,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = initialActivities,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = ActivitiesSort.Default)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
@@ -110,10 +114,11 @@ internal class ActivityListStateImplTest {
     @Test
     fun `on bookmarkRemoved, then remove bookmark from activity`() = runTest {
         val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult = PaginationResult(
-            models = initialActivities,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = initialActivities,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = ActivitiesSort.Default)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
@@ -128,10 +133,11 @@ internal class ActivityListStateImplTest {
     @Test
     fun `on commentAdded, then add comment to activity`() = runTest {
         val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult = PaginationResult(
-            models = initialActivities,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = initialActivities,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = ActivitiesSort.Default)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
@@ -145,10 +151,11 @@ internal class ActivityListStateImplTest {
     @Test
     fun `on commentRemoved, then remove comment from activity`() = runTest {
         val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult = PaginationResult(
-            models = initialActivities,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = initialActivities,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = ActivitiesSort.Default)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
@@ -163,10 +170,11 @@ internal class ActivityListStateImplTest {
     @Test
     fun `on reactionAdded, then add reaction to activity`() = runTest {
         val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult = PaginationResult(
-            models = initialActivities,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = initialActivities,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = ActivitiesSort.Default)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
@@ -180,10 +188,11 @@ internal class ActivityListStateImplTest {
     @Test
     fun `on reactionRemoved, then remove reaction from activity`() = runTest {
         val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult = PaginationResult(
-            models = initialActivities,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = initialActivities,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = ActivitiesSort.Default)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 

@@ -26,8 +26,8 @@ import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Test
 import java.util.Date
+import org.junit.Test
 
 internal class BookmarkListEventHandlerTest {
 
@@ -37,11 +37,12 @@ internal class BookmarkListEventHandlerTest {
     @Test
     fun `on BookmarkFolderDeletedEvent, then call onBookmarkFolderRemoved`() {
         val bookmarkFolder = bookmarkFolderResponse()
-        val event = BookmarkFolderDeletedEvent(
-            createdAt = Date(),
-            bookmarkFolder = bookmarkFolder,
-            type = "feeds.bookmark_folder.deleted"
-        )
+        val event =
+            BookmarkFolderDeletedEvent(
+                createdAt = Date(),
+                bookmarkFolder = bookmarkFolder,
+                type = "feeds.bookmark_folder.deleted",
+            )
 
         handler.onEvent(event)
 
@@ -51,11 +52,12 @@ internal class BookmarkListEventHandlerTest {
     @Test
     fun `on BookmarkFolderUpdatedEvent, then call onBookmarkFolderUpdated`() {
         val bookmarkFolder = bookmarkFolderResponse()
-        val event = BookmarkFolderUpdatedEvent(
-            createdAt = Date(),
-            bookmarkFolder = bookmarkFolder,
-            type = "feeds.bookmark_folder.updated"
-        )
+        val event =
+            BookmarkFolderUpdatedEvent(
+                createdAt = Date(),
+                bookmarkFolder = bookmarkFolder,
+                type = "feeds.bookmark_folder.updated",
+            )
 
         handler.onEvent(event)
 
@@ -65,11 +67,12 @@ internal class BookmarkListEventHandlerTest {
     @Test
     fun `on BookmarkUpdatedEvent, then call onBookmarkUpdated`() {
         val bookmark = bookmarkResponse()
-        val event = BookmarkUpdatedEvent(
-            createdAt = Date(),
-            bookmark = bookmark,
-            type = "feeds.bookmark.updated"
-        )
+        val event =
+            BookmarkUpdatedEvent(
+                createdAt = Date(),
+                bookmark = bookmark,
+                type = "feeds.bookmark.updated",
+            )
 
         handler.onEvent(event)
 
@@ -78,9 +81,10 @@ internal class BookmarkListEventHandlerTest {
 
     @Test
     fun `on unknown event, then do nothing`() {
-        val unknownEvent = object : WSEvent {
-            override fun getWSEventType(): String = "unknown.event"
-        }
+        val unknownEvent =
+            object : WSEvent {
+                override fun getWSEventType(): String = "unknown.event"
+            }
 
         handler.onEvent(unknownEvent)
 

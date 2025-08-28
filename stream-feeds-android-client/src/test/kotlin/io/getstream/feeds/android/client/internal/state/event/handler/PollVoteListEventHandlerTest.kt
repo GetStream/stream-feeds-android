@@ -25,8 +25,8 @@ import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Test
 import java.util.Date
+import org.junit.Test
 
 internal class PollVoteListEventHandlerTest {
     private val pollId = "poll-1"
@@ -38,13 +38,14 @@ internal class PollVoteListEventHandlerTest {
     fun `on PollVoteChangedFeedEvent for matching poll, then call pollVoteUpdated`() {
         val poll = pollResponseData().copy(id = pollId)
         val pollVote = pollVoteResponseData()
-        val event = PollVoteChangedFeedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            poll = poll,
-            pollVote = pollVote,
-            type = "feeds.poll.vote_changed"
-        )
+        val event =
+            PollVoteChangedFeedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                poll = poll,
+                pollVote = pollVote,
+                type = "feeds.poll.vote_changed",
+            )
 
         handler.onEvent(event)
 
@@ -55,13 +56,14 @@ internal class PollVoteListEventHandlerTest {
     fun `on PollVoteChangedFeedEvent for different poll, then do not call pollVoteUpdated`() {
         val poll = pollResponseData().copy(id = "different-poll")
         val pollVote = pollVoteResponseData()
-        val event = PollVoteChangedFeedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            poll = poll,
-            pollVote = pollVote,
-            type = "feeds.poll.vote_changed"
-        )
+        val event =
+            PollVoteChangedFeedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                poll = poll,
+                pollVote = pollVote,
+                type = "feeds.poll.vote_changed",
+            )
 
         handler.onEvent(event)
 
@@ -72,13 +74,14 @@ internal class PollVoteListEventHandlerTest {
     fun `on PollVoteRemovedFeedEvent for matching poll, then call pollVoteRemoved`() {
         val poll = pollResponseData().copy(id = pollId)
         val pollVote = pollVoteResponseData()
-        val event = PollVoteRemovedFeedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            poll = poll,
-            pollVote = pollVote,
-            type = "feeds.poll.vote_removed"
-        )
+        val event =
+            PollVoteRemovedFeedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                poll = poll,
+                pollVote = pollVote,
+                type = "feeds.poll.vote_removed",
+            )
 
         handler.onEvent(event)
 
@@ -89,13 +92,14 @@ internal class PollVoteListEventHandlerTest {
     fun `on PollVoteRemovedFeedEvent for different poll, then do not call pollVoteRemoved`() {
         val poll = pollResponseData().copy(id = "different-poll")
         val pollVote = pollVoteResponseData()
-        val event = PollVoteRemovedFeedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            poll = poll,
-            pollVote = pollVote,
-            type = "feeds.poll.vote_removed"
-        )
+        val event =
+            PollVoteRemovedFeedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                poll = poll,
+                pollVote = pollVote,
+                type = "feeds.poll.vote_removed",
+            )
 
         handler.onEvent(event)
 
@@ -104,9 +108,10 @@ internal class PollVoteListEventHandlerTest {
 
     @Test
     fun `on unknown event, then do nothing`() {
-        val unknownEvent = object : WSEvent {
-            override fun getWSEventType(): String = "unknown.event"
-        }
+        val unknownEvent =
+            object : WSEvent {
+                override fun getWSEventType(): String = "unknown.event"
+            }
 
         handler.onEvent(unknownEvent)
 

@@ -52,27 +52,26 @@ internal class ModerationRepositoryImplTest {
 
     @Test
     fun `on queryModerationConfigs, then delegate to api and map response`() = runTest {
-        val query = ModerationConfigsQuery(
-            limit = 10,
-            next = "next-cursor",
-            previous = "prev-cursor"
-        )
-        val queryResponse = QueryModerationConfigsResponse(
-            duration = "100ms",
-            configs = emptyList(),
-            next = "next-cursor",
-            prev = "prev-cursor"
-        )
-        val expectedPaginationResult = PaginationResult<ModerationConfigData>(
-            models = emptyList(),
-            pagination = PaginationData(next = "next-cursor", previous = "prev-cursor")
-        )
+        val query =
+            ModerationConfigsQuery(limit = 10, next = "next-cursor", previous = "prev-cursor")
+        val queryResponse =
+            QueryModerationConfigsResponse(
+                duration = "100ms",
+                configs = emptyList(),
+                next = "next-cursor",
+                prev = "prev-cursor",
+            )
+        val expectedPaginationResult =
+            PaginationResult<ModerationConfigData>(
+                models = emptyList(),
+                pagination = PaginationData(next = "next-cursor", previous = "prev-cursor"),
+            )
 
         testDelegation(
             apiFunction = { api.queryModerationConfigs(any()) },
             repositoryCall = { repository.queryModerationConfigs(query) },
             apiResult = queryResponse,
-            repositoryResult = expectedPaginationResult
+            repositoryResult = expectedPaginationResult,
         )
     }
 
@@ -84,7 +83,7 @@ internal class ModerationRepositoryImplTest {
         testDelegation(
             apiFunction = { api.ban(banRequest) },
             repositoryCall = { repository.ban(banRequest) },
-            apiResult = banResponse
+            apiResult = banResponse,
         )
     }
 
@@ -96,24 +95,25 @@ internal class ModerationRepositoryImplTest {
         testDelegation(
             apiFunction = { api.mute(muteRequest) },
             repositoryCall = { repository.mute(muteRequest) },
-            apiResult = muteResponse
+            apiResult = muteResponse,
         )
     }
 
     @Test
     fun `on blockUser, then delegate to api`() = runTest {
         val blockRequest = BlockUsersRequest(blockedUserId = "user-123")
-        val blockResponse = BlockUsersResponse(
-            blockedByUserId = "admin-1",
-            blockedUserId = "user-123",
-            createdAt = java.util.Date(1000),
-            duration = "30ms"
-        )
+        val blockResponse =
+            BlockUsersResponse(
+                blockedByUserId = "admin-1",
+                blockedUserId = "user-123",
+                createdAt = java.util.Date(1000),
+                duration = "30ms",
+            )
 
         testDelegation(
             apiFunction = { api.blockUsers(blockRequest) },
             repositoryCall = { repository.blockUser(blockRequest) },
-            apiResult = blockResponse
+            apiResult = blockResponse,
         )
     }
 
@@ -125,7 +125,7 @@ internal class ModerationRepositoryImplTest {
         testDelegation(
             apiFunction = { api.unblockUsers(unblockRequest) },
             repositoryCall = { repository.unblockUser(unblockRequest) },
-            apiResult = unblockResponse
+            apiResult = unblockResponse,
         )
     }
 
@@ -136,7 +136,7 @@ internal class ModerationRepositoryImplTest {
         testDelegation(
             apiFunction = { api.getBlockedUsers() },
             repositoryCall = { repository.getBlockedUsers() },
-            apiResult = blockedUsersResponse
+            apiResult = blockedUsersResponse,
         )
     }
 
@@ -148,22 +148,23 @@ internal class ModerationRepositoryImplTest {
         testDelegation(
             apiFunction = { api.flag(flagRequest) },
             repositoryCall = { repository.flag(flagRequest) },
-            apiResult = flagResponse
+            apiResult = flagResponse,
         )
     }
 
     @Test
     fun `on submitAction, then delegate to api`() = runTest {
-        val submitActionRequest = SubmitActionRequest(
-            actionType = SubmitActionRequest.ActionType.Ban,
-            itemId = "item-123"
-        )
+        val submitActionRequest =
+            SubmitActionRequest(
+                actionType = SubmitActionRequest.ActionType.Ban,
+                itemId = "item-123",
+            )
         val submitActionResponse = SubmitActionResponse(duration = "10ms")
 
         testDelegation(
             apiFunction = { api.submitAction(submitActionRequest) },
             repositoryCall = { repository.submitAction(submitActionRequest) },
-            apiResult = submitActionResponse
+            apiResult = submitActionResponse,
         )
     }
 
@@ -175,7 +176,7 @@ internal class ModerationRepositoryImplTest {
         testDelegation(
             apiFunction = { api.queryReviewQueue(queryRequest) },
             repositoryCall = { repository.queryReviewQueue(queryRequest) },
-            apiResult = queryResponse
+            apiResult = queryResponse,
         )
     }
 
@@ -187,7 +188,7 @@ internal class ModerationRepositoryImplTest {
         testDelegation(
             apiFunction = { api.upsertConfig(upsertRequest) },
             repositoryCall = { repository.upsertConfig(upsertRequest) },
-            apiResult = upsertResponse
+            apiResult = upsertResponse,
         )
     }
 
@@ -200,7 +201,7 @@ internal class ModerationRepositoryImplTest {
         testDelegation(
             apiFunction = { api.deleteConfig(key = key, team = team) },
             repositoryCall = { repository.deleteConfig(key, team) },
-            apiResult = deleteResponse
+            apiResult = deleteResponse,
         )
     }
 
@@ -213,7 +214,7 @@ internal class ModerationRepositoryImplTest {
         testDelegation(
             apiFunction = { api.getConfig(key = key, team = team) },
             repositoryCall = { repository.getConfig(key, team) },
-            apiResult = getResponse
+            apiResult = getResponse,
         )
     }
 
@@ -225,7 +226,7 @@ internal class ModerationRepositoryImplTest {
         testDelegation(
             apiFunction = { api.queryModerationConfigs(queryRequest) },
             repositoryCall = { repository.queryModerationConfigs(queryRequest) },
-            apiResult = queryResponse
+            apiResult = queryResponse,
         )
     }
 }

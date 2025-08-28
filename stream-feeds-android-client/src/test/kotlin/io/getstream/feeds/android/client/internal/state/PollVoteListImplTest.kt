@@ -36,11 +36,12 @@ internal class PollVoteListImplTest {
         mockk(relaxed = true)
     private val query = PollVotesQuery(pollId = "poll-1", userId = "user-1", limit = 10)
 
-    private val pollVoteList = PollVoteListImpl(
-        query = query,
-        repository = pollsRepository,
-        subscriptionManager = subscriptionManager
-    )
+    private val pollVoteList =
+        PollVoteListImpl(
+            query = query,
+            repository = pollsRepository,
+            subscriptionManager = subscriptionManager,
+        )
 
     @Test
     fun `on get, then return poll votes and update state`() = runTest {
@@ -58,18 +59,19 @@ internal class PollVoteListImplTest {
     fun `on queryMorePollVotes with next cursor, then query with next cursor`() = runTest {
         setupInitialState()
 
-        val moreVotes = listOf(
-            pollVoteData("vote-3", "poll-1", "option-1", "user-3"),
-            pollVoteData("vote-4", "poll-1", "option-2", "user-4")
-        )
-        val morePaginationResult = createPaginationResult(
-            votes = moreVotes,
-            next = "next-cursor-2",
-            previous = "next-cursor"
-        )
-        coEvery {
-            pollsRepository.queryPollVotes(any())
-        } returns Result.success(morePaginationResult)
+        val moreVotes =
+            listOf(
+                pollVoteData("vote-3", "poll-1", "option-1", "user-3"),
+                pollVoteData("vote-4", "poll-1", "option-2", "user-4"),
+            )
+        val morePaginationResult =
+            createPaginationResult(
+                votes = moreVotes,
+                next = "next-cursor-2",
+                previous = "next-cursor",
+            )
+        coEvery { pollsRepository.queryPollVotes(any()) } returns
+            Result.success(morePaginationResult)
 
         val result = pollVoteList.queryMorePollVotes()
 
@@ -93,13 +95,10 @@ internal class PollVoteListImplTest {
 
         val customLimit = 5
         val moreVotes = listOf(pollVoteData("vote-3", "poll-1", "option-1", "user-3"))
-        val morePaginationResult = createPaginationResult(
-            votes = moreVotes,
-            previous = "next-cursor"
-        )
-        coEvery {
-            pollsRepository.queryPollVotes(any())
-        } returns Result.success(morePaginationResult)
+        val morePaginationResult =
+            createPaginationResult(votes = moreVotes, previous = "next-cursor")
+        coEvery { pollsRepository.queryPollVotes(any()) } returns
+            Result.success(morePaginationResult)
 
         val result = pollVoteList.queryMorePollVotes(customLimit)
 
@@ -109,13 +108,13 @@ internal class PollVoteListImplTest {
 
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialVotes = listOf(pollVoteData())
-        val initialPaginationResult = PaginationResult(
-            models = initialVotes,
-            pagination = PaginationData(next = nextCursor, previous = null)
-        )
-        coEvery {
-            pollsRepository.queryPollVotes(query)
-        } returns Result.success(initialPaginationResult)
+        val initialPaginationResult =
+            PaginationResult(
+                models = initialVotes,
+                pagination = PaginationData(next = nextCursor, previous = null),
+            )
+        coEvery { pollsRepository.queryPollVotes(query) } returns
+            Result.success(initialPaginationResult)
 
         pollVoteList.get()
     }
@@ -123,9 +122,10 @@ internal class PollVoteListImplTest {
     private fun createPaginationResult(
         votes: List<PollVoteData>,
         next: String? = null,
-        previous: String? = null
-    ) = PaginationResult(
-        models = votes,
-        pagination = PaginationData(next = next, previous = previous)
-    )
+        previous: String? = null,
+    ) =
+        PaginationResult(
+            models = votes,
+            pagination = PaginationData(next = next, previous = previous),
+        )
 }

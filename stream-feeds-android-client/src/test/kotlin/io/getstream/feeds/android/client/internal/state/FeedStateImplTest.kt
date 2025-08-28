@@ -61,12 +61,13 @@ internal class FeedStateImplTest {
         val followers = listOf(followData())
         val following = listOf(followData("user-2", "user-3"))
 
-        val result = createGetOrCreateInfo(
-            activities = activities,
-            feed = feed,
-            followers = followers,
-            following = following
-        )
+        val result =
+            createGetOrCreateInfo(
+                activities = activities,
+                feed = feed,
+                followers = followers,
+                following = following,
+            )
 
         feedState.onQueryFeed(result)
 
@@ -83,10 +84,11 @@ internal class FeedStateImplTest {
         setupInitialState(initialActivities)
 
         val newActivities = listOf(activityData("activity-2"), activityData("activity-3"))
-        val newPaginationResult = PaginationResult(
-            models = newActivities,
-            pagination = PaginationData(next = "next-cursor-2", previous = null)
-        )
+        val newPaginationResult =
+            PaginationResult(
+                models = newActivities,
+                pagination = PaginationData(next = "next-cursor-2", previous = null),
+            )
 
         feedState.onQueryMoreActivities(newPaginationResult, createQueryConfig())
 
@@ -214,7 +216,7 @@ internal class FeedStateImplTest {
             activities = listOf(activityData()),
             followers = listOf(followData()),
             following = listOf(followData()),
-            followRequests = listOf(followData())
+            followRequests = listOf(followData()),
         )
 
         feedState.onFeedDeleted()
@@ -233,15 +235,16 @@ internal class FeedStateImplTest {
         feed: io.getstream.feeds.android.client.api.model.FeedData = feedData(),
         followers: List<FollowData> = emptyList(),
         following: List<FollowData> = emptyList(),
-        followRequests: List<FollowData> = emptyList()
+        followRequests: List<FollowData> = emptyList(),
     ) {
-        val result = createGetOrCreateInfo(
-            activities = activities,
-            feed = feed,
-            followers = followers,
-            following = following,
-            followRequests = followRequests
-        )
+        val result =
+            createGetOrCreateInfo(
+                activities = activities,
+                feed = feed,
+                followers = followers,
+                following = following,
+                followRequests = followRequests,
+            )
         feedState.onQueryFeed(result)
     }
 
@@ -250,12 +253,13 @@ internal class FeedStateImplTest {
         feed: io.getstream.feeds.android.client.api.model.FeedData = feedData(),
         followers: List<FollowData> = emptyList(),
         following: List<FollowData> = emptyList(),
-        followRequests: List<FollowData> = emptyList()
+        followRequests: List<FollowData> = emptyList(),
     ): GetOrCreateInfo {
-        val paginationResult = PaginationResult(
-            models = activities,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = activities,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = createQueryConfig()
 
         return GetOrCreateInfo(
@@ -269,15 +273,14 @@ internal class FeedStateImplTest {
             pinnedActivities = emptyList(),
             aggregatedActivities = emptyList(),
             notificationStatus = null,
-            members = PaginationResult(
-                models = emptyList(),
-                pagination = PaginationData(next = null, previous = null)
-            )
+            members =
+                PaginationResult(
+                    models = emptyList(),
+                    pagination = PaginationData(next = null, previous = null),
+                ),
         )
     }
 
-    private fun createQueryConfig() = QueryConfiguration(
-        filter = null,
-        sort = ActivitiesSort.Default
-    )
+    private fun createQueryConfig() =
+        QueryConfiguration(filter = null, sort = ActivitiesSort.Default)
 }

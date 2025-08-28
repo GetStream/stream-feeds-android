@@ -37,20 +37,20 @@ internal class ActivityListImplTest {
     private val query = ActivitiesQuery(limit = 10)
     private val currentUserId = "user-123"
 
-    private val activityList = ActivityListImpl(
-        query = query,
-        currentUserId = currentUserId,
-        activitiesRepository = activitiesRepository,
-        subscriptionManager = subscriptionManager
-    )
+    private val activityList =
+        ActivityListImpl(
+            query = query,
+            currentUserId = currentUserId,
+            activitiesRepository = activitiesRepository,
+            subscriptionManager = subscriptionManager,
+        )
 
     @Test
     fun `get when repository succeeds, then return activities and update state`() = runTest {
         val activities = listOf(activityData("activity-1"), activityData("activity-2"))
         val paginationResult = createPaginationResult(activities, next = "next-cursor")
-        coEvery {
-            activitiesRepository.queryActivities(query)
-        } returns Result.success(paginationResult)
+        coEvery { activitiesRepository.queryActivities(query) } returns
+            Result.success(paginationResult)
 
         val result = activityList.get()
 
@@ -63,15 +63,15 @@ internal class ActivityListImplTest {
         setupInitialState()
 
         val moreActivities = listOf(activityData("activity-2"), activityData("activity-3"))
-        val morePaginationResult = createPaginationResult(
-            activities = moreActivities,
-            next = "next-cursor-2",
-            previous = "next-cursor"
-        )
+        val morePaginationResult =
+            createPaginationResult(
+                activities = moreActivities,
+                next = "next-cursor-2",
+                previous = "next-cursor",
+            )
         val expectedNextQuery = createNextQuery("next-cursor")
-        coEvery {
-            activitiesRepository.queryActivities(expectedNextQuery)
-        } returns Result.success(morePaginationResult)
+        coEvery { activitiesRepository.queryActivities(expectedNextQuery) } returns
+            Result.success(morePaginationResult)
 
         val result = activityList.queryMoreActivities()
 
@@ -96,13 +96,10 @@ internal class ActivityListImplTest {
         val customLimit = 5
         val expectedNextQuery = createNextQuery("next-cursor", limit = customLimit)
         val moreActivities = listOf(activityData("activity-2"))
-        val morePaginationResult = createPaginationResult(
-            activities = moreActivities,
-            previous = "next-cursor"
-        )
-        coEvery {
-            activitiesRepository.queryActivities(expectedNextQuery)
-        } returns Result.success(morePaginationResult)
+        val morePaginationResult =
+            createPaginationResult(activities = moreActivities, previous = "next-cursor")
+        coEvery { activitiesRepository.queryActivities(expectedNextQuery) } returns
+            Result.success(morePaginationResult)
 
         val result = activityList.queryMoreActivities(customLimit)
 
@@ -116,9 +113,8 @@ internal class ActivityListImplTest {
 
         val exception = RuntimeException("API Error")
         val expectedNextQuery = createNextQuery("next-cursor")
-        coEvery {
-            activitiesRepository.queryActivities(expectedNextQuery)
-        } returns Result.failure(exception)
+        coEvery { activitiesRepository.queryActivities(expectedNextQuery) } returns
+            Result.failure(exception)
 
         val result = activityList.queryMoreActivities()
 
@@ -128,33 +124,32 @@ internal class ActivityListImplTest {
     // Helper functions to reduce boilerplate
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialActivities = listOf(activityData("activity-1"))
-        val initialPaginationResult = PaginationResult(
-            models = initialActivities,
-            pagination = PaginationData(next = nextCursor, previous = null)
-        )
-        coEvery {
-            activitiesRepository.queryActivities(query)
-        } returns Result.success(initialPaginationResult)
+        val initialPaginationResult =
+            PaginationResult(
+                models = initialActivities,
+                pagination = PaginationData(next = nextCursor, previous = null),
+            )
+        coEvery { activitiesRepository.queryActivities(query) } returns
+            Result.success(initialPaginationResult)
         activityList.get()
     }
 
     private fun createPaginationResult(
         activities: List<ActivityData>,
         next: String? = null,
-        previous: String? = null
-    ) = PaginationResult(
-        models = activities,
-        pagination = PaginationData(next = next, previous = previous)
-    )
+        previous: String? = null,
+    ) =
+        PaginationResult(
+            models = activities,
+            pagination = PaginationData(next = next, previous = previous),
+        )
 
-    private fun createNextQuery(
-        next: String,
-        limit: Int? = query.limit
-    ) = ActivitiesQuery(
-        filter = query.filter,
-        sort = query.sort,
-        limit = limit,
-        next = next,
-        previous = null
-    )
+    private fun createNextQuery(next: String, limit: Int? = query.limit) =
+        ActivitiesQuery(
+            filter = query.filter,
+            sort = query.sort,
+            limit = limit,
+            next = next,
+            previous = null,
+        )
 }

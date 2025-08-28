@@ -39,11 +39,13 @@ internal class CommentReactionListStateImplTest {
 
     @Test
     fun `on queryMoreReactions, then update reactions and pagination`() = runTest {
-        val reactions = listOf(feedsReactionData(), feedsReactionData("reaction-2", "comment-1", "user-2"))
-        val paginationResult = PaginationResult(
-            models = reactions,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val reactions =
+            listOf(feedsReactionData(), feedsReactionData("reaction-2", "comment-1", "user-2"))
+        val paginationResult =
+            PaginationResult(
+                models = reactions,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = CommentReactionsSort.Default)
 
         commentReactionListState.onQueryMoreReactions(paginationResult, queryConfig)
@@ -55,11 +57,13 @@ internal class CommentReactionListStateImplTest {
 
     @Test
     fun `on reactionRemoved, then remove specific reaction`() = runTest {
-        val initialReactions = listOf(feedsReactionData(), feedsReactionData("reaction-2", "comment-1", "user-2"))
-        val paginationResult = PaginationResult(
-            models = initialReactions,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val initialReactions =
+            listOf(feedsReactionData(), feedsReactionData("reaction-2", "comment-1", "user-2"))
+        val paginationResult =
+            PaginationResult(
+                models = initialReactions,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = CommentReactionsSort.Default)
         commentReactionListState.onQueryMoreReactions(paginationResult, queryConfig)
 

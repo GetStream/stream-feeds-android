@@ -33,20 +33,23 @@ import org.junit.Test
 
 internal class MemberListImplTest {
     private val feedsRepository: FeedsRepository = mockk()
-    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> = mockk(relaxed = true)
+    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> =
+        mockk(relaxed = true)
     private val query = MembersQuery(fid = FeedId("user", "test"), limit = 10)
 
-    private val memberList = MemberListImpl(
-        query = query,
-        feedsRepository = feedsRepository,
-        subscriptionManager = subscriptionManager
-    )
+    private val memberList =
+        MemberListImpl(
+            query = query,
+            feedsRepository = feedsRepository,
+            subscriptionManager = subscriptionManager,
+        )
 
     @Test
     fun `on get, then return members and update state`() = runTest {
         val members = listOf(feedMemberData(), feedMemberData())
         val paginationResult = createPaginationResult(members, next = "next-cursor")
-        coEvery { feedsRepository.queryFeedMembers(any(), any(), any()) } returns Result.success(paginationResult)
+        coEvery { feedsRepository.queryFeedMembers(any(), any(), any()) } returns
+            Result.success(paginationResult)
 
         val result = memberList.get()
 
@@ -59,12 +62,14 @@ internal class MemberListImplTest {
         setupInitialState()
 
         val moreMembers = listOf(feedMemberData(), feedMemberData())
-        val morePaginationResult = createPaginationResult(
-            members = moreMembers,
-            next = "next-cursor-2",
-            previous = "next-cursor"
-        )
-        coEvery { feedsRepository.queryFeedMembers(any(), any(), any()) } returns Result.success(morePaginationResult)
+        val morePaginationResult =
+            createPaginationResult(
+                members = moreMembers,
+                next = "next-cursor-2",
+                previous = "next-cursor",
+            )
+        coEvery { feedsRepository.queryFeedMembers(any(), any(), any()) } returns
+            Result.success(morePaginationResult)
 
         val result = memberList.queryMoreMembers()
 
@@ -88,11 +93,10 @@ internal class MemberListImplTest {
 
         val customLimit = 5
         val moreMembers = listOf(feedMemberData())
-        val morePaginationResult = createPaginationResult(
-            members = moreMembers,
-            previous = "next-cursor"
-        )
-        coEvery { feedsRepository.queryFeedMembers(any(), any(), any()) } returns Result.success(morePaginationResult)
+        val morePaginationResult =
+            createPaginationResult(members = moreMembers, previous = "next-cursor")
+        coEvery { feedsRepository.queryFeedMembers(any(), any(), any()) } returns
+            Result.success(morePaginationResult)
 
         val result = memberList.queryMoreMembers(customLimit)
 
@@ -102,20 +106,23 @@ internal class MemberListImplTest {
 
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialMembers = listOf(feedMemberData())
-        val initialPaginationResult = PaginationResult(
-            models = initialMembers,
-            pagination = PaginationData(next = nextCursor, previous = null)
-        )
-        coEvery { feedsRepository.queryFeedMembers(any(), any(), any()) } returns Result.success(initialPaginationResult)
+        val initialPaginationResult =
+            PaginationResult(
+                models = initialMembers,
+                pagination = PaginationData(next = nextCursor, previous = null),
+            )
+        coEvery { feedsRepository.queryFeedMembers(any(), any(), any()) } returns
+            Result.success(initialPaginationResult)
         memberList.get()
     }
 
     private fun createPaginationResult(
         members: List<FeedMemberData>,
         next: String? = null,
-        previous: String? = null
-    ) = PaginationResult(
-        models = members,
-        pagination = PaginationData(next = next, previous = previous)
-    )
+        previous: String? = null,
+    ) =
+        PaginationResult(
+            models = members,
+            pagination = PaginationData(next = next, previous = previous),
+        )
 }

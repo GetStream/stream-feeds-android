@@ -24,8 +24,8 @@ import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Test
 import java.util.Date
+import org.junit.Test
 
 internal class MemberListEventHandlerTest {
     private val state: MemberListStateUpdates = mockk(relaxed = true)
@@ -34,12 +34,13 @@ internal class MemberListEventHandlerTest {
 
     @Test
     fun `on FeedMemberRemovedEvent, then call onMemberRemoved`() {
-        val event = FeedMemberRemovedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            memberId = "member-1",
-            type = "feeds.feed_member.removed"
-        )
+        val event =
+            FeedMemberRemovedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                memberId = "member-1",
+                type = "feeds.feed_member.removed",
+            )
 
         handler.onEvent(event)
 
@@ -49,12 +50,13 @@ internal class MemberListEventHandlerTest {
     @Test
     fun `on FeedMemberUpdatedEvent, then call onMemberUpdated`() {
         val member = feedMemberResponse()
-        val event = FeedMemberUpdatedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            member = member,
-            type = "feeds.feed_member.updated"
-        )
+        val event =
+            FeedMemberUpdatedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                member = member,
+                type = "feeds.feed_member.updated",
+            )
 
         handler.onEvent(event)
 
@@ -63,9 +65,10 @@ internal class MemberListEventHandlerTest {
 
     @Test
     fun `on unknown event, then do nothing`() {
-        val unknownEvent = object : WSEvent {
-            override fun getWSEventType(): String = "unknown.event"
-        }
+        val unknownEvent =
+            object : WSEvent {
+                override fun getWSEventType(): String = "unknown.event"
+            }
 
         handler.onEvent(unknownEvent)
 

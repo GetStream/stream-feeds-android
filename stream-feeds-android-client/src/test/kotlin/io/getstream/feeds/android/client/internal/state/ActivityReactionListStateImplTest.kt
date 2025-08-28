@@ -39,18 +39,14 @@ internal class ActivityReactionListStateImplTest {
 
     @Test
     fun `on queryMoreActivityReactions, then update reactions and pagination`() = runTest {
-        val reactions = listOf(
-            feedsReactionData(),
-            feedsReactionData("reaction-2", "activity-1", "user-2")
-        )
-        val paginationResult = PaginationResult(
-            models = reactions,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
-        val queryConfig = QueryConfiguration(
-            filter = null,
-            sort = ActivityReactionsSort.Default
-        )
+        val reactions =
+            listOf(feedsReactionData(), feedsReactionData("reaction-2", "activity-1", "user-2"))
+        val paginationResult =
+            PaginationResult(
+                models = reactions,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
+        val queryConfig = QueryConfiguration(filter = null, sort = ActivityReactionsSort.Default)
 
         activityReactionListState.onQueryMoreActivityReactions(paginationResult, queryConfig)
 
@@ -61,18 +57,14 @@ internal class ActivityReactionListStateImplTest {
 
     @Test
     fun `on reactionRemoved, then remove specific reaction`() = runTest {
-        val initialReactions = listOf(
-            feedsReactionData(),
-            feedsReactionData("reaction-2", "activity-1", "user-2")
-        )
-        val paginationResult = PaginationResult(
-            models = initialReactions,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
-        val queryConfig = QueryConfiguration(
-            filter = null,
-            sort = ActivityReactionsSort.Default
-        )
+        val initialReactions =
+            listOf(feedsReactionData(), feedsReactionData("reaction-2", "activity-1", "user-2"))
+        val paginationResult =
+            PaginationResult(
+                models = initialReactions,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
+        val queryConfig = QueryConfiguration(filter = null, sort = ActivityReactionsSort.Default)
         activityReactionListState.onQueryMoreActivityReactions(paginationResult, queryConfig)
 
         activityReactionListState.onReactionRemoved(initialReactions[0])

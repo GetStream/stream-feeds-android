@@ -30,8 +30,8 @@ import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Test
 import java.util.Date
+import org.junit.Test
 
 internal class ActivityCommentListEventHandlerTest {
     private val objectId = "activity-1"
@@ -43,13 +43,14 @@ internal class ActivityCommentListEventHandlerTest {
     @Test
     fun `on CommentAddedEvent for matching object, then call onCommentAdded`() {
         val comment = commentResponse().copy(objectId = objectId, objectType = objectType)
-        val event = CommentAddedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            comment = comment,
-            activity = activityResponse(),
-            type = "feeds.comment.added"
-        )
+        val event =
+            CommentAddedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                comment = comment,
+                activity = activityResponse(),
+                type = "feeds.comment.added",
+            )
 
         handler.onEvent(event)
 
@@ -60,13 +61,14 @@ internal class ActivityCommentListEventHandlerTest {
     fun `on CommentAddedEvent for different object, then do not call onCommentAdded`() {
         val comment =
             commentResponse().copy(objectId = "different-activity", objectType = objectType)
-        val event = CommentAddedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            comment = comment,
-            activity = activityResponse(),
-            type = "feeds.comment.added"
-        )
+        val event =
+            CommentAddedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                comment = comment,
+                activity = activityResponse(),
+                type = "feeds.comment.added",
+            )
 
         handler.onEvent(event)
 
@@ -76,12 +78,13 @@ internal class ActivityCommentListEventHandlerTest {
     @Test
     fun `on CommentDeletedEvent for matching object, then call onCommentRemoved`() {
         val comment = commentResponse().copy(objectId = objectId, objectType = objectType)
-        val event = CommentDeletedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            comment = comment,
-            type = "feeds.comment.deleted"
-        )
+        val event =
+            CommentDeletedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                comment = comment,
+                type = "feeds.comment.deleted",
+            )
 
         handler.onEvent(event)
 
@@ -91,12 +94,13 @@ internal class ActivityCommentListEventHandlerTest {
     @Test
     fun `on CommentUpdatedEvent for matching object, then call onCommentUpdated`() {
         val comment = commentResponse().copy(objectId = objectId, objectType = objectType)
-        val event = CommentUpdatedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            comment = comment,
-            type = "feeds.comment.updated"
-        )
+        val event =
+            CommentUpdatedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                comment = comment,
+                type = "feeds.comment.updated",
+            )
 
         handler.onEvent(event)
 
@@ -107,14 +111,15 @@ internal class ActivityCommentListEventHandlerTest {
     fun `on CommentReactionAddedEvent for matching object, then call onCommentReactionAdded`() {
         val comment = commentResponse().copy(objectId = objectId, objectType = objectType)
         val reaction = feedsReactionResponse()
-        val event = CommentReactionAddedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            activity = activityResponse(),
-            comment = comment,
-            reaction = reaction,
-            type = "feeds.comment.reaction.added"
-        )
+        val event =
+            CommentReactionAddedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                activity = activityResponse(),
+                comment = comment,
+                reaction = reaction,
+                type = "feeds.comment.reaction.added",
+            )
 
         handler.onEvent(event)
 
@@ -125,13 +130,14 @@ internal class ActivityCommentListEventHandlerTest {
     fun `on CommentReactionDeletedEvent for matching object, then call onCommentReactionRemoved`() {
         val comment = commentResponse().copy(objectId = objectId, objectType = objectType)
         val reaction = feedsReactionResponse()
-        val event = CommentReactionDeletedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            comment = comment,
-            reaction = reaction,
-            type = "feeds.comment.reaction.deleted"
-        )
+        val event =
+            CommentReactionDeletedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                comment = comment,
+                reaction = reaction,
+                type = "feeds.comment.reaction.deleted",
+            )
 
         handler.onEvent(event)
 
@@ -140,9 +146,10 @@ internal class ActivityCommentListEventHandlerTest {
 
     @Test
     fun `on unknown event, then do nothing`() {
-        val unknownEvent = object : WSEvent {
-            override fun getWSEventType(): String = "unknown.event"
-        }
+        val unknownEvent =
+            object : WSEvent {
+                override fun getWSEventType(): String = "unknown.event"
+            }
 
         handler.onEvent(unknownEvent)
 

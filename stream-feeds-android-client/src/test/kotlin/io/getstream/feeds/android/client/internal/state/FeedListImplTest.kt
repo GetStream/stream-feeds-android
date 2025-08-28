@@ -32,14 +32,16 @@ import org.junit.Test
 
 internal class FeedListImplTest {
     private val feedsRepository: FeedsRepository = mockk()
-    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> = mockk(relaxed = true)
+    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> =
+        mockk(relaxed = true)
     private val query = FeedsQuery(limit = 10, watch = false)
 
-    private val feedList = FeedListImpl(
-        query = query,
-        feedsRepository = feedsRepository,
-        subscriptionManager = subscriptionManager
-    )
+    private val feedList =
+        FeedListImpl(
+            query = query,
+            feedsRepository = feedsRepository,
+            subscriptionManager = subscriptionManager,
+        )
 
     @Test
     fun `on get, then return feeds and update state`() = runTest {
@@ -58,11 +60,12 @@ internal class FeedListImplTest {
         setupInitialState()
 
         val moreFeeds = listOf(feedData("feed-3", "user-3"), feedData("feed-4", "user-4"))
-        val morePaginationResult = createPaginationResult(
-            feeds = moreFeeds,
-            next = "next-cursor-2",
-            previous = "next-cursor"
-        )
+        val morePaginationResult =
+            createPaginationResult(
+                feeds = moreFeeds,
+                next = "next-cursor-2",
+                previous = "next-cursor",
+            )
         coEvery { feedsRepository.queryFeeds(any()) } returns Result.success(morePaginationResult)
 
         val result = feedList.queryMoreFeeds()
@@ -87,10 +90,8 @@ internal class FeedListImplTest {
 
         val customLimit = 5
         val moreFeeds = listOf(feedData("feed-3", "user-3"))
-        val morePaginationResult = createPaginationResult(
-            feeds = moreFeeds,
-            previous = "next-cursor"
-        )
+        val morePaginationResult =
+            createPaginationResult(feeds = moreFeeds, previous = "next-cursor")
         coEvery { feedsRepository.queryFeeds(any()) } returns Result.success(morePaginationResult)
 
         val result = feedList.queryMoreFeeds(customLimit)
@@ -101,20 +102,23 @@ internal class FeedListImplTest {
 
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialFeeds = listOf(feedData())
-        val initialPaginationResult = PaginationResult(
-            models = initialFeeds,
-            pagination = PaginationData(next = nextCursor, previous = null)
-        )
-        coEvery { feedsRepository.queryFeeds(query) } returns Result.success(initialPaginationResult)
+        val initialPaginationResult =
+            PaginationResult(
+                models = initialFeeds,
+                pagination = PaginationData(next = nextCursor, previous = null),
+            )
+        coEvery { feedsRepository.queryFeeds(query) } returns
+            Result.success(initialPaginationResult)
         feedList.get()
     }
 
     private fun createPaginationResult(
         feeds: List<FeedData>,
         next: String? = null,
-        previous: String? = null
-    ) = PaginationResult(
-        models = feeds,
-        pagination = PaginationData(next = next, previous = previous)
-    )
+        previous: String? = null,
+    ) =
+        PaginationResult(
+            models = feeds,
+            pagination = PaginationData(next = next, previous = previous),
+        )
 }

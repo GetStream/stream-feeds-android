@@ -39,14 +39,12 @@ internal class PollListStateImplTest {
 
     @Test
     fun `on queryMorePolls, then update polls and pagination`() = runTest {
-        val polls = listOf(
-            pollData("poll-1", "Test Poll"),
-            pollData("poll-2", "Test Poll 2")
-        )
-        val paginationResult = PaginationResult(
-            models = polls,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val polls = listOf(pollData("poll-1", "Test Poll"), pollData("poll-2", "Test Poll 2"))
+        val paginationResult =
+            PaginationResult(
+                models = polls,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = PollsSort.Default)
 
         pollListState.onQueryMorePolls(paginationResult, queryConfig)
@@ -58,14 +56,13 @@ internal class PollListStateImplTest {
 
     @Test
     fun `on pollUpdated, then update specific poll`() = runTest {
-        val initialPolls = listOf(
-            pollData("poll-1", "Test Poll"),
-            pollData("poll-2", "Test Poll 2")
-        )
-        val paginationResult = PaginationResult(
-            models = initialPolls,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val initialPolls =
+            listOf(pollData("poll-1", "Test Poll"), pollData("poll-2", "Test Poll 2"))
+        val paginationResult =
+            PaginationResult(
+                models = initialPolls,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = PollsSort.Default)
         pollListState.onQueryMorePolls(paginationResult, queryConfig)
 
@@ -79,14 +76,13 @@ internal class PollListStateImplTest {
 
     @Test
     fun `on pollUpdated with non-existent poll, then keep existing polls unchanged`() = runTest {
-        val initialPolls = listOf(
-            pollData("poll-1", "Test Poll"),
-            pollData("poll-2", "Test Poll 2")
-        )
-        val paginationResult = PaginationResult(
-            models = initialPolls,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val initialPolls =
+            listOf(pollData("poll-1", "Test Poll"), pollData("poll-2", "Test Poll 2"))
+        val paginationResult =
+            PaginationResult(
+                models = initialPolls,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = PollsSort.Default)
         pollListState.onQueryMorePolls(paginationResult, queryConfig)
 

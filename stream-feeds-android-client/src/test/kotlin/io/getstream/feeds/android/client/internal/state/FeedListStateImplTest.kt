@@ -40,10 +40,11 @@ internal class FeedListStateImplTest {
     @Test
     fun `on queryMoreFeeds, then update feeds and pagination`() = runTest {
         val feeds = listOf(feedData(), feedData("feed-2", "user", "Test Feed 2"))
-        val paginationResult = PaginationResult(
-            models = feeds,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = feeds,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = FeedsSort.Default)
 
         feedListState.onQueryMoreFeeds(paginationResult, queryConfig)
@@ -56,10 +57,11 @@ internal class FeedListStateImplTest {
     @Test
     fun `on feedUpdated, then update specific feed`() = runTest {
         val initialFeeds = listOf(feedData(), feedData("feed-2", "user", "Test Feed 2"))
-        val paginationResult = PaginationResult(
-            models = initialFeeds,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = initialFeeds,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = FeedsSort.Default)
         feedListState.onQueryMoreFeeds(paginationResult, queryConfig)
 
@@ -74,10 +76,11 @@ internal class FeedListStateImplTest {
     @Test
     fun `on feedUpdated with non-existent feed, then keep existing feeds unchanged`() = runTest {
         val initialFeeds = listOf(feedData(), feedData("feed-2", "user", "Test Feed 2"))
-        val paginationResult = PaginationResult(
-            models = initialFeeds,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = initialFeeds,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = FeedsSort.Default)
         feedListState.onQueryMoreFeeds(paginationResult, queryConfig)
 

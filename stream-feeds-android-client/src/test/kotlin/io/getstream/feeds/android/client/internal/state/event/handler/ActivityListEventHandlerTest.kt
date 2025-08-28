@@ -32,8 +32,8 @@ import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Test
 import java.util.Date
+import org.junit.Test
 
 internal class ActivityListEventHandlerTest {
     private val state: ActivityListStateUpdates = mockk(relaxed = true)
@@ -43,12 +43,13 @@ internal class ActivityListEventHandlerTest {
     @Test
     fun `on ActivityDeletedEvent, then call onActivityRemoved`() {
         val activity = activityResponse()
-        val event = ActivityDeletedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            activity = activity,
-            type = "feeds.activity.deleted"
-        )
+        val event =
+            ActivityDeletedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                activity = activity,
+                type = "feeds.activity.deleted",
+            )
 
         handler.onEvent(event)
 
@@ -59,13 +60,14 @@ internal class ActivityListEventHandlerTest {
     fun `on ActivityReactionAddedEvent, then call onReactionAdded`() {
         val activity = activityResponse()
         val reaction = feedsReactionResponse()
-        val event = ActivityReactionAddedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            activity = activity,
-            reaction = reaction,
-            type = "feeds.activity.reaction.added"
-        )
+        val event =
+            ActivityReactionAddedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                activity = activity,
+                reaction = reaction,
+                type = "feeds.activity.reaction.added",
+            )
 
         handler.onEvent(event)
 
@@ -76,13 +78,14 @@ internal class ActivityListEventHandlerTest {
     fun `on ActivityReactionDeletedEvent, then call onReactionRemoved`() {
         val activity = activityResponse()
         val reaction = feedsReactionResponse()
-        val event = ActivityReactionDeletedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            activity = activity,
-            reaction = reaction,
-            type = "feeds.activity.reaction.deleted"
-        )
+        val event =
+            ActivityReactionDeletedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                activity = activity,
+                reaction = reaction,
+                type = "feeds.activity.reaction.deleted",
+            )
 
         handler.onEvent(event)
 
@@ -92,11 +95,12 @@ internal class ActivityListEventHandlerTest {
     @Test
     fun `on BookmarkAddedEvent, then call onBookmarkAdded`() {
         val bookmark = bookmarkResponse()
-        val event = BookmarkAddedEvent(
-            createdAt = Date(),
-            bookmark = bookmark,
-            type = "feeds.bookmark.added"
-        )
+        val event =
+            BookmarkAddedEvent(
+                createdAt = Date(),
+                bookmark = bookmark,
+                type = "feeds.bookmark.added",
+            )
 
         handler.onEvent(event)
 
@@ -106,11 +110,12 @@ internal class ActivityListEventHandlerTest {
     @Test
     fun `on BookmarkDeletedEvent, then call onBookmarkRemoved`() {
         val bookmark = bookmarkResponse()
-        val event = BookmarkDeletedEvent(
-            createdAt = Date(),
-            bookmark = bookmark,
-            type = "feeds.bookmark.deleted"
-        )
+        val event =
+            BookmarkDeletedEvent(
+                createdAt = Date(),
+                bookmark = bookmark,
+                type = "feeds.bookmark.deleted",
+            )
 
         handler.onEvent(event)
 
@@ -120,13 +125,14 @@ internal class ActivityListEventHandlerTest {
     @Test
     fun `on CommentAddedEvent, then call onCommentAdded`() {
         val comment = commentResponse()
-        val event = CommentAddedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            comment = comment,
-            activity = activityResponse(),
-            type = "feeds.comment.added"
-        )
+        val event =
+            CommentAddedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                comment = comment,
+                activity = activityResponse(),
+                type = "feeds.comment.added",
+            )
 
         handler.onEvent(event)
 
@@ -136,12 +142,13 @@ internal class ActivityListEventHandlerTest {
     @Test
     fun `on CommentDeletedEvent, then call onCommentRemoved`() {
         val comment = commentResponse()
-        val event = CommentDeletedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            comment = comment,
-            type = "feeds.comment.deleted"
-        )
+        val event =
+            CommentDeletedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                comment = comment,
+                type = "feeds.comment.deleted",
+            )
 
         handler.onEvent(event)
 
@@ -150,9 +157,10 @@ internal class ActivityListEventHandlerTest {
 
     @Test
     fun `on unknown event, then do nothing`() {
-        val unknownEvent = object : WSEvent {
-            override fun getWSEventType(): String = "unknown.event"
-        }
+        val unknownEvent =
+            object : WSEvent {
+                override fun getWSEventType(): String = "unknown.event"
+            }
 
         handler.onEvent(unknownEvent)
 

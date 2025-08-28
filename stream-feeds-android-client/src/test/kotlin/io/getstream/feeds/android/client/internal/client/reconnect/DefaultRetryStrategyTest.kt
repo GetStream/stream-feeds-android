@@ -15,10 +15,10 @@
  */
 package io.getstream.feeds.android.client.internal.client.reconnect
 
+import kotlin.concurrent.thread
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import kotlin.concurrent.thread
 
 internal class DefaultRetryStrategyTest {
 
@@ -123,8 +123,10 @@ internal class DefaultRetryStrategyTest {
         val delays = (1..100).map { strategy.nextRetryDelay() }
         val uniqueDelays = delays.toSet()
 
-        assertTrue("Should have multiple different delays due to jitter, got: $uniqueDelays",
-                   uniqueDelays.size > 1)
+        assertTrue(
+            "Should have multiple different delays due to jitter, got: $uniqueDelays",
+            uniqueDelays.size > 1,
+        )
     }
 
     @Test
@@ -154,14 +156,15 @@ internal class DefaultRetryStrategyTest {
 
     @Test
     fun `on thread safety, then concurrent access works correctly`() {
-        val threads = (1..10).map {
-            thread {
-                repeat(5) {
-                    strategy.incrementConsecutiveFailures()
-                    strategy.nextRetryDelay()
+        val threads =
+            (1..10).map {
+                thread {
+                    repeat(5) {
+                        strategy.incrementConsecutiveFailures()
+                        strategy.nextRetryDelay()
+                    }
                 }
             }
-        }
 
         threads.forEach { it.join() }
 

@@ -54,8 +54,8 @@ import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Test
 import java.util.Date
+import org.junit.Test
 
 internal class FeedEventHandlerTest {
     private val fid = FeedId("user", "feed-1")
@@ -66,12 +66,13 @@ internal class FeedEventHandlerTest {
     @Test
     fun `on ActivityAddedEvent for matching feed, then call onActivityAdded`() {
         val activity = activityResponse()
-        val event = ActivityAddedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            activity = activity,
-            type = "feeds.activity.added"
-        )
+        val event =
+            ActivityAddedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                activity = activity,
+                type = "feeds.activity.added",
+            )
 
         handler.onEvent(event)
 
@@ -81,12 +82,13 @@ internal class FeedEventHandlerTest {
     @Test
     fun `on ActivityAddedEvent for different feed, then do not call onActivityAdded`() {
         val activity = activityResponse()
-        val event = ActivityAddedEvent(
-            createdAt = Date(),
-            fid = "user:different-feed",
-            activity = activity,
-            type = "feeds.activity.added"
-        )
+        val event =
+            ActivityAddedEvent(
+                createdAt = Date(),
+                fid = "user:different-feed",
+                activity = activity,
+                type = "feeds.activity.added",
+            )
 
         handler.onEvent(event)
 
@@ -96,12 +98,13 @@ internal class FeedEventHandlerTest {
     @Test
     fun `on ActivityDeletedEvent for matching feed, then call onActivityRemoved`() {
         val activity = activityResponse()
-        val event = ActivityDeletedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            activity = activity,
-            type = "feeds.activity.deleted"
-        )
+        val event =
+            ActivityDeletedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                activity = activity,
+                type = "feeds.activity.deleted",
+            )
 
         handler.onEvent(event)
 
@@ -111,12 +114,13 @@ internal class FeedEventHandlerTest {
     @Test
     fun `on ActivityUpdatedEvent for matching feed, then call onActivityUpdated`() {
         val activity = activityResponse()
-        val event = ActivityUpdatedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            activity = activity,
-            type = "feeds.activity.updated"
-        )
+        val event =
+            ActivityUpdatedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                activity = activity,
+                type = "feeds.activity.updated",
+            )
 
         handler.onEvent(event)
 
@@ -127,13 +131,14 @@ internal class FeedEventHandlerTest {
     fun `on ActivityReactionAddedEvent for matching feed, then call onReactionAdded`() {
         val activity = activityResponse()
         val reaction = feedsReactionResponse()
-        val event = ActivityReactionAddedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            activity = activity,
-            reaction = reaction,
-            type = "feeds.activity.reaction.added"
-        )
+        val event =
+            ActivityReactionAddedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                activity = activity,
+                reaction = reaction,
+                type = "feeds.activity.reaction.added",
+            )
 
         handler.onEvent(event)
 
@@ -144,13 +149,14 @@ internal class FeedEventHandlerTest {
     fun `on ActivityReactionDeletedEvent for matching feed, then call onReactionRemoved`() {
         val activity = activityResponse()
         val reaction = feedsReactionResponse()
-        val event = ActivityReactionDeletedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            activity = activity,
-            reaction = reaction,
-            type = "feeds.activity.reaction.deleted"
-        )
+        val event =
+            ActivityReactionDeletedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                activity = activity,
+                reaction = reaction,
+                type = "feeds.activity.reaction.deleted",
+            )
 
         handler.onEvent(event)
 
@@ -160,12 +166,13 @@ internal class FeedEventHandlerTest {
     @Test
     fun `on ActivityPinnedEvent for matching feed, then call onActivityPinned`() {
         val pinnedActivity = pinActivityResponse()
-        val event = ActivityPinnedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            pinnedActivity = pinnedActivity,
-            type = "feeds.activity.pinned"
-        )
+        val event =
+            ActivityPinnedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                pinnedActivity = pinnedActivity,
+                type = "feeds.activity.pinned",
+            )
 
         handler.onEvent(event)
 
@@ -175,12 +182,13 @@ internal class FeedEventHandlerTest {
     @Test
     fun `on ActivityUnpinnedEvent for matching feed, then call onActivityUnpinned`() {
         val pinnedActivity = pinActivityResponse()
-        val event = ActivityUnpinnedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            pinnedActivity = pinnedActivity,
-            type = "feeds.activity.unpinned"
-        )
+        val event =
+            ActivityUnpinnedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                pinnedActivity = pinnedActivity,
+                type = "feeds.activity.unpinned",
+            )
 
         handler.onEvent(event)
 
@@ -189,16 +197,17 @@ internal class FeedEventHandlerTest {
 
     @Test
     fun `on BookmarkAddedEvent for activity in feed, then call onBookmarkAdded`() {
-        val bookmark = bookmarkResponse().copy(
-            activity = activityResponse().copy(
-                feeds = listOf(fid.rawValue, "other:feed")
+        val bookmark =
+            bookmarkResponse()
+                .copy(
+                    activity = activityResponse().copy(feeds = listOf(fid.rawValue, "other:feed"))
+                )
+        val event =
+            BookmarkAddedEvent(
+                createdAt = Date(),
+                bookmark = bookmark,
+                type = "feeds.bookmark.added",
             )
-        )
-        val event = BookmarkAddedEvent(
-            createdAt = Date(),
-            bookmark = bookmark,
-            type = "feeds.bookmark.added"
-        )
 
         handler.onEvent(event)
 
@@ -207,16 +216,17 @@ internal class FeedEventHandlerTest {
 
     @Test
     fun `on BookmarkAddedEvent for activity not in feed, then do not call onBookmarkAdded`() {
-        val bookmark = bookmarkResponse().copy(
-            activity = activityResponse().copy(
-                feeds = listOf("other:feed", "another:feed")
+        val bookmark =
+            bookmarkResponse()
+                .copy(
+                    activity = activityResponse().copy(feeds = listOf("other:feed", "another:feed"))
+                )
+        val event =
+            BookmarkAddedEvent(
+                createdAt = Date(),
+                bookmark = bookmark,
+                type = "feeds.bookmark.added",
             )
-        )
-        val event = BookmarkAddedEvent(
-            createdAt = Date(),
-            bookmark = bookmark,
-            type = "feeds.bookmark.added"
-        )
 
         handler.onEvent(event)
 
@@ -225,16 +235,15 @@ internal class FeedEventHandlerTest {
 
     @Test
     fun `on BookmarkDeletedEvent for activity in feed, then call onBookmarkRemoved`() {
-        val bookmark = bookmarkResponse().copy(
-            activity = activityResponse().copy(
-                feeds = listOf(fid.rawValue)
+        val bookmark =
+            bookmarkResponse()
+                .copy(activity = activityResponse().copy(feeds = listOf(fid.rawValue)))
+        val event =
+            BookmarkDeletedEvent(
+                createdAt = Date(),
+                bookmark = bookmark,
+                type = "feeds.bookmark.deleted",
             )
-        )
-        val event = BookmarkDeletedEvent(
-            createdAt = Date(),
-            bookmark = bookmark,
-            type = "feeds.bookmark.deleted"
-        )
 
         handler.onEvent(event)
 
@@ -244,13 +253,14 @@ internal class FeedEventHandlerTest {
     @Test
     fun `on CommentAddedEvent for matching feed, then call onCommentAdded`() {
         val comment = commentResponse()
-        val event = CommentAddedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            comment = comment,
-            type = "feeds.comment.added",
-            activity = activityResponse()
-        )
+        val event =
+            CommentAddedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                comment = comment,
+                type = "feeds.comment.added",
+                activity = activityResponse(),
+            )
 
         handler.onEvent(event)
 
@@ -260,12 +270,13 @@ internal class FeedEventHandlerTest {
     @Test
     fun `on CommentDeletedEvent for matching feed, then call onCommentRemoved`() {
         val comment = commentResponse()
-        val event = CommentDeletedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            comment = comment,
-            type = "feeds.comment.deleted"
-        )
+        val event =
+            CommentDeletedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                comment = comment,
+                type = "feeds.comment.deleted",
+            )
 
         handler.onEvent(event)
 
@@ -274,11 +285,8 @@ internal class FeedEventHandlerTest {
 
     @Test
     fun `on FeedDeletedEvent for matching feed, then call onFeedDeleted`() {
-        val event = FeedDeletedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            type = "feeds.feed.deleted"
-        )
+        val event =
+            FeedDeletedEvent(createdAt = Date(), fid = fid.rawValue, type = "feeds.feed.deleted")
 
         handler.onEvent(event)
 
@@ -288,12 +296,13 @@ internal class FeedEventHandlerTest {
     @Test
     fun `on FeedUpdatedEvent for matching feed, then call onFeedUpdated`() {
         val feed = feedResponse()
-        val event = FeedUpdatedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            feed = feed,
-            type = "feeds.feed.updated"
-        )
+        val event =
+            FeedUpdatedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                feed = feed,
+                type = "feeds.feed.updated",
+            )
 
         handler.onEvent(event)
 
@@ -303,12 +312,13 @@ internal class FeedEventHandlerTest {
     @Test
     fun `on FollowCreatedEvent for matching feed, then call onFollowAdded`() {
         val follow = followResponse()
-        val event = FollowCreatedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            follow = follow,
-            type = "feeds.follow.created"
-        )
+        val event =
+            FollowCreatedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                follow = follow,
+                type = "feeds.follow.created",
+            )
 
         handler.onEvent(event)
 
@@ -318,12 +328,13 @@ internal class FeedEventHandlerTest {
     @Test
     fun `on FollowDeletedEvent for matching feed, then call onFollowRemoved`() {
         val follow = followResponse()
-        val event = FollowDeletedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            follow = follow,
-            type = "feeds.follow.deleted"
-        )
+        val event =
+            FollowDeletedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                follow = follow,
+                type = "feeds.follow.deleted",
+            )
 
         handler.onEvent(event)
 
@@ -333,12 +344,13 @@ internal class FeedEventHandlerTest {
     @Test
     fun `on FollowUpdatedEvent for matching feed, then call onFollowUpdated`() {
         val follow = followResponse()
-        val event = FollowUpdatedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            follow = follow,
-            type = "feeds.follow.updated"
-        )
+        val event =
+            FollowUpdatedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                follow = follow,
+                type = "feeds.follow.updated",
+            )
 
         handler.onEvent(event)
 
@@ -347,13 +359,14 @@ internal class FeedEventHandlerTest {
 
     @Test
     fun `on NotificationFeedUpdatedEvent, then call onNotificationFeedUpdated`() {
-        val event = NotificationFeedUpdatedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            aggregatedActivities = emptyList(),
-            notificationStatus = null,
-            type = "feeds.notification.updated"
-        )
+        val event =
+            NotificationFeedUpdatedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                aggregatedActivities = emptyList(),
+                notificationStatus = null,
+                type = "feeds.notification.updated",
+            )
 
         handler.onEvent(event)
 
@@ -363,12 +376,13 @@ internal class FeedEventHandlerTest {
     @Test
     fun `on PollClosedFeedEvent for matching feed, then call onPollChanged`() {
         val poll = pollResponseData()
-        val event = PollClosedFeedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            poll = poll,
-            type = "feeds.poll.closed"
-        )
+        val event =
+            PollClosedFeedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                poll = poll,
+                type = "feeds.poll.closed",
+            )
 
         handler.onEvent(event)
 
@@ -378,12 +392,13 @@ internal class FeedEventHandlerTest {
     @Test
     fun `on PollDeletedFeedEvent for matching feed, then call onPollChanged with null`() {
         val poll = pollResponseData()
-        val event = PollDeletedFeedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            poll = poll,
-            type = "feeds.poll.deleted"
-        )
+        val event =
+            PollDeletedFeedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                poll = poll,
+                type = "feeds.poll.deleted",
+            )
 
         handler.onEvent(event)
 
@@ -393,12 +408,13 @@ internal class FeedEventHandlerTest {
     @Test
     fun `on PollUpdatedFeedEvent for matching feed, then call onPollChanged`() {
         val poll = pollResponseData()
-        val event = PollUpdatedFeedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            poll = poll,
-            type = "feeds.poll.updated"
-        )
+        val event =
+            PollUpdatedFeedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                poll = poll,
+                type = "feeds.poll.updated",
+            )
 
         handler.onEvent(event)
 
@@ -409,13 +425,14 @@ internal class FeedEventHandlerTest {
     fun `on PollVoteCastedFeedEvent for matching feed, then call onPollChanged`() {
         val poll = pollResponseData()
         val pollVote = pollVoteResponseData()
-        val event = PollVoteCastedFeedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            poll = poll,
-            pollVote = pollVote,
-            type = "feeds.poll.vote.casted"
-        )
+        val event =
+            PollVoteCastedFeedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                poll = poll,
+                pollVote = pollVote,
+                type = "feeds.poll.vote.casted",
+            )
 
         handler.onEvent(event)
 
@@ -426,13 +443,14 @@ internal class FeedEventHandlerTest {
     fun `on PollVoteChangedFeedEvent for matching feed, then call onPollChanged`() {
         val poll = pollResponseData()
         val pollVote = pollVoteResponseData()
-        val event = PollVoteChangedFeedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            poll = poll,
-            pollVote = pollVote,
-            type = "feeds.poll.vote.changed"
-        )
+        val event =
+            PollVoteChangedFeedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                poll = poll,
+                pollVote = pollVote,
+                type = "feeds.poll.vote.changed",
+            )
 
         handler.onEvent(event)
 
@@ -443,13 +461,14 @@ internal class FeedEventHandlerTest {
     fun `on PollVoteRemovedFeedEvent for matching feed, then call onPollChanged`() {
         val poll = pollResponseData()
         val pollVote = pollVoteResponseData()
-        val event = PollVoteRemovedFeedEvent(
-            createdAt = Date(),
-            fid = fid.rawValue,
-            poll = poll,
-            pollVote = pollVote,
-            type = "feeds.poll.vote.removed"
-        )
+        val event =
+            PollVoteRemovedFeedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                poll = poll,
+                pollVote = pollVote,
+                type = "feeds.poll.vote.removed",
+            )
 
         handler.onEvent(event)
 
@@ -458,9 +477,10 @@ internal class FeedEventHandlerTest {
 
     @Test
     fun `on unknown event, then do nothing`() {
-        val unknownEvent = object : WSEvent {
-            override fun getWSEventType(): String = "unknown.event"
-        }
+        val unknownEvent =
+            object : WSEvent {
+                override fun getWSEventType(): String = "unknown.event"
+            }
 
         handler.onEvent(unknownEvent)
 

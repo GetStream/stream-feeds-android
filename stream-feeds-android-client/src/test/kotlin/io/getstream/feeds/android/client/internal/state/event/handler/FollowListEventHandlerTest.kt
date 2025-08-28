@@ -23,8 +23,8 @@ import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Test
 import java.util.Date
+import org.junit.Test
 
 internal class FollowListEventHandlerTest {
     private val state: FollowListStateUpdates = mockk(relaxed = true)
@@ -34,12 +34,13 @@ internal class FollowListEventHandlerTest {
     @Test
     fun `on FollowUpdatedEvent, then call onFollowUpdated`() {
         val follow = followResponse()
-        val event = FollowUpdatedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            follow = follow,
-            type = "feeds.follow.updated"
-        )
+        val event =
+            FollowUpdatedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                follow = follow,
+                type = "feeds.follow.updated",
+            )
 
         handler.onEvent(event)
 
@@ -48,9 +49,10 @@ internal class FollowListEventHandlerTest {
 
     @Test
     fun `on unknown event, then do nothing`() {
-        val unknownEvent = object : WSEvent {
-            override fun getWSEventType(): String = "unknown.event"
-        }
+        val unknownEvent =
+            object : WSEvent {
+                override fun getWSEventType(): String = "unknown.event"
+            }
 
         handler.onEvent(unknownEvent)
 

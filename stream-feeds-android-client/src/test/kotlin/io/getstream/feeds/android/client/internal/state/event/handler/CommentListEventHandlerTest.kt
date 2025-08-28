@@ -23,8 +23,8 @@ import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Test
 import java.util.Date
+import org.junit.Test
 
 internal class CommentListEventHandlerTest {
 
@@ -34,12 +34,13 @@ internal class CommentListEventHandlerTest {
     @Test
     fun `on CommentUpdatedEvent, then call onCommentUpdated`() {
         val comment = commentResponse()
-        val event = CommentUpdatedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            comment = comment,
-            type = "feeds.comment.updated"
-        )
+        val event =
+            CommentUpdatedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                comment = comment,
+                type = "feeds.comment.updated",
+            )
 
         handler.onEvent(event)
 
@@ -48,9 +49,10 @@ internal class CommentListEventHandlerTest {
 
     @Test
     fun `on unknown event, then do nothing`() {
-        val unknownEvent = object : WSEvent {
-            override fun getWSEventType(): String = "unknown.event"
-        }
+        val unknownEvent =
+            object : WSEvent {
+                override fun getWSEventType(): String = "unknown.event"
+            }
 
         handler.onEvent(unknownEvent)
 

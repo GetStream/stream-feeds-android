@@ -23,8 +23,8 @@ import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Test
 import java.util.Date
+import org.junit.Test
 
 internal class FeedListEventHandlerTest {
     private val state: FeedListStateUpdates = mockk(relaxed = true)
@@ -34,12 +34,13 @@ internal class FeedListEventHandlerTest {
     @Test
     fun `on FeedUpdatedEvent, then call onFeedUpdated`() {
         val feed = feedResponse()
-        val event = FeedUpdatedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            feed = feed,
-            type = "feeds.feed.updated"
-        )
+        val event =
+            FeedUpdatedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                feed = feed,
+                type = "feeds.feed.updated",
+            )
 
         handler.onEvent(event)
 
@@ -48,9 +49,10 @@ internal class FeedListEventHandlerTest {
 
     @Test
     fun `on unknown event, then do nothing`() {
-        val unknownEvent = object : WSEvent {
-            override fun getWSEventType(): String = "unknown.event"
-        }
+        val unknownEvent =
+            object : WSEvent {
+                override fun getWSEventType(): String = "unknown.event"
+            }
 
         handler.onEvent(unknownEvent)
 

@@ -32,20 +32,23 @@ import org.junit.Test
 
 internal class ActivityReactionListImplTest {
     private val activitiesRepository: ActivitiesRepository = mockk()
-    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> = mockk(relaxed = true)
+    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> =
+        mockk(relaxed = true)
     private val query = ActivityReactionsQuery(activityId = "activity-1", limit = 10)
 
-    private val activityReactionList = ActivityReactionListImpl(
-        query = query,
-        activitiesRepository = activitiesRepository,
-        subscriptionManager = subscriptionManager
-    )
+    private val activityReactionList =
+        ActivityReactionListImpl(
+            query = query,
+            activitiesRepository = activitiesRepository,
+            subscriptionManager = subscriptionManager,
+        )
 
     @Test
     fun `on get, then return reactions and update state`() = runTest {
         val reactions = listOf(feedsReactionData(), feedsReactionData())
         val paginationResult = createPaginationResult(reactions, next = "next-cursor")
-        coEvery { activitiesRepository.queryActivityReactions(query.activityId, any()) } returns Result.success(paginationResult)
+        coEvery { activitiesRepository.queryActivityReactions(query.activityId, any()) } returns
+            Result.success(paginationResult)
 
         val result = activityReactionList.get()
 
@@ -58,12 +61,14 @@ internal class ActivityReactionListImplTest {
         setupInitialState()
 
         val moreReactions = listOf(feedsReactionData(), feedsReactionData())
-        val morePaginationResult = createPaginationResult(
-            reactions = moreReactions,
-            next = "next-cursor-2",
-            previous = "next-cursor"
-        )
-        coEvery { activitiesRepository.queryActivityReactions(any(), any()) } returns Result.success(morePaginationResult)
+        val morePaginationResult =
+            createPaginationResult(
+                reactions = moreReactions,
+                next = "next-cursor-2",
+                previous = "next-cursor",
+            )
+        coEvery { activitiesRepository.queryActivityReactions(any(), any()) } returns
+            Result.success(morePaginationResult)
 
         val result = activityReactionList.queryMoreReactions()
 
@@ -87,11 +92,10 @@ internal class ActivityReactionListImplTest {
 
         val customLimit = 5
         val moreReactions = listOf(feedsReactionData())
-        val morePaginationResult = createPaginationResult(
-            reactions = moreReactions,
-            previous = "next-cursor"
-        )
-        coEvery { activitiesRepository.queryActivityReactions(any(), any()) } returns Result.success(morePaginationResult)
+        val morePaginationResult =
+            createPaginationResult(reactions = moreReactions, previous = "next-cursor")
+        coEvery { activitiesRepository.queryActivityReactions(any(), any()) } returns
+            Result.success(morePaginationResult)
 
         val result = activityReactionList.queryMoreReactions(customLimit)
 
@@ -101,20 +105,23 @@ internal class ActivityReactionListImplTest {
 
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialReactions = listOf(feedsReactionData())
-        val initialPaginationResult = PaginationResult(
-            models = initialReactions,
-            pagination = PaginationData(next = nextCursor, previous = null)
-        )
-        coEvery { activitiesRepository.queryActivityReactions(query.activityId, any()) } returns Result.success(initialPaginationResult)
+        val initialPaginationResult =
+            PaginationResult(
+                models = initialReactions,
+                pagination = PaginationData(next = nextCursor, previous = null),
+            )
+        coEvery { activitiesRepository.queryActivityReactions(query.activityId, any()) } returns
+            Result.success(initialPaginationResult)
         activityReactionList.get()
     }
 
     private fun createPaginationResult(
         reactions: List<FeedsReactionData>,
         next: String? = null,
-        previous: String? = null
-    ) = PaginationResult(
-        models = reactions,
-        pagination = PaginationData(next = next, previous = previous)
-    )
+        previous: String? = null,
+    ) =
+        PaginationResult(
+            models = reactions,
+            pagination = PaginationData(next = next, previous = previous),
+        )
 }

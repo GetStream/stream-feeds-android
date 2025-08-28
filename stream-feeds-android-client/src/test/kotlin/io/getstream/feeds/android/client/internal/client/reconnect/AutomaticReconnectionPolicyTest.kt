@@ -74,10 +74,11 @@ internal class AutomaticReconnectionPolicyTest {
         every { policy2.shouldReconnect() } returns true
         every { policy3.shouldReconnect() } returns true
 
-        val composite = CompositeReconnectionPolicy(
-            CompositeReconnectionPolicy.Operator.AND,
-            listOf(policy1, policy2, policy3)
-        )
+        val composite =
+            CompositeReconnectionPolicy(
+                CompositeReconnectionPolicy.Operator.AND,
+                listOf(policy1, policy2, policy3),
+            )
 
         assertTrue(composite.shouldReconnect())
     }
@@ -91,10 +92,11 @@ internal class AutomaticReconnectionPolicyTest {
         every { policy2.shouldReconnect() } returns false // One false
         every { policy3.shouldReconnect() } returns true
 
-        val composite = CompositeReconnectionPolicy(
-            CompositeReconnectionPolicy.Operator.AND,
-            listOf(policy1, policy2, policy3)
-        )
+        val composite =
+            CompositeReconnectionPolicy(
+                CompositeReconnectionPolicy.Operator.AND,
+                listOf(policy1, policy2, policy3),
+            )
 
         assertFalse(composite.shouldReconnect())
     }
@@ -106,10 +108,11 @@ internal class AutomaticReconnectionPolicyTest {
         every { policy1.shouldReconnect() } returns false
         every { policy2.shouldReconnect() } returns false
 
-        val composite = CompositeReconnectionPolicy(
-            CompositeReconnectionPolicy.Operator.AND,
-            listOf(policy1, policy2)
-        )
+        val composite =
+            CompositeReconnectionPolicy(
+                CompositeReconnectionPolicy.Operator.AND,
+                listOf(policy1, policy2),
+            )
 
         assertFalse(composite.shouldReconnect())
     }
@@ -121,10 +124,11 @@ internal class AutomaticReconnectionPolicyTest {
         every { policy1.shouldReconnect() } returns true
         every { policy2.shouldReconnect() } returns true
 
-        val composite = CompositeReconnectionPolicy(
-            CompositeReconnectionPolicy.Operator.OR,
-            listOf(policy1, policy2)
-        )
+        val composite =
+            CompositeReconnectionPolicy(
+                CompositeReconnectionPolicy.Operator.OR,
+                listOf(policy1, policy2),
+            )
 
         assertTrue(composite.shouldReconnect())
     }
@@ -138,10 +142,11 @@ internal class AutomaticReconnectionPolicyTest {
         every { policy2.shouldReconnect() } returns true // One true is enough
         every { policy3.shouldReconnect() } returns false
 
-        val composite = CompositeReconnectionPolicy(
-            CompositeReconnectionPolicy.Operator.OR,
-            listOf(policy1, policy2, policy3)
-        )
+        val composite =
+            CompositeReconnectionPolicy(
+                CompositeReconnectionPolicy.Operator.OR,
+                listOf(policy1, policy2, policy3),
+            )
 
         assertTrue(composite.shouldReconnect())
     }
@@ -153,20 +158,19 @@ internal class AutomaticReconnectionPolicyTest {
         every { policy1.shouldReconnect() } returns false
         every { policy2.shouldReconnect() } returns false
 
-        val composite = CompositeReconnectionPolicy(
-            CompositeReconnectionPolicy.Operator.OR,
-            listOf(policy1, policy2)
-        )
+        val composite =
+            CompositeReconnectionPolicy(
+                CompositeReconnectionPolicy.Operator.OR,
+                listOf(policy1, policy2),
+            )
 
         assertFalse(composite.shouldReconnect())
     }
 
     @Test
     fun `CompositeReconnectionPolicy with AND operator on empty list, then shouldReconnect returns true`() {
-        val composite = CompositeReconnectionPolicy(
-            CompositeReconnectionPolicy.Operator.AND,
-            emptyList()
-        )
+        val composite =
+            CompositeReconnectionPolicy(CompositeReconnectionPolicy.Operator.AND, emptyList())
 
         // AND with empty list should return true (all of nothing is true)
         assertTrue(composite.shouldReconnect())
@@ -174,10 +178,8 @@ internal class AutomaticReconnectionPolicyTest {
 
     @Test
     fun `CompositeReconnectionPolicy with OR operator on empty list, then shouldReconnect returns false`() {
-        val composite = CompositeReconnectionPolicy(
-            CompositeReconnectionPolicy.Operator.OR,
-            emptyList()
-        )
+        val composite =
+            CompositeReconnectionPolicy(CompositeReconnectionPolicy.Operator.OR, emptyList())
 
         // OR with empty list should return false (any of nothing is false)
         assertFalse(composite.shouldReconnect())
@@ -188,10 +190,8 @@ internal class AutomaticReconnectionPolicyTest {
         val policy: AutomaticReconnectionPolicy = mockk()
         every { policy.shouldReconnect() } returns true
 
-        val composite = CompositeReconnectionPolicy(
-            CompositeReconnectionPolicy.Operator.AND,
-            listOf(policy)
-        )
+        val composite =
+            CompositeReconnectionPolicy(CompositeReconnectionPolicy.Operator.AND, listOf(policy))
 
         assertTrue(composite.shouldReconnect())
     }
@@ -201,10 +201,8 @@ internal class AutomaticReconnectionPolicyTest {
         val policy: AutomaticReconnectionPolicy = mockk()
         every { policy.shouldReconnect() } returns false
 
-        val composite = CompositeReconnectionPolicy(
-            CompositeReconnectionPolicy.Operator.OR,
-            listOf(policy)
-        )
+        val composite =
+            CompositeReconnectionPolicy(CompositeReconnectionPolicy.Operator.OR, listOf(policy))
 
         assertFalse(composite.shouldReconnect())
     }

@@ -23,8 +23,8 @@ import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Test
 import java.util.Date
+import org.junit.Test
 
 internal class PollListEventHandlerTest {
     private val state: PollListStateUpdates = mockk(relaxed = true)
@@ -34,12 +34,13 @@ internal class PollListEventHandlerTest {
     @Test
     fun `on PollUpdatedFeedEvent, then call onPollUpdated`() {
         val poll = pollResponseData()
-        val event = PollUpdatedFeedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            poll = poll,
-            type = "feeds.poll.updated"
-        )
+        val event =
+            PollUpdatedFeedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                poll = poll,
+                type = "feeds.poll.updated",
+            )
 
         handler.onEvent(event)
 
@@ -48,9 +49,10 @@ internal class PollListEventHandlerTest {
 
     @Test
     fun `on unknown event, then do nothing`() {
-        val unknownEvent = object : WSEvent {
-            override fun getWSEventType(): String = "unknown.event"
-        }
+        val unknownEvent =
+            object : WSEvent {
+                override fun getWSEventType(): String = "unknown.event"
+            }
 
         handler.onEvent(unknownEvent)
 

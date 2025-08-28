@@ -227,9 +227,7 @@ internal object TestData {
             visibilityTag = null,
         )
 
-    fun appData(
-        name: String = "Test App",
-    ): AppData =
+    fun appData(name: String = "Test App"): AppData =
         AppData(
             asyncUrlEnrichEnabled = false,
             autoTranslationEnabled = false,
@@ -286,110 +284,119 @@ internal object TestData {
             type = "",
             updatedAt = Date(),
             visibility = ActivityResponse.Visibility.Public,
-            user = userResponse()
+            user = userResponse(),
         )
 
-    fun feedsReactionResponse() = FeedsReactionResponse(
-        activityId = "activity-1",
-        createdAt = Date(1000),
-        type = "like",
-        updatedAt = Date(1000),
-        user = userResponse(),
-    )
+    fun feedsReactionResponse() =
+        FeedsReactionResponse(
+            activityId = "activity-1",
+            createdAt = Date(1000),
+            type = "like",
+            updatedAt = Date(1000),
+            user = userResponse(),
+        )
 
-    fun pinActivityResponse(): PinActivityResponse = PinActivityResponse(
-        createdAt = Date(1000),
-        activity = activityResponse(),
-        duration = "duration",
-        feed = "feed",
-        userId = "user"
-    )
+    fun pinActivityResponse(): PinActivityResponse =
+        PinActivityResponse(
+            createdAt = Date(1000),
+            activity = activityResponse(),
+            duration = "duration",
+            feed = "feed",
+            userId = "user",
+        )
 
-    fun unpinActivityResponse(): UnpinActivityResponse = UnpinActivityResponse(
-        activity = activityResponse(),
-        duration = "duration",
-        feed = "feed",
-        userId = "user"
-    )
+    fun unpinActivityResponse(): UnpinActivityResponse =
+        UnpinActivityResponse(
+            activity = activityResponse(),
+            duration = "duration",
+            feed = "feed",
+            userId = "user",
+        )
 
-    fun userResponse() = UserResponse(
-        id = "user-1",
-        banned = false,
-        createdAt = Date(1000),
-        language = "en",
-        online = false,
-        role = "user",
-        updatedAt = Date(1000),
-    )
+    fun userResponse() =
+        UserResponse(
+            id = "user-1",
+            banned = false,
+            createdAt = Date(1000),
+            language = "en",
+            online = false,
+            role = "user",
+            updatedAt = Date(1000),
+        )
 
-    fun bookmarkResponse() = BookmarkResponse(
-        createdAt = Date(1000),
-        updatedAt = Date(1000),
-        activity = activityResponse(),
-        user = userResponse(),
-        custom = emptyMap(),
-        folder = null
-    )
+    fun bookmarkResponse() =
+        BookmarkResponse(
+            createdAt = Date(1000),
+            updatedAt = Date(1000),
+            activity = activityResponse(),
+            user = userResponse(),
+            custom = emptyMap(),
+            folder = null,
+        )
 
-    fun bookmarkFolderResponse() = BookmarkFolderResponse(
-        createdAt = Date(1000),
-        custom = emptyMap(),
-        id = "folder-1",
-        name = "Test Folder",
-        updatedAt = Date(1000)
-    )
+    fun bookmarkFolderResponse() =
+        BookmarkFolderResponse(
+            createdAt = Date(1000),
+            custom = emptyMap(),
+            id = "folder-1",
+            name = "Test Folder",
+            updatedAt = Date(1000),
+        )
 
     fun followData(
         sourceUserId: String = "user-1",
         targetUserId: String = "user-2",
         createdAt: Date = Date(1000),
         updatedAt: Date = Date(1000),
-    ): FollowData = FollowData(
-        createdAt = createdAt,
-        custom = emptyMap(),
-        followerRole = "user",
-        pushPreference = "all",
-        requestAcceptedAt = createdAt,
-        requestRejectedAt = null,
-        sourceFeed = FeedData(
+    ): FollowData =
+        FollowData(
             createdAt = createdAt,
-            createdBy = userData(sourceUserId),
             custom = emptyMap(),
-            deletedAt = null,
-            description = "Test feed",
-            fid = FeedId("user:$sourceUserId"),
-            filterTags = emptyList(),
-            followerCount = 0,
-            followingCount = 0,
-            groupId = "user",
-            id = sourceUserId,
-            memberCount = 0,
-            name = "Test Feed",
-            pinCount = 0,
+            followerRole = "user",
+            pushPreference = "all",
+            requestAcceptedAt = createdAt,
+            requestRejectedAt = null,
+            sourceFeed =
+                FeedData(
+                    createdAt = createdAt,
+                    createdBy = userData(sourceUserId),
+                    custom = emptyMap(),
+                    deletedAt = null,
+                    description = "Test feed",
+                    fid = FeedId("user:$sourceUserId"),
+                    filterTags = emptyList(),
+                    followerCount = 0,
+                    followingCount = 0,
+                    groupId = "user",
+                    id = sourceUserId,
+                    memberCount = 0,
+                    name = "Test Feed",
+                    pinCount = 0,
+                    updatedAt = updatedAt,
+                    visibility = "public",
+                ),
+            status = FollowStatus.Accepted,
+            targetFeed =
+                FeedData(
+                    createdAt = createdAt,
+                    createdBy = userData(targetUserId),
+                    custom = emptyMap(),
+                    deletedAt = null,
+                    description = "Target feed",
+                    fid = FeedId("user:$targetUserId"),
+                    filterTags = emptyList(),
+                    followerCount = 0,
+                    followingCount = 0,
+                    groupId = "user",
+                    id = targetUserId,
+                    memberCount = 0,
+                    name = "Target Feed",
+                    pinCount = 0,
+                    updatedAt = updatedAt,
+                    visibility = "public",
+                ),
             updatedAt = updatedAt,
-            visibility = "public"
-        ),
-        status = FollowStatus.Accepted,
-        targetFeed = FeedData(
-            createdAt = createdAt,
-            createdBy = userData(targetUserId),
-            custom = emptyMap(),
-            deletedAt = null,
-            description = "Target feed",
-            fid = FeedId("user:$targetUserId"),
-            filterTags = emptyList(),
-            followerCount = 0,
-            followingCount = 0,
-            groupId = "user",
-            id = targetUserId,
-            memberCount = 0,
-            name = "Target Feed",
-            pinCount = 0,
-            updatedAt = updatedAt,
-            visibility = "public"
-        ),
-        updatedAt = updatedAt
-    )
+        )
 
     fun feedMemberData(
         userId: String = "user-1",
@@ -397,26 +404,23 @@ internal object TestData {
         status: FeedMemberStatus = FeedMemberStatus.Member,
         createdAt: Date = Date(1000),
         updatedAt: Date = Date(1000),
-    ): FeedMemberData = FeedMemberData(
-        createdAt = createdAt,
-        custom = emptyMap(),
-        inviteAcceptedAt = createdAt,
-        inviteRejectedAt = null,
-        role = role,
-        status = status,
-        updatedAt = updatedAt,
-        user = userData(userId)
-    )
+    ): FeedMemberData =
+        FeedMemberData(
+            createdAt = createdAt,
+            custom = emptyMap(),
+            inviteAcceptedAt = createdAt,
+            inviteRejectedAt = null,
+            role = role,
+            status = status,
+            updatedAt = updatedAt,
+            user = userData(userId),
+        )
 
     fun pollOptionData(
         id: String = "option-1",
         text: String = "Test Option",
         custom: Map<String, Any?> = emptyMap(),
-    ): PollOptionData = PollOptionData(
-        custom = custom,
-        id = id,
-        text = text
-    )
+    ): PollOptionData = PollOptionData(custom = custom, id = id, text = text)
 
     fun pollVoteData(
         id: String = "vote-1",
@@ -424,96 +428,98 @@ internal object TestData {
         optionId: String = "option-1",
         userId: String = "user-1",
         answerText: String? = null,
-    ): PollVoteData = PollVoteData(
-        answerText = answerText,
-        createdAt = Date(1000),
-        id = id,
-        isAnswer = null,
-        optionId = optionId,
-        pollId = pollId,
-        updatedAt = Date(1000),
-        user = userData(userId),
-        userId = userId
-    )
+    ): PollVoteData =
+        PollVoteData(
+            answerText = answerText,
+            createdAt = Date(1000),
+            id = id,
+            isAnswer = null,
+            optionId = optionId,
+            pollId = pollId,
+            updatedAt = Date(1000),
+            user = userData(userId),
+            userId = userId,
+        )
 
     fun pollData(
         id: String = "poll-1",
         name: String = "Test Poll",
         description: String = "Test poll description",
         isClosed: Boolean = false,
-    ): PollData = PollData(
-        allowAnswers = false,
-        allowUserSuggestedOptions = false,
-        answersCount = 0,
-        createdAt = Date(1000),
-        createdBy = userData("user-1"),
-        createdById = "user-1",
-        custom = emptyMap(),
-        description = description,
-        enforceUniqueVote = true,
-        id = id,
-        isClosed = isClosed,
-        latestAnswers = emptyList(),
-        latestVotesByOption = emptyMap(),
-        maxVotesAllowed = null,
-        name = name,
-        options = listOf(pollOptionData(), pollOptionData("option-2", "Test Option 2")),
-        ownVotes = emptyList(),
-        updatedAt = Date(1000),
-        voteCount = 0,
-        voteCountsByOption = emptyMap(),
-        votingVisibility = "public"
-    )
+    ): PollData =
+        PollData(
+            allowAnswers = false,
+            allowUserSuggestedOptions = false,
+            answersCount = 0,
+            createdAt = Date(1000),
+            createdBy = userData("user-1"),
+            createdById = "user-1",
+            custom = emptyMap(),
+            description = description,
+            enforceUniqueVote = true,
+            id = id,
+            isClosed = isClosed,
+            latestAnswers = emptyList(),
+            latestVotesByOption = emptyMap(),
+            maxVotesAllowed = null,
+            name = name,
+            options = listOf(pollOptionData(), pollOptionData("option-2", "Test Option 2")),
+            ownVotes = emptyList(),
+            updatedAt = Date(1000),
+            voteCount = 0,
+            voteCountsByOption = emptyMap(),
+            votingVisibility = "public",
+        )
 
-    fun pollResponseData(
-        name: String = "Test Poll",
-    ): PollResponseData = PollResponseData(
-        allowAnswers = false,
-        allowUserSuggestedOptions = false,
-        answersCount = 0,
-        createdAt = Date(1000),
-        createdById = "user-1",
-        description = "Test poll description",
-        enforceUniqueVote = true,
-        id = "poll-1",
-        name = name,
-        updatedAt = Date(1000),
-        voteCount = 0,
-        votingVisibility = "public",
-        latestAnswers = emptyList(),
-        options = emptyList(),
-        ownVotes = emptyList(),
-        custom = emptyMap(),
-        latestVotesByOption = emptyMap(),
-        voteCountsByOption = emptyMap(),
-        isClosed = false,
-        maxVotesAllowed = null,
-        createdBy = null
-    )
+    fun pollResponseData(name: String = "Test Poll"): PollResponseData =
+        PollResponseData(
+            allowAnswers = false,
+            allowUserSuggestedOptions = false,
+            answersCount = 0,
+            createdAt = Date(1000),
+            createdById = "user-1",
+            description = "Test poll description",
+            enforceUniqueVote = true,
+            id = "poll-1",
+            name = name,
+            updatedAt = Date(1000),
+            voteCount = 0,
+            votingVisibility = "public",
+            latestAnswers = emptyList(),
+            options = emptyList(),
+            ownVotes = emptyList(),
+            custom = emptyMap(),
+            latestVotesByOption = emptyMap(),
+            voteCountsByOption = emptyMap(),
+            isClosed = false,
+            maxVotesAllowed = null,
+            createdBy = null,
+        )
 
     fun feedData(
         id: String = "user-1",
         groupId: String = "user",
         name: String = "Test Feed",
         description: String = "Test feed description",
-    ): FeedData = FeedData(
-        createdAt = Date(1000),
-        createdBy = userData(id),
-        custom = emptyMap(),
-        deletedAt = null,
-        description = description,
-        fid = FeedId("$groupId:$id"),
-        filterTags = emptyList(),
-        followerCount = 0,
-        followingCount = 0,
-        groupId = groupId,
-        id = id,
-        memberCount = 0,
-        name = name,
-        pinCount = 0,
-        updatedAt = Date(1000),
-        visibility = "public"
-    )
+    ): FeedData =
+        FeedData(
+            createdAt = Date(1000),
+            createdBy = userData(id),
+            custom = emptyMap(),
+            deletedAt = null,
+            description = description,
+            fid = FeedId("$groupId:$id"),
+            filterTags = emptyList(),
+            followerCount = 0,
+            followingCount = 0,
+            groupId = groupId,
+            id = id,
+            memberCount = 0,
+            name = name,
+            pinCount = 0,
+            updatedAt = Date(1000),
+            visibility = "public",
+        )
 
     fun moderationConfigData(
         key: String = "config-1",
@@ -521,160 +527,156 @@ internal object TestData {
         async: Boolean = false,
         createdAt: Date = Date(1000),
         updatedAt: Date = Date(1000),
-    ): ModerationConfigData = ModerationConfigData(
-        aiImageConfig = null,
-        aiTextConfig = null,
-        aiVideoConfig = null,
-        async = async,
-        automodPlatformCircumventionConfig = null,
-        automodSemanticFiltersConfig = null,
-        automodToxicityConfig = null,
-        blockListConfig = null,
-        createdAt = createdAt,
-        key = key,
-        team = team,
-        updatedAt = updatedAt,
-        velocityFilterConfig = null
-    )
+    ): ModerationConfigData =
+        ModerationConfigData(
+            aiImageConfig = null,
+            aiTextConfig = null,
+            aiVideoConfig = null,
+            async = async,
+            automodPlatformCircumventionConfig = null,
+            automodSemanticFiltersConfig = null,
+            automodToxicityConfig = null,
+            blockListConfig = null,
+            createdAt = createdAt,
+            key = key,
+            team = team,
+            updatedAt = updatedAt,
+            velocityFilterConfig = null,
+        )
 
-    fun feedResponse() = FeedResponse(
-        id = "feed-1",
-        groupId = "user",
-        name = "Test Feed",
-        description = "Test feed description",
-        feed = "user:feed-1",
-        followerCount = 0,
-        followingCount = 0,
-        memberCount = 0,
-        pinCount = 0,
-        createdAt = Date(1000),
-        updatedAt = Date(1000),
-        createdBy = userResponse(),
-        custom = emptyMap()
-    )
+    fun feedResponse() =
+        FeedResponse(
+            id = "feed-1",
+            groupId = "user",
+            name = "Test Feed",
+            description = "Test feed description",
+            feed = "user:feed-1",
+            followerCount = 0,
+            followingCount = 0,
+            memberCount = 0,
+            pinCount = 0,
+            createdAt = Date(1000),
+            updatedAt = Date(1000),
+            createdBy = userResponse(),
+            custom = emptyMap(),
+        )
 
-    fun followResponse() = FollowResponse(
-        createdAt = Date(1000),
-        updatedAt = Date(1000),
-        sourceFeed = feedResponse(),
-        targetFeed = feedResponse(),
-        status = FollowResponse.Status.Accepted,
-        pushPreference = FollowResponse.PushPreference.All,
-        followerRole = "user",
-        custom = emptyMap()
-    )
+    fun followResponse() =
+        FollowResponse(
+            createdAt = Date(1000),
+            updatedAt = Date(1000),
+            sourceFeed = feedResponse(),
+            targetFeed = feedResponse(),
+            status = FollowResponse.Status.Accepted,
+            pushPreference = FollowResponse.PushPreference.All,
+            followerRole = "user",
+            custom = emptyMap(),
+        )
 
-    fun feedMemberResponse() = FeedMemberResponse(
-        createdAt = Date(1000),
-        updatedAt = Date(1000),
-        user = userResponse(),
-        role = "member",
-        status = FeedMemberResponse.Status.Member,
-        custom = emptyMap()
-    )
+    fun feedMemberResponse() =
+        FeedMemberResponse(
+            createdAt = Date(1000),
+            updatedAt = Date(1000),
+            user = userResponse(),
+            role = "member",
+            status = FeedMemberResponse.Status.Member,
+            custom = emptyMap(),
+        )
 
-    fun getOrCreateFeedResponse() = GetOrCreateFeedResponse(
-        created = false,
-        duration = "duration",
-        activities = emptyList(),
-        aggregatedActivities = emptyList(),
-        followers = emptyList(),
-        following = emptyList(),
-        members = emptyList(),
-        ownCapabilities = emptyList(),
-        pinnedActivities = emptyList(),
-        feed = feedResponse(),
-        next = "next",
-        prev = "prev"
-    )
+    fun getOrCreateFeedResponse() =
+        GetOrCreateFeedResponse(
+            created = false,
+            duration = "duration",
+            activities = emptyList(),
+            aggregatedActivities = emptyList(),
+            followers = emptyList(),
+            following = emptyList(),
+            members = emptyList(),
+            ownCapabilities = emptyList(),
+            pinnedActivities = emptyList(),
+            feed = feedResponse(),
+            next = "next",
+            prev = "prev",
+        )
 
-    fun queryFeedsResponse() = QueryFeedsResponse(
-        duration = "duration",
-        feeds = listOf(feedResponse()),
-        next = "next",
-        prev = "prev"
-    )
+    fun queryFeedsResponse() =
+        QueryFeedsResponse(
+            duration = "duration",
+            feeds = listOf(feedResponse()),
+            next = "next",
+            prev = "prev",
+        )
 
-    fun queryFollowsResponse() = QueryFollowsResponse(
-        duration = "duration",
-        follows = listOf(followResponse()),
-        next = "next",
-        prev = "prev"
-    )
+    fun queryFollowsResponse() =
+        QueryFollowsResponse(
+            duration = "duration",
+            follows = listOf(followResponse()),
+            next = "next",
+            prev = "prev",
+        )
 
-    fun singleFollowResponse() = SingleFollowResponse(
-        duration = "duration",
-        follow = followResponse()
-    )
+    fun singleFollowResponse() =
+        SingleFollowResponse(duration = "duration", follow = followResponse())
 
-    fun acceptFollowResponse() = AcceptFollowResponse(
-        duration = "duration",
-        follow = followResponse()
-    )
+    fun acceptFollowResponse() =
+        AcceptFollowResponse(duration = "duration", follow = followResponse())
 
-    fun rejectFollowResponse() = RejectFollowResponse(
-        duration = "duration",
-        follow = followResponse()
-    )
+    fun rejectFollowResponse() =
+        RejectFollowResponse(duration = "duration", follow = followResponse())
 
-    fun updateFeedResponse() = UpdateFeedResponse(
-        duration = "duration",
-        feed = feedResponse()
-    )
+    fun updateFeedResponse() = UpdateFeedResponse(duration = "duration", feed = feedResponse())
 
-    fun updateFeedMembersResponse() = UpdateFeedMembersResponse(
-        duration = "duration",
-        added = emptyList(),
-        removedIds = emptyList(),
-        updated = emptyList()
-    )
+    fun updateFeedMembersResponse() =
+        UpdateFeedMembersResponse(
+            duration = "duration",
+            added = emptyList(),
+            removedIds = emptyList(),
+            updated = emptyList(),
+        )
 
-    fun queryFeedMembersResponse() = QueryFeedMembersResponse(
-        duration = "duration",
-        members = listOf(feedMemberResponse()),
-        next = "next",
-        prev = "prev"
-    )
+    fun queryFeedMembersResponse() =
+        QueryFeedMembersResponse(
+            duration = "duration",
+            members = listOf(feedMemberResponse()),
+            next = "next",
+            prev = "prev",
+        )
 
-    fun acceptFeedMemberResponse() = AcceptFeedMemberInviteResponse(
-        duration = "duration",
-        member = feedMemberResponse()
-    )
+    fun acceptFeedMemberResponse() =
+        AcceptFeedMemberInviteResponse(duration = "duration", member = feedMemberResponse())
 
-    fun rejectFeedMemberResponse() = RejectFeedMemberInviteResponse(
-        duration = "duration",
-        member = feedMemberResponse()
-    )
+    fun rejectFeedMemberResponse() =
+        RejectFeedMemberInviteResponse(duration = "duration", member = feedMemberResponse())
 
-    fun followSuggestionsResponse() = GetFollowSuggestionsResponse(
-        duration = "duration",
-        suggestions = listOf(feedResponse())
-    )
+    fun followSuggestionsResponse() =
+        GetFollowSuggestionsResponse(duration = "duration", suggestions = listOf(feedResponse()))
 
-    fun commentResponse() = CommentResponse(
-        id = "comment-1",
-        createdAt = Date(1000),
-        updatedAt = Date(1000),
-        text = "Test comment",
-        user = userResponse(),
-        confidenceScore = 0.9f,
-        downvoteCount = 0,
-        objectId = "activity-1",
-        objectType = "activity",
-        reactionCount = 5,
-        replyCount = 2,
-        score = 10,
-        status = "active",
-        upvoteCount = 5,
-        custom = emptyMap()
-    )
+    fun commentResponse() =
+        CommentResponse(
+            id = "comment-1",
+            createdAt = Date(1000),
+            updatedAt = Date(1000),
+            text = "Test comment",
+            user = userResponse(),
+            confidenceScore = 0.9f,
+            downvoteCount = 0,
+            objectId = "activity-1",
+            objectType = "activity",
+            reactionCount = 5,
+            replyCount = 2,
+            score = 10,
+            status = "active",
+            upvoteCount = 5,
+            custom = emptyMap(),
+        )
 
-    fun pollVoteResponseData() = PollVoteResponseData(
-        id = "vote-1",
-        pollId = "poll-1",
-        optionId = "option-1",
-        createdAt = Date(1000),
-        updatedAt = Date(1000),
-        user = userResponse()
-    )
+    fun pollVoteResponseData() =
+        PollVoteResponseData(
+            id = "vote-1",
+            pollId = "poll-1",
+            optionId = "option-1",
+            createdAt = Date(1000),
+            updatedAt = Date(1000),
+            user = userResponse(),
+        )
 }

@@ -35,13 +35,14 @@ internal class AppRepositoryImplTest {
     fun `getApp when called multiple times, fetch from api once and cache result`() = runTest {
         val fileUploadConfig = FileUploadConfig(sizeLimit = 0)
         val imageUploadConfig = FileUploadConfig(sizeLimit = 0)
-        val appResponseFields = AppResponseFields(
-            asyncUrlEnrichEnabled = false,
-            autoTranslationEnabled = false,
-            name = "Test App",
-            fileUploadConfig = fileUploadConfig,
-            imageUploadConfig = imageUploadConfig
-        )
+        val appResponseFields =
+            AppResponseFields(
+                asyncUrlEnrichEnabled = false,
+                autoTranslationEnabled = false,
+                name = "Test App",
+                fileUploadConfig = fileUploadConfig,
+                imageUploadConfig = imageUploadConfig,
+            )
         val apiResponse = GetApplicationResponse(duration = "100ms", app = appResponseFields)
 
         coEvery { api.getApp() } returns apiResponse

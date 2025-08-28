@@ -32,24 +32,20 @@ internal class ModerationConfigListImplTest {
     private val moderationRepository: ModerationRepository = mockk()
     private val query = ModerationConfigsQuery(limit = 10)
 
-    private val moderationConfigList = ModerationConfigListImpl(
-        query = query,
-        moderationRepository = moderationRepository
-    )
+    private val moderationConfigList =
+        ModerationConfigListImpl(query = query, moderationRepository = moderationRepository)
 
     @Test
     fun `on get, then return moderation configs and update state`() = runTest {
-        val configs = listOf(
-            moderationConfigData(),
-            moderationConfigData(key = "config-2", team = "team-2")
-        )
-        val paginationResult = PaginationResult(
-            models = configs,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
-        coEvery {
-            moderationRepository.queryModerationConfigs(query)
-        } returns Result.success(paginationResult)
+        val configs =
+            listOf(moderationConfigData(), moderationConfigData(key = "config-2", team = "team-2"))
+        val paginationResult =
+            PaginationResult(
+                models = configs,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
+        coEvery { moderationRepository.queryModerationConfigs(query) } returns
+            Result.success(paginationResult)
 
         val result = moderationConfigList.get()
 
@@ -61,14 +57,16 @@ internal class ModerationConfigListImplTest {
     fun `on queryMoreConfigs with next cursor, then query with next cursor`() = runTest {
         setupInitialState()
 
-        val moreConfigs = listOf(
-            moderationConfigData(key = "config-3", team = "team-3"),
-            moderationConfigData(key = "config-4", team = "team-4")
-        )
-        val morePaginationResult = PaginationResult(
-            models = moreConfigs,
-            pagination = PaginationData(next = "next-cursor-2", previous = "next-cursor")
-        )
+        val moreConfigs =
+            listOf(
+                moderationConfigData(key = "config-3", team = "team-3"),
+                moderationConfigData(key = "config-4", team = "team-4"),
+            )
+        val morePaginationResult =
+            PaginationResult(
+                models = moreConfigs,
+                pagination = PaginationData(next = "next-cursor-2", previous = "next-cursor"),
+            )
         coEvery {
             moderationRepository.queryModerationConfigs(any<ModerationConfigsQuery>())
         } returns Result.success(morePaginationResult)
@@ -97,10 +95,11 @@ internal class ModerationConfigListImplTest {
 
         val customLimit = 5
         val moreConfigs = listOf(moderationConfigData(key = "config-3", team = "team-3"))
-        val morePaginationResult = PaginationResult(
-            models = moreConfigs,
-            pagination = PaginationData(next = null, previous = "next-cursor")
-        )
+        val morePaginationResult =
+            PaginationResult(
+                models = moreConfigs,
+                pagination = PaginationData(next = null, previous = "next-cursor"),
+            )
         coEvery {
             moderationRepository.queryModerationConfigs(any<ModerationConfigsQuery>())
         } returns Result.success(morePaginationResult)
@@ -113,13 +112,13 @@ internal class ModerationConfigListImplTest {
 
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialConfigs = listOf(moderationConfigData())
-        val initialPaginationResult = PaginationResult(
-            models = initialConfigs,
-            pagination = PaginationData(next = nextCursor, previous = null)
-        )
-        coEvery {
-            moderationRepository.queryModerationConfigs(query)
-        } returns Result.success(initialPaginationResult)
+        val initialPaginationResult =
+            PaginationResult(
+                models = initialConfigs,
+                pagination = PaginationData(next = nextCursor, previous = null),
+            )
+        coEvery { moderationRepository.queryModerationConfigs(query) } returns
+            Result.success(initialPaginationResult)
         moderationConfigList.get()
     }
 }

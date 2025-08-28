@@ -47,16 +47,17 @@ import io.getstream.log.TaggedLogger
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import java.util.Date
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.util.Date
 
 internal class FeedsClientImplTest {
     private val coreClient: StreamClient = mockk(relaxed = true)
-    private val feedsEventsSubscriptionManager: StreamSubscriptionManager<FeedsEventListener> = mockk(relaxed = true)
+    private val feedsEventsSubscriptionManager: StreamSubscriptionManager<FeedsEventListener> =
+        mockk(relaxed = true)
     private val apiKey: StreamApiKey = StreamApiKey.fromString("test-api-key")
     private val user: User = User(id = "test-user", type = UserAuthType.REGULAR)
     private val connectionRecoveryHandler: ConnectionRecoveryHandler = mockk(relaxed = true)
@@ -73,52 +74,12 @@ internal class FeedsClientImplTest {
     private val moderation: Moderation = mockk(relaxed = true)
     private val logger: TaggedLogger = mockk(relaxed = true)
 
-    private val feedsClient: FeedsClientImpl = FeedsClientImpl(
-        coreClient = coreClient,
-        feedsEventsSubscriptionManager = feedsEventsSubscriptionManager,
-        apiKey = apiKey,
-        user = user,
-        connectionRecoveryHandler = connectionRecoveryHandler,
-        activitiesRepository = activitiesRepository,
-        appRepository = appRepository,
-        bookmarksRepository = bookmarksRepository,
-        commentsRepository = commentsRepository,
-        devicesRepository = devicesRepository,
-        feedsRepository = feedsRepository,
-        filesRepository = filesRepository,
-        moderationRepository = moderationRepository,
-        pollsRepository = pollsRepository,
-        uploader = uploader,
-        moderation = moderation,
-        logger = logger
-    )
-
-    @Test
-    fun `connect when user is regular, then subscribes to client and connects successfully`() = runTest {
-        val connectedUser = StreamConnectedUser(
-            createdAt = Date(1000),
-            id = "user-1",
-            language = "en",
-            role = "user",
-            updatedAt = Date(1000),
-            teams = emptyList()
-        )
-        coEvery { coreClient.connect() } returns Result.success(connectedUser)
-        every { coreClient.subscribe(any()) } returns Result.success(mockk())
-
-        val result = feedsClient.connect()
-
-        assertEquals(connectedUser, result.getOrNull())
-    }
-
-    @Test
-    fun `connect when user is anonymous, then returns failure`() = runTest {
-        val anonymousUser = User(id = "!anon", type = UserAuthType.ANONYMOUS)
-        val anonymousClient = FeedsClientImpl(
+    private val feedsClient: FeedsClientImpl =
+        FeedsClientImpl(
             coreClient = coreClient,
             feedsEventsSubscriptionManager = feedsEventsSubscriptionManager,
             apiKey = apiKey,
-            user = anonymousUser,
+            user = user,
             connectionRecoveryHandler = connectionRecoveryHandler,
             activitiesRepository = activitiesRepository,
             appRepository = appRepository,
@@ -131,8 +92,52 @@ internal class FeedsClientImplTest {
             pollsRepository = pollsRepository,
             uploader = uploader,
             moderation = moderation,
-            logger = logger
+            logger = logger,
         )
+
+    @Test
+    fun `connect when user is regular, then subscribes to client and connects successfully`() =
+        runTest {
+            val connectedUser =
+                StreamConnectedUser(
+                    createdAt = Date(1000),
+                    id = "user-1",
+                    language = "en",
+                    role = "user",
+                    updatedAt = Date(1000),
+                    teams = emptyList(),
+                )
+            coEvery { coreClient.connect() } returns Result.success(connectedUser)
+            every { coreClient.subscribe(any()) } returns Result.success(mockk())
+
+            val result = feedsClient.connect()
+
+            assertEquals(connectedUser, result.getOrNull())
+        }
+
+    @Test
+    fun `connect when user is anonymous, then returns failure`() = runTest {
+        val anonymousUser = User(id = "!anon", type = UserAuthType.ANONYMOUS)
+        val anonymousClient =
+            FeedsClientImpl(
+                coreClient = coreClient,
+                feedsEventsSubscriptionManager = feedsEventsSubscriptionManager,
+                apiKey = apiKey,
+                user = anonymousUser,
+                connectionRecoveryHandler = connectionRecoveryHandler,
+                activitiesRepository = activitiesRepository,
+                appRepository = appRepository,
+                bookmarksRepository = bookmarksRepository,
+                commentsRepository = commentsRepository,
+                devicesRepository = devicesRepository,
+                feedsRepository = feedsRepository,
+                filesRepository = filesRepository,
+                moderationRepository = moderationRepository,
+                pollsRepository = pollsRepository,
+                uploader = uploader,
+                moderation = moderation,
+                logger = logger,
+            )
 
         val result = anonymousClient.connect()
 
@@ -141,11 +146,12 @@ internal class FeedsClientImplTest {
     }
 
     @Test
-    fun `disconnect when called, then stops recovery handler and disconnects core client`() = runTest {
-        coEvery { coreClient.disconnect() } returns Result.success(Unit)
+    fun `disconnect when called, then stops recovery handler and disconnects core client`() =
+        runTest {
+            coEvery { coreClient.disconnect() } returns Result.success(Unit)
 
-        assertTrue(feedsClient.disconnect().isSuccess)
-    }
+            assertTrue(feedsClient.disconnect().isSuccess)
+        }
 
     @Test
     fun `addActivity when given request, then delegates to activities repository`() = runTest {
@@ -170,21 +176,24 @@ internal class FeedsClientImplTest {
     }
 
     @Test
-    fun `upsertActivities when given activities, then delegates to activities repository`() = runTest {
-        val activities = listOf(ActivityRequest(type = "post", text = "Hello world"))
-        val activityDataList = listOf(activityData(id = "activity-1", text = "Hello world"))
-        coEvery { activitiesRepository.upsertActivities(activities) } returns Result.success(activityDataList)
+    fun `upsertActivities when given activities, then delegates to activities repository`() =
+        runTest {
+            val activities = listOf(ActivityRequest(type = "post", text = "Hello world"))
+            val activityDataList = listOf(activityData(id = "activity-1", text = "Hello world"))
+            coEvery { activitiesRepository.upsertActivities(activities) } returns
+                Result.success(activityDataList)
 
-        val result = feedsClient.upsertActivities(activities)
+            val result = feedsClient.upsertActivities(activities)
 
-        assertEquals(activityDataList, result.getOrNull())
-    }
+            assertEquals(activityDataList, result.getOrNull())
+        }
 
     @Test
     fun `upsertActivities when repository fails, then returns failure`() = runTest {
         val activities = listOf(ActivityRequest(type = "post", text = "Hello world"))
         val exception = RuntimeException("Network error")
-        coEvery { activitiesRepository.upsertActivities(activities) } returns Result.failure(exception)
+        coEvery { activitiesRepository.upsertActivities(activities) } returns
+            Result.failure(exception)
 
         val result = feedsClient.upsertActivities(activities)
 
@@ -194,11 +203,13 @@ internal class FeedsClientImplTest {
     @Test
     fun `deleteActivities when given request, then delegates to activities repository`() = runTest {
         val request = DeleteActivitiesRequest(ids = listOf("activity-1", "activity-2"))
-        val deleteResponse = DeleteActivitiesResponse(
-            duration = "50ms",
-            deletedIds = listOf("activity-1", "activity-2")
-        )
-        coEvery { activitiesRepository.deleteActivities(request) } returns Result.success(deleteResponse)
+        val deleteResponse =
+            DeleteActivitiesResponse(
+                duration = "50ms",
+                deletedIds = listOf("activity-1", "activity-2"),
+            )
+        coEvery { activitiesRepository.deleteActivities(request) } returns
+            Result.success(deleteResponse)
 
         val result = feedsClient.deleteActivities(request)
 
@@ -217,10 +228,7 @@ internal class FeedsClientImplTest {
 
     @Test
     fun `queryDevices when called, then delegates to devices repository`() = runTest {
-        val devicesResponse = ListDevicesResponse(
-            duration = "100ms",
-            devices = emptyList()
-        )
+        val devicesResponse = ListDevicesResponse(duration = "100ms", devices = emptyList())
         coEvery { devicesRepository.queryDevices() } returns Result.success(devicesResponse)
 
         val result = feedsClient.queryDevices()
@@ -233,9 +241,8 @@ internal class FeedsClientImplTest {
         val deviceId = "device-123"
         val pushProvider = PushNotificationsProvider.FIREBASE
         val pushProviderName = "firebase"
-        coEvery {
-            devicesRepository.createDevice(deviceId, pushProvider, pushProviderName)
-        } returns Result.success(Unit)
+        coEvery { devicesRepository.createDevice(deviceId, pushProvider, pushProviderName) } returns
+            Result.success(Unit)
 
         val result = feedsClient.createDevice(deviceId, pushProvider, pushProviderName)
 

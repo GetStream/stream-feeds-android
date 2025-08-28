@@ -42,10 +42,11 @@ internal class MemberListStateImplTest {
     @Test
     fun `on queryMoreMembers, then update members and pagination`() = runTest {
         val members = listOf(feedMemberData(), feedMemberData("user-2"))
-        val paginationResult = PaginationResult(
-            models = members,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = members,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = MembersSort.Default)
 
         memberListState.onQueryMoreMembers(paginationResult, queryConfig)
@@ -58,10 +59,11 @@ internal class MemberListStateImplTest {
     @Test
     fun `on memberUpdated, then update specific member`() = runTest {
         val initialMembers = listOf(feedMemberData(), feedMemberData("user-2"))
-        val paginationResult = PaginationResult(
-            models = initialMembers,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = initialMembers,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = MembersSort.Default)
         memberListState.onQueryMoreMembers(paginationResult, queryConfig)
 
@@ -76,10 +78,11 @@ internal class MemberListStateImplTest {
     @Test
     fun `on memberRemoved, then remove specific member`() = runTest {
         val initialMembers = listOf(feedMemberData(), feedMemberData("user-2"))
-        val paginationResult = PaginationResult(
-            models = initialMembers,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = initialMembers,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = MembersSort.Default)
         memberListState.onQueryMoreMembers(paginationResult, queryConfig)
 
@@ -92,19 +95,21 @@ internal class MemberListStateImplTest {
     @Test
     fun `on membersUpdated, then apply multiple updates`() = runTest {
         val initialMembers = listOf(feedMemberData(), feedMemberData("user-2"))
-        val paginationResult = PaginationResult(
-            models = initialMembers,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = initialMembers,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = MembersSort.Default)
         memberListState.onQueryMoreMembers(paginationResult, queryConfig)
 
         val updatedMember = feedMemberData("user-1", role = "admin")
-        val updates = ModelUpdates(
-            added = emptyList(),
-            updated = listOf(updatedMember),
-            removedIds = listOf(initialMembers[1].id)
-        )
+        val updates =
+            ModelUpdates(
+                added = emptyList(),
+                updated = listOf(updatedMember),
+                removedIds = listOf(initialMembers[1].id),
+            )
         memberListState.onMembersUpdated(updates)
 
         val finalMembers = memberListState.members.value
@@ -114,10 +119,11 @@ internal class MemberListStateImplTest {
     @Test
     fun `on clear, then remove all members`() = runTest {
         val initialMembers = listOf(feedMemberData(), feedMemberData("user-2"))
-        val paginationResult = PaginationResult(
-            models = initialMembers,
-            pagination = PaginationData(next = "next-cursor", previous = null)
-        )
+        val paginationResult =
+            PaginationResult(
+                models = initialMembers,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
         val queryConfig = QueryConfiguration(filter = null, sort = MembersSort.Default)
         memberListState.onQueryMoreMembers(paginationResult, queryConfig)
 

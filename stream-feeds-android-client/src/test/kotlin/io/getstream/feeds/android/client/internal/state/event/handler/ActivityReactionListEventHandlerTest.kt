@@ -24,8 +24,8 @@ import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Test
 import java.util.Date
+import org.junit.Test
 
 internal class ActivityReactionListEventHandlerTest {
     private val activityId = "activity-1"
@@ -37,13 +37,14 @@ internal class ActivityReactionListEventHandlerTest {
     fun `on ActivityReactionDeletedEvent for matching activity, then call onReactionRemoved`() {
         val activity = activityResponse().copy(id = activityId)
         val reaction = feedsReactionResponse()
-        val event = ActivityReactionDeletedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            activity = activity,
-            reaction = reaction,
-            type = "feeds.activity.reaction.deleted"
-        )
+        val event =
+            ActivityReactionDeletedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                activity = activity,
+                reaction = reaction,
+                type = "feeds.activity.reaction.deleted",
+            )
 
         handler.onEvent(event)
 
@@ -54,13 +55,14 @@ internal class ActivityReactionListEventHandlerTest {
     fun `on ActivityReactionDeletedEvent for different activity, then do not call onReactionRemoved`() {
         val activity = activityResponse().copy(id = "different-activity")
         val reaction = feedsReactionResponse()
-        val event = ActivityReactionDeletedEvent(
-            createdAt = Date(),
-            fid = "user:feed-1",
-            activity = activity,
-            reaction = reaction,
-            type = "feeds.activity.reaction.deleted"
-        )
+        val event =
+            ActivityReactionDeletedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                activity = activity,
+                reaction = reaction,
+                type = "feeds.activity.reaction.deleted",
+            )
 
         handler.onEvent(event)
 
@@ -69,9 +71,10 @@ internal class ActivityReactionListEventHandlerTest {
 
     @Test
     fun `on unknown event, then do nothing`() {
-        val unknownEvent = object : WSEvent {
-            override fun getWSEventType(): String = "unknown.event"
-        }
+        val unknownEvent =
+            object : WSEvent {
+                override fun getWSEventType(): String = "unknown.event"
+            }
 
         handler.onEvent(unknownEvent)
 
