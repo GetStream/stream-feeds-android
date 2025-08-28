@@ -22,4 +22,6 @@ import kotlin.collections.*
 import kotlin.io.*
 
 /**  */
-public data class BlockContentOptions(@Json(name = "reason") public val reason: kotlin.String)
+public data class BlockContentOptions(
+    @Json(name = "reason") public val reason: kotlin.String? = null
+)

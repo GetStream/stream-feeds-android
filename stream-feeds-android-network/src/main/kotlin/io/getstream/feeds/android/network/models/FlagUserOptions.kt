@@ -22,4 +22,4 @@ import kotlin.collections.*
 import kotlin.io.*
 
 /**  */
-public data class FlagUserOptions(@Json(name = "reason") public val reason: kotlin.String)
+public data class FlagUserOptions(@Json(name = "reason") public val reason: kotlin.String? = null)

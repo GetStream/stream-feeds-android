@@ -20,6 +20,7 @@ package io.getstream.feeds.android.network.models
 import com.squareup.moshi.Json
 import kotlin.collections.*
 import kotlin.collections.List
+import kotlin.collections.Map
 import kotlin.io.*
 
 /**  */
@@ -30,4 +31,6 @@ public data class TextContentParameters(
     public val blocklistMatch: kotlin.collections.List<kotlin.String>? = emptyList(),
     @Json(name = "harm_labels")
     public val harmLabels: kotlin.collections.List<kotlin.String>? = emptyList(),
+    @Json(name = "llm_harm_labels")
+    public val llmHarmLabels: kotlin.collections.Map<kotlin.String, kotlin.String>? = emptyMap(),
 )

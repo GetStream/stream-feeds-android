@@ -23,6 +23,6 @@ import kotlin.io.*
 
 /**  */
 public data class ContentCountRuleParameters(
-    @Json(name = "threshold") public val threshold: kotlin.Int,
-    @Json(name = "time_window") public val timeWindow: kotlin.String,
+    @Json(name = "threshold") public val threshold: kotlin.Int? = null,
+    @Json(name = "time_window") public val timeWindow: kotlin.String? = null,
 )

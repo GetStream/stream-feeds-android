@@ -26,6 +26,8 @@ import kotlin.io.*
 public data class CommentReactionAddedEvent(
     @Json(name = "created_at") public val createdAt: java.util.Date,
     @Json(name = "fid") public val fid: kotlin.String,
+    @Json(name = "activity")
+    public val activity: io.getstream.feeds.android.network.models.ActivityResponse,
     @Json(name = "comment")
     public val comment: io.getstream.feeds.android.network.models.CommentResponse,
     @Json(name = "custom")
@@ -38,15 +40,15 @@ public data class CommentReactionAddedEvent(
     @Json(name = "user")
     public val user: io.getstream.feeds.android.network.models.UserResponseCommonFields? = null,
 ) :
-    io.getstream.feeds.android.network.models.WSEvent,
     io.getstream.feeds.android.network.models.WSClientEvent,
+    io.getstream.feeds.android.network.models.WSEvent,
     io.getstream.feeds.android.network.models.FeedEvent {
 
-    override fun getWSEventType(): kotlin.String {
+    override fun getWSClientEventType(): kotlin.String {
         return type
     }
 
-    override fun getWSClientEventType(): kotlin.String {
+    override fun getWSEventType(): kotlin.String {
         return type
     }
 }

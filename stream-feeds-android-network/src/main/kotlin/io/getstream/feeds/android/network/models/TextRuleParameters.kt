@@ -20,16 +20,19 @@ package io.getstream.feeds.android.network.models
 import com.squareup.moshi.Json
 import kotlin.collections.*
 import kotlin.collections.List
+import kotlin.collections.Map
 import kotlin.io.*
 
 /**  */
 public data class TextRuleParameters(
-    @Json(name = "threshold") public val threshold: kotlin.Int,
-    @Json(name = "time_window") public val timeWindow: kotlin.String,
     @Json(name = "contains_url") public val containsUrl: kotlin.Boolean? = null,
     @Json(name = "severity") public val severity: kotlin.String? = null,
+    @Json(name = "threshold") public val threshold: kotlin.Int? = null,
+    @Json(name = "time_window") public val timeWindow: kotlin.String? = null,
     @Json(name = "blocklist_match")
     public val blocklistMatch: kotlin.collections.List<kotlin.String>? = emptyList(),
     @Json(name = "harm_labels")
     public val harmLabels: kotlin.collections.List<kotlin.String>? = emptyList(),
+    @Json(name = "llm_harm_labels")
+    public val llmHarmLabels: kotlin.collections.Map<kotlin.String, kotlin.String>? = emptyMap(),
 )

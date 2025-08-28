@@ -23,8 +23,8 @@ import kotlin.io.*
 
 /**  */
 public data class RuleBuilderCondition(
-    @Json(name = "type") public val type: kotlin.String,
     @Json(name = "confidence") public val confidence: kotlin.Float? = null,
+    @Json(name = "type") public val type: kotlin.String? = null,
     @Json(name = "content_count_rule_params")
     public val contentCountRuleParams:
         io.getstream.feeds.android.network.models.ContentCountRuleParameters? =
@@ -44,6 +44,10 @@ public data class RuleBuilderCondition(
     @Json(name = "user_created_within_params")
     public val userCreatedWithinParams:
         io.getstream.feeds.android.network.models.UserCreatedWithinParameters? =
+        null,
+    @Json(name = "user_custom_property_params")
+    public val userCustomPropertyParams:
+        io.getstream.feeds.android.network.models.UserCustomPropertyParameters? =
         null,
     @Json(name = "user_rule_params")
     public val userRuleParams: io.getstream.feeds.android.network.models.UserRuleParameters? = null,
