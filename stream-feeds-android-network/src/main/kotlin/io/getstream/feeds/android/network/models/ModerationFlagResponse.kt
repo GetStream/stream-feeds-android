@@ -25,11 +25,11 @@ import kotlin.io.*
 
 /**  */
 public data class ModerationFlagResponse(
-    @Json(name = "created_at") public val createdAt: kotlin.String,
+    @Json(name = "created_at") public val createdAt: java.util.Date,
     @Json(name = "entity_id") public val entityId: kotlin.String,
     @Json(name = "entity_type") public val entityType: kotlin.String,
     @Json(name = "type") public val type: kotlin.String,
-    @Json(name = "updated_at") public val updatedAt: kotlin.String,
+    @Json(name = "updated_at") public val updatedAt: java.util.Date,
     @Json(name = "user_id") public val userId: kotlin.String,
     @Json(name = "result")
     public val result: kotlin.collections.List<kotlin.collections.Map<kotlin.String, Any?>> =

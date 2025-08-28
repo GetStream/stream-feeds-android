@@ -47,6 +47,9 @@ public data class FeedGroup(
     public val aggregation: io.getstream.feeds.android.network.models.AggregationConfig? = null,
     @Json(name = "Notification")
     public val notification: io.getstream.feeds.android.network.models.NotificationConfig? = null,
+    @Json(name = "PushNotification")
+    public val pushNotification: io.getstream.feeds.android.network.models.PushNotificationConfig? =
+        null,
     @Json(name = "Ranking")
     public val ranking: io.getstream.feeds.android.network.models.RankingConfig? = null,
     @Json(name = "Stories")

@@ -379,13 +379,14 @@ internal class FeedsClientImpl(
     }
 
     override fun events() = callbackFlow {
-        val listener = object : FeedsSocketListener {
-            override fun onState(state: WebSocketConnectionState) {}
+        val listener =
+            object : FeedsSocketListener {
+                override fun onState(state: WebSocketConnectionState) {}
 
-            override fun onEvent(event: WSEvent) {
-                trySend(event)
+                override fun onEvent(event: WSEvent) {
+                    trySend(event)
+                }
             }
-        }
         val subscription = socket.subscribe(listener)
 
         awaitClose { subscription.getOrNull()?.cancel() }

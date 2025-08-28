@@ -85,8 +85,9 @@ public interface FeedsClient {
     /**
      * Creates and returns a flow that emits WebSocket events.
      *
-     * This flow provides real-time updates for events to which the client is subscribed. For example, if you query a
-     * feed, you'll receive updates related to that feed, such as new activities, reactions, comments, etc.
+     * This flow provides real-time updates for events to which the client is subscribed. For
+     * example, if you query a feed, you'll receive updates related to that feed, such as new
+     * activities, reactions, comments, etc.
      *
      * **Note:** This flow drops events if the consumer cannot keep up (backpressure). To prevent
      * this, consider applying your preferred strategy using the `.buffer()` operator.

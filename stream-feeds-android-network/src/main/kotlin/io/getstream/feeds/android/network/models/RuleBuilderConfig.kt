@@ -24,9 +24,9 @@ import kotlin.io.*
 
 /**  */
 public data class RuleBuilderConfig(
+    @Json(name = "async") public val async: kotlin.Boolean? = null,
     @Json(name = "rules")
     public val rules:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.RuleBuilderRule> =
+        kotlin.collections.List<io.getstream.feeds.android.network.models.RuleBuilderRule>? =
         emptyList(),
-    @Json(name = "async") public val async: kotlin.Boolean? = null,
 )

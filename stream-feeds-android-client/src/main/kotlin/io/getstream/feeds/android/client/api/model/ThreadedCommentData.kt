@@ -185,11 +185,12 @@ internal fun ThreadedCommentData.addReaction(
     // Increment the count if:
     // 1. The reaction is from another user (not own reaction)
     // 2. The reaction is from the current user, but it's a new reaction (not an update of existing)
-    val updatedReactionGroup = if (!ownReaction || inserted) {
-        reactionGroup.increment(reaction.createdAt)
-    } else {
-        reactionGroup
-    }
+    val updatedReactionGroup =
+        if (!ownReaction || inserted) {
+            reactionGroup.increment(reaction.createdAt)
+        } else {
+            reactionGroup
+        }
     val updatedReactionGroups =
         this.reactionGroups.toMutableMap().apply { this[reaction.type] = updatedReactionGroup }
     val updatedReactionCount = updatedReactionGroups.values.sumOf(ReactionGroupData::count)
@@ -234,11 +235,12 @@ internal fun ThreadedCommentData.removeReaction(
     // Decrement the count if:
     // 1. The reaction is from another user (not own reaction)
     // 2. The reaction is from the current user, and it was already present
-    val updatedReactionGroup = if (!ownReaction || removed) {
-        reactionGroup.decrement(reaction.createdAt)
-    } else {
-        reactionGroup
-    }
+    val updatedReactionGroup =
+        if (!ownReaction || removed) {
+            reactionGroup.decrement(reaction.createdAt)
+        } else {
+            reactionGroup
+        }
     val updatedReactionGroups =
         if (updatedReactionGroup.isEmpty) {
             this.reactionGroups - reaction.type // Remove empty group

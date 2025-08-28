@@ -19,14 +19,12 @@ package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
 import kotlin.collections.*
+import kotlin.collections.List
 import kotlin.io.*
 
 /**  */
-public data class PushPreferences(
-    @Json(name = "call_level") public val callLevel: kotlin.String? = null,
-    @Json(name = "chat_level") public val chatLevel: kotlin.String? = null,
-    @Json(name = "disabled_until") public val disabledUntil: java.util.Date? = null,
-    @Json(name = "feeds_level") public val feedsLevel: kotlin.String? = null,
-    @Json(name = "feeds_events")
-    public val feedsEvents: io.getstream.feeds.android.network.models.FeedsEventPreferences? = null,
+public data class PushNotificationConfig(
+    @Json(name = "enabled") public val enabled: kotlin.Boolean? = null,
+    @Json(name = "activity_types")
+    public val activityTypes: kotlin.collections.List<kotlin.String>? = emptyList(),
 )

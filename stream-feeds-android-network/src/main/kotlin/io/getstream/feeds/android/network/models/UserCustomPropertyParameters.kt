@@ -22,11 +22,7 @@ import kotlin.collections.*
 import kotlin.io.*
 
 /**  */
-public data class PushPreferences(
-    @Json(name = "call_level") public val callLevel: kotlin.String? = null,
-    @Json(name = "chat_level") public val chatLevel: kotlin.String? = null,
-    @Json(name = "disabled_until") public val disabledUntil: java.util.Date? = null,
-    @Json(name = "feeds_level") public val feedsLevel: kotlin.String? = null,
-    @Json(name = "feeds_events")
-    public val feedsEvents: io.getstream.feeds.android.network.models.FeedsEventPreferences? = null,
+public data class UserCustomPropertyParameters(
+    @Json(name = "operator") public val operator: kotlin.String? = null,
+    @Json(name = "property_key") public val propertyKey: kotlin.String? = null,
 )
