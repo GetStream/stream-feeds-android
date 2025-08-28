@@ -11,6 +11,13 @@ plugins {
     alias(libs.plugins.kover)
 }
 
+rootProject.extra.apply {
+    set("PUBLISH_GROUP_ID", Configuration.artifactGroup)
+    set("PUBLISH_ARTIFACT_ID", "stream-feeds-android-client")
+    set("PUBLISH_VERSION", rootProject.extra.get("rootVersionName"))
+}
+
+apply(from = "${rootDir}/scripts/publish-module.gradle")
 apply(from = "$rootDir/scripts/android.gradle")
 
 android {
@@ -38,6 +45,10 @@ android {
         debug {
             consumerProguardFiles("consumer-rules.pro")
         }
+    }
+
+    publishing {
+        singleVariant("release") { }
     }
 }
 
