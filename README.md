@@ -8,7 +8,7 @@
 
 <div align="center">
 
-![stream-feeds-android-client](https://img.shields.io/badge/stream--feeds--android--client-2.50%20MB-lightgreen)
+![stream-feeds-android-client](https://img.shields.io/badge/stream--feeds--android--client-2.53%20MB-lightgreen)
 
 </div>
 
