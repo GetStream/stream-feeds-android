@@ -172,12 +172,6 @@ internal class FeedStateImpl(
             }
     }
 
-    override fun onActivityRemoved(activity: ActivityData) {
-        _activities.value = _activities.value.filter { it.id != activity.id }
-        // Also remove the activity from pinned activities if it exists
-        _pinnedActivities.value = _pinnedActivities.value.filter { it.activity.id != activity.id }
-    }
-
     override fun onActivityRemoved(activityId: String) {
         _activities.value = _activities.value.filter { it.id != activityId }
         // Also remove the activity from pinned activities if it exists
@@ -388,9 +382,6 @@ internal interface FeedStateUpdates {
 
     /** Handles updates to the feed state when activity is updated. */
     fun onActivityUpdated(activity: ActivityData)
-
-    /** Handles updates to the feed state when activity is removed. */
-    fun onActivityRemoved(activity: ActivityData)
 
     /** Handles updates to the feed state when an activity is removed. */
     fun onActivityRemoved(activityId: String)
