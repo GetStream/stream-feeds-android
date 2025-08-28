@@ -1,0 +1,20 @@
+name: SDK size checks
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compare-sdk-sizes:
+    uses: GetStream/android-ci-actions/.github/workflows/sdk-size-checks.yml@main
+    with:
+      modules: "stream-feeds-android-client"
+      metrics-project: "stream-feeds-android-metrics"
+    secrets:
+      BUILD_CACHE_AWS_REGION: ${{ secrets.BUILD_CACHE_AWS_REGION }}
+      BUILD_CACHE_AWS_BUCKET: ${{ secrets.BUILD_CACHE_AWS_BUCKET }}
+      BUILD_CACHE_AWS_ACCESS_KEY_ID: ${{ secrets.BUILD_CACHE_AWS_ACCESS_KEY_ID }}
+      BUILD_CACHE_AWS_SECRET_KEY: ${{ secrets.BUILD_CACHE_AWS_SECRET_KEY }}

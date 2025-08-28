@@ -1,5 +1,21 @@
 # Official Android SDK for [Stream Feeds](https://getstream.io/activity-feeds/)
 
+<p align="center">
+  <a href="https://github.com/GetStream/stream-feeds-android/actions/workflows/android.yml"><img src="https://github.com/GetStream/stream-feeds-android/actions/workflows/android.yml/badge.svg" /></a>
+  <a href="https://android-arsenal.com/api?level=21"><img alt="API" src="https://img.shields.io/badge/API-21%2B-blue.svg?style=flat"/></a>
+  <a href="https://github.com/GetStream/stream-feeds-android/releases"><img src="https://img.shields.io/github/v/release/GetStream/stream-feeds-android" /></a>
+</p>
+
+<div align="center">
+
+![stream-feeds-android-client](https://img.shields.io/badge/stream--feeds--android--client-2.50%20MB-lightgreen)
+
+</div>
+
+<p align="center">
+  <a href="https://deepwiki.com/GetStream/stream-feeds-android"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
+</p>
+
 This is the official Android SDK for Stream Feeds, a platform for building apps with activity feeds support. The
 repository includes a low-level SDK that communicates with Stream's backend, as well as a demo app that showcases how to
 use it.
