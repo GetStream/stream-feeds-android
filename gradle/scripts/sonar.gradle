@@ -24,10 +24,8 @@ ext.sonar.ignoreModules.each {
 
 sonarqube {
     properties {
-        property("sonar.host.url", "http://localhost:9000")
-        property("sonar.token", "squ_3528190014bea3c86f1bb984e75ef3b588e26fac")
-        //property("sonar.host.url", "https://sonarcloud.io")
-        //property("sonar.token", "${System.getenv("SONAR_TOKEN")}")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.token", "${System.getenv("SONAR_TOKEN")}")
         property("sonar.organization", "getstream")
         property("sonar.projectKey", "GetStream_stream-feeds-android")
         property("sonar.projectName", "stream-feeds-android")
