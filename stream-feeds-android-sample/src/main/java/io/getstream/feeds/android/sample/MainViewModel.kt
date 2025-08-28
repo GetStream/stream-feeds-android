@@ -21,7 +21,6 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ramcosta.composedestinations.generated.destinations.MainScreenDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.getstream.feeds.android.client.api.model.User
 import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.model.PushNotificationsProvider

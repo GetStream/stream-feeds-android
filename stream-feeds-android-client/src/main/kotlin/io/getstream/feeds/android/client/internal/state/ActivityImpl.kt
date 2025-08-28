@@ -118,7 +118,8 @@ internal class ActivityImpl(
         requests: List<ActivityAddCommentRequest>,
         attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?,
     ): Result<List<CommentData>> {
-        return commentsRepository.addCommentsBatch(requests, attachmentUploadProgress).onSuccess { comments ->
+        return commentsRepository.addCommentsBatch(requests, attachmentUploadProgress).onSuccess {
+            comments ->
             val threadedComments = comments.map(::ThreadedCommentData)
             threadedComments.forEach { threadedComment ->
                 commentList.mutableState.onCommentAdded(threadedComment)
