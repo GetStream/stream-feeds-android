@@ -52,7 +52,6 @@ internal class FilesRepositoryImplTest {
 
         val result = repository.deleteFile(fileUrl)
 
-        assertTrue(result.isFailure)
         assertEquals("File deletion failed", result.exceptionOrNull()?.message)
         coVerify { feedsApi.deleteFile(fileUrl) }
     }
@@ -78,7 +77,6 @@ internal class FilesRepositoryImplTest {
 
         val result = repository.deleteImage(imageUrl)
 
-        assertTrue(result.isFailure)
         assertEquals("Image deletion failed", result.exceptionOrNull()?.message)
         coVerify { feedsApi.deleteImage(imageUrl) }
     }

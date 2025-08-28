@@ -70,7 +70,7 @@ internal class FeedEventHandler(private val fid: FeedId, private val state: Feed
 
             is ActivityDeletedEvent -> {
                 if (event.fid == fid.rawValue) {
-                    state.onActivityRemoved(event.activity.toModel())
+                    state.onActivityRemoved(event.activity.id)
                 }
             }
 
