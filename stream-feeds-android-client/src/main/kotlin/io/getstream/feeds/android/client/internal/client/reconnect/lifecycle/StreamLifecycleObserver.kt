@@ -18,7 +18,6 @@ package io.getstream.feeds.android.client.internal.client.reconnect.lifecycle
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import io.getstream.android.core.annotations.StreamInternalApi
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,8 +34,7 @@ import kotlinx.coroutines.withContext
  * @param scope The [CoroutineScope] used to launch coroutines for notifying listeners
  * @param lifecycle The [Lifecycle] to observe for lifecycle events
  */
-@StreamInternalApi
-public class StreamLifecycleObserver(
+internal class StreamLifecycleObserver(
     private val scope: CoroutineScope,
     private val lifecycle: Lifecycle,
 ) : DefaultLifecycleObserver {

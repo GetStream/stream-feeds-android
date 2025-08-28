@@ -28,9 +28,7 @@ import com.google.firebase.messaging.RemoteMessage
 import io.getstream.feeds.android.sample.MainActivity
 import io.getstream.feeds.android.sample.R
 
-/**
- * A Firebase Messaging Service to handle incoming push notifications for Stream Feeds.
- */
+/** A Firebase Messaging Service to handle incoming push notifications for Stream Feeds. */
 class FeedsFirebaseMessagingService : FirebaseMessagingService() {
 
     companion object {
@@ -57,8 +55,10 @@ class FeedsFirebaseMessagingService : FirebaseMessagingService() {
 
     private fun showNotification(title: String, body: String) {
         // Only proceed if notification permission is granted or not required
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        if (
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) !=
+                    PackageManager.PERMISSION_GRANTED
         ) {
             return
         }

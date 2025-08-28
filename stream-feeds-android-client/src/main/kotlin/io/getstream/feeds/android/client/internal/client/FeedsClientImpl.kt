@@ -21,8 +21,6 @@ import io.getstream.android.core.api.model.connection.StreamConnectionState
 import io.getstream.android.core.api.model.value.StreamApiKey
 import io.getstream.android.core.api.socket.listeners.StreamClientListener
 import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
-import io.getstream.feeds.android.client.api.model.User
-import io.getstream.feeds.android.client.api.model.UserAuthType
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.Moderation
 import io.getstream.feeds.android.client.api.file.FeedUploader
@@ -30,6 +28,8 @@ import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
+import io.getstream.feeds.android.client.api.model.User
+import io.getstream.feeds.android.client.api.model.UserAuthType
 import io.getstream.feeds.android.client.api.state.Activity
 import io.getstream.feeds.android.client.api.state.ActivityCommentList
 import io.getstream.feeds.android.client.api.state.ActivityList
@@ -61,6 +61,7 @@ import io.getstream.feeds.android.client.api.state.query.MembersQuery
 import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
+import io.getstream.feeds.android.client.internal.client.reconnect.ConnectionRecoveryHandler
 import io.getstream.feeds.android.client.internal.log.provideLogger
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.AppRepository
@@ -71,7 +72,6 @@ import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.FilesRepository
 import io.getstream.feeds.android.client.internal.repository.ModerationRepository
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
-import io.getstream.feeds.android.client.internal.client.reconnect.ConnectionRecoveryHandler
 import io.getstream.feeds.android.client.internal.state.ActivityCommentListImpl
 import io.getstream.feeds.android.client.internal.state.ActivityImpl
 import io.getstream.feeds.android.client.internal.state.ActivityListImpl
@@ -125,28 +125,28 @@ internal class FeedsClientImpl(
     override val state: StateFlow<StreamConnectionState>
         get() = coreClient.connectionState
 
-    private val _events = MutableSharedFlow<WSEvent>(
-        1,
-        extraBufferCapacity = 100,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
+    private val _events =
+        MutableSharedFlow<WSEvent>(
+            1,
+            extraBufferCapacity = 100,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        )
     override val events: Flow<WSEvent>
         get() = _events.asSharedFlow()
 
-    private val clientSubscription = object : StreamClientListener {
+    private val clientSubscription =
+        object : StreamClientListener {
 
-        override fun onEvent(event: Any) {
-            if (event is WSEvent) {
-                logger.v { "[onEvent] Received event from core: $event" }
-                _events.tryEmit(event)
-                feedsEventsSubscriptionManager.forEach {
-                    it.onEvent(event)
+            override fun onEvent(event: Any) {
+                if (event is WSEvent) {
+                    logger.v { "[onEvent] Received event from core: $event" }
+                    _events.tryEmit(event)
+                    feedsEventsSubscriptionManager.forEach { it.onEvent(event) }
+                } else {
+                    logger.e { "[onEvent] Received non-WSEvent: $event" }
                 }
-            } else {
-                logger.e { "[onEvent] Received non-WSEvent: $event" }
             }
         }
-    }
 
     override suspend fun connect(): Result<StreamConnectedUser> {
         if (user.type == UserAuthType.ANONYMOUS) {
@@ -179,7 +179,11 @@ internal class FeedsClientImpl(
         )
 
     override fun feedList(query: FeedsQuery): FeedList =
-        FeedListImpl(query = query, feedsRepository = feedsRepository, subscriptionManager = feedsEventsSubscriptionManager)
+        FeedListImpl(
+            query = query,
+            feedsRepository = feedsRepository,
+            subscriptionManager = feedsEventsSubscriptionManager,
+        )
 
     override fun followList(query: FollowsQuery): FollowList =
         FollowListImpl(
@@ -294,10 +298,18 @@ internal class FeedsClientImpl(
         )
 
     override fun pollVoteList(query: PollVotesQuery): PollVoteList =
-        PollVoteListImpl(query = query, repository = pollsRepository, subscriptionManager = feedsEventsSubscriptionManager)
+        PollVoteListImpl(
+            query = query,
+            repository = pollsRepository,
+            subscriptionManager = feedsEventsSubscriptionManager,
+        )
 
     override fun pollList(query: PollsQuery): PollList =
-        PollListImpl(query = query, pollsRepository = pollsRepository, subscriptionManager = feedsEventsSubscriptionManager)
+        PollListImpl(
+            query = query,
+            pollsRepository = pollsRepository,
+            subscriptionManager = feedsEventsSubscriptionManager,
+        )
 
     override fun moderationConfigList(query: ModerationConfigsQuery): ModerationConfigList =
         ModerationConfigListImpl(query = query, moderationRepository = moderationRepository)

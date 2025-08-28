@@ -18,8 +18,8 @@ package io.getstream.feeds.android.client.internal.client.reconnect
 import io.getstream.android.core.api.StreamClient
 import io.getstream.android.core.api.model.connection.StreamConnectionState
 import io.getstream.android.core.api.socket.listeners.StreamClientListener
-import io.getstream.feeds.android.client.internal.client.reconnect.lifecycle.StreamLifecycleObserver
 import io.getstream.android.core.network.NetworkStateProvider
+import io.getstream.feeds.android.client.internal.client.reconnect.lifecycle.StreamLifecycleObserver
 import io.getstream.feeds.android.client.internal.log.provideLogger
 import io.getstream.log.TaggedLogger
 import kotlinx.coroutines.CoroutineScope
@@ -27,7 +27,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 /**
  * Handles the connection recovery logic for the [FeedsSocket].
@@ -115,7 +114,6 @@ internal class ConnectionRecoveryHandler(
 
     private val canReconnect: Boolean
         get() = automaticReconnectionPolicies.all(AutomaticReconnectionPolicy::shouldReconnect)
-
 
     /**
      * Starts the connection recovery handler by subscribing to the necessary listeners. This method

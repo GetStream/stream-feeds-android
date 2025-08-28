@@ -4,6 +4,8 @@ import java.util.Calendar
 apply(plugin = "io.github.gradle-nexus.publish-plugin")
 apply(plugin = "org.jetbrains.dokka")
 
+apply(from = "${rootDir}/gradle/scripts/sonar.gradle")
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
     alias(libs.plugins.android.application) apply false
@@ -16,6 +18,8 @@ plugins {
     id("com.google.gms.google-services") version "4.4.3" apply false
     alias(libs.plugins.dokka) apply false
     alias(libs.plugins.nexus) apply false
+    alias(libs.plugins.sonarqube)
+    alias(libs.plugins.kover)
 }
 
 spotless {
@@ -37,6 +41,8 @@ detekt {
 
 // License tasks
 subprojects {
+    apply(from = "${rootDir}/gradle/scripts/coverage.gradle")
+
     tasks.register("generateLicense") {
         val currentYear = Calendar.getInstance().get(Calendar.YEAR).toString()
         val licenseTemplate = file("../config/license/license.template")

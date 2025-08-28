@@ -25,15 +25,16 @@ import io.getstream.feeds.android.client.api.model.User
 import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
+import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.login.UserCredentials
 import io.getstream.feeds.android.sample.utils.logResult
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel

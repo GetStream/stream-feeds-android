@@ -15,12 +15,12 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
-import io.getstream.feeds.android.client.api.query.Sort
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
+import io.getstream.feeds.android.client.api.query.Sort
 import io.getstream.feeds.android.client.api.state.MemberListState
 import io.getstream.feeds.android.client.api.state.query.MembersQuery
 import io.getstream.feeds.android.client.api.state.query.MembersSort

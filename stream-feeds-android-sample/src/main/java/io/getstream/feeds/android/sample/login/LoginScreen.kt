@@ -65,8 +65,7 @@ fun LoginScreen(
         ) {
             LoginHeader()
 
-            LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f)
-            ) {
+            LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f)) {
                 items(credentials) { item ->
                     UserLoginItem(item, onCredentialsSelected)
                     HorizontalDivider(thickness = 0.5.dp)
