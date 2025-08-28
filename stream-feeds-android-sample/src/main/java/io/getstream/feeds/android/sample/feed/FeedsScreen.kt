@@ -167,13 +167,20 @@ private fun FeedsScreenContent(
                 LazyColumn(state = listState) {
                     items(activities) { activity ->
                         if (activity.parent != null) {
-                            val repostText = activity.text?.let { ": $it" }.orEmpty()
-                            Text(
-                                text =
-                                    "${activity.user.name ?: activity.user.id} reposted$repostText",
-                                fontStyle = FontStyle.Italic,
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 modifier = Modifier.padding(16.dp),
-                            )
+                            ) {
+                                UserAvatar(activity.user.image, Modifier.size(24.dp))
+
+                                val name = activity.user.name ?: activity.user.id
+                                val repostText = activity.text?.let { ": $it" }.orEmpty()
+                                Text(
+                                    text = "$name reposted$repostText",
+                                    fontStyle = FontStyle.Italic,
+                                )
+                            }
                         }
 
                         val baseActivity = activity.parent ?: activity
@@ -210,18 +217,18 @@ private fun FeedsScreenContent(
                         )
                     }
                 }
+            }
 
-                FloatingActionButton(
-                    onClick = { showCreatePostBottomSheet = true },
-                    modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
-                    shape = CircleShape,
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.add_24),
-                        contentDescription = "Add Activity",
-                        modifier = Modifier.size(24.dp),
-                    )
-                }
+            FloatingActionButton(
+                onClick = { showCreatePostBottomSheet = true },
+                modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+                shape = CircleShape,
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.add_24),
+                    contentDescription = "Add Activity",
+                    modifier = Modifier.size(24.dp),
+                )
             }
 
             if (showLogoutConfirmation) {
