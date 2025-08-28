@@ -4,6 +4,7 @@ ext.sonar = [
         ignoreModules : [
                 'stream-feeds-android-network',
                 'stream-feeds-android-sample',
+                'buildSrc'
         ],
         excludeFilter : [
                 '**/test/**',
@@ -30,7 +31,7 @@ sonarqube {
         property("sonar.projectName", "stream-feeds-android")
         property "sonar.java.coveragePlugin", "jacoco"
         property "sonar.sourceEncoding", "UTF-8"
-        property "sonar.java.binaries", "${rootDir}/**/build/tmp/java-classes/debug"
+        property "sonar.java.binaries", "${rootDir}/**/build/tmp/kotlin-classes/debug"
         property "sonar.coverage.exclusions", rootProject.ext.sonar.excludeFilter
     }
 }
