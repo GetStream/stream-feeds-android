@@ -15,8 +15,8 @@
  */
 package io.getstream.feeds.android.client.internal.client.reconnect
 
-import io.getstream.feeds.android.client.internal.client.reconnect.lifecycle.StreamLifecycleObserver
 import io.getstream.android.core.network.NetworkStateProvider
+import io.getstream.feeds.android.client.internal.client.reconnect.lifecycle.StreamLifecycleObserver
 
 /**
  * Interface that defines a policy for determining whether the WebSocket should attempt an automatic

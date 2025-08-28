@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.sample.poll
 
 import androidx.compose.foundation.background
@@ -39,22 +54,23 @@ fun PollResultsScreen(poll: PollData, onCloseClick: () -> Unit) {
                     IconButton(onClick = onCloseClick) {
                         Icon(painterResource(R.drawable.close), contentDescription = "Close")
                     }
-                }
+                },
             )
         }
     ) { padding ->
         Column(
-            Modifier
-                .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            Modifier.padding(padding).padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(
                 text = poll.name,
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
-                    .padding(16.dp)
-                    .fillMaxWidth(),
+                modifier =
+                    Modifier.background(
+                            MaterialTheme.colorScheme.surfaceVariant,
+                            RoundedCornerShape(16.dp),
+                        )
+                        .padding(16.dp)
+                        .fillMaxWidth(),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
             )
@@ -74,20 +90,15 @@ fun PollResultsScreen(poll: PollData, onCloseClick: () -> Unit) {
 private fun OptionResultItem(
     option: PollOptionData,
     votesCount: Int,
-    latestVotes: List<PollVoteData>
+    latestVotes: List<PollVoteData>,
 ) {
     Column(
-        Modifier
-            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
+        Modifier.background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Row {
-            Text(
-                text = option.text,
-                modifier = Modifier.weight(1f),
-                fontSize = 18.sp
-            )
+            Text(text = option.text, modifier = Modifier.weight(1f), fontSize = 18.sp)
             Text(votesCount.toString())
         }
 
@@ -96,10 +107,7 @@ private fun OptionResultItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                UserAvatar(
-                    vote.user?.image,
-                    Modifier.size(24.dp)
-                )
+                UserAvatar(vote.user?.image, Modifier.size(24.dp))
                 Text(vote.user?.name ?: vote.userId ?: "anonymous")
             }
         }

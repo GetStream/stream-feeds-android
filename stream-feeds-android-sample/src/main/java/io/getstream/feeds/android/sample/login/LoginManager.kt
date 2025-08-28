@@ -25,8 +25,8 @@ import io.getstream.android.core.api.authentication.StreamTokenProvider
 import io.getstream.android.core.api.model.value.StreamApiKey
 import io.getstream.android.core.api.model.value.StreamToken
 import io.getstream.android.core.api.model.value.StreamUserId
-import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.api.FeedsClient
+import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.sample.DemoAppConfig
 import javax.inject.Inject
 import javax.inject.Singleton

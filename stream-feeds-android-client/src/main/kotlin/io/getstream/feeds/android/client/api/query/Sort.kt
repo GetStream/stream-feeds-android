@@ -17,7 +17,6 @@ package io.getstream.feeds.android.client.api.query
 
 import io.getstream.android.core.annotations.StreamInternalApi
 
-
 /**
  * The direction of a sort operation. This enum defines whether a sort should be performed in
  * ascending (forward) or descending (reverse) order. The raw values correspond to the values

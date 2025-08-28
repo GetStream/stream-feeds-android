@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.client
 
 import android.content.Context
@@ -26,12 +41,15 @@ import io.getstream.android.core.api.socket.listeners.StreamClientListener
 import io.getstream.android.core.api.socket.monitor.StreamHealthMonitor
 import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.android.core.network.NetworkStateProvider
-import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.FeedsConfig
+import io.getstream.feeds.android.client.api.model.User
+import io.getstream.feeds.android.client.internal.client.reconnect.ConnectionRecoveryHandler
+import io.getstream.feeds.android.client.internal.client.reconnect.DefaultRetryStrategy
 import io.getstream.feeds.android.client.internal.client.reconnect.lifecycle.StreamLifecycleObserver
 import io.getstream.feeds.android.client.internal.file.StreamFeedUploader
+import io.getstream.feeds.android.client.internal.http.FeedsSingleFlightApi
 import io.getstream.feeds.android.client.internal.log.provideLogger
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.AppRepositoryImpl
@@ -43,9 +61,6 @@ import io.getstream.feeds.android.client.internal.repository.FilesRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.ModerationRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.PollsRepositoryImpl
 import io.getstream.feeds.android.client.internal.serialization.FeedsMoshiJsonParser
-import io.getstream.feeds.android.client.internal.client.reconnect.ConnectionRecoveryHandler
-import io.getstream.feeds.android.client.internal.client.reconnect.DefaultRetryStrategy
-import io.getstream.feeds.android.client.internal.http.FeedsSingleFlightApi
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.infrastructure.Serializer
 import io.getstream.feeds.android.network.models.WSEvent
@@ -63,9 +78,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.create
 
-/**
- * Creates a [StreamClient] instance with the given configuration and dependencies.
- */
+/** Creates a [StreamClient] instance with the given configuration and dependencies. */
 internal fun createStreamCoreClient(
     scope: CoroutineScope,
     apiKey: StreamApiKey,
@@ -77,10 +90,12 @@ internal fun createStreamCoreClient(
     feedsMoshiJsonParser: FeedsMoshiJsonParser,
     logProvider: StreamLoggerProvider? = null,
 ): StreamClient {
-    val logProvider = logProvider ?: StreamLoggerProvider.Companion.defaultAndroidLogger(
-        minLevel = StreamLogger.LogLevel.Verbose,
-        honorAndroidIsLoggable = false,
-    )
+    val logProvider =
+        logProvider
+            ?: StreamLoggerProvider.Companion.defaultAndroidLogger(
+                minLevel = StreamLogger.LogLevel.Verbose,
+                honorAndroidIsLoggable = false,
+            )
     val clientSubscriptionManager =
         StreamSubscriptionManager<StreamClientListener>(
             logger = logProvider.taggedLogger("SCClientSubscriptions"),
@@ -125,10 +140,7 @@ internal fun createStreamCoreClient(
         connectionIdHolder = connectionIdHolder,
         socketFactory = socketFactory,
         healthMonitor = healthMonitor,
-        httpConfig = StreamHttpConfig(
-            httpBuilder = okHttpClient,
-            automaticInterceptors = true,
-        ),
+        httpConfig = StreamHttpConfig(httpBuilder = okHttpClient, automaticInterceptors = true),
         serializationConfig =
             StreamClientSerializationConfig.default(
                 object : StreamEventSerialization<WSEvent> {
@@ -143,9 +155,7 @@ internal fun createStreamCoreClient(
     )
 }
 
-/**
- * Creates a [FeedsClient] instance with the given configuration and dependencies.
- */
+/** Creates a [FeedsClient] instance with the given configuration and dependencies. */
 internal fun createFeedsClient(
     context: Context,
     apiKey: StreamApiKey,
@@ -154,10 +164,11 @@ internal fun createFeedsClient(
     config: FeedsConfig,
 ): FeedsClient {
 
-    val logProvider = StreamLoggerProvider.Companion.defaultAndroidLogger(
-        minLevel = StreamLogger.LogLevel.Verbose,
-        honorAndroidIsLoggable = false,
-    )
+    val logProvider =
+        StreamLoggerProvider.Companion.defaultAndroidLogger(
+            minLevel = StreamLogger.LogLevel.Verbose,
+            honorAndroidIsLoggable = false,
+        )
     // Setup logging
     if (!StreamLog.isInstalled) {
         // If no logger is installed, install the default logger
@@ -169,12 +180,12 @@ internal fun createFeedsClient(
     // Setup coroutine scope for the client
     val clientScope =
         CoroutineScope(Dispatchers.Default) +
-                SupervisorJob() +
-                CoroutineExceptionHandler { coroutineContext, throwable ->
-                    logger.e(throwable) {
-                        "[clientScope] Uncaught exception in coroutine $coroutineContext: $throwable"
-                    }
+            SupervisorJob() +
+            CoroutineExceptionHandler { coroutineContext, throwable ->
+                logger.e(throwable) {
+                    "[clientScope] Uncaught exception in coroutine $coroutineContext: $throwable"
                 }
+            }
 
     // Processing
     val singleFlight = StreamSingleFlightProcessor(clientScope)
@@ -186,48 +197,50 @@ internal fun createFeedsClient(
     val tokenManager = StreamTokenManager(userId, tokenProvider, singleFlight)
     // Setup network
     val endpointConfig = EndpointConfig.PRODUCTION // TODO: Make this configurable
-    val clientInfoHeader = StreamHttpClientInfoHeader.create(
-        product = "stream-feeds-android",
-        productVersion = "0.0.1",
-        os = "Android",
-        apiLevel = Build.VERSION.SDK_INT,
-        deviceModel = Build.MODEL,
-    )
+    val clientInfoHeader =
+        StreamHttpClientInfoHeader.create(
+            product = "stream-feeds-android",
+            productVersion = "0.0.1",
+            os = "Android",
+            apiLevel = Build.VERSION.SDK_INT,
+            deviceModel = Build.MODEL,
+        )
     // HTTP Configuration
-
 
     val okHttpBuilder =
         OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
 
-    val client = createStreamCoreClient(
-        clientScope,
-        apiKey,
-        userId,
-        StreamWsUrl.fromString(endpointConfig.wsUrl),
-        clientInfoHeader,
-        tokenProvider,
-        okHttpBuilder,
-        FeedsMoshiJsonParser(Serializer.moshi),
-    )
-    val connectionRecoveryHandler = ConnectionRecoveryHandler(
-        scope = clientScope,
-        client = client,
-        lifecycleObserver =
-            StreamLifecycleObserver(
-                scope = clientScope,
-                lifecycle = ProcessLifecycleOwner.Companion.get().lifecycle,
-            ),
-        networkStateProvider =
-            NetworkStateProvider(
-                scope = clientScope,
-                connectivityManager =
-                    context.getSystemService(Context.CONNECTIVITY_SERVICE)
+    val client =
+        createStreamCoreClient(
+            clientScope,
+            apiKey,
+            userId,
+            StreamWsUrl.fromString(endpointConfig.wsUrl),
+            clientInfoHeader,
+            tokenProvider,
+            okHttpBuilder,
+            FeedsMoshiJsonParser(Serializer.moshi),
+        )
+    val connectionRecoveryHandler =
+        ConnectionRecoveryHandler(
+            scope = clientScope,
+            client = client,
+            lifecycleObserver =
+                StreamLifecycleObserver(
+                    scope = clientScope,
+                    lifecycle = ProcessLifecycleOwner.Companion.get().lifecycle,
+                ),
+            networkStateProvider =
+                NetworkStateProvider(
+                    scope = clientScope,
+                    connectivityManager =
+                        context.getSystemService(Context.CONNECTIVITY_SERVICE)
                             as ConnectivityManager,
-            ),
-        keepConnectionAliveInBackground = false,
-        reconnectStrategy = DefaultRetryStrategy(),
-    )
+                ),
+            keepConnectionAliveInBackground = false,
+            reconnectStrategy = DefaultRetryStrategy(),
+        )
     val okHttpClient = okHttpBuilder.build()
     val retrofit =
         Retrofit.Builder()
@@ -267,10 +280,12 @@ internal fun createFeedsClient(
         uploader = uploader,
         moderation = moderation,
         coreClient = client,
-        feedsEventsSubscriptionManager = StreamSubscriptionManager(logProvider.taggedLogger("FeedEventSubscriptions"),
-            maxStrongSubscriptions = Integer.MAX_VALUE,
-            maxWeakSubscriptions = Integer.MAX_VALUE,
-        ),
+        feedsEventsSubscriptionManager =
+            StreamSubscriptionManager(
+                logProvider.taggedLogger("FeedEventSubscriptions"),
+                maxStrongSubscriptions = Integer.MAX_VALUE,
+                maxWeakSubscriptions = Integer.MAX_VALUE,
+            ),
         logger = logger,
     )
 }

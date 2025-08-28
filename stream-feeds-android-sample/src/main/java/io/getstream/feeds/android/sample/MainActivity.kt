@@ -85,15 +85,14 @@ fun MainScreen(navigator: DestinationsNavigator) {
 
             is ViewState.LoggedIn -> {
                 LaunchedEffect(Unit) {
-                    val args = FeedsScreenArgs(
-                        feedId = FeedId("user", viewState.user.id).rawValue,
-                        avatarUrl = viewState.user.imageURL,
-                        userId = viewState.user.id,
-                    )
+                    val args =
+                        FeedsScreenArgs(
+                            feedId = FeedId("user", viewState.user.id).rawValue,
+                            avatarUrl = viewState.user.imageURL,
+                            userId = viewState.user.id,
+                        )
                     navigator.navigate(FeedsScreenDestination(args)) {
-                        popUpTo(NavGraphs.root) {
-                            inclusive = true
-                        }
+                        popUpTo(NavGraphs.root) { inclusive = true }
                     }
                 }
             }

@@ -48,13 +48,12 @@ class CoilImageLoaderFactory : SingletonImageLoader.Factory {
             .build()
     }
 
-    // Using a BitmapDrawable instead of a ColorDrawable because crossfade doesn't play well with the latter
-    private fun Context.lazyColorImage(color: Long): Lazy<Image> = lazy(LazyThreadSafetyMode.NONE) {
-        createBitmap(1, 1)
-            .apply { eraseColor(color.toInt()) }
-            .toDrawable(resources)
-            .asImage()
-    }
+    // Using a BitmapDrawable instead of a ColorDrawable because crossfade doesn't play well with
+    // the latter
+    private fun Context.lazyColorImage(color: Long): Lazy<Image> =
+        lazy(LazyThreadSafetyMode.NONE) {
+            createBitmap(1, 1).apply { eraseColor(color.toInt()) }.toDrawable(resources).asImage()
+        }
 
     private fun Context.isNightMode(): Boolean {
         val uiMode = resources.configuration.uiMode

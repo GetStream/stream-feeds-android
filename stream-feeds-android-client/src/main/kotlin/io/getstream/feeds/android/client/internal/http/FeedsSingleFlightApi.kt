@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2014-2025 Stream.io Inc. All rights reserved.
+ *
+ * Licensed under the Stream License;
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://github.com/GetStream/stream-feeds-android/blob/main/LICENSE
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.getstream.feeds.android.client.internal.http
 
 import io.getstream.android.core.api.model.StreamTypedKey.Companion.asStreamTypedKey
@@ -150,264 +165,408 @@ import io.getstream.feeds.android.network.models.WSAuthMessage
 
 internal class FeedsSingleFlightApi(
     private val delegate: FeedsApi,
-    private val singleFlightProcessor: StreamSingleFlightProcessor
+    private val singleFlightProcessor: StreamSingleFlightProcessor,
 ) : FeedsApi {
 
     override suspend fun getApp(): GetApplicationResponse =
-        singleFlightProcessor.run("getApp".asStreamTypedKey<GetApplicationResponse>()) {
-            delegate.getApp()
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("getApp".asStreamTypedKey<GetApplicationResponse>()) { delegate.getApp() }
+            .getOrThrow()
 
     override suspend fun listBlockLists(team: String?): ListBlockListResponse =
-        singleFlightProcessor.run("listBlockLists-${team}".asStreamTypedKey<ListBlockListResponse>()) {
-            delegate.listBlockLists(team)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("listBlockLists-${team}".asStreamTypedKey<ListBlockListResponse>()) {
+                delegate.listBlockLists(team)
+            }
+            .getOrThrow()
 
-    override suspend fun createBlockList(createBlockListRequest: CreateBlockListRequest): CreateBlockListResponse =
-        singleFlightProcessor.run("createBlockList-${createBlockListRequest}".asStreamTypedKey<CreateBlockListResponse>()) {
-            delegate.createBlockList(createBlockListRequest)
-        }.getOrThrow()
+    override suspend fun createBlockList(
+        createBlockListRequest: CreateBlockListRequest
+    ): CreateBlockListResponse =
+        singleFlightProcessor
+            .run(
+                "createBlockList-${createBlockListRequest}"
+                    .asStreamTypedKey<CreateBlockListResponse>()
+            ) {
+                delegate.createBlockList(createBlockListRequest)
+            }
+            .getOrThrow()
 
-    override suspend fun deleteBlockList(
-        name: String,
-        team: String?
-    ): Response =
-        singleFlightProcessor.run("deleteBlockList-${name}-${team}".asStreamTypedKey<Response>()) {
-            delegate.deleteBlockList(name, team)
-        }.getOrThrow()
+    override suspend fun deleteBlockList(name: String, team: String?): Response =
+        singleFlightProcessor
+            .run("deleteBlockList-${name}-${team}".asStreamTypedKey<Response>()) {
+                delegate.deleteBlockList(name, team)
+            }
+            .getOrThrow()
 
     override suspend fun updateBlockList(
         name: String,
-        updateBlockListRequest: UpdateBlockListRequest
+        updateBlockListRequest: UpdateBlockListRequest,
     ): UpdateBlockListResponse =
-        singleFlightProcessor.run("updateBlockList-${name}-${updateBlockListRequest}".asStreamTypedKey<UpdateBlockListResponse>()) {
-            delegate.updateBlockList(name, updateBlockListRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "updateBlockList-${name}-${updateBlockListRequest}"
+                    .asStreamTypedKey<UpdateBlockListResponse>()
+            ) {
+                delegate.updateBlockList(name, updateBlockListRequest)
+            }
+            .getOrThrow()
 
     override suspend fun updateBlockList(name: String): UpdateBlockListResponse =
-        singleFlightProcessor.run("updateBlockList-${name}".asStreamTypedKey<UpdateBlockListResponse>()) {
-            delegate.updateBlockList(name)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("updateBlockList-${name}".asStreamTypedKey<UpdateBlockListResponse>()) {
+                delegate.updateBlockList(name)
+            }
+            .getOrThrow()
 
     override suspend fun deleteDevice(id: String): Response =
-        singleFlightProcessor.run("deleteDevice-${id}".asStreamTypedKey<Response>()) {
-            delegate.deleteDevice(id)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("deleteDevice-${id}".asStreamTypedKey<Response>()) { delegate.deleteDevice(id) }
+            .getOrThrow()
 
     override suspend fun listDevices(): ListDevicesResponse =
-        singleFlightProcessor.run("listDevices".asStreamTypedKey<ListDevicesResponse>()) {
-            delegate.listDevices()
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("listDevices".asStreamTypedKey<ListDevicesResponse>()) { delegate.listDevices() }
+            .getOrThrow()
 
     override suspend fun createDevice(createDeviceRequest: CreateDeviceRequest): Response =
-        singleFlightProcessor.run("createDevice-${createDeviceRequest}".asStreamTypedKey<Response>()) {
-            delegate.createDevice(createDeviceRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("createDevice-${createDeviceRequest}".asStreamTypedKey<Response>()) {
+                delegate.createDevice(createDeviceRequest)
+            }
+            .getOrThrow()
 
     override suspend fun addActivity(addActivityRequest: AddActivityRequest): AddActivityResponse =
-        singleFlightProcessor.run("addActivity-${addActivityRequest}".asStreamTypedKey<AddActivityResponse>()) {
-            delegate.addActivity(addActivityRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("addActivity-${addActivityRequest}".asStreamTypedKey<AddActivityResponse>()) {
+                delegate.addActivity(addActivityRequest)
+            }
+            .getOrThrow()
 
-    override suspend fun upsertActivities(upsertActivitiesRequest: UpsertActivitiesRequest): UpsertActivitiesResponse =
-        singleFlightProcessor.run("upsertActivities-${upsertActivitiesRequest}".asStreamTypedKey<UpsertActivitiesResponse>()) {
-            delegate.upsertActivities(upsertActivitiesRequest)
-        }.getOrThrow()
+    override suspend fun upsertActivities(
+        upsertActivitiesRequest: UpsertActivitiesRequest
+    ): UpsertActivitiesResponse =
+        singleFlightProcessor
+            .run(
+                "upsertActivities-${upsertActivitiesRequest}"
+                    .asStreamTypedKey<UpsertActivitiesResponse>()
+            ) {
+                delegate.upsertActivities(upsertActivitiesRequest)
+            }
+            .getOrThrow()
 
-    override suspend fun deleteActivities(deleteActivitiesRequest: DeleteActivitiesRequest): DeleteActivitiesResponse =
-        singleFlightProcessor.run("deleteActivities-${deleteActivitiesRequest}".asStreamTypedKey<DeleteActivitiesResponse>()) {
-            delegate.deleteActivities(deleteActivitiesRequest)
-        }.getOrThrow()
+    override suspend fun deleteActivities(
+        deleteActivitiesRequest: DeleteActivitiesRequest
+    ): DeleteActivitiesResponse =
+        singleFlightProcessor
+            .run(
+                "deleteActivities-${deleteActivitiesRequest}"
+                    .asStreamTypedKey<DeleteActivitiesResponse>()
+            ) {
+                delegate.deleteActivities(deleteActivitiesRequest)
+            }
+            .getOrThrow()
 
-    override suspend fun queryActivities(queryActivitiesRequest: QueryActivitiesRequest): QueryActivitiesResponse =
-        singleFlightProcessor.run("queryActivities-${queryActivitiesRequest}".asStreamTypedKey<QueryActivitiesResponse>()) {
-            delegate.queryActivities(queryActivitiesRequest)
-        }.getOrThrow()
+    override suspend fun queryActivities(
+        queryActivitiesRequest: QueryActivitiesRequest
+    ): QueryActivitiesResponse =
+        singleFlightProcessor
+            .run(
+                "queryActivities-${queryActivitiesRequest}"
+                    .asStreamTypedKey<QueryActivitiesResponse>()
+            ) {
+                delegate.queryActivities(queryActivitiesRequest)
+            }
+            .getOrThrow()
 
     override suspend fun queryActivities(): QueryActivitiesResponse =
-        singleFlightProcessor.run("queryActivities".asStreamTypedKey<QueryActivitiesResponse>()) {
-            delegate.queryActivities()
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("queryActivities".asStreamTypedKey<QueryActivitiesResponse>()) {
+                delegate.queryActivities()
+            }
+            .getOrThrow()
 
     override suspend fun deleteBookmark(
         activityId: String,
-        folderId: String?
+        folderId: String?,
     ): DeleteBookmarkResponse =
-        singleFlightProcessor.run("deleteBookmark-${activityId}-${folderId}".asStreamTypedKey<DeleteBookmarkResponse>()) {
-            delegate.deleteBookmark(activityId, folderId)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "deleteBookmark-${activityId}-${folderId}"
+                    .asStreamTypedKey<DeleteBookmarkResponse>()
+            ) {
+                delegate.deleteBookmark(activityId, folderId)
+            }
+            .getOrThrow()
 
     override suspend fun updateBookmark(
         activityId: String,
-        updateBookmarkRequest: UpdateBookmarkRequest
+        updateBookmarkRequest: UpdateBookmarkRequest,
     ): UpdateBookmarkResponse =
-        singleFlightProcessor.run("updateBookmark-${activityId}-${updateBookmarkRequest}".asStreamTypedKey<UpdateBookmarkResponse>()) {
-            delegate.updateBookmark(activityId, updateBookmarkRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "updateBookmark-${activityId}-${updateBookmarkRequest}"
+                    .asStreamTypedKey<UpdateBookmarkResponse>()
+            ) {
+                delegate.updateBookmark(activityId, updateBookmarkRequest)
+            }
+            .getOrThrow()
 
     override suspend fun updateBookmark(activityId: String): UpdateBookmarkResponse =
-        singleFlightProcessor.run("updateBookmark-${activityId}".asStreamTypedKey<UpdateBookmarkResponse>()) {
-            delegate.updateBookmark(activityId)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("updateBookmark-${activityId}".asStreamTypedKey<UpdateBookmarkResponse>()) {
+                delegate.updateBookmark(activityId)
+            }
+            .getOrThrow()
 
     override suspend fun addBookmark(
         activityId: String,
-        addBookmarkRequest: AddBookmarkRequest
+        addBookmarkRequest: AddBookmarkRequest,
     ): AddBookmarkResponse =
-        singleFlightProcessor.run("addBookmark-${activityId}-${addBookmarkRequest}".asStreamTypedKey<AddBookmarkResponse>()) {
-            delegate.addBookmark(activityId, addBookmarkRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "addBookmark-${activityId}-${addBookmarkRequest}"
+                    .asStreamTypedKey<AddBookmarkResponse>()
+            ) {
+                delegate.addBookmark(activityId, addBookmarkRequest)
+            }
+            .getOrThrow()
 
     override suspend fun addBookmark(activityId: String): AddBookmarkResponse =
-        singleFlightProcessor.run("addBookmark-${activityId}".asStreamTypedKey<AddBookmarkResponse>()) {
-            delegate.addBookmark(activityId)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("addBookmark-${activityId}".asStreamTypedKey<AddBookmarkResponse>()) {
+                delegate.addBookmark(activityId)
+            }
+            .getOrThrow()
 
     override suspend fun activityFeedback(
         activityId: String,
-        activityFeedbackRequest: ActivityFeedbackRequest
+        activityFeedbackRequest: ActivityFeedbackRequest,
     ): ActivityFeedbackResponse =
-        singleFlightProcessor.run("activityFeedback-${activityId}-${activityFeedbackRequest}".asStreamTypedKey<ActivityFeedbackResponse>()) {
-            delegate.activityFeedback(activityId, activityFeedbackRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "activityFeedback-${activityId}-${activityFeedbackRequest}"
+                    .asStreamTypedKey<ActivityFeedbackResponse>()
+            ) {
+                delegate.activityFeedback(activityId, activityFeedbackRequest)
+            }
+            .getOrThrow()
 
     override suspend fun activityFeedback(activityId: String): ActivityFeedbackResponse =
-        singleFlightProcessor.run("activityFeedback-${activityId}".asStreamTypedKey<ActivityFeedbackResponse>()) {
-            delegate.activityFeedback(activityId)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("activityFeedback-${activityId}".asStreamTypedKey<ActivityFeedbackResponse>()) {
+                delegate.activityFeedback(activityId)
+            }
+            .getOrThrow()
 
     override suspend fun castPollVote(
         activityId: String,
         pollId: String,
-        castPollVoteRequest: CastPollVoteRequest
+        castPollVoteRequest: CastPollVoteRequest,
     ): PollVoteResponse =
-        singleFlightProcessor.run("castPollVote-${activityId}-${pollId}-${castPollVoteRequest}".asStreamTypedKey<PollVoteResponse>()) {
-            delegate.castPollVote(activityId, pollId, castPollVoteRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "castPollVote-${activityId}-${pollId}-${castPollVoteRequest}"
+                    .asStreamTypedKey<PollVoteResponse>()
+            ) {
+                delegate.castPollVote(activityId, pollId, castPollVoteRequest)
+            }
+            .getOrThrow()
 
-    override suspend fun castPollVote(
-        activityId: String,
-        pollId: String
-    ): PollVoteResponse =
-        singleFlightProcessor.run("castPollVote-${activityId}-${pollId}".asStreamTypedKey<PollVoteResponse>()) {
-            delegate.castPollVote(activityId, pollId)
-        }.getOrThrow()
+    override suspend fun castPollVote(activityId: String, pollId: String): PollVoteResponse =
+        singleFlightProcessor
+            .run("castPollVote-${activityId}-${pollId}".asStreamTypedKey<PollVoteResponse>()) {
+                delegate.castPollVote(activityId, pollId)
+            }
+            .getOrThrow()
 
     override suspend fun deletePollVote(
         activityId: String,
         pollId: String,
         voteId: String,
-        userId: String?
+        userId: String?,
     ): PollVoteResponse =
-        singleFlightProcessor.run("deletePollVote-${activityId}-${pollId}-${voteId}-${userId}".asStreamTypedKey<PollVoteResponse>()) {
-            delegate.deletePollVote(activityId, pollId, voteId, userId)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "deletePollVote-${activityId}-${pollId}-${voteId}-${userId}"
+                    .asStreamTypedKey<PollVoteResponse>()
+            ) {
+                delegate.deletePollVote(activityId, pollId, voteId, userId)
+            }
+            .getOrThrow()
 
     override suspend fun addReaction(
         activityId: String,
-        addReactionRequest: AddReactionRequest
+        addReactionRequest: AddReactionRequest,
     ): AddReactionResponse =
-        singleFlightProcessor.run("addReaction-${activityId}-${addReactionRequest}".asStreamTypedKey<AddReactionResponse>()) {
-            delegate.addReaction(activityId, addReactionRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "addReaction-${activityId}-${addReactionRequest}"
+                    .asStreamTypedKey<AddReactionResponse>()
+            ) {
+                delegate.addReaction(activityId, addReactionRequest)
+            }
+            .getOrThrow()
 
     override suspend fun queryActivityReactions(
         activityId: String,
-        queryActivityReactionsRequest: QueryActivityReactionsRequest
+        queryActivityReactionsRequest: QueryActivityReactionsRequest,
     ): QueryActivityReactionsResponse =
-        singleFlightProcessor.run("queryActivityReactions-${activityId}-${queryActivityReactionsRequest}".asStreamTypedKey<QueryActivityReactionsResponse>()) {
-            delegate.queryActivityReactions(activityId, queryActivityReactionsRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "queryActivityReactions-${activityId}-${queryActivityReactionsRequest}"
+                    .asStreamTypedKey<QueryActivityReactionsResponse>()
+            ) {
+                delegate.queryActivityReactions(activityId, queryActivityReactionsRequest)
+            }
+            .getOrThrow()
 
-    override suspend fun queryActivityReactions(activityId: String): QueryActivityReactionsResponse =
-        singleFlightProcessor.run("queryActivityReactions-${activityId}".asStreamTypedKey<QueryActivityReactionsResponse>()) {
-            delegate.queryActivityReactions(activityId)
-        }.getOrThrow()
+    override suspend fun queryActivityReactions(
+        activityId: String
+    ): QueryActivityReactionsResponse =
+        singleFlightProcessor
+            .run(
+                "queryActivityReactions-${activityId}"
+                    .asStreamTypedKey<QueryActivityReactionsResponse>()
+            ) {
+                delegate.queryActivityReactions(activityId)
+            }
+            .getOrThrow()
 
     override suspend fun deleteActivityReaction(
         activityId: String,
-        type: String
+        type: String,
     ): DeleteActivityReactionResponse =
-        singleFlightProcessor.run("deleteActivityReaction-${activityId}-${type}".asStreamTypedKey<DeleteActivityReactionResponse>()) {
-            delegate.deleteActivityReaction(activityId, type)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "deleteActivityReaction-${activityId}-${type}"
+                    .asStreamTypedKey<DeleteActivityReactionResponse>()
+            ) {
+                delegate.deleteActivityReaction(activityId, type)
+            }
+            .getOrThrow()
 
-    override suspend fun deleteActivity(
-        id: String,
-        hardDelete: Boolean?
-    ): DeleteActivityResponse =
-        singleFlightProcessor.run("deleteActivity-${id}-${hardDelete}".asStreamTypedKey<DeleteActivityResponse>()) {
-            delegate.deleteActivity(id, hardDelete)
-        }.getOrThrow()
+    override suspend fun deleteActivity(id: String, hardDelete: Boolean?): DeleteActivityResponse =
+        singleFlightProcessor
+            .run("deleteActivity-${id}-${hardDelete}".asStreamTypedKey<DeleteActivityResponse>()) {
+                delegate.deleteActivity(id, hardDelete)
+            }
+            .getOrThrow()
 
     override suspend fun getActivity(id: String): GetActivityResponse =
-        singleFlightProcessor.run("getActivity-${id}".asStreamTypedKey<GetActivityResponse>()) {
-            delegate.getActivity(id)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("getActivity-${id}".asStreamTypedKey<GetActivityResponse>()) {
+                delegate.getActivity(id)
+            }
+            .getOrThrow()
 
     override suspend fun updateActivityPartial(
         id: String,
-        updateActivityPartialRequest: UpdateActivityPartialRequest
+        updateActivityPartialRequest: UpdateActivityPartialRequest,
     ): UpdateActivityPartialResponse =
-        singleFlightProcessor.run("updateActivityPartial-${id}-${updateActivityPartialRequest}".asStreamTypedKey<UpdateActivityPartialResponse>()) {
-            delegate.updateActivityPartial(id, updateActivityPartialRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "updateActivityPartial-${id}-${updateActivityPartialRequest}"
+                    .asStreamTypedKey<UpdateActivityPartialResponse>()
+            ) {
+                delegate.updateActivityPartial(id, updateActivityPartialRequest)
+            }
+            .getOrThrow()
 
     override suspend fun updateActivityPartial(id: String): UpdateActivityPartialResponse =
-        singleFlightProcessor.run("updateActivityPartial-${id}".asStreamTypedKey<UpdateActivityPartialResponse>()) {
-            delegate.updateActivityPartial(id)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("updateActivityPartial-${id}".asStreamTypedKey<UpdateActivityPartialResponse>()) {
+                delegate.updateActivityPartial(id)
+            }
+            .getOrThrow()
 
     override suspend fun updateActivity(
         id: String,
-        updateActivityRequest: UpdateActivityRequest
+        updateActivityRequest: UpdateActivityRequest,
     ): UpdateActivityResponse =
-        singleFlightProcessor.run("updateActivity-${id}-${updateActivityRequest}".asStreamTypedKey<UpdateActivityResponse>()) {
-            delegate.updateActivity(id, updateActivityRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "updateActivity-${id}-${updateActivityRequest}"
+                    .asStreamTypedKey<UpdateActivityResponse>()
+            ) {
+                delegate.updateActivity(id, updateActivityRequest)
+            }
+            .getOrThrow()
 
     override suspend fun updateActivity(id: String): UpdateActivityResponse =
-        singleFlightProcessor.run("updateActivity-${id}".asStreamTypedKey<UpdateActivityResponse>()) {
-            delegate.updateActivity(id)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("updateActivity-${id}".asStreamTypedKey<UpdateActivityResponse>()) {
+                delegate.updateActivity(id)
+            }
+            .getOrThrow()
 
-    override suspend fun queryBookmarkFolders(queryBookmarkFoldersRequest: QueryBookmarkFoldersRequest): QueryBookmarkFoldersResponse =
-        singleFlightProcessor.run("queryBookmarkFolders-${queryBookmarkFoldersRequest}".asStreamTypedKey<QueryBookmarkFoldersResponse>()) {
-            delegate.queryBookmarkFolders(queryBookmarkFoldersRequest)
-        }.getOrThrow()
+    override suspend fun queryBookmarkFolders(
+        queryBookmarkFoldersRequest: QueryBookmarkFoldersRequest
+    ): QueryBookmarkFoldersResponse =
+        singleFlightProcessor
+            .run(
+                "queryBookmarkFolders-${queryBookmarkFoldersRequest}"
+                    .asStreamTypedKey<QueryBookmarkFoldersResponse>()
+            ) {
+                delegate.queryBookmarkFolders(queryBookmarkFoldersRequest)
+            }
+            .getOrThrow()
 
     override suspend fun queryBookmarkFolders(): QueryBookmarkFoldersResponse =
-        singleFlightProcessor.run("queryBookmarkFolders".asStreamTypedKey<QueryBookmarkFoldersResponse>()) {
-            delegate.queryBookmarkFolders()
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("queryBookmarkFolders".asStreamTypedKey<QueryBookmarkFoldersResponse>()) {
+                delegate.queryBookmarkFolders()
+            }
+            .getOrThrow()
 
     override suspend fun deleteBookmarkFolder(folderId: String): DeleteBookmarkFolderResponse =
-        singleFlightProcessor.run("deleteBookmarkFolder-${folderId}".asStreamTypedKey<DeleteBookmarkFolderResponse>()) {
-            delegate.deleteBookmarkFolder(folderId)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "deleteBookmarkFolder-${folderId}".asStreamTypedKey<DeleteBookmarkFolderResponse>()
+            ) {
+                delegate.deleteBookmarkFolder(folderId)
+            }
+            .getOrThrow()
 
     override suspend fun updateBookmarkFolder(
         folderId: String,
-        updateBookmarkFolderRequest: UpdateBookmarkFolderRequest
+        updateBookmarkFolderRequest: UpdateBookmarkFolderRequest,
     ): UpdateBookmarkFolderResponse =
-        singleFlightProcessor.run("updateBookmarkFolder-${folderId}-${updateBookmarkFolderRequest}".asStreamTypedKey<UpdateBookmarkFolderResponse>()) {
-            delegate.updateBookmarkFolder(folderId, updateBookmarkFolderRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "updateBookmarkFolder-${folderId}-${updateBookmarkFolderRequest}"
+                    .asStreamTypedKey<UpdateBookmarkFolderResponse>()
+            ) {
+                delegate.updateBookmarkFolder(folderId, updateBookmarkFolderRequest)
+            }
+            .getOrThrow()
 
     override suspend fun updateBookmarkFolder(folderId: String): UpdateBookmarkFolderResponse =
-        singleFlightProcessor.run("updateBookmarkFolder-${folderId}".asStreamTypedKey<UpdateBookmarkFolderResponse>()) {
-            delegate.updateBookmarkFolder(folderId)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "updateBookmarkFolder-${folderId}".asStreamTypedKey<UpdateBookmarkFolderResponse>()
+            ) {
+                delegate.updateBookmarkFolder(folderId)
+            }
+            .getOrThrow()
 
-    override suspend fun queryBookmarks(queryBookmarksRequest: QueryBookmarksRequest): QueryBookmarksResponse =
-        singleFlightProcessor.run("queryBookmarks-${queryBookmarksRequest}".asStreamTypedKey<QueryBookmarksResponse>()) {
-            delegate.queryBookmarks(queryBookmarksRequest)
-        }.getOrThrow()
+    override suspend fun queryBookmarks(
+        queryBookmarksRequest: QueryBookmarksRequest
+    ): QueryBookmarksResponse =
+        singleFlightProcessor
+            .run(
+                "queryBookmarks-${queryBookmarksRequest}".asStreamTypedKey<QueryBookmarksResponse>()
+            ) {
+                delegate.queryBookmarks(queryBookmarksRequest)
+            }
+            .getOrThrow()
 
     override suspend fun queryBookmarks(): QueryBookmarksResponse =
-        singleFlightProcessor.run("queryBookmarks".asStreamTypedKey<QueryBookmarksResponse>()) {
-            delegate.queryBookmarks()
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("queryBookmarks".asStreamTypedKey<QueryBookmarksResponse>()) {
+                delegate.queryBookmarks()
+            }
+            .getOrThrow()
 
     override suspend fun getComments(
         objectId: String,
@@ -417,81 +576,135 @@ internal class FeedsSingleFlightApi(
         repliesLimit: Int?,
         limit: Int?,
         prev: String?,
-        next: String?
+        next: String?,
     ): GetCommentsResponse =
-        singleFlightProcessor.run("getComments-${objectId}-${objectType}-${depth}-${sort}-${repliesLimit}-${limit}-${prev}-${next}".asStreamTypedKey<GetCommentsResponse>()) {
-            delegate.getComments(objectId, objectType, depth, sort, repliesLimit, limit, prev, next)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "getComments-${objectId}-${objectType}-${depth}-${sort}-${repliesLimit}-${limit}-${prev}-${next}"
+                    .asStreamTypedKey<GetCommentsResponse>()
+            ) {
+                delegate.getComments(
+                    objectId,
+                    objectType,
+                    depth,
+                    sort,
+                    repliesLimit,
+                    limit,
+                    prev,
+                    next,
+                )
+            }
+            .getOrThrow()
 
     override suspend fun addComment(addCommentRequest: AddCommentRequest): AddCommentResponse =
-        singleFlightProcessor.run("addComment-${addCommentRequest}".asStreamTypedKey<AddCommentResponse>()) {
-            delegate.addComment(addCommentRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("addComment-${addCommentRequest}".asStreamTypedKey<AddCommentResponse>()) {
+                delegate.addComment(addCommentRequest)
+            }
+            .getOrThrow()
 
-    override suspend fun addCommentsBatch(addCommentsBatchRequest: AddCommentsBatchRequest): AddCommentsBatchResponse =
-        singleFlightProcessor.run("addCommentsBatch-${addCommentsBatchRequest}".asStreamTypedKey<AddCommentsBatchResponse>()) {
-            delegate.addCommentsBatch(addCommentsBatchRequest)
-        }.getOrThrow()
+    override suspend fun addCommentsBatch(
+        addCommentsBatchRequest: AddCommentsBatchRequest
+    ): AddCommentsBatchResponse =
+        singleFlightProcessor
+            .run(
+                "addCommentsBatch-${addCommentsBatchRequest}"
+                    .asStreamTypedKey<AddCommentsBatchResponse>()
+            ) {
+                delegate.addCommentsBatch(addCommentsBatchRequest)
+            }
+            .getOrThrow()
 
-    override suspend fun queryComments(queryCommentsRequest: QueryCommentsRequest): QueryCommentsResponse =
-        singleFlightProcessor.run("queryComments-${queryCommentsRequest}".asStreamTypedKey<QueryCommentsResponse>()) {
-            delegate.queryComments(queryCommentsRequest)
-        }.getOrThrow()
+    override suspend fun queryComments(
+        queryCommentsRequest: QueryCommentsRequest
+    ): QueryCommentsResponse =
+        singleFlightProcessor
+            .run(
+                "queryComments-${queryCommentsRequest}".asStreamTypedKey<QueryCommentsResponse>()
+            ) {
+                delegate.queryComments(queryCommentsRequest)
+            }
+            .getOrThrow()
 
-    override suspend fun deleteComment(
-        id: String,
-        hardDelete: Boolean?
-    ): DeleteCommentResponse =
-        singleFlightProcessor.run("deleteComment-${id}-${hardDelete}".asStreamTypedKey<DeleteCommentResponse>()) {
-            delegate.deleteComment(id, hardDelete)
-        }.getOrThrow()
+    override suspend fun deleteComment(id: String, hardDelete: Boolean?): DeleteCommentResponse =
+        singleFlightProcessor
+            .run("deleteComment-${id}-${hardDelete}".asStreamTypedKey<DeleteCommentResponse>()) {
+                delegate.deleteComment(id, hardDelete)
+            }
+            .getOrThrow()
 
     override suspend fun getComment(id: String): GetCommentResponse =
-        singleFlightProcessor.run("getComment-${id}".asStreamTypedKey<GetCommentResponse>()) {
-            delegate.getComment(id)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("getComment-${id}".asStreamTypedKey<GetCommentResponse>()) {
+                delegate.getComment(id)
+            }
+            .getOrThrow()
 
     override suspend fun updateComment(
         id: String,
-        updateCommentRequest: UpdateCommentRequest
+        updateCommentRequest: UpdateCommentRequest,
     ): UpdateCommentResponse =
-        singleFlightProcessor.run("updateComment-${id}-${updateCommentRequest}".asStreamTypedKey<UpdateCommentResponse>()) {
-            delegate.updateComment(id, updateCommentRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "updateComment-${id}-${updateCommentRequest}"
+                    .asStreamTypedKey<UpdateCommentResponse>()
+            ) {
+                delegate.updateComment(id, updateCommentRequest)
+            }
+            .getOrThrow()
 
     override suspend fun updateComment(id: String): UpdateCommentResponse =
-        singleFlightProcessor.run("updateComment-${id}".asStreamTypedKey<UpdateCommentResponse>()) {
-            delegate.updateComment(id)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("updateComment-${id}".asStreamTypedKey<UpdateCommentResponse>()) {
+                delegate.updateComment(id)
+            }
+            .getOrThrow()
 
     override suspend fun addCommentReaction(
         id: String,
-        addCommentReactionRequest: AddCommentReactionRequest
+        addCommentReactionRequest: AddCommentReactionRequest,
     ): AddCommentReactionResponse =
-        singleFlightProcessor.run("addCommentReaction-${id}-${addCommentReactionRequest}".asStreamTypedKey<AddCommentReactionResponse>()) {
-            delegate.addCommentReaction(id, addCommentReactionRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "addCommentReaction-${id}-${addCommentReactionRequest}"
+                    .asStreamTypedKey<AddCommentReactionResponse>()
+            ) {
+                delegate.addCommentReaction(id, addCommentReactionRequest)
+            }
+            .getOrThrow()
 
     override suspend fun queryCommentReactions(
         id: String,
-        queryCommentReactionsRequest: QueryCommentReactionsRequest
+        queryCommentReactionsRequest: QueryCommentReactionsRequest,
     ): QueryCommentReactionsResponse =
-        singleFlightProcessor.run("queryCommentReactions-${id}-${queryCommentReactionsRequest}".asStreamTypedKey<QueryCommentReactionsResponse>()) {
-            delegate.queryCommentReactions(id, queryCommentReactionsRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "queryCommentReactions-${id}-${queryCommentReactionsRequest}"
+                    .asStreamTypedKey<QueryCommentReactionsResponse>()
+            ) {
+                delegate.queryCommentReactions(id, queryCommentReactionsRequest)
+            }
+            .getOrThrow()
 
     override suspend fun queryCommentReactions(id: String): QueryCommentReactionsResponse =
-        singleFlightProcessor.run("queryCommentReactions-${id}".asStreamTypedKey<QueryCommentReactionsResponse>()) {
-            delegate.queryCommentReactions(id)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("queryCommentReactions-${id}".asStreamTypedKey<QueryCommentReactionsResponse>()) {
+                delegate.queryCommentReactions(id)
+            }
+            .getOrThrow()
 
     override suspend fun deleteCommentReaction(
         id: String,
-        type: String
+        type: String,
     ): DeleteCommentReactionResponse =
-        singleFlightProcessor.run("deleteCommentReaction-${id}-${type}".asStreamTypedKey<DeleteCommentReactionResponse>()) {
-            delegate.deleteCommentReaction(id, type)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "deleteCommentReaction-${id}-${type}"
+                    .asStreamTypedKey<DeleteCommentReactionResponse>()
+            ) {
+                delegate.deleteCommentReaction(id, type)
+            }
+            .getOrThrow()
 
     override suspend fun getCommentReplies(
         id: String,
@@ -500,491 +713,710 @@ internal class FeedsSingleFlightApi(
         repliesLimit: Int?,
         limit: Int?,
         prev: String?,
-        next: String?
+        next: String?,
     ): GetCommentRepliesResponse =
-        singleFlightProcessor.run("getCommentReplies-${id}-${depth}-${sort}-${repliesLimit}-${limit}-${prev}-${next}".asStreamTypedKey<GetCommentRepliesResponse>()) {
-            delegate.getCommentReplies(id, depth, sort, repliesLimit, limit, prev, next)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "getCommentReplies-${id}-${depth}-${sort}-${repliesLimit}-${limit}-${prev}-${next}"
+                    .asStreamTypedKey<GetCommentRepliesResponse>()
+            ) {
+                delegate.getCommentReplies(id, depth, sort, repliesLimit, limit, prev, next)
+            }
+            .getOrThrow()
 
     override suspend fun deleteFeed(
         feedGroupId: String,
         feedId: String,
-        hardDelete: Boolean?
+        hardDelete: Boolean?,
     ): DeleteFeedResponse =
-        singleFlightProcessor.run("deleteFeed-${feedGroupId}-${feedId}-${hardDelete}".asStreamTypedKey<DeleteFeedResponse>()) {
-            delegate.deleteFeed(feedGroupId, feedId, hardDelete)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "deleteFeed-${feedGroupId}-${feedId}-${hardDelete}"
+                    .asStreamTypedKey<DeleteFeedResponse>()
+            ) {
+                delegate.deleteFeed(feedGroupId, feedId, hardDelete)
+            }
+            .getOrThrow()
 
     override suspend fun getOrCreateFeed(
         feedGroupId: String,
         feedId: String,
         connectionId: String?,
-        getOrCreateFeedRequest: GetOrCreateFeedRequest
+        getOrCreateFeedRequest: GetOrCreateFeedRequest,
     ): GetOrCreateFeedResponse =
-        singleFlightProcessor.run("getOrCreateFeed-${feedGroupId}-${feedId}-${connectionId}-${getOrCreateFeedRequest}".asStreamTypedKey<GetOrCreateFeedResponse>()) {
-            delegate.getOrCreateFeed(feedGroupId, feedId, connectionId, getOrCreateFeedRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "getOrCreateFeed-${feedGroupId}-${feedId}-${connectionId}-${getOrCreateFeedRequest}"
+                    .asStreamTypedKey<GetOrCreateFeedResponse>()
+            ) {
+                delegate.getOrCreateFeed(feedGroupId, feedId, connectionId, getOrCreateFeedRequest)
+            }
+            .getOrThrow()
 
     override suspend fun getOrCreateFeed(
         feedGroupId: String,
         feedId: String,
-        connectionId: String?
+        connectionId: String?,
     ): GetOrCreateFeedResponse =
-        singleFlightProcessor.run("getOrCreateFeed-${feedGroupId}-${feedId}-${connectionId}".asStreamTypedKey<GetOrCreateFeedResponse>()) {
-            delegate.getOrCreateFeed(feedGroupId, feedId, connectionId)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "getOrCreateFeed-${feedGroupId}-${feedId}-${connectionId}"
+                    .asStreamTypedKey<GetOrCreateFeedResponse>()
+            ) {
+                delegate.getOrCreateFeed(feedGroupId, feedId, connectionId)
+            }
+            .getOrThrow()
 
     override suspend fun updateFeed(
         feedGroupId: String,
         feedId: String,
-        updateFeedRequest: UpdateFeedRequest
+        updateFeedRequest: UpdateFeedRequest,
     ): UpdateFeedResponse =
-        singleFlightProcessor.run("updateFeed-${feedGroupId}-${feedId}-${updateFeedRequest}".asStreamTypedKey<UpdateFeedResponse>()) {
-            delegate.updateFeed(feedGroupId, feedId, updateFeedRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "updateFeed-${feedGroupId}-${feedId}-${updateFeedRequest}"
+                    .asStreamTypedKey<UpdateFeedResponse>()
+            ) {
+                delegate.updateFeed(feedGroupId, feedId, updateFeedRequest)
+            }
+            .getOrThrow()
 
-    override suspend fun updateFeed(
-        feedGroupId: String,
-        feedId: String
-    ): UpdateFeedResponse =
-        singleFlightProcessor.run("updateFeed-${feedGroupId}-${feedId}".asStreamTypedKey<UpdateFeedResponse>()) {
-            delegate.updateFeed(feedGroupId, feedId)
-        }.getOrThrow()
+    override suspend fun updateFeed(feedGroupId: String, feedId: String): UpdateFeedResponse =
+        singleFlightProcessor
+            .run("updateFeed-${feedGroupId}-${feedId}".asStreamTypedKey<UpdateFeedResponse>()) {
+                delegate.updateFeed(feedGroupId, feedId)
+            }
+            .getOrThrow()
 
     override suspend fun markActivity(
         feedGroupId: String,
         feedId: String,
-        markActivityRequest: MarkActivityRequest
+        markActivityRequest: MarkActivityRequest,
     ): Response =
-        singleFlightProcessor.run("markActivity-${feedGroupId}-${feedId}-${markActivityRequest}".asStreamTypedKey<Response>()) {
-            delegate.markActivity(feedGroupId, feedId, markActivityRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "markActivity-${feedGroupId}-${feedId}-${markActivityRequest}"
+                    .asStreamTypedKey<Response>()
+            ) {
+                delegate.markActivity(feedGroupId, feedId, markActivityRequest)
+            }
+            .getOrThrow()
 
-    override suspend fun markActivity(
-        feedGroupId: String,
-        feedId: String
-    ): Response =
-        singleFlightProcessor.run("markActivity-${feedGroupId}-${feedId}".asStreamTypedKey<Response>()) {
-            delegate.markActivity(feedGroupId, feedId)
-        }.getOrThrow()
+    override suspend fun markActivity(feedGroupId: String, feedId: String): Response =
+        singleFlightProcessor
+            .run("markActivity-${feedGroupId}-${feedId}".asStreamTypedKey<Response>()) {
+                delegate.markActivity(feedGroupId, feedId)
+            }
+            .getOrThrow()
 
     override suspend fun unpinActivity(
         feedGroupId: String,
         feedId: String,
-        activityId: String
+        activityId: String,
     ): UnpinActivityResponse =
-        singleFlightProcessor.run("unpinActivity-${feedGroupId}-${feedId}-${activityId}".asStreamTypedKey<UnpinActivityResponse>()) {
-            delegate.unpinActivity(feedGroupId, feedId, activityId)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "unpinActivity-${feedGroupId}-${feedId}-${activityId}"
+                    .asStreamTypedKey<UnpinActivityResponse>()
+            ) {
+                delegate.unpinActivity(feedGroupId, feedId, activityId)
+            }
+            .getOrThrow()
 
     override suspend fun pinActivity(
         feedGroupId: String,
         feedId: String,
         activityId: String,
-        pinActivityRequest: PinActivityRequest
+        pinActivityRequest: PinActivityRequest,
     ): PinActivityResponse =
-        singleFlightProcessor.run("pinActivity-${feedGroupId}-${feedId}-${activityId}-${pinActivityRequest}".asStreamTypedKey<PinActivityResponse>()) {
-            delegate.pinActivity(feedGroupId, feedId, activityId, pinActivityRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "pinActivity-${feedGroupId}-${feedId}-${activityId}-${pinActivityRequest}"
+                    .asStreamTypedKey<PinActivityResponse>()
+            ) {
+                delegate.pinActivity(feedGroupId, feedId, activityId, pinActivityRequest)
+            }
+            .getOrThrow()
 
     override suspend fun pinActivity(
         feedGroupId: String,
         feedId: String,
-        activityId: String
+        activityId: String,
     ): PinActivityResponse =
-        singleFlightProcessor.run("pinActivity-${feedGroupId}-${feedId}-${activityId}".asStreamTypedKey<PinActivityResponse>()) {
-            delegate.pinActivity(feedGroupId, feedId, activityId)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "pinActivity-${feedGroupId}-${feedId}-${activityId}"
+                    .asStreamTypedKey<PinActivityResponse>()
+            ) {
+                delegate.pinActivity(feedGroupId, feedId, activityId)
+            }
+            .getOrThrow()
 
     override suspend fun updateFeedMembers(
         feedGroupId: String,
         feedId: String,
-        updateFeedMembersRequest: UpdateFeedMembersRequest
+        updateFeedMembersRequest: UpdateFeedMembersRequest,
     ): UpdateFeedMembersResponse =
-        singleFlightProcessor.run("updateFeedMembers-${feedGroupId}-${feedId}-${updateFeedMembersRequest}".asStreamTypedKey<UpdateFeedMembersResponse>()) {
-            delegate.updateFeedMembers(feedGroupId, feedId, updateFeedMembersRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "updateFeedMembers-${feedGroupId}-${feedId}-${updateFeedMembersRequest}"
+                    .asStreamTypedKey<UpdateFeedMembersResponse>()
+            ) {
+                delegate.updateFeedMembers(feedGroupId, feedId, updateFeedMembersRequest)
+            }
+            .getOrThrow()
 
     override suspend fun acceptFeedMemberInvite(
         feedId: String,
         feedGroupId: String,
-        acceptFeedMemberInviteRequest: AcceptFeedMemberInviteRequest
+        acceptFeedMemberInviteRequest: AcceptFeedMemberInviteRequest,
     ): AcceptFeedMemberInviteResponse =
-        singleFlightProcessor.run("acceptFeedMemberInvite-${feedId}-${feedGroupId}-${acceptFeedMemberInviteRequest}".asStreamTypedKey<AcceptFeedMemberInviteResponse>()) {
-            delegate.acceptFeedMemberInvite(feedId, feedGroupId, acceptFeedMemberInviteRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "acceptFeedMemberInvite-${feedId}-${feedGroupId}-${acceptFeedMemberInviteRequest}"
+                    .asStreamTypedKey<AcceptFeedMemberInviteResponse>()
+            ) {
+                delegate.acceptFeedMemberInvite(feedId, feedGroupId, acceptFeedMemberInviteRequest)
+            }
+            .getOrThrow()
 
     override suspend fun acceptFeedMemberInvite(
         feedId: String,
-        feedGroupId: String
+        feedGroupId: String,
     ): AcceptFeedMemberInviteResponse =
-        singleFlightProcessor.run("acceptFeedMemberInvite-${feedId}-${feedGroupId}".asStreamTypedKey<AcceptFeedMemberInviteResponse>()) {
-            delegate.acceptFeedMemberInvite(feedId, feedGroupId)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "acceptFeedMemberInvite-${feedId}-${feedGroupId}"
+                    .asStreamTypedKey<AcceptFeedMemberInviteResponse>()
+            ) {
+                delegate.acceptFeedMemberInvite(feedId, feedGroupId)
+            }
+            .getOrThrow()
 
     override suspend fun queryFeedMembers(
         feedGroupId: String,
         feedId: String,
-        queryFeedMembersRequest: QueryFeedMembersRequest
+        queryFeedMembersRequest: QueryFeedMembersRequest,
     ): QueryFeedMembersResponse =
-        singleFlightProcessor.run("queryFeedMembers-${feedGroupId}-${feedId}-${queryFeedMembersRequest}".asStreamTypedKey<QueryFeedMembersResponse>()) {
-            delegate.queryFeedMembers(feedGroupId, feedId, queryFeedMembersRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "queryFeedMembers-${feedGroupId}-${feedId}-${queryFeedMembersRequest}"
+                    .asStreamTypedKey<QueryFeedMembersResponse>()
+            ) {
+                delegate.queryFeedMembers(feedGroupId, feedId, queryFeedMembersRequest)
+            }
+            .getOrThrow()
 
     override suspend fun queryFeedMembers(
         feedGroupId: String,
-        feedId: String
+        feedId: String,
     ): QueryFeedMembersResponse =
-        singleFlightProcessor.run("queryFeedMembers-${feedGroupId}-${feedId}".asStreamTypedKey<QueryFeedMembersResponse>()) {
-            delegate.queryFeedMembers(feedGroupId, feedId)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "queryFeedMembers-${feedGroupId}-${feedId}"
+                    .asStreamTypedKey<QueryFeedMembersResponse>()
+            ) {
+                delegate.queryFeedMembers(feedGroupId, feedId)
+            }
+            .getOrThrow()
 
     override suspend fun rejectFeedMemberInvite(
         feedGroupId: String,
         feedId: String,
-        rejectFeedMemberInviteRequest: RejectFeedMemberInviteRequest
+        rejectFeedMemberInviteRequest: RejectFeedMemberInviteRequest,
     ): RejectFeedMemberInviteResponse =
-        singleFlightProcessor.run("rejectFeedMemberInvite-${feedGroupId}-${feedId}-${rejectFeedMemberInviteRequest}".asStreamTypedKey<RejectFeedMemberInviteResponse>()) {
-            delegate.rejectFeedMemberInvite(feedGroupId, feedId, rejectFeedMemberInviteRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "rejectFeedMemberInvite-${feedGroupId}-${feedId}-${rejectFeedMemberInviteRequest}"
+                    .asStreamTypedKey<RejectFeedMemberInviteResponse>()
+            ) {
+                delegate.rejectFeedMemberInvite(feedGroupId, feedId, rejectFeedMemberInviteRequest)
+            }
+            .getOrThrow()
 
     override suspend fun rejectFeedMemberInvite(
         feedGroupId: String,
-        feedId: String
+        feedId: String,
     ): RejectFeedMemberInviteResponse =
-        singleFlightProcessor.run("rejectFeedMemberInvite-${feedGroupId}-${feedId}".asStreamTypedKey<RejectFeedMemberInviteResponse>()) {
-            delegate.rejectFeedMemberInvite(feedGroupId, feedId)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "rejectFeedMemberInvite-${feedGroupId}-${feedId}"
+                    .asStreamTypedKey<RejectFeedMemberInviteResponse>()
+            ) {
+                delegate.rejectFeedMemberInvite(feedGroupId, feedId)
+            }
+            .getOrThrow()
 
     override suspend fun stopWatchingFeed(
         feedGroupId: String,
         feedId: String,
-        connectionId: String?
+        connectionId: String?,
     ): Response =
-        singleFlightProcessor.run("stopWatchingFeed-${feedGroupId}-${feedId}-${connectionId}".asStreamTypedKey<Response>()) {
-            delegate.stopWatchingFeed(feedGroupId, feedId, connectionId)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "stopWatchingFeed-${feedGroupId}-${feedId}-${connectionId}"
+                    .asStreamTypedKey<Response>()
+            ) {
+                delegate.stopWatchingFeed(feedGroupId, feedId, connectionId)
+            }
+            .getOrThrow()
 
     override suspend fun getFollowSuggestions(
         feedGroupId: String,
-        limit: Int?
+        limit: Int?,
     ): GetFollowSuggestionsResponse =
-        singleFlightProcessor.run("getFollowSuggestions-${feedGroupId}-${limit}".asStreamTypedKey<GetFollowSuggestionsResponse>()) {
-            delegate.getFollowSuggestions(feedGroupId, limit)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "getFollowSuggestions-${feedGroupId}-${limit}"
+                    .asStreamTypedKey<GetFollowSuggestionsResponse>()
+            ) {
+                delegate.getFollowSuggestions(feedGroupId, limit)
+            }
+            .getOrThrow()
 
-    override suspend fun createFeedsBatch(createFeedsBatchRequest: CreateFeedsBatchRequest): CreateFeedsBatchResponse =
-        singleFlightProcessor.run("createFeedsBatch-${createFeedsBatchRequest}".asStreamTypedKey<CreateFeedsBatchResponse>()) {
-            delegate.createFeedsBatch(createFeedsBatchRequest)
-        }.getOrThrow()
+    override suspend fun createFeedsBatch(
+        createFeedsBatchRequest: CreateFeedsBatchRequest
+    ): CreateFeedsBatchResponse =
+        singleFlightProcessor
+            .run(
+                "createFeedsBatch-${createFeedsBatchRequest}"
+                    .asStreamTypedKey<CreateFeedsBatchResponse>()
+            ) {
+                delegate.createFeedsBatch(createFeedsBatchRequest)
+            }
+            .getOrThrow()
 
     override suspend fun queryFeeds(
         connectionId: String?,
-        queryFeedsRequest: QueryFeedsRequest
+        queryFeedsRequest: QueryFeedsRequest,
     ): QueryFeedsResponse =
-        singleFlightProcessor.run("queryFeeds-${connectionId}-${queryFeedsRequest}".asStreamTypedKey<QueryFeedsResponse>()) {
-            delegate.queryFeeds(connectionId, queryFeedsRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "queryFeeds-${connectionId}-${queryFeedsRequest}"
+                    .asStreamTypedKey<QueryFeedsResponse>()
+            ) {
+                delegate.queryFeeds(connectionId, queryFeedsRequest)
+            }
+            .getOrThrow()
 
     override suspend fun queryFeeds(connectionId: String?): QueryFeedsResponse =
-        singleFlightProcessor.run("queryFeeds-${connectionId}".asStreamTypedKey<QueryFeedsResponse>()) {
-            delegate.queryFeeds(connectionId)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("queryFeeds-${connectionId}".asStreamTypedKey<QueryFeedsResponse>()) {
+                delegate.queryFeeds(connectionId)
+            }
+            .getOrThrow()
 
-    override suspend fun updateFollow(updateFollowRequest: UpdateFollowRequest): UpdateFollowResponse =
-        singleFlightProcessor.run("updateFollow-${updateFollowRequest}".asStreamTypedKey<UpdateFollowResponse>()) {
-            delegate.updateFollow(updateFollowRequest)
-        }.getOrThrow()
+    override suspend fun updateFollow(
+        updateFollowRequest: UpdateFollowRequest
+    ): UpdateFollowResponse =
+        singleFlightProcessor
+            .run("updateFollow-${updateFollowRequest}".asStreamTypedKey<UpdateFollowResponse>()) {
+                delegate.updateFollow(updateFollowRequest)
+            }
+            .getOrThrow()
 
     override suspend fun follow(followRequest: FollowRequest): SingleFollowResponse =
-        singleFlightProcessor.run("follow-${followRequest}".asStreamTypedKey<SingleFollowResponse>()) {
-            delegate.follow(followRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("follow-${followRequest}".asStreamTypedKey<SingleFollowResponse>()) {
+                delegate.follow(followRequest)
+            }
+            .getOrThrow()
 
-    override suspend fun acceptFollow(acceptFollowRequest: AcceptFollowRequest): AcceptFollowResponse =
-        singleFlightProcessor.run("acceptFollow-${acceptFollowRequest}".asStreamTypedKey<AcceptFollowResponse>()) {
-            delegate.acceptFollow(acceptFollowRequest)
-        }.getOrThrow()
+    override suspend fun acceptFollow(
+        acceptFollowRequest: AcceptFollowRequest
+    ): AcceptFollowResponse =
+        singleFlightProcessor
+            .run("acceptFollow-${acceptFollowRequest}".asStreamTypedKey<AcceptFollowResponse>()) {
+                delegate.acceptFollow(acceptFollowRequest)
+            }
+            .getOrThrow()
 
     override suspend fun followBatch(followBatchRequest: FollowBatchRequest): FollowBatchResponse =
-        singleFlightProcessor.run("followBatch-${followBatchRequest}".asStreamTypedKey<FollowBatchResponse>()) {
-            delegate.followBatch(followBatchRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("followBatch-${followBatchRequest}".asStreamTypedKey<FollowBatchResponse>()) {
+                delegate.followBatch(followBatchRequest)
+            }
+            .getOrThrow()
 
-    override suspend fun queryFollows(queryFollowsRequest: QueryFollowsRequest): QueryFollowsResponse =
-        singleFlightProcessor.run("queryFollows-${queryFollowsRequest}".asStreamTypedKey<QueryFollowsResponse>()) {
-            delegate.queryFollows(queryFollowsRequest)
-        }.getOrThrow()
+    override suspend fun queryFollows(
+        queryFollowsRequest: QueryFollowsRequest
+    ): QueryFollowsResponse =
+        singleFlightProcessor
+            .run("queryFollows-${queryFollowsRequest}".asStreamTypedKey<QueryFollowsResponse>()) {
+                delegate.queryFollows(queryFollowsRequest)
+            }
+            .getOrThrow()
 
     override suspend fun queryFollows(): QueryFollowsResponse =
-        singleFlightProcessor.run("queryFollows".asStreamTypedKey<QueryFollowsResponse>()) {
-            delegate.queryFollows()
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("queryFollows".asStreamTypedKey<QueryFollowsResponse>()) {
+                delegate.queryFollows()
+            }
+            .getOrThrow()
 
-    override suspend fun rejectFollow(rejectFollowRequest: RejectFollowRequest): RejectFollowResponse =
-        singleFlightProcessor.run("rejectFollow-${rejectFollowRequest}".asStreamTypedKey<RejectFollowResponse>()) {
-            delegate.rejectFollow(rejectFollowRequest)
-        }.getOrThrow()
+    override suspend fun rejectFollow(
+        rejectFollowRequest: RejectFollowRequest
+    ): RejectFollowResponse =
+        singleFlightProcessor
+            .run("rejectFollow-${rejectFollowRequest}".asStreamTypedKey<RejectFollowResponse>()) {
+                delegate.rejectFollow(rejectFollowRequest)
+            }
+            .getOrThrow()
 
-    override suspend fun unfollow(
-        source: String,
-        target: String
-    ): UnfollowResponse =
-        singleFlightProcessor.run("unfollow-${source}-${target}".asStreamTypedKey<UnfollowResponse>()) {
-            delegate.unfollow(source, target)
-        }.getOrThrow()
+    override suspend fun unfollow(source: String, target: String): UnfollowResponse =
+        singleFlightProcessor
+            .run("unfollow-${source}-${target}".asStreamTypedKey<UnfollowResponse>()) {
+                delegate.unfollow(source, target)
+            }
+            .getOrThrow()
 
     override suspend fun createGuest(createGuestRequest: CreateGuestRequest): CreateGuestResponse =
-        singleFlightProcessor.run("createGuest-${createGuestRequest}".asStreamTypedKey<CreateGuestResponse>()) {
-            delegate.createGuest(createGuestRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("createGuest-${createGuestRequest}".asStreamTypedKey<CreateGuestResponse>()) {
+                delegate.createGuest(createGuestRequest)
+            }
+            .getOrThrow()
 
-    override suspend fun longPoll(
-        connectionId: String?,
-        json: WSAuthMessage?
-    ) {
-        singleFlightProcessor.run("longPoll-${connectionId}-${json}".asStreamTypedKey<Unit>()) {
-            delegate.longPoll(connectionId, json)
-        }.getOrThrow()
+    override suspend fun longPoll(connectionId: String?, json: WSAuthMessage?) {
+        singleFlightProcessor
+            .run("longPoll-${connectionId}-${json}".asStreamTypedKey<Unit>()) {
+                delegate.longPoll(connectionId, json)
+            }
+            .getOrThrow()
     }
 
     override suspend fun ban(banRequest: BanRequest): BanResponse =
-        singleFlightProcessor.run("ban-${banRequest}".asStreamTypedKey<BanResponse>()) {
-            delegate.ban(banRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("ban-${banRequest}".asStreamTypedKey<BanResponse>()) { delegate.ban(banRequest) }
+            .getOrThrow()
 
-    override suspend fun upsertConfig(upsertConfigRequest: UpsertConfigRequest): UpsertConfigResponse =
-        singleFlightProcessor.run("upsertConfig-${upsertConfigRequest}".asStreamTypedKey<UpsertConfigResponse>()) {
-            delegate.upsertConfig(upsertConfigRequest)
-        }.getOrThrow()
+    override suspend fun upsertConfig(
+        upsertConfigRequest: UpsertConfigRequest
+    ): UpsertConfigResponse =
+        singleFlightProcessor
+            .run("upsertConfig-${upsertConfigRequest}".asStreamTypedKey<UpsertConfigResponse>()) {
+                delegate.upsertConfig(upsertConfigRequest)
+            }
+            .getOrThrow()
 
-    override suspend fun deleteConfig(
-        key: String,
-        team: String?
-    ): DeleteModerationConfigResponse =
-        singleFlightProcessor.run("deleteConfig-${key}-${team}".asStreamTypedKey<DeleteModerationConfigResponse>()) {
-            delegate.deleteConfig(key, team)
-        }.getOrThrow()
+    override suspend fun deleteConfig(key: String, team: String?): DeleteModerationConfigResponse =
+        singleFlightProcessor
+            .run("deleteConfig-${key}-${team}".asStreamTypedKey<DeleteModerationConfigResponse>()) {
+                delegate.deleteConfig(key, team)
+            }
+            .getOrThrow()
 
-    override suspend fun getConfig(
-        key: String,
-        team: String?
-    ): GetConfigResponse =
-        singleFlightProcessor.run("getConfig-${key}-${team}".asStreamTypedKey<GetConfigResponse>()) {
-            delegate.getConfig(key, team)
-        }.getOrThrow()
+    override suspend fun getConfig(key: String, team: String?): GetConfigResponse =
+        singleFlightProcessor
+            .run("getConfig-${key}-${team}".asStreamTypedKey<GetConfigResponse>()) {
+                delegate.getConfig(key, team)
+            }
+            .getOrThrow()
 
-    override suspend fun queryModerationConfigs(queryModerationConfigsRequest: QueryModerationConfigsRequest): QueryModerationConfigsResponse =
-        singleFlightProcessor.run("queryModerationConfigs-${queryModerationConfigsRequest}".asStreamTypedKey<QueryModerationConfigsResponse>()) {
-            delegate.queryModerationConfigs(queryModerationConfigsRequest)
-        }.getOrThrow()
+    override suspend fun queryModerationConfigs(
+        queryModerationConfigsRequest: QueryModerationConfigsRequest
+    ): QueryModerationConfigsResponse =
+        singleFlightProcessor
+            .run(
+                "queryModerationConfigs-${queryModerationConfigsRequest}"
+                    .asStreamTypedKey<QueryModerationConfigsResponse>()
+            ) {
+                delegate.queryModerationConfigs(queryModerationConfigsRequest)
+            }
+            .getOrThrow()
 
     override suspend fun queryModerationConfigs(): QueryModerationConfigsResponse =
-        singleFlightProcessor.run("queryModerationConfigs".asStreamTypedKey<QueryModerationConfigsResponse>()) {
-            delegate.queryModerationConfigs()
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("queryModerationConfigs".asStreamTypedKey<QueryModerationConfigsResponse>()) {
+                delegate.queryModerationConfigs()
+            }
+            .getOrThrow()
 
     override suspend fun flag(flagRequest: FlagRequest): FlagResponse =
-        singleFlightProcessor.run("flag-${flagRequest}".asStreamTypedKey<FlagResponse>()) {
-            delegate.flag(flagRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("flag-${flagRequest}".asStreamTypedKey<FlagResponse>()) {
+                delegate.flag(flagRequest)
+            }
+            .getOrThrow()
 
     override suspend fun mute(muteRequest: MuteRequest): MuteResponse =
-        singleFlightProcessor.run("mute-${muteRequest}".asStreamTypedKey<MuteResponse>()) {
-            delegate.mute(muteRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("mute-${muteRequest}".asStreamTypedKey<MuteResponse>()) {
+                delegate.mute(muteRequest)
+            }
+            .getOrThrow()
 
-    override suspend fun queryReviewQueue(queryReviewQueueRequest: QueryReviewQueueRequest): QueryReviewQueueResponse =
-        singleFlightProcessor.run("queryReviewQueue-${queryReviewQueueRequest}".asStreamTypedKey<QueryReviewQueueResponse>()) {
-            delegate.queryReviewQueue(queryReviewQueueRequest)
-        }.getOrThrow()
+    override suspend fun queryReviewQueue(
+        queryReviewQueueRequest: QueryReviewQueueRequest
+    ): QueryReviewQueueResponse =
+        singleFlightProcessor
+            .run(
+                "queryReviewQueue-${queryReviewQueueRequest}"
+                    .asStreamTypedKey<QueryReviewQueueResponse>()
+            ) {
+                delegate.queryReviewQueue(queryReviewQueueRequest)
+            }
+            .getOrThrow()
 
     override suspend fun queryReviewQueue(): QueryReviewQueueResponse =
-        singleFlightProcessor.run("queryReviewQueue".asStreamTypedKey<QueryReviewQueueResponse>()) {
-            delegate.queryReviewQueue()
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("queryReviewQueue".asStreamTypedKey<QueryReviewQueueResponse>()) {
+                delegate.queryReviewQueue()
+            }
+            .getOrThrow()
 
-    override suspend fun submitAction(submitActionRequest: SubmitActionRequest): SubmitActionResponse =
-        singleFlightProcessor.run("submitAction-${submitActionRequest}".asStreamTypedKey<SubmitActionResponse>()) {
-            delegate.submitAction(submitActionRequest)
-        }.getOrThrow()
+    override suspend fun submitAction(
+        submitActionRequest: SubmitActionRequest
+    ): SubmitActionResponse =
+        singleFlightProcessor
+            .run("submitAction-${submitActionRequest}".asStreamTypedKey<SubmitActionResponse>()) {
+                delegate.submitAction(submitActionRequest)
+            }
+            .getOrThrow()
 
     override suspend fun getOG(url: String): GetOGResponse =
-        singleFlightProcessor.run("getOG-${url}".asStreamTypedKey<GetOGResponse>()) {
-            delegate.getOG(url)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("getOG-${url}".asStreamTypedKey<GetOGResponse>()) { delegate.getOG(url) }
+            .getOrThrow()
 
     override suspend fun createPoll(createPollRequest: CreatePollRequest): PollResponse =
-        singleFlightProcessor.run("createPoll-${createPollRequest}".asStreamTypedKey<PollResponse>()) {
-            delegate.createPoll(createPollRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("createPoll-${createPollRequest}".asStreamTypedKey<PollResponse>()) {
+                delegate.createPoll(createPollRequest)
+            }
+            .getOrThrow()
 
     override suspend fun updatePoll(updatePollRequest: UpdatePollRequest): PollResponse =
-        singleFlightProcessor.run("updatePoll-${updatePollRequest}".asStreamTypedKey<PollResponse>()) {
-            delegate.updatePoll(updatePollRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("updatePoll-${updatePollRequest}".asStreamTypedKey<PollResponse>()) {
+                delegate.updatePoll(updatePollRequest)
+            }
+            .getOrThrow()
 
     override suspend fun queryPolls(
         userId: String?,
-        queryPollsRequest: QueryPollsRequest
+        queryPollsRequest: QueryPollsRequest,
     ): QueryPollsResponse =
-        singleFlightProcessor.run("queryPolls-${userId}-${queryPollsRequest}".asStreamTypedKey<QueryPollsResponse>()) {
-            delegate.queryPolls(userId, queryPollsRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "queryPolls-${userId}-${queryPollsRequest}".asStreamTypedKey<QueryPollsResponse>()
+            ) {
+                delegate.queryPolls(userId, queryPollsRequest)
+            }
+            .getOrThrow()
 
     override suspend fun queryPolls(userId: String?): QueryPollsResponse =
-        singleFlightProcessor.run("queryPolls-${userId}".asStreamTypedKey<QueryPollsResponse>()) {
-            delegate.queryPolls(userId)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("queryPolls-${userId}".asStreamTypedKey<QueryPollsResponse>()) {
+                delegate.queryPolls(userId)
+            }
+            .getOrThrow()
 
-    override suspend fun deletePoll(
-        pollId: String,
-        userId: String?
-    ): Response =
-        singleFlightProcessor.run("deletePoll-${pollId}-${userId}".asStreamTypedKey<Response>()) {
-            delegate.deletePoll(pollId, userId)
-        }.getOrThrow()
+    override suspend fun deletePoll(pollId: String, userId: String?): Response =
+        singleFlightProcessor
+            .run("deletePoll-${pollId}-${userId}".asStreamTypedKey<Response>()) {
+                delegate.deletePoll(pollId, userId)
+            }
+            .getOrThrow()
 
-    override suspend fun getPoll(
-        pollId: String,
-        userId: String?
-    ): PollResponse =
-        singleFlightProcessor.run("getPoll-${pollId}-${userId}".asStreamTypedKey<PollResponse>()) {
-            delegate.getPoll(pollId, userId)
-        }.getOrThrow()
+    override suspend fun getPoll(pollId: String, userId: String?): PollResponse =
+        singleFlightProcessor
+            .run("getPoll-${pollId}-${userId}".asStreamTypedKey<PollResponse>()) {
+                delegate.getPoll(pollId, userId)
+            }
+            .getOrThrow()
 
     override suspend fun updatePollPartial(
         pollId: String,
-        updatePollPartialRequest: UpdatePollPartialRequest
+        updatePollPartialRequest: UpdatePollPartialRequest,
     ): PollResponse =
-        singleFlightProcessor.run("updatePollPartial-${pollId}-${updatePollPartialRequest}".asStreamTypedKey<PollResponse>()) {
-            delegate.updatePollPartial(pollId, updatePollPartialRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "updatePollPartial-${pollId}-${updatePollPartialRequest}"
+                    .asStreamTypedKey<PollResponse>()
+            ) {
+                delegate.updatePollPartial(pollId, updatePollPartialRequest)
+            }
+            .getOrThrow()
 
     override suspend fun updatePollPartial(pollId: String): PollResponse =
-        singleFlightProcessor.run("updatePollPartial-${pollId}".asStreamTypedKey<PollResponse>()) {
-            delegate.updatePollPartial(pollId)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("updatePollPartial-${pollId}".asStreamTypedKey<PollResponse>()) {
+                delegate.updatePollPartial(pollId)
+            }
+            .getOrThrow()
 
     override suspend fun createPollOption(
         pollId: String,
-        createPollOptionRequest: CreatePollOptionRequest
+        createPollOptionRequest: CreatePollOptionRequest,
     ): PollOptionResponse =
-        singleFlightProcessor.run("createPollOption-${pollId}-${createPollOptionRequest}".asStreamTypedKey<PollOptionResponse>()) {
-            delegate.createPollOption(pollId, createPollOptionRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "createPollOption-${pollId}-${createPollOptionRequest}"
+                    .asStreamTypedKey<PollOptionResponse>()
+            ) {
+                delegate.createPollOption(pollId, createPollOptionRequest)
+            }
+            .getOrThrow()
 
     override suspend fun updatePollOption(
         pollId: String,
-        updatePollOptionRequest: UpdatePollOptionRequest
+        updatePollOptionRequest: UpdatePollOptionRequest,
     ): PollOptionResponse =
-        singleFlightProcessor.run("updatePollOption-${pollId}-${updatePollOptionRequest}".asStreamTypedKey<PollOptionResponse>()) {
-            delegate.updatePollOption(pollId, updatePollOptionRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "updatePollOption-${pollId}-${updatePollOptionRequest}"
+                    .asStreamTypedKey<PollOptionResponse>()
+            ) {
+                delegate.updatePollOption(pollId, updatePollOptionRequest)
+            }
+            .getOrThrow()
 
     override suspend fun deletePollOption(
         pollId: String,
         optionId: String,
-        userId: String?
+        userId: String?,
     ): Response =
-        singleFlightProcessor.run("deletePollOption-${pollId}-${optionId}-${userId}".asStreamTypedKey<Response>()) {
-            delegate.deletePollOption(pollId, optionId, userId)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("deletePollOption-${pollId}-${optionId}-${userId}".asStreamTypedKey<Response>()) {
+                delegate.deletePollOption(pollId, optionId, userId)
+            }
+            .getOrThrow()
 
     override suspend fun getPollOption(
         pollId: String,
         optionId: String,
-        userId: String?
+        userId: String?,
     ): PollOptionResponse =
-        singleFlightProcessor.run("getPollOption-${pollId}-${optionId}-${userId}".asStreamTypedKey<PollOptionResponse>()) {
-            delegate.getPollOption(pollId, optionId, userId)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "getPollOption-${pollId}-${optionId}-${userId}"
+                    .asStreamTypedKey<PollOptionResponse>()
+            ) {
+                delegate.getPollOption(pollId, optionId, userId)
+            }
+            .getOrThrow()
 
     override suspend fun queryPollVotes(
         pollId: String,
         userId: String?,
-        queryPollVotesRequest: QueryPollVotesRequest
+        queryPollVotesRequest: QueryPollVotesRequest,
     ): PollVotesResponse =
-        singleFlightProcessor.run("queryPollVotes-${pollId}-${userId}-${queryPollVotesRequest}".asStreamTypedKey<PollVotesResponse>()) {
-            delegate.queryPollVotes(pollId, userId, queryPollVotesRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run(
+                "queryPollVotes-${pollId}-${userId}-${queryPollVotesRequest}"
+                    .asStreamTypedKey<PollVotesResponse>()
+            ) {
+                delegate.queryPollVotes(pollId, userId, queryPollVotesRequest)
+            }
+            .getOrThrow()
 
-    override suspend fun queryPollVotes(
-        pollId: String,
-        userId: String?
-    ): PollVotesResponse =
-        singleFlightProcessor.run("queryPollVotes-${pollId}-${userId}".asStreamTypedKey<PollVotesResponse>()) {
-            delegate.queryPollVotes(pollId, userId)
-        }.getOrThrow()
+    override suspend fun queryPollVotes(pollId: String, userId: String?): PollVotesResponse =
+        singleFlightProcessor
+            .run("queryPollVotes-${pollId}-${userId}".asStreamTypedKey<PollVotesResponse>()) {
+                delegate.queryPollVotes(pollId, userId)
+            }
+            .getOrThrow()
 
     override suspend fun deleteFile(url: String?): Response =
-        singleFlightProcessor.run("deleteFile-${url}".asStreamTypedKey<Response>()) {
-            delegate.deleteFile(url)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("deleteFile-${url}".asStreamTypedKey<Response>()) { delegate.deleteFile(url) }
+            .getOrThrow()
 
     override suspend fun uploadFile(fileUploadRequest: FileUploadRequest): FileUploadResponse =
-        singleFlightProcessor.run("uploadFile-${fileUploadRequest}".asStreamTypedKey<FileUploadResponse>()) {
-            delegate.uploadFile(fileUploadRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("uploadFile-${fileUploadRequest}".asStreamTypedKey<FileUploadResponse>()) {
+                delegate.uploadFile(fileUploadRequest)
+            }
+            .getOrThrow()
 
     override suspend fun uploadFile(): FileUploadResponse =
-        singleFlightProcessor.run("uploadFile".asStreamTypedKey<FileUploadResponse>()) {
-            delegate.uploadFile()
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("uploadFile".asStreamTypedKey<FileUploadResponse>()) { delegate.uploadFile() }
+            .getOrThrow()
 
     override suspend fun deleteImage(url: String?): Response =
-        singleFlightProcessor.run("deleteImage-${url}".asStreamTypedKey<Response>()) {
-            delegate.deleteImage(url)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("deleteImage-${url}".asStreamTypedKey<Response>()) { delegate.deleteImage(url) }
+            .getOrThrow()
 
     override suspend fun uploadImage(imageUploadRequest: ImageUploadRequest): ImageUploadResponse =
-        singleFlightProcessor.run("uploadImage-${imageUploadRequest}".asStreamTypedKey<ImageUploadResponse>()) {
-            delegate.uploadImage(imageUploadRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("uploadImage-${imageUploadRequest}".asStreamTypedKey<ImageUploadResponse>()) {
+                delegate.uploadImage(imageUploadRequest)
+            }
+            .getOrThrow()
 
     override suspend fun uploadImage(): ImageUploadResponse =
-        singleFlightProcessor.run("uploadImage".asStreamTypedKey<ImageUploadResponse>()) {
-            delegate.uploadImage()
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("uploadImage".asStreamTypedKey<ImageUploadResponse>()) { delegate.uploadImage() }
+            .getOrThrow()
 
     override suspend fun queryUsers(payload: QueryUsersPayload?): QueryUsersResponse =
-        singleFlightProcessor.run("queryUsers-${payload}".asStreamTypedKey<QueryUsersResponse>()) {
-            delegate.queryUsers(payload)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("queryUsers-${payload}".asStreamTypedKey<QueryUsersResponse>()) {
+                delegate.queryUsers(payload)
+            }
+            .getOrThrow()
 
-    override suspend fun updateUsersPartial(updateUsersPartialRequest: UpdateUsersPartialRequest): UpdateUsersResponse =
-        singleFlightProcessor.run("updateUsersPartial-${updateUsersPartialRequest}".asStreamTypedKey<UpdateUsersResponse>()) {
-            delegate.updateUsersPartial(updateUsersPartialRequest)
-        }.getOrThrow()
+    override suspend fun updateUsersPartial(
+        updateUsersPartialRequest: UpdateUsersPartialRequest
+    ): UpdateUsersResponse =
+        singleFlightProcessor
+            .run(
+                "updateUsersPartial-${updateUsersPartialRequest}"
+                    .asStreamTypedKey<UpdateUsersResponse>()
+            ) {
+                delegate.updateUsersPartial(updateUsersPartialRequest)
+            }
+            .getOrThrow()
 
     override suspend fun updateUsers(updateUsersRequest: UpdateUsersRequest): UpdateUsersResponse =
-        singleFlightProcessor.run("updateUsers-${updateUsersRequest}".asStreamTypedKey<UpdateUsersResponse>()) {
-            delegate.updateUsers(updateUsersRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("updateUsers-${updateUsersRequest}".asStreamTypedKey<UpdateUsersResponse>()) {
+                delegate.updateUsers(updateUsersRequest)
+            }
+            .getOrThrow()
 
     override suspend fun getBlockedUsers(): GetBlockedUsersResponse =
-        singleFlightProcessor.run("getBlockedUsers".asStreamTypedKey<GetBlockedUsersResponse>()) {
-            delegate.getBlockedUsers()
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("getBlockedUsers".asStreamTypedKey<GetBlockedUsersResponse>()) {
+                delegate.getBlockedUsers()
+            }
+            .getOrThrow()
 
     override suspend fun blockUsers(blockUsersRequest: BlockUsersRequest): BlockUsersResponse =
-        singleFlightProcessor.run("blockUsers-${blockUsersRequest}".asStreamTypedKey<BlockUsersResponse>()) {
-            delegate.blockUsers(blockUsersRequest)
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("blockUsers-${blockUsersRequest}".asStreamTypedKey<BlockUsersResponse>()) {
+                delegate.blockUsers(blockUsersRequest)
+            }
+            .getOrThrow()
 
     override suspend fun getUserLiveLocations(): SharedLocationsResponse =
-        singleFlightProcessor.run("getUserLiveLocations".asStreamTypedKey<SharedLocationsResponse>()) {
-            delegate.getUserLiveLocations()
-        }.getOrThrow()
+        singleFlightProcessor
+            .run("getUserLiveLocations".asStreamTypedKey<SharedLocationsResponse>()) {
+                delegate.getUserLiveLocations()
+            }
+            .getOrThrow()
 
-    override suspend fun updateLiveLocation(updateLiveLocationRequest: UpdateLiveLocationRequest): SharedLocationResponse =
-        singleFlightProcessor.run("updateLiveLocation-${updateLiveLocationRequest}".asStreamTypedKey<SharedLocationResponse>()) {
-            delegate.updateLiveLocation(updateLiveLocationRequest)
-        }.getOrThrow()
+    override suspend fun updateLiveLocation(
+        updateLiveLocationRequest: UpdateLiveLocationRequest
+    ): SharedLocationResponse =
+        singleFlightProcessor
+            .run(
+                "updateLiveLocation-${updateLiveLocationRequest}"
+                    .asStreamTypedKey<SharedLocationResponse>()
+            ) {
+                delegate.updateLiveLocation(updateLiveLocationRequest)
+            }
+            .getOrThrow()
 
-    override suspend fun unblockUsers(unblockUsersRequest: UnblockUsersRequest): UnblockUsersResponse =
-        singleFlightProcessor.run("unblockUsers-${unblockUsersRequest}".asStreamTypedKey<UnblockUsersResponse>()) {
-            delegate.unblockUsers(unblockUsersRequest)
-        }.getOrThrow()
-
+    override suspend fun unblockUsers(
+        unblockUsersRequest: UnblockUsersRequest
+    ): UnblockUsersResponse =
+        singleFlightProcessor
+            .run("unblockUsers-${unblockUsersRequest}".asStreamTypedKey<UnblockUsersResponse>()) {
+                delegate.unblockUsers(unblockUsersRequest)
+            }
+            .getOrThrow()
 }

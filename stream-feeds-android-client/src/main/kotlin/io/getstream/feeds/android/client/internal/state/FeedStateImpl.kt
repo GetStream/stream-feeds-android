@@ -15,7 +15,6 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
-import io.getstream.feeds.android.client.api.query.Sort
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.ActivityPinData
 import io.getstream.feeds.android.client.api.model.AggregatedActivityData
@@ -36,6 +35,7 @@ import io.getstream.feeds.android.client.api.model.addReaction
 import io.getstream.feeds.android.client.api.model.deleteBookmark
 import io.getstream.feeds.android.client.api.model.removeComment
 import io.getstream.feeds.android.client.api.model.removeReaction
+import io.getstream.feeds.android.client.api.query.Sort
 import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
