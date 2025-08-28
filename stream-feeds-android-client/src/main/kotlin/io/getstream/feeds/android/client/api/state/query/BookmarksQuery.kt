@@ -16,10 +16,13 @@
 package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.feeds.android.client.api.model.BookmarkData
+import io.getstream.feeds.android.client.api.query.DefaultFilterField
 import io.getstream.feeds.android.client.api.query.Filter
+import io.getstream.feeds.android.client.api.query.FilterField
 import io.getstream.feeds.android.client.api.query.Sort
 import io.getstream.feeds.android.client.api.query.SortDirection
 import io.getstream.feeds.android.client.api.query.SortField
+import io.getstream.feeds.android.client.api.query.TypedFilter
 import io.getstream.feeds.android.client.api.query.toRequest
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.network.models.QueryBookmarksRequest
@@ -31,13 +34,8 @@ import io.getstream.feeds.android.network.models.QueryBookmarksRequest
  * specify filters to narrow down results, sorting options, and pagination parameters.
  *
  * @property filter Optional filter to apply to the bookmarks query. Use this to narrow down results
- *   based on specific criteria. Supported filters:
- * - field: `activity_id`, operators: `equal`, `in`
- * - field: `folder_id`, operators: `equal`, `in`, `exists`
- * - field: `user_id`, operators: `equal`, `in`
- * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `updated_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- *
+ *   based on specific criteria. See [BookmarksFilterField] for available filter fields and their
+ *   supported operators.
  * @property sort Array of sorting criteria to apply to the bookmarks. If not specified, the API
  *   will use its default sorting.
  * @property limit Maximum number of bookmarks to return in a single request. If not specified, the
@@ -54,6 +52,48 @@ public data class BookmarksQuery(
     public val next: String? = null,
     public val previous: String? = null,
 )
+
+public typealias BookmarksFilter = TypedFilter<BookmarksFilterField>
+
+public interface BookmarksFilterField : FilterField {
+    /**
+     * Filter by activity ID.
+     *
+     * Supported operators: `equal`, `in`
+     */
+    public data object ActivityId : BookmarksFilterField, DefaultFilterField("activity_id")
+
+    /**
+     * Filter by folder ID.
+     *
+     * Supported operators: `equal`, `in`, `exists`
+     */
+    public data object FolderId : BookmarksFilterField, DefaultFilterField("folder_id")
+
+    /**
+     * Filter by user ID.
+     *
+     * Supported operators: `equal`, `in`
+     */
+    public data object UserId : BookmarksFilterField, DefaultFilterField("user_id")
+
+    /**
+     * Filter by creation timestamp.
+     *
+     * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+     */
+    public data object CreatedAt : BookmarksFilterField, DefaultFilterField("created_at")
+
+    /**
+     * Filter by last update timestamp.
+     *
+     * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+     */
+    public data object UpdatedAt : BookmarksFilterField, DefaultFilterField("updated_at")
+
+    /** Filter by any arbitrary field name not covered by the predefined filter fields. */
+    public data class Raw(override val raw: String) : BookmarksFilterField
+}
 
 /**
  * Represents a sorting operation for bookmarks.
