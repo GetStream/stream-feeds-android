@@ -66,7 +66,7 @@ To add the SDK, open your `build.gradle` or `build.gradle.kts` file and add:
 
 ```kotlin
 dependencies {
-    implementation("io.getstream:stream-feeds-android:<latest-version>")
+    implementation("io.getstream:stream-feeds-android-client:<latest-version>")
 }
 ```
 ### Basic Usage
