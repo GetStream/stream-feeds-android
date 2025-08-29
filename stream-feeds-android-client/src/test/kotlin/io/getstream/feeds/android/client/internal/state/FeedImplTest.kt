@@ -44,6 +44,7 @@ internal class FeedImplTest {
             feedsRepository = mockk(),
             pollsRepository = mockk(),
             subscriptionManager = mockk(relaxed = true),
+            feedWatchHandler = mockk(relaxed = true),
         )
 
     @Test

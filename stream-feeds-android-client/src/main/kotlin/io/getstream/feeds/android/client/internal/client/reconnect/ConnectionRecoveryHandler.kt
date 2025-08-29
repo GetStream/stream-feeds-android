@@ -29,13 +29,13 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 /**
- * Handles the connection recovery logic for the [FeedsSocket].
+ * Handles the connection recovery logic for the [StreamClient].
  *
  * This class manages the reconnection attempts based on various policies and strategies. It listens
  * to lifecycle events and network state changes to determine when to reconnect or disconnect.
  *
  * @param scope The coroutine scope in which the reconnection logic will run.
- * @param socket The [FeedsSocket] instance to manage.
+ * @param client The [StreamClient] instance to manage.
  * @param lifecycleObserver The [StreamLifecycleObserver] to observe app lifecycle events.
  * @param networkStateProvider The [NetworkStateProvider] to monitor network connectivity.
  * @param keepConnectionAliveInBackground Whether to keep the connection alive when the app is in

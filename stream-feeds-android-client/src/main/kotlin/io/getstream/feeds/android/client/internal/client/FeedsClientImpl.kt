@@ -62,6 +62,7 @@ import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
 import io.getstream.feeds.android.client.internal.client.reconnect.ConnectionRecoveryHandler
+import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
 import io.getstream.feeds.android.client.internal.log.provideLogger
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.AppRepository
@@ -119,6 +120,7 @@ internal class FeedsClientImpl(
     private val pollsRepository: PollsRepository,
     override val uploader: FeedUploader,
     override val moderation: Moderation,
+    private val feedWatchHandler: FeedWatchHandler,
     private val logger: TaggedLogger = provideLogger(tag = "Client"),
 ) : FeedsClient {
 
@@ -154,6 +156,7 @@ internal class FeedsClientImpl(
             return Result.failure(IllegalArgumentException("Anonymous users cannot connect."))
         }
         coreClient.subscribe(clientSubscription)
+        connectionRecoveryHandler.start()
         return coreClient.connect()
     }
 
@@ -176,6 +179,7 @@ internal class FeedsClientImpl(
             feedsRepository = feedsRepository,
             pollsRepository = pollsRepository,
             subscriptionManager = feedsEventsSubscriptionManager,
+            feedWatchHandler = feedWatchHandler,
         )
 
     override fun feedList(query: FeedsQuery): FeedList =

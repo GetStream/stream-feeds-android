@@ -47,6 +47,7 @@ import io.getstream.feeds.android.client.api.model.FeedsConfig
 import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.internal.client.reconnect.ConnectionRecoveryHandler
 import io.getstream.feeds.android.client.internal.client.reconnect.DefaultRetryStrategy
+import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
 import io.getstream.feeds.android.client.internal.client.reconnect.lifecycle.StreamLifecycleObserver
 import io.getstream.feeds.android.client.internal.file.StreamFeedUploader
 import io.getstream.feeds.android.client.internal.http.FeedsSingleFlightApi
@@ -263,6 +264,13 @@ internal fun createFeedsClient(
 
     val moderation = ModerationImpl(moderationRepository)
 
+    val feedWatchHandler =
+        FeedWatchHandler(
+            connectedEvents = client.connectionState,
+            feedsRepository = feedsRepository,
+            scope = clientScope,
+        )
+
     // Build client
     return FeedsClientImpl(
         apiKey = apiKey,
@@ -286,6 +294,7 @@ internal fun createFeedsClient(
                 maxStrongSubscriptions = Integer.MAX_VALUE,
                 maxWeakSubscriptions = Integer.MAX_VALUE,
             ),
+        feedWatchHandler = feedWatchHandler,
         logger = logger,
     )
 }
