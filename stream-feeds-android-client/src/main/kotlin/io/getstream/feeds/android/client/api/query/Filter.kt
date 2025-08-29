@@ -23,7 +23,7 @@ import io.getstream.android.core.annotations.StreamInternalApi
  * Filters are used to specify criteria for querying and retrieving data from Stream services. Each
  * filter implementation defines specific matching logic for different comparison operations.
  */
-public sealed class Filter
+@Deprecated("Use TypedFilter instead") public sealed class Filter
 
 /**
  * Filter that matches values that are equal to a specified value.
@@ -133,22 +133,49 @@ public data class ContainsFilter internal constructor(val field: String, val val
 public data class PathExistsFilter internal constructor(val field: String, val value: String) :
     Filter()
 
+// TODO make interface and rename to Filter in v1
+public sealed class TypedFilter<T : FilterField> : Filter()
+
+internal data class BinaryOperationFilter<T : FilterField, V : Any>(
+    val operator: FilterOperator,
+    val field: T,
+    val value: V,
+) : TypedFilter<T>()
+
+internal data class CollectionOperationFilter<T : FilterField>(
+    internal val operator: FilterOperator,
+    val filters: Set<TypedFilter<T>>,
+) : TypedFilter<T>()
+
+/** Converts a [TypedFilter] instance to a request map suitable for API queries. */
+internal fun TypedFilter<*>.toRequest(): Map<String, Any> =
+    when (this) {
+        is CollectionOperationFilter<*> ->
+            mapOf(operator.rawValue to filters.map(TypedFilter<*>::toRequest))
+        is BinaryOperationFilter<*, *> -> mapOf(field.raw to mapOf(operator.rawValue to value))
+    }
+
 /** Converts a [Filter] instance to a request map suitable for API queries. */
 @StreamInternalApi
 public fun Filter.toRequest(): Map<String, Any> =
     when (this) {
         is EqualFilter -> mapOf(field to value)
-        is GreaterThanFilter -> mapOf(field to mapOf(FilterOperator.GREATER to value))
+        is GreaterThanFilter -> mapOf(field to mapOf(FilterOperator.GREATER.rawValue to value))
         is GreaterThanOrEqualFilter ->
-            mapOf(field to mapOf(FilterOperator.GREATER_OR_EQUAL to value))
-        is LessThanFilter -> mapOf(field to mapOf(FilterOperator.LESS to value))
-        is LessThanOrEqualFilter -> mapOf(field to mapOf(FilterOperator.LESS_OR_EQUAL to value))
-        is InFilter -> mapOf(field to mapOf(FilterOperator.IN to values))
-        is QueryFilter -> mapOf(field to mapOf(FilterOperator.QUERY to value))
-        is AutocompleteFilter -> mapOf(field to mapOf(FilterOperator.AUTOCOMPLETE to value))
-        is ExistsFilter -> mapOf(field to mapOf(FilterOperator.EXISTS to value))
-        is AndFilter -> mapOf(FilterOperator.AND to filters.map(Filter::toRequest))
-        is OrFilter -> mapOf(FilterOperator.OR to filters.map(Filter::toRequest))
-        is ContainsFilter -> mapOf(field to mapOf(FilterOperator.CONTAINS to value))
-        is PathExistsFilter -> mapOf(field to mapOf(FilterOperator.PATH_EXISTS to value))
+            mapOf(field to mapOf(FilterOperator.GREATER_OR_EQUAL.rawValue to value))
+        is LessThanFilter -> mapOf(field to mapOf(FilterOperator.LESS.rawValue to value))
+        is LessThanOrEqualFilter ->
+            mapOf(field to mapOf(FilterOperator.LESS_OR_EQUAL.rawValue to value))
+        is InFilter -> mapOf(field to mapOf(FilterOperator.IN.rawValue to values))
+        is QueryFilter -> mapOf(field to mapOf(FilterOperator.QUERY.rawValue to value))
+        is AutocompleteFilter ->
+            mapOf(field to mapOf(FilterOperator.AUTOCOMPLETE.rawValue to value))
+        is ExistsFilter -> mapOf(field to mapOf(FilterOperator.EXISTS.rawValue to value))
+        is AndFilter -> mapOf(FilterOperator.AND.rawValue to filters.map(Filter::toRequest))
+        is OrFilter -> mapOf(FilterOperator.OR.rawValue to filters.map(Filter::toRequest))
+        is ContainsFilter -> mapOf(field to mapOf(FilterOperator.CONTAINS.rawValue to value))
+        is PathExistsFilter -> mapOf(field to mapOf(FilterOperator.PATH_EXISTS.rawValue to value))
+        is BinaryOperationFilter<*, *> -> mapOf(field.raw to mapOf(operator.rawValue to value))
+        is CollectionOperationFilter<*> ->
+            mapOf(operator.rawValue to filters.map { it.toRequest() })
     }

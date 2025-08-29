@@ -16,45 +16,45 @@
 package io.getstream.feeds.android.client.api.query
 
 /** Contains all possible filter operators that can be used in queries. */
-internal object FilterOperator {
+internal enum class FilterOperator(val rawValue: String) {
     /**
      * Matches values that are equal to a specified value or matches all of the values in an array.
      */
-    internal const val EQUAL = "\$eq"
+    EQUAL("\$eq"),
 
     /** Matches values that are greater than a specified value. */
-    internal const val GREATER = "\$gt"
+    GREATER("\$gt"),
 
-    /** Matches values that are greater than a specified value. */
-    internal const val GREATER_OR_EQUAL = "\$gte"
+    /** Matches values that are greater than or equal to a specified value. */
+    GREATER_OR_EQUAL("\$gte"),
 
     /** Matches values that are less than a specified value. */
-    internal const val LESS = "\$lt"
+    LESS("\$lt"),
 
     /** Matches values that are less than or equal to a specified value. */
-    internal const val LESS_OR_EQUAL = "\$lte"
+    LESS_OR_EQUAL("\$lte"),
 
     /** Matches any of the values specified in an array. */
-    internal const val IN = "\$in"
+    IN("\$in"),
 
     /** Matches values by performing text search with the specified value. */
-    internal const val QUERY = "\$q"
+    QUERY("\$q"),
 
     /** Matches values with the specified text. */
-    internal const val AUTOCOMPLETE = "\$autocomplete"
+    AUTOCOMPLETE("\$autocomplete"),
 
     /** Matches values that exist/don't exist based on the specified boolean value. */
-    internal const val EXISTS = "\$exists"
+    EXISTS("\$exists"),
 
     /** Matches all the values specified in an array. */
-    internal const val AND = "\$and"
+    AND("\$and"),
 
     /** Matches at least one of the values specified in an array. */
-    internal const val OR = "\$or"
+    OR("\$or"),
 
     /** Matches if the key array contains the given value. */
-    internal const val CONTAINS = "\$contains"
+    CONTAINS("\$contains"),
 
     /** Matches if the value contains JSON with the given path. */
-    internal const val PATH_EXISTS = "\$path_exists"
+    PATH_EXISTS("\$path_exists"),
 }
