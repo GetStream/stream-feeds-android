@@ -50,7 +50,6 @@ import io.getstream.feeds.android.client.internal.client.reconnect.DefaultRetryS
 import io.getstream.feeds.android.client.internal.client.reconnect.lifecycle.StreamLifecycleObserver
 import io.getstream.feeds.android.client.internal.file.StreamFeedUploader
 import io.getstream.feeds.android.client.internal.http.FeedsSingleFlightApi
-import io.getstream.feeds.android.client.internal.log.provideLogger
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.AppRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepositoryImpl
@@ -64,8 +63,6 @@ import io.getstream.feeds.android.client.internal.serialization.FeedsMoshiJsonPa
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.infrastructure.Serializer
 import io.getstream.feeds.android.network.models.WSEvent
-import io.getstream.log.AndroidStreamLogger
-import io.getstream.log.StreamLog
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -88,14 +85,8 @@ internal fun createStreamCoreClient(
     tokenProvider: StreamTokenProvider,
     okHttpClient: OkHttpClient.Builder,
     feedsMoshiJsonParser: FeedsMoshiJsonParser,
-    logProvider: StreamLoggerProvider? = null,
+    logProvider: StreamLoggerProvider,
 ): StreamClient {
-    val logProvider =
-        logProvider
-            ?: StreamLoggerProvider.Companion.defaultAndroidLogger(
-                minLevel = StreamLogger.LogLevel.Verbose,
-                honorAndroidIsLoggable = false,
-            )
     val clientSubscriptionManager =
         StreamSubscriptionManager<StreamClientListener>(
             logger = logProvider.taggedLogger("SCClientSubscriptions"),
@@ -169,13 +160,7 @@ internal fun createFeedsClient(
             minLevel = StreamLogger.LogLevel.Verbose,
             honorAndroidIsLoggable = false,
         )
-    // Setup logging
-    if (!StreamLog.isInstalled) {
-        // If no logger is installed, install the default logger
-        StreamLog.setValidator { _, _ -> true } // TODO: Make the log level configurable
-        StreamLog.install(AndroidStreamLogger())
-    }
-    val logger = provideLogger(tag = "Client")
+    val logger = logProvider.taggedLogger("FeedsClient")
 
     // Setup coroutine scope for the client
     val clientScope =
@@ -193,8 +178,6 @@ internal fun createFeedsClient(
     // UserID
     val userId = StreamUserId.fromString(user.id)
 
-    // Token management
-    val tokenManager = StreamTokenManager(userId, tokenProvider, singleFlight)
     // Setup network
     val endpointConfig = EndpointConfig.PRODUCTION // TODO: Make this configurable
     val clientInfoHeader =
@@ -206,7 +189,6 @@ internal fun createFeedsClient(
             deviceModel = Build.MODEL,
         )
     // HTTP Configuration
-
     val okHttpBuilder =
         OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
@@ -221,6 +203,7 @@ internal fun createFeedsClient(
             tokenProvider,
             okHttpBuilder,
             FeedsMoshiJsonParser(Serializer.moshi),
+            logProvider,
         )
     val connectionRecoveryHandler =
         ConnectionRecoveryHandler(
@@ -240,6 +223,7 @@ internal fun createFeedsClient(
                 ),
             keepConnectionAliveInBackground = false,
             reconnectStrategy = DefaultRetryStrategy(),
+            logger = logProvider.taggedLogger("ConnectionRecoveryHandler"),
         )
     val okHttpClient = okHttpBuilder.build()
     val retrofit =

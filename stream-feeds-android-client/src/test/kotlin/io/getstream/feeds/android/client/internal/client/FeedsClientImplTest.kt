@@ -16,6 +16,7 @@
 package io.getstream.feeds.android.client.internal.client
 
 import io.getstream.android.core.api.StreamClient
+import io.getstream.android.core.api.log.StreamLogger
 import io.getstream.android.core.api.model.connection.StreamConnectedUser
 import io.getstream.android.core.api.model.connection.StreamConnectionState
 import io.getstream.android.core.api.model.value.StreamApiKey
@@ -43,7 +44,6 @@ import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.network.models.ListDevicesResponse
-import io.getstream.log.TaggedLogger
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -72,7 +72,7 @@ internal class FeedsClientImplTest {
     private val pollsRepository: PollsRepository = mockk(relaxed = true)
     private val uploader: FeedUploader = mockk(relaxed = true)
     private val moderation: Moderation = mockk(relaxed = true)
-    private val logger: TaggedLogger = mockk(relaxed = true)
+    private val logger: StreamLogger = mockk(relaxed = true)
 
     private val feedsClient: FeedsClientImpl =
         FeedsClientImpl(

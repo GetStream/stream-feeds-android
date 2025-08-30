@@ -16,12 +16,11 @@
 package io.getstream.feeds.android.client.internal.client.reconnect
 
 import io.getstream.android.core.api.StreamClient
+import io.getstream.android.core.api.log.StreamLogger
 import io.getstream.android.core.api.model.connection.StreamConnectionState
 import io.getstream.android.core.api.socket.listeners.StreamClientListener
 import io.getstream.android.core.network.NetworkStateProvider
 import io.getstream.feeds.android.client.internal.client.reconnect.lifecycle.StreamLifecycleObserver
-import io.getstream.feeds.android.client.internal.log.provideLogger
-import io.getstream.log.TaggedLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -29,13 +28,13 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 /**
- * Handles the connection recovery logic for the [FeedsSocket].
+ * Handles the connection recovery logic for the [StreamClient].
  *
  * This class manages the reconnection attempts based on various policies and strategies. It listens
  * to lifecycle events and network state changes to determine when to reconnect or disconnect.
  *
  * @param scope The coroutine scope in which the reconnection logic will run.
- * @param socket The [FeedsSocket] instance to manage.
+ * @param client The [StreamClient] whose connection is managed.
  * @param lifecycleObserver The [StreamLifecycleObserver] to observe app lifecycle events.
  * @param networkStateProvider The [NetworkStateProvider] to monitor network connectivity.
  * @param keepConnectionAliveInBackground Whether to keep the connection alive when the app is in
@@ -56,7 +55,7 @@ internal class ConnectionRecoveryHandler(
             BackgroundStateReconnectionPolicy(lifecycleObserver),
             InternetAvailabilityReconnectionPolicy(networkStateProvider),
         ),
-    private val logger: TaggedLogger = provideLogger(tag = "ConnectionRecoveryHandler"),
+    private val logger: StreamLogger,
 ) {
 
     private var reconnectionTimer: Job? = null
