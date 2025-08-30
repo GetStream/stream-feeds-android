@@ -96,12 +96,12 @@ Check our docs for more details.
 ```kotlin
 // Initialize the client
 val client = FeedsClient(
-    apiKey = ApiKey("<your_api_key>"),
+    apiKey = StreamApiKey.fromString("<your_api_key>"),
     user = User(id = "john"),
     context = context,
-    tokenProvider = object : UserTokenProvider {
-        override suspend fun loadToken(): UserToken {
-            // Return a valid user token for the user
+    tokenProvider = object : StreamTokenProvider {
+        override suspend fun loadToken(userId: StreamUserId): StreamToken {
+            return StreamToken.fromString("<user_token>")
         }
     }
 )
