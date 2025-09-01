@@ -27,6 +27,7 @@ import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
 import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.api.model.UserAuthType
 import io.getstream.feeds.android.client.internal.client.reconnect.ConnectionRecoveryHandler
+import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.AppRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
@@ -72,6 +73,7 @@ internal class FeedsClientImplTest {
     private val pollsRepository: PollsRepository = mockk(relaxed = true)
     private val uploader: FeedUploader = mockk(relaxed = true)
     private val moderation: Moderation = mockk(relaxed = true)
+    private val feedWatchHandler: FeedWatchHandler = mockk(relaxed = true)
     private val logger: StreamLogger = mockk(relaxed = true)
 
     private val feedsClient: FeedsClientImpl =
@@ -92,6 +94,7 @@ internal class FeedsClientImplTest {
             pollsRepository = pollsRepository,
             uploader = uploader,
             moderation = moderation,
+            feedWatchHandler = feedWatchHandler,
             logger = logger,
         )
 
@@ -136,6 +139,7 @@ internal class FeedsClientImplTest {
                 pollsRepository = pollsRepository,
                 uploader = uploader,
                 moderation = moderation,
+                feedWatchHandler = feedWatchHandler,
                 logger = logger,
             )
 
