@@ -41,6 +41,7 @@ import io.getstream.android.core.api.socket.listeners.StreamClientListener
 import io.getstream.android.core.api.socket.monitor.StreamHealthMonitor
 import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.android.core.network.NetworkStateProvider
+import io.getstream.feeds.android.client.BuildConfig
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.FeedsConfig
@@ -199,8 +200,8 @@ internal fun createFeedsClient(
     val endpointConfig = EndpointConfig.PRODUCTION // TODO: Make this configurable
     val clientInfoHeader =
         StreamHttpClientInfoHeader.create(
-            product = "stream-feeds-android",
-            productVersion = "0.0.1",
+            product = BuildConfig.PRODUCT_NAME,
+            productVersion = BuildConfig.PRODUCT_VERSION,
             os = "Android",
             apiLevel = Build.VERSION.SDK_INT,
             deviceModel = Build.MODEL,
