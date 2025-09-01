@@ -165,8 +165,6 @@ public interface FeedsClient {
      */
     public fun followList(query: FollowsQuery): FollowList
 
-    // TODO: Event subscription
-
     /**
      * Creates an activity instance for the specified activity ID and feed ID.
      *
@@ -490,13 +488,45 @@ public interface FeedsClient {
      */
     public val moderation: Moderation
 
+    /**
+     * Exposes the current connection state of the [FeedsClient] as a [StateFlow].
+     *
+     * Example:
+     * ```kotlin
+     * client
+     *    .state
+     *    .collect { state ->
+     *          // Handle connection state changes
+     *    }
+     * ```
+     *
+     * @return A [StateFlow] emitting [StreamConnectionState] representing the current connection
+     *   state of the client.
+     */
     public val state: StateFlow<StreamConnectionState>
 
+    /**
+     * Exposes a [Flow] of real-time WebSocket events received by the client. Allows you to
+     * subscribe to specific event types by filtering the main event stream. It's useful when you
+     * only want to handle certain types of events.
+     *
+     * Example:
+     * ```kotlin
+     * client
+     *     .events
+     *     .collect { event ->
+     *         // Handle the event types you care about
+     *     }
+     * ```
+     *
+     * @return A [Flow] emitting incoming [WSEvent]s from the WebSocket connection.
+     */
     public val events: Flow<WSEvent>
 }
 
 /**
- * Initializes a new [FeedsClient] with the provided [apiKey], [user], and [token].
+ * Initializes a new [FeedsClient] with the provided [apiKey], [user], [tokenProvider] and optional
+ * [config].
  *
  * @param context The Android [Context] for the client.
  * @param apiKey The API key for the client.
