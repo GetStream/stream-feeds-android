@@ -279,14 +279,14 @@ internal object TestData {
         ActivityResponse(
             bookmarkCount = 0,
             commentCount = 0,
-            createdAt = Date(),
+            createdAt = Date(1000),
             id = "",
             popularity = 0,
             reactionCount = 0,
             score = 0f,
             shareCount = 0,
             type = "",
-            updatedAt = Date(),
+            updatedAt = Date(1000),
             visibility = ActivityResponse.Visibility.Public,
             user = userResponse(),
         )

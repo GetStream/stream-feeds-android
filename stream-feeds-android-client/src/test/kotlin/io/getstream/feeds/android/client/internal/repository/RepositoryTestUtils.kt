@@ -29,7 +29,7 @@ internal object RepositoryTestUtils {
 
     inline fun <T, R> testDelegation(
         crossinline apiFunction: suspend MockKMatcherScope.() -> T,
-        crossinline repositoryCall: suspend () -> Result<T>,
+        crossinline repositoryCall: suspend () -> Result<R>,
         apiResult: T,
         repositoryResult: R,
     ) = runTest {
