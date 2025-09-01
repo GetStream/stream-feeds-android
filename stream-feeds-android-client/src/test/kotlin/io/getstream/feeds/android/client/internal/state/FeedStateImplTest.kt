@@ -21,6 +21,7 @@ import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
+import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
@@ -282,5 +283,8 @@ internal class FeedStateImplTest {
     }
 
     private fun createQueryConfig() =
-        QueryConfiguration(filter = null, sort = ActivitiesSort.Default)
+        QueryConfiguration<ActivitiesFilterField, ActivitiesSort>(
+            filter = null,
+            sort = ActivitiesSort.Default,
+        )
 }

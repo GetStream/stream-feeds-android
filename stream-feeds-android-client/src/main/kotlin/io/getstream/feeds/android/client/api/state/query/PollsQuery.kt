@@ -15,12 +15,13 @@
  */
 package io.getstream.feeds.android.client.api.state.query
 
+import io.getstream.android.core.api.filter.Filter
+import io.getstream.android.core.api.filter.FilterField
+import io.getstream.android.core.api.filter.Sort
+import io.getstream.android.core.api.filter.SortDirection
+import io.getstream.android.core.api.filter.SortField
+import io.getstream.android.core.api.filter.toRequest
 import io.getstream.feeds.android.client.api.model.PollData
-import io.getstream.feeds.android.client.api.query.Filter
-import io.getstream.feeds.android.client.api.query.Sort
-import io.getstream.feeds.android.client.api.query.SortDirection
-import io.getstream.feeds.android.client.api.query.SortField
-import io.getstream.feeds.android.client.api.query.toRequest
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.network.models.QueryPollsRequest
 
@@ -31,19 +32,8 @@ import io.getstream.feeds.android.network.models.QueryPollsRequest
  * specify filters to narrow down results, sorting options, and pagination parameters.
  *
  * @property filter Optional filter to apply to the polls query. Use this to narrow down results
- *   based on specific criteria. Supported filters:
- * - field: `allow_answers`, operators: `equal`
- * - field: `allow_user_suggested_options`, operators: `equal`
- * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `created_by_id`, operators: `equal`, `in`
- * - field: `id`, operators: `equal`, `in`
- * - field: `is_closed`, operators: `equal`
- * - field: `max_votes_allowed`, operators: `equal`, `greater`, `greaterOrEqual`, `less`,
- *   `lessOrEqual`
- * - field: `name`, operators: `equal`, `in`
- * - field: `updated_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `voting_visibility`, operators: `equal`
- *
+ *   based on specific criteria. See [PollsFilterField] for available filter fields and their
+ *   supported operators.
  * @property limit Maximum number of polls to return in a single request. If not specified, the API
  *   will use its default limit.
  * @param next Pagination cursor for fetching the next page of results. This is typically provided
@@ -54,12 +44,89 @@ import io.getstream.feeds.android.network.models.QueryPollsRequest
  *   use its default sorting.
  */
 public data class PollsQuery(
-    public val filter: Filter? = null,
+    public val filter: PollsFilter? = null,
     public val limit: Int? = null,
     public val next: String? = null,
     public val previous: String? = null,
     public val sort: List<PollsSort>? = null,
 )
+
+public typealias PollsFilter = Filter<PollsFilterField>
+
+public data class PollsFilterField(override val remote: String) : FilterField {
+    public companion object {
+        /**
+         * Filter by allow answers setting.
+         *
+         * Supported operators: `equal`
+         */
+        public val allowAnswers: PollsFilterField = PollsFilterField("allow_answers")
+
+        /**
+         * Filter by allow user suggested options setting.
+         *
+         * Supported operators: `equal`
+         */
+        public val allowUserSuggestedOptions: PollsFilterField =
+            PollsFilterField("allow_user_suggested_options")
+
+        /**
+         * Filter by creation timestamp.
+         *
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val createdAt: PollsFilterField = PollsFilterField("created_at")
+
+        /**
+         * Filter by creator's user ID.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val createdById: PollsFilterField = PollsFilterField("created_by_id")
+
+        /**
+         * Filter by poll ID.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val id: PollsFilterField = PollsFilterField("id")
+
+        /**
+         * Filter by closed status.
+         *
+         * Supported operators: `equal`
+         */
+        public val isClosed: PollsFilterField = PollsFilterField("is_closed")
+
+        /**
+         * Filter by maximum votes allowed.
+         *
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val maxVotesAllowed: PollsFilterField = PollsFilterField("max_votes_allowed")
+
+        /**
+         * Filter by poll name.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val name: PollsFilterField = PollsFilterField("name")
+
+        /**
+         * Filter by last update timestamp.
+         *
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val updatedAt: PollsFilterField = PollsFilterField("updated_at")
+
+        /**
+         * Filter by voting visibility.
+         *
+         * Supported operators: `equal`
+         */
+        public val votingVisibility: PollsFilterField = PollsFilterField("voting_visibility")
+    }
+}
 
 /**
  * Represents a sort specification for polls.

@@ -15,12 +15,13 @@
  */
 package io.getstream.feeds.android.client.api.state.query
 
+import io.getstream.android.core.api.filter.Filter
+import io.getstream.android.core.api.filter.FilterField
+import io.getstream.android.core.api.filter.Sort
+import io.getstream.android.core.api.filter.SortDirection
+import io.getstream.android.core.api.filter.SortField
+import io.getstream.android.core.api.filter.toRequest
 import io.getstream.feeds.android.client.api.model.PollVoteData
-import io.getstream.feeds.android.client.api.query.Filter
-import io.getstream.feeds.android.client.api.query.Sort
-import io.getstream.feeds.android.client.api.query.SortDirection
-import io.getstream.feeds.android.client.api.query.SortField
-import io.getstream.feeds.android.client.api.query.toRequest
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.network.models.QueryPollVotesRequest
 
@@ -33,15 +34,8 @@ import io.getstream.feeds.android.network.models.QueryPollVotesRequest
  * @property pollId The unique identifier of the poll to fetch votes for.
  * @param userId Optional user ID used for authentication.
  * @param filter Optional filter to apply to the poll votes query. Use this to narrow down results
- *   based on specific criteria. Supported filters:
- * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `id`, operators: `equal`, `in`
- * - field: `is_answer`, operators: `equal`
- * - field: `option_id`, operators: `equal`, `in`, `exists`
- * - field: `user_id`, operators: `equal`, `in`
- * - field: `poll_id`, operators: `equal`, `in`
- * - field: `updated_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- *
+ *   based on specific criteria. See [PollVotesFilterField] for available filter fields and their
+ *   supported operators.
  * @property limit Maximum number of poll votes to return in a single request. If not specified, the
  *   API will use its default limit.
  * @property next Pagination cursor for fetching the next page of results. This is typically
@@ -54,12 +48,67 @@ import io.getstream.feeds.android.network.models.QueryPollVotesRequest
 public data class PollVotesQuery(
     public val pollId: String,
     public val userId: String? = null,
-    public val filter: Filter? = null,
+    public val filter: PollVotesFilter? = null,
     public val limit: Int? = null,
     public val next: String? = null,
     public val previous: String? = null,
     public val sort: List<PollVotesSort>? = null,
 )
+
+public typealias PollVotesFilter = Filter<PollVotesFilterField>
+
+public data class PollVotesFilterField(override val remote: String) : FilterField {
+    public companion object {
+        /**
+         * Filter by creation timestamp.
+         *
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val createdAt: PollVotesFilterField = PollVotesFilterField("created_at")
+
+        /**
+         * Filter by vote ID.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val id: PollVotesFilterField = PollVotesFilterField("id")
+
+        /**
+         * Filter by is answer flag.
+         *
+         * Supported operators: `equal`
+         */
+        public val isAnswer: PollVotesFilterField = PollVotesFilterField("is_answer")
+
+        /**
+         * Filter by option ID.
+         *
+         * Supported operators: `equal`, `in`, `exists`
+         */
+        public val optionId: PollVotesFilterField = PollVotesFilterField("option_id")
+
+        /**
+         * Filter by user ID.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val userId: PollVotesFilterField = PollVotesFilterField("user_id")
+
+        /**
+         * Filter by poll ID.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val pollId: PollVotesFilterField = PollVotesFilterField("poll_id")
+
+        /**
+         * Filter by last update timestamp.
+         *
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val updatedAt: PollVotesFilterField = PollVotesFilterField("updated_at")
+    }
+}
 
 /**
  * Represents a sort specification for poll votes.

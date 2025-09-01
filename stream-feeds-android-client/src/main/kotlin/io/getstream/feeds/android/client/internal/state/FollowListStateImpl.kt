@@ -20,6 +20,7 @@ import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.FollowListState
+import io.getstream.feeds.android.client.api.state.query.FollowsFilterField
 import io.getstream.feeds.android.client.api.state.query.FollowsQuery
 import io.getstream.feeds.android.client.api.state.query.FollowsSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
@@ -38,7 +39,7 @@ internal class FollowListStateImpl(override val query: FollowsQuery) : FollowLis
 
     private val _follows: MutableStateFlow<List<FollowData>> = MutableStateFlow(emptyList())
 
-    internal var queryConfig: QueryConfiguration<FollowsSort>? = null
+    internal var queryConfig: QueryConfiguration<FollowsFilterField, FollowsSort>? = null
         private set
 
     private var _pagination: PaginationData? = null
@@ -54,7 +55,7 @@ internal class FollowListStateImpl(override val query: FollowsQuery) : FollowLis
 
     override fun onQueryMoreFollows(
         result: PaginationResult<FollowData>,
-        queryConfig: QueryConfiguration<FollowsSort>,
+        queryConfig: QueryConfiguration<FollowsFilterField, FollowsSort>,
     ) {
         _pagination = result.pagination
         this.queryConfig = queryConfig
@@ -88,7 +89,7 @@ internal interface FollowListStateUpdates {
     /** Handles the result of a query for more follows. */
     fun onQueryMoreFollows(
         result: PaginationResult<FollowData>,
-        queryConfig: QueryConfiguration<FollowsSort>,
+        queryConfig: QueryConfiguration<FollowsFilterField, FollowsSort>,
     )
 
     /** Handles the update of a follow data. */

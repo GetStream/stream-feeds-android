@@ -21,6 +21,7 @@ import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
+import io.getstream.feeds.android.client.api.state.query.MembersFilterField
 import io.getstream.feeds.android.client.api.state.query.MembersQuery
 import io.getstream.feeds.android.client.api.state.query.MembersSort
 import io.getstream.feeds.android.client.internal.test.TestData.feedMemberData
@@ -47,7 +48,11 @@ internal class MemberListStateImplTest {
                 models = members,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = MembersSort.Default)
+        val queryConfig =
+            QueryConfiguration<MembersFilterField, MembersSort>(
+                filter = null,
+                sort = MembersSort.Default,
+            )
 
         memberListState.onQueryMoreMembers(paginationResult, queryConfig)
 
@@ -64,7 +69,11 @@ internal class MemberListStateImplTest {
                 models = initialMembers,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = MembersSort.Default)
+        val queryConfig =
+            QueryConfiguration<MembersFilterField, MembersSort>(
+                filter = null,
+                sort = MembersSort.Default,
+            )
         memberListState.onQueryMoreMembers(paginationResult, queryConfig)
 
         val updatedMember = feedMemberData("user-1", role = "admin")
@@ -83,7 +92,11 @@ internal class MemberListStateImplTest {
                 models = initialMembers,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = MembersSort.Default)
+        val queryConfig =
+            QueryConfiguration<MembersFilterField, MembersSort>(
+                filter = null,
+                sort = MembersSort.Default,
+            )
         memberListState.onQueryMoreMembers(paginationResult, queryConfig)
 
         memberListState.onMemberRemoved(initialMembers[0].id)
@@ -100,7 +113,11 @@ internal class MemberListStateImplTest {
                 models = initialMembers,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = MembersSort.Default)
+        val queryConfig =
+            QueryConfiguration<MembersFilterField, MembersSort>(
+                filter = null,
+                sort = MembersSort.Default,
+            )
         memberListState.onQueryMoreMembers(paginationResult, queryConfig)
 
         val updatedMember = feedMemberData("user-1", role = "admin")
@@ -124,7 +141,11 @@ internal class MemberListStateImplTest {
                 models = initialMembers,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = MembersSort.Default)
+        val queryConfig =
+            QueryConfiguration<MembersFilterField, MembersSort>(
+                filter = null,
+                sort = MembersSort.Default,
+            )
         memberListState.onQueryMoreMembers(paginationResult, queryConfig)
 
         memberListState.clear()

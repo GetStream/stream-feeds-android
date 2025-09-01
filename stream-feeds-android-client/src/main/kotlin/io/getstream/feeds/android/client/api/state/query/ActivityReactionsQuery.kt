@@ -15,12 +15,13 @@
  */
 package io.getstream.feeds.android.client.api.state.query
 
+import io.getstream.android.core.api.filter.Filter
+import io.getstream.android.core.api.filter.FilterField
+import io.getstream.android.core.api.filter.Sort
+import io.getstream.android.core.api.filter.SortDirection
+import io.getstream.android.core.api.filter.SortField
+import io.getstream.android.core.api.filter.toRequest
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
-import io.getstream.feeds.android.client.api.query.Filter
-import io.getstream.feeds.android.client.api.query.Sort
-import io.getstream.feeds.android.client.api.query.SortDirection
-import io.getstream.feeds.android.client.api.query.SortField
-import io.getstream.feeds.android.client.api.query.toRequest
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.network.models.QueryActivityReactionsRequest
 
@@ -32,11 +33,8 @@ import io.getstream.feeds.android.network.models.QueryActivityReactionsRequest
  *
  * @property activityId The unique identifier of the activity to fetch reactions for.
  * @property filter Optional filter to apply to the activity reactions query. Use this to narrow
- *   down results based on specific criteria. Supported filters:
- * - field: `reaction_type`, operators: `equal`, `in`
- * - field: `user_id`, operators: `equal`, `in`
- * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- *
+ *   down results based on specific criteria. See [ActivityReactionsFilterField] for available
+ *   filter fields and their supported operators.
  * @property limit Optional limit for the number of reactions to fetch. If not specified, the API
  *   will use its default limit.
  * @property next Pagination cursor for fetching the next page of results. This is typically
@@ -48,12 +46,41 @@ import io.getstream.feeds.android.network.models.QueryActivityReactionsRequest
  */
 public data class ActivityReactionsQuery(
     public val activityId: String,
-    public val filter: Filter? = null,
+    public val filter: ActivityReactionsFilter? = null,
     public val limit: Int? = null,
     public val next: String? = null,
     public val previous: String? = null,
     public val sort: List<ActivityReactionsSort>? = null,
 )
+
+public typealias ActivityReactionsFilter = Filter<ActivityReactionsFilterField>
+
+public data class ActivityReactionsFilterField(override val remote: String) : FilterField {
+    public companion object {
+        /**
+         * Filter by reaction type.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val reactionType: ActivityReactionsFilterField =
+            ActivityReactionsFilterField("reaction_type")
+
+        /**
+         * Filter by user ID who created the reaction.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val userId: ActivityReactionsFilterField = ActivityReactionsFilterField("user_id")
+
+        /**
+         * Filter by creation timestamp.
+         *
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val createdAt: ActivityReactionsFilterField =
+            ActivityReactionsFilterField("created_at")
+    }
+}
 
 /**
  * A sort configuration for activity reactions.

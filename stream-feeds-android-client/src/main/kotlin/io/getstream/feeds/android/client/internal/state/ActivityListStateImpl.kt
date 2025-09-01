@@ -29,6 +29,7 @@ import io.getstream.feeds.android.client.api.model.deleteBookmark
 import io.getstream.feeds.android.client.api.model.removeComment
 import io.getstream.feeds.android.client.api.model.removeReaction
 import io.getstream.feeds.android.client.api.state.ActivityListState
+import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
@@ -54,7 +55,7 @@ internal class ActivityListStateImpl(
 
     private val _activities: MutableStateFlow<List<ActivityData>> = MutableStateFlow(emptyList())
 
-    internal var queryConfig: QueryConfiguration<ActivitiesSort>? = null
+    internal var queryConfig: QueryConfiguration<ActivitiesFilterField, ActivitiesSort>? = null
         private set
 
     private var _pagination: PaginationData? = null
@@ -70,7 +71,7 @@ internal class ActivityListStateImpl(
 
     override fun onQueryMoreActivities(
         result: PaginationResult<ActivityData>,
-        queryConfig: QueryConfiguration<ActivitiesSort>,
+        queryConfig: QueryConfiguration<ActivitiesFilterField, ActivitiesSort>,
     ) {
         _pagination = result.pagination
         // Update the query configuration for future queries
@@ -179,7 +180,7 @@ internal interface ActivityListStateUpdates {
      */
     fun onQueryMoreActivities(
         result: PaginationResult<ActivityData>,
-        queryConfig: QueryConfiguration<ActivitiesSort>,
+        queryConfig: QueryConfiguration<ActivitiesFilterField, ActivitiesSort>,
     )
 
     /**
