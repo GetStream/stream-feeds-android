@@ -27,9 +27,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.file.FileType
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
+import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
 import io.getstream.feeds.android.client.api.state.Activity
 import io.getstream.feeds.android.network.models.AddCommentReactionRequest
+import io.getstream.feeds.android.network.models.UpdateCommentRequest
 import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.util.copyToCache
@@ -38,11 +40,11 @@ import io.getstream.feeds.android.sample.util.map
 import io.getstream.feeds.android.sample.util.notNull
 import io.getstream.feeds.android.sample.util.withFirstContent
 import io.getstream.feeds.android.sample.utils.logResult
-import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import javax.inject.Inject
 
 @HiltViewModel
 class CommentsSheetViewModel
@@ -56,20 +58,25 @@ constructor(
     private val args = CommentsBottomSheetDestination.argsFrom(savedStateHandle)
     private var canLoadMoreComments = true
 
-    private val activity =
+    private val internalState =
         flow {
-                val activity =
-                    loginManager
-                        .currentState()
-                        ?.client
-                        ?.activity(activityId = args.activityId, fid = args.fid)
-                emit(AsyncResource.notNull(activity))
+                val pair =
+                    loginManager.currentState()?.let { (user, client) ->
+                        user to client.activity(activityId = args.activityId, fid = args.fid)
+                    }
+
+                emit(AsyncResource.notNull(pair))
             }
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
+    val activity =
+        internalState
+            .map { resource -> resource.map(Pair<User, Activity>::second) }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
+
     val state =
-        activity
-            .map { loadingState -> loadingState.map(Activity::state) }
+        internalState
+            .map { loadingState -> loadingState.map { it.first to it.second.state } }
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
     init {
@@ -97,6 +104,19 @@ constructor(
                     addCommentReaction(comment.id, request)
                 }
                 .logResult(TAG, "Toggling heart reaction for comment: ${comment.id}")
+        }
+    }
+
+    fun onDeleteClick(id: String) {
+        activity.withFirstContent(viewModelScope) {
+            deleteComment(id).logResult(TAG, "Deleting comment: $id")
+        }
+    }
+
+    fun onEditComment(id: String, text: String) {
+        activity.withFirstContent(viewModelScope) {
+            updateComment(id, UpdateCommentRequest(text))
+                .logResult(TAG, "Editing comment $id with text: $text")
         }
     }
 

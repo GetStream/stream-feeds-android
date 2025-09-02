@@ -18,6 +18,7 @@ package io.getstream.feeds.android.sample.feed
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,6 +50,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -90,13 +93,17 @@ fun ColumnScope.CommentsBottomSheet(navigator: DestinationsNavigator) {
         }
 
         is AsyncResource.Content -> {
-            val comments by state.data.comments.collectAsStateWithLifecycle()
+            val comments by state.data.second.comments.collectAsStateWithLifecycle()
+            val currentUserId = state.data.first.id
 
             CommentsBottomSheetContent(
                 comments = comments,
+                currentUserId = currentUserId,
                 onLoadMore = viewModel::onLoadMore,
                 onLikeClick = viewModel::onLikeClick,
                 onPostComment = viewModel::onPostComment,
+                onDeleteClick = viewModel::onDeleteClick,
+                onEditComment = viewModel::onEditComment,
             )
         }
     }
@@ -105,9 +112,12 @@ fun ColumnScope.CommentsBottomSheet(navigator: DestinationsNavigator) {
 @Composable
 private fun ColumnScope.CommentsBottomSheetContent(
     comments: List<ThreadedCommentData>,
+    currentUserId: String,
     onLoadMore: () -> Unit,
     onLikeClick: (ThreadedCommentData) -> Unit,
     onPostComment: (text: String, parentCommentId: String?, attachmentUris: List<Uri>) -> Unit,
+    onDeleteClick: (String) -> Unit,
+    onEditComment: (commentId: String, newText: String) -> Unit,
 ) {
     var createCommentData: CreateCommentData? by remember { mutableStateOf(null) }
     var expandedCommentId: String? by remember { mutableStateOf(null) }
@@ -128,6 +138,7 @@ private fun ColumnScope.CommentsBottomSheetContent(
             items(comments) { comment ->
                 Comment(
                     data = comment,
+                    currentUserId = currentUserId,
                     isExpanded = comment.id == expandedCommentId,
                     onExpandClick = {
                         expandedCommentId = comment.id.takeUnless { it == expandedCommentId }
@@ -136,6 +147,8 @@ private fun ColumnScope.CommentsBottomSheetContent(
                         createCommentData = CreateCommentData(commentId)
                     },
                     onLikeClick = onLikeClick,
+                    onDeleteClick = onDeleteClick,
+                    onEditComment = onEditComment,
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                 )
             }
@@ -173,19 +186,38 @@ private fun ColumnScope.CommentsBottomSheetContent(
 @Composable
 private fun Comment(
     data: ThreadedCommentData,
+    currentUserId: String,
     isExpanded: Boolean,
     onExpandClick: () -> Unit,
     onReplyClick: (commentId: String) -> Unit,
     onLikeClick: (ThreadedCommentData) -> Unit,
+    onDeleteClick: (commentId: String) -> Unit,
+    onEditComment: (commentId: String, newText: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expandedCommentId: String? by remember { mutableStateOf(null) }
+    var showContextMenu by remember { mutableStateOf(false) }
+    var showEditDialog by remember { mutableStateOf(false) }
+
+    val hapticFeedback = LocalHapticFeedback.current
 
     Column(modifier.fillMaxWidth()) {
         Column(
             Modifier.background(
                     MaterialTheme.colorScheme.secondaryContainer,
                     shape = RoundedCornerShape(16.dp),
+                )
+                .combinedClickable(
+                    indication = null,
+                    interactionSource = null,
+                    onClick = {},
+                    onLongClick =
+                        if (data.user.id == currentUserId) {
+                            {
+                                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                                showContextMenu = true
+                            }
+                        } else null,
                 )
                 .padding(16.dp)
                 .fillMaxWidth(),
@@ -243,16 +275,48 @@ private fun Comment(
                 data.replies?.forEach { reply ->
                     Comment(
                         data = reply,
+                        currentUserId = currentUserId,
                         isExpanded = reply.id == expandedCommentId,
                         onExpandClick = {
                             expandedCommentId = reply.id.takeUnless { it == expandedCommentId }
                         },
                         onReplyClick = onReplyClick,
                         onLikeClick = onLikeClick,
+                        onDeleteClick = onDeleteClick,
+                        onEditComment = onEditComment,
                         modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 16.dp),
                     )
                 }
             }
+        }
+
+        // Context menu dialog for long press
+        if (showContextMenu) {
+            ContentContextMenuDialog(
+                title = "Comment Options",
+                showEdit = true,
+                onDismiss = { showContextMenu = false },
+                onEdit = {
+                    showEditDialog = true
+                    showContextMenu = false
+                },
+                onDelete = {
+                    onDeleteClick(data.id)
+                    showContextMenu = false
+                },
+            )
+        }
+
+        // Edit comment dialog
+        if (showEditDialog) {
+            EditContentDialog(
+                data.text.orEmpty(),
+                onDismiss = { showEditDialog = false },
+                onSave = { newText ->
+                    onEditComment(data.id, newText)
+                    showEditDialog = false
+                },
+            )
         }
     }
 }
