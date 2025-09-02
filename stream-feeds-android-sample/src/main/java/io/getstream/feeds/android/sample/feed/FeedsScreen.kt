@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -37,6 +36,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -44,6 +44,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -84,6 +85,7 @@ import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.UserData
 import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.network.models.Attachment
+import io.getstream.feeds.android.network.models.NotificationStatusResponse
 import io.getstream.feeds.android.sample.R
 import io.getstream.feeds.android.sample.components.LinkText
 import io.getstream.feeds.android.sample.components.LoadingScreen
@@ -103,23 +105,36 @@ fun FeedsScreen(args: FeedsScreenArgs, navigator: DestinationsNavigator) {
     val viewModel = hiltViewModel<FeedViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    Box {
+    Scaffold(
+        topBar = {
+            val notificationStatus by viewModel.notificationStatus.collectAsStateWithLifecycle()
+            TopBarSection(notificationStatus, navigator, args)
+        },
+        snackbarHost = {
+            val snackbarHostState = remember(::SnackbarHostState)
+
+            LaunchedEffect(Unit) { viewModel.error.collect { snackbarHostState.showSnackbar(it) } }
+
+            SnackbarHost(snackbarHostState)
+        },
+    ) { padding ->
         when (val state = state) {
-            AsyncResource.Loading -> LoadingScreen()
+            AsyncResource.Loading -> LoadingScreen(Modifier.padding(padding))
 
             AsyncResource.Error -> {
                 LaunchedEffect(Unit) { navigator.popBackStack() }
-                return
+                return@Scaffold
             }
 
-            is AsyncResource.Content -> FeedsScreenContent(args, navigator, state.data, viewModel)
+            is AsyncResource.Content ->
+                FeedsScreenContent(
+                    args,
+                    navigator,
+                    state.data,
+                    viewModel,
+                    Modifier.padding(padding),
+                )
         }
-
-        val snackbarHostState = remember(::SnackbarHostState)
-
-        LaunchedEffect(Unit) { viewModel.error.collect { snackbarHostState.showSnackbar(it) } }
-
-        SnackbarHost(snackbarHostState, Modifier.align(Alignment.BottomCenter))
     }
 }
 
@@ -129,31 +144,11 @@ private fun FeedsScreenContent(
     navigator: DestinationsNavigator,
     state: FeedState,
     viewModel: FeedViewModel,
+    modifier: Modifier,
 ) {
-    var showLogoutConfirmation by remember { mutableStateOf(false) }
     var showCreatePostBottomSheet by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxSize().systemBarsPadding()) {
-        // Toolbar
-        val notificationStatus by viewModel.notificationStatus.collectAsStateWithLifecycle()
-
-        FeedsScreenToolbar(
-            avatarUrl = args.avatarUrl,
-            hasUnseenNotifications = (notificationStatus?.unseen ?: 0) > 0,
-            onUserAvatarClick = { showLogoutConfirmation = true },
-            onNotificationsClick = {
-                // Open notifications screen ()
-                val fid = FeedId("notification", args.userId)
-                navigator.navigate(
-                    NotificationsScreenDestination(NotificationsScreenArgs(fid.rawValue))
-                )
-            },
-            onProfileClick = { navigator.navigate(ProfileScreenDestination(feedId = args.feedId)) },
-        )
-
-        // Toolbar divider
-        HorizontalDivider(color = Color.Gray.copy(alpha = 0.1f), thickness = 1.dp)
-
+    Column(modifier = modifier.fillMaxSize()) {
         Box(modifier = Modifier.fillMaxSize()) {
             // Feed content
             val activities by state.activities.collectAsStateWithLifecycle()
@@ -231,18 +226,6 @@ private fun FeedsScreenContent(
                 )
             }
 
-            if (showLogoutConfirmation) {
-                LogoutConfirmationDialog(
-                    onDismiss = { showLogoutConfirmation = false },
-                    onConfirm = {
-                        showLogoutConfirmation = false
-                        navigator.navigate(MainScreenDestination(logout = true)) {
-                            popUpTo(NavGraphs.root) { inclusive = true }
-                        }
-                    },
-                )
-            }
-
             // Create Post Bottom Sheet
             if (showCreatePostBottomSheet) {
                 CreateContentBottomSheet(
@@ -265,6 +248,42 @@ private fun FeedsScreenContent(
 }
 
 @Composable
+private fun TopBarSection(
+    notificationStatus: NotificationStatusResponse?,
+    navigator: DestinationsNavigator,
+    args: FeedsScreenArgs,
+) {
+    var showLogoutConfirmation by remember { mutableStateOf(false) }
+
+    FeedsScreenToolbar(
+        avatarUrl = args.avatarUrl,
+        hasUnseenNotifications = (notificationStatus?.unseen ?: 0) > 0,
+        onUserAvatarClick = { showLogoutConfirmation = true },
+        onNotificationsClick = {
+            // Open notifications screen
+            val fid = FeedId("notification", args.userId)
+            navigator.navigate(
+                NotificationsScreenDestination(NotificationsScreenArgs(fid.rawValue))
+            )
+        },
+        onProfileClick = { navigator.navigate(ProfileScreenDestination(feedId = args.feedId)) },
+    )
+
+    if (showLogoutConfirmation) {
+        LogoutConfirmationDialog(
+            onDismiss = { showLogoutConfirmation = false },
+            onConfirm = {
+                showLogoutConfirmation = false
+                navigator.navigate(MainScreenDestination(logout = true)) {
+                    popUpTo(NavGraphs.root) { inclusive = true }
+                }
+            },
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun FeedsScreenToolbar(
     avatarUrl: String?,
     hasUnseenNotifications: Boolean,
@@ -272,32 +291,22 @@ fun FeedsScreenToolbar(
     onNotificationsClick: () -> Unit,
     onProfileClick: () -> Unit,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        // Left side - Avatar
-        UserAvatar(
-            avatarUrl = avatarUrl,
-            modifier = Modifier.size(36.dp).clickable(onClick = onUserAvatarClick),
-        )
-
-        // Center - Title (using weight to ensure perfect centering)
-        Text(
-            text = "Stream Feeds",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.weight(1f),
-        )
-
-        // Right side - Action buttons
-        Row(verticalAlignment = Alignment.CenterVertically) {
+    CenterAlignedTopAppBar(
+        title = { Text(text = "Stream Feeds") },
+        navigationIcon = {
+            UserAvatar(
+                avatarUrl = avatarUrl,
+                modifier =
+                    Modifier.padding(start = 8.dp)
+                        .size(36.dp)
+                        .clickable(onClick = onUserAvatarClick),
+            )
+        },
+        actions = {
             NotificationIcon(hasUnseen = hasUnseenNotifications, onClick = onNotificationsClick)
             ProfileIcon(onClick = onProfileClick)
-        }
-    }
+        },
+    )
 }
 
 @Composable
@@ -342,7 +351,6 @@ fun EmptyContent() {
         Text(
             text = "No activities yet. Start by creating a post!",
             fontSize = 16.sp,
-            color = Color.Gray,
             textAlign = TextAlign.Center,
         )
     }
@@ -396,7 +404,6 @@ fun ActivityContent(
                     text = user.name ?: user.id,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.Black,
                     modifier = Modifier.padding(bottom = 4.dp),
                 )
 
@@ -465,11 +472,7 @@ fun ActivityContent(
         }
 
         // Add divider between activities for better separation
-        HorizontalDivider(
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
-            color = Color.Gray.copy(alpha = 0.2f),
-            thickness = 1.dp,
-        )
+        HorizontalDivider(modifier = Modifier.fillMaxWidth().padding(top = 16.dp), thickness = 1.dp)
     }
 }
 
@@ -536,7 +539,7 @@ fun ActivityContextMenuDialog(
                     }
 
                     // Divider between Edit and Delete
-                    HorizontalDivider(color = Color.Gray.copy(alpha = 0.3f), thickness = 1.dp)
+                    HorizontalDivider(thickness = 1.dp)
                 }
 
                 Row(
