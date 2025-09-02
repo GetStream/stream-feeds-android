@@ -15,12 +15,13 @@
  */
 package io.getstream.feeds.android.client.api.state.query
 
+import io.getstream.android.core.api.filter.Filter
+import io.getstream.android.core.api.filter.FilterField
+import io.getstream.android.core.api.filter.Sort
+import io.getstream.android.core.api.filter.SortDirection
+import io.getstream.android.core.api.filter.SortField
+import io.getstream.android.core.api.filter.toRequest
 import io.getstream.feeds.android.client.api.model.ModerationConfigData
-import io.getstream.feeds.android.client.api.query.Filter
-import io.getstream.feeds.android.client.api.query.Sort
-import io.getstream.feeds.android.client.api.query.SortDirection
-import io.getstream.feeds.android.client.api.query.SortField
-import io.getstream.feeds.android.client.api.query.toRequest
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.network.models.QueryModerationConfigsRequest
 
@@ -30,24 +31,56 @@ import io.getstream.feeds.android.network.models.QueryModerationConfigsRequest
  * This model defines the parameters used to fetch moderation configurations, including pagination
  * settings, sorting options, and filtering conditions.
  *
- * @property filter Filter conditions for the moderation configuration query. Supported filters:
- * - field: `key`, operators: `equal`, `in`, `autocomplete`
- * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `updated_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `team`, operators: `equal`, `in`
- *
+ * @property filter Filter conditions for the moderation configuration query. See
+ *   [ModerationConfigsFilterField] for available filter fields and their supported operators.
  * @property limit The maximum number of moderation configurations to return.
  * @property next The pagination cursor for fetching the next page of configurations.
  * @property previous The pagination cursor for fetching the previous page of configurations.
  * @property sort The sorting criteria for configurations.
  */
 public data class ModerationConfigsQuery(
-    public val filter: Filter? = null,
+    public val filter: ModerationConfigsFilter? = null,
     public val limit: Int? = null,
     public val next: String? = null,
     public val previous: String? = null,
     public val sort: List<ModerationConfigSort>? = null,
 )
+
+public typealias ModerationConfigsFilter = Filter<ModerationConfigsFilterField>
+
+public data class ModerationConfigsFilterField(override val remote: String) : FilterField {
+    public companion object {
+        /**
+         * Filter by configuration key.
+         *
+         * Supported operators: `equal`, `in`, `autocomplete`
+         */
+        public val key: ModerationConfigsFilterField = ModerationConfigsFilterField("key")
+
+        /**
+         * Filter by creation timestamp.
+         *
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val createdAt: ModerationConfigsFilterField =
+            ModerationConfigsFilterField("created_at")
+
+        /**
+         * Filter by last update timestamp.
+         *
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val updatedAt: ModerationConfigsFilterField =
+            ModerationConfigsFilterField("updated_at")
+
+        /**
+         * Filter by team.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val team: ModerationConfigsFilterField = ModerationConfigsFilterField("team")
+    }
+}
 
 /**
  * Represents a sorting configuration for querying moderation configurations.

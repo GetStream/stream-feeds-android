@@ -19,6 +19,7 @@ import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
+import io.getstream.feeds.android.client.api.state.query.PollsFilterField
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
 import io.getstream.feeds.android.client.api.state.query.PollsSort
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
@@ -45,7 +46,8 @@ internal class PollListStateImplTest {
                 models = polls,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = PollsSort.Default)
+        val queryConfig =
+            QueryConfiguration<PollsFilterField, PollsSort>(filter = null, sort = PollsSort.Default)
 
         pollListState.onQueryMorePolls(paginationResult, queryConfig)
 
@@ -63,7 +65,8 @@ internal class PollListStateImplTest {
                 models = initialPolls,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = PollsSort.Default)
+        val queryConfig =
+            QueryConfiguration<PollsFilterField, PollsSort>(filter = null, sort = PollsSort.Default)
         pollListState.onQueryMorePolls(paginationResult, queryConfig)
 
         val updatedPoll = pollData("poll-1", "Updated Poll", description = "Updated description")
@@ -83,7 +86,8 @@ internal class PollListStateImplTest {
                 models = initialPolls,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = PollsSort.Default)
+        val queryConfig =
+            QueryConfiguration<PollsFilterField, PollsSort>(filter = null, sort = PollsSort.Default)
         pollListState.onQueryMorePolls(paginationResult, queryConfig)
 
         val nonExistentPoll = pollData("non-existent", "Non-existent Poll")

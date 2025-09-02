@@ -15,13 +15,14 @@
  */
 package io.getstream.feeds.android.client.api.state.query
 
+import io.getstream.android.core.api.filter.Filter
+import io.getstream.android.core.api.filter.FilterField
+import io.getstream.android.core.api.filter.Sort
+import io.getstream.android.core.api.filter.SortDirection
+import io.getstream.android.core.api.filter.SortField
+import io.getstream.android.core.api.filter.toRequest
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
-import io.getstream.feeds.android.client.api.query.Filter
-import io.getstream.feeds.android.client.api.query.Sort
-import io.getstream.feeds.android.client.api.query.SortDirection
-import io.getstream.feeds.android.client.api.query.SortField
-import io.getstream.feeds.android.client.api.query.toRequest
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.network.models.QueryFeedMembersRequest
 
@@ -33,15 +34,8 @@ import io.getstream.feeds.android.network.models.QueryFeedMembersRequest
  *
  * @property fid The feed ID to fetch members for.
  * @property filter Optional filter to apply to the members query. Use this to narrow down results
- *   based on specific criteria. Supported filters:
- * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `role`, operators: `equal`, `in`
- * - field: `status`, operators: `equal`, `in`
- * - field: `updated_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `user_id`, operators: `equal`, `in`
- * - field: `fid`, operators: `equal`, `in`
- * - field: `request`, operators: `equal`
- *
+ *   based on specific criteria. See [MembersFilterField] for available filter fields and their
+ *   supported operators.
  * @property sort Array of sorting criteria to apply to the members. If not specified, the API will
  *   use its default sorting.
  * @property limit Maximum number of members to return in a single request. If not specified, the
@@ -53,12 +47,67 @@ import io.getstream.feeds.android.network.models.QueryFeedMembersRequest
  */
 public data class MembersQuery(
     public val fid: FeedId,
-    public val filter: Filter? = null,
+    public val filter: MembersFilter? = null,
     public val sort: List<MembersSort>? = null,
     public val limit: Int? = null,
     public val next: String? = null,
     public val previous: String? = null,
 )
+
+public typealias MembersFilter = Filter<MembersFilterField>
+
+public data class MembersFilterField(override val remote: String) : FilterField {
+    public companion object {
+        /**
+         * Filter by creation timestamp.
+         *
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val createdAt: MembersFilterField = MembersFilterField("created_at")
+
+        /**
+         * Filter by member role.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val role: MembersFilterField = MembersFilterField("role")
+
+        /**
+         * Filter by member status.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val status: MembersFilterField = MembersFilterField("status")
+
+        /**
+         * Filter by last update timestamp.
+         *
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val updatedAt: MembersFilterField = MembersFilterField("updated_at")
+
+        /**
+         * Filter by user ID.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val userId: MembersFilterField = MembersFilterField("user_id")
+
+        /**
+         * Filter by feed ID.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val fid: MembersFilterField = MembersFilterField("fid")
+
+        /**
+         * Filter by request.
+         *
+         * Supported operators: `equal`
+         */
+        public val request: MembersFilterField = MembersFilterField("request")
+    }
+}
 
 /**
  * Represents a sorting operation for feed members.

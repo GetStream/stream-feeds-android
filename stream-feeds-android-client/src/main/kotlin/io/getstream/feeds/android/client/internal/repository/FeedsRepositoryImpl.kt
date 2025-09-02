@@ -15,6 +15,7 @@
  */
 package io.getstream.feeds.android.client.internal.repository
 
+import io.getstream.android.core.api.filter.sortedWith
 import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
@@ -25,7 +26,6 @@ import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.model.toModel
-import io.getstream.feeds.android.client.api.query.sortedWith
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery

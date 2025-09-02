@@ -15,13 +15,14 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
+import io.getstream.android.core.api.filter.Sort
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
-import io.getstream.feeds.android.client.api.query.Sort
 import io.getstream.feeds.android.client.api.state.MemberListState
+import io.getstream.feeds.android.client.api.state.query.MembersFilterField
 import io.getstream.feeds.android.client.api.state.query.MembersQuery
 import io.getstream.feeds.android.client.api.state.query.MembersSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
@@ -40,7 +41,7 @@ internal class MemberListStateImpl(override val query: MembersQuery) : MemberLis
 
     private val _members: MutableStateFlow<List<FeedMemberData>> = MutableStateFlow(emptyList())
 
-    internal var queryConfig: QueryConfiguration<MembersSort>? = null
+    internal var queryConfig: QueryConfiguration<MembersFilterField, MembersSort>? = null
         private set
 
     private var _pagination: PaginationData? = null
@@ -56,7 +57,7 @@ internal class MemberListStateImpl(override val query: MembersQuery) : MemberLis
 
     override fun onQueryMoreMembers(
         result: PaginationResult<FeedMemberData>,
-        queryConfig: QueryConfiguration<MembersSort>,
+        queryConfig: QueryConfiguration<MembersFilterField, MembersSort>,
     ) {
         _pagination = result.pagination
         this.queryConfig = queryConfig
@@ -120,7 +121,7 @@ internal interface MemberListStateUpdates {
     /** Handles the result of a query for more members. */
     fun onQueryMoreMembers(
         result: PaginationResult<FeedMemberData>,
-        queryConfig: QueryConfiguration<MembersSort>,
+        queryConfig: QueryConfiguration<MembersFilterField, MembersSort>,
     )
 
     /** Handles the removal of a member by their ID. */

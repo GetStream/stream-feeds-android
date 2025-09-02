@@ -15,12 +15,13 @@
  */
 package io.getstream.feeds.android.client.api.state.query
 
+import io.getstream.android.core.api.filter.Filter
+import io.getstream.android.core.api.filter.FilterField
+import io.getstream.android.core.api.filter.Sort
+import io.getstream.android.core.api.filter.SortDirection
+import io.getstream.android.core.api.filter.SortField
+import io.getstream.android.core.api.filter.toRequest
 import io.getstream.feeds.android.client.api.model.FollowData
-import io.getstream.feeds.android.client.api.query.Filter
-import io.getstream.feeds.android.client.api.query.Sort
-import io.getstream.feeds.android.client.api.query.SortDirection
-import io.getstream.feeds.android.client.api.query.SortField
-import io.getstream.feeds.android.client.api.query.toRequest
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.network.models.QueryFollowsRequest
 
@@ -31,12 +32,8 @@ import io.getstream.feeds.android.network.models.QueryFollowsRequest
  * specify filters to narrow down results, sorting options, and pagination parameters.
  *
  * @property filter Optional filter to apply to the follows query. Use this to narrow down results
- *   based on specific criteria. Supported filters:
- * - field: `source_feed`, operators: `equal`, `in`
- * - field: `target_feed`, operators: `equal`, `in`
- * - field: `status`, operators: `equal`, `in`
- * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- *
+ *   based on specific criteria. See [FollowsFilterField] for available filter fields and their
+ *   supported operators.
  * @property sort Array of sorting criteria to apply to the follows. If not specified, the API will
  *   use its default sorting.
  * @property limit Maximum number of follows to return in a single request. If not specified, the
@@ -47,12 +44,46 @@ import io.getstream.feeds.android.network.models.QueryFollowsRequest
  *   provided in the response of a previous request.
  */
 public data class FollowsQuery(
-    public val filter: Filter? = null,
+    public val filter: FollowsFilter? = null,
     public val sort: List<FollowsSort>? = null,
     public val limit: Int? = null,
     public val next: String? = null,
     public val previous: String? = null,
 )
+
+public typealias FollowsFilter = Filter<FollowsFilterField>
+
+public data class FollowsFilterField(override val remote: String) : FilterField {
+    public companion object {
+        /**
+         * Filter by source feed.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val sourceFeed: FollowsFilterField = FollowsFilterField("source_feed")
+
+        /**
+         * Filter by target feed.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val targetFeed: FollowsFilterField = FollowsFilterField("target_feed")
+
+        /**
+         * Filter by follow status.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val status: FollowsFilterField = FollowsFilterField("status")
+
+        /**
+         * Filter by creation timestamp.
+         *
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val createdAt: FollowsFilterField = FollowsFilterField("created_at")
+    }
+}
 
 /**
  * Represents a sorting operation for follows.

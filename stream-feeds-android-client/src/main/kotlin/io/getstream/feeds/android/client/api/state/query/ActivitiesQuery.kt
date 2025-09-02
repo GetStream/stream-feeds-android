@@ -15,12 +15,13 @@
  */
 package io.getstream.feeds.android.client.api.state.query
 
+import io.getstream.android.core.api.filter.Filter
+import io.getstream.android.core.api.filter.FilterField
+import io.getstream.android.core.api.filter.Sort
+import io.getstream.android.core.api.filter.SortDirection
+import io.getstream.android.core.api.filter.SortField
+import io.getstream.android.core.api.filter.toRequest
 import io.getstream.feeds.android.client.api.model.ActivityData
-import io.getstream.feeds.android.client.api.query.Filter
-import io.getstream.feeds.android.client.api.query.Sort
-import io.getstream.feeds.android.client.api.query.SortDirection
-import io.getstream.feeds.android.client.api.query.SortField
-import io.getstream.feeds.android.client.api.query.toRequest
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.network.models.QueryActivitiesRequest
 
@@ -33,23 +34,15 @@ import io.getstream.feeds.android.network.models.QueryActivitiesRequest
  * Example usage:
  * ```kotlin
  * val query = ActivitiesQuery(
- *   filter = Filter.eq("id", "activity-id-1"),
+ *   filter = ActivitiesFilterField.Id.equal("activity-id-1"),
  *   sort = listOf(ActivitiesSort(ActivitiesSortField.CreatedAt, SortDirection.REVERSE)),
  *   limit = 20,
  * )
  * ```
  *
  * @property filter Optional filter to apply to the activities query. Use this to narrow down
- *   results based on specific criteria. Supported filters:
- * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `id`, operators: `equal`, `in`
- * - field: `filter_tags`, operators: `equal`, `in`, `contains`
- * - field: `popularity`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `search_data`, operators: `equal`, `q`, `autocomplete`
- * - field: `text`, operators: `equal`, `q`, `autocomplete`
- * - field: `type`, operators: `equal`, `in`
- * - field: `user_id`, operators: `equal`, `in`
- *
+ *   results based on specific criteria. See [ActivitiesFilterField] for available filter fields and
+ *   their supported operators.
  * @property sort Array of sorting criteria to apply to the activities. If not specified, the API
  *   will use its default sorting.
  * @property limit Maximum number of activities to return in a single request. If not specified, the
@@ -60,12 +53,74 @@ import io.getstream.feeds.android.network.models.QueryActivitiesRequest
  *   provided in the response of a previous request.
  */
 public data class ActivitiesQuery(
-    public val filter: Filter? = null,
+    public val filter: ActivitiesFilter? = null,
     public val sort: List<ActivitiesSort>? = null,
     public val limit: Int? = null,
     public val next: String? = null,
     public val previous: String? = null,
 )
+
+public typealias ActivitiesFilter = Filter<ActivitiesFilterField>
+
+public data class ActivitiesFilterField(override val remote: String) : FilterField {
+    public companion object {
+        /**
+         * Filter by activity creation timestamp.
+         *
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val createdAt: ActivitiesFilterField = ActivitiesFilterField("created_at")
+
+        /**
+         * Filter by activity ID.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val id: ActivitiesFilterField = ActivitiesFilterField("id")
+
+        /**
+         * Filter by activity filter tags.
+         *
+         * Supported operators: `equal`, `in`, `contains`
+         */
+        public val filterTags: ActivitiesFilterField = ActivitiesFilterField("filter_tags")
+
+        /**
+         * Filter by activity popularity score.
+         *
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val popularity: ActivitiesFilterField = ActivitiesFilterField("popularity")
+
+        /**
+         * Filter by activity search data.
+         *
+         * Supported operators: `equal`, `q`, `autocomplete`
+         */
+        public val searchData: ActivitiesFilterField = ActivitiesFilterField("search_data")
+
+        /**
+         * Filter by activity text content.
+         *
+         * Supported operators: `equal`, `q`, `autocomplete`
+         */
+        public val text: ActivitiesFilterField = ActivitiesFilterField("text")
+
+        /**
+         * Filter by activity type.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val type: ActivitiesFilterField = ActivitiesFilterField("type")
+
+        /**
+         * Filter by user ID who created the activity.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val userId: ActivitiesFilterField = ActivitiesFilterField("user_id")
+    }
+}
 
 /**
  * Represents a sorting operation for activities.

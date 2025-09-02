@@ -59,7 +59,7 @@ tasks.withType<KotlinCompile>().configureEach {
                 "-progressive",
                 "-Xconsistent-data-class-copy-visibility",
                 "-Xexplicit-api=strict",
-                "-opt-in=io.getstream.android.core.annotations.StreamCoreApi,io.getstream.android.core.annotations.StreamInternalApi",
+                "-opt-in=io.getstream.android.core.annotations.StreamInternalApi",
             ),
         )
         jvmTarget.set(JvmTarget.JVM_11)

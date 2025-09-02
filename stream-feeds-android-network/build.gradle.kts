@@ -1,5 +1,4 @@
 import io.getstream.feeds.android.Configuration
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -48,7 +47,6 @@ tasks.withType<KotlinCompile>().configureEach {
         freeCompilerArgs.addAll(
             listOf(
                 "-progressive",
-                "-opt-in=io.getstream.kotlin.base.annotation.marker.StreamInternalApi",
                 "-Xexplicit-api=strict",
             ),
         )
