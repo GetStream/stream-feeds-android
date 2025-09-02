@@ -15,7 +15,6 @@
  */
 package io.getstream.feeds.android.sample.feed
 
-import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -66,6 +65,7 @@ import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.sample.R
 import io.getstream.feeds.android.sample.components.LoadingScreen
+import io.getstream.feeds.android.sample.feed.CommentsSheetViewModel.Event
 import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
 import io.getstream.feeds.android.sample.ui.util.rippleClickable
 import io.getstream.feeds.android.sample.util.AsyncResource
@@ -99,11 +99,7 @@ fun ColumnScope.CommentsBottomSheet(navigator: DestinationsNavigator) {
             CommentsBottomSheetContent(
                 comments = comments,
                 currentUserId = currentUserId,
-                onLoadMore = viewModel::onLoadMore,
-                onLikeClick = viewModel::onLikeClick,
-                onPostComment = viewModel::onPostComment,
-                onDeleteClick = viewModel::onDeleteClick,
-                onEditComment = viewModel::onEditComment,
+                onEvent = viewModel::onEvent,
             )
         }
     }
@@ -113,11 +109,7 @@ fun ColumnScope.CommentsBottomSheet(navigator: DestinationsNavigator) {
 private fun ColumnScope.CommentsBottomSheetContent(
     comments: List<ThreadedCommentData>,
     currentUserId: String,
-    onLoadMore: () -> Unit,
-    onLikeClick: (ThreadedCommentData) -> Unit,
-    onPostComment: (text: String, parentCommentId: String?, attachmentUris: List<Uri>) -> Unit,
-    onDeleteClick: (String) -> Unit,
-    onEditComment: (commentId: String, newText: String) -> Unit,
+    onEvent: (Event) -> Unit,
 ) {
     var createCommentData: CreateCommentData? by remember { mutableStateOf(null) }
     var expandedCommentId: String? by remember { mutableStateOf(null) }
@@ -132,7 +124,7 @@ private fun ColumnScope.CommentsBottomSheetContent(
     Box(Modifier.fillMaxWidth().defaultMinSize(minHeight = 300.dp)) {
         val lazyListState = rememberLazyListState()
 
-        ScrolledToBottomEffect(lazyListState, action = onLoadMore)
+        ScrolledToBottomEffect(lazyListState, action = { onEvent(Event.OnScrollToBottom) })
 
         LazyColumn(state = lazyListState) {
             items(comments) { comment ->
@@ -146,9 +138,7 @@ private fun ColumnScope.CommentsBottomSheetContent(
                     onReplyClick = { commentId ->
                         createCommentData = CreateCommentData(commentId)
                     },
-                    onLikeClick = onLikeClick,
-                    onDeleteClick = onDeleteClick,
-                    onEditComment = onEditComment,
+                    onEvent = onEvent,
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                 )
             }
@@ -176,7 +166,7 @@ private fun ColumnScope.CommentsBottomSheetContent(
             onDismiss = { createCommentData = null },
             requireText = true,
             onPost = { text, attachments ->
-                onPostComment(text, createCommentData?.replyParentId, attachments)
+                onEvent(Event.OnPost(text, createCommentData?.replyParentId, attachments))
                 createCommentData = null
             },
         )
@@ -190,9 +180,7 @@ private fun Comment(
     isExpanded: Boolean,
     onExpandClick: () -> Unit,
     onReplyClick: (commentId: String) -> Unit,
-    onLikeClick: (ThreadedCommentData) -> Unit,
-    onDeleteClick: (commentId: String) -> Unit,
-    onEditComment: (commentId: String, newText: String) -> Unit,
+    onEvent: (Event) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expandedCommentId: String? by remember { mutableStateOf(null) }
@@ -237,7 +225,7 @@ private fun Comment(
             Text(
                 text = if (hasOwnHeart) "Unlike" else "Like",
                 modifier =
-                    Modifier.rippleClickable { onLikeClick(data) }
+                    Modifier.rippleClickable { onEvent(Event.OnLike(data)) }
                         .padding(horizontal = 8.dp, vertical = 4.dp),
             )
             Text(
@@ -281,9 +269,7 @@ private fun Comment(
                             expandedCommentId = reply.id.takeUnless { it == expandedCommentId }
                         },
                         onReplyClick = onReplyClick,
-                        onLikeClick = onLikeClick,
-                        onDeleteClick = onDeleteClick,
-                        onEditComment = onEditComment,
+                        onEvent = onEvent,
                         modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 16.dp),
                     )
                 }
@@ -301,7 +287,7 @@ private fun Comment(
                     showContextMenu = false
                 },
                 onDelete = {
-                    onDeleteClick(data.id)
+                    onEvent(Event.OnDelete(data.id))
                     showContextMenu = false
                 },
             )
@@ -313,7 +299,7 @@ private fun Comment(
                 data.text.orEmpty(),
                 onDismiss = { showEditDialog = false },
                 onSave = { newText ->
-                    onEditComment(data.id, newText)
+                    onEvent(Event.OnEdit(commentId = data.id, text = newText))
                     showEditDialog = false
                 },
             )

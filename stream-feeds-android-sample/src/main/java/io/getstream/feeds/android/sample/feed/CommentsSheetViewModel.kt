@@ -40,11 +40,11 @@ import io.getstream.feeds.android.sample.util.map
 import io.getstream.feeds.android.sample.util.notNull
 import io.getstream.feeds.android.sample.util.withFirstContent
 import io.getstream.feeds.android.sample.utils.logResult
+import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import javax.inject.Inject
 
 @HiltViewModel
 class CommentsSheetViewModel
@@ -85,7 +85,17 @@ constructor(
         }
     }
 
-    fun onLoadMore() {
+    fun onEvent(event: Event) {
+        when (event) {
+            Event.OnScrollToBottom -> loadMore()
+            is Event.OnEdit -> edit(id = event.commentId, text = event.text)
+            is Event.OnPost -> post(event.text, event.replyParentId, event.attachments)
+            is Event.OnLike -> toggleLike(event.comment)
+            is Event.OnDelete -> delete(event.commentId)
+        }
+    }
+
+    private fun loadMore() {
         if (!canLoadMoreComments) return
         activity.withFirstContent(viewModelScope) {
             queryMoreComments()
@@ -94,7 +104,7 @@ constructor(
         }
     }
 
-    fun onLikeClick(comment: ThreadedCommentData) {
+    private fun toggleLike(comment: ThreadedCommentData) {
         activity.withFirstContent(viewModelScope) {
             if (comment.ownReactions.any { it.type == "heart" }) {
                     deleteCommentReaction(comment.id, "heart")
@@ -107,20 +117,20 @@ constructor(
         }
     }
 
-    fun onDeleteClick(id: String) {
+    private fun delete(commentId: String) {
         activity.withFirstContent(viewModelScope) {
-            deleteComment(id).logResult(TAG, "Deleting comment: $id")
+            deleteComment(commentId).logResult(TAG, "Deleting comment: $commentId")
         }
     }
 
-    fun onEditComment(id: String, text: String) {
+    private fun edit(id: String, text: String) {
         activity.withFirstContent(viewModelScope) {
             updateComment(id, UpdateCommentRequest(text))
                 .logResult(TAG, "Editing comment $id with text: $text")
         }
     }
 
-    fun onPostComment(text: String, replyParentId: String?, attachments: List<Uri>) {
+    private fun post(text: String, replyParentId: String?, attachments: List<Uri>) {
         activity.withFirstContent(viewModelScope) {
             val attachmentFiles =
                 context.copyToCache(attachments).getOrElse { error ->
@@ -147,6 +157,22 @@ constructor(
 
             deleteFiles(attachmentFiles)
         }
+    }
+
+    sealed interface Event {
+        data object OnScrollToBottom : Event
+
+        data class OnLike(val comment: ThreadedCommentData) : Event
+
+        data class OnDelete(val commentId: String) : Event
+
+        data class OnEdit(val commentId: String, val text: String) : Event
+
+        data class OnPost(
+            val text: String,
+            val replyParentId: String?,
+            val attachments: List<Uri>,
+        ) : Event
     }
 
     companion object {
