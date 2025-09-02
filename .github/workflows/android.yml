@@ -83,3 +83,8 @@ jobs:
           path: stream-feeds-android/build/reports/tests/testDebugUnitTest/index.html
 
       - uses: GetStream/android-ci-actions/actions/setup-ruby@main
+
+      - name: Sonar
+        run: ./gradlew sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
