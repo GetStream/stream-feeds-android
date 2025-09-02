@@ -21,6 +21,7 @@ import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.ModerationConfigListState
 import io.getstream.feeds.android.client.api.state.query.ModerationConfigSort
+import io.getstream.feeds.android.client.api.state.query.ModerationConfigsFilterField
 import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,7 +39,9 @@ internal class ModerationConfigListStateImpl(override val query: ModerationConfi
     private val _configs: MutableStateFlow<List<ModerationConfigData>> =
         MutableStateFlow(emptyList())
 
-    internal var queryConfig: QueryConfiguration<ModerationConfigSort>? = null
+    internal var queryConfig:
+        QueryConfiguration<ModerationConfigsFilterField, ModerationConfigSort>? =
+        null
         private set
 
     private var _pagination: PaginationData? = null
@@ -54,7 +57,7 @@ internal class ModerationConfigListStateImpl(override val query: ModerationConfi
 
     override fun onLoadMoreConfigs(
         result: PaginationResult<ModerationConfigData>,
-        queryConfig: QueryConfiguration<ModerationConfigSort>,
+        queryConfig: QueryConfiguration<ModerationConfigsFilterField, ModerationConfigSort>,
     ) {
         _pagination = result.pagination
         this.queryConfig = queryConfig
@@ -71,6 +74,6 @@ internal interface ModerationConfigListStateUpdates {
 
     fun onLoadMoreConfigs(
         result: PaginationResult<ModerationConfigData>,
-        queryConfig: QueryConfiguration<ModerationConfigSort>,
+        queryConfig: QueryConfiguration<ModerationConfigsFilterField, ModerationConfigSort>,
     )
 }

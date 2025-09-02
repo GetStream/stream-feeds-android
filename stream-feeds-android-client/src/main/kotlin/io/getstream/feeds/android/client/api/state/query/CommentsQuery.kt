@@ -15,8 +15,9 @@
  */
 package io.getstream.feeds.android.client.api.state.query
 
-import io.getstream.feeds.android.client.api.query.Filter
-import io.getstream.feeds.android.client.api.query.toRequest
+import io.getstream.android.core.api.filter.Filter
+import io.getstream.android.core.api.filter.FilterField
+import io.getstream.android.core.api.filter.toRequest
 import io.getstream.feeds.android.network.models.QueryCommentsRequest
 import java.util.Date
 
@@ -31,7 +32,7 @@ import java.util.Date
  * ```kotlin
  * // Simple query with basic filter
  * val query = CommentsQuery(
- *   filter = Filters.equal("object_id", "activity-123),
+ *   filter = CommentsFilterField.ObjectId.equal("activity-123"),
  *   sort = CommentsSort.Best,
  *   limit = 20,
  * )
@@ -39,34 +40,20 @@ import java.util.Date
  * // Complex query with multiple filters
  * val complexQuery = CommentsQuery(
  *   filter = Filters.and(
- *     Filters.equal("object_id", "activity-123"),
- *     Filters.greater("score", 5.0),
- *     Filters.equal("status", "active")
+ *     CommentsFilterField.ObjectId.equal("activity-123"),
+ *     CommentsFilterField.Score.greater(5.0),
+ *     CommentsFilterField.Status.equal("active")
  *   ),
  *   sort = CommentsSort.Top,
  *   limit = 50,
  * )
  * ```
  *
- * @property Filter criteria for the comments query. This filter can be a simple single filter or a
- *   complex combination of multiple filters using logical operators (`.and`, `.or`). The filter
- *   determines which comments are included in the query results based on field values and
- *   comparison operators. Supported filters:
- * - field: `id`, operators: `equal`, `in`
- * - field: `user_id`, operators: `equal`, `in`
- * - field: `object_type`, operators: `equal`, `in`
- * - field: `object_id`, operators: `equal`, `in`
- * - field: `parent_id`, operators: `equal`, `in`
- * - field: `comment_text`, operators: `q`
- * - field: `status`, operators: `equal`, `in`
- * - field: `upvote_count`, operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `downvote_count`, operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `reply_count`, operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `score`, operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `confidence_score`, operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `controversy_score`, operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- *
+ * @property filter Filter criteria for the comments query. This filter can be a simple single
+ *   filter or a complex combination of multiple filters using logical operators (`.and`, `.or`).
+ *   The filter determines which comments are included in the query results based on field values
+ *   and comparison operators. See [CommentsFilterField] for available filter fields and their
+ *   supported operators.
  * @property limit Maximum number of comments to return in a single request. If not specified, the
  *   API will use its default limit.
  * @property next Pagination cursor for fetching the next page of results. This is typically
@@ -76,12 +63,116 @@ import java.util.Date
  * @property sort Optional sorting criteria for the comments. See [CommentsSort].
  */
 public data class CommentsQuery(
-    public val filter: Filter?,
+    public val filter: CommentsFilter? = null,
     public val limit: Int? = null,
     public val next: String? = null,
     public val previous: String? = null,
     public val sort: CommentsSort? = null,
 )
+
+public typealias CommentsFilter = Filter<CommentsFilterField>
+
+public data class CommentsFilterField(override val remote: String) : FilterField {
+    public companion object {
+        /**
+         * Filter by comment ID.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val id: CommentsFilterField = CommentsFilterField("id")
+
+        /**
+         * Filter by user ID who created the comment.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val userId: CommentsFilterField = CommentsFilterField("user_id")
+
+        /**
+         * Filter by object type.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val objectType: CommentsFilterField = CommentsFilterField("object_type")
+
+        /**
+         * Filter by object ID.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val objectId: CommentsFilterField = CommentsFilterField("object_id")
+
+        /**
+         * Filter by parent comment ID.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val parentId: CommentsFilterField = CommentsFilterField("parent_id")
+
+        /**
+         * Filter by comment text content.
+         *
+         * Supported operators: `q`
+         */
+        public val commentText: CommentsFilterField = CommentsFilterField("comment_text")
+
+        /**
+         * Filter by comment status.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val status: CommentsFilterField = CommentsFilterField("status")
+
+        /**
+         * Filter by upvote count.
+         *
+         * Supported operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val upvoteCount: CommentsFilterField = CommentsFilterField("upvote_count")
+
+        /**
+         * Filter by downvote count.
+         *
+         * Supported operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val downvoteCount: CommentsFilterField = CommentsFilterField("downvote_count")
+
+        /**
+         * Filter by reply count.
+         *
+         * Supported operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val replyCount: CommentsFilterField = CommentsFilterField("reply_count")
+
+        /**
+         * Filter by comment score.
+         *
+         * Supported operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val score: CommentsFilterField = CommentsFilterField("score")
+
+        /**
+         * Filter by confidence score.
+         *
+         * Supported operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val confidenceScore: CommentsFilterField = CommentsFilterField("confidence_score")
+
+        /**
+         * Filter by controversy score.
+         *
+         * Supported operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val controversyScore: CommentsFilterField = CommentsFilterField("controversy_score")
+
+        /**
+         * Filter by creation timestamp.
+         *
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val createdAt: CommentsFilterField = CommentsFilterField("created_at")
+    }
+}
 
 /** Represents the sorting options available for comments. */
 public sealed interface CommentsSort {

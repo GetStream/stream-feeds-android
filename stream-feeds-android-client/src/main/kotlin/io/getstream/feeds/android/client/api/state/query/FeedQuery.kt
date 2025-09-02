@@ -15,11 +15,10 @@
  */
 package io.getstream.feeds.android.client.api.state.query
 
+import io.getstream.android.core.api.filter.toRequest
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedInputData
 import io.getstream.feeds.android.client.api.model.toRequest
-import io.getstream.feeds.android.client.api.query.Filter
-import io.getstream.feeds.android.client.api.query.toRequest
 import io.getstream.feeds.android.network.models.GetOrCreateFeedRequest
 import io.getstream.feeds.android.network.models.PagerRequest
 
@@ -27,16 +26,8 @@ import io.getstream.feeds.android.network.models.PagerRequest
  * A query configuration for retrieving and managing feed data from Stream feeds.
  *
  * @param fid The unique identifier for the feed.
- * @param activityFilter Filter criteria for activities in the feed. Supported filters:
- * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `id`, operators: `equal`, `in`
- * - field: `filter_tags`, operators: `equal`, `in`, `contains`
- * - field: `popularity`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `search_data`, operators: `equal`, `q`, `autocomplete`
- * - field: `text`, operators: `equal`, `q`, `autocomplete`
- * - field: `type`, operators: `equal`, `in`
- * - field: `user_id`, operators: `equal`, `in`
- *
+ * @param activityFilter Filter criteria for activities in the feed. See [ActivitiesFilterField] for
+ *   available filter fields and their supported operators.
  * @param activityLimit Maximum number of activities to retrieve.
  * @param activityNext Pagination cursor for fetching the next page of activities.
  * @param activityPrevious Pagination cursor for fetching the previous page of activities.
@@ -53,7 +44,7 @@ import io.getstream.feeds.android.network.models.PagerRequest
  */
 public data class FeedQuery(
     public val fid: FeedId,
-    public val activityFilter: Filter? = null,
+    public val activityFilter: ActivitiesFilter? = null,
     public val activityLimit: Int? = null,
     public val activityNext: String? = null,
     public val activityPrevious: String? = null,
@@ -91,7 +82,7 @@ public data class FeedQuery(
     public constructor(
         group: String,
         id: String,
-        activityFilter: Filter? = null,
+        activityFilter: ActivitiesFilter? = null,
         activityLimit: Int? = null,
         activityNext: String? = null,
         activityPrevious: String? = null,

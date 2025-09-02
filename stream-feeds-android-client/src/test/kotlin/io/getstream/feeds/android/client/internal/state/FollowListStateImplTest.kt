@@ -19,6 +19,7 @@ import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
+import io.getstream.feeds.android.client.api.state.query.FollowsFilterField
 import io.getstream.feeds.android.client.api.state.query.FollowsQuery
 import io.getstream.feeds.android.client.api.state.query.FollowsSort
 import io.getstream.feeds.android.client.internal.test.TestData.followData
@@ -45,7 +46,11 @@ internal class FollowListStateImplTest {
                 models = follows,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = FollowsSort.Default)
+        val queryConfig =
+            QueryConfiguration<FollowsFilterField, FollowsSort>(
+                filter = null,
+                sort = FollowsSort.Default,
+            )
 
         followListState.onQueryMoreFollows(paginationResult, queryConfig)
 
@@ -62,7 +67,11 @@ internal class FollowListStateImplTest {
                 models = initialFollows,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = FollowsSort.Default)
+        val queryConfig =
+            QueryConfiguration<FollowsFilterField, FollowsSort>(
+                filter = null,
+                sort = FollowsSort.Default,
+            )
         followListState.onQueryMoreFollows(paginationResult, queryConfig)
 
         val updatedFollow =
@@ -87,7 +96,11 @@ internal class FollowListStateImplTest {
                     models = initialFollows,
                     pagination = PaginationData(next = "next-cursor", previous = null),
                 )
-            val queryConfig = QueryConfiguration(filter = null, sort = FollowsSort.Default)
+            val queryConfig =
+                QueryConfiguration<FollowsFilterField, FollowsSort>(
+                    filter = null,
+                    sort = FollowsSort.Default,
+                )
             followListState.onQueryMoreFollows(paginationResult, queryConfig)
 
             val nonExistentFollow = followData("user-4", "user-5")

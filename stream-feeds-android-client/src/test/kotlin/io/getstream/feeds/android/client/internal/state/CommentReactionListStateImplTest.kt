@@ -19,6 +19,7 @@ import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
+import io.getstream.feeds.android.client.api.state.query.CommentReactionsFilterField
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsSort
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
@@ -46,7 +47,11 @@ internal class CommentReactionListStateImplTest {
                 models = reactions,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = CommentReactionsSort.Default)
+        val queryConfig =
+            QueryConfiguration<CommentReactionsFilterField, CommentReactionsSort>(
+                filter = null,
+                sort = CommentReactionsSort.Default,
+            )
 
         commentReactionListState.onQueryMoreReactions(paginationResult, queryConfig)
 
@@ -64,7 +69,11 @@ internal class CommentReactionListStateImplTest {
                 models = initialReactions,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = CommentReactionsSort.Default)
+        val queryConfig =
+            QueryConfiguration<CommentReactionsFilterField, CommentReactionsSort>(
+                filter = null,
+                sort = CommentReactionsSort.Default,
+            )
         commentReactionListState.onQueryMoreReactions(paginationResult, queryConfig)
 
         commentReactionListState.onReactionRemoved(initialReactions[0])

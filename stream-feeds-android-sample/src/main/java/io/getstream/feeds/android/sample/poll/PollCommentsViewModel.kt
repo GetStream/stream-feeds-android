@@ -20,8 +20,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ramcosta.composedestinations.generated.destinations.PollCommentsScreenDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.getstream.feeds.android.client.api.query.Filters
+import io.getstream.android.core.api.filter.equal
 import io.getstream.feeds.android.client.api.state.PollVoteList
+import io.getstream.feeds.android.client.api.state.query.PollVotesFilterField
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.util.AsyncResource
@@ -72,7 +73,7 @@ constructor(loginManager: LoginManager, savedStateHandle: SavedStateHandle) : Vi
             PollVotesQuery(
                 pollId = pollId,
                 userId = userState.user.id,
-                filter = Filters.equal("is_answer", true),
+                filter = PollVotesFilterField.isAnswer.equal(true),
             )
         return userState.client.pollVoteList(query)
     }

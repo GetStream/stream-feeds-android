@@ -15,12 +15,13 @@
  */
 package io.getstream.feeds.android.client.api.state.query
 
+import io.getstream.android.core.api.filter.Filter
+import io.getstream.android.core.api.filter.FilterField
+import io.getstream.android.core.api.filter.Sort
+import io.getstream.android.core.api.filter.SortDirection
+import io.getstream.android.core.api.filter.SortField
+import io.getstream.android.core.api.filter.toRequest
 import io.getstream.feeds.android.client.api.model.FeedData
-import io.getstream.feeds.android.client.api.query.Filter
-import io.getstream.feeds.android.client.api.query.Sort
-import io.getstream.feeds.android.client.api.query.SortDirection
-import io.getstream.feeds.android.client.api.query.SortField
-import io.getstream.feeds.android.client.api.query.toRequest
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.network.models.QueryFeedsRequest
 
@@ -33,33 +34,15 @@ import io.getstream.feeds.android.network.models.QueryFeedsRequest
  * Example usage:
  * ```kotlin
  * val query = FeedsQuery(
- *   filter = Filter.eq("visibility", "public"),
+ *   filter = FeedsFilterField.visibility.equal("public"),
  *   sort = listOf(FeedsSort(FeedsSortField.CreatedAt, SortDirection.REVERSE)),
  *   limit = 20,
  * )
  * ```
  *
  * @property filter Optional filter to apply to the feeds query. Use this to narrow down results
- *   based on specific criteria. Supported filters:
- * - field: `id`, operators: `equal`, `in`
- * - field: `group_id`, operators: `equal`, `in`
- * - field: `feed`, operators: `equal`, `in`
- * - field: `created_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `created_by_id`, operators: `equal`, `in`
- * - field: `created_by.name`, operators: `equal`, `q`, `autocomplete`
- * - field: `description`, operators: `equal`, `q`, `autocomplete`
- * - field: `follower_count`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `following_count`, operators: `equal`, `greater`, `greaterOrEqual`, `less`,
- *   `lessOrEqual`
- * - field: `member_count`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `members`, operators: `in`
- * - field: `name`, operators: `equal`, `q`, `autocomplete`
- * - field: `updated_at`, operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
- * - field: `visibility`, operators: `equal`, `in`
- * - field: `following_users`, operators: `in`
- * - field: `following_feeds`, operators: `in`
- * - field: `filter_tags`, operators: `equal`, `in`, `contains`
- *
+ *   based on specific criteria. See [FeedsFilterField] for available filter fields and their
+ *   supported operators.
  * @property sort Array of sorting criteria to apply to the feeds. If not specified, the API will
  *   use its default sorting.
  * @property limit Maximum number of feeds to return in a single request. If not specified, the API
@@ -72,13 +55,138 @@ import io.getstream.feeds.android.network.models.QueryFeedsRequest
  *   real-time functionality.
  */
 public data class FeedsQuery(
-    public val filter: Filter? = null,
+    public val filter: FeedsFilter? = null,
     public val sort: List<FeedsSort>? = null,
     public val limit: Int? = null,
     public val next: String? = null,
     public val previous: String? = null,
     public val watch: Boolean = true,
 )
+
+public typealias FeedsFilter = Filter<FeedsFilterField>
+
+public data class FeedsFilterField(override val remote: String) : FilterField {
+    public companion object {
+        /**
+         * Filter by feed ID.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val id: FeedsFilterField = FeedsFilterField("id")
+
+        /**
+         * Filter by group ID.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val groupId: FeedsFilterField = FeedsFilterField("group_id")
+
+        /**
+         * Filter by feed.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val feed: FeedsFilterField = FeedsFilterField("feed")
+
+        /**
+         * Filter by creation timestamp.
+         *
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val createdAt: FeedsFilterField = FeedsFilterField("created_at")
+
+        /**
+         * Filter by creator's user ID.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val createdById: FeedsFilterField = FeedsFilterField("created_by_id")
+
+        /**
+         * Filter by creator's name.
+         *
+         * Supported operators: `equal`, `q`, `autocomplete`
+         */
+        public val createdByName: FeedsFilterField = FeedsFilterField("created_by.name")
+
+        /**
+         * Filter by feed description.
+         *
+         * Supported operators: `equal`, `q`, `autocomplete`
+         */
+        public val description: FeedsFilterField = FeedsFilterField("description")
+
+        /**
+         * Filter by follower count.
+         *
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val followerCount: FeedsFilterField = FeedsFilterField("follower_count")
+
+        /**
+         * Filter by following count.
+         *
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val followingCount: FeedsFilterField = FeedsFilterField("following_count")
+
+        /**
+         * Filter by member count.
+         *
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val memberCount: FeedsFilterField = FeedsFilterField("member_count")
+
+        /**
+         * Filter by members.
+         *
+         * Supported operators: `in`
+         */
+        public val members: FeedsFilterField = FeedsFilterField("members")
+
+        /**
+         * Filter by feed name.
+         *
+         * Supported operators: `equal`, `q`, `autocomplete`
+         */
+        public val name: FeedsFilterField = FeedsFilterField("name")
+
+        /**
+         * Filter by last update timestamp.
+         *
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         */
+        public val updatedAt: FeedsFilterField = FeedsFilterField("updated_at")
+
+        /**
+         * Filter by feed visibility.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val visibility: FeedsFilterField = FeedsFilterField("visibility")
+
+        /**
+         * Filter by following users.
+         *
+         * Supported operators: `in`
+         */
+        public val followingUsers: FeedsFilterField = FeedsFilterField("following_users")
+
+        /**
+         * Filter by following feeds.
+         *
+         * Supported operators: `in`
+         */
+        public val followingFeeds: FeedsFilterField = FeedsFilterField("following_feeds")
+
+        /**
+         * Filter by filter tags.
+         *
+         * Supported operators: `equal`, `in`, `contains`
+         */
+        public val filterTags: FeedsFilterField = FeedsFilterField("filter_tags")
+    }
+}
 
 /**
  * Represents a sorting operation for feeds.

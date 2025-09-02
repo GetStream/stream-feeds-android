@@ -19,6 +19,7 @@ import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
+import io.getstream.feeds.android.client.api.state.query.FeedsFilterField
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.client.api.state.query.FeedsSort
 import io.getstream.feeds.android.client.internal.test.TestData.feedData
@@ -45,7 +46,8 @@ internal class FeedListStateImplTest {
                 models = feeds,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = FeedsSort.Default)
+        val queryConfig =
+            QueryConfiguration<FeedsFilterField, FeedsSort>(filter = null, sort = FeedsSort.Default)
 
         feedListState.onQueryMoreFeeds(paginationResult, queryConfig)
 
@@ -62,7 +64,8 @@ internal class FeedListStateImplTest {
                 models = initialFeeds,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = FeedsSort.Default)
+        val queryConfig =
+            QueryConfiguration<FeedsFilterField, FeedsSort>(filter = null, sort = FeedsSort.Default)
         feedListState.onQueryMoreFeeds(paginationResult, queryConfig)
 
         val updatedFeed =
@@ -81,7 +84,8 @@ internal class FeedListStateImplTest {
                 models = initialFeeds,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig = QueryConfiguration(filter = null, sort = FeedsSort.Default)
+        val queryConfig =
+            QueryConfiguration<FeedsFilterField, FeedsSort>(filter = null, sort = FeedsSort.Default)
         feedListState.onQueryMoreFeeds(paginationResult, queryConfig)
 
         val nonExistentFeed = feedData("non-existent", "user", "Non-existent Feed")
