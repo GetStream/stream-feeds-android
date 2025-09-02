@@ -85,6 +85,7 @@ import io.getstream.feeds.android.sample.components.LoadingScreen
 import io.getstream.feeds.android.sample.components.UserAvatar
 import io.getstream.feeds.android.sample.notification.NotificationsScreenArgs
 import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
+import io.getstream.feeds.android.sample.ui.util.conditional
 import io.getstream.feeds.android.sample.util.AsyncResource
 
 data class FeedsScreenArgs(val feedId: String, val avatarUrl: String?, val userId: String) {
@@ -376,18 +377,17 @@ fun ActivityContent(
     Column(
         modifier =
             Modifier.fillMaxWidth()
-                .combinedClickable(
-                    indication = null,
-                    interactionSource = null,
-                    onClick = { /* Regular click - do nothing */ },
-                    onLongClick =
-                        if (isCurrentUserAuthor) {
-                            {
-                                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                                showContextMenu = true
-                            }
-                        } else null,
-                )
+                .conditional(isCurrentUserAuthor) {
+                    combinedClickable(
+                        indication = null,
+                        interactionSource = null,
+                        onClick = { /* Regular click - do nothing */ },
+                        onLongClick = {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                            showContextMenu = true
+                        },
+                    )
+                }
                 .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {

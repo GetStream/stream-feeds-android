@@ -67,6 +67,7 @@ import io.getstream.feeds.android.sample.R
 import io.getstream.feeds.android.sample.components.LoadingScreen
 import io.getstream.feeds.android.sample.feed.CommentsSheetViewModel.Event
 import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
+import io.getstream.feeds.android.sample.ui.util.conditional
 import io.getstream.feeds.android.sample.ui.util.rippleClickable
 import io.getstream.feeds.android.sample.util.AsyncResource
 
@@ -195,18 +196,17 @@ private fun Comment(
                     MaterialTheme.colorScheme.secondaryContainer,
                     shape = RoundedCornerShape(16.dp),
                 )
-                .combinedClickable(
-                    indication = null,
-                    interactionSource = null,
-                    onClick = {},
-                    onLongClick =
-                        if (data.user.id == currentUserId) {
-                            {
-                                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                                showContextMenu = true
-                            }
-                        } else null,
-                )
+                .conditional(data.user.id == currentUserId) {
+                    combinedClickable(
+                        indication = null,
+                        interactionSource = null,
+                        onClick = {},
+                        onLongClick = {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                            showContextMenu = true
+                        },
+                    )
+                }
                 .padding(16.dp)
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(4.dp),

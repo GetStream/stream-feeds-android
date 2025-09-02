@@ -52,3 +52,10 @@ fun Modifier.rippleClickable(enabled: Boolean = true, onClick: () -> Unit): Modi
         enabled = enabled,
         onClick = onClick,
     )
+
+inline fun Modifier.conditional(condition: Boolean, modifier: Modifier.() -> Modifier): Modifier =
+    if (condition) {
+        modifier()
+    } else {
+        this
+    }
