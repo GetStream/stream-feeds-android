@@ -55,6 +55,7 @@ fun CreateContentBottomSheet(
     title: String,
     onDismiss: () -> Unit,
     onPost: (text: String, attachments: List<Uri>) -> Unit,
+    requireText: Boolean,
     extraActions: @Composable RowScope.() -> Unit = {},
 ) {
     var postText by remember { mutableStateOf("") }
@@ -75,7 +76,7 @@ fun CreateContentBottomSheet(
             ) {
                 Text(text = title, fontSize = 18.sp, fontWeight = FontWeight.Companion.Bold)
 
-                val canPost = attachments.isNotEmpty() || postText.isNotBlank()
+                val canPost = attachments.isNotEmpty() && !requireText || postText.isNotBlank()
                 TextButton(onClick = { onPost(postText, attachments) }, enabled = canPost) {
                     Text(text = "Submit", fontWeight = FontWeight.Companion.Medium)
                 }

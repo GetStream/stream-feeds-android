@@ -48,7 +48,7 @@ import kotlinx.coroutines.flow.stateIn
 class CommentsSheetViewModel
 @Inject
 constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     loginManager: LoginManager,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
