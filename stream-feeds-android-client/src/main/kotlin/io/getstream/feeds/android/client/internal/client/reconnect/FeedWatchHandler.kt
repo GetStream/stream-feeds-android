@@ -15,16 +15,16 @@
  */
 package io.getstream.feeds.android.client.internal.client.reconnect
 
+import io.getstream.android.core.api.filter.`in`
 import io.getstream.android.core.api.model.connection.StreamConnectionState
 import io.getstream.feeds.android.client.api.model.FeedId
-import io.getstream.feeds.android.client.api.state.query.FeedQuery
+import io.getstream.feeds.android.client.api.state.query.FeedsFilterField
+import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 
 /**
@@ -62,10 +62,9 @@ internal class FeedWatchHandler(
     }
 
     private suspend fun rewatchAll() {
-        coroutineScope {
-            watched
-                .map { launch { feedsRepository.getOrCreateFeed(FeedQuery(it.key, watch = true)) } }
-                .joinAll()
+        val toRewatch = watched.keys.mapTo(mutableListOf(), FeedId::rawValue)
+        if (toRewatch.isNotEmpty()) {
+            feedsRepository.queryFeeds(FeedsQuery(FeedsFilterField.feed.`in`(toRewatch)))
         }
     }
 }
