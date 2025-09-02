@@ -20,6 +20,8 @@ import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentsSort
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
+import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
+import io.getstream.feeds.android.client.internal.test.TestData.reactionGroupData
 import io.getstream.feeds.android.client.internal.test.TestData.threadedCommentData
 import java.util.Date
 import org.junit.Assert.assertEquals
@@ -143,6 +145,150 @@ internal class ActivityCommentListStateImplTest {
 
         state.onCommentAdded(parent)
         state.onCommentUpdated(update)
+
+        assertEquals(listOf(expected), state.comments.value)
+    }
+
+    @Test
+    fun `onCommentRemoved when it's a top-level comment, then remove it from the list`() {
+        val comment1 = threadedCommentData(id = "c1", createdAt = Date(1))
+        val comment2 = threadedCommentData(id = "c2", createdAt = Date(2))
+        val comment3 = threadedCommentData(id = "c3", createdAt = Date(3))
+        val expected = listOf(comment1, comment3)
+
+        state.onCommentAdded(comment1)
+        state.onCommentAdded(comment2)
+        state.onCommentAdded(comment3)
+        state.onCommentRemoved("c2")
+
+        assertEquals(expected, state.comments.value)
+    }
+
+    @Test
+    fun `onCommentRemoved when it's a nested reply, then remove it from parent's replies`() {
+        val child2 = threadedCommentData("c2", parentId = "c1", createdAt = Date(2))
+        val child3 = threadedCommentData("c3", parentId = "c1", createdAt = Date(3))
+        val child4 = threadedCommentData("c4", parentId = "c1", createdAt = Date(4))
+        val parent = threadedCommentData(id = "c1", replies = listOf(child2, child3, child4))
+        val expected = parent.copy(replies = listOf(child2, child4), replyCount = 2)
+
+        state.onCommentAdded(parent)
+        state.onCommentRemoved("c3")
+
+        assertEquals(listOf(expected), state.comments.value)
+    }
+
+    @Test
+    fun `onCommentReactionAdded when it's a top-level comment, then add reaction to it`() {
+        val comment = threadedCommentData(id = "c1", createdAt = Date(1))
+        val reaction =
+            feedsReactionData(
+                activityId = "c1",
+                type = "like",
+                userId = "user-2",
+                createdAt = Date(2),
+            )
+        val expected =
+            threadedCommentData(
+                id = "c1",
+                createdAt = Date(1),
+                latestReactions = listOf(reaction),
+                reactionCount = 1,
+                reactionGroups =
+                    mapOf(
+                        "like" to
+                            reactionGroupData(
+                                count = 1,
+                                firstReactionAt = Date(2),
+                                lastReactionAt = Date(2),
+                            )
+                    ),
+            )
+
+        state.onCommentAdded(comment)
+        state.onCommentReactionAdded("c1", reaction)
+
+        assertEquals(listOf(expected), state.comments.value)
+    }
+
+    @Test
+    fun `onCommentReactionAdded when it's a nested reply, then add reaction to the reply`() {
+        val child = threadedCommentData("c2", parentId = "c1", createdAt = Date(2))
+        val parent = threadedCommentData(id = "c1", replies = listOf(child))
+        val reaction =
+            feedsReactionData(
+                activityId = "c2",
+                type = "like",
+                userId = "user-2",
+                createdAt = Date(2),
+            )
+        val expected =
+            threadedCommentData(
+                id = "c1",
+                replies =
+                    listOf(
+                        child.copy(
+                            latestReactions = listOf(reaction),
+                            reactionCount = 1,
+                            reactionGroups =
+                                mapOf(
+                                    "like" to
+                                        reactionGroupData(
+                                            count = 1,
+                                            firstReactionAt = Date(2),
+                                            lastReactionAt = Date(2),
+                                        )
+                                ),
+                        )
+                    ),
+            )
+
+        state.onCommentAdded(parent)
+        state.onCommentReactionAdded("c2", reaction)
+
+        assertEquals(listOf(expected), state.comments.value)
+    }
+
+    @Test
+    fun `onCommentReactionRemoved when it's a top-level comment, then remove reaction from it`() {
+        val reaction = feedsReactionData(activityId = "c1", type = "like", userId = "user-2")
+        val comment =
+            threadedCommentData(
+                id = "c1",
+                createdAt = Date(1),
+                latestReactions = listOf(reaction),
+                reactionCount = 1,
+                reactionGroups = mapOf("like" to reactionGroupData()),
+            )
+        val expected = threadedCommentData(id = "c1", createdAt = Date(1))
+
+        state.onCommentAdded(comment)
+        state.onCommentReactionRemoved("c1", reaction)
+
+        assertEquals(listOf(expected), state.comments.value)
+    }
+
+    @Test
+    fun `onCommentReactionRemoved when it's a nested reply, then remove reaction from the reply`() {
+        val reaction = feedsReactionData(activityId = "c2", type = "like", userId = "user-2")
+        val reply =
+            threadedCommentData(
+                "c2",
+                parentId = "c1",
+                createdAt = Date(2),
+                latestReactions = listOf(reaction),
+                reactionCount = 1,
+                reactionGroups = mapOf("like" to reactionGroupData()),
+            )
+        val parent = threadedCommentData(id = "c1", replies = listOf(reply))
+        val expected =
+            threadedCommentData(
+                id = "c1",
+                replies = listOf(threadedCommentData("c2", parentId = "c1", createdAt = Date(2))),
+            )
+
+        state.onCommentAdded(parent)
+        state.onCommentReactionRemoved("c2", reaction)
 
         assertEquals(listOf(expected), state.comments.value)
     }
