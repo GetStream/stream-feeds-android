@@ -103,7 +103,6 @@ internal class ActivityCommentListStateImpl(
                 // A top-level comment was removed
                 filteredTopLevel
             } else {
-                // TODO: test this logic
                 // It might be a nested reply, search and remove recursively
                 current.map { comment -> removeCommentFromReplies(comment, commentId) }
             }

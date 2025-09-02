@@ -22,7 +22,7 @@ import io.getstream.feeds.android.network.models.CreateDeviceRequest
 import io.getstream.feeds.android.network.models.ListDevicesResponse
 
 /**
- * Default implementation of the [DevicesRepository] interface. Uses the provided [ApiService] to
+ * Default implementation of the [DevicesRepository] interface. Uses the provided [FeedsApi] to
  * perform network requests related to devices.
  *
  * @property api The API service used to perform network requests.
