@@ -72,7 +72,6 @@ dependencies {
 
     api(libs.stream.android.core)
     implementation(libs.stream.android.annotations)
-    implementation(libs.stream.log)
 
     // Android
     implementation(libs.androidx.core.ktx)

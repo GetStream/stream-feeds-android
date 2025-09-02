@@ -16,6 +16,7 @@
 package io.getstream.feeds.android.client.internal.client
 
 import io.getstream.android.core.api.StreamClient
+import io.getstream.android.core.api.log.StreamLogger
 import io.getstream.android.core.api.model.connection.StreamConnectedUser
 import io.getstream.android.core.api.model.connection.StreamConnectionState
 import io.getstream.android.core.api.model.value.StreamApiKey
@@ -62,7 +63,6 @@ import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
 import io.getstream.feeds.android.client.internal.client.reconnect.ConnectionRecoveryHandler
-import io.getstream.feeds.android.client.internal.log.provideLogger
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.AppRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
@@ -95,7 +95,6 @@ import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.network.models.ListDevicesResponse
 import io.getstream.feeds.android.network.models.WSEvent
-import io.getstream.log.TaggedLogger
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -119,7 +118,7 @@ internal class FeedsClientImpl(
     private val pollsRepository: PollsRepository,
     override val uploader: FeedUploader,
     override val moderation: Moderation,
-    private val logger: TaggedLogger = provideLogger(tag = "Client"),
+    private val logger: StreamLogger,
 ) : FeedsClient {
 
     override val state: StateFlow<StreamConnectionState>

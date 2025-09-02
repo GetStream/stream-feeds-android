@@ -13,16 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getstream.feeds.android.client.internal.log
+package io.getstream.feeds.android.metrics
 
-import io.getstream.log.StreamLog
-import io.getstream.log.TaggedLogger
+import androidx.activity.ComponentActivity
 
-/**
- * Provides a logger for the given tag.
- *
- * @param prefix The prefix to be used for the tag.
- * @param tag The tag to be used for the logger.
- */
-internal fun provideLogger(prefix: String = "Feeds", tag: String): TaggedLogger =
-    StreamLog.getLogger("$prefix:$tag")
+class MainActivity : ComponentActivity()

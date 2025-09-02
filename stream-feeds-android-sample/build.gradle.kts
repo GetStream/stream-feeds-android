@@ -48,8 +48,6 @@ android {
 dependencies {
     // Feeds Client
     implementation(project(":stream-feeds-android-client"))
-    // Stream Log
-    implementation(libs.stream.log)
     // Coil
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)

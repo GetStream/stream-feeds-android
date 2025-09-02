@@ -24,3 +24,4 @@ rootProject.name = "stream-feeds-android"
 include(":stream-feeds-android-sample")
 include(":stream-feeds-android-client")
 include(":stream-feeds-android-network")
+include(":metrics:stream-feeds-android-metrics")
