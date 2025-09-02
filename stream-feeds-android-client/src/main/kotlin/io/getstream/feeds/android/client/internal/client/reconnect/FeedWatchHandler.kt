@@ -19,6 +19,7 @@ import io.getstream.android.core.api.model.connection.StreamConnectionState
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
+import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -32,40 +33,38 @@ import kotlinx.coroutines.launch
  * Keeps track of feeds that are being watched and re-subscribes to them when the connection is
  * re-established.
  *
- * @property connectedEvents A [Flow] that emits events when the connection state changes to
+ * @property connectionState A [Flow] that emits events when the connection state changes to
  *   [StreamConnectionState.Connected].
  * @property feedsRepository The [FeedsRepository] used to rewatch feeds on connection.
  * @property scope The [CoroutineScope] in which to launch coroutines for re-watching feeds.
  */
 internal class FeedWatchHandler(
-    private val connectedEvents: Flow<StreamConnectionState>,
+    private val connectionState: Flow<StreamConnectionState>,
     private val feedsRepository: FeedsRepository,
     scope: CoroutineScope,
 ) {
-    private val watched = mutableSetOf<FeedId>()
+    private val watched = ConcurrentHashMap<FeedId, Unit>()
 
     init {
         scope.launch {
-            connectedEvents.filterIsInstance<StreamConnectionState.Connected>().collect {
+            connectionState.filterIsInstance<StreamConnectionState.Connected>().collect {
                 rewatchAll()
             }
         }
     }
 
-    @Synchronized
     fun onStartWatching(feedId: FeedId) {
-        watched += feedId
+        watched[feedId] = Unit
     }
 
-    @Synchronized
     fun onStopWatching(feedId: FeedId) {
         watched -= feedId
     }
 
     private suspend fun rewatchAll() {
         coroutineScope {
-            synchronized(this@FeedWatchHandler) { watched.toSet() }
-                .map { launch { feedsRepository.getOrCreateFeed(FeedQuery(it, watch = true)) } }
+            watched
+                .map { launch { feedsRepository.getOrCreateFeed(FeedQuery(it.key, watch = true)) } }
                 .joinAll()
         }
     }

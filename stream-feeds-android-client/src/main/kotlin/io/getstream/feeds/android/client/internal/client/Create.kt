@@ -251,7 +251,7 @@ internal fun createFeedsClient(
 
     val feedWatchHandler =
         FeedWatchHandler(
-            connectedEvents = client.connectionState,
+            connectionState = client.connectionState,
             feedsRepository = feedsRepository,
             scope = clientScope,
         )
