@@ -25,15 +25,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -60,7 +57,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -70,7 +66,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.NavGraphs
@@ -235,6 +230,7 @@ private fun FeedsScreenContent(
                         showCreatePostBottomSheet = false
                         viewModel.onCreatePost(postText, attachments)
                     },
+                    requireText = false,
                     extraActions = {
                         CreatePollButton { formData ->
                             showCreatePostBottomSheet = false
@@ -421,7 +417,7 @@ fun ActivityContent(
         }
 
         // Attachments - show below the content for better visual hierarchy
-        AttachmentsSection(attachments)
+        ImageAttachmentsSection(attachments)
 
         // Action buttons row
         ActivityActions(
@@ -473,36 +469,6 @@ fun ActivityContent(
 
         // Add divider between activities for better separation
         HorizontalDivider(modifier = Modifier.fillMaxWidth().padding(top = 16.dp), thickness = 1.dp)
-    }
-}
-
-@Composable
-private fun AttachmentsSection(attachments: List<Attachment>) {
-    if (attachments.size == 1) {
-        AsyncImage(
-            modifier =
-                Modifier.fillMaxWidth()
-                    .height(240.dp)
-                    .padding(top = 8.dp)
-                    .clip(RoundedCornerShape(12.dp)),
-            model = attachments.first().assetUrl,
-            contentDescription = "Activity image",
-            contentScale = ContentScale.Crop,
-        )
-    } else if (attachments.size > 1) {
-        LazyRow(
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            items(attachments) { attachment ->
-                AsyncImage(
-                    modifier = Modifier.size(160.dp).clip(RoundedCornerShape(12.dp)),
-                    model = attachment.assetUrl,
-                    contentDescription = "Activity image",
-                    contentScale = ContentScale.Crop,
-                )
-            }
-        }
     }
 }
 

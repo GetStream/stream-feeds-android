@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
@@ -30,7 +29,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -163,6 +161,7 @@ private fun ColumnScope.CommentsBottomSheetContent(
         CreateContentBottomSheet(
             title = "Add comment",
             onDismiss = { createCommentData = null },
+            requireText = true,
             onPost = { text, attachments ->
                 onPostComment(text, createCommentData?.replyParentId, attachments)
                 createCommentData = null
@@ -182,7 +181,7 @@ private fun Comment(
 ) {
     var expandedCommentId: String? by remember { mutableStateOf(null) }
 
-    Column(modifier.width(IntrinsicSize.Max)) {
+    Column(modifier.fillMaxWidth()) {
         Column(
             Modifier.background(
                     MaterialTheme.colorScheme.secondaryContainer,
@@ -194,6 +193,7 @@ private fun Comment(
         ) {
             Text(data.user.name.orEmpty(), fontWeight = FontWeight.SemiBold)
             Text(data.text.orEmpty())
+            ImageAttachmentsSection(data.attachments.orEmpty())
         }
 
         Row(
