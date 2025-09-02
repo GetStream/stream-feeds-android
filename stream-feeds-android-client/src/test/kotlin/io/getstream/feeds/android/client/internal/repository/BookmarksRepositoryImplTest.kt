@@ -19,6 +19,7 @@ import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersQuery
+import io.getstream.feeds.android.client.api.state.query.BookmarksQuery
 import io.getstream.feeds.android.client.api.state.query.toRequest
 import io.getstream.feeds.android.client.internal.repository.RepositoryTestUtils.testDelegation
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkFolderResponse
@@ -91,7 +92,7 @@ internal class BookmarksRepositoryImplTest {
 
     @Test
     fun `on queryBookmarks, delegate to api`() = runTest {
-        val query = io.getstream.feeds.android.client.api.state.query.BookmarksQuery()
+        val query = BookmarksQuery()
         val request = query.toRequest()
 
         val apiResult =
