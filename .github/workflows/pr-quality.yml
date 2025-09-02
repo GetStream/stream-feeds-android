@@ -1,0 +1,15 @@
+name: PR checklist
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, labeled, unlabeled, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  pr-checklist:
+    uses: GetStream/android-ci-actions/.github/workflows/pr-quality.yml@main
+    secrets: inherit
