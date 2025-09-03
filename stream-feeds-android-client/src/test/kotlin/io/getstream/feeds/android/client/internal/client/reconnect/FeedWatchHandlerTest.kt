@@ -16,15 +16,13 @@
 package io.getstream.feeds.android.client.internal.client.reconnect
 
 import app.cash.turbine.test
-import io.getstream.android.core.api.filter.`in`
 import io.getstream.android.core.api.model.StreamRetryPolicy
 import io.getstream.android.core.api.model.connection.StreamConnectionState
 import io.getstream.android.core.api.model.exceptions.StreamClientException
 import io.getstream.android.core.api.processing.StreamRetryProcessor
 import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.FeedId
-import io.getstream.feeds.android.client.api.state.query.FeedsFilterField
-import io.getstream.feeds.android.client.api.state.query.FeedsQuery
+import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.mockk.called
 import io.mockk.coEvery
@@ -58,11 +56,10 @@ internal class FeedWatchHandlerTest {
 
     @Test
     fun `on connected event, query feeds that are still being watched`() = runTest {
-        coEvery { feedsRepository.queryFeeds(any()) } returns Result.success(mockk())
+        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(mockk())
         val id1 = FeedId("group", "id1")
         val id2 = FeedId("group", "id2")
         val id3 = FeedId("group", "id3")
-        val expectedQuery = FeedsQuery(FeedsFilterField.feed.`in`("group:id1", "group:id3"))
 
         handler.onStartWatching(id1)
         handler.onStartWatching(id2)
@@ -71,7 +68,10 @@ internal class FeedWatchHandlerTest {
 
         connectionEvents.emit(StreamConnectionState.Connected(mockk(), "connection-id"))
 
-        coVerify { feedsRepository.queryFeeds(expectedQuery) }
+        coVerify {
+            feedsRepository.getOrCreateFeed(FeedQuery(id1))
+            feedsRepository.getOrCreateFeed(FeedQuery(id3))
+        }
     }
 
     @Test
@@ -85,7 +85,12 @@ internal class FeedWatchHandlerTest {
         errorBus.test {
             connectionEvents.emit(StreamConnectionState.Connected(mockk(), "connection-id"))
 
-            assertEquals(setOf(id1, id2), (awaitItem() as? StreamFeedRewatchException)?.ids)
+            val erroredIds =
+                setOf(
+                    (awaitItem() as? StreamFeedRewatchException)?.id,
+                    (awaitItem() as? StreamFeedRewatchException)?.id,
+                )
+            assertEquals(setOf(id1, id2), erroredIds)
         }
     }
 
