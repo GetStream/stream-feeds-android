@@ -39,8 +39,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -87,6 +85,7 @@ import io.getstream.feeds.android.sample.components.LoadingScreen
 import io.getstream.feeds.android.sample.components.UserAvatar
 import io.getstream.feeds.android.sample.notification.NotificationsScreenArgs
 import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
+import io.getstream.feeds.android.sample.ui.util.conditional
 import io.getstream.feeds.android.sample.util.AsyncResource
 
 data class FeedsScreenArgs(val feedId: String, val avatarUrl: String?, val userId: String) {
@@ -378,18 +377,17 @@ fun ActivityContent(
     Column(
         modifier =
             Modifier.fillMaxWidth()
-                .combinedClickable(
-                    indication = null,
-                    interactionSource = null,
-                    onClick = { /* Regular click - do nothing */ },
-                    onLongClick =
-                        if (isCurrentUserAuthor) {
-                            {
-                                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                                showContextMenu = true
-                            }
-                        } else null,
-                )
+                .conditional(isCurrentUserAuthor) {
+                    combinedClickable(
+                        indication = null,
+                        interactionSource = null,
+                        onClick = { /* Regular click - do nothing */ },
+                        onLongClick = {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                            showContextMenu = true
+                        },
+                    )
+                }
                 .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
@@ -441,7 +439,8 @@ fun ActivityContent(
 
         // Context menu dialog for long press
         if (showContextMenu) {
-            ActivityContextMenuDialog(
+            ContentContextMenuDialog(
+                title = "Post Options",
                 showEdit = data.parent == null && data.poll == null,
                 onDismiss = { showContextMenu = false },
                 onEdit = {
@@ -457,7 +456,7 @@ fun ActivityContent(
 
         // Edit dialog
         if (showEditDialog) {
-            EditPostDialog(
+            EditContentDialog(
                 initialText = text,
                 onDismiss = { showEditDialog = false },
                 onSave = { editedText ->
@@ -470,89 +469,6 @@ fun ActivityContent(
         // Add divider between activities for better separation
         HorizontalDivider(modifier = Modifier.fillMaxWidth().padding(top = 16.dp), thickness = 1.dp)
     }
-}
-
-@Composable
-fun ActivityContextMenuDialog(
-    showEdit: Boolean,
-    onDismiss: () -> Unit,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(text = "Post Options", fontWeight = FontWeight.Bold, fontSize = 16.sp) },
-        text = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                if (showEdit) {
-                    Row(
-                        modifier =
-                            Modifier.fillMaxWidth()
-                                .clickable { onEdit() }
-                                .padding(vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.edit_24),
-                            contentDescription = "Edit",
-                            modifier = Modifier.size(24.dp),
-                        )
-                        Text(
-                            text = "Edit Post",
-                            fontSize = 16.sp,
-                            modifier = Modifier.padding(start = 16.dp),
-                        )
-                    }
-
-                    // Divider between Edit and Delete
-                    HorizontalDivider(thickness = 1.dp)
-                }
-
-                Row(
-                    modifier =
-                        Modifier.fillMaxWidth().clickable { onDelete() }.padding(vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.delete_24),
-                        contentDescription = "Delete",
-                        tint = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.size(24.dp),
-                    )
-                    Text(
-                        text = "Delete Post",
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(start = 16.dp),
-                    )
-                }
-            }
-        },
-        confirmButton = {},
-        dismissButton = {},
-    )
-}
-
-@Composable
-fun EditPostDialog(initialText: String, onDismiss: () -> Unit, onSave: (String) -> Unit) {
-    var editText by remember { mutableStateOf(initialText) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(text = "Edit Post", fontWeight = FontWeight.Bold, fontSize = 16.sp) },
-        text = {
-            OutlinedTextField(
-                value = editText,
-                onValueChange = { editText = it },
-                placeholder = { Text("What's on your mind?") },
-                modifier = Modifier.fillMaxWidth(),
-                maxLines = 5,
-                minLines = 3,
-            )
-        },
-        confirmButton = { Button(onClick = { onSave(editText) }) { Text("Save") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
-    )
 }
 
 @Composable

@@ -15,9 +15,9 @@
  */
 package io.getstream.feeds.android.sample.feed
 
-import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,6 +49,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -63,7 +65,9 @@ import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.sample.R
 import io.getstream.feeds.android.sample.components.LoadingScreen
+import io.getstream.feeds.android.sample.feed.CommentsSheetViewModel.Event
 import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
+import io.getstream.feeds.android.sample.ui.util.conditional
 import io.getstream.feeds.android.sample.ui.util.rippleClickable
 import io.getstream.feeds.android.sample.util.AsyncResource
 
@@ -90,13 +94,13 @@ fun ColumnScope.CommentsBottomSheet(navigator: DestinationsNavigator) {
         }
 
         is AsyncResource.Content -> {
-            val comments by state.data.comments.collectAsStateWithLifecycle()
+            val comments by state.data.second.comments.collectAsStateWithLifecycle()
+            val currentUserId = state.data.first.id
 
             CommentsBottomSheetContent(
                 comments = comments,
-                onLoadMore = viewModel::onLoadMore,
-                onLikeClick = viewModel::onLikeClick,
-                onPostComment = viewModel::onPostComment,
+                currentUserId = currentUserId,
+                onEvent = viewModel::onEvent,
             )
         }
     }
@@ -105,9 +109,8 @@ fun ColumnScope.CommentsBottomSheet(navigator: DestinationsNavigator) {
 @Composable
 private fun ColumnScope.CommentsBottomSheetContent(
     comments: List<ThreadedCommentData>,
-    onLoadMore: () -> Unit,
-    onLikeClick: (ThreadedCommentData) -> Unit,
-    onPostComment: (text: String, parentCommentId: String?, attachmentUris: List<Uri>) -> Unit,
+    currentUserId: String,
+    onEvent: (Event) -> Unit,
 ) {
     var createCommentData: CreateCommentData? by remember { mutableStateOf(null) }
     var expandedCommentId: String? by remember { mutableStateOf(null) }
@@ -122,12 +125,13 @@ private fun ColumnScope.CommentsBottomSheetContent(
     Box(Modifier.fillMaxWidth().defaultMinSize(minHeight = 300.dp)) {
         val lazyListState = rememberLazyListState()
 
-        ScrolledToBottomEffect(lazyListState, action = onLoadMore)
+        ScrolledToBottomEffect(lazyListState, action = { onEvent(Event.OnScrollToBottom) })
 
         LazyColumn(state = lazyListState) {
             items(comments) { comment ->
                 Comment(
                     data = comment,
+                    currentUserId = currentUserId,
                     isExpanded = comment.id == expandedCommentId,
                     onExpandClick = {
                         expandedCommentId = comment.id.takeUnless { it == expandedCommentId }
@@ -135,7 +139,7 @@ private fun ColumnScope.CommentsBottomSheetContent(
                     onReplyClick = { commentId ->
                         createCommentData = CreateCommentData(commentId)
                     },
-                    onLikeClick = onLikeClick,
+                    onEvent = onEvent,
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                 )
             }
@@ -163,7 +167,7 @@ private fun ColumnScope.CommentsBottomSheetContent(
             onDismiss = { createCommentData = null },
             requireText = true,
             onPost = { text, attachments ->
-                onPostComment(text, createCommentData?.replyParentId, attachments)
+                onEvent(Event.OnPost(text, createCommentData?.replyParentId, attachments))
                 createCommentData = null
             },
         )
@@ -173,13 +177,18 @@ private fun ColumnScope.CommentsBottomSheetContent(
 @Composable
 private fun Comment(
     data: ThreadedCommentData,
+    currentUserId: String,
     isExpanded: Boolean,
     onExpandClick: () -> Unit,
     onReplyClick: (commentId: String) -> Unit,
-    onLikeClick: (ThreadedCommentData) -> Unit,
+    onEvent: (Event) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expandedCommentId: String? by remember { mutableStateOf(null) }
+    var showContextMenu by remember { mutableStateOf(false) }
+    var showEditDialog by remember { mutableStateOf(false) }
+
+    val hapticFeedback = LocalHapticFeedback.current
 
     Column(modifier.fillMaxWidth()) {
         Column(
@@ -187,6 +196,17 @@ private fun Comment(
                     MaterialTheme.colorScheme.secondaryContainer,
                     shape = RoundedCornerShape(16.dp),
                 )
+                .conditional(data.user.id == currentUserId) {
+                    combinedClickable(
+                        indication = null,
+                        interactionSource = null,
+                        onClick = {},
+                        onLongClick = {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                            showContextMenu = true
+                        },
+                    )
+                }
                 .padding(16.dp)
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -205,7 +225,7 @@ private fun Comment(
             Text(
                 text = if (hasOwnHeart) "Unlike" else "Like",
                 modifier =
-                    Modifier.rippleClickable { onLikeClick(data) }
+                    Modifier.rippleClickable { onEvent(Event.OnLike(data)) }
                         .padding(horizontal = 8.dp, vertical = 4.dp),
             )
             Text(
@@ -243,16 +263,46 @@ private fun Comment(
                 data.replies?.forEach { reply ->
                     Comment(
                         data = reply,
+                        currentUserId = currentUserId,
                         isExpanded = reply.id == expandedCommentId,
                         onExpandClick = {
                             expandedCommentId = reply.id.takeUnless { it == expandedCommentId }
                         },
                         onReplyClick = onReplyClick,
-                        onLikeClick = onLikeClick,
+                        onEvent = onEvent,
                         modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 16.dp),
                     )
                 }
             }
+        }
+
+        // Context menu dialog for long press
+        if (showContextMenu) {
+            ContentContextMenuDialog(
+                title = "Comment Options",
+                showEdit = true,
+                onDismiss = { showContextMenu = false },
+                onEdit = {
+                    showEditDialog = true
+                    showContextMenu = false
+                },
+                onDelete = {
+                    onEvent(Event.OnDelete(data.id))
+                    showContextMenu = false
+                },
+            )
+        }
+
+        // Edit comment dialog
+        if (showEditDialog) {
+            EditContentDialog(
+                data.text.orEmpty(),
+                onDismiss = { showEditDialog = false },
+                onSave = { newText ->
+                    onEvent(Event.OnEdit(commentId = data.id, text = newText))
+                    showEditDialog = false
+                },
+            )
         }
     }
 }

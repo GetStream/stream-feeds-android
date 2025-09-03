@@ -27,9 +27,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.file.FileType
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
+import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
 import io.getstream.feeds.android.client.api.state.Activity
 import io.getstream.feeds.android.network.models.AddCommentReactionRequest
+import io.getstream.feeds.android.network.models.UpdateCommentRequest
 import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.util.copyToCache
@@ -56,20 +58,25 @@ constructor(
     private val args = CommentsBottomSheetDestination.argsFrom(savedStateHandle)
     private var canLoadMoreComments = true
 
-    private val activity =
+    private val internalState =
         flow {
-                val activity =
-                    loginManager
-                        .currentState()
-                        ?.client
-                        ?.activity(activityId = args.activityId, fid = args.fid)
-                emit(AsyncResource.notNull(activity))
+                val pair =
+                    loginManager.currentState()?.let { (user, client) ->
+                        user to client.activity(activityId = args.activityId, fid = args.fid)
+                    }
+
+                emit(AsyncResource.notNull(pair))
             }
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
+    val activity =
+        internalState
+            .map { resource -> resource.map(Pair<User, Activity>::second) }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
+
     val state =
-        activity
-            .map { loadingState -> loadingState.map(Activity::state) }
+        internalState
+            .map { loadingState -> loadingState.map { it.first to it.second.state } }
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
     init {
@@ -78,7 +85,17 @@ constructor(
         }
     }
 
-    fun onLoadMore() {
+    fun onEvent(event: Event) {
+        when (event) {
+            Event.OnScrollToBottom -> loadMore()
+            is Event.OnEdit -> edit(id = event.commentId, text = event.text)
+            is Event.OnPost -> post(event.text, event.replyParentId, event.attachments)
+            is Event.OnLike -> toggleLike(event.comment)
+            is Event.OnDelete -> delete(event.commentId)
+        }
+    }
+
+    private fun loadMore() {
         if (!canLoadMoreComments) return
         activity.withFirstContent(viewModelScope) {
             queryMoreComments()
@@ -87,7 +104,7 @@ constructor(
         }
     }
 
-    fun onLikeClick(comment: ThreadedCommentData) {
+    private fun toggleLike(comment: ThreadedCommentData) {
         activity.withFirstContent(viewModelScope) {
             if (comment.ownReactions.any { it.type == "heart" }) {
                     deleteCommentReaction(comment.id, "heart")
@@ -100,7 +117,20 @@ constructor(
         }
     }
 
-    fun onPostComment(text: String, replyParentId: String?, attachments: List<Uri>) {
+    private fun delete(commentId: String) {
+        activity.withFirstContent(viewModelScope) {
+            deleteComment(commentId).logResult(TAG, "Deleting comment: $commentId")
+        }
+    }
+
+    private fun edit(id: String, text: String) {
+        activity.withFirstContent(viewModelScope) {
+            updateComment(id, UpdateCommentRequest(text))
+                .logResult(TAG, "Editing comment $id with text: $text")
+        }
+    }
+
+    private fun post(text: String, replyParentId: String?, attachments: List<Uri>) {
         activity.withFirstContent(viewModelScope) {
             val attachmentFiles =
                 context.copyToCache(attachments).getOrElse { error ->
@@ -127,6 +157,22 @@ constructor(
 
             deleteFiles(attachmentFiles)
         }
+    }
+
+    sealed interface Event {
+        data object OnScrollToBottom : Event
+
+        data class OnLike(val comment: ThreadedCommentData) : Event
+
+        data class OnDelete(val commentId: String) : Event
+
+        data class OnEdit(val commentId: String, val text: String) : Event
+
+        data class OnPost(
+            val text: String,
+            val replyParentId: String?,
+            val attachments: List<Uri>,
+        ) : Event
     }
 
     companion object {
