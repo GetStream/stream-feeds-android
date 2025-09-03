@@ -15,9 +15,11 @@
  */
 package io.getstream.feeds.android.client.internal.client.reconnect
 
+import app.cash.turbine.test
 import io.getstream.android.core.api.filter.`in`
 import io.getstream.android.core.api.model.StreamRetryPolicy
 import io.getstream.android.core.api.model.connection.StreamConnectionState
+import io.getstream.android.core.api.model.exceptions.StreamClientException
 import io.getstream.android.core.api.processing.StreamRetryProcessor
 import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.FeedId
@@ -34,20 +36,29 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class FeedWatchHandlerTest {
     private val connectionEvents = MutableSharedFlow<StreamConnectionState>()
     private val feedsRepository: FeedsRepository = mockk()
-    private val scope = TestScope(UnconfinedTestDispatcher())
     private val retryProcessor: StreamRetryProcessor = TestRetryProcessor()
+    private val errorBus = MutableSharedFlow<StreamClientException>()
+    private val scope = TestScope(UnconfinedTestDispatcher())
 
-    private val handler = FeedWatchHandler(connectionEvents, feedsRepository, retryProcessor, scope)
+    private val handler =
+        FeedWatchHandler(
+            connectionState = connectionEvents,
+            feedsRepository = feedsRepository,
+            retryProcessor = retryProcessor,
+            errorBus = errorBus,
+            scope = scope,
+        )
 
     @Test
-    fun `on connected event, get feeds that are still being watched`() = runTest {
-        coEvery { feedsRepository.queryFeeds(any()) } returns Result.failure(Exception())
+    fun `on connected event, query feeds that are still being watched`() = runTest {
+        coEvery { feedsRepository.queryFeeds(any()) } returns Result.success(mockk())
         val id1 = FeedId("group", "id1")
         val id2 = FeedId("group", "id2")
         val id3 = FeedId("group", "id3")
@@ -61,6 +72,21 @@ internal class FeedWatchHandlerTest {
         connectionEvents.emit(StreamConnectionState.Connected(mockk(), "connection-id"))
 
         coVerify { feedsRepository.queryFeeds(expectedQuery) }
+    }
+
+    @Test
+    fun `on connected event when query fails, post error`() = runTest {
+        coEvery { feedsRepository.queryFeeds(any()) } returns Result.failure(Exception())
+        val id1 = FeedId("group", "id1")
+        val id2 = FeedId("group", "id2")
+        handler.onStartWatching(id1)
+        handler.onStartWatching(id2)
+
+        errorBus.test {
+            connectionEvents.emit(StreamConnectionState.Connected(mockk(), "connection-id"))
+
+            assertEquals(setOf(id1, id2), (awaitItem() as? StreamFeedRewatchException)?.ids)
+        }
     }
 
     @Test

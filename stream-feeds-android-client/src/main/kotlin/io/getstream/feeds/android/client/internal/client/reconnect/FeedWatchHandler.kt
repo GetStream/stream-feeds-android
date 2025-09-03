@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.client.reconnect
 import io.getstream.android.core.api.filter.`in`
 import io.getstream.android.core.api.model.StreamRetryPolicy
 import io.getstream.android.core.api.model.connection.StreamConnectionState
+import io.getstream.android.core.api.model.exceptions.StreamClientException
 import io.getstream.android.core.api.processing.StreamRetryProcessor
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.query.FeedsFilterField
@@ -26,6 +27,7 @@ import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 
@@ -44,7 +46,8 @@ internal class FeedWatchHandler(
     private val connectionState: Flow<StreamConnectionState>,
     private val feedsRepository: FeedsRepository,
     private val retryProcessor: StreamRetryProcessor,
-    scope: CoroutineScope,
+    private val errorBus: MutableSharedFlow<StreamClientException>,
+    private val scope: CoroutineScope,
 ) {
     private val watched = ConcurrentHashMap<FeedId, Unit>()
 
@@ -65,13 +68,18 @@ internal class FeedWatchHandler(
     }
 
     private suspend fun rewatchAll() {
-        val toRewatch = watched.keys.mapTo(mutableListOf(), FeedId::rawValue)
-        if (toRewatch.isNotEmpty()) {
-            retryProcessor.retry(retryPolicy) {
-                feedsRepository
-                    .queryFeeds(FeedsQuery(FeedsFilterField.feed.`in`(toRewatch)))
-                    .getOrThrow()
-            }
+        val watchedCopy = watched.keys.toSet()
+
+        if (watchedCopy.isNotEmpty()) {
+            val toRewatch = watchedCopy.map(FeedId::rawValue)
+
+            retryProcessor
+                .retry(retryPolicy) {
+                    feedsRepository
+                        .queryFeeds(FeedsQuery(FeedsFilterField.feed.`in`(toRewatch)))
+                        .getOrThrow()
+                }
+                .onFailure { errorBus.emit(StreamFeedRewatchException(watchedCopy, it)) }
         }
     }
 
@@ -79,3 +87,6 @@ internal class FeedWatchHandler(
         private val retryPolicy = StreamRetryPolicy.exponential(maxRetries = 3)
     }
 }
+
+internal class StreamFeedRewatchException(val ids: Set<FeedId>, cause: Throwable? = null) :
+    StreamClientException("Failed to rewatch feeds", cause)

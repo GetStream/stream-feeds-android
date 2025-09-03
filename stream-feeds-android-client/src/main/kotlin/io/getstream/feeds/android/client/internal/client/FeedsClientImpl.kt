@@ -19,6 +19,7 @@ import io.getstream.android.core.api.StreamClient
 import io.getstream.android.core.api.log.StreamLogger
 import io.getstream.android.core.api.model.connection.StreamConnectedUser
 import io.getstream.android.core.api.model.connection.StreamConnectionState
+import io.getstream.android.core.api.model.exceptions.StreamClientException
 import io.getstream.android.core.api.model.value.StreamApiKey
 import io.getstream.android.core.api.socket.listeners.StreamClientListener
 import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
@@ -96,11 +97,13 @@ import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.network.models.ListDevicesResponse
 import io.getstream.feeds.android.network.models.WSEvent
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 
 internal class FeedsClientImpl(
     private val coreClient: StreamClient,
@@ -121,6 +124,8 @@ internal class FeedsClientImpl(
     override val moderation: Moderation,
     private val feedWatchHandler: FeedWatchHandler,
     private val logger: StreamLogger,
+    scope: CoroutineScope,
+    errorBus: Flow<StreamClientException>,
 ) : FeedsClient {
 
     override val state: StateFlow<StreamConnectionState>
@@ -148,6 +153,12 @@ internal class FeedsClientImpl(
                 }
             }
         }
+
+    init {
+        scope.launch {
+            errorBus.collect { logger.e(it) { "[FeedsClient] Received error from bus" } }
+        }
+    }
 
     override suspend fun connect(): Result<StreamConnectedUser> {
         if (user.type == UserAuthType.ANONYMOUS) {
