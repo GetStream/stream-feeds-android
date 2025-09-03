@@ -31,6 +31,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -66,19 +67,23 @@ data class NotificationsScreenArgs(val feedId: String) {
 fun NotificationsScreen(navigator: DestinationsNavigator) {
     val viewModel = hiltViewModel<NotificationsViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
-    when (val state = state) {
-        AsyncResource.Loading -> LoadingScreen()
-        AsyncResource.Error -> {
-            LaunchedEffect(Unit) { navigator.popBackStack() }
-            return
+
+    Surface {
+        when (val state = state) {
+            AsyncResource.Loading -> LoadingScreen()
+            AsyncResource.Error -> {
+                LaunchedEffect(Unit) { navigator.popBackStack() }
+                return@Surface
+            }
+
+            is AsyncResource.Content ->
+                NotificationsScreen(
+                    state = state.data,
+                    onMarkAllSeen = viewModel::onMarkAllSeen,
+                    onMarkAggregatedActivityRead = viewModel::onMarkAggregatedActivityRead,
+                    onMarkAllRead = viewModel::onMarkAllRead,
+                )
         }
-        is AsyncResource.Content ->
-            NotificationsScreen(
-                state = state.data,
-                onMarkAllSeen = viewModel::onMarkAllSeen,
-                onMarkAggregatedActivityRead = viewModel::onMarkAggregatedActivityRead,
-                onMarkAllRead = viewModel::onMarkAllRead,
-            )
     }
 }
 
