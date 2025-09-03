@@ -16,7 +16,10 @@
 package io.getstream.feeds.android.client.internal.client.reconnect
 
 import io.getstream.android.core.api.filter.`in`
+import io.getstream.android.core.api.model.StreamRetryPolicy
 import io.getstream.android.core.api.model.connection.StreamConnectionState
+import io.getstream.android.core.api.processing.StreamRetryProcessor
+import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.query.FeedsFilterField
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
@@ -38,8 +41,9 @@ internal class FeedWatchHandlerTest {
     private val connectionEvents = MutableSharedFlow<StreamConnectionState>()
     private val feedsRepository: FeedsRepository = mockk()
     private val scope = TestScope(UnconfinedTestDispatcher())
+    private val retryProcessor: StreamRetryProcessor = TestRetryProcessor()
 
-    private val handler = FeedWatchHandler(connectionEvents, feedsRepository, scope)
+    private val handler = FeedWatchHandler(connectionEvents, feedsRepository, retryProcessor, scope)
 
     @Test
     fun `on connected event, get feeds that are still being watched`() = runTest {
@@ -73,5 +77,12 @@ internal class FeedWatchHandlerTest {
             .forEach { connectionEvents.emit(it) }
 
         verify { feedsRepository wasNot called }
+    }
+
+    private class TestRetryProcessor : StreamRetryProcessor {
+        override suspend fun <T> retry(
+            policy: StreamRetryPolicy,
+            block: suspend () -> T,
+        ): Result<T> = runSafely { block() }
     }
 }

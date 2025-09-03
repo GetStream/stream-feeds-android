@@ -16,7 +16,9 @@
 package io.getstream.feeds.android.client.internal.client.reconnect
 
 import io.getstream.android.core.api.filter.`in`
+import io.getstream.android.core.api.model.StreamRetryPolicy
 import io.getstream.android.core.api.model.connection.StreamConnectionState
+import io.getstream.android.core.api.processing.StreamRetryProcessor
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.query.FeedsFilterField
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
@@ -41,6 +43,7 @@ import kotlinx.coroutines.launch
 internal class FeedWatchHandler(
     private val connectionState: Flow<StreamConnectionState>,
     private val feedsRepository: FeedsRepository,
+    private val retryProcessor: StreamRetryProcessor,
     scope: CoroutineScope,
 ) {
     private val watched = ConcurrentHashMap<FeedId, Unit>()
@@ -64,7 +67,15 @@ internal class FeedWatchHandler(
     private suspend fun rewatchAll() {
         val toRewatch = watched.keys.mapTo(mutableListOf(), FeedId::rawValue)
         if (toRewatch.isNotEmpty()) {
-            feedsRepository.queryFeeds(FeedsQuery(FeedsFilterField.feed.`in`(toRewatch)))
+            retryProcessor.retry(retryPolicy) {
+                feedsRepository
+                    .queryFeeds(FeedsQuery(FeedsFilterField.feed.`in`(toRewatch)))
+                    .getOrThrow()
+            }
         }
+    }
+
+    companion object {
+        private val retryPolicy = StreamRetryPolicy.exponential(maxRetries = 3)
     }
 }

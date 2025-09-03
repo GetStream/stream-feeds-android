@@ -253,6 +253,7 @@ internal fun createFeedsClient(
         FeedWatchHandler(
             connectionState = client.connectionState,
             feedsRepository = feedsRepository,
+            retryProcessor = StreamRetryProcessor(logProvider.taggedLogger("WatchHandler")),
             scope = clientScope,
         )
 
