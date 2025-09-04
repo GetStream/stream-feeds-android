@@ -19,6 +19,7 @@ import io.getstream.android.core.api.StreamClient
 import io.getstream.android.core.api.log.StreamLogger
 import io.getstream.android.core.api.model.connection.StreamConnectedUser
 import io.getstream.android.core.api.model.connection.StreamConnectionState
+import io.getstream.android.core.api.model.exceptions.StreamClientException
 import io.getstream.android.core.api.model.value.StreamApiKey
 import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.Moderation
@@ -27,6 +28,7 @@ import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
 import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.api.model.UserAuthType
 import io.getstream.feeds.android.client.internal.client.reconnect.ConnectionRecoveryHandler
+import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.AppRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
@@ -47,13 +49,19 @@ import io.getstream.feeds.android.network.models.ListDevicesResponse
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import java.util.Date
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class FeedsClientImplTest {
     private val coreClient: StreamClient = mockk(relaxed = true)
     private val feedsEventsSubscriptionManager: StreamSubscriptionManager<FeedsEventListener> =
@@ -72,7 +80,10 @@ internal class FeedsClientImplTest {
     private val pollsRepository: PollsRepository = mockk(relaxed = true)
     private val uploader: FeedUploader = mockk(relaxed = true)
     private val moderation: Moderation = mockk(relaxed = true)
+    private val feedWatchHandler: FeedWatchHandler = mockk(relaxed = true)
     private val logger: StreamLogger = mockk(relaxed = true)
+    private val scope = TestScope(UnconfinedTestDispatcher())
+    private val errorBus = MutableSharedFlow<StreamClientException>()
 
     private val feedsClient: FeedsClientImpl =
         FeedsClientImpl(
@@ -92,8 +103,20 @@ internal class FeedsClientImplTest {
             pollsRepository = pollsRepository,
             uploader = uploader,
             moderation = moderation,
+            feedWatchHandler = feedWatchHandler,
             logger = logger,
+            scope = scope,
+            errorBus = errorBus,
         )
+
+    @Test
+    fun `on error bus event, then log it`() = runTest {
+        val exception = StreamClientException("error!")
+
+        errorBus.emit(exception)
+
+        verify { logger.e(exception, any()) }
+    }
 
     @Test
     fun `connect when user is regular, then subscribes to client and connects successfully`() =
@@ -136,7 +159,10 @@ internal class FeedsClientImplTest {
                 pollsRepository = pollsRepository,
                 uploader = uploader,
                 moderation = moderation,
+                feedWatchHandler = feedWatchHandler,
                 logger = logger,
+                scope = scope,
+                errorBus = errorBus,
             )
 
         val result = anonymousClient.connect()

@@ -26,6 +26,7 @@ import io.getstream.android.core.api.log.StreamLogger
 import io.getstream.android.core.api.log.StreamLoggerProvider
 import io.getstream.android.core.api.model.config.StreamClientSerializationConfig
 import io.getstream.android.core.api.model.config.StreamHttpConfig
+import io.getstream.android.core.api.model.exceptions.StreamClientException
 import io.getstream.android.core.api.model.value.StreamApiKey
 import io.getstream.android.core.api.model.value.StreamHttpClientInfoHeader
 import io.getstream.android.core.api.model.value.StreamUserId
@@ -48,6 +49,7 @@ import io.getstream.feeds.android.client.api.model.FeedsConfig
 import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.internal.client.reconnect.ConnectionRecoveryHandler
 import io.getstream.feeds.android.client.internal.client.reconnect.DefaultRetryStrategy
+import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
 import io.getstream.feeds.android.client.internal.client.reconnect.lifecycle.StreamLifecycleObserver
 import io.getstream.feeds.android.client.internal.file.StreamFeedUploader
 import io.getstream.feeds.android.client.internal.http.FeedsSingleFlightApi
@@ -68,6 +70,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.plus
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -247,6 +250,16 @@ internal fun createFeedsClient(
     val pollsRepository = PollsRepositoryImpl(feedsApi)
 
     val moderation = ModerationImpl(moderationRepository)
+    val errorBus = MutableSharedFlow<StreamClientException>(extraBufferCapacity = 100)
+
+    val feedWatchHandler =
+        FeedWatchHandler(
+            connectionState = client.connectionState,
+            feedsRepository = feedsRepository,
+            retryProcessor = StreamRetryProcessor(logProvider.taggedLogger("WatchHandler")),
+            errorBus = errorBus,
+            scope = clientScope,
+        )
 
     // Build client
     return FeedsClientImpl(
@@ -271,6 +284,9 @@ internal fun createFeedsClient(
                 maxStrongSubscriptions = Integer.MAX_VALUE,
                 maxWeakSubscriptions = Integer.MAX_VALUE,
             ),
+        feedWatchHandler = feedWatchHandler,
+        errorBus = errorBus,
+        scope = clientScope,
         logger = logger,
     )
 }

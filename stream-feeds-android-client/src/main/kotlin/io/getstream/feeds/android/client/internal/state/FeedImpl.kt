@@ -32,6 +32,7 @@ import io.getstream.feeds.android.client.api.state.Feed
 import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.api.state.query.MembersQuery
+import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
@@ -92,6 +93,7 @@ internal class FeedImpl(
     private val feedsRepository: FeedsRepository,
     private val pollsRepository: PollsRepository,
     private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
+    private val feedWatchHandler: FeedWatchHandler,
 ) : Feed {
 
     private val memberList: MemberListImpl =
@@ -127,6 +129,9 @@ internal class FeedImpl(
         get() = _state
 
     override suspend fun getOrCreate(): Result<FeedData> {
+        if (query.watch) {
+            feedWatchHandler.onStartWatching(query.fid)
+        }
         return feedsRepository
             .getOrCreateFeed(query)
             .onSuccess { _state.onQueryFeed(it) }
@@ -134,6 +139,7 @@ internal class FeedImpl(
     }
 
     override suspend fun stopWatching(): Result<Unit> {
+        feedWatchHandler.onStopWatching(query.fid)
         return feedsRepository.stopWatching(groupId = group, feedId = id)
     }
 
