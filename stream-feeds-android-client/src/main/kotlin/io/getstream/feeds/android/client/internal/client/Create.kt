@@ -22,7 +22,6 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import io.getstream.android.core.api.StreamClient
 import io.getstream.android.core.api.authentication.StreamTokenManager
 import io.getstream.android.core.api.authentication.StreamTokenProvider
-import io.getstream.android.core.api.log.StreamLogger
 import io.getstream.android.core.api.log.StreamLoggerProvider
 import io.getstream.android.core.api.model.config.StreamClientSerializationConfig
 import io.getstream.android.core.api.model.config.StreamHttpConfig
@@ -51,6 +50,8 @@ import io.getstream.feeds.android.client.internal.client.reconnect.DefaultRetryS
 import io.getstream.feeds.android.client.internal.client.reconnect.lifecycle.StreamLifecycleObserver
 import io.getstream.feeds.android.client.internal.file.StreamFeedUploader
 import io.getstream.feeds.android.client.internal.http.FeedsSingleFlightApi
+import io.getstream.feeds.android.client.internal.logging.createLoggerProvider
+import io.getstream.feeds.android.client.internal.logging.createLoggingInterceptor
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.AppRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepositoryImpl
@@ -70,7 +71,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.plus
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -156,11 +156,7 @@ internal fun createFeedsClient(
     config: FeedsConfig,
 ): FeedsClient {
 
-    val logProvider =
-        StreamLoggerProvider.Companion.defaultAndroidLogger(
-            minLevel = StreamLogger.LogLevel.Verbose,
-            honorAndroidIsLoggable = false,
-        )
+    val logProvider = createLoggerProvider(config.loggingConfig.customLogger)
     val logger = logProvider.taggedLogger("FeedsClient")
 
     // Setup coroutine scope for the client
@@ -192,7 +188,9 @@ internal fun createFeedsClient(
     // HTTP Configuration
     val okHttpBuilder =
         OkHttpClient.Builder()
-            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+            .addInterceptor(
+                createLoggingInterceptor(logProvider, config.loggingConfig.httpLoggingLevel)
+            )
 
     val client =
         createStreamCoreClient(
