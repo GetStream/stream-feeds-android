@@ -40,6 +40,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -81,27 +82,31 @@ data class CommentsSheetArgs(val feedId: String, val activityId: String) {
 )
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ColumnScope.CommentsBottomSheet(navigator: DestinationsNavigator) {
+fun CommentsBottomSheet(navigator: DestinationsNavigator) {
     val viewModel = hiltViewModel<CommentsSheetViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    when (val state = state) {
-        AsyncResource.Loading -> LoadingScreen()
+    Surface {
+        when (val state = state) {
+            AsyncResource.Loading -> LoadingScreen()
 
-        AsyncResource.Error -> {
-            LaunchedEffect(Unit) { navigator.popBackStack() }
-            return
-        }
+            AsyncResource.Error -> {
+                LaunchedEffect(Unit) { navigator.popBackStack() }
+                return@Surface
+            }
 
-        is AsyncResource.Content -> {
-            val comments by state.data.second.comments.collectAsStateWithLifecycle()
-            val currentUserId = state.data.first.id
+            is AsyncResource.Content -> {
+                val comments by state.data.second.comments.collectAsStateWithLifecycle()
+                val currentUserId = state.data.first.id
 
-            CommentsBottomSheetContent(
-                comments = comments,
-                currentUserId = currentUserId,
-                onEvent = viewModel::onEvent,
-            )
+                Column {
+                    CommentsBottomSheetContent(
+                        comments = comments,
+                        currentUserId = currentUserId,
+                        onEvent = viewModel::onEvent,
+                    )
+                }
+            }
         }
     }
 }
