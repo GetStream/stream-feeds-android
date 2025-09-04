@@ -16,7 +16,6 @@
 package io.getstream.feeds.android.sample.profile
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,14 +23,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -70,21 +73,23 @@ fun ProfileScreen(navigator: DestinationsNavigator) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    when (val state = state) {
-        AsyncResource.Loading -> LoadingScreen()
+    Surface {
+        when (val state = state) {
+            AsyncResource.Loading -> LoadingScreen()
 
-        AsyncResource.Error -> {
-            LaunchedEffect(Unit) { navigator.popBackStack() }
-            return
+            AsyncResource.Error -> {
+                LaunchedEffect(Unit) { navigator.popBackStack() }
+                return@Surface
+            }
+
+            is AsyncResource.Content ->
+                ProfileScreen(
+                    state = state.data,
+                    followSuggestions = viewModel.followSuggestions,
+                    onFollowClick = viewModel::follow,
+                    onUnfollowClick = viewModel::unfollow,
+                )
         }
-
-        is AsyncResource.Content ->
-            ProfileScreen(
-                state = state.data,
-                followSuggestions = viewModel.followSuggestions,
-                onFollowClick = viewModel::follow,
-                onUnfollowClick = viewModel::unfollow,
-            )
     }
 }
 
@@ -95,7 +100,12 @@ fun ProfileScreen(
     onFollowClick: (FeedId) -> Unit,
     onUnfollowClick: (FeedId) -> Unit,
 ) {
-    Column(modifier = Modifier.fillMaxSize().systemBarsPadding().padding(16.dp)) {
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier =
+            Modifier.fillMaxSize().systemBarsPadding().verticalScroll(scrollState).padding(16.dp)
+    ) {
         Text(
             text = "Profile",
             fontSize = 24.sp,
@@ -154,14 +164,12 @@ fun ProfileScreen(
         val followSuggestions by followSuggestions.collectAsStateWithLifecycle()
         SectionTitle("Who to follow")
         if (followSuggestions.isNotEmpty()) {
-            LazyColumn {
-                items(followSuggestions) {
-                    FollowSuggestionItem(
-                        owner = it.createdBy,
-                        fid = it.fid,
-                        onFollowClick = onFollowClick,
-                    )
-                }
+            followSuggestions.forEach {
+                FollowSuggestionItem(
+                    owner = it.createdBy,
+                    fid = it.fid,
+                    onFollowClick = onFollowClick,
+                )
             }
         } else {
             Text(text = "-No follow suggestions-")
@@ -191,7 +199,7 @@ private fun <T> ProfileSection(
     if (items.isNotEmpty()) {
         items.forEach { item -> itemContent(item) }
     } else {
-        Text(text = emptyText, color = Color.Gray)
+        Text(text = emptyText, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 
     HorizontalDivider(Modifier.fillMaxWidth().padding(vertical = 16.dp))
@@ -200,20 +208,20 @@ private fun <T> ProfileSection(
 @Composable
 fun FollowingItem(follow: FollowData, onUnfollowClick: (FeedId) -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = follow.targetFeed.createdBy.run { name ?: id },
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
         )
-        Text(
-            modifier = Modifier.clickable { onUnfollowClick(follow.targetFeed.fid) },
-            text = "Unfollow",
-            fontSize = 14.sp,
-            color = Color.Blue,
-        )
+        CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
+            TextButton(onClick = { onUnfollowClick(follow.targetFeed.fid) }) {
+                Text(text = "Unfollow")
+            }
+        }
     }
 }
 
@@ -237,19 +245,13 @@ fun FollowSuggestionItem(owner: UserData, fid: FeedId, onFollowClick: (FeedId) -
                 )
             }
         }
-        Card(
+        OutlinedButton(
             modifier = Modifier.padding(start = 8.dp).align(Alignment.CenterVertically),
             shape = CircleShape,
             border = BorderStroke(1.dp, Color.Gray),
-            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
             onClick = { onFollowClick(fid) },
         ) {
-            Text(
-                text = "Follow",
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                fontSize = 14.sp,
-                color = Color.Blue,
-            )
+            Text(text = "Follow")
         }
     }
 }

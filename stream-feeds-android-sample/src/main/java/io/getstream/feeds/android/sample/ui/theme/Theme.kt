@@ -26,8 +26,32 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme()
-
 private val LightColorScheme = lightColorScheme()
+
+private val LegacyDarkColors =
+    androidx.compose.material.darkColors(
+        primary = DarkColorScheme.primary,
+        primaryVariant = DarkColorScheme.primaryContainer,
+        secondary = DarkColorScheme.secondary,
+        background = DarkColorScheme.background,
+        surface = DarkColorScheme.surface,
+        onPrimary = DarkColorScheme.onPrimary,
+        onSecondary = DarkColorScheme.onSecondary,
+        onBackground = DarkColorScheme.onBackground,
+        onSurface = DarkColorScheme.onSurface,
+    )
+private val LegacyLightColors =
+    androidx.compose.material.lightColors(
+        primary = LightColorScheme.primary,
+        primaryVariant = LightColorScheme.primaryContainer,
+        secondary = LightColorScheme.secondary,
+        background = LightColorScheme.background,
+        surface = LightColorScheme.surface,
+        onPrimary = LightColorScheme.onPrimary,
+        onSecondary = LightColorScheme.onSecondary,
+        onBackground = LightColorScheme.onBackground,
+        onSurface = LightColorScheme.onSurface,
+    )
 
 @Composable
 fun AppTheme(
@@ -46,5 +70,16 @@ fun AppTheme(
             else -> LightColorScheme
         }
 
-    MaterialTheme(colorScheme = colorScheme, typography = Typography, content = content)
+    val legacyColors =
+        when (darkTheme) {
+            true -> LegacyDarkColors
+            false -> LegacyLightColors
+        }
+
+    // Also apply Material 2 theme because the bottom sheet from Compose Destinations uses it. We
+    // can remove this alongside the material 2 library once they add support
+    // https://github.com/raamcosta/compose-destinations/issues/756.
+    androidx.compose.material.MaterialTheme(colors = legacyColors) {
+        MaterialTheme(colorScheme = colorScheme, typography = Typography, content = content)
+    }
 }
