@@ -98,11 +98,13 @@ fun CommentsBottomSheet(navigator: DestinationsNavigator) {
             is AsyncResource.Content -> {
                 val comments by state.data.second.comments.collectAsStateWithLifecycle()
                 val currentUserId = state.data.first.id
+                val createContentState by viewModel.createContentState.collectAsStateWithLifecycle()
 
                 Column {
                     CommentsBottomSheetContent(
                         comments = comments,
                         currentUserId = currentUserId,
+                        createContentState = createContentState,
                         onEvent = viewModel::onEvent,
                     )
                 }
@@ -115,9 +117,9 @@ fun CommentsBottomSheet(navigator: DestinationsNavigator) {
 private fun ColumnScope.CommentsBottomSheetContent(
     comments: List<ThreadedCommentData>,
     currentUserId: String,
+    createContentState: CreateContentState,
     onEvent: (Event) -> Unit,
 ) {
-    var createCommentData: CreateCommentData? by remember { mutableStateOf(null) }
     var expandedCommentId: String? by remember { mutableStateOf(null) }
 
     Text(
@@ -141,9 +143,7 @@ private fun ColumnScope.CommentsBottomSheetContent(
                     onExpandClick = {
                         expandedCommentId = comment.id.takeUnless { it == expandedCommentId }
                     },
-                    onReplyClick = { commentId ->
-                        createCommentData = CreateCommentData(commentId)
-                    },
+                    onReplyClick = { commentId -> onEvent(Event.OnReply(commentId)) },
                     onEvent = onEvent,
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                 )
@@ -154,7 +154,7 @@ private fun ColumnScope.CommentsBottomSheetContent(
         }
 
         FloatingActionButton(
-            onClick = { createCommentData = CreateCommentData() },
+            onClick = { onEvent(Event.OnAddContent) },
             modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
             shape = CircleShape,
         ) {
@@ -166,17 +166,13 @@ private fun ColumnScope.CommentsBottomSheetContent(
         }
     }
 
-    if (createCommentData != null) {
-        CreateContentBottomSheet(
-            title = "Add comment",
-            onDismiss = { createCommentData = null },
-            requireText = true,
-            onPost = { text, attachments ->
-                onEvent(Event.OnPost(text, createCommentData?.replyParentId, attachments))
-                createCommentData = null
-            },
-        )
-    }
+    CreateContentBottomSheet(
+        state = createContentState,
+        title = "Add comment",
+        onDismiss = { onEvent(Event.OnContentCreateDismiss) },
+        onPost = { text, attachments -> onEvent(Event.OnPost(text, attachments)) },
+        requireText = true,
+    )
 }
 
 @Composable
@@ -311,5 +307,3 @@ private fun Comment(
         }
     }
 }
-
-@JvmInline private value class CreateCommentData(val replyParentId: String? = null)

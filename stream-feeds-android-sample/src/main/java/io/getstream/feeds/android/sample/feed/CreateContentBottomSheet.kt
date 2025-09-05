@@ -28,12 +28,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -41,6 +43,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,22 +54,39 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+enum class CreateContentState {
+    Hidden,
+    Composing,
+    Posting,
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateContentBottomSheet(
+    state: CreateContentState,
     title: String,
     onDismiss: () -> Unit,
     onPost: (text: String, attachments: List<Uri>) -> Unit,
     requireText: Boolean,
-    extraActions: @Composable RowScope.() -> Unit = {},
+    extraActions: @Composable RowScope.(inputEnabled: Boolean) -> Unit = {},
 ) {
+    if (state == CreateContentState.Hidden) return
+
+    val state by rememberUpdatedState(state)
+    val sheetState =
+        rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+            // Do not allow hiding while posting
+            confirmValueChange = { it != SheetValue.Hidden || state != CreateContentState.Posting },
+        )
+    val inputEnabled = state == CreateContentState.Composing
+
     var postText by remember { mutableStateOf("") }
-    var attachments by remember { mutableStateOf<List<Uri>>(emptyList()) }
-    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var attachments by remember { mutableStateOf(emptyList<Uri>()) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = bottomSheetState,
+        sheetState = sheetState,
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
@@ -78,9 +98,13 @@ fun CreateContentBottomSheet(
             ) {
                 Text(text = title, fontSize = 18.sp, fontWeight = FontWeight.Companion.Bold)
 
-                val canPost = attachments.isNotEmpty() && !requireText || postText.isNotBlank()
-                TextButton(onClick = { onPost(postText, attachments) }, enabled = canPost) {
-                    Text(text = "Submit", fontWeight = FontWeight.Companion.Medium)
+                if (state == CreateContentState.Posting) {
+                    CircularProgressIndicator()
+                } else {
+                    val canPost = attachments.isNotEmpty() && !requireText || postText.isNotBlank()
+                    TextButton(onClick = { onPost(postText, attachments) }, enabled = canPost) {
+                        Text(text = "Submit", fontWeight = FontWeight.Companion.Medium)
+                    }
                 }
             }
 
@@ -88,6 +112,7 @@ fun CreateContentBottomSheet(
             OutlinedTextField(
                 value = postText,
                 onValueChange = { postText = it },
+                enabled = inputEnabled,
                 placeholder = { Text("What's on your mind?") },
                 modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
                 minLines = 3,
@@ -106,6 +131,7 @@ fun CreateContentBottomSheet(
                 AttachmentButton(
                     hasAttachment = hasAttachments,
                     onAttachmentsSelected = { uris -> attachments = uris },
+                    enabled = inputEnabled,
                 )
 
                 if (hasAttachments) {
@@ -117,21 +143,26 @@ fun CreateContentBottomSheet(
                 }
 
                 // Display any extra actions passed to the bottom sheet
-                extraActions()
+                extraActions(inputEnabled)
             }
         }
     }
 }
 
 @Composable
-private fun AttachmentButton(hasAttachment: Boolean, onAttachmentsSelected: (List<Uri>) -> Unit) {
+private fun AttachmentButton(
+    hasAttachment: Boolean,
+    onAttachmentsSelected: (List<Uri>) -> Unit,
+    enabled: Boolean,
+) {
     val activityLauncher =
         rememberLauncherForActivityResult(PickMultipleVisualMedia(), onAttachmentsSelected)
 
     IconButton(
         onClick = {
             activityLauncher.launch(PickVisualMediaRequest(mediaType = PickVisualMedia.ImageOnly))
-        }
+        },
+        enabled = enabled,
     ) {
         Icon(
             painter = painterResource(android.R.drawable.ic_menu_gallery),

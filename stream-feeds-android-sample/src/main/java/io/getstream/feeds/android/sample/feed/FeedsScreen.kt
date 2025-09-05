@@ -140,7 +140,7 @@ private fun FeedsScreenContent(
     viewModel: FeedViewModel,
     modifier: Modifier,
 ) {
-    var showCreatePostBottomSheet by remember { mutableStateOf(false) }
+    val createContentState by viewModel.createContentState.collectAsStateWithLifecycle()
 
     Column(modifier = modifier.fillMaxSize()) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -209,7 +209,7 @@ private fun FeedsScreenContent(
             }
 
             FloatingActionButton(
-                onClick = { showCreatePostBottomSheet = true },
+                onClick = viewModel::onCreateClick,
                 modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
                 shape = CircleShape,
             ) {
@@ -221,23 +221,14 @@ private fun FeedsScreenContent(
             }
 
             // Create Post Bottom Sheet
-            if (showCreatePostBottomSheet) {
-                CreateContentBottomSheet(
-                    title = "Create post",
-                    onDismiss = { showCreatePostBottomSheet = false },
-                    onPost = { postText, attachments ->
-                        showCreatePostBottomSheet = false
-                        viewModel.onCreatePost(postText, attachments)
-                    },
-                    requireText = false,
-                    extraActions = {
-                        CreatePollButton { formData ->
-                            showCreatePostBottomSheet = false
-                            viewModel.onCreatePoll(formData)
-                        }
-                    },
-                )
-            }
+            CreateContentBottomSheet(
+                state = createContentState,
+                title = "Create post",
+                onDismiss = viewModel::onContentCreateDismiss,
+                onPost = viewModel::onCreatePost,
+                requireText = false,
+                extraActions = { enabled -> CreatePollButton(viewModel::onCreatePoll, enabled) },
+            )
         }
     }
 }

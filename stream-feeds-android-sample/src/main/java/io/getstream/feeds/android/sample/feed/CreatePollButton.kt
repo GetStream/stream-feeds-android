@@ -60,10 +60,10 @@ import io.getstream.feeds.android.sample.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreatePollButton(onCreatePoll: (PollFormData) -> Unit) {
+fun CreatePollButton(onCreatePoll: (PollFormData) -> Unit, enabled: Boolean) {
     var showPollBottomSheet by remember { mutableStateOf(false) }
 
-    IconButton(onClick = { showPollBottomSheet = true }) {
+    IconButton(onClick = { showPollBottomSheet = true }, enabled = enabled) {
         Icon(
             painter = painterResource(R.drawable.poll),
             contentDescription = "Create Poll",
