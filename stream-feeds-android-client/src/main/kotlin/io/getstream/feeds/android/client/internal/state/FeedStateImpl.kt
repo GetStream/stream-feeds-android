@@ -15,7 +15,7 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
-import io.getstream.android.core.api.filter.Sort
+import io.getstream.android.core.api.sort.Sort
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.ActivityPinData
 import io.getstream.feeds.android.client.api.model.AggregatedActivityData
@@ -37,7 +37,7 @@ import io.getstream.feeds.android.client.api.model.deleteBookmark
 import io.getstream.feeds.android.client.api.model.removeComment
 import io.getstream.feeds.android.client.api.model.removeReaction
 import io.getstream.feeds.android.client.api.state.FeedState
-import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
+import io.getstream.feeds.android.client.api.state.query.ActivitiesQueryConfig
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
@@ -83,8 +83,7 @@ internal class FeedStateImpl(
 
     private var _activitiesPagination: PaginationData? = null
 
-    internal var activitiesQueryConfig: QueryConfiguration<ActivitiesFilterField, ActivitiesSort>? =
-        null
+    internal var activitiesQueryConfig: ActivitiesQueryConfig? = null
         private set
 
     private val activitiesSorting: List<Sort<ActivityData>>
@@ -145,7 +144,7 @@ internal class FeedStateImpl(
 
     override fun onQueryMoreActivities(
         result: PaginationResult<ActivityData>,
-        queryConfig: QueryConfiguration<ActivitiesFilterField, ActivitiesSort>,
+        queryConfig: ActivitiesQueryConfig,
     ) {
         _activitiesPagination = result.pagination
         activitiesQueryConfig = queryConfig
@@ -387,7 +386,7 @@ internal interface FeedStateUpdates {
     /** Handles the result of a query for more activities. */
     fun onQueryMoreActivities(
         result: PaginationResult<ActivityData>,
-        queryConfig: QueryConfiguration<ActivitiesFilterField, ActivitiesSort>,
+        queryConfig: ActivitiesQueryConfig,
     )
 
     /** Handles updates to the feed state when activity is added. */

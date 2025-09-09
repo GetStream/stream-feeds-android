@@ -18,10 +18,9 @@ package io.getstream.feeds.android.client.internal.state
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.CommentReactionListState
-import io.getstream.feeds.android.client.api.state.query.CommentReactionsFilterField
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
+import io.getstream.feeds.android.client.api.state.query.CommentReactionsQueryConfig
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,9 +41,7 @@ internal class CommentReactionListStateImpl(override val query: CommentReactions
     private val _reactions: MutableStateFlow<List<FeedsReactionData>> =
         MutableStateFlow(emptyList())
 
-    internal var queryConfig:
-        QueryConfiguration<CommentReactionsFilterField, CommentReactionsSort>? =
-        null
+    internal var queryConfig: CommentReactionsQueryConfig? = null
         private set
 
     private var _pagination: PaginationData? = null
@@ -60,7 +57,7 @@ internal class CommentReactionListStateImpl(override val query: CommentReactions
 
     override fun onQueryMoreReactions(
         result: PaginationResult<FeedsReactionData>,
-        queryConfig: QueryConfiguration<CommentReactionsFilterField, CommentReactionsSort>,
+        queryConfig: CommentReactionsQueryConfig,
     ) {
         _pagination = result.pagination
         // Update the query configuration for future queries
@@ -89,7 +86,7 @@ internal interface CommentReactionListStateUpdates {
      */
     fun onQueryMoreReactions(
         result: PaginationResult<FeedsReactionData>,
-        queryConfig: QueryConfiguration<CommentReactionsFilterField, CommentReactionsSort>,
+        queryConfig: CommentReactionsQueryConfig,
     )
 
     /**

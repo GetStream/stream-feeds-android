@@ -18,9 +18,8 @@ package io.getstream.feeds.android.client.internal.state
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
-import io.getstream.feeds.android.client.api.state.query.BookmarksFilterField
 import io.getstream.feeds.android.client.api.state.query.BookmarksQuery
+import io.getstream.feeds.android.client.api.state.query.BookmarksQueryConfig
 import io.getstream.feeds.android.client.api.state.query.BookmarksSort
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkFolderData
@@ -47,11 +46,7 @@ internal class BookmarkListStateImplTest {
                 models = bookmarks,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig =
-            QueryConfiguration<BookmarksFilterField, BookmarksSort>(
-                filter = null,
-                sort = BookmarksSort.Default,
-            )
+        val queryConfig = BookmarksQueryConfig(filter = null, sort = BookmarksSort.Default)
 
         bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
 
@@ -68,11 +63,7 @@ internal class BookmarkListStateImplTest {
                 models = initialBookmarks,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig =
-            QueryConfiguration<BookmarksFilterField, BookmarksSort>(
-                filter = null,
-                sort = BookmarksSort.Default,
-            )
+        val queryConfig = BookmarksQueryConfig(filter = null, sort = BookmarksSort.Default)
         bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
 
         val updatedBookmark = bookmarkData("activity-1", "user-1")
@@ -100,11 +91,7 @@ internal class BookmarkListStateImplTest {
                 models = initialBookmarks,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig =
-            QueryConfiguration<BookmarksFilterField, BookmarksSort>(
-                filter = null,
-                sort = BookmarksSort.Default,
-            )
+        val queryConfig = BookmarksQueryConfig(filter = null, sort = BookmarksSort.Default)
         bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
 
         val updatedFolder = bookmarkFolderData("folder-1", "Updated Folder")
@@ -132,11 +119,7 @@ internal class BookmarkListStateImplTest {
                 models = initialBookmarks,
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
-        val queryConfig =
-            QueryConfiguration<BookmarksFilterField, BookmarksSort>(
-                filter = null,
-                sort = BookmarksSort.Default,
-            )
+        val queryConfig = BookmarksQueryConfig(filter = null, sort = BookmarksSort.Default)
         bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
 
         bookmarkListState.onBookmarkFolderRemoved(folder.id)
@@ -157,11 +140,7 @@ internal class BookmarkListStateImplTest {
             )
         val paginationResult =
             PaginationResult(models = initialBookmarks, pagination = PaginationData())
-        val queryConfig =
-            QueryConfiguration<BookmarksFilterField, BookmarksSort>(
-                filter = null,
-                sort = BookmarksSort.Default,
-            )
+        val queryConfig = BookmarksQueryConfig(filter = null, sort = BookmarksSort.Default)
         bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
 
         val bookmarkToRemove = initialBookmarks[1]
@@ -178,11 +157,7 @@ internal class BookmarkListStateImplTest {
             listOf(bookmarkData("activity-1", "user-1"), bookmarkData("activity-2", "user-2"))
         val paginationResult =
             PaginationResult(models = initialBookmarks, pagination = PaginationData())
-        val queryConfig =
-            QueryConfiguration<BookmarksFilterField, BookmarksSort>(
-                filter = null,
-                sort = BookmarksSort.Default,
-            )
+        val queryConfig = BookmarksQueryConfig(filter = null, sort = BookmarksSort.Default)
         bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
 
         val nonexistentBookmark = bookmarkData("activity-999", "user-999")

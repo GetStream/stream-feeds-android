@@ -18,10 +18,9 @@ package io.getstream.feeds.android.client.internal.state
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.PollData
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.PollListState
-import io.getstream.feeds.android.client.api.state.query.PollsFilterField
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
+import io.getstream.feeds.android.client.api.state.query.PollsQueryConfig
 import io.getstream.feeds.android.client.api.state.query.PollsSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,7 +40,7 @@ internal class PollListStateImpl(override val query: PollsQuery) : PollListMutab
 
     private val _polls: MutableStateFlow<List<PollData>> = MutableStateFlow(emptyList())
 
-    internal var queryConfig: QueryConfiguration<PollsFilterField, PollsSort>? = null
+    internal var queryConfig: PollsQueryConfig? = null
         private set
 
     private var _pagination: PaginationData? = null
@@ -57,7 +56,7 @@ internal class PollListStateImpl(override val query: PollsQuery) : PollListMutab
 
     override fun onQueryMorePolls(
         result: PaginationResult<PollData>,
-        queryConfig: QueryConfiguration<PollsFilterField, PollsSort>,
+        queryConfig: PollsQueryConfig,
     ) {
         _pagination = result.pagination
         // Update the query configuration for future queries
@@ -97,10 +96,7 @@ internal interface PollListStateUpdates {
      * @param result The result containing the list of polls.
      * @param queryConfig The configuration used for the query, including sorting options.
      */
-    fun onQueryMorePolls(
-        result: PaginationResult<PollData>,
-        queryConfig: QueryConfiguration<PollsFilterField, PollsSort>,
-    )
+    fun onQueryMorePolls(result: PaginationResult<PollData>, queryConfig: PollsQueryConfig)
 
     /**
      * Called when a poll is updated.

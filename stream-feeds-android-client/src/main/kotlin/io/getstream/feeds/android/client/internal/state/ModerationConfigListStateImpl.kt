@@ -18,11 +18,10 @@ package io.getstream.feeds.android.client.internal.state
 import io.getstream.feeds.android.client.api.model.ModerationConfigData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.ModerationConfigListState
 import io.getstream.feeds.android.client.api.state.query.ModerationConfigSort
-import io.getstream.feeds.android.client.api.state.query.ModerationConfigsFilterField
 import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
+import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQueryConfig
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,9 +39,7 @@ internal class ModerationConfigListStateImpl(override val query: ModerationConfi
     private val _configs: MutableStateFlow<List<ModerationConfigData>> =
         MutableStateFlow(emptyList())
 
-    internal var queryConfig:
-        QueryConfiguration<ModerationConfigsFilterField, ModerationConfigSort>? =
-        null
+    internal var queryConfig: ModerationConfigsQueryConfig? = null
         private set
 
     private var _pagination: PaginationData? = null
@@ -58,7 +55,7 @@ internal class ModerationConfigListStateImpl(override val query: ModerationConfi
 
     override fun onLoadMoreConfigs(
         result: PaginationResult<ModerationConfigData>,
-        queryConfig: QueryConfiguration<ModerationConfigsFilterField, ModerationConfigSort>,
+        queryConfig: ModerationConfigsQueryConfig,
     ) {
         _pagination = result.pagination
         this.queryConfig = queryConfig
@@ -76,6 +73,6 @@ internal interface ModerationConfigListStateUpdates {
 
     fun onLoadMoreConfigs(
         result: PaginationResult<ModerationConfigData>,
-        queryConfig: QueryConfiguration<ModerationConfigsFilterField, ModerationConfigSort>,
+        queryConfig: ModerationConfigsQueryConfig,
     )
 }

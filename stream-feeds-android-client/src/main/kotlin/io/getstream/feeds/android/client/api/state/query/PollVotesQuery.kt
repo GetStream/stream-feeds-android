@@ -17,11 +17,12 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.filter.Sort
-import io.getstream.android.core.api.filter.SortDirection
-import io.getstream.android.core.api.filter.SortField
 import io.getstream.android.core.api.filter.toRequest
+import io.getstream.android.core.api.sort.Sort
+import io.getstream.android.core.api.sort.SortDirection
+import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.PollVoteData
+import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.network.models.QueryPollVotesRequest
 
@@ -55,58 +56,70 @@ public data class PollVotesQuery(
     public val sort: List<PollVotesSort>? = null,
 )
 
-public typealias PollVotesFilter = Filter<PollVotesFilterField>
+public typealias PollVotesFilter = Filter<PollVoteData, PollVotesFilterField>
 
-public data class PollVotesFilterField(override val remote: String) : FilterField {
+internal typealias PollVotesQueryConfig =
+    QueryConfiguration<PollVoteData, PollVotesFilterField, PollVotesSort>
+
+public data class PollVotesFilterField(
+    override val remote: String,
+    override val localValue: (PollVoteData) -> Any?,
+) : FilterField<PollVoteData> {
     public companion object {
         /**
          * Filter by creation timestamp.
          *
          * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
-        public val createdAt: PollVotesFilterField = PollVotesFilterField("created_at")
+        public val createdAt: PollVotesFilterField =
+            PollVotesFilterField("created_at", PollVoteData::createdAt)
 
         /**
          * Filter by vote ID.
          *
          * Supported operators: `equal`, `in`
          */
-        public val id: PollVotesFilterField = PollVotesFilterField("id")
+        public val id: PollVotesFilterField = PollVotesFilterField("id", PollVoteData::id)
 
         /**
          * Filter by is answer flag.
          *
          * Supported operators: `equal`
          */
-        public val isAnswer: PollVotesFilterField = PollVotesFilterField("is_answer")
+        public val isAnswer: PollVotesFilterField =
+            PollVotesFilterField("is_answer", PollVoteData::isAnswer)
 
         /**
          * Filter by option ID.
          *
          * Supported operators: `equal`, `in`, `exists`
          */
-        public val optionId: PollVotesFilterField = PollVotesFilterField("option_id")
+        public val optionId: PollVotesFilterField =
+            PollVotesFilterField("option_id", PollVoteData::optionId)
 
         /**
          * Filter by user ID.
          *
          * Supported operators: `equal`, `in`
          */
-        public val userId: PollVotesFilterField = PollVotesFilterField("user_id")
+        public val userId: PollVotesFilterField =
+            PollVotesFilterField("user_id", PollVoteData::userId)
 
         /**
          * Filter by poll ID.
          *
          * Supported operators: `equal`, `in`
          */
-        public val pollId: PollVotesFilterField = PollVotesFilterField("poll_id")
+        public val pollId: PollVotesFilterField =
+            PollVotesFilterField("poll_id", PollVoteData::pollId)
 
         /**
          * Filter by last update timestamp.
          *
          * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
-        public val updatedAt: PollVotesFilterField = PollVotesFilterField("updated_at")
+        public val updatedAt: PollVotesFilterField =
+            PollVotesFilterField("updated_at", PollVoteData::updatedAt)
     }
 }
 

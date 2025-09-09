@@ -17,11 +17,12 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.filter.Sort
-import io.getstream.android.core.api.filter.SortDirection
-import io.getstream.android.core.api.filter.SortField
 import io.getstream.android.core.api.filter.toRequest
+import io.getstream.android.core.api.sort.Sort
+import io.getstream.android.core.api.sort.SortDirection
+import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.ModerationConfigData
+import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.network.models.QueryModerationConfigsRequest
 
@@ -46,16 +47,24 @@ public data class ModerationConfigsQuery(
     public val sort: List<ModerationConfigSort>? = null,
 )
 
-public typealias ModerationConfigsFilter = Filter<ModerationConfigsFilterField>
+public typealias ModerationConfigsFilter =
+    Filter<ModerationConfigData, ModerationConfigsFilterField>
 
-public data class ModerationConfigsFilterField(override val remote: String) : FilterField {
+internal typealias ModerationConfigsQueryConfig =
+    QueryConfiguration<ModerationConfigData, ModerationConfigsFilterField, ModerationConfigSort>
+
+public data class ModerationConfigsFilterField(
+    override val remote: String,
+    override val localValue: (ModerationConfigData) -> Any?,
+) : FilterField<ModerationConfigData> {
     public companion object {
         /**
          * Filter by configuration key.
          *
          * Supported operators: `equal`, `in`, `autocomplete`
          */
-        public val key: ModerationConfigsFilterField = ModerationConfigsFilterField("key")
+        public val key: ModerationConfigsFilterField =
+            ModerationConfigsFilterField("key", ModerationConfigData::key)
 
         /**
          * Filter by creation timestamp.
@@ -63,7 +72,7 @@ public data class ModerationConfigsFilterField(override val remote: String) : Fi
          * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
         public val createdAt: ModerationConfigsFilterField =
-            ModerationConfigsFilterField("created_at")
+            ModerationConfigsFilterField("created_at", ModerationConfigData::createdAt)
 
         /**
          * Filter by last update timestamp.
@@ -71,14 +80,15 @@ public data class ModerationConfigsFilterField(override val remote: String) : Fi
          * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
         public val updatedAt: ModerationConfigsFilterField =
-            ModerationConfigsFilterField("updated_at")
+            ModerationConfigsFilterField("updated_at", ModerationConfigData::updatedAt)
 
         /**
          * Filter by team.
          *
          * Supported operators: `equal`, `in`
          */
-        public val team: ModerationConfigsFilterField = ModerationConfigsFilterField("team")
+        public val team: ModerationConfigsFilterField =
+            ModerationConfigsFilterField("team", ModerationConfigData::team)
     }
 }
 

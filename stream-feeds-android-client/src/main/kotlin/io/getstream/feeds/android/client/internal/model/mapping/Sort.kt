@@ -15,7 +15,7 @@
  */
 package io.getstream.feeds.android.client.internal.model.mapping
 
-import io.getstream.android.core.api.filter.Sort
+import io.getstream.android.core.api.sort.Sort
 import io.getstream.feeds.android.network.models.SortParamRequest
 
 /**

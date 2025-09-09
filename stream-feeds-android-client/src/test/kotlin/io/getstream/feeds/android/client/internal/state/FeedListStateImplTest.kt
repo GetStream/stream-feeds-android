@@ -16,9 +16,8 @@
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.FeedData
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
-import io.getstream.feeds.android.client.api.state.query.FeedsFilterField
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
+import io.getstream.feeds.android.client.api.state.query.FeedsQueryConfig
 import io.getstream.feeds.android.client.api.state.query.FeedsSort
 import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
 import io.getstream.feeds.android.client.internal.test.TestData.feedData
@@ -93,8 +92,7 @@ internal class FeedListStateImplTest {
         val feed2 = feedData(id = "feed-2", groupId = "user", name = "Second Feed")
         val initialFeeds = listOf(feed1, feed2)
         val paginationResult = defaultPaginationResult(initialFeeds)
-        val queryConfig =
-            QueryConfiguration<FeedsFilterField, FeedsSort>(filter = null, sort = FeedsSort.Default)
+        val queryConfig = FeedsQueryConfig(filter = null, sort = FeedsSort.Default)
         feedListState.onQueryMoreFeeds(paginationResult, queryConfig)
 
         feedListState.onFeedRemoved("user:feed-1")
@@ -104,7 +102,6 @@ internal class FeedListStateImplTest {
     }
 
     companion object {
-        private val defaultQueryConfig =
-            QueryConfiguration<FeedsFilterField, FeedsSort>(filter = null, sort = FeedsSort.Default)
+        private val defaultQueryConfig = FeedsQueryConfig(filter = null, sort = FeedsSort.Default)
     }
 }

@@ -18,10 +18,9 @@ package io.getstream.feeds.android.client.internal.state
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.FollowListState
-import io.getstream.feeds.android.client.api.state.query.FollowsFilterField
 import io.getstream.feeds.android.client.api.state.query.FollowsQuery
+import io.getstream.feeds.android.client.api.state.query.FollowsQueryConfig
 import io.getstream.feeds.android.client.api.state.query.FollowsSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +39,7 @@ internal class FollowListStateImpl(override val query: FollowsQuery) : FollowLis
 
     private val _follows: MutableStateFlow<List<FollowData>> = MutableStateFlow(emptyList())
 
-    internal var queryConfig: QueryConfiguration<FollowsFilterField, FollowsSort>? = null
+    internal var queryConfig: FollowsQueryConfig? = null
         private set
 
     private var _pagination: PaginationData? = null
@@ -56,7 +55,7 @@ internal class FollowListStateImpl(override val query: FollowsQuery) : FollowLis
 
     override fun onQueryMoreFollows(
         result: PaginationResult<FollowData>,
-        queryConfig: QueryConfiguration<FollowsFilterField, FollowsSort>,
+        queryConfig: FollowsQueryConfig,
     ) {
         _pagination = result.pagination
         this.queryConfig = queryConfig
@@ -95,10 +94,7 @@ internal interface FollowListMutableState : FollowListState, FollowListStateUpda
 internal interface FollowListStateUpdates {
 
     /** Handles the result of a query for more follows. */
-    fun onQueryMoreFollows(
-        result: PaginationResult<FollowData>,
-        queryConfig: QueryConfiguration<FollowsFilterField, FollowsSort>,
-    )
+    fun onQueryMoreFollows(result: PaginationResult<FollowData>, queryConfig: FollowsQueryConfig)
 
     /** Handles the update of a follow data. */
     fun onFollowUpdated(follow: FollowData)

@@ -17,11 +17,12 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.filter.Sort
-import io.getstream.android.core.api.filter.SortDirection
-import io.getstream.android.core.api.filter.SortField
 import io.getstream.android.core.api.filter.toRequest
+import io.getstream.android.core.api.sort.Sort
+import io.getstream.android.core.api.sort.SortDirection
+import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.FollowData
+import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.network.models.QueryFollowsRequest
 
@@ -51,37 +52,46 @@ public data class FollowsQuery(
     public val previous: String? = null,
 )
 
-public typealias FollowsFilter = Filter<FollowsFilterField>
+public typealias FollowsFilter = Filter<FollowData, FollowsFilterField>
 
-public data class FollowsFilterField(override val remote: String) : FilterField {
+internal typealias FollowsQueryConfig =
+    QueryConfiguration<FollowData, FollowsFilterField, FollowsSort>
+
+public data class FollowsFilterField(
+    override val remote: String,
+    override val localValue: (FollowData) -> Any?,
+) : FilterField<FollowData> {
     public companion object {
         /**
          * Filter by source feed.
          *
          * Supported operators: `equal`, `in`
          */
-        public val sourceFeed: FollowsFilterField = FollowsFilterField("source_feed")
+        public val sourceFeed: FollowsFilterField =
+            FollowsFilterField("source_feed") { it.sourceFeed.fid.rawValue }
 
         /**
          * Filter by target feed.
          *
          * Supported operators: `equal`, `in`
          */
-        public val targetFeed: FollowsFilterField = FollowsFilterField("target_feed")
+        public val targetFeed: FollowsFilterField =
+            FollowsFilterField("target_feed") { it.targetFeed.fid.rawValue }
 
         /**
          * Filter by follow status.
          *
          * Supported operators: `equal`, `in`
          */
-        public val status: FollowsFilterField = FollowsFilterField("status")
+        public val status: FollowsFilterField = FollowsFilterField("status") { it.status.string }
 
         /**
          * Filter by creation timestamp.
          *
          * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
-        public val createdAt: FollowsFilterField = FollowsFilterField("created_at")
+        public val createdAt: FollowsFilterField =
+            FollowsFilterField("created_at", FollowData::createdAt)
     }
 }
 

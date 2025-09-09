@@ -15,7 +15,7 @@
  */
 package io.getstream.feeds.android.client.internal.repository
 
-import io.getstream.android.core.api.filter.sortedWith
+import io.getstream.android.core.api.sort.sortedWith
 import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId

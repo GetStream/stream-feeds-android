@@ -15,9 +15,9 @@
  */
 package io.getstream.feeds.android.client.internal.utils
 
-import io.getstream.android.core.api.filter.Sort
-import io.getstream.android.core.api.filter.SortDirection
-import io.getstream.android.core.api.filter.SortField
+import io.getstream.android.core.api.sort.Sort
+import io.getstream.android.core.api.sort.SortDirection
+import io.getstream.android.core.api.sort.SortField
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

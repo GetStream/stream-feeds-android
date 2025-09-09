@@ -15,15 +15,14 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
-import io.getstream.android.core.api.filter.Sort
+import io.getstream.android.core.api.sort.Sort
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.MemberListState
-import io.getstream.feeds.android.client.api.state.query.MembersFilterField
 import io.getstream.feeds.android.client.api.state.query.MembersQuery
+import io.getstream.feeds.android.client.api.state.query.MembersQueryConfig
 import io.getstream.feeds.android.client.api.state.query.MembersSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.upsert
@@ -43,7 +42,7 @@ internal class MemberListStateImpl(override val query: MembersQuery) : MemberLis
 
     private val _members: MutableStateFlow<List<FeedMemberData>> = MutableStateFlow(emptyList())
 
-    internal var queryConfig: QueryConfiguration<MembersFilterField, MembersSort>? = null
+    internal var queryConfig: MembersQueryConfig? = null
         private set
 
     private var _pagination: PaginationData? = null
@@ -59,7 +58,7 @@ internal class MemberListStateImpl(override val query: MembersQuery) : MemberLis
 
     override fun onQueryMoreMembers(
         result: PaginationResult<FeedMemberData>,
-        queryConfig: QueryConfiguration<MembersFilterField, MembersSort>,
+        queryConfig: MembersQueryConfig,
     ) {
         _pagination = result.pagination
         this.queryConfig = queryConfig
@@ -129,7 +128,7 @@ internal interface MemberListStateUpdates {
     /** Handles the result of a query for more members. */
     fun onQueryMoreMembers(
         result: PaginationResult<FeedMemberData>,
-        queryConfig: QueryConfiguration<MembersFilterField, MembersSort>,
+        queryConfig: MembersQueryConfig,
     )
 
     /** Handles the addition of a new member. */

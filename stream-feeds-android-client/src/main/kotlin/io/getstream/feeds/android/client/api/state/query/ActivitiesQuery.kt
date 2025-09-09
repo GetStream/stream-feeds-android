@@ -17,11 +17,12 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.filter.Sort
-import io.getstream.android.core.api.filter.SortDirection
-import io.getstream.android.core.api.filter.SortField
 import io.getstream.android.core.api.filter.toRequest
+import io.getstream.android.core.api.sort.Sort
+import io.getstream.android.core.api.sort.SortDirection
+import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.ActivityData
+import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.network.models.QueryActivitiesRequest
 
@@ -60,65 +61,77 @@ public data class ActivitiesQuery(
     public val previous: String? = null,
 )
 
-public typealias ActivitiesFilter = Filter<ActivitiesFilterField>
+public typealias ActivitiesFilter = Filter<ActivityData, ActivitiesFilterField>
 
-public data class ActivitiesFilterField(override val remote: String) : FilterField {
+internal typealias ActivitiesQueryConfig =
+    QueryConfiguration<ActivityData, ActivitiesFilterField, ActivitiesSort>
+
+public data class ActivitiesFilterField(
+    override val remote: String,
+    override val localValue: (ActivityData) -> Any?,
+) : FilterField<ActivityData> {
     public companion object {
         /**
          * Filter by activity creation timestamp.
          *
          * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
-        public val createdAt: ActivitiesFilterField = ActivitiesFilterField("created_at")
+        public val createdAt: ActivitiesFilterField =
+            ActivitiesFilterField("created_at", ActivityData::createdAt)
 
         /**
          * Filter by activity ID.
          *
          * Supported operators: `equal`, `in`
          */
-        public val id: ActivitiesFilterField = ActivitiesFilterField("id")
+        public val id: ActivitiesFilterField = ActivitiesFilterField("id", ActivityData::id)
 
         /**
          * Filter by activity filter tags.
          *
          * Supported operators: `equal`, `in`, `contains`
          */
-        public val filterTags: ActivitiesFilterField = ActivitiesFilterField("filter_tags")
+        public val filterTags: ActivitiesFilterField =
+            ActivitiesFilterField("filter_tags", ActivityData::filterTags)
 
         /**
          * Filter by activity popularity score.
          *
-         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
+         * Supported operators: `equal`, `notEqual`, `greater`, `greaterOrEqual`, `less`,
+         * `lessOrEqual`
          */
-        public val popularity: ActivitiesFilterField = ActivitiesFilterField("popularity")
+        public val popularity: ActivitiesFilterField =
+            ActivitiesFilterField("popularity", ActivityData::popularity)
 
         /**
          * Filter by activity search data.
          *
-         * Supported operators: `equal`, `q`, `autocomplete`
+         * Supported operators: `q`, `autocomplete`
          */
-        public val searchData: ActivitiesFilterField = ActivitiesFilterField("search_data")
+        public val searchData: ActivitiesFilterField =
+            ActivitiesFilterField("search_data", ActivityData::searchData)
 
         /**
          * Filter by activity text content.
          *
          * Supported operators: `equal`, `q`, `autocomplete`
          */
-        public val text: ActivitiesFilterField = ActivitiesFilterField("text")
+        public val text: ActivitiesFilterField = ActivitiesFilterField("text", ActivityData::text)
 
         /**
          * Filter by activity type.
          *
          * Supported operators: `equal`, `in`
          */
-        public val type: ActivitiesFilterField = ActivitiesFilterField("type")
+        public val type: ActivitiesFilterField =
+            ActivitiesFilterField("activity_type", ActivityData::type)
 
         /**
          * Filter by user ID who created the activity.
          *
          * Supported operators: `equal`, `in`
          */
-        public val userId: ActivitiesFilterField = ActivitiesFilterField("user_id")
+        public val userId: ActivitiesFilterField = ActivitiesFilterField("user_id") { it.user.id }
 
         /**
          * Filter by activity expiration timestamp.
@@ -126,7 +139,16 @@ public data class ActivitiesFilterField(override val remote: String) : FilterFie
          * Supported operators: `equal`, `notEqual`, `greater`, `greaterOrEqual`, `less`,
          * `lessOrEqual`, `exists`
          */
-        public val expiresAt: ActivitiesFilterField = ActivitiesFilterField("expires_at")
+        public val expiresAt: ActivitiesFilterField =
+            ActivitiesFilterField("expires_at", ActivityData::expiresAt)
+
+        /**
+         * Filter by activity interest tags.
+         *
+         * Supported operators: `equal`, `in`, `contains`
+         */
+        public val interestTags: ActivitiesFilterField =
+            ActivitiesFilterField("interest_tags", ActivityData::interestTags)
     }
 }
 

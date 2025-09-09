@@ -17,11 +17,12 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.filter.Sort
-import io.getstream.android.core.api.filter.SortDirection
-import io.getstream.android.core.api.filter.SortField
 import io.getstream.android.core.api.filter.toRequest
+import io.getstream.android.core.api.sort.Sort
+import io.getstream.android.core.api.sort.SortDirection
+import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
+import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.network.models.QueryCommentReactionsRequest
 
@@ -58,9 +59,15 @@ public data class CommentReactionsQuery(
     public val sort: List<CommentReactionsSort>? = null,
 )
 
-public typealias CommentReactionsFilter = Filter<CommentReactionsFilterField>
+public typealias CommentReactionsFilter = Filter<FeedsReactionData, CommentReactionsFilterField>
 
-public data class CommentReactionsFilterField(override val remote: String) : FilterField {
+internal typealias CommentReactionsQueryConfig =
+    QueryConfiguration<FeedsReactionData, CommentReactionsFilterField, CommentReactionsSort>
+
+public data class CommentReactionsFilterField(
+    override val remote: String,
+    override val localValue: (FeedsReactionData) -> Any?,
+) : FilterField<FeedsReactionData> {
     public companion object {
         /**
          * Filter by reaction type.
@@ -68,14 +75,15 @@ public data class CommentReactionsFilterField(override val remote: String) : Fil
          * Supported operators: `equal`, `in`
          */
         public val reactionType: CommentReactionsFilterField =
-            CommentReactionsFilterField("reaction_type")
+            CommentReactionsFilterField("reaction_type", FeedsReactionData::type)
 
         /**
          * Filter by user ID.
          *
          * Supported operators: `equal`, `in`
          */
-        public val userId: CommentReactionsFilterField = CommentReactionsFilterField("user_id")
+        public val userId: CommentReactionsFilterField =
+            CommentReactionsFilterField("user_id") { it.user.id }
 
         /**
          * Filter by creation timestamp.
@@ -83,7 +91,7 @@ public data class CommentReactionsFilterField(override val remote: String) : Fil
          * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
         public val createdAt: CommentReactionsFilterField =
-            CommentReactionsFilterField("created_at")
+            CommentReactionsFilterField("created_at", FeedsReactionData::createdAt)
     }
 }
 

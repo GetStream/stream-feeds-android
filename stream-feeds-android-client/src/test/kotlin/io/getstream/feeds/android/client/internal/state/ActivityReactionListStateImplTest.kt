@@ -18,9 +18,8 @@ package io.getstream.feeds.android.client.internal.state
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
-import io.getstream.feeds.android.client.api.state.query.ActivityReactionsFilterField
 import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQuery
+import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQueryConfig
 import io.getstream.feeds.android.client.api.state.query.ActivityReactionsSort
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import kotlinx.coroutines.test.runTest
@@ -48,10 +47,7 @@ internal class ActivityReactionListStateImplTest {
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
         val queryConfig =
-            QueryConfiguration<ActivityReactionsFilterField, ActivityReactionsSort>(
-                filter = null,
-                sort = ActivityReactionsSort.Default,
-            )
+            ActivityReactionsQueryConfig(filter = null, sort = ActivityReactionsSort.Default)
 
         activityReactionListState.onQueryMoreActivityReactions(paginationResult, queryConfig)
 
@@ -70,10 +66,7 @@ internal class ActivityReactionListStateImplTest {
                 pagination = PaginationData(next = "next-cursor", previous = null),
             )
         val queryConfig =
-            QueryConfiguration<ActivityReactionsFilterField, ActivityReactionsSort>(
-                filter = null,
-                sort = ActivityReactionsSort.Default,
-            )
+            ActivityReactionsQueryConfig(filter = null, sort = ActivityReactionsSort.Default)
         activityReactionListState.onQueryMoreActivityReactions(paginationResult, queryConfig)
 
         activityReactionListState.onReactionRemoved(initialReactions[0])

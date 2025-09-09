@@ -17,11 +17,12 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.filter.Sort
-import io.getstream.android.core.api.filter.SortDirection
-import io.getstream.android.core.api.filter.SortField
 import io.getstream.android.core.api.filter.toRequest
+import io.getstream.android.core.api.sort.Sort
+import io.getstream.android.core.api.sort.SortDirection
+import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
+import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.network.models.QueryActivityReactionsRequest
 
@@ -53,9 +54,15 @@ public data class ActivityReactionsQuery(
     public val sort: List<ActivityReactionsSort>? = null,
 )
 
-public typealias ActivityReactionsFilter = Filter<ActivityReactionsFilterField>
+public typealias ActivityReactionsFilter = Filter<FeedsReactionData, ActivityReactionsFilterField>
 
-public data class ActivityReactionsFilterField(override val remote: String) : FilterField {
+internal typealias ActivityReactionsQueryConfig =
+    QueryConfiguration<FeedsReactionData, ActivityReactionsFilterField, ActivityReactionsSort>
+
+public data class ActivityReactionsFilterField(
+    override val remote: String,
+    override val localValue: (FeedsReactionData) -> Any?,
+) : FilterField<FeedsReactionData> {
     public companion object {
         /**
          * Filter by reaction type.
@@ -63,14 +70,15 @@ public data class ActivityReactionsFilterField(override val remote: String) : Fi
          * Supported operators: `equal`, `in`
          */
         public val reactionType: ActivityReactionsFilterField =
-            ActivityReactionsFilterField("reaction_type")
+            ActivityReactionsFilterField("reaction_type", FeedsReactionData::type)
 
         /**
          * Filter by user ID who created the reaction.
          *
          * Supported operators: `equal`, `in`
          */
-        public val userId: ActivityReactionsFilterField = ActivityReactionsFilterField("user_id")
+        public val userId: ActivityReactionsFilterField =
+            ActivityReactionsFilterField("user_id") { it.user.id }
 
         /**
          * Filter by creation timestamp.
@@ -78,7 +86,7 @@ public data class ActivityReactionsFilterField(override val remote: String) : Fi
          * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
         public val createdAt: ActivityReactionsFilterField =
-            ActivityReactionsFilterField("created_at")
+            ActivityReactionsFilterField("created_at", FeedsReactionData::createdAt)
     }
 }
 

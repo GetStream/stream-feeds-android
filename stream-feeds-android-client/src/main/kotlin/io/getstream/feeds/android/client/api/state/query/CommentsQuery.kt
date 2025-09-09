@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.api.state.query
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
 import io.getstream.android.core.api.filter.toRequest
+import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.network.models.QueryCommentsRequest
 import java.util.Date
 
@@ -70,107 +71,120 @@ public data class CommentsQuery(
     public val sort: CommentsSort? = null,
 )
 
-public typealias CommentsFilter = Filter<CommentsFilterField>
+public typealias CommentsFilter = Filter<CommentData, CommentsFilterField>
 
-public data class CommentsFilterField(override val remote: String) : FilterField {
+public data class CommentsFilterField(
+    override val remote: String,
+    override val localValue: (CommentData) -> Any?,
+) : FilterField<CommentData> {
     public companion object {
         /**
          * Filter by comment ID.
          *
          * Supported operators: `equal`, `in`
          */
-        public val id: CommentsFilterField = CommentsFilterField("id")
+        public val id: CommentsFilterField = CommentsFilterField("id", CommentData::id)
 
         /**
          * Filter by user ID who created the comment.
          *
          * Supported operators: `equal`, `in`
          */
-        public val userId: CommentsFilterField = CommentsFilterField("user_id")
+        public val userId: CommentsFilterField = CommentsFilterField("user_id") { it.user.id }
 
         /**
          * Filter by object type.
          *
-         * Supported operators: `equal`, `in`
+         * Supported operators: `equal`, `notEqual`, `in`, `notIn`
          */
-        public val objectType: CommentsFilterField = CommentsFilterField("object_type")
+        public val objectType: CommentsFilterField =
+            CommentsFilterField("object_type", CommentData::objectType)
 
         /**
          * Filter by object ID.
          *
          * Supported operators: `equal`, `in`
          */
-        public val objectId: CommentsFilterField = CommentsFilterField("object_id")
+        public val objectId: CommentsFilterField =
+            CommentsFilterField("object_id", CommentData::objectId)
 
         /**
          * Filter by parent comment ID.
          *
          * Supported operators: `equal`, `in`
          */
-        public val parentId: CommentsFilterField = CommentsFilterField("parent_id")
+        public val parentId: CommentsFilterField =
+            CommentsFilterField("parent_id", CommentData::parentId)
 
         /**
          * Filter by comment text content.
          *
          * Supported operators: `q`
          */
-        public val commentText: CommentsFilterField = CommentsFilterField("comment_text")
+        public val commentText: CommentsFilterField =
+            CommentsFilterField("comment_text", CommentData::text)
 
         /**
          * Filter by comment status.
          *
-         * Supported operators: `equal`, `in`
+         * Supported operators: `equal`, `notEqual`, `in`
          */
-        public val status: CommentsFilterField = CommentsFilterField("status")
+        public val status: CommentsFilterField = CommentsFilterField("status", CommentData::status)
 
         /**
          * Filter by upvote count.
          *
          * Supported operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
-        public val upvoteCount: CommentsFilterField = CommentsFilterField("upvote_count")
+        public val upvoteCount: CommentsFilterField =
+            CommentsFilterField("upvote_count", CommentData::upvoteCount)
 
         /**
          * Filter by downvote count.
          *
          * Supported operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
-        public val downvoteCount: CommentsFilterField = CommentsFilterField("downvote_count")
+        public val downvoteCount: CommentsFilterField =
+            CommentsFilterField("downvote_count", CommentData::downvoteCount)
 
         /**
          * Filter by reply count.
          *
          * Supported operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
-        public val replyCount: CommentsFilterField = CommentsFilterField("reply_count")
+        public val replyCount: CommentsFilterField =
+            CommentsFilterField("reply_count", CommentData::replyCount)
 
         /**
          * Filter by comment score.
          *
          * Supported operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
-        public val score: CommentsFilterField = CommentsFilterField("score")
+        public val score: CommentsFilterField = CommentsFilterField("score", CommentData::score)
 
         /**
          * Filter by confidence score.
          *
          * Supported operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
-        public val confidenceScore: CommentsFilterField = CommentsFilterField("confidence_score")
+        public val confidenceScore: CommentsFilterField =
+            CommentsFilterField("confidence_score", CommentData::confidenceScore)
 
         /**
          * Filter by controversy score.
          *
          * Supported operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
-        public val controversyScore: CommentsFilterField = CommentsFilterField("controversy_score")
+        public val controversyScore: CommentsFilterField =
+            CommentsFilterField("controversy_score", CommentData::controversyScore)
 
         /**
          * Filter by creation timestamp.
          *
          * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
-        public val createdAt: CommentsFilterField = CommentsFilterField("created_at")
+        public val createdAt: CommentsFilterField =
+            CommentsFilterField("created_at", CommentData::createdAt)
     }
 }
 

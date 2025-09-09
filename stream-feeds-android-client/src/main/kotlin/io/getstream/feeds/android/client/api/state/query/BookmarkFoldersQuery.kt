@@ -17,11 +17,12 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.filter.Sort
-import io.getstream.android.core.api.filter.SortDirection
-import io.getstream.android.core.api.filter.SortField
 import io.getstream.android.core.api.filter.toRequest
+import io.getstream.android.core.api.sort.Sort
+import io.getstream.android.core.api.sort.SortDirection
+import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.BookmarkFolderData
+import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.network.models.QueryBookmarkFoldersRequest
 
@@ -51,45 +52,39 @@ public data class BookmarkFoldersQuery(
     public val previous: String? = null,
 )
 
-public typealias BookmarkFoldersFilter = Filter<BookmarkFoldersFilterField>
+public typealias BookmarkFoldersFilter = Filter<BookmarkFolderData, BookmarkFoldersFilterField>
 
-public data class BookmarkFoldersFilterField(override val remote: String) : FilterField {
+internal typealias BookmarkFoldersQueryConfig =
+    QueryConfiguration<BookmarkFolderData, BookmarkFoldersFilterField, BookmarkFoldersSort>
+
+public data class BookmarkFoldersFilterField(
+    override val remote: String,
+    override val localValue: (BookmarkFolderData) -> Any?,
+) : FilterField<BookmarkFolderData> {
     public companion object {
-        /**
-         * Filter by folder ID.
-         *
-         * Supported operators: `equal`, `in`
-         */
-        public val folderId: BookmarkFoldersFilterField = BookmarkFoldersFilterField("folder_id")
-
         /**
          * Filter by folder name.
          *
          * Supported operators: `equal`, `in`, `contains`
          */
         public val folderName: BookmarkFoldersFilterField =
-            BookmarkFoldersFilterField("folder_name")
-
-        /**
-         * Filter by user ID.
-         *
-         * Supported operators: `equal`, `in`
-         */
-        public val userId: BookmarkFoldersFilterField = BookmarkFoldersFilterField("user_id")
+            BookmarkFoldersFilterField("folder_name", BookmarkFolderData::name)
 
         /**
          * Filter by creation timestamp.
          *
          * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
-        public val createdAt: BookmarkFoldersFilterField = BookmarkFoldersFilterField("created_at")
+        public val createdAt: BookmarkFoldersFilterField =
+            BookmarkFoldersFilterField("created_at", BookmarkFolderData::createdAt)
 
         /**
          * Filter by last update timestamp.
          *
          * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
-        public val updatedAt: BookmarkFoldersFilterField = BookmarkFoldersFilterField("updated_at")
+        public val updatedAt: BookmarkFoldersFilterField =
+            BookmarkFoldersFilterField("updated_at", BookmarkFolderData::updatedAt)
     }
 }
 
