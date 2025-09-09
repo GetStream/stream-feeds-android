@@ -31,7 +31,7 @@ internal class CustomLoggerProviderTest(
     @Test
     fun `on taggedLogger, return a logger that forwards the tag`() {
         val customLogger = mockk<Logger>(relaxed = true)
-        val taggedLogger = CustomLoggerProvider(customLogger).taggedLogger("a tag")
+        val taggedLogger = FeedsLoggerProvider(customLogger).taggedLogger("a tag")
         val exception = Exception("an exception")
 
         taggedLogger.log(logLevel, exception) { "a message" }

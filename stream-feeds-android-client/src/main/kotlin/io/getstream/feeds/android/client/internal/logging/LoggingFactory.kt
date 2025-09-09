@@ -22,7 +22,7 @@ import okhttp3.Interceptor
 import okhttp3.logging.HttpLoggingInterceptor
 
 internal fun createLoggerProvider(customLogger: Logger?): StreamLoggerProvider =
-    customLogger?.let(::CustomLoggerProvider) ?: StreamLoggerProvider.defaultAndroidLogger()
+    customLogger?.let(::FeedsLoggerProvider) ?: StreamLoggerProvider.defaultAndroidLogger()
 
 internal fun createLoggingInterceptor(
     provider: StreamLoggerProvider,

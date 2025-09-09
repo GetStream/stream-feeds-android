@@ -20,11 +20,11 @@ import io.getstream.android.core.api.log.StreamLogger.LogLevel as CoreLogLevel
 import io.getstream.android.core.api.log.StreamLoggerProvider
 import io.getstream.feeds.android.client.api.logging.Logger
 
-internal class CustomLoggerProvider(private val customLogger: Logger) : StreamLoggerProvider {
-    override fun taggedLogger(tag: String): StreamLogger = CustomTaggedLogger(customLogger, tag)
+internal class FeedsLoggerProvider(private val customLogger: Logger) : StreamLoggerProvider {
+    override fun taggedLogger(tag: String): StreamLogger = FeedsTaggedLogger(customLogger, tag)
 }
 
-private class CustomTaggedLogger(private val customLogger: Logger, private val tag: String) :
+private class FeedsTaggedLogger(private val customLogger: Logger, private val tag: String) :
     StreamLogger {
     override fun log(level: CoreLogLevel, throwable: Throwable?, message: () -> String) =
         customLogger.log(level.map(), tag, throwable, message)
