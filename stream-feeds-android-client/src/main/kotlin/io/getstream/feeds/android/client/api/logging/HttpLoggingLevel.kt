@@ -15,11 +15,23 @@
  */
 package io.getstream.feeds.android.client.api.logging
 
-import okhttp3.logging.HttpLoggingInterceptor
+/**
+ * Represents the logging levels for HTTP requests and responses.
+ * - None: No logging.
+ * - Basic: Logs request and response lines.
+ * - Headers: Logs request and response lines along with their respective headers.
+ * - Body: Logs request and response lines, headers, and bodies (if present).
+ */
+public enum class HttpLoggingLevel {
+    /** No logging. */
+    None,
 
-public enum class HttpLoggingLevel(internal val okhttp: HttpLoggingInterceptor.Level) {
-    None(HttpLoggingInterceptor.Level.NONE),
-    Basic(HttpLoggingInterceptor.Level.BASIC),
-    Headers(HttpLoggingInterceptor.Level.HEADERS),
-    Body(HttpLoggingInterceptor.Level.BODY),
+    /** Logs request and response lines. */
+    Basic,
+
+    /** Logs request and response lines along with their respective headers. */
+    Headers,
+
+    /** Logs request and response lines, headers, and bodies (if present). */
+    Body,
 }

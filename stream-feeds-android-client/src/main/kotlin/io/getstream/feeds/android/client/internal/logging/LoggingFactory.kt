@@ -30,5 +30,13 @@ internal fun createLoggingInterceptor(
 ): Interceptor {
     val logger = provider.taggedLogger("FeedHTTP")
 
-    return HttpLoggingInterceptor(logger = { logger.i { it } }).setLevel(level.okhttp)
+    return HttpLoggingInterceptor(logger = { logger.i { it } }).setLevel(level.toOkHttpLevel())
 }
+
+private fun HttpLoggingLevel.toOkHttpLevel(): HttpLoggingInterceptor.Level =
+    when (this) {
+        HttpLoggingLevel.None -> HttpLoggingInterceptor.Level.NONE
+        HttpLoggingLevel.Basic -> HttpLoggingInterceptor.Level.BASIC
+        HttpLoggingLevel.Headers -> HttpLoggingInterceptor.Level.HEADERS
+        HttpLoggingLevel.Body -> HttpLoggingInterceptor.Level.BODY
+    }
