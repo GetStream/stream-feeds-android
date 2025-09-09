@@ -41,7 +41,10 @@ import io.getstream.feeds.android.sample.util.notNull
 import io.getstream.feeds.android.sample.util.withFirstContent
 import io.getstream.feeds.android.sample.utils.logResult
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -79,6 +82,10 @@ constructor(
             .map { loadingState -> loadingState.map { it.first to it.second.state } }
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
+    private var replyParentId: String? = null
+    private val _createContentState = MutableStateFlow(CreateContentState.Hidden)
+    val createContentState: StateFlow<CreateContentState> = _createContentState.asStateFlow()
+
     init {
         activity.withFirstContent(viewModelScope) {
             get().logResult(TAG, "Loading activity: $activityId")
@@ -89,9 +96,12 @@ constructor(
         when (event) {
             Event.OnScrollToBottom -> loadMore()
             is Event.OnEdit -> edit(id = event.commentId, text = event.text)
-            is Event.OnPost -> post(event.text, event.replyParentId, event.attachments)
+            is Event.OnPost -> post(event.text, replyParentId, event.attachments)
             is Event.OnLike -> toggleLike(event.comment)
             is Event.OnDelete -> delete(event.commentId)
+            Event.OnAddContent -> showAddContent(true)
+            Event.OnContentCreateDismiss -> showAddContent(false)
+            is Event.OnReply -> showAddContent(true, event.parentId)
         }
     }
 
@@ -130,37 +140,55 @@ constructor(
         }
     }
 
+    private fun showAddContent(show: Boolean, replyParentId: String? = null) {
+        _createContentState.value =
+            if (show) CreateContentState.Composing else CreateContentState.Hidden
+        this.replyParentId = replyParentId
+    }
+
     private fun post(text: String, replyParentId: String?, attachments: List<Uri>) {
+        _createContentState.value = CreateContentState.Posting
+
         activity.withFirstContent(viewModelScope) {
             val attachmentFiles =
                 context.copyToCache(attachments).getOrElse { error ->
                     Log.e(TAG, "Failed to copy attachments", error)
+                    _createContentState.value = CreateContentState.Composing
                     return@withFirstContent
                 }
 
-            addComment(
-                    ActivityAddCommentRequest(
-                        comment = text,
-                        activityId = activityId,
-                        parentId = replyParentId,
-                        createNotificationActivity = true,
-                        attachmentUploads =
-                            attachmentFiles.map {
-                                FeedUploadPayload(file = it, type = FileType.Image("jpeg"))
-                            },
-                    ),
-                    attachmentUploadProgress = { file, progress ->
-                        Log.d(TAG, "Uploading attachment: ${file.type}, progress: $progress")
-                    },
-                )
-                .logResult(TAG, "Adding comment to activity: $activityId")
+            val result =
+                addComment(
+                        ActivityAddCommentRequest(
+                            comment = text,
+                            activityId = activityId,
+                            parentId = replyParentId,
+                            createNotificationActivity = true,
+                            attachmentUploads =
+                                attachmentFiles.map {
+                                    FeedUploadPayload(file = it, type = FileType.Image("jpeg"))
+                                },
+                        ),
+                        attachmentUploadProgress = { file, progress ->
+                            Log.d(TAG, "Uploading attachment: ${file.type}, progress: $progress")
+                        },
+                    )
+                    .logResult(TAG, "Adding comment to activity: $activityId")
 
             deleteFiles(attachmentFiles)
+
+            _createContentState.value =
+                result.fold(
+                    onSuccess = { CreateContentState.Hidden },
+                    onFailure = { CreateContentState.Composing },
+                )
         }
     }
 
     sealed interface Event {
         data object OnScrollToBottom : Event
+
+        data object OnAddContent : Event
 
         data class OnLike(val comment: ThreadedCommentData) : Event
 
@@ -168,11 +196,11 @@ constructor(
 
         data class OnEdit(val commentId: String, val text: String) : Event
 
-        data class OnPost(
-            val text: String,
-            val replyParentId: String?,
-            val attachments: List<Uri>,
-        ) : Event
+        data class OnPost(val text: String, val attachments: List<Uri>) : Event
+
+        data object OnContentCreateDismiss : Event
+
+        data class OnReply(val parentId: String) : Event
     }
 
     companion object {
