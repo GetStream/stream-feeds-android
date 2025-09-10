@@ -35,4 +35,7 @@ public data class STTEgressConfig(
     public val translationLanguages: kotlin.collections.List<kotlin.String>? = emptyList(),
     @Json(name = "external_storage")
     public val externalStorage: io.getstream.feeds.android.network.models.ExternalStorage? = null,
+    @Json(name = "speech_segment_config")
+    public val speechSegmentConfig: io.getstream.feeds.android.network.models.SpeechSegmentConfig? =
+        null,
 )

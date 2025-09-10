@@ -19,12 +19,27 @@ package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
 import kotlin.collections.*
-import kotlin.collections.List
+import kotlin.collections.Map
 import kotlin.io.*
 
 /**  */
-public data class PushNotificationConfig(
-    @Json(name = "enable_push") public val enablePush: kotlin.Boolean? = null,
-    @Json(name = "push_types")
-    public val pushTypes: kotlin.collections.List<kotlin.String>? = emptyList(),
+public data class UpsertPushPreferencesResponse(
+    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "user_channel_preferences")
+    public val userChannelPreferences:
+        kotlin.collections.Map<
+            kotlin.String,
+            kotlin.collections.Map<
+                kotlin.String,
+                io.getstream.feeds.android.network.models.ChannelPushPreferences,
+            >,
+        > =
+        emptyMap(),
+    @Json(name = "user_preferences")
+    public val userPreferences:
+        kotlin.collections.Map<
+            kotlin.String,
+            io.getstream.feeds.android.network.models.PushPreferences,
+        > =
+        emptyMap(),
 )
