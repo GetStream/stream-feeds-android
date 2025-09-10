@@ -50,7 +50,10 @@ import io.getstream.feeds.android.sample.util.withFirstContent
 import io.getstream.feeds.android.sample.utils.logResult
 import javax.inject.Inject
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -81,6 +84,9 @@ constructor(
         feed
             .map { asyncResource -> asyncResource.map(Feed::state) }
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
+
+    private val _createContentState = MutableStateFlow(CreateContentState.Hidden)
+    val createContentState: StateFlow<CreateContentState> = _createContentState.asStateFlow()
 
     val pollController =
         FeedPollController(
@@ -173,7 +179,17 @@ constructor(
         }
     }
 
+    fun onCreateClick() {
+        _createContentState.value = CreateContentState.Composing
+    }
+
+    fun onContentCreateDismiss() {
+        _createContentState.value = CreateContentState.Hidden
+    }
+
     fun onCreatePost(text: String, attachments: List<Uri>) {
+        _createContentState.value = CreateContentState.Posting
+
         feed.withFirstContent(viewModelScope) {
             val attachmentFiles =
                 application
@@ -181,25 +197,35 @@ constructor(
                     .notifyOnFailure { "Failed to copy attachments" }
                     .getOrElse { error ->
                         Log.e(TAG, "Failed to copy attachments", error)
+                        _createContentState.value = CreateContentState.Composing
                         return@withFirstContent
                     }
 
-            addActivity(
-                    FeedAddActivityRequest(
-                        type = "activity",
-                        text = text,
-                        feeds = listOf(fid.rawValue),
-                        attachmentUploads =
-                            attachmentFiles.map { FeedUploadPayload(it, FileType.Image("jpeg")) },
-                    ),
-                    attachmentUploadProgress = { file, progress ->
-                        Log.d(TAG, "Uploading attachment: ${file.type}, progress: $progress")
-                    },
-                )
-                .logResult(TAG, "Creating activity with text: $text")
-                .notifyOnFailure { "Failed to create post" }
+            val result =
+                addActivity(
+                        FeedAddActivityRequest(
+                            type = "activity",
+                            text = text,
+                            feeds = listOf(fid.rawValue),
+                            attachmentUploads =
+                                attachmentFiles.map {
+                                    FeedUploadPayload(it, FileType.Image("jpeg"))
+                                },
+                        ),
+                        attachmentUploadProgress = { file, progress ->
+                            Log.d(TAG, "Uploading attachment: ${file.type}, progress: $progress")
+                        },
+                    )
+                    .logResult(TAG, "Creating activity with text: $text")
+                    .notifyOnFailure { "Failed to create post" }
 
             deleteFiles(attachmentFiles)
+
+            _createContentState.value =
+                result.fold(
+                    onSuccess = { CreateContentState.Hidden },
+                    onFailure = { CreateContentState.Composing },
+                )
         }
     }
 

@@ -90,6 +90,8 @@ public data class MessageResponse(
     public val imageLabels:
         kotlin.collections.Map<kotlin.String, kotlin.collections.List<kotlin.String>>? =
         emptyMap(),
+    @Json(name = "member")
+    public val member: io.getstream.feeds.android.network.models.ChannelMemberResponse? = null,
     @Json(name = "moderation")
     public val moderation: io.getstream.feeds.android.network.models.ModerationV2Response? = null,
     @Json(name = "pinned_by")

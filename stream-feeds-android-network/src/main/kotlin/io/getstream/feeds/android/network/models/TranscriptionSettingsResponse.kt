@@ -31,6 +31,9 @@ public data class TranscriptionSettingsResponse(
     @Json(name = "closed_caption_mode") public val closedCaptionMode: ClosedCaptionMode,
     @Json(name = "language") public val language: Language,
     @Json(name = "mode") public val mode: Mode,
+    @Json(name = "speech_segment_config")
+    public val speechSegmentConfig: io.getstream.feeds.android.network.models.SpeechSegmentConfig? =
+        null,
 ) {
 
     /** ClosedCaptionMode Enum */

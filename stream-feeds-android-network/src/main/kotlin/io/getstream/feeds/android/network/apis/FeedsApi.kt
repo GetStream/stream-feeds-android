@@ -909,6 +909,17 @@ public interface FeedsApi {
         @Query("user_id") userId: kotlin.String? = null,
     ): io.getstream.feeds.android.network.models.PollVotesResponse
 
+    /**
+     * Push notification preferences Upserts the push preferences for a user and or channel member.
+     * Set to all, mentions or none
+     */
+    @POST("/api/v2/push_preferences")
+    public suspend fun updatePushNotificationPreferences(
+        @Body
+        upsertPushPreferencesRequest:
+            io.getstream.feeds.android.network.models.UpsertPushPreferencesRequest
+    ): io.getstream.feeds.android.network.models.UpsertPushPreferencesResponse
+
     /** Delete file Deletes previously uploaded file */
     @DELETE("/api/v2/uploads/file")
     public suspend fun deleteFile(

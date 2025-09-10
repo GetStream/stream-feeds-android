@@ -130,6 +130,21 @@ public object Serializer {
                 io.getstream.feeds.android.network.models.FeedRequest.Visibility.VisibilityAdapter()
             )
             .add(
+                io.getstream.feeds.android.network.models.FeedsPreferences.Comment.CommentAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.FeedsPreferences.CommentReaction
+                    .CommentReactionAdapter()
+            )
+            .add(io.getstream.feeds.android.network.models.FeedsPreferences.Follow.FollowAdapter())
+            .add(
+                io.getstream.feeds.android.network.models.FeedsPreferences.Mention.MentionAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.FeedsPreferences.Reaction
+                    .ReactionAdapter()
+            )
+            .add(
                 io.getstream.feeds.android.network.models.FollowRequest.PushPreference
                     .PushPreferenceAdapter()
             )
@@ -158,6 +173,18 @@ public object Serializer {
                     .ModeAdapter()
             )
             .add(io.getstream.feeds.android.network.models.OCRRule.Action.ActionAdapter())
+            .add(
+                io.getstream.feeds.android.network.models.PushPreferenceInput.CallLevel
+                    .CallLevelAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.PushPreferenceInput.ChatLevel
+                    .ChatLevelAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.PushPreferenceInput.FeedsLevel
+                    .FeedsLevelAdapter()
+            )
             .add(io.getstream.feeds.android.network.models.QueryCommentsRequest.Sort.SortAdapter())
             .add(
                 io.getstream.feeds.android.network.models.StoriesConfig.ExpirationBehaviour

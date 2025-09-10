@@ -23,5 +23,7 @@ import kotlin.io.*
 
 /** CallIngressResponse is the payload for ingress settings */
 public data class CallIngressResponse(
-    @Json(name = "rtmp") public val rtmp: io.getstream.feeds.android.network.models.RTMPIngress
+    @Json(name = "rtmp") public val rtmp: io.getstream.feeds.android.network.models.RTMPIngress,
+    @Json(name = "srt") public val srt: io.getstream.feeds.android.network.models.SRTIngress,
+    @Json(name = "whip") public val whip: io.getstream.feeds.android.network.models.WHIPIngress,
 )
