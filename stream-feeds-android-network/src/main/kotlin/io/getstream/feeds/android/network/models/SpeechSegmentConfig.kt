@@ -19,12 +19,10 @@ package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
 import kotlin.collections.*
-import kotlin.collections.List
 import kotlin.io.*
 
 /**  */
-public data class PushNotificationConfig(
-    @Json(name = "enable_push") public val enablePush: kotlin.Boolean? = null,
-    @Json(name = "push_types")
-    public val pushTypes: kotlin.collections.List<kotlin.String>? = emptyList(),
+public data class SpeechSegmentConfig(
+    @Json(name = "max_speech_caption_ms") public val maxSpeechCaptionMs: kotlin.Int? = null,
+    @Json(name = "silence_duration_ms") public val silenceDurationMs: kotlin.Int? = null,
 )

@@ -19,12 +19,9 @@ package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
 import kotlin.collections.*
-import kotlin.collections.List
 import kotlin.io.*
 
 /**  */
-public data class PushNotificationConfig(
-    @Json(name = "enable_push") public val enablePush: kotlin.Boolean? = null,
-    @Json(name = "push_types")
-    public val pushTypes: kotlin.collections.List<kotlin.String>? = emptyList(),
+public data class ChannelMemberResponse(
+    @Json(name = "channel_role") public val channelRole: kotlin.String
 )

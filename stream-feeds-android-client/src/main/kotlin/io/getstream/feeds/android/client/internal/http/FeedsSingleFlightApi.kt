@@ -161,6 +161,8 @@ import io.getstream.feeds.android.network.models.UpsertActivitiesRequest
 import io.getstream.feeds.android.network.models.UpsertActivitiesResponse
 import io.getstream.feeds.android.network.models.UpsertConfigRequest
 import io.getstream.feeds.android.network.models.UpsertConfigResponse
+import io.getstream.feeds.android.network.models.UpsertPushPreferencesRequest
+import io.getstream.feeds.android.network.models.UpsertPushPreferencesResponse
 import io.getstream.feeds.android.network.models.WSAuthMessage
 
 internal class FeedsSingleFlightApi(
@@ -1315,6 +1317,18 @@ internal class FeedsSingleFlightApi(
         singleFlightProcessor
             .run("queryPollVotes-${pollId}-${userId}".asStreamTypedKey<PollVotesResponse>()) {
                 delegate.queryPollVotes(pollId, userId)
+            }
+            .getOrThrow()
+
+    override suspend fun updatePushNotificationPreferences(
+        upsertPushPreferencesRequest: UpsertPushPreferencesRequest
+    ): UpsertPushPreferencesResponse =
+        singleFlightProcessor
+            .run(
+                "updatePushNotificationPreferences-${upsertPushPreferencesRequest}"
+                    .asStreamTypedKey<UpsertPushPreferencesResponse>()
+            ) {
+                delegate.updatePushNotificationPreferences(upsertPushPreferencesRequest)
             }
             .getOrThrow()
 
