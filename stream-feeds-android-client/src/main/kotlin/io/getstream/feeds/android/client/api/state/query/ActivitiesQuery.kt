@@ -119,6 +119,14 @@ public data class ActivitiesFilterField(override val remote: String) : FilterFie
          * Supported operators: `equal`, `in`
          */
         public val userId: ActivitiesFilterField = ActivitiesFilterField("user_id")
+
+        /**
+         * Filter by activity expiration timestamp.
+         *
+         * Supported operators: `equal`, `notEqual`, `greater`, `greaterOrEqual`, `less`,
+         * `lessOrEqual`, `exists`
+         */
+        public val expiresAt: ActivitiesFilterField = ActivitiesFilterField("expires_at")
     }
 }
 
