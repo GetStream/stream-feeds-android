@@ -128,17 +128,19 @@ constructor(
         }
     }
 
-    fun onHeartClick(activity: ActivityData) {
-        if (activity.ownReactions.isEmpty()) {
-            // Add 'heart' reaction
+    fun onReactionClick(activity: ActivityData, reaction: Reaction) {
+        if (activity.ownReactions.none { it.type == reaction.value }) {
+            // Add reaction
             feed.withFirstContent(viewModelScope) {
-                val request = AddReactionRequest("heart", createNotificationActivity = true)
+                val request = AddReactionRequest(reaction.value, createNotificationActivity = true)
                 addReaction(activity.id, request).notifyOnFailure { "Failed to add reaction" }
             }
         } else {
-            // Remove 'heart' reaction
+            // Remove reaction
             feed.withFirstContent(viewModelScope) {
-                deleteReaction(activity.id, "heart").notifyOnFailure { "Failed to delete reaction" }
+                deleteReaction(activity.id, reaction.value).notifyOnFailure {
+                    "Failed to delete reaction"
+                }
             }
         }
     }

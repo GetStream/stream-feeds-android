@@ -38,7 +38,7 @@ import io.getstream.feeds.android.sample.R
 fun ActivityActions(
     activity: ActivityData,
     onCommentClick: () -> Unit,
-    onHeartClick: () -> Unit,
+    onReactionClick: (Reaction) -> Unit,
     onRepostClick: () -> Unit,
     onBookmarkClick: () -> Unit,
 ) {
@@ -54,22 +54,18 @@ fun ActivityActions(
             onClick = onCommentClick,
         )
 
-        // Hearts (Likes)
-        val heartsCount = activity.reactionGroups["heart"]?.count ?: 0
-        val hasOwnHeart = activity.ownReactions.any { it.type == "heart" }
-        val icon =
-            if (hasOwnHeart) {
-                painterResource(R.drawable.favorite_filled_24)
-            } else {
-                painterResource(R.drawable.favorite_24)
-            }
-        ActionButton(
-            icon = icon,
-            count = heartsCount,
-            contentDescription = "Like",
-            onClick = onHeartClick,
-            tint = Color(0xFFE91E63), // Pink color for hearts
-        )
+        Reaction.entries.forEach { reaction ->
+            val reactionCount = activity.reactionGroups[reaction.value]?.count ?: 0
+            val hasOwnReaction = activity.ownReactions.any { it.type == reaction.value }
+
+            ActionButton(
+                icon = reaction.painter(hasOwnReaction),
+                count = reactionCount,
+                contentDescription = reaction.description,
+                onClick = { onReactionClick(reaction) },
+                tint = reaction.color,
+            )
+        }
 
         // Reposts
         ActionButton(
