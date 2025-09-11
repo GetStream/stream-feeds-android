@@ -15,6 +15,7 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
+import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.MemberListStateUpdates
 import io.getstream.feeds.android.client.internal.test.TestData.feedMemberResponse
@@ -24,13 +25,14 @@ import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
 import io.mockk.mockk
 import io.mockk.verify
-import java.util.Date
 import org.junit.Test
+import java.util.Date
 
 internal class MemberListEventHandlerTest {
+    private val fid = FeedId("user:feed-1")
     private val state: MemberListStateUpdates = mockk(relaxed = true)
 
-    private val handler = MemberListEventHandler(state)
+    private val handler = MemberListEventHandler(fid, state)
 
     @Test
     fun `on FeedMemberRemovedEvent, then call onMemberRemoved`() {

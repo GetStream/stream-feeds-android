@@ -45,7 +45,7 @@ internal class MemberListImpl(
 
     private val _state: MemberListStateImpl = MemberListStateImpl(query)
 
-    private val eventHandler = MemberListEventHandler(_state)
+    private val eventHandler = MemberListEventHandler(query.fid, _state)
 
     init {
         subscriptionManager.subscribe(eventHandler)
