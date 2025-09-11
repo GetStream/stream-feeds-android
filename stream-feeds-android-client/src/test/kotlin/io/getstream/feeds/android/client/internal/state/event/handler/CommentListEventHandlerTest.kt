@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.CommentListStateUpdates
 import io.getstream.feeds.android.client.internal.test.TestData.commentResponse
+import io.getstream.feeds.android.network.models.CommentDeletedEvent
 import io.getstream.feeds.android.network.models.CommentUpdatedEvent
 import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
@@ -45,6 +46,22 @@ internal class CommentListEventHandlerTest {
         handler.onEvent(event)
 
         verify { state.onCommentUpdated(comment.toModel()) }
+    }
+
+    @Test
+    fun `on CommentDeletedEvent, then call onCommentRemoved`() {
+        val comment = commentResponse()
+        val event =
+            CommentDeletedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                comment = comment,
+                type = "feeds.comment.deleted",
+            )
+
+        handler.onEvent(event)
+
+        verify { state.onCommentRemoved(event.comment.id) }
     }
 
     @Test

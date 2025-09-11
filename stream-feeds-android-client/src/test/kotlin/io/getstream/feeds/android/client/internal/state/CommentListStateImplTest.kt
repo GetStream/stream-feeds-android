@@ -60,4 +60,40 @@ internal class CommentListStateImplTest {
 
         assertEquals(expected, state.comments.value)
     }
+
+    @Test
+    fun `on commentRemoved from top level, then remove specific comment`() {
+        val comment1 = commentData("1", text = "First", createdAt = Date(1))
+        val comment2 = commentData("2", text = "Second", createdAt = Date(2))
+        val comment3 = commentData("3", text = "Third", createdAt = Date(3))
+        val result =
+            PaginationResult(
+                models = listOf(comment1, comment2, comment3),
+                pagination = PaginationData("next", "previous"),
+            )
+
+        state.onQueryMoreComments(result)
+        state.onCommentRemoved("2")
+
+        val expected = listOf(comment1, comment3)
+        assertEquals(expected, state.comments.value)
+    }
+
+    @Test
+    fun `on commentRemoved from nested reply, then remove reply and update parent reply count`() {
+        val reply1 = commentData("reply1", text = "Reply 1", createdAt = Date(2))
+        val reply2 = commentData("reply2", text = "Reply 2", createdAt = Date(3))
+        val reply3 = commentData("reply3", text = "Reply 3", createdAt = Date(4))
+        val parentComment =
+            commentData("parent", text = "Parent", createdAt = Date(1))
+                .copy(replies = listOf(reply1, reply2, reply3), replyCount = 3)
+
+        val result = PaginationResult(models = listOf(parentComment), pagination = PaginationData())
+
+        state.onQueryMoreComments(result)
+        state.onCommentRemoved("reply2")
+
+        val expectedParent = parentComment.copy(replies = listOf(reply1, reply3), replyCount = 2)
+        assertEquals(listOf(expectedParent), state.comments.value)
+    }
 }

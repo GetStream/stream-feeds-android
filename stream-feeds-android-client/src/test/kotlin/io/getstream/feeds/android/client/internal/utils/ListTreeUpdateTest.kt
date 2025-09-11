@@ -208,6 +208,84 @@ internal class ListTreeUpdateTest {
         assertEquals(expected, updated)
     }
 
+    @Test
+    fun `on treeRemoveFirst when element is not found, then return original list`() {
+        val initial = listOf(TestNode("1", 20), TestNode("2", 25), TestNode("3", 30))
+
+        val result =
+            initial.treeRemoveFirst(
+                matcher = { it.id == "4" },
+                childrenSelector = TestNode::nodes,
+                updateChildren = { node, children -> node.copy(nodes = children) },
+            )
+
+        assertEquals(initial, result)
+    }
+
+    @Test
+    fun `on treeRemoveFirst when element is found at top level, then remove element`() {
+        val initial = listOf(TestNode("1", 20), TestNode("2", 25), TestNode("3", 30))
+        val expected = listOf(TestNode("1", 20), TestNode("3", 30))
+
+        val result =
+            initial.treeRemoveFirst(
+                matcher = { it.id == "2" },
+                childrenSelector = TestNode::nodes,
+                updateChildren = { node, children -> node.copy(nodes = children) },
+            )
+
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `on treeRemoveFirst when element is nested, then remove from children`() {
+        val initial =
+            listOf(
+                TestNode("1", 20),
+                TestNode(
+                    "2",
+                    25,
+                    listOf(TestNode("5", 50, listOf(TestNode("3", 30))), TestNode("4", 40)),
+                ),
+                TestNode("6", 60),
+            )
+        val expected =
+            listOf(
+                TestNode("1", 20),
+                TestNode("2", 25, listOf(TestNode("5", 50), TestNode("4", 40))),
+                TestNode("6", 60),
+            )
+
+        val result =
+            initial.treeRemoveFirst(
+                matcher = { it.id == "3" },
+                childrenSelector = TestNode::nodes,
+                updateChildren = { node, children -> node.copy(nodes = children) },
+            )
+
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `on treeRemoveFirst when multiple elements match, then remove only first match`() {
+        val initial =
+            listOf(
+                TestNode("A", 1, listOf(TestNode("target", 100))),
+                TestNode("B", 2, listOf(TestNode("target", 200))),
+            )
+        val expected =
+            listOf(TestNode("A", 1, listOf()), TestNode("B", 2, listOf(TestNode("target", 200))))
+
+        val result =
+            initial.treeRemoveFirst(
+                matcher = { it.id == "target" },
+                childrenSelector = TestNode::nodes,
+                updateChildren = { node, children -> node.copy(nodes = children) },
+            )
+
+        assertEquals(expected, result)
+    }
+
     private data class TestNode(
         val id: String,
         val sortField: Int,

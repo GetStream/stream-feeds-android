@@ -28,6 +28,7 @@ import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.query.toComparator
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
+import io.getstream.feeds.android.client.internal.utils.treeRemoveFirst
 import io.getstream.feeds.android.client.internal.utils.treeUpdateFirst
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -96,16 +97,13 @@ internal class ActivityCommentListStateImpl(
 
     override fun onCommentRemoved(commentId: String) {
         _comments.update { current ->
-            // First check if it's a top-level comment
-            val filteredTopLevel = current.filter { it.id != commentId }
-
-            if (filteredTopLevel.size != current.size) {
-                // A top-level comment was removed
-                filteredTopLevel
-            } else {
-                // It might be a nested reply, search and remove recursively
-                current.map { comment -> removeCommentFromReplies(comment, commentId) }
-            }
+            current.treeRemoveFirst(
+                matcher = { it.id == commentId },
+                childrenSelector = { it.replies.orEmpty() },
+                updateChildren = { parent, children ->
+                    parent.copy(replies = children, replyCount = parent.replyCount - 1)
+                },
+            )
         }
     }
 
@@ -137,29 +135,6 @@ internal class ActivityCommentListStateImpl(
         }
         // No matching parent found in this subtree, return unchanged
         return parent
-    }
-
-    private fun removeCommentFromReplies(
-        comment: ThreadedCommentData,
-        commentIdToRemove: String,
-    ): ThreadedCommentData {
-        // If this comment has no replies, nothing to remove
-        if (comment.replies.isNullOrEmpty()) {
-            return comment
-        }
-
-        // Check if the comment to remove is a direct child
-        val filteredReplies = comment.replies.filter { it.id != commentIdToRemove }
-        if (filteredReplies.size != comment.replies.size) {
-            // Found and removed a direct child, update reply count
-            return comment.copy(replies = filteredReplies, replyCount = comment.replyCount - 1)
-        }
-
-        // The comment wasn't a direct child, search recursively in nested replies
-        val updatedReplies =
-            comment.replies.map { reply -> removeCommentFromReplies(reply, commentIdToRemove) }
-
-        return comment.copy(replies = updatedReplies)
     }
 
     private fun addCommentReaction(

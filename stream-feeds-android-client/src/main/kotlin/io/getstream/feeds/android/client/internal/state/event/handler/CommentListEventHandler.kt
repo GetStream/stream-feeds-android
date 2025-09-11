@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.CommentListStateUpdates
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.network.models.CommentDeletedEvent
 import io.getstream.feeds.android.network.models.CommentUpdatedEvent
 import io.getstream.feeds.android.network.models.WSEvent
 
@@ -26,6 +27,7 @@ internal class CommentListEventHandler(private val state: CommentListStateUpdate
 
     override fun onEvent(event: WSEvent) {
         when (event) {
+            is CommentDeletedEvent -> state.onCommentRemoved(event.comment.id)
             is CommentUpdatedEvent -> state.onCommentUpdated(event.comment.toModel())
         }
     }
