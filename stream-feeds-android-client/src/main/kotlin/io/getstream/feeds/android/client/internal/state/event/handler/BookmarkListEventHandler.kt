@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.BookmarkListStateUpdates
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.network.models.BookmarkDeletedEvent
 import io.getstream.feeds.android.network.models.BookmarkFolderDeletedEvent
 import io.getstream.feeds.android.network.models.BookmarkFolderUpdatedEvent
 import io.getstream.feeds.android.network.models.BookmarkUpdatedEvent
@@ -31,7 +32,9 @@ internal class BookmarkListEventHandler(private val state: BookmarkListStateUpda
             is BookmarkFolderDeletedEvent -> state.onBookmarkFolderRemoved(event.bookmarkFolder.id)
             is BookmarkFolderUpdatedEvent ->
                 state.onBookmarkFolderUpdated(event.bookmarkFolder.toModel())
+
             is BookmarkUpdatedEvent -> state.onBookmarkUpdated(event.bookmark.toModel())
+            is BookmarkDeletedEvent -> state.onBookmarkRemoved(event.bookmark.toModel())
         }
     }
 }

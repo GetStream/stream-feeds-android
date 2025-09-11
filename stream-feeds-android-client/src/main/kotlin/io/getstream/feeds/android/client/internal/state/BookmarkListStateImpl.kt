@@ -28,6 +28,7 @@ import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * An observable state object that manages the current state of a bookmark list.
@@ -104,6 +105,10 @@ internal class BookmarkListStateImpl(override val query: BookmarksQuery) :
                 }
             }
     }
+
+    override fun onBookmarkRemoved(bookmark: BookmarkData) {
+        _bookmarks.update { current -> current.filter { it.id != bookmark.id } }
+    }
 }
 
 /**
@@ -127,4 +132,6 @@ internal interface BookmarkListStateUpdates {
     fun onBookmarkFolderUpdated(folder: BookmarkFolderData)
 
     fun onBookmarkUpdated(bookmark: BookmarkData)
+
+    fun onBookmarkRemoved(bookmark: BookmarkData)
 }
