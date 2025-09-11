@@ -275,12 +275,12 @@ internal object TestData {
             updatedAt = Date(1000),
         )
 
-    fun activityResponse(): ActivityResponse =
+    fun activityResponse(id: String = ""): ActivityResponse =
         ActivityResponse(
             bookmarkCount = 0,
             commentCount = 0,
             createdAt = Date(1000),
-            id = "",
+            id = id,
             popularity = 0,
             reactionCount = 0,
             score = 0f,
