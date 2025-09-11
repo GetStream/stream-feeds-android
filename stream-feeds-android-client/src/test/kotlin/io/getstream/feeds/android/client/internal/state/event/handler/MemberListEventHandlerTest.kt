@@ -25,8 +25,8 @@ import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Test
 import java.util.Date
+import org.junit.Test
 
 internal class MemberListEventHandlerTest {
     private val fid = FeedId("user:feed-1")
