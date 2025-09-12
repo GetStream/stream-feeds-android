@@ -23,6 +23,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ramcosta.composedestinations.generated.destinations.FeedsScreenDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.getstream.android.core.api.filter.doesNotExist
+import io.getstream.android.core.api.filter.exists
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.file.FileType
 import io.getstream.feeds.android.client.api.model.ActivityData
@@ -32,6 +34,8 @@ import io.getstream.feeds.android.client.api.model.FeedInputData
 import io.getstream.feeds.android.client.api.model.FeedMemberRequestData
 import io.getstream.feeds.android.client.api.model.FeedVisibility
 import io.getstream.feeds.android.client.api.state.Feed
+import io.getstream.feeds.android.client.api.state.query.ActivitiesFilter
+import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.network.models.AddReactionRequest
 import io.getstream.feeds.android.network.models.CreatePollRequest
@@ -40,6 +44,7 @@ import io.getstream.feeds.android.network.models.CreatePollRequest.VotingVisibil
 import io.getstream.feeds.android.network.models.PollOptionInput
 import io.getstream.feeds.android.network.models.UpdateActivityRequest
 import io.getstream.feeds.android.sample.login.LoginManager
+import io.getstream.feeds.android.sample.login.LoginManager.UserState
 import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.util.copyToCache
 import io.getstream.feeds.android.sample.util.deleteFiles
@@ -48,14 +53,16 @@ import io.getstream.feeds.android.sample.util.map
 import io.getstream.feeds.android.sample.util.notNull
 import io.getstream.feeds.android.sample.util.withFirstContent
 import io.getstream.feeds.android.sample.utils.logResult
+import java.io.File
 import javax.inject.Inject
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.days
+import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -75,14 +82,9 @@ constructor(
         flow { emit(AsyncResource.notNull(loginManager.currentState())) }
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
-    private val feed =
+    val viewState =
         userState
-            .map { it.map(::getFeed) }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
-
-    val state =
-        feed
-            .map { asyncResource -> asyncResource.map(Feed::state) }
+            .map { it.map(::toState) }
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
     private val _createContentState = MutableStateFlow(CreateContentState.Hidden)
@@ -95,35 +97,25 @@ constructor(
             fid = args.fid,
         )
 
-    // Notification feed
-    private val notificationFid = FeedId("notification", args.userId)
-    private val notificationFeed =
-        userState
-            .map { asyncResource ->
-                asyncResource.map { userState -> userState.client.feed(FeedQuery(notificationFid)) }
-            }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
-
-    val notificationStatus =
-        notificationFeed
-            .flatMapLatest { it.getOrNull()?.state?.notificationStatus ?: emptyFlow() }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, null)
-
     private val errorChannel = Channel<String>()
     val error = errorChannel.receiveAsFlow()
 
     init {
-        feed.withFirstContent(viewModelScope) {
-            getOrCreate().notifyOnFailure { "Error getting the feed" }
+        viewState.withFirstContent(viewModelScope) {
+            timeline.getOrCreate().notifyOnFailure { "Error getting the timeline" }
         }
-        notificationFeed.withFirstContent(viewModelScope) { getOrCreate() }
+        viewState.withFirstContent(viewModelScope) {
+            stories.getOrCreate().notifyOnFailure { "Error getting the stories" }
+        }
+        viewState.withFirstContent(viewModelScope) { notifications.getOrCreate() }
     }
 
     fun onLoadMore() {
-        feed.withFirstContent(viewModelScope) {
-            if (!state.canLoadMoreActivities) return@withFirstContent
-            queryMoreActivities()
-                .logResult(TAG, "Loading more activities for feed: $fid")
+        viewState.withFirstContent(viewModelScope) {
+            if (!timeline.state.canLoadMoreActivities) return@withFirstContent
+            timeline
+                .queryMoreActivities()
+                .logResult(TAG, "Loading more activities for feed: ${timeline.fid}")
                 .notifyOnFailure { "Failed to load more activities" }
         }
     }
@@ -131,14 +123,16 @@ constructor(
     fun onReactionClick(activity: ActivityData, reaction: Reaction) {
         if (activity.ownReactions.none { it.type == reaction.value }) {
             // Add reaction
-            feed.withFirstContent(viewModelScope) {
+            viewState.withFirstContent(viewModelScope) {
                 val request = AddReactionRequest(reaction.value, createNotificationActivity = true)
-                addReaction(activity.id, request).notifyOnFailure { "Failed to add reaction" }
+                timeline.addReaction(activity.id, request).notifyOnFailure {
+                    "Failed to add reaction"
+                }
             }
         } else {
             // Remove reaction
-            feed.withFirstContent(viewModelScope) {
-                deleteReaction(activity.id, reaction.value).notifyOnFailure {
+            viewState.withFirstContent(viewModelScope) {
+                timeline.deleteReaction(activity.id, reaction.value).notifyOnFailure {
                     "Failed to delete reaction"
                 }
             }
@@ -146,42 +140,46 @@ constructor(
     }
 
     fun onRepostClick(activity: ActivityData, text: String?) {
-        feed.withFirstContent(viewModelScope) {
-            repost(activity.id, text = text).notifyOnFailure { "Failed to repost activity" }
+        viewState.withFirstContent(viewModelScope) {
+            timeline.repost(activity.id, text = text).notifyOnFailure {
+                "Failed to repost activity"
+            }
         }
     }
 
     fun onBookmarkClick(activity: ActivityData) {
         if (activity.ownBookmarks.isEmpty()) {
             // Add bookmark
-            feed.withFirstContent(viewModelScope) {
-                addBookmark(activity.id).notifyOnFailure { "Failed to add bookmark" }
+            viewState.withFirstContent(viewModelScope) {
+                timeline.addBookmark(activity.id).notifyOnFailure { "Failed to add bookmark" }
             }
         } else {
             // Remove bookmark
-            feed.withFirstContent(viewModelScope) {
-                deleteBookmark(activity.id).notifyOnFailure { "Failed to delete bookmark" }
+            viewState.withFirstContent(viewModelScope) {
+                timeline.deleteBookmark(activity.id).notifyOnFailure { "Failed to delete bookmark" }
             }
         }
     }
 
     fun onDeleteClick(activityId: String) {
-        feed.withFirstContent(viewModelScope) {
-            deleteActivity(activityId)
+        viewState.withFirstContent(viewModelScope) {
+            timeline
+                .deleteActivity(activityId)
                 .logResult(TAG, "Deleting activity: $activityId")
                 .notifyOnFailure { "Failed to delete activity" }
         }
     }
 
     fun onEditActivity(activityId: String, text: String) {
-        feed.withFirstContent(viewModelScope) {
-            updateActivity(activityId, UpdateActivityRequest(text = text))
+        viewState.withFirstContent(viewModelScope) {
+            timeline
+                .updateActivity(activityId, UpdateActivityRequest(text = text))
                 .logResult(TAG, "Updating activity: $activityId with text: $text")
                 .notifyOnFailure { "Failed to edit activity" }
         }
     }
 
-    fun onCreateClick() {
+    fun onCreatePostClick() {
         _createContentState.value = CreateContentState.Composing
     }
 
@@ -189,10 +187,10 @@ constructor(
         _createContentState.value = CreateContentState.Hidden
     }
 
-    fun onCreatePost(text: String, attachments: List<Uri>) {
+    fun onCreatePost(text: String, attachments: List<Uri>, isStory: Boolean) {
         _createContentState.value = CreateContentState.Posting
 
-        feed.withFirstContent(viewModelScope) {
+        viewState.withFirstContent(viewModelScope) {
             val attachmentFiles =
                 application
                     .copyToCache(attachments)
@@ -204,16 +202,9 @@ constructor(
                     }
 
             val result =
-                addActivity(
-                        FeedAddActivityRequest(
-                            type = "activity",
-                            text = text,
-                            feeds = listOf(fid.rawValue),
-                            attachmentUploads =
-                                attachmentFiles.map {
-                                    FeedUploadPayload(it, FileType.Image("jpeg"))
-                                },
-                        ),
+                timeline
+                    .addActivity(
+                        request = addActivityRequest(timeline.fid, text, isStory, attachmentFiles),
                         attachmentUploadProgress = { file, progress ->
                             Log.d(TAG, "Uploading attachment: ${file.type}, progress: $progress")
                         },
@@ -231,8 +222,23 @@ constructor(
         }
     }
 
+    @OptIn(ExperimentalTime::class)
+    private fun addActivityRequest(
+        feedId: FeedId,
+        text: String,
+        isStory: Boolean,
+        attachments: List<File>,
+    ) =
+        FeedAddActivityRequest(
+            type = "activity",
+            text = text,
+            feeds = listOf(feedId.rawValue),
+            expiresAt = if (isStory) Clock.System.now().plus(1.days).toString() else null,
+            attachmentUploads = attachments.map { FeedUploadPayload(it, FileType.Image("jpeg")) },
+        )
+
     fun onCreatePoll(poll: PollFormData) {
-        feed.withFirstContent(viewModelScope) {
+        viewState.withFirstContent(viewModelScope) {
             val request =
                 CreatePollRequest(
                     name = poll.question,
@@ -247,29 +253,40 @@ constructor(
                     votingVisibility = if (poll.anonymousPoll) Anonymous else Public,
                 )
 
-            createPoll(request = request, activityType = "activity")
+            timeline
+                .createPoll(request = request, activityType = "activity")
                 .logResult(TAG, "Creating poll with question: ${poll.question}")
                 .notifyOnFailure { "Failed to create poll" }
         }
     }
 
-    private fun getFeed(userState: LoginManager.UserState): Feed {
-        val query =
-            FeedQuery(
-                fid = args.fid,
-                data =
-                    FeedInputData(
-                        members = listOf(FeedMemberRequestData(userState.user.id)),
-                        visibility = FeedVisibility.Public,
-                    ),
-            )
+    private fun toState(userState: UserState): ViewState {
+        val timelineQuery = feedQuery(userState, ActivitiesFilterField.expiresAt.doesNotExist())
+        val storiesQuery = feedQuery(userState, ActivitiesFilterField.expiresAt.exists())
 
-        return userState.client.feed(query)
+        return ViewState(
+            timeline = userState.client.feed(timelineQuery),
+            stories = userState.client.feed(storiesQuery),
+            notifications = userState.client.feed(FeedId("notification", args.userId)),
+        )
     }
+
+    private fun feedQuery(userState: UserState, filter: ActivitiesFilter) =
+        FeedQuery(
+            fid = args.fid,
+            activityFilter = filter,
+            data =
+                FeedInputData(
+                    members = listOf(FeedMemberRequestData(userState.user.id)),
+                    visibility = FeedVisibility.Public,
+                ),
+        )
 
     private suspend inline fun <T> Result<T>.notifyOnFailure(message: () -> String) = onFailure {
         errorChannel.send("${message()}: ${it.message}")
     }
+
+    data class ViewState(val timeline: Feed, val stories: Feed, val notifications: Feed)
 
     companion object {
         private const val TAG = "FeedViewModel"
