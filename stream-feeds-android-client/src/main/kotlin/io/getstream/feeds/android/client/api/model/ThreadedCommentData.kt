@@ -16,7 +16,7 @@
 package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.client.api.state.query.CommentsSortDataFields
-import io.getstream.feeds.android.client.internal.utils.upsert
+import io.getstream.feeds.android.client.internal.model.addReaction
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import io.getstream.feeds.android.network.models.Attachment
 import io.getstream.feeds.android.network.models.RepliesMeta
@@ -169,38 +169,21 @@ public data class ThreadedCommentData(
 internal fun ThreadedCommentData.addReaction(
     reaction: FeedsReactionData,
     currentUserId: String,
-): ThreadedCommentData {
-    val ownReaction = reaction.user.id == currentUserId
-    val updatedOwnReactions =
-        if (ownReaction) {
-            ownReactions.upsert(reaction, FeedsReactionData::id)
-        } else {
-            ownReactions
-        }
-    val updatedLatestReactions = latestReactions.upsert(reaction, FeedsReactionData::id)
-    val inserted =
-        updatedOwnReactions.size > ownReactions.size ||
-            updatedLatestReactions.size > latestReactions.size
-    val reactionGroup =
-        this.reactionGroups[reaction.type]
-            ?: ReactionGroupData(count = 1, reaction.createdAt, reaction.createdAt)
-    // Increment the count if the reaction was inserted (not an update of existing)
-    val updatedReactionGroup =
-        if (inserted) {
-            reactionGroup.increment(reaction.createdAt)
-        } else {
-            reactionGroup
-        }
-    val updatedReactionGroups =
-        this.reactionGroups.toMutableMap().apply { this[reaction.type] = updatedReactionGroup }
-    val updatedReactionCount = updatedReactionGroups.values.sumOf(ReactionGroupData::count)
-    return this.copy(
-        latestReactions = updatedLatestReactions,
-        reactionGroups = updatedReactionGroups,
-        reactionCount = updatedReactionCount,
-        ownReactions = updatedOwnReactions,
-    )
-}
+): ThreadedCommentData =
+    addReaction(
+        ownReactions = ownReactions,
+        latestReactions = latestReactions,
+        reactionGroups = reactionGroups,
+        reaction = reaction,
+        currentUserId = currentUserId,
+    ) { latestReactions, reactionGroups, reactionCount, ownReactions ->
+        copy(
+            latestReactions = latestReactions,
+            reactionGroups = reactionGroups,
+            reactionCount = reactionCount,
+            ownReactions = ownReactions,
+        )
+    }
 
 /**
  * Removes a reaction from the comment, updating the latest reactions, reaction groups, reaction

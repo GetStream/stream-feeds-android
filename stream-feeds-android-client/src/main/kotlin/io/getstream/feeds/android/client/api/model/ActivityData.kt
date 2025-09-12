@@ -15,6 +15,7 @@
  */
 package io.getstream.feeds.android.client.api.model
 
+import io.getstream.feeds.android.client.internal.model.addReaction
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.network.models.ActivityLocation
 import io.getstream.feeds.android.network.models.ActivityResponse
@@ -276,28 +277,21 @@ internal fun ActivityData.deleteBookmark(
 internal fun ActivityData.addReaction(
     reaction: FeedsReactionData,
     currentUserId: String,
-): ActivityData {
-    val updatedLatestReactions = this.latestReactions.upsert(reaction, FeedsReactionData::id)
-    val reactionGroup =
-        this.reactionGroups[reaction.type]
-            ?: ReactionGroupData(1, reaction.createdAt, reaction.createdAt)
-    val updatedReactionGroup = reactionGroup.increment(reaction.createdAt)
-    val updatedReactionGroups =
-        this.reactionGroups.toMutableMap().apply { this[reaction.type] = updatedReactionGroup }
-    val updatedReactionCount = updatedReactionGroups.values.sumOf(ReactionGroupData::count)
-    val updatedOwnReactions =
-        if (reaction.user.id == currentUserId) {
-            this.ownReactions.upsert(reaction, FeedsReactionData::id)
-        } else {
-            this.ownReactions
-        }
-    return this.copy(
-        latestReactions = updatedLatestReactions,
-        reactionGroups = updatedReactionGroups,
-        reactionCount = updatedReactionCount,
-        ownReactions = updatedOwnReactions,
-    )
-}
+): ActivityData =
+    addReaction(
+        ownReactions = ownReactions,
+        latestReactions = latestReactions,
+        reactionGroups = reactionGroups,
+        reaction = reaction,
+        currentUserId = currentUserId,
+    ) { latestReactions, reactionGroups, reactionCount, ownReactions ->
+        copy(
+            latestReactions = latestReactions,
+            reactionGroups = reactionGroups,
+            reactionCount = reactionCount,
+            ownReactions = ownReactions,
+        )
+    }
 
 /**
  * Removes a reaction from the activity, updating the latest reactions, reaction groups, reaction

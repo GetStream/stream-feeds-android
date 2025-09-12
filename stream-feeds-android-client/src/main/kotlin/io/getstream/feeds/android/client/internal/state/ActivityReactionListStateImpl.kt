@@ -74,9 +74,7 @@ internal class ActivityReactionListStateImpl(override val query: ActivityReactio
     }
 
     override fun onReactionAdded(reaction: FeedsReactionData) {
-        _reactions.update { current ->
-            current.upsert(reaction, FeedsReactionData::id)
-        }
+        _reactions.update { current -> current.upsert(reaction, FeedsReactionData::id) }
     }
 
     override fun onReactionRemoved(reaction: FeedsReactionData) {
