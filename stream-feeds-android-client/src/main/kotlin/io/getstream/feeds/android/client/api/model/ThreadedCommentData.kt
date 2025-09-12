@@ -204,8 +204,8 @@ internal fun ThreadedCommentData.removeReaction(
         } else {
             this.ownReactions
         }
-    val removed = updatedOwnReactions.size < this.ownReactions.size
     val updatedLatestReactions = this.latestReactions.filter { it.id != reaction.id }
+    val removed = updatedOwnReactions.size < ownReactions.size || updatedLatestReactions.size < latestReactions.size
     val reactionGroup = this.reactionGroups[reaction.type]
     if (reactionGroup == null) {
         // If there is no reaction group for this type, just update latest and own reactions.
@@ -215,11 +215,9 @@ internal fun ThreadedCommentData.removeReaction(
             ownReactions = updatedOwnReactions,
         )
     }
-    // Decrement the count if:
-    // 1. The reaction is from another user (not own reaction)
-    // 2. The reaction is from the current user, and it was already present
+    // Decrement the count if the reaction was actually removed
     val updatedReactionGroup =
-        if (!ownReaction || removed) {
+        if (removed) {
             reactionGroup.decrement(reaction.createdAt)
         } else {
             reactionGroup
