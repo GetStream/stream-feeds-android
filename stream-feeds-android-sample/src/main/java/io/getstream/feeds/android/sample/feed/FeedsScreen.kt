@@ -187,7 +187,7 @@ private fun FeedsScreenContent(
                                     )
                                 )
                             },
-                            onHeartClick = { viewModel.onHeartClick(activity) },
+                            onReactionClick = { viewModel.onReactionClick(activity, it) },
                             onRepostClick = { message ->
                                 viewModel.onRepostClick(activity, message)
                             },
@@ -351,7 +351,7 @@ fun ActivityContent(
     data: ActivityData,
     currentUserId: String,
     onCommentClick: () -> Unit,
-    onHeartClick: () -> Unit,
+    onReactionClick: (Reaction) -> Unit,
     onRepostClick: (String?) -> Unit,
     onBookmarkClick: () -> Unit,
     onDeleteClick: () -> Unit,
@@ -412,7 +412,7 @@ fun ActivityContent(
         ActivityActions(
             activity = data,
             onCommentClick = onCommentClick,
-            onHeartClick = onHeartClick,
+            onReactionClick = onReactionClick,
             onRepostClick = { showRepostDialog = true },
             onBookmarkClick = onBookmarkClick,
         )
