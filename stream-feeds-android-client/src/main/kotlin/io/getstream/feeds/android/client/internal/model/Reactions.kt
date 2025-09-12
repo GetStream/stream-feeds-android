@@ -17,7 +17,9 @@ package io.getstream.feeds.android.client.internal.model
 
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.ReactionGroupData
+import io.getstream.feeds.android.client.api.model.decrement
 import io.getstream.feeds.android.client.api.model.increment
+import io.getstream.feeds.android.client.api.model.isEmpty
 import io.getstream.feeds.android.client.internal.utils.upsert
 
 internal inline fun <T> addReaction(
@@ -57,6 +59,59 @@ internal inline fun <T> addReaction(
         }
     val updatedReactionGroups =
         reactionGroups.toMutableMap().apply { this[reaction.type] = updatedReactionGroup }
+    val updatedReactionCount = updatedReactionGroups.values.sumOf(ReactionGroupData::count)
+    return update(
+        updatedLatestReactions,
+        updatedReactionGroups,
+        updatedReactionCount,
+        updatedOwnReactions,
+    )
+}
+
+internal inline fun <T> removeReaction(
+    ownReactions: List<FeedsReactionData>,
+    latestReactions: List<FeedsReactionData>,
+    reactionGroups: Map<String, ReactionGroupData>,
+    reaction: FeedsReactionData,
+    currentUserId: String,
+    update:
+        (
+            latestReactions: List<FeedsReactionData>,
+            reactionGroups: Map<String, ReactionGroupData>?,
+            reactionCount: Int?,
+            ownReactions: List<FeedsReactionData>,
+        ) -> T,
+): T {
+    val ownReaction = reaction.user.id == currentUserId
+    val updatedOwnReactions =
+        if (ownReaction) {
+            ownReactions.filter { it.id != reaction.id }
+        } else {
+            ownReactions
+        }
+    val updatedLatestReactions = latestReactions.filter { it.id != reaction.id }
+    val removed =
+        updatedOwnReactions.size < ownReactions.size ||
+            updatedLatestReactions.size < latestReactions.size
+    val reactionGroup = reactionGroups[reaction.type]
+    if (reactionGroup == null) {
+        // If there is no reaction group for this type, just update latest and own reactions.
+        // Note: This is only a hypothetical case, as we should always have a reaction group.
+        return update(updatedLatestReactions, null, null, updatedOwnReactions)
+    }
+    // Decrement the count if the reaction was actually removed
+    val updatedReactionGroup =
+        if (removed) {
+            reactionGroup.decrement(reaction.createdAt)
+        } else {
+            reactionGroup
+        }
+    val updatedReactionGroups =
+        if (updatedReactionGroup.isEmpty) {
+            reactionGroups - reaction.type // Remove empty group
+        } else {
+            reactionGroups.toMutableMap().apply { this[reaction.type] = updatedReactionGroup }
+        }
     val updatedReactionCount = updatedReactionGroups.values.sumOf(ReactionGroupData::count)
     return update(
         updatedLatestReactions,
