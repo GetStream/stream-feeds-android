@@ -52,8 +52,7 @@ import io.getstream.feeds.android.sample.components.UserAvatar
 fun StoryScreen(activity: ActivityData, onDismiss: () -> Unit) {
     Dialog(
         onDismissRequest = onDismiss,
-        properties =
-            DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
+        properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
         val firstImage = activity.attachments.firstOrNull()?.assetUrl
 
