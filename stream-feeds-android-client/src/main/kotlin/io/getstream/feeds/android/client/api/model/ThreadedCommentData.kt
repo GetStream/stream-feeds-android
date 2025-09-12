@@ -177,16 +177,16 @@ internal fun ThreadedCommentData.addReaction(
         } else {
             ownReactions
         }
-    val inserted = updatedOwnReactions.size > ownReactions.size
     val updatedLatestReactions = latestReactions.upsert(reaction, FeedsReactionData::id)
+    val inserted =
+        updatedOwnReactions.size > ownReactions.size ||
+            updatedLatestReactions.size > latestReactions.size
     val reactionGroup =
         this.reactionGroups[reaction.type]
             ?: ReactionGroupData(count = 1, reaction.createdAt, reaction.createdAt)
-    // Increment the count if:
-    // 1. The reaction is from another user (not own reaction)
-    // 2. The reaction is from the current user, but it's a new reaction (not an update of existing)
+    // Increment the count if the reaction was inserted (not an update of existing)
     val updatedReactionGroup =
-        if (!ownReaction || inserted) {
+        if (inserted) {
             reactionGroup.increment(reaction.createdAt)
         } else {
             reactionGroup
