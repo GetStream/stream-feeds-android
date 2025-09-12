@@ -28,6 +28,7 @@ import io.getstream.feeds.android.network.models.PollVoteChangedFeedEvent
 import io.getstream.feeds.android.network.models.PollVoteRemovedFeedEvent
 import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
+import io.mockk.clearMocks
 import io.mockk.mockk
 import io.mockk.verify
 import java.util.Date
@@ -36,111 +37,73 @@ import org.junit.Test
 internal class ActivityEventHandlerTest {
 
     private val fid = FeedId("user", "activity-1")
+    private val differentFid = "user:different-activity"
     private val state: ActivityStateUpdates = mockk(relaxed = true)
     private val activityId = "test-activity-id"
     private val handler = ActivityEventHandler(fid, activityId, state)
 
     @Test
-    fun `on PollClosedFeedEvent for matching feed, then call onPollClosed`() {
+    fun `on PollClosedFeedEvent, then handle based on feed match`() {
         val poll = pollResponseData()
-        val event =
+        val matchingEvent =
             PollClosedFeedEvent(
                 createdAt = Date(),
                 fid = fid.rawValue,
                 poll = poll,
                 type = "feeds.poll.closed",
             )
+        val nonMatchingEvent = matchingEvent.copy(fid = differentFid)
 
-        handler.onEvent(event)
-
-        verify { state.onPollClosed(poll.toModel()) }
+        testEventHandling(
+            matchingEvent = matchingEvent,
+            nonMatchingEvent = nonMatchingEvent,
+            verifyBlock = { state.onPollClosed(poll.toModel()) },
+        )
     }
 
     @Test
-    fun `on PollClosedFeedEvent for different feed, then do not call onPollClosed`() {
+    fun `on PollDeletedFeedEvent, then handle based on feed match`() {
         val poll = pollResponseData()
-        val event =
-            PollClosedFeedEvent(
-                createdAt = Date(),
-                fid = "user:different-activity",
-                poll = poll,
-                type = "feeds.poll.closed",
-            )
-
-        handler.onEvent(event)
-
-        verify(exactly = 0) { state.onPollClosed(any()) }
-    }
-
-    @Test
-    fun `on PollDeletedFeedEvent for matching feed, then call onPollDeleted`() {
-        val poll = pollResponseData()
-        val event =
+        val matchingEvent =
             PollDeletedFeedEvent(
                 createdAt = Date(),
                 fid = fid.rawValue,
                 poll = poll,
                 type = "feeds.poll.deleted",
             )
+        val nonMatchingEvent = matchingEvent.copy(fid = differentFid)
 
-        handler.onEvent(event)
-
-        verify { state.onPollDeleted(poll.id) }
+        testEventHandling(
+            matchingEvent = matchingEvent,
+            nonMatchingEvent = nonMatchingEvent,
+            verifyBlock = { state.onPollDeleted(poll.id) },
+        )
     }
 
     @Test
-    fun `on PollDeletedFeedEvent for different feed, then do not call onPollDeleted`() {
+    fun `on PollUpdatedFeedEvent, then handle based on feed match`() {
         val poll = pollResponseData()
-        val event =
-            PollDeletedFeedEvent(
-                createdAt = Date(),
-                fid = "user:different-activity",
-                poll = poll,
-                type = "feeds.poll.deleted",
-            )
-
-        handler.onEvent(event)
-
-        verify(exactly = 0) { state.onPollDeleted(any()) }
-    }
-
-    @Test
-    fun `on PollUpdatedFeedEvent for matching feed, then call onPollUpdated`() {
-        val poll = pollResponseData()
-        val event =
+        val matchingEvent =
             PollUpdatedFeedEvent(
                 createdAt = Date(),
                 fid = fid.rawValue,
                 poll = poll,
                 type = "feeds.poll.updated",
             )
+        val nonMatchingEvent = matchingEvent.copy(fid = differentFid)
 
-        handler.onEvent(event)
-
-        verify { state.onPollUpdated(poll.toModel()) }
+        testEventHandling(
+            matchingEvent = matchingEvent,
+            nonMatchingEvent = nonMatchingEvent,
+            verifyBlock = { state.onPollUpdated(poll.toModel()) },
+        )
     }
 
     @Test
-    fun `on PollUpdatedFeedEvent for different feed, then do not call onPollUpdated`() {
-        val poll = pollResponseData()
-        val event =
-            PollUpdatedFeedEvent(
-                createdAt = Date(),
-                fid = "user:different-activity",
-                poll = poll,
-                type = "feeds.poll.updated",
-            )
-
-        handler.onEvent(event)
-
-        verify(exactly = 0) { state.onPollUpdated(any()) }
-    }
-
-    @Test
-    fun `on PollVoteCastedFeedEvent for matching feed, then call onPollVoteCasted`() {
+    fun `on PollVoteCastedFeedEvent, then handle based on feed match`() {
         val poll = pollResponseData()
         val pollVote = pollVoteResponseData()
-        val event =
+        val matchingEvent =
             PollVoteCastedFeedEvent(
                 createdAt = Date(),
                 fid = fid.rawValue,
@@ -148,35 +111,20 @@ internal class ActivityEventHandlerTest {
                 pollVote = pollVote,
                 type = "feeds.poll.vote.casted",
             )
+        val nonMatchingEvent = matchingEvent.copy(fid = differentFid)
 
-        handler.onEvent(event)
-
-        verify { state.onPollVoteCasted(pollVote.toModel(), poll.toModel()) }
+        testEventHandling(
+            matchingEvent = matchingEvent,
+            nonMatchingEvent = nonMatchingEvent,
+            verifyBlock = { state.onPollVoteCasted(pollVote.toModel(), poll.toModel()) },
+        )
     }
 
     @Test
-    fun `on PollVoteCastedFeedEvent for different feed, then do not call onPollVoteCasted`() {
+    fun `on PollVoteChangedFeedEvent, then handle based on feed match`() {
         val poll = pollResponseData()
         val pollVote = pollVoteResponseData()
-        val event =
-            PollVoteCastedFeedEvent(
-                createdAt = Date(),
-                fid = "user:different-activity",
-                poll = poll,
-                pollVote = pollVote,
-                type = "feeds.poll.vote.casted",
-            )
-
-        handler.onEvent(event)
-
-        verify(exactly = 0) { state.onPollVoteCasted(any(), any()) }
-    }
-
-    @Test
-    fun `on PollVoteChangedFeedEvent for matching feed, then call onPollVoteChanged`() {
-        val poll = pollResponseData()
-        val pollVote = pollVoteResponseData()
-        val event =
+        val matchingEvent =
             PollVoteChangedFeedEvent(
                 createdAt = Date(),
                 fid = fid.rawValue,
@@ -184,35 +132,20 @@ internal class ActivityEventHandlerTest {
                 pollVote = pollVote,
                 type = "feeds.poll.vote.changed",
             )
+        val nonMatchingEvent = matchingEvent.copy(fid = differentFid)
 
-        handler.onEvent(event)
-
-        verify { state.onPollVoteChanged(pollVote.toModel(), poll.toModel()) }
+        testEventHandling(
+            matchingEvent = matchingEvent,
+            nonMatchingEvent = nonMatchingEvent,
+            verifyBlock = { state.onPollVoteChanged(pollVote.toModel(), poll.toModel()) },
+        )
     }
 
     @Test
-    fun `on PollVoteChangedFeedEvent for different feed, then do not call onPollVoteChanged`() {
+    fun `on PollVoteRemovedFeedEvent, then handle based on feed match`() {
         val poll = pollResponseData()
         val pollVote = pollVoteResponseData()
-        val event =
-            PollVoteChangedFeedEvent(
-                createdAt = Date(),
-                fid = "user:different-activity",
-                poll = poll,
-                pollVote = pollVote,
-                type = "feeds.poll.vote.changed",
-            )
-
-        handler.onEvent(event)
-
-        verify(exactly = 0) { state.onPollVoteChanged(any(), any()) }
-    }
-
-    @Test
-    fun `on PollVoteRemovedFeedEvent for matching feed, then call onPollVoteRemoved`() {
-        val poll = pollResponseData()
-        val pollVote = pollVoteResponseData()
-        val event =
+        val matchingEvent =
             PollVoteRemovedFeedEvent(
                 createdAt = Date(),
                 fid = fid.rawValue,
@@ -220,28 +153,13 @@ internal class ActivityEventHandlerTest {
                 pollVote = pollVote,
                 type = "feeds.poll.vote.removed",
             )
+        val nonMatchingEvent = matchingEvent.copy(fid = differentFid)
 
-        handler.onEvent(event)
-
-        verify { state.onPollVoteRemoved(pollVote.toModel(), poll.toModel()) }
-    }
-
-    @Test
-    fun `on PollVoteRemovedFeedEvent for different feed, then do not call onPollVoteRemoved`() {
-        val poll = pollResponseData()
-        val pollVote = pollVoteResponseData()
-        val event =
-            PollVoteRemovedFeedEvent(
-                createdAt = Date(),
-                fid = "user:different-activity",
-                poll = poll,
-                pollVote = pollVote,
-                type = "feeds.poll.vote.removed",
-            )
-
-        handler.onEvent(event)
-
-        verify(exactly = 0) { state.onPollVoteRemoved(any(), any()) }
+        testEventHandling(
+            matchingEvent = matchingEvent,
+            nonMatchingEvent = nonMatchingEvent,
+            verifyBlock = { state.onPollVoteRemoved(pollVote.toModel(), poll.toModel()) },
+        )
     }
 
     @Test
@@ -253,6 +171,23 @@ internal class ActivityEventHandlerTest {
 
         handler.onEvent(unknownEvent)
 
+        verify { state wasNot called }
+    }
+
+    private fun testEventHandling(
+        matchingEvent: WSEvent,
+        nonMatchingEvent: WSEvent,
+        verifyBlock: () -> Unit,
+    ) {
+        // Test matching event
+        handler.onEvent(matchingEvent)
+        verify { verifyBlock() }
+
+        // Reset mock for clean verification
+        clearMocks(state)
+
+        // Test non-matching event
+        handler.onEvent(nonMatchingEvent)
         verify { state wasNot called }
     }
 }
