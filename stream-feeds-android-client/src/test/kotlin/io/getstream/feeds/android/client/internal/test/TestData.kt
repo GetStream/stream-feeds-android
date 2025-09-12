@@ -149,6 +149,7 @@ internal object TestData {
     ): FeedsReactionData =
         FeedsReactionData(
             activityId = activityId,
+            commentId = null,
             createdAt = createdAt,
             custom = null,
             type = type,
