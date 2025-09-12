@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.FeedListStateUpdates
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.network.models.FeedDeletedEvent
 import io.getstream.feeds.android.network.models.FeedUpdatedEvent
 import io.getstream.feeds.android.network.models.WSEvent
 
@@ -27,6 +28,10 @@ internal class FeedListEventHandler(private val state: FeedListStateUpdates) : F
         when (event) {
             is FeedUpdatedEvent -> {
                 state.onFeedUpdated(event.feed.toModel())
+            }
+
+            is FeedDeletedEvent -> {
+                state.onFeedRemoved(event.fid)
             }
         }
     }

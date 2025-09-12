@@ -30,6 +30,8 @@ import io.getstream.feeds.android.client.api.model.FileUploadConfigData
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.FollowStatus
 import io.getstream.feeds.android.client.api.model.ModerationConfigData
+import io.getstream.feeds.android.client.api.model.PaginationData
+import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollOptionData
 import io.getstream.feeds.android.client.api.model.PollVoteData
@@ -683,5 +685,11 @@ internal object TestData {
             createdAt = Date(1000),
             updatedAt = Date(1000),
             user = userResponse(),
+        )
+
+    fun <T> defaultPaginationResult(list: List<T>): PaginationResult<T> =
+        PaginationResult(
+            models = list,
+            pagination = PaginationData(next = "next-cursor", previous = null),
         )
 }
