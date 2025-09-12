@@ -16,13 +16,19 @@
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.ActivityData
+import io.getstream.feeds.android.client.api.model.BookmarkData
+import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollOptionData
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
+import io.getstream.feeds.android.client.api.model.addBookmark
 import io.getstream.feeds.android.client.api.model.addOption
+import io.getstream.feeds.android.client.api.model.addReaction
 import io.getstream.feeds.android.client.api.model.castVote
+import io.getstream.feeds.android.client.api.model.deleteBookmark
 import io.getstream.feeds.android.client.api.model.removeOption
+import io.getstream.feeds.android.client.api.model.removeReaction
 import io.getstream.feeds.android.client.api.model.removeVote
 import io.getstream.feeds.android.client.api.model.updateOption
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
@@ -30,6 +36,7 @@ import io.getstream.feeds.android.client.api.state.ActivityState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * An observable object representing the current state of an activity.
@@ -61,6 +68,22 @@ internal class ActivityStateImpl(
     override fun onActivityUpdated(activity: ActivityData) {
         _activity.value = activity
         _poll.value = activity.poll
+    }
+
+    override fun onReactionAdded(reaction: FeedsReactionData) {
+        _activity.update { current -> current?.addReaction(reaction, currentUserId) }
+    }
+
+    override fun onReactionRemoved(reaction: FeedsReactionData) {
+        _activity.update { current -> current?.removeReaction(reaction, currentUserId) }
+    }
+
+    override fun onBookmarkAdded(bookmark: BookmarkData) {
+        _activity.update { current -> current?.addBookmark(bookmark, currentUserId) }
+    }
+
+    override fun onBookmarkRemoved(bookmark: BookmarkData) {
+        _activity.update { current -> current?.deleteBookmark(bookmark, currentUserId) }
     }
 
     override fun onPollClosed(poll: PollData) {
@@ -139,6 +162,34 @@ internal interface ActivityStateUpdates {
      * @param activity The updated activity data.
      */
     fun onActivityUpdated(activity: ActivityData)
+
+    /**
+     * Called when a reaction is added to the activity.
+     *
+     * @param reaction The reaction that was added.
+     */
+    fun onReactionAdded(reaction: FeedsReactionData)
+
+    /**
+     * Called when a reaction is removed from the activity.
+     *
+     * @param reaction The reaction that was removed.
+     */
+    fun onReactionRemoved(reaction: FeedsReactionData)
+
+    /**
+     * Called when a bookmark is added to the activity.
+     *
+     * @param bookmark The bookmark that was added.
+     */
+    fun onBookmarkAdded(bookmark: BookmarkData)
+
+    /**
+     * Called when a bookmark is removed from the activity.
+     *
+     * @param bookmark The bookmark that was deleted.
+     */
+    fun onBookmarkRemoved(bookmark: BookmarkData)
 
     /**
      * Called when the associated poll is closed.

@@ -37,7 +37,8 @@ internal class ActivityEventHandlerTest {
 
     private val fid = FeedId("user", "activity-1")
     private val state: ActivityStateUpdates = mockk(relaxed = true)
-    private val handler = ActivityEventHandler(fid, state)
+    private val activityId = "test-activity-id"
+    private val handler = ActivityEventHandler(fid, activityId, state)
 
     @Test
     fun `on PollClosedFeedEvent for matching feed, then call onPollClosed`() {

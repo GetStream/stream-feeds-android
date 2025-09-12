@@ -19,6 +19,11 @@ import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.ActivityStateUpdates
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
+import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
+import io.getstream.feeds.android.network.models.ActivityUpdatedEvent
+import io.getstream.feeds.android.network.models.BookmarkAddedEvent
+import io.getstream.feeds.android.network.models.BookmarkDeletedEvent
 import io.getstream.feeds.android.network.models.PollClosedFeedEvent
 import io.getstream.feeds.android.network.models.PollDeletedFeedEvent
 import io.getstream.feeds.android.network.models.PollUpdatedFeedEvent
@@ -37,6 +42,7 @@ import io.getstream.feeds.android.network.models.WSEvent
  */
 internal class ActivityEventHandler(
     private val fid: FeedId,
+    private val activityId: String,
     private val state: ActivityStateUpdates,
 ) : FeedsEventListener {
 
@@ -47,6 +53,33 @@ internal class ActivityEventHandler(
      */
     override fun onEvent(event: WSEvent) {
         when (event) {
+            is ActivityReactionAddedEvent -> {
+                if (event.fid != fid.rawValue || event.activity.id != activityId) return
+                state.onReactionAdded(event.reaction.toModel())
+            }
+
+            is ActivityReactionDeletedEvent -> {
+                if (event.fid != fid.rawValue || event.activity.id != activityId) return
+                state.onReactionRemoved(event.reaction.toModel())
+            }
+
+            is ActivityUpdatedEvent -> {
+                if (event.fid != fid.rawValue || event.activity.id != activityId) return
+                state.onActivityUpdated(event.activity.toModel())
+            }
+
+            is BookmarkAddedEvent -> {
+                val eventActivity = event.bookmark.activity
+                if (fid.rawValue !in eventActivity.feeds || eventActivity.id != activityId) return
+                state.onBookmarkAdded(event.bookmark.toModel())
+            }
+
+            is BookmarkDeletedEvent -> {
+                val eventActivity = event.bookmark.activity
+                if (fid.rawValue !in eventActivity.feeds || eventActivity.id != activityId) return
+                state.onBookmarkRemoved(event.bookmark.toModel())
+            }
+
             is PollClosedFeedEvent -> {
                 if (event.fid != fid.rawValue) return
                 state.onPollClosed(event.poll.toModel())
