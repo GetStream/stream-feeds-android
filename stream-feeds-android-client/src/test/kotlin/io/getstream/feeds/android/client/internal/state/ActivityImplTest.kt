@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.state
 import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
@@ -35,6 +36,9 @@ import io.getstream.feeds.android.network.models.AddCommentReactionRequest
 import io.getstream.feeds.android.network.models.CastPollVoteRequest
 import io.getstream.feeds.android.network.models.CreatePollOptionRequest
 import io.getstream.feeds.android.network.models.UpdateCommentRequest
+import io.getstream.feeds.android.network.models.UpdatePollOptionRequest
+import io.getstream.feeds.android.network.models.UpdatePollPartialRequest
+import io.getstream.feeds.android.network.models.UpdatePollRequest
 import io.getstream.feeds.android.network.models.VoteData
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -43,7 +47,6 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 internal class ActivityImplTest {
@@ -237,10 +240,8 @@ internal class ActivityImplTest {
     fun `on getPoll when activity has poll, delegate to repository and update state`() = runTest {
         val poll = pollData("poll-1")
         val updatedPoll = pollData("poll-1", name = "Updated Poll")
-        val activityWithPoll = activityData("activityId", poll = poll)
-        coEvery { activitiesRepository.getActivity("activityId") } returns
-            Result.success(activityWithPoll)
-        coEvery { activityCommentListImpl.get() } returns Result.success(emptyList())
+
+        setupActivityWithPoll(poll)
         coEvery { pollsRepository.getPoll("poll-1", "currentUserId") } returns
             Result.success(updatedPoll)
 
@@ -254,10 +255,8 @@ internal class ActivityImplTest {
     fun `on closePoll when activity has poll, delegate to repository and update state`() = runTest {
         val poll = pollData("poll-1")
         val closedPoll = pollData("poll-1", isClosed = true)
-        val activityWithPoll = activityData("activityId", poll = poll)
-        coEvery { activitiesRepository.getActivity("activityId") } returns
-            Result.success(activityWithPoll)
-        coEvery { activityCommentListImpl.get() } returns Result.success(emptyList())
+
+        setupActivityWithPoll(poll)
         coEvery { pollsRepository.closePoll("poll-1") } returns Result.success(closedPoll)
 
         val result = activity.closePoll()
@@ -270,15 +269,8 @@ internal class ActivityImplTest {
     fun `on deletePoll when activity has poll, delegate to repository and update state`() =
         runTest {
             val poll = pollData("poll-1")
-            val activityWithPoll = activityData("activityId", poll = poll)
 
-            // First set up initial state by getting the activity
-            coEvery { activitiesRepository.getActivity("activityId") } returns
-                Result.success(activityWithPoll)
-            coEvery { activityCommentListImpl.get() } returns Result.success(emptyList())
-            activity.get()
-
-            // Now test poll deletion
+            setupActivityWithPoll(poll)
             coEvery { pollsRepository.deletePoll("poll-1", "currentUserId") } returns
                 Result.success(Unit)
 
@@ -292,69 +284,52 @@ internal class ActivityImplTest {
     fun `on createPollOption when activity has poll, delegate to repository and update state`() =
         runTest {
             val poll = pollData("poll-1")
-            val activityWithPoll = activityData("activityId", poll = poll)
             val request = CreatePollOptionRequest(text = "New Option")
             val option = pollOptionData("option-3", "New Option")
+            val expectedOptions =
+                listOf(
+                    pollOptionData("option-1", "Test Option"),
+                    pollOptionData("option-2", "Test Option 2"),
+                    pollOptionData("option-3", "New Option"),
+                )
 
-            // Set up initial poll state
-            coEvery { activitiesRepository.getActivity("activityId") } returns
-                Result.success(activityWithPoll)
-            coEvery { activityCommentListImpl.get() } returns Result.success(emptyList())
-            activity.get() // Sets initial poll state
-
+            setupActivityWithPoll(poll)
             coEvery { pollsRepository.createPollOption("poll-1", request) } returns
                 Result.success(option)
 
             val result = activity.createPollOption(request)
 
             assertEquals(option, result.getOrNull())
-            // Verify poll state was updated (should contain new option)
-            val updatedPoll = activity.state.poll.value
-            assertNotNull("Poll state should be updated", updatedPoll)
-            assertTrue(
-                "Poll should contain new option",
-                updatedPoll?.options?.any { it.id == "option-3" && it.text == "New Option" } == true,
-            )
+            assertEquals(expectedOptions, activity.state.poll.value?.options)
         }
 
     @Test
     fun `on castPollVote when activity has poll, delegate to repository and update state`() =
         runTest {
             val poll = pollData("poll-1")
-            val activityWithPoll = activityData("activityId", poll = poll)
             val request = CastPollVoteRequest(vote = VoteData(optionId = "option-1"))
             val vote = pollVoteData("vote-1", "poll-1", "option-1")
 
-            // Set up initial poll state
-            coEvery { activitiesRepository.getActivity("activityId") } returns
-                Result.success(activityWithPoll)
-            coEvery { activityCommentListImpl.get() } returns Result.success(emptyList())
-            activity.get()
-
+            setupActivityWithPoll(poll)
             coEvery { pollsRepository.castPollVote("activityId", "poll-1", request) } returns
                 Result.success(vote)
 
             val result = activity.castPollVote(request)
 
             assertEquals(vote, result.getOrNull())
-            // Verify poll state was updated (state change indicates vote was processed)
-            val updatedPoll = activity.state.poll.value
-            assertNotNull("Poll state should be updated", updatedPoll)
+            val actualPoll = activity.state.poll.value!!
+            assertEquals(1, actualPoll.voteCount)
+            assertEquals(1, actualPoll.voteCountsByOption["option-1"])
+            assertEquals(listOf(vote), actualPoll.latestVotesByOption["option-1"])
         }
 
     @Test
     fun `on deletePollVote when activity has poll, delegate to repository and update state`() =
         runTest {
             val poll = pollData("poll-1")
-            val activityWithPoll = activityData("activityId", poll = poll)
             val vote = pollVoteData("vote-1", "poll-1", "option-1")
 
-            // Set up initial poll state
-            coEvery { activitiesRepository.getActivity("activityId") } returns
-                Result.success(activityWithPoll)
-            coEvery { activityCommentListImpl.get() } returns Result.success(emptyList())
-            activity.get()
-
+            setupActivityWithPoll(poll)
             coEvery {
                 pollsRepository.deletePollVote("activityId", "poll-1", "vote-1", "currentUserId")
             } returns Result.success(vote)
@@ -362,8 +337,103 @@ internal class ActivityImplTest {
             val result = activity.deletePollVote("vote-1", "currentUserId")
 
             assertEquals(vote, result.getOrNull())
-            // Verify poll state was updated (state change indicates vote was processed)
-            val updatedPoll = activity.state.poll.value
-            assertNotNull("Poll state should be updated", updatedPoll)
+            assertNotNull("Poll should still exist", activity.state.poll.value)
         }
+
+    @Test
+    fun `on updatePollPartial when activity has poll, delegate to repository and update state`() =
+        runTest {
+            val poll = pollData("poll-1")
+            val updatedPoll = pollData("poll-1", name = "Updated Poll")
+            val request = UpdatePollPartialRequest(set = mapOf("name" to "Updated Poll"))
+
+            setupActivityWithPoll(poll)
+            coEvery { pollsRepository.updatePollPartial("poll-1", request) } returns
+                Result.success(updatedPoll)
+
+            val result = activity.updatePollPartial(request)
+
+            assertEquals(updatedPoll, result.getOrNull())
+            assertEquals(updatedPoll, activity.state.poll.value)
+        }
+
+    @Test
+    fun `on updatePoll when activity has poll, delegate to repository and update state`() =
+        runTest {
+            val poll = pollData("poll-1")
+            val updatedPoll = pollData("poll-1", name = "Updated Poll")
+            val request = UpdatePollRequest(id = "poll-1", name = "Updated Poll")
+
+            setupActivityWithPoll(poll)
+            coEvery { pollsRepository.updatePoll(request) } returns Result.success(updatedPoll)
+
+            val result = activity.updatePoll(request)
+
+            assertEquals(updatedPoll, result.getOrNull())
+            assertEquals(updatedPoll, activity.state.poll.value)
+        }
+
+    @Test
+    fun `on deletePollOption when activity has poll, delegate to repository`() = runTest {
+        val poll = pollData("poll-1")
+        val optionId = "option-1"
+        val userId = "user-1"
+        val expectedOptions = listOf(pollOptionData("option-2", "Test Option 2"))
+
+        setupActivityWithPoll(poll)
+        coEvery { pollsRepository.deletePollOption("poll-1", optionId, userId) } returns
+            Result.success(Unit)
+
+        val result = activity.deletePollOption(optionId, userId)
+
+        assertEquals(Unit, result.getOrNull())
+        assertEquals(expectedOptions, activity.state.poll.value?.options)
+    }
+
+    @Test
+    fun `on getPollOption when activity has poll, delegate to repository and update state`() =
+        runTest {
+            val poll = pollData("poll-1")
+            val optionId = "option-1"
+            val userId = "user-1"
+            val option = pollOptionData(optionId)
+
+            setupActivityWithPoll(poll)
+            coEvery { pollsRepository.getPollOption("poll-1", optionId, userId) } returns
+                Result.success(option)
+
+            val result = activity.getPollOption(optionId, userId)
+
+            assertEquals(option, result.getOrNull())
+        }
+
+    @Test
+    fun `on updatePollOption when activity has poll, delegate to repository and update state`() =
+        runTest {
+            val poll = pollData("poll-1")
+            val updatedOption = pollOptionData("option-1", text = "Updated Option")
+            val request = UpdatePollOptionRequest(id = "option-1", text = "Updated Option")
+            val expectedOptions =
+                listOf(
+                    pollOptionData("option-1", "Updated Option"),
+                    pollOptionData("option-2", "Test Option 2"),
+                )
+
+            setupActivityWithPoll(poll)
+            coEvery { pollsRepository.updatePollOption("poll-1", request) } returns
+                Result.success(updatedOption)
+
+            val result = activity.updatePollOption(request)
+
+            assertEquals(updatedOption, result.getOrNull())
+            assertEquals(expectedOptions, activity.state.poll.value?.options)
+        }
+
+    private suspend fun setupActivityWithPoll(poll: PollData = pollData("poll-1")) {
+        val activityWithPoll = activityData("activityId", poll = poll)
+        coEvery { activitiesRepository.getActivity("activityId") } returns
+            Result.success(activityWithPoll)
+        coEvery { activityCommentListImpl.get() } returns Result.success(emptyList())
+        activity.get()
+    }
 }
