@@ -15,6 +15,7 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
+import io.getstream.android.core.api.filter.matches
 import io.getstream.android.core.api.sort.Sort
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.ActivityPinData
@@ -155,12 +156,16 @@ internal class FeedStateImpl(
     }
 
     override fun onActivityAdded(activity: ActivityData) {
+        if (feedQuery.activityFilter?.matches(activity) == false) return
+
         _activities.update { current ->
             current.upsertSorted(activity, ActivityData::id, activitiesSorting)
         }
     }
 
     override fun onActivityUpdated(activity: ActivityData) {
+        if (feedQuery.activityFilter?.matches(activity) == false) return
+
         // Update the activities list
         _activities.update { current ->
             current.upsertSorted(activity, ActivityData::id, activitiesSorting)

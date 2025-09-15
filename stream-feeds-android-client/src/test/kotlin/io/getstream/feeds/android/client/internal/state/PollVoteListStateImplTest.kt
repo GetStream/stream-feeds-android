@@ -40,7 +40,6 @@ internal class PollVoteListStateImplTest {
     fun `on queryMorePollVotes, then update votes and pagination`() = runTest {
         val votes = listOf(pollVoteData(), pollVoteData("vote-2", "poll-1", "option-2", "user-2"))
         val paginationResult = defaultPaginationResult(votes)
-        val queryConfig = PollVotesQueryConfig(filter = null, sort = PollVotesSort.Default)
 
         pollVoteListState.onQueryMorePollVotes(paginationResult, queryConfig)
 
@@ -54,7 +53,6 @@ internal class PollVoteListStateImplTest {
         val initialVotes =
             listOf(pollVoteData(), pollVoteData("vote-2", "poll-1", "option-2", "user-2"))
         val paginationResult = defaultPaginationResult(initialVotes)
-        val queryConfig = PollVotesQueryConfig(filter = null, sort = PollVotesSort.Default)
         pollVoteListState.onQueryMorePollVotes(paginationResult, queryConfig)
 
         val updatedVote =
@@ -70,7 +68,6 @@ internal class PollVoteListStateImplTest {
         val initialVotes =
             listOf(pollVoteData(), pollVoteData("vote-2", "poll-1", "option-2", "user-2"))
         val paginationResult = defaultPaginationResult(initialVotes)
-        val queryConfig = PollVotesQueryConfig(filter = null, sort = PollVotesSort.Default)
         pollVoteListState.onQueryMorePollVotes(paginationResult, queryConfig)
 
         pollVoteListState.pollVoteRemoved(initialVotes.first().id)
@@ -84,7 +81,6 @@ internal class PollVoteListStateImplTest {
         val initialVotes =
             listOf(pollVoteData(), pollVoteData("vote-2", "poll-1", "option-2", "user-2"))
         val paginationResult = defaultPaginationResult(initialVotes)
-        val queryConfig = PollVotesQueryConfig(filter = null, sort = PollVotesSort.Default)
         pollVoteListState.onQueryMorePollVotes(paginationResult, queryConfig)
 
         val nonExistentVote = pollVoteData("non-existent", "poll-1", "option-1", "user-3")
@@ -98,7 +94,6 @@ internal class PollVoteListStateImplTest {
         val initial =
             listOf(pollVoteData("vote-1"), pollVoteData("vote-3", "poll-1", "option-3", "user-3"))
         val pagination = defaultPaginationResult(initial)
-        val queryConfig = PollVotesQueryConfig(filter = null, sort = PollVotesSort.Default)
         pollVoteListState.onQueryMorePollVotes(pagination, queryConfig)
 
         val newVote = pollVoteData("vote-2", "poll-1", "option-2", "user-2")
@@ -113,12 +108,15 @@ internal class PollVoteListStateImplTest {
         val initial =
             pollVoteData("vote-1", "poll-1", "option-1", "user-1", answerText = "Original")
         val pagination = defaultPaginationResult(listOf(initial))
-        val queryConfig = PollVotesQueryConfig(filter = null, sort = PollVotesSort.Default)
         pollVoteListState.onQueryMorePollVotes(pagination, queryConfig)
 
         val updated = pollVoteData("vote-1", "poll-1", "option-1", "user-1", answerText = "Updated")
         pollVoteListState.pollVoteAdded(updated)
 
         assertEquals(listOf(updated), pollVoteListState.votes.value)
+    }
+
+    companion object {
+        private val queryConfig = PollVotesQueryConfig(filter = null, sort = PollVotesSort.Default)
     }
 }

@@ -16,14 +16,13 @@
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.ActivityData
-import io.getstream.feeds.android.client.api.model.PaginationData
-import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQueryConfig
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
+import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -44,12 +43,7 @@ internal class ActivityListStateImplTest {
     @Test
     fun `on queryMoreActivities, then update activities and pagination`() = runTest {
         val activities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult =
-            PaginationResult(
-                models = activities,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig = ActivitiesQueryConfig(filter = null, sort = ActivitiesSort.Default)
+        val paginationResult = defaultPaginationResult(activities)
 
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
@@ -61,12 +55,7 @@ internal class ActivityListStateImplTest {
     @Test
     fun `on activityUpdated, then update specific activity`() = runTest {
         val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult =
-            PaginationResult(
-                models = initialActivities,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig = ActivitiesQueryConfig(filter = null, sort = ActivitiesSort.Default)
+        val paginationResult = defaultPaginationResult(initialActivities)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
         val updatedActivity = activityData("activity-1", text = "Updated activity")
@@ -79,12 +68,7 @@ internal class ActivityListStateImplTest {
     @Test
     fun `on activityRemoved, then remove specific activity`() = runTest {
         val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult =
-            PaginationResult(
-                models = initialActivities,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig = ActivitiesQueryConfig(filter = null, sort = ActivitiesSort.Default)
+        val paginationResult = defaultPaginationResult(initialActivities)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
         activityListState.onActivityRemoved(initialActivities[0])
@@ -96,12 +80,7 @@ internal class ActivityListStateImplTest {
     @Test
     fun `on bookmarkAdded, then add bookmark to activity`() = runTest {
         val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult =
-            PaginationResult(
-                models = initialActivities,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig = ActivitiesQueryConfig(filter = null, sort = ActivitiesSort.Default)
+        val paginationResult = defaultPaginationResult(initialActivities)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
         val bookmark = bookmarkData("activity-1", currentUserId)
@@ -114,12 +93,7 @@ internal class ActivityListStateImplTest {
     @Test
     fun `on bookmarkRemoved, then remove bookmark from activity`() = runTest {
         val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult =
-            PaginationResult(
-                models = initialActivities,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig = ActivitiesQueryConfig(filter = null, sort = ActivitiesSort.Default)
+        val paginationResult = defaultPaginationResult(initialActivities)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
         val bookmark = bookmarkData("activity-1", currentUserId)
@@ -133,12 +107,7 @@ internal class ActivityListStateImplTest {
     @Test
     fun `on commentAdded, then add comment to activity`() = runTest {
         val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult =
-            PaginationResult(
-                models = initialActivities,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig = ActivitiesQueryConfig(filter = null, sort = ActivitiesSort.Default)
+        val paginationResult = defaultPaginationResult(initialActivities)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
         val comment = commentData("comment-1", objectId = "activity-1")
@@ -151,12 +120,7 @@ internal class ActivityListStateImplTest {
     @Test
     fun `on commentRemoved, then remove comment from activity`() = runTest {
         val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult =
-            PaginationResult(
-                models = initialActivities,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig = ActivitiesQueryConfig(filter = null, sort = ActivitiesSort.Default)
+        val paginationResult = defaultPaginationResult(initialActivities)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
         val comment = commentData("comment-1", objectId = "activity-1")
@@ -170,12 +134,7 @@ internal class ActivityListStateImplTest {
     @Test
     fun `on reactionAdded, then add reaction to activity`() = runTest {
         val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult =
-            PaginationResult(
-                models = initialActivities,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig = ActivitiesQueryConfig(filter = null, sort = ActivitiesSort.Default)
+        val paginationResult = defaultPaginationResult(initialActivities)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
         val reaction = feedsReactionData("activity-1", "like", currentUserId)
@@ -188,12 +147,7 @@ internal class ActivityListStateImplTest {
     @Test
     fun `on reactionRemoved, then remove reaction from activity`() = runTest {
         val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult =
-            PaginationResult(
-                models = initialActivities,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig = ActivitiesQueryConfig(filter = null, sort = ActivitiesSort.Default)
+        val paginationResult = defaultPaginationResult(initialActivities)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
         val reaction = feedsReactionData("activity-1", "like", currentUserId)
@@ -202,5 +156,10 @@ internal class ActivityListStateImplTest {
 
         val updatedActivities = activityListState.activities.value
         assertEquals(0, updatedActivities.first().reactionCount)
+    }
+
+    companion object {
+        private val queryConfig =
+            ActivitiesQueryConfig(filter = null, sort = ActivitiesSort.Default)
     }
 }

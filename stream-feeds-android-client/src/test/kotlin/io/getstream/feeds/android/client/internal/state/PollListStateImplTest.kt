@@ -15,12 +15,11 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
-import io.getstream.feeds.android.client.api.model.PaginationData
-import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQueryConfig
 import io.getstream.feeds.android.client.api.state.query.PollsSort
+import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -40,12 +39,7 @@ internal class PollListStateImplTest {
     @Test
     fun `on queryMorePolls, then update polls and pagination`() = runTest {
         val polls = listOf(pollData("poll-1", "Test Poll"), pollData("poll-2", "Test Poll 2"))
-        val paginationResult =
-            PaginationResult(
-                models = polls,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig = PollsQueryConfig(filter = null, sort = PollsSort.Default)
+        val paginationResult = defaultPaginationResult(polls)
 
         pollListState.onQueryMorePolls(paginationResult, queryConfig)
 
@@ -58,12 +52,7 @@ internal class PollListStateImplTest {
     fun `on pollUpdated, then update specific poll`() = runTest {
         val initialPolls =
             listOf(pollData("poll-1", "Test Poll"), pollData("poll-2", "Test Poll 2"))
-        val paginationResult =
-            PaginationResult(
-                models = initialPolls,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig = PollsQueryConfig(filter = null, sort = PollsSort.Default)
+        val paginationResult = defaultPaginationResult(initialPolls)
         pollListState.onQueryMorePolls(paginationResult, queryConfig)
 
         val updatedPoll = pollData("poll-1", "Updated Poll", description = "Updated description")
@@ -78,17 +67,16 @@ internal class PollListStateImplTest {
     fun `on pollUpdated with non-existent poll, then keep existing polls unchanged`() = runTest {
         val initialPolls =
             listOf(pollData("poll-1", "Test Poll"), pollData("poll-2", "Test Poll 2"))
-        val paginationResult =
-            PaginationResult(
-                models = initialPolls,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig = PollsQueryConfig(filter = null, sort = PollsSort.Default)
+        val paginationResult = defaultPaginationResult(initialPolls)
         pollListState.onQueryMorePolls(paginationResult, queryConfig)
 
         val nonExistentPoll = pollData("non-existent", "Non-existent Poll")
         pollListState.onPollUpdated(nonExistentPoll)
 
         assertEquals(initialPolls, pollListState.polls.value)
+    }
+
+    companion object {
+        private val queryConfig = PollsQueryConfig(filter = null, sort = PollsSort.Default)
     }
 }

@@ -16,11 +16,10 @@
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.ModerationConfigData
-import io.getstream.feeds.android.client.api.model.PaginationData
-import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.state.query.ModerationConfigSort
 import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
 import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQueryConfig
+import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
 import io.getstream.feeds.android.client.internal.test.TestData.moderationConfigData
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -40,18 +39,17 @@ internal class ModerationConfigListStateImplTest {
     @Test
     fun `on loadMoreConfigs, then update configs and pagination`() = runTest {
         val configs = listOf(moderationConfigData(), moderationConfigData("config-2", "team-2"))
-        val paginationResult =
-            PaginationResult(
-                models = configs,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig =
-            ModerationConfigsQueryConfig(filter = null, sort = ModerationConfigSort.Default)
+        val paginationResult = defaultPaginationResult(configs)
 
         moderationConfigListState.onLoadMoreConfigs(paginationResult, queryConfig)
 
         assertEquals(configs, moderationConfigListState.configs.value)
         assertEquals("next-cursor", moderationConfigListState.pagination?.next)
         assertEquals(queryConfig, moderationConfigListState.queryConfig)
+    }
+
+    companion object {
+        private val queryConfig =
+            ModerationConfigsQueryConfig(filter = null, sort = ModerationConfigSort.Default)
     }
 }

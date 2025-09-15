@@ -23,6 +23,7 @@ import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.state.query.MembersQuery
 import io.getstream.feeds.android.client.api.state.query.MembersQueryConfig
 import io.getstream.feeds.android.client.api.state.query.MembersSort
+import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
 import io.getstream.feeds.android.client.internal.test.TestData.feedMemberData
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -42,12 +43,7 @@ internal class MemberListStateImplTest {
     @Test
     fun `on queryMoreMembers, then update members and pagination`() = runTest {
         val members = listOf(feedMemberData(), feedMemberData("user-2"))
-        val paginationResult =
-            PaginationResult(
-                models = members,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig = MembersQueryConfig(filter = null, sort = MembersSort.Default)
+        val paginationResult = defaultPaginationResult(members)
 
         memberListState.onQueryMoreMembers(paginationResult, queryConfig)
 
@@ -59,12 +55,7 @@ internal class MemberListStateImplTest {
     @Test
     fun `on memberUpdated, then update specific member`() = runTest {
         val initialMembers = listOf(feedMemberData(), feedMemberData("user-2"))
-        val paginationResult =
-            PaginationResult(
-                models = initialMembers,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig = MembersQueryConfig(filter = null, sort = MembersSort.Default)
+        val paginationResult = defaultPaginationResult(initialMembers)
         memberListState.onQueryMoreMembers(paginationResult, queryConfig)
 
         val updatedMember = feedMemberData("user-1", role = "admin")
@@ -78,12 +69,7 @@ internal class MemberListStateImplTest {
     @Test
     fun `on memberRemoved, then remove specific member`() = runTest {
         val initialMembers = listOf(feedMemberData(), feedMemberData("user-2"))
-        val paginationResult =
-            PaginationResult(
-                models = initialMembers,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig = MembersQueryConfig(filter = null, sort = MembersSort.Default)
+        val paginationResult = defaultPaginationResult(initialMembers)
         memberListState.onQueryMoreMembers(paginationResult, queryConfig)
 
         memberListState.onMemberRemoved(initialMembers[0].id)
@@ -95,12 +81,7 @@ internal class MemberListStateImplTest {
     @Test
     fun `on membersUpdated, then apply multiple updates`() = runTest {
         val initialMembers = listOf(feedMemberData(), feedMemberData("user-2"))
-        val paginationResult =
-            PaginationResult(
-                models = initialMembers,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig = MembersQueryConfig(filter = null, sort = MembersSort.Default)
+        val paginationResult = defaultPaginationResult(initialMembers)
         memberListState.onQueryMoreMembers(paginationResult, queryConfig)
 
         val updatedMember = feedMemberData("user-1", role = "admin")
@@ -121,7 +102,6 @@ internal class MemberListStateImplTest {
         val initialMembers = listOf(feedMemberData(), feedMemberData("user-2"))
         val paginationResult =
             PaginationResult(models = initialMembers, pagination = PaginationData())
-        val queryConfig = MembersQueryConfig(filter = null, sort = MembersSort.Default)
         memberListState.onQueryMoreMembers(paginationResult, queryConfig)
 
         val newMember = feedMemberData("user-3")
@@ -133,12 +113,7 @@ internal class MemberListStateImplTest {
     @Test
     fun `on memberAdded with existing id, then update member`() = runTest {
         val initialMembers = listOf(feedMemberData(), feedMemberData("user-2"))
-        val paginationResult =
-            PaginationResult(
-                models = initialMembers,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig = MembersQueryConfig(filter = null, sort = MembersSort.Default)
+        val paginationResult = defaultPaginationResult(initialMembers)
         memberListState.onQueryMoreMembers(paginationResult, queryConfig)
 
         val updatedMember = feedMemberData("user-1", role = "admin")
@@ -153,16 +128,15 @@ internal class MemberListStateImplTest {
     @Test
     fun `on clear, then remove all members`() = runTest {
         val initialMembers = listOf(feedMemberData(), feedMemberData("user-2"))
-        val paginationResult =
-            PaginationResult(
-                models = initialMembers,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig = MembersQueryConfig(filter = null, sort = MembersSort.Default)
+        val paginationResult = defaultPaginationResult(initialMembers)
         memberListState.onQueryMoreMembers(paginationResult, queryConfig)
 
         memberListState.clear()
 
         assertEquals(emptyList<FeedMemberData>(), memberListState.members.value)
+    }
+
+    companion object {
+        private val queryConfig = MembersQueryConfig(filter = null, sort = MembersSort.Default)
     }
 }
