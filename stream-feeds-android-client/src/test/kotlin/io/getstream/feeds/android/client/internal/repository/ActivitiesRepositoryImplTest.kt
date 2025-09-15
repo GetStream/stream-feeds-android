@@ -22,10 +22,11 @@ import io.getstream.feeds.android.client.api.file.UploadedFile
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.FeedAddActivityRequest
 import io.getstream.feeds.android.client.api.model.FeedId
-import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.toModel
+import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
+import io.getstream.feeds.android.client.api.state.query.toRequest
 import io.getstream.feeds.android.client.internal.repository.RepositoryTestUtils.testDelegation
 import io.getstream.feeds.android.client.internal.test.TestData.activityResponse
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionResponse
@@ -33,6 +34,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.pinActivityRespo
 import io.getstream.feeds.android.client.internal.test.TestData.unpinActivityResponse
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.AddActivityRequest
+import io.getstream.feeds.android.network.models.AddActivityResponse
 import io.getstream.feeds.android.network.models.AddReactionRequest
 import io.getstream.feeds.android.network.models.AddReactionResponse
 import io.getstream.feeds.android.network.models.Attachment
@@ -42,6 +44,7 @@ import io.getstream.feeds.android.network.models.DeleteActivityReactionResponse
 import io.getstream.feeds.android.network.models.DeleteActivityResponse
 import io.getstream.feeds.android.network.models.GetActivityResponse
 import io.getstream.feeds.android.network.models.MarkActivityRequest
+import io.getstream.feeds.android.network.models.QueryActivitiesResponse
 import io.getstream.feeds.android.network.models.QueryActivityReactionsRequest
 import io.getstream.feeds.android.network.models.QueryActivityReactionsResponse
 import io.getstream.feeds.android.network.models.UpdateActivityRequest
@@ -256,10 +259,42 @@ internal class ActivitiesRepositoryImplTest {
             apiFunction = { feedsApi.queryActivityReactions("activityId", request) },
             repositoryCall = { repository.queryActivityReactions("activityId", request) },
             apiResult = QueryActivityReactionsResponse(duration = "duration"),
+            repositoryResult = PaginationResult(models = emptyList(), pagination = PaginationData()),
+        )
+    }
+
+    @Test
+    fun `on addActivity, delegate to api`() {
+        val request = AddActivityRequest(type = "post", text = "Simple activity")
+        val apiResult = AddActivityResponse("duration", activityResponse())
+
+        testDelegation(
+            apiFunction = { feedsApi.addActivity(request) },
+            repositoryCall = { repository.addActivity(request) },
+            apiResult = apiResult,
+            repositoryResult = apiResult.activity.toModel(),
+        )
+    }
+
+    @Test
+    fun `on queryActivities, delegate to api and transform result`() {
+        val query = ActivitiesQuery(limit = 10)
+        val apiResult =
+            QueryActivitiesResponse(
+                duration = "duration",
+                activities = listOf(activityResponse()),
+                next = "next-cursor",
+                prev = "prev-cursor",
+            )
+
+        testDelegation(
+            apiFunction = { feedsApi.queryActivities(query.toRequest()) },
+            repositoryCall = { repository.queryActivities(query) },
+            apiResult = apiResult,
             repositoryResult =
                 PaginationResult(
-                    models = emptyList<FeedsReactionData>(),
-                    pagination = PaginationData(),
+                    models = apiResult.activities.map { it.toModel() },
+                    pagination = PaginationData(next = apiResult.next, previous = apiResult.prev),
                 ),
         )
     }
