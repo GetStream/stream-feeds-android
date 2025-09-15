@@ -20,6 +20,7 @@ import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.FeedAddActivityRequest
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
@@ -37,11 +38,22 @@ import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedData
+import io.getstream.feeds.android.client.internal.test.TestData.feedMemberData
+import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.getstream.feeds.android.client.internal.test.TestData.followData
+import io.getstream.feeds.android.client.internal.test.TestData.pollData
+import io.getstream.feeds.android.client.internal.test.TestData.reactionGroupData
 import io.getstream.feeds.android.network.models.AddBookmarkRequest
+import io.getstream.feeds.android.network.models.AddCommentReactionRequest
+import io.getstream.feeds.android.network.models.AddReactionRequest
+import io.getstream.feeds.android.network.models.CreatePollRequest
+import io.getstream.feeds.android.network.models.FeedMemberRequest
 import io.getstream.feeds.android.network.models.FollowRequest
 import io.getstream.feeds.android.network.models.MarkActivityRequest
 import io.getstream.feeds.android.network.models.UpdateActivityRequest
+import io.getstream.feeds.android.network.models.UpdateBookmarkRequest
+import io.getstream.feeds.android.network.models.UpdateCommentRequest
+import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.network.models.UpdateFeedRequest
 import io.mockk.called
 import io.mockk.coEvery
@@ -411,6 +423,265 @@ internal class FeedImplTest {
 
         assertEquals(Unit, result.getOrNull())
         verify { feedWatchHandler.onStopWatching(any()) }
+    }
+
+    @Test
+    fun `on updateBookmark, delegate to repository`() = runTest {
+        val feed = createFeed()
+        val activityId = "activity-1"
+        val request = UpdateBookmarkRequest(folderId = "new-folder")
+        val bookmark = bookmarkData(activityId)
+
+        coEvery { bookmarksRepository.updateBookmark(activityId, request) } returns
+            Result.success(bookmark)
+
+        val result = feed.updateBookmark(activityId, request)
+
+        assertEquals(bookmark, result.getOrNull())
+    }
+
+    @Test
+    fun `on getComment, delegate to repository`() = runTest {
+        val feed = createFeed()
+        val commentId = "comment-1"
+        val comment = commentData(commentId)
+
+        coEvery { commentsRepository.getComment(commentId) } returns Result.success(comment)
+
+        val result = feed.getComment(commentId)
+
+        assertEquals(comment, result.getOrNull())
+    }
+
+    @Test
+    fun `on updateComment, delegate to repository`() = runTest {
+        val feed = createFeed()
+        val commentId = "comment-1"
+        val request = UpdateCommentRequest(comment = "Updated comment")
+        val comment = commentData(commentId, "Updated comment")
+
+        coEvery { commentsRepository.updateComment(commentId, request) } returns
+            Result.success(comment)
+
+        val result = feed.updateComment(commentId, request)
+
+        assertEquals(comment, result.getOrNull())
+    }
+
+    @Test
+    fun `on deleteComment, delegate to repository`() = runTest {
+        val feed = createFeed()
+        val commentId = "comment-1"
+        val hardDelete = true
+
+        coEvery { commentsRepository.deleteComment(commentId, hardDelete) } returns
+            Result.success(Unit)
+
+        val result = feed.deleteComment(commentId, hardDelete)
+
+        assertEquals(Unit, result.getOrNull())
+    }
+
+    @Test
+    fun `on queryFollowSuggestions, delegate to repository`() = runTest {
+        val feed = createFeed()
+        val limit = 10
+        val suggestions = listOf(feedData("suggested-1"), feedData("suggested-2"))
+
+        coEvery { feedsRepository.queryFollowSuggestions("group", limit) } returns
+            Result.success(suggestions)
+
+        val result = feed.queryFollowSuggestions(limit)
+
+        assertEquals(suggestions, result.getOrNull())
+    }
+
+    @Test
+    fun `on queryFeedMembers, delegate to memberList`() = runTest {
+        val feed = createFeed()
+        val members = listOf(feedMemberData())
+
+        coEvery { feedsRepository.queryFeedMembers(any(), any(), any()) } returns
+            Result.success(PaginationResult(members, PaginationData.EMPTY))
+
+        val result = feed.queryFeedMembers()
+
+        assertEquals(members, result.getOrNull())
+    }
+
+    @Test
+    fun `on queryMoreFeedMembers with no pagination, then return empty list`() = runTest {
+        val feed = createFeed()
+        val limit = 5
+        val moreMembers = listOf(feedMemberData())
+
+        coEvery { feedsRepository.queryFeedMembers(any(), any(), any()) } returnsMany
+            listOf(
+                Result.success(PaginationResult(emptyList(), PaginationData(next = "next"))),
+                Result.success(PaginationResult(moreMembers, PaginationData.EMPTY)),
+            )
+
+        feed.queryFeedMembers()
+        val result = feed.queryMoreFeedMembers(limit)
+
+        assertEquals(moreMembers, result.getOrNull())
+    }
+
+    @Test
+    fun `on updateFeedMembers, delegate to repository and update memberList state`() = runTest {
+        val feed = createFeed()
+        val request =
+            UpdateFeedMembersRequest(
+                operation = UpdateFeedMembersRequest.Operation.Upsert,
+                members = listOf(FeedMemberRequest(userId = "user1", role = "member")),
+            )
+        val memberUpdates =
+            ModelUpdates(
+                added = emptyList(),
+                removedIds = emptyList(),
+                updated = listOf(feedMemberData("user1")),
+            )
+
+        coEvery { feedsRepository.updateFeedMembers("group", "id", request) } returns
+            Result.success(memberUpdates)
+
+        val result = feed.updateFeedMembers(request)
+
+        assertEquals(memberUpdates, result.getOrNull())
+    }
+
+    @Test
+    fun `on acceptFeedMember, delegate to repository`() = runTest {
+        val feed = createFeed()
+        val member = feedMemberData()
+
+        coEvery { feedsRepository.acceptFeedMember("group", "id") } returns Result.success(member)
+
+        val result = feed.acceptFeedMember()
+
+        assertEquals(member, result.getOrNull())
+    }
+
+    @Test
+    fun `on rejectFeedMember, delegate to repository`() = runTest {
+        val feed = createFeed()
+        val member = feedMemberData()
+
+        coEvery { feedsRepository.rejectFeedMember("group", "id") } returns Result.success(member)
+
+        val result = feed.rejectFeedMember()
+
+        assertEquals(member, result.getOrNull())
+    }
+
+    @Test
+    fun `on addReaction, delegate to repository and update state`() = runTest {
+        val feed = createFeed()
+        val activityId = "activity-1"
+        val request = AddReactionRequest(type = "like")
+        val reaction = feedsReactionData(activityId = activityId, type = "like", userId = "user")
+        val activity = activityData(activityId)
+
+        // Set up initial state with activity
+        val feedInfo = getOrCreateInfo(feedData(), listOf(activity))
+        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
+        feed.getOrCreate()
+
+        coEvery { activitiesRepository.addReaction(activityId, request) } returns
+            Result.success(reaction)
+
+        val result = feed.addReaction(activityId, request)
+
+        assertEquals(reaction, result.getOrNull())
+        val updatedActivity = feed.state.activities.value.first()
+        assertEquals(listOf(reaction), updatedActivity.ownReactions)
+        assertEquals(1, updatedActivity.reactionCount)
+    }
+
+    @Test
+    fun `on deleteReaction, delegate to repository and update state`() = runTest {
+        val feed = createFeed()
+        val activityId = "activity-1"
+        val type = "like"
+        val reaction = feedsReactionData(activityId = activityId, type = type, userId = "user")
+        coEvery { activitiesRepository.deleteReaction(activityId, type) } returns
+            Result.success(reaction)
+
+        // Set up initial state with activity that has a reaction
+        val activityWithReaction =
+            activityData(activityId)
+                .copy(
+                    ownReactions = listOf(reaction),
+                    reactionCount = 1,
+                    reactionGroups = mapOf("like" to reactionGroupData(count = 1)),
+                )
+        val feedInfo = getOrCreateInfo(feedData(), listOf(activityWithReaction))
+        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
+        feed.getOrCreate()
+
+        val result = feed.deleteReaction(activityId, type)
+
+        assertEquals(reaction, result.getOrNull())
+        val updatedActivity = feed.state.activities.value.first()
+        assertTrue("There should be no reaction", updatedActivity.ownReactions.isEmpty())
+        assertEquals(0, updatedActivity.reactionCount)
+    }
+
+    @Test
+    fun `on addCommentReaction, delegate to repository`() = runTest {
+        val feed = createFeed()
+        val commentId = "comment-1"
+        val request = AddCommentReactionRequest(type = "like")
+        val reaction = feedsReactionData()
+
+        coEvery { commentsRepository.addCommentReaction(commentId, request) } returns
+            Result.success(Pair(reaction, commentId))
+
+        val result = feed.addCommentReaction(commentId, request)
+
+        assertEquals(reaction, result.getOrNull())
+    }
+
+    @Test
+    fun `on deleteCommentReaction, delegate to repository`() = runTest {
+        val feed = createFeed()
+        val commentId = "comment-1"
+        val type = "like"
+        val reaction = feedsReactionData()
+
+        coEvery { commentsRepository.deleteCommentReaction(commentId, type) } returns
+            Result.success(Pair(reaction, commentId))
+
+        val result = feed.deleteCommentReaction(commentId, type)
+
+        assertEquals(reaction, result.getOrNull())
+    }
+
+    @Test
+    fun `on createPoll, create poll then add activity with poll`() = runTest {
+        val feed = createFeed()
+        val pollRequest = CreatePollRequest(name = "Test Poll")
+        val activityType = "poll"
+        val poll = pollData("poll-1")
+        val activity = activityData("activity-1", type = activityType)
+
+        coEvery { pollsRepository.createPoll(pollRequest) } returns Result.success(poll)
+        coEvery { activitiesRepository.addActivity(any<FeedAddActivityRequest>()) } returns
+            Result.success(activity)
+
+        val result = feed.createPoll(pollRequest, activityType)
+
+        assertEquals(activity, result.getOrNull())
+        coVerify { pollsRepository.createPoll(pollRequest) }
+        coVerify {
+            activitiesRepository.addActivity(
+                match<FeedAddActivityRequest> { request ->
+                    request.request.pollId == poll.id &&
+                        request.request.type == activityType &&
+                        request.request.feeds.contains("group:id")
+                }
+            )
+        }
     }
 
     private fun createFeed(watch: Boolean = false) =
