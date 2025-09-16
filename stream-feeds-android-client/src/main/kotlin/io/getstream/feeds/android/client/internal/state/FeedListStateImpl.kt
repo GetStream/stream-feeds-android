@@ -57,14 +57,15 @@ internal class FeedListStateImpl(override val query: FeedsQuery) : FeedListMutab
         get() = _pagination
 
     override fun onFeedUpdated(feed: FeedData) {
-        _feeds.value =
-            _feeds.value.map {
+        _feeds.update { current ->
+            current.map {
                 if (it.fid == feed.fid) {
                     feed
                 } else {
                     it
                 }
             }
+        }
     }
 
     override fun onFeedRemoved(feedId: String) {
@@ -78,7 +79,9 @@ internal class FeedListStateImpl(override val query: FeedsQuery) : FeedListMutab
         _pagination = result.pagination
         this.queryConfig = queryConfig
         // Merge the new feeds with the existing ones (keeping the sort order)
-        _feeds.value = _feeds.value.mergeSorted(result.models, { it.fid.rawValue }, feedsSorting)
+        _feeds.update { current ->
+            current.mergeSorted(result.models, { it.fid.rawValue }, feedsSorting)
+        }
     }
 }
 

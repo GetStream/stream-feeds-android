@@ -69,8 +69,9 @@ internal class ActivityReactionListStateImpl(override val query: ActivityReactio
         // Update the query configuration for future queries
         this.queryConfig = queryConfig
         // Merge the new reactions with the existing ones (keeping the sort order)
-        _reactions.value =
-            _reactions.value.mergeSorted(result.models, FeedsReactionData::id, reactionsSorting)
+        _reactions.update { current ->
+            current.mergeSorted(result.models, FeedsReactionData::id, reactionsSorting)
+        }
     }
 
     override fun onReactionAdded(reaction: FeedsReactionData) {
@@ -78,7 +79,7 @@ internal class ActivityReactionListStateImpl(override val query: ActivityReactio
     }
 
     override fun onReactionRemoved(reaction: FeedsReactionData) {
-        _reactions.value = _reactions.value.filter { it.id != reaction.id }
+        _reactions.update { current -> current.filter { it.id != reaction.id } }
     }
 }
 

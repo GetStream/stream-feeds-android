@@ -30,6 +30,7 @@ import io.getstream.feeds.android.client.api.state.query.toComparator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * An observable object representing the current state of a comment's reply list.
@@ -62,7 +63,7 @@ internal class CommentReplyListStateImpl(
     override fun onQueryMoreReplies(result: PaginationResult<ThreadedCommentData>) {
         _pagination = result.pagination
         // Merge the new replies with the existing ones (keeping the sort order)
-        _replies.value = _replies.value + result.models
+        _replies.update { current -> current + result.models }
     }
 
     override fun onCommentAdded(comment: ThreadedCommentData) {
@@ -70,32 +71,36 @@ internal class CommentReplyListStateImpl(
             // Comment is not a reply, ignore it
             return
         }
-        _replies.value = _replies.value.map { addNestedReply(it, comment) }
+        _replies.update { current -> current.map { addNestedReply(it, comment) } }
     }
 
     override fun onCommentRemoved(commentId: String) {
-        val filteredTopLevel = _replies.value.filter { it.id != commentId }
-        if (filteredTopLevel.size != _replies.value.size) {
-            // A top-level comment was removed, update the state
-            _replies.value = filteredTopLevel
-        } else {
-            // It might be a nested reply, search and remove recursively
-            _replies.value = _replies.value.map { parent -> removeNestedReply(parent, commentId) }
+        _replies.update { current ->
+            val filteredTopLevel = current.filter { it.id != commentId }
+            if (filteredTopLevel.size != current.size) {
+                // A top-level comment was removed, update the state
+                filteredTopLevel
+            } else {
+                // It might be a nested reply, search and remove recursively
+                current.map { parent -> removeNestedReply(parent, commentId) }
+            }
         }
     }
 
     override fun onCommentUpdated(comment: CommentData) {
-        _replies.value = _replies.value.map { parent -> updateNestedReply(parent, comment) }
+        _replies.update { current -> current.map { parent -> updateNestedReply(parent, comment) } }
     }
 
     override fun onCommentReactionAdded(commentId: String, reaction: FeedsReactionData) {
-        _replies.value =
-            _replies.value.map { parent -> addNestedReplyReaction(parent, commentId, reaction) }
+        _replies.update { current ->
+            current.map { parent -> addNestedReplyReaction(parent, commentId, reaction) }
+        }
     }
 
     override fun onCommentReactionRemoved(commentId: String, reaction: FeedsReactionData) {
-        _replies.value =
-            _replies.value.map { parent -> removeNestedReplyReaction(parent, commentId, reaction) }
+        _replies.update { current ->
+            current.map { parent -> removeNestedReplyReaction(parent, commentId, reaction) }
+        }
     }
 
     private fun addNestedReply(

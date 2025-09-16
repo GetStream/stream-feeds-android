@@ -61,18 +61,21 @@ internal class FollowListStateImpl(override val query: FollowsQuery) : FollowLis
         _pagination = result.pagination
         this.queryConfig = queryConfig
         // Merge the new follows with the existing ones (keeping the sort order)
-        _follows.value = _follows.value.mergeSorted(result.models, FollowData::id, followsSorting)
+        _follows.update { current ->
+            current.mergeSorted(result.models, FollowData::id, followsSorting)
+        }
     }
 
     override fun onFollowUpdated(follow: FollowData) {
-        _follows.value =
-            _follows.value.map {
+        _follows.update { current ->
+            current.map {
                 if (it.id == follow.id) {
                     follow
                 } else {
                     it
                 }
             }
+        }
     }
 
     override fun onFollowRemoved(follow: FollowData) {

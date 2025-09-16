@@ -27,6 +27,7 @@ import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * An observable state object that manages the current state of a comment reaction list.
@@ -65,12 +66,13 @@ internal class CommentReactionListStateImpl(override val query: CommentReactions
         // Update the query configuration for future queries
         this.queryConfig = queryConfig
         // Merge the new reactions with the existing ones (keeping the sort order)
-        _reactions.value =
-            _reactions.value.mergeSorted(result.models, FeedsReactionData::id, reactionsSorting)
+        _reactions.update { current ->
+            current.mergeSorted(result.models, FeedsReactionData::id, reactionsSorting)
+        }
     }
 
     override fun onReactionRemoved(reaction: FeedsReactionData) {
-        _reactions.value = _reactions.value.filter { it.id != reaction.id }
+        _reactions.update { current -> current.filter { it.id != reaction.id } }
     }
 }
 

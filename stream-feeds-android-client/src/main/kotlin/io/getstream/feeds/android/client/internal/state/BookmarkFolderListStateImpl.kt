@@ -27,6 +27,7 @@ import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * An observable state object that manages the current state of a bookmark folder list.
@@ -65,17 +66,18 @@ internal class BookmarkFolderListStateImpl(override val query: BookmarkFoldersQu
         // Update the query configuration for future queries
         this.queryConfig = queryConfig
         // Merge the new folders with the existing ones (keeping the sort order)
-        _folders.value =
-            _folders.value.mergeSorted(result.models, BookmarkFolderData::id, foldersSorting)
+        _folders.update { current ->
+            current.mergeSorted(result.models, BookmarkFolderData::id, foldersSorting)
+        }
     }
 
     override fun onBookmarkFolderRemoved(folderId: String) {
-        _folders.value = _folders.value.filter { it.id != folderId }
+        _folders.update { current -> current.filter { it.id != folderId } }
     }
 
     override fun onBookmarkFolderUpdated(folder: BookmarkFolderData) {
-        _folders.value =
-            _folders.value.map {
+        _folders.update { current ->
+            current.map {
                 if (it.id == folder.id) {
                     // Update the folder data
                     folder
@@ -83,6 +85,7 @@ internal class BookmarkFolderListStateImpl(override val query: BookmarkFoldersQu
                     it
                 }
             }
+        }
     }
 }
 

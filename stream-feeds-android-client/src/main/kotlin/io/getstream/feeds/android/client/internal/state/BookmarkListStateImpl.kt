@@ -66,13 +66,14 @@ internal class BookmarkListStateImpl(override val query: BookmarksQuery) :
         // Update the query configuration for future queries
         this.queryConfig = queryConfig
         // Merge the new bookmarks with the existing ones (keeping the sort order)
-        _bookmarks.value =
-            _bookmarks.value.mergeSorted(result.models, BookmarkData::id, bookmarksSorting)
+        _bookmarks.update { current ->
+            current.mergeSorted(result.models, BookmarkData::id, bookmarksSorting)
+        }
     }
 
     override fun onBookmarkFolderRemoved(folderId: String) {
-        _bookmarks.value =
-            _bookmarks.value.map {
+        _bookmarks.update { current ->
+            current.map {
                 if (it.folder?.id == folderId) {
                     // Remove the folder reference from the bookmark
                     it.copy(folder = null)
@@ -80,11 +81,12 @@ internal class BookmarkListStateImpl(override val query: BookmarksQuery) :
                     it
                 }
             }
+        }
     }
 
     override fun onBookmarkFolderUpdated(folder: BookmarkFolderData) {
-        _bookmarks.value =
-            _bookmarks.value.map { bookmark ->
+        _bookmarks.update { current ->
+            current.map { bookmark ->
                 if (bookmark.folder?.id == folder.id) {
                     // Update the folder reference in the bookmark
                     bookmark.copy(folder = folder)
@@ -92,11 +94,12 @@ internal class BookmarkListStateImpl(override val query: BookmarksQuery) :
                     bookmark
                 }
             }
+        }
     }
 
     override fun onBookmarkUpdated(bookmark: BookmarkData) {
-        _bookmarks.value =
-            _bookmarks.value.map {
+        _bookmarks.update { current ->
+            current.map {
                 if (it.id == bookmark.id) {
                     // Update the bookmark with the new data
                     bookmark
@@ -104,6 +107,7 @@ internal class BookmarkListStateImpl(override val query: BookmarksQuery) :
                     it
                 }
             }
+        }
     }
 
     override fun onBookmarkRemoved(bookmark: BookmarkData) {

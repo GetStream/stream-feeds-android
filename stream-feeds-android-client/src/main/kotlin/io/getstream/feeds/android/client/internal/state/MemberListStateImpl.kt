@@ -64,8 +64,9 @@ internal class MemberListStateImpl(override val query: MembersQuery) : MemberLis
         _pagination = result.pagination
         this.queryConfig = queryConfig
         // Merge the new members with the existing ones (keeping the sort order)
-        _members.value =
-            _members.value.mergeSorted(result.models, FeedMemberData::id, membersSorting)
+        _members.update { current ->
+            current.mergeSorted(result.models, FeedMemberData::id, membersSorting)
+        }
     }
 
     override fun onMemberAdded(member: FeedMemberData) {
@@ -73,38 +74,39 @@ internal class MemberListStateImpl(override val query: MembersQuery) : MemberLis
     }
 
     override fun onMemberRemoved(memberId: String) {
-        _members.value = _members.value.filter { it.id != memberId }
+        _members.update { current -> current.filter { it.id != memberId } }
     }
 
     override fun onMemberUpdated(member: FeedMemberData) {
-        _members.value =
-            _members.value.map {
+        _members.update { current ->
+            current.map {
                 if (it.id == member.id) {
                     member
                 } else {
                     it
                 }
             }
+        }
     }
 
     override fun onMembersUpdated(updates: ModelUpdates<FeedMemberData>) {
-        // Apply each update to the current members list
-        updates.updated.forEach { updatedMember ->
-            _members.value =
-                _members.value.map {
-                    if (it.id == updatedMember.id) {
-                        updatedMember
-                    } else {
-                        it
-                    }
+        // Create a map for efficient lookups of updated members
+        val updatesMap = updates.updated.associateBy(FeedMemberData::id)
+
+        _members.update { current ->
+            // Apply updates and filter out removed members in a single pass
+            current.mapNotNull { member ->
+                if (member.id in updates.removedIds) {
+                    null
+                } else {
+                    updatesMap[member.id] ?: member
                 }
+            }
         }
-        // Remove members by their IDs
-        _members.value = _members.value.filterNot { member -> member.id in updates.removedIds }
     }
 
     override fun clear() {
-        _members.value = emptyList()
+        _members.update { emptyList() }
     }
 }
 
