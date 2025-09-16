@@ -16,6 +16,7 @@
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
+import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationResult
@@ -89,7 +90,10 @@ internal interface CommentsRepository {
      *   soft-deleted.
      * @return A [Result] indicating success or failure of the deletion operation.
      */
-    suspend fun deleteComment(commentId: String, hardDelete: Boolean?): Result<Unit>
+    suspend fun deleteComment(
+        commentId: String,
+        hardDelete: Boolean?,
+    ): Result<Pair<CommentData, ActivityData>>
 
     /**
      * Retrieves a specific comment by its identifier.

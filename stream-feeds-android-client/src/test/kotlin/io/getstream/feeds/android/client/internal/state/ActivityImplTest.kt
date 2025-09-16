@@ -161,13 +161,16 @@ internal class ActivityImplTest {
     fun `on deleteComment, delegate to repository and notify state`() = runTest {
         val commentId = "comment1"
         val hardDelete = true
+        val expectedActivity = activityData(id = "activityId", text = "Updated activity")
+        val deleteData = commentData(commentId) to expectedActivity
         coEvery { commentsRepository.deleteComment(commentId, hardDelete) } returns
-            Result.success(Unit)
+            Result.success(deleteData)
 
         val result = activity.deleteComment(commentId, hardDelete)
 
         assertEquals(Unit, result.getOrNull())
         coVerify { commentListState.onCommentRemoved(commentId) }
+        assertEquals(expectedActivity, activity.state.activity.value)
     }
 
     @Test

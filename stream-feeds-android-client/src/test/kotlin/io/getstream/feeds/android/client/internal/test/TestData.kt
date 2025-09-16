@@ -44,6 +44,7 @@ import io.getstream.feeds.android.network.models.ActivityResponse
 import io.getstream.feeds.android.network.models.BookmarkFolderResponse
 import io.getstream.feeds.android.network.models.BookmarkResponse
 import io.getstream.feeds.android.network.models.CommentResponse
+import io.getstream.feeds.android.network.models.DeleteCommentResponse
 import io.getstream.feeds.android.network.models.FeedMemberResponse
 import io.getstream.feeds.android.network.models.FeedResponse
 import io.getstream.feeds.android.network.models.FeedsReactionResponse
@@ -675,6 +676,13 @@ internal object TestData {
             status = "active",
             upvoteCount = 5,
             custom = emptyMap(),
+        )
+
+    fun deleteCommentResponse() =
+        DeleteCommentResponse(
+            duration = "duration",
+            activity = activityResponse(),
+            comment = commentResponse(),
         )
 
     fun pollVoteResponseData() =

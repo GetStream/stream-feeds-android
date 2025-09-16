@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.repository
 import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.file.FeedUploader
+import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
@@ -122,10 +123,13 @@ internal class CommentsRepositoryImpl(
         )
     }
 
-    override suspend fun deleteComment(commentId: String, hardDelete: Boolean?): Result<Unit> =
-        runSafely {
-            api.deleteComment(commentId, hardDelete)
-        }
+    override suspend fun deleteComment(
+        commentId: String,
+        hardDelete: Boolean?,
+    ): Result<Pair<CommentData, ActivityData>> = runSafely {
+        val response = api.deleteComment(commentId, hardDelete)
+        response.comment.toModel() to response.activity.toModel()
+    }
 
     override suspend fun getComment(commentId: String): Result<CommentData> = runSafely {
         api.getComment(commentId).comment.toModel()
