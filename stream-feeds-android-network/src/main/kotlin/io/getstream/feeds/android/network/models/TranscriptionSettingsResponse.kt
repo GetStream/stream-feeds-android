@@ -34,6 +34,8 @@ public data class TranscriptionSettingsResponse(
     @Json(name = "speech_segment_config")
     public val speechSegmentConfig: io.getstream.feeds.android.network.models.SpeechSegmentConfig? =
         null,
+    @Json(name = "translation")
+    public val translation: io.getstream.feeds.android.network.models.TranslationSettings? = null,
 ) {
 
     /** ClosedCaptionMode Enum */

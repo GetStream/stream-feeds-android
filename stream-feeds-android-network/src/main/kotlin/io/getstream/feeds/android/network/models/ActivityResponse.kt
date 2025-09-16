@@ -95,7 +95,8 @@ public data class ActivityResponse(
     @Json(name = "moderation")
     public val moderation: io.getstream.feeds.android.network.models.ModerationV2Response? = null,
     @Json(name = "notification_context")
-    public val notificationContext: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    public val notificationContext: io.getstream.feeds.android.network.models.NotificationContext? =
+        null,
     @Json(name = "parent")
     public val parent: io.getstream.feeds.android.network.models.ActivityResponse? = null,
     @Json(name = "poll")

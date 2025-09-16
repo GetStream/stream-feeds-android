@@ -64,6 +64,13 @@ public data class Channel(
     public val configOverrides: io.getstream.feeds.android.network.models.ConfigOverrides? = null,
     @Json(name = "created_by")
     public val createdBy: io.getstream.feeds.android.network.models.User? = null,
+    @Json(name = "members_lookup")
+    public val membersLookup:
+        kotlin.collections.Map<
+            kotlin.String,
+            io.getstream.feeds.android.network.models.ChannelMemberLookup,
+        >? =
+        emptyMap(),
     @Json(name = "truncated_by")
     public val truncatedBy: io.getstream.feeds.android.network.models.User? = null,
 )

@@ -19,13 +19,18 @@ package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
 import kotlin.collections.*
+import kotlin.collections.List
 import kotlin.io.*
 
 /**  */
-public data class DeleteCommentResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
-    @Json(name = "activity")
-    public val activity: io.getstream.feeds.android.network.models.ActivityResponse,
-    @Json(name = "comment")
-    public val comment: io.getstream.feeds.android.network.models.CommentResponse,
+public data class NotificationTarget(
+    @Json(name = "id") public val id: kotlin.String,
+    @Json(name = "name") public val name: kotlin.String? = null,
+    @Json(name = "text") public val text: kotlin.String? = null,
+    @Json(name = "type") public val type: kotlin.String? = null,
+    @Json(name = "user_id") public val userId: kotlin.String? = null,
+    @Json(name = "attachments")
+    public val attachments:
+        kotlin.collections.List<io.getstream.feeds.android.network.models.Attachment>? =
+        emptyList(),
 )

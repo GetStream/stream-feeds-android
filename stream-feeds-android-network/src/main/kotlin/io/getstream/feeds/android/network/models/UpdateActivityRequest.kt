@@ -33,6 +33,7 @@ public data class UpdateActivityRequest(
     public val attachments:
         kotlin.collections.List<io.getstream.feeds.android.network.models.Attachment>? =
         emptyList(),
+    @Json(name = "feeds") public val feeds: kotlin.collections.List<kotlin.String>? = emptyList(),
     @Json(name = "filter_tags")
     public val filterTags: kotlin.collections.List<kotlin.String>? = emptyList(),
     @Json(name = "interest_tags")
