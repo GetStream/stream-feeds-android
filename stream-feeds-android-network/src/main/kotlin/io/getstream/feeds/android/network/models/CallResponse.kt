@@ -33,6 +33,7 @@ public data class CallResponse(
     @Json(name = "id") public val id: kotlin.String,
     @Json(name = "recording") public val recording: kotlin.Boolean,
     @Json(name = "transcribing") public val transcribing: kotlin.Boolean,
+    @Json(name = "translating") public val translating: kotlin.Boolean,
     @Json(name = "type") public val type: kotlin.String,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
     @Json(name = "blocked_user_ids")

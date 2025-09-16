@@ -19,13 +19,12 @@ package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
 import kotlin.collections.*
+import kotlin.collections.List
 import kotlin.io.*
 
 /**  */
-public data class DeleteCommentResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
-    @Json(name = "activity")
-    public val activity: io.getstream.feeds.android.network.models.ActivityResponse,
-    @Json(name = "comment")
-    public val comment: io.getstream.feeds.android.network.models.CommentResponse,
+public data class TranslationSettings(
+    @Json(name = "enabled") public val enabled: kotlin.Boolean,
+    @Json(name = "languages")
+    public val languages: kotlin.collections.List<kotlin.String> = emptyList(),
 )

@@ -19,6 +19,7 @@ import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.network.models.ActivityLocation
 import io.getstream.feeds.android.network.models.ActivityResponse
 import io.getstream.feeds.android.network.models.Attachment
+import io.getstream.feeds.android.network.models.NotificationContext
 import java.util.Date
 import kotlin.math.max
 
@@ -112,7 +113,7 @@ public data class ActivityData(
     val location: ActivityLocation?,
     val mentionedUsers: List<UserData>,
     val moderation: Moderation?,
-    val notificationContext: Map<String, Any?>?,
+    val notificationContext: NotificationContext?,
     val ownBookmarks: List<BookmarkData>,
     val ownReactions: List<FeedsReactionData>,
     val parent: ActivityData?,

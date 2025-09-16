@@ -22,10 +22,12 @@ import kotlin.collections.*
 import kotlin.io.*
 
 /**  */
-public data class DeleteCommentResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
-    @Json(name = "activity")
-    public val activity: io.getstream.feeds.android.network.models.ActivityResponse,
-    @Json(name = "comment")
-    public val comment: io.getstream.feeds.android.network.models.CommentResponse,
+public data class ChannelMemberLookup(
+    @Json(name = "archived") public val archived: kotlin.Boolean,
+    @Json(name = "banned") public val banned: kotlin.Boolean,
+    @Json(name = "hidden") public val hidden: kotlin.Boolean,
+    @Json(name = "pinned") public val pinned: kotlin.Boolean,
+    @Json(name = "archived_at") public val archivedAt: java.util.Date? = null,
+    @Json(name = "ban_expires") public val banExpires: java.util.Date? = null,
+    @Json(name = "pinned_at") public val pinnedAt: java.util.Date? = null,
 )

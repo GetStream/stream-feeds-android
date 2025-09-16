@@ -22,10 +22,9 @@ import kotlin.collections.*
 import kotlin.io.*
 
 /**  */
-public data class DeleteCommentResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
-    @Json(name = "activity")
-    public val activity: io.getstream.feeds.android.network.models.ActivityResponse,
-    @Json(name = "comment")
-    public val comment: io.getstream.feeds.android.network.models.CommentResponse,
+public data class NotificationContext(
+    @Json(name = "target")
+    public val target: io.getstream.feeds.android.network.models.NotificationTarget? = null,
+    @Json(name = "trigger")
+    public val trigger: io.getstream.feeds.android.network.models.NotificationTrigger? = null,
 )

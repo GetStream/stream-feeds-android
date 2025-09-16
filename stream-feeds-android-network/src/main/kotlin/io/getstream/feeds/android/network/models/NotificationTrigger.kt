@@ -19,27 +19,10 @@ package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
 import kotlin.collections.*
-import kotlin.collections.Map
 import kotlin.io.*
 
-/** Emitted when app settings are updated */
-public data class AppUpdatedEvent(
-    @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "app") public val app: io.getstream.feeds.android.network.models.AppEventResponse,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
+/**  */
+public data class NotificationTrigger(
+    @Json(name = "text") public val text: kotlin.String,
     @Json(name = "type") public val type: kotlin.String,
-    @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
-) :
-    io.getstream.feeds.android.network.models.WSEvent,
-    io.getstream.feeds.android.network.models.WSClientEvent,
-    io.getstream.feeds.android.network.models.FeedEvent {
-
-    override fun getWSEventType(): kotlin.String {
-        return type
-    }
-
-    override fun getWSClientEventType(): kotlin.String {
-        return type
-    }
-}
+)
