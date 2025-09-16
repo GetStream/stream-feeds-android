@@ -16,6 +16,7 @@
 package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.client.api.file.FeedUploader
+import io.getstream.feeds.android.client.api.logging.LoggingConfig
 
 /**
  * Configuration class for the Stream Feeds Android client. This class contains all the
@@ -23,5 +24,10 @@ import io.getstream.feeds.android.client.api.file.FeedUploader
  * option for customizing the CDN.
  *
  * @param customUploader Optional [FeedUploader] implementation for overriding the default CDN.
+ * @param loggingConfig Configuration for logging within the FeedsClient. See [LoggingConfig] for
+ *   more details.
  */
-public class FeedsConfig(public val customUploader: FeedUploader? = null)
+public class FeedsConfig(
+    public val customUploader: FeedUploader? = null,
+    public val loggingConfig: LoggingConfig = LoggingConfig(),
+)

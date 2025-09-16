@@ -26,6 +26,9 @@ import io.getstream.android.core.api.model.value.StreamApiKey
 import io.getstream.android.core.api.model.value.StreamToken
 import io.getstream.android.core.api.model.value.StreamUserId
 import io.getstream.feeds.android.client.api.FeedsClient
+import io.getstream.feeds.android.client.api.logging.HttpLoggingLevel
+import io.getstream.feeds.android.client.api.logging.LoggingConfig
+import io.getstream.feeds.android.client.api.model.FeedsConfig
 import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.sample.DemoAppConfig
 import javax.inject.Inject
@@ -93,6 +96,10 @@ constructor(
                             return credentials.userToken
                         }
                     },
+                config =
+                    FeedsConfig(
+                        loggingConfig = LoggingConfig(httpLoggingLevel = HttpLoggingLevel.Body)
+                    ),
             )
 
         return client.connect().map { UserState(user = credentials.user, client = client) }
