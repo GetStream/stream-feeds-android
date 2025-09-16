@@ -17,6 +17,7 @@ package io.getstream.feeds.android.sample.feed
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +29,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -35,10 +37,10 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -80,13 +82,18 @@ import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.network.models.Attachment
 import io.getstream.feeds.android.network.models.NotificationStatusResponse
 import io.getstream.feeds.android.sample.R
+import io.getstream.feeds.android.sample.components.ExpandableFloatingActionButton
+import io.getstream.feeds.android.sample.components.FloatingActionButtonItem
 import io.getstream.feeds.android.sample.components.LinkText
 import io.getstream.feeds.android.sample.components.LoadingScreen
 import io.getstream.feeds.android.sample.components.UserAvatar
+import io.getstream.feeds.android.sample.feed.FeedViewModel.ViewState
 import io.getstream.feeds.android.sample.notification.NotificationsScreenArgs
+import io.getstream.feeds.android.sample.story.StoryScreen
 import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
 import io.getstream.feeds.android.sample.ui.util.conditional
 import io.getstream.feeds.android.sample.util.AsyncResource
+import io.getstream.feeds.android.sample.util.getOrNull
 
 data class FeedsScreenArgs(val feedId: String, val avatarUrl: String?, val userId: String) {
     val fid = FeedId(feedId)
@@ -97,11 +104,18 @@ data class FeedsScreenArgs(val feedId: String, val avatarUrl: String?, val userI
 @Composable
 fun FeedsScreen(args: FeedsScreenArgs, navigator: DestinationsNavigator) {
     val viewModel = hiltViewModel<FeedViewModel>()
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
-            val notificationStatus by viewModel.notificationStatus.collectAsStateWithLifecycle()
+            val notificationStatus =
+                viewState
+                    .getOrNull()
+                    ?.notifications
+                    ?.state
+                    ?.notificationStatus
+                    ?.collectAsStateWithLifecycle()
+                    ?.value
             TopBarSection(notificationStatus, navigator, args)
         },
         snackbarHost = {
@@ -112,7 +126,7 @@ fun FeedsScreen(args: FeedsScreenArgs, navigator: DestinationsNavigator) {
             SnackbarHost(snackbarHostState)
         },
     ) { padding ->
-        when (val state = state) {
+        when (val state = viewState) {
             AsyncResource.Loading -> LoadingScreen(Modifier.padding(padding))
 
             AsyncResource.Error -> {
@@ -136,7 +150,7 @@ fun FeedsScreen(args: FeedsScreenArgs, navigator: DestinationsNavigator) {
 private fun FeedsScreenContent(
     args: FeedsScreenArgs,
     navigator: DestinationsNavigator,
-    state: FeedState,
+    viewState: ViewState,
     viewModel: FeedViewModel,
     modifier: Modifier,
 ) {
@@ -145,7 +159,7 @@ private fun FeedsScreenContent(
     Column(modifier = modifier.fillMaxSize()) {
         Box(modifier = Modifier.fillMaxSize()) {
             // Feed content
-            val activities by state.activities.collectAsStateWithLifecycle()
+            val activities by viewState.timeline.state.activities.collectAsStateWithLifecycle()
             val listState = rememberLazyListState()
 
             if (activities.isEmpty()) {
@@ -154,6 +168,8 @@ private fun FeedsScreenContent(
                 ScrolledToBottomEffect(listState, action = viewModel::onLoadMore)
 
                 LazyColumn(state = listState) {
+                    item { Stories(viewState.stories.state) }
+
                     items(activities) { activity ->
                         if (activity.parent != null) {
                             Row(
@@ -187,7 +203,7 @@ private fun FeedsScreenContent(
                                     )
                                 )
                             },
-                            onHeartClick = { viewModel.onHeartClick(activity) },
+                            onReactionClick = { viewModel.onReactionClick(activity, it) },
                             onRepostClick = { message ->
                                 viewModel.onRepostClick(activity, message)
                             },
@@ -208,29 +224,75 @@ private fun FeedsScreenContent(
                 }
             }
 
-            FloatingActionButton(
-                onClick = viewModel::onCreateClick,
+            var showPollBottomSheet by remember { mutableStateOf(false) }
+
+            // FAB with content creation options
+            CreateContentButton(
+                onCreatePostClick = viewModel::onCreatePostClick,
+                onCreatePollClick = { showPollBottomSheet = true },
                 modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
-                shape = CircleShape,
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.add_24),
-                    contentDescription = "Add Activity",
-                    modifier = Modifier.size(24.dp),
-                )
-            }
+            )
 
             // Create Post Bottom Sheet
             CreateContentBottomSheet(
                 state = createContentState,
-                title = "Create post",
+                config = ContentConfig.Post(onSubmit = viewModel::onCreatePost),
                 onDismiss = viewModel::onContentCreateDismiss,
-                onPost = viewModel::onCreatePost,
-                requireText = false,
-                extraActions = { enabled -> CreatePollButton(viewModel::onCreatePoll, enabled) },
+            )
+
+            if (showPollBottomSheet) {
+                CreatePollBottomSheet(
+                    onDismissRequest = { showPollBottomSheet = false },
+                    onCreatePoll = viewModel::onCreatePoll,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun Stories(state: FeedState) {
+    val stories by state.activities.collectAsStateWithLifecycle()
+    var selectedStory by remember { mutableStateOf<ActivityData?>(null) }
+
+    LazyRow {
+        items(stories) { story ->
+            UserAvatar(
+                story.user.image,
+                Modifier.padding(8.dp)
+                    .size(72.dp)
+                    .border(3.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+                    .border(6.dp, MaterialTheme.colorScheme.surface, CircleShape)
+                    .clickable { selectedStory = story },
             )
         }
     }
+
+    selectedStory?.let { StoryScreen(activity = it, onDismiss = { selectedStory = null }) }
+}
+
+@Composable
+private fun CreateContentButton(
+    onCreatePostClick: () -> Unit,
+    onCreatePollClick: () -> Unit,
+    modifier: Modifier,
+) {
+    ExpandableFloatingActionButton(
+        items =
+            listOf(
+                FloatingActionButtonItem(
+                    icon = painterResource(R.drawable.poll),
+                    label = "Create Poll",
+                    onClick = onCreatePollClick,
+                ),
+                FloatingActionButtonItem(
+                    icon = painterResource(R.drawable.add_24),
+                    label = "Create Post",
+                    onClick = onCreatePostClick,
+                ),
+            ),
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -351,7 +413,7 @@ fun ActivityContent(
     data: ActivityData,
     currentUserId: String,
     onCommentClick: () -> Unit,
-    onHeartClick: () -> Unit,
+    onReactionClick: (Reaction) -> Unit,
     onRepostClick: (String?) -> Unit,
     onBookmarkClick: () -> Unit,
     onDeleteClick: () -> Unit,
@@ -412,7 +474,7 @@ fun ActivityContent(
         ActivityActions(
             activity = data,
             onCommentClick = onCommentClick,
-            onHeartClick = onHeartClick,
+            onReactionClick = onReactionClick,
             onRepostClick = { showRepostDialog = true },
             onBookmarkClick = onBookmarkClick,
         )

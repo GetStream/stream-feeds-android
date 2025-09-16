@@ -22,4 +22,7 @@ import kotlin.collections.*
 import kotlin.io.*
 
 /**  */
-public data class DeleteFeedResponse(@Json(name = "duration") public val duration: kotlin.String)
+public data class DeleteFeedResponse(
+    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "task_id") public val taskId: kotlin.String,
+)

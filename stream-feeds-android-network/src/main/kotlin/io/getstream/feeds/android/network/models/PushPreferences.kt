@@ -27,6 +27,6 @@ public data class PushPreferences(
     @Json(name = "chat_level") public val chatLevel: kotlin.String? = null,
     @Json(name = "disabled_until") public val disabledUntil: java.util.Date? = null,
     @Json(name = "feeds_level") public val feedsLevel: kotlin.String? = null,
-    @Json(name = "feeds_events")
-    public val feedsEvents: io.getstream.feeds.android.network.models.FeedsEventPreferences? = null,
+    @Json(name = "feeds_preferences")
+    public val feedsPreferences: io.getstream.feeds.android.network.models.FeedsPreferences? = null,
 )

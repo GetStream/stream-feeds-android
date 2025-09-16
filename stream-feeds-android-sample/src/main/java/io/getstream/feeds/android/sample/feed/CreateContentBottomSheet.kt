@@ -23,7 +23,7 @@ import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -36,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -60,15 +61,25 @@ enum class CreateContentState {
     Posting,
 }
 
+sealed class ContentConfig(
+    val title: String,
+    val requireText: Boolean,
+    val showStoryToggle: Boolean,
+) {
+    data class Post(
+        val onSubmit: (text: String, attachments: List<Uri>, isStory: Boolean) -> Unit
+    ) : ContentConfig(title = "Create Post", requireText = false, showStoryToggle = true)
+
+    data class Comment(val onSubmit: (text: String, attachments: List<Uri>) -> Unit) :
+        ContentConfig(title = "Add Comment", requireText = true, showStoryToggle = false)
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateContentBottomSheet(
     state: CreateContentState,
-    title: String,
+    config: ContentConfig,
     onDismiss: () -> Unit,
-    onPost: (text: String, attachments: List<Uri>) -> Unit,
-    requireText: Boolean,
-    extraActions: @Composable RowScope.(inputEnabled: Boolean) -> Unit = {},
 ) {
     if (state == CreateContentState.Hidden) return
 
@@ -81,8 +92,9 @@ fun CreateContentBottomSheet(
         )
     val inputEnabled = state == CreateContentState.Composing
 
-    var postText by remember { mutableStateOf("") }
+    var text by remember { mutableStateOf("") }
     var attachments by remember { mutableStateOf(emptyList<Uri>()) }
+    var isStory by remember { mutableStateOf(false) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -96,13 +108,23 @@ fun CreateContentBottomSheet(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Companion.CenterVertically,
             ) {
-                Text(text = title, fontSize = 18.sp, fontWeight = FontWeight.Companion.Bold)
+                Text(text = config.title, fontSize = 18.sp, fontWeight = FontWeight.Companion.Bold)
 
                 if (state == CreateContentState.Posting) {
                     CircularProgressIndicator()
                 } else {
-                    val canPost = attachments.isNotEmpty() && !requireText || postText.isNotBlank()
-                    TextButton(onClick = { onPost(postText, attachments) }, enabled = canPost) {
+                    val canPost =
+                        attachments.isNotEmpty() && !config.requireText || text.isNotBlank()
+                    TextButton(
+                        onClick = {
+                            when (config) {
+                                is ContentConfig.Post -> config.onSubmit(text, attachments, isStory)
+
+                                is ContentConfig.Comment -> config.onSubmit(text, attachments)
+                            }
+                        },
+                        enabled = canPost,
+                    ) {
                         Text(text = "Submit", fontWeight = FontWeight.Companion.Medium)
                     }
                 }
@@ -110,8 +132,8 @@ fun CreateContentBottomSheet(
 
             // Text Input
             OutlinedTextField(
-                value = postText,
-                onValueChange = { postText = it },
+                value = text,
+                onValueChange = { text = it },
                 enabled = inputEnabled,
                 placeholder = { Text("What's on your mind?") },
                 modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
@@ -120,7 +142,7 @@ fun CreateContentBottomSheet(
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             )
 
-            // Bottom toolbar with image attachment option
+            // Bottom toolbar with options
             Row(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                 horizontalArrangement = Arrangement.Start,
@@ -134,16 +156,19 @@ fun CreateContentBottomSheet(
                     enabled = inputEnabled,
                 )
 
-                if (hasAttachments) {
+                if (config.showStoryToggle) {
+                    Spacer(Modifier.weight(1f))
                     Text(
-                        text = "Attachment selected",
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(start = 8.dp),
+                        text = "Post as story",
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(end = 8.dp),
+                    )
+                    Switch(
+                        checked = isStory,
+                        onCheckedChange = { isStory = it },
+                        enabled = inputEnabled,
                     )
                 }
-
-                // Display any extra actions passed to the bottom sheet
-                extraActions(inputEnabled)
             }
         }
     }

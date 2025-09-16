@@ -60,34 +60,22 @@ import io.getstream.feeds.android.sample.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreatePollButton(onCreatePoll: (PollFormData) -> Unit, enabled: Boolean) {
-    var showPollBottomSheet by remember { mutableStateOf(false) }
+fun CreatePollBottomSheet(onDismissRequest: () -> Unit, onCreatePoll: (PollFormData) -> Unit) {
+    ModalBottomSheet(
+        onDismissRequest = onDismissRequest,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        contentWindowInsets = { WindowInsets(16.dp, 16.dp, 16.dp, 16.dp) },
+    ) {
+        val scrollState = rememberScrollState()
 
-    IconButton(onClick = { showPollBottomSheet = true }, enabled = enabled) {
-        Icon(
-            painter = painterResource(R.drawable.poll),
-            contentDescription = "Create Poll",
-            modifier = Modifier.size(24.dp),
-        )
-    }
-
-    if (showPollBottomSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showPollBottomSheet = false },
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-            contentWindowInsets = { WindowInsets(16.dp, 16.dp, 16.dp, 16.dp) },
-        ) {
-            val scrollState = rememberScrollState()
-
-            Column(Modifier.verticalScroll(scrollState)) {
-                CreatePollBottomSheetContent(
-                    onCreateClicked = {
-                        onCreatePoll(it)
-                        showPollBottomSheet = false
-                    },
-                    onCancelClick = { showPollBottomSheet = false },
-                )
-            }
+        Column(Modifier.verticalScroll(scrollState)) {
+            CreatePollBottomSheetContent(
+                onCreateClicked = {
+                    onCreatePoll(it)
+                    onDismissRequest()
+                },
+                onCancelClick = onDismissRequest,
+            )
         }
     }
 }

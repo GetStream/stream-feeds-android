@@ -52,7 +52,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,7 +63,6 @@ import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomS
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
-import io.getstream.feeds.android.sample.R
 import io.getstream.feeds.android.sample.components.LoadingScreen
 import io.getstream.feeds.android.sample.feed.CommentsSheetViewModel.Event
 import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
@@ -168,10 +166,9 @@ private fun ColumnScope.CommentsBottomSheetContent(
 
     CreateContentBottomSheet(
         state = createContentState,
-        title = "Add comment",
+        config =
+            ContentConfig.Comment { text, attachments -> onEvent(Event.OnPost(text, attachments)) },
         onDismiss = { onEvent(Event.OnContentCreateDismiss) },
-        onPost = { text, attachments -> onEvent(Event.OnPost(text, attachments)) },
-        requireText = true,
     )
 }
 
@@ -246,13 +243,7 @@ private fun Comment(
                 )
             }
 
-            val heartId =
-                if (hasOwnHeart) {
-                    R.drawable.favorite_filled_24
-                } else {
-                    R.drawable.favorite_24
-                }
-            Icon(painter = painterResource(heartId), contentDescription = null)
+            Icon(painter = Reaction.Heart.painter(hasOwnHeart), contentDescription = null)
             Text(
                 text = data.reactionGroups["heart"]?.count?.toString() ?: "0",
                 modifier = Modifier.padding(start = 4.dp),
