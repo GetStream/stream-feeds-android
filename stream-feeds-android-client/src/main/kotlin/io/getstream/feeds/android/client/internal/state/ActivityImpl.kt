@@ -31,8 +31,11 @@ import io.getstream.feeds.android.client.api.state.ActivityState
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.handler.ActivityEventHandler
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
+import io.getstream.feeds.android.client.internal.subscribe.onEvent
 import io.getstream.feeds.android.client.internal.utils.flatMap
 import io.getstream.feeds.android.network.models.AddCommentReactionRequest
 import io.getstream.feeds.android.network.models.CastPollVoteRequest
@@ -58,7 +61,8 @@ import io.getstream.feeds.android.network.models.UpdatePollRequest
  * @property commentsRepository The repository used to fetch and manage comments.
  * @property pollsRepository The repository used to fetch and manage polls.
  * @property commentList The list of comments associated with this activity.
- * @property subscriptionManager The manager for WebSocket subscriptions to receive real-time
+ * @property subscriptionManager The manager for state update subscriptions.
+ * @property socketSubscriptionManager The manager for WebSocket subscriptions to receive real-time
  *   updates.
  */
 internal class ActivityImpl(
@@ -69,7 +73,8 @@ internal class ActivityImpl(
     private val commentsRepository: CommentsRepository,
     private val pollsRepository: PollsRepository,
     private val commentList: ActivityCommentListImpl,
-    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
+    private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
+    socketSubscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
 ) : Activity {
 
     private val _state: ActivityStateImpl = ActivityStateImpl(currentUserId, commentList.state)
@@ -78,7 +83,7 @@ internal class ActivityImpl(
         ActivityEventHandler(fid = fid, activityId = activityId, state = _state)
 
     init {
-        subscriptionManager.subscribe(eventHandler)
+        socketSubscriptionManager.subscribe(eventHandler)
     }
 
     override val state: ActivityState
@@ -101,8 +106,8 @@ internal class ActivityImpl(
     }
 
     override suspend fun getComment(commentId: String): Result<CommentData> {
-        return commentsRepository.getComment(commentId).onSuccess {
-            commentList.mutableState.onCommentUpdated(it)
+        return commentsRepository.getComment(commentId).onSuccess { comment ->
+            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(comment))
         }
     }
 
@@ -112,7 +117,7 @@ internal class ActivityImpl(
     ): Result<CommentData> {
         return commentsRepository
             .addComment(request = request, attachmentUploadProgress = attachmentUploadProgress)
-            .onSuccess { commentList.mutableState.onCommentAdded(ThreadedCommentData(it)) }
+            .onSuccess { subscriptionManager.onEvent(StateUpdateEvent.CommentAdded(it)) }
     }
 
     override suspend fun addCommentsBatch(
@@ -121,10 +126,7 @@ internal class ActivityImpl(
     ): Result<List<CommentData>> {
         return commentsRepository.addCommentsBatch(requests, attachmentUploadProgress).onSuccess {
             comments ->
-            val threadedComments = comments.map(::ThreadedCommentData)
-            threadedComments.forEach { threadedComment ->
-                commentList.mutableState.onCommentAdded(threadedComment)
-            }
+            comments.forEach { subscriptionManager.onEvent(StateUpdateEvent.CommentAdded(it)) }
         }
     }
 
@@ -132,7 +134,7 @@ internal class ActivityImpl(
         return commentsRepository
             .deleteComment(commentId, hardDelete)
             .onSuccess { (comment, activity) ->
-                commentList.mutableState.onCommentRemoved(comment.id)
+                subscriptionManager.onEvent(StateUpdateEvent.CommentDeleted(comment))
                 _state.onActivityUpdated(activity)
             }
             .map {}
@@ -143,7 +145,7 @@ internal class ActivityImpl(
         request: UpdateCommentRequest,
     ): Result<CommentData> {
         return commentsRepository.updateComment(commentId, request).onSuccess {
-            commentList.mutableState.onCommentUpdated(it)
+            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(it))
         }
     }
 
@@ -153,7 +155,11 @@ internal class ActivityImpl(
     ): Result<FeedsReactionData> {
         return commentsRepository
             .addCommentReaction(commentId, request)
-            .onSuccess { commentList.mutableState.onCommentReactionAdded(it.second, it.first) }
+            .onSuccess { (reaction, comment) ->
+                subscriptionManager.onEvent(
+                    StateUpdateEvent.CommentReactionAdded(comment, reaction)
+                )
+            }
             .map { it.first }
     }
 
@@ -163,7 +169,11 @@ internal class ActivityImpl(
     ): Result<FeedsReactionData> {
         return commentsRepository
             .deleteCommentReaction(commentId, type)
-            .onSuccess { commentList.mutableState.onCommentReactionRemoved(it.second, it.first) }
+            .onSuccess { (reaction, comment) ->
+                subscriptionManager.onEvent(
+                    StateUpdateEvent.CommentReactionDeleted(comment, reaction)
+                )
+            }
             .map { it.first }
     }
 

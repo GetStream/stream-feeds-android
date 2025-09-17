@@ -222,7 +222,8 @@ internal class FeedsClientImpl(
             activitiesRepository = activitiesRepository,
             commentsRepository = commentsRepository,
             pollsRepository = pollsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
+            socketSubscriptionManager = feedsEventsSubscriptionManager,
             commentList =
                 ActivityCommentListImpl(
                     query =
@@ -233,7 +234,7 @@ internal class FeedsClientImpl(
                         ),
                     currentUserId = user.id,
                     commentsRepository = commentsRepository,
-                    subscriptionManager = feedsEventsSubscriptionManager,
+                    subscriptionManager = stateEventsSubscriptionManager,
                 ),
         )
 
@@ -294,7 +295,7 @@ internal class FeedsClientImpl(
             query = query,
             currentUserId = user.id,
             commentsRepository = commentsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun commentReplyList(query: CommentRepliesQuery): CommentReplyList =

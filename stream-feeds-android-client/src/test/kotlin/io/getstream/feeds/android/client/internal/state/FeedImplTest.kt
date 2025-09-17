@@ -645,7 +645,7 @@ internal class FeedImplTest {
         val reaction = feedsReactionData()
 
         coEvery { commentsRepository.addCommentReaction(commentId, request) } returns
-            Result.success(Pair(reaction, commentId))
+            Result.success(Pair(reaction, commentData(commentId)))
 
         val result = feed.addCommentReaction(commentId, request)
 
@@ -660,7 +660,7 @@ internal class FeedImplTest {
         val reaction = feedsReactionData()
 
         coEvery { commentsRepository.deleteCommentReaction(commentId, type) } returns
-            Result.success(Pair(reaction, commentId))
+            Result.success(Pair(reaction, commentData(commentId)))
 
         val result = feed.deleteCommentReaction(commentId, type)
 

@@ -15,13 +15,34 @@
  */
 package io.getstream.feeds.android.client.internal.state.event
 
+import io.getstream.feeds.android.client.api.model.CommentData
+import io.getstream.feeds.android.client.api.model.FeedsReactionData
+import io.getstream.feeds.android.client.api.model.toModel
+import io.getstream.feeds.android.network.models.CommentAddedEvent
+import io.getstream.feeds.android.network.models.CommentDeletedEvent
+import io.getstream.feeds.android.network.models.CommentReactionAddedEvent
+import io.getstream.feeds.android.network.models.CommentReactionDeletedEvent
+import io.getstream.feeds.android.network.models.CommentUpdatedEvent
 import io.getstream.feeds.android.network.models.WSEvent
 
 /**
  * Represents an event that may trigger a state update. These events are typically the result of
  * receiving a WebSocket event or having executed a successful API call that can modify the state.
  */
-internal sealed interface StateUpdateEvent {}
+internal sealed interface StateUpdateEvent {
+
+    data class CommentAdded(val comment: CommentData) : StateUpdateEvent
+
+    data class CommentDeleted(val comment: CommentData) : StateUpdateEvent
+
+    data class CommentUpdated(val comment: CommentData) : StateUpdateEvent
+
+    data class CommentReactionAdded(val comment: CommentData, val reaction: FeedsReactionData) :
+        StateUpdateEvent
+
+    data class CommentReactionDeleted(val comment: CommentData, val reaction: FeedsReactionData) :
+        StateUpdateEvent
+}
 
 internal fun WSEvent.toModel(): StateUpdateEvent? =
     when (this) {
@@ -39,4 +60,3 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
 
         else -> null
     }
-}

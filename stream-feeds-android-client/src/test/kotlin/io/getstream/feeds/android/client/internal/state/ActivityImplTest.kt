@@ -24,7 +24,9 @@ import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentReq
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
@@ -32,6 +34,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionDat
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import io.getstream.feeds.android.client.internal.test.TestData.pollOptionData
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
+import io.getstream.feeds.android.client.internal.test.TestSubscriptionManager
 import io.getstream.feeds.android.network.models.AddCommentReactionRequest
 import io.getstream.feeds.android.network.models.CastPollVoteRequest
 import io.getstream.feeds.android.network.models.CreatePollOptionRequest
@@ -44,6 +47,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -56,9 +60,9 @@ internal class ActivityImplTest {
     private val commentListState = mockk<ActivityCommentListMutableState>(relaxed = true)
     private val activityCommentListImpl: ActivityCommentListImpl = mockk {
         every { state } returns commentListState
-        every { mutableState } returns commentListState
     }
-    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> =
+    private val stateEventListener: StateUpdateEventListener = mockk(relaxed = true)
+    private val socketSubscriptionManager: StreamSubscriptionManager<FeedsEventListener> =
         mockk(relaxed = true)
 
     private val activity =
@@ -70,7 +74,8 @@ internal class ActivityImplTest {
             commentsRepository = commentsRepository,
             pollsRepository = pollsRepository,
             commentList = activityCommentListImpl,
-            subscriptionManager = subscriptionManager,
+            subscriptionManager = TestSubscriptionManager(stateEventListener),
+            socketSubscriptionManager = socketSubscriptionManager,
         )
 
     @Test
@@ -82,7 +87,7 @@ internal class ActivityImplTest {
 
         activity.addComment(request, progress)
 
-        coVerify { commentListState.onCommentAdded(ThreadedCommentData(commentData)) }
+        verify { stateEventListener.onEvent(StateUpdateEvent.CommentAdded(commentData)) }
     }
 
     @Test
@@ -98,10 +103,8 @@ internal class ActivityImplTest {
 
         activity.addCommentsBatch(requests)
 
-        coVerify {
-            commentData.forEach { data ->
-                commentListState.onCommentAdded(ThreadedCommentData(data))
-            }
+        commentData.forEach { data ->
+            verify { stateEventListener.onEvent(StateUpdateEvent.CommentAdded(data)) }
         }
     }
 
@@ -154,7 +157,7 @@ internal class ActivityImplTest {
         val result = activity.getComment(commentId)
 
         assertEquals(comment, result.getOrNull())
-        coVerify { commentListState.onCommentUpdated(comment) }
+        verify { stateEventListener.onEvent(StateUpdateEvent.CommentUpdated(comment)) }
     }
 
     @Test
@@ -169,7 +172,7 @@ internal class ActivityImplTest {
         val result = activity.deleteComment(commentId, hardDelete)
 
         assertEquals(Unit, result.getOrNull())
-        coVerify { commentListState.onCommentRemoved(commentId) }
+        verify { stateEventListener.onEvent(StateUpdateEvent.CommentDeleted(deleteData.first)) }
         assertEquals(expectedActivity, activity.state.activity.value)
     }
 
@@ -184,7 +187,7 @@ internal class ActivityImplTest {
         val result = activity.updateComment(commentId, request)
 
         assertEquals(updatedComment, result.getOrNull())
-        coVerify { commentListState.onCommentUpdated(updatedComment) }
+        verify { stateEventListener.onEvent(StateUpdateEvent.CommentUpdated(updatedComment)) }
     }
 
     @Test
@@ -192,13 +195,18 @@ internal class ActivityImplTest {
         val commentId = "comment1"
         val request = AddCommentReactionRequest(type = "like")
         val reactionData = feedsReactionData(type = "like")
+        val commentData = commentData(commentId)
         coEvery { commentsRepository.addCommentReaction(commentId, request) } returns
-            Result.success(Pair(reactionData, commentId))
+            Result.success(Pair(reactionData, commentData))
 
         val result = activity.addCommentReaction(commentId, request)
 
         assertEquals(reactionData, result.getOrNull())
-        coVerify { commentListState.onCommentReactionAdded(commentId, reactionData) }
+        verify {
+            stateEventListener.onEvent(
+                StateUpdateEvent.CommentReactionAdded(commentData, reactionData)
+            )
+        }
     }
 
     @Test
@@ -206,13 +214,18 @@ internal class ActivityImplTest {
         val commentId = "comment1"
         val type = "like"
         val reactionData = feedsReactionData(type = type)
+        val commentData = commentData(commentId)
         coEvery { commentsRepository.deleteCommentReaction(commentId, type) } returns
-            Result.success(Pair(reactionData, commentId))
+            Result.success(Pair(reactionData, commentData))
 
         val result = activity.deleteCommentReaction(commentId, type)
 
         assertEquals(reactionData, result.getOrNull())
-        coVerify { commentListState.onCommentReactionRemoved(commentId, reactionData) }
+        verify {
+            stateEventListener.onEvent(
+                StateUpdateEvent.CommentReactionDeleted(commentData, reactionData)
+            )
+        }
     }
 
     @Test
