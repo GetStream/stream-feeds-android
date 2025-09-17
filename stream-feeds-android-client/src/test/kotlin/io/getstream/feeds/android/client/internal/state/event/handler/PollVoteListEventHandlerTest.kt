@@ -19,6 +19,7 @@ import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.PollVoteListStateUpdates
 import io.getstream.feeds.android.client.internal.test.TestData.pollResponseData
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteResponseData
+import io.getstream.feeds.android.network.models.PollVoteCastedFeedEvent
 import io.getstream.feeds.android.network.models.PollVoteChangedFeedEvent
 import io.getstream.feeds.android.network.models.PollVoteRemovedFeedEvent
 import io.getstream.feeds.android.network.models.WSEvent
@@ -104,6 +105,42 @@ internal class PollVoteListEventHandlerTest {
         handler.onEvent(event)
 
         verify(exactly = 0) { state.pollVoteRemoved(any()) }
+    }
+
+    @Test
+    fun `on PollVoteCastedFeedEvent for matching poll, then call pollVoteAdded`() {
+        val poll = pollResponseData().copy(id = pollId)
+        val pollVote = pollVoteResponseData()
+        val event =
+            PollVoteCastedFeedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                poll = poll,
+                pollVote = pollVote,
+                type = "feeds.poll.vote_casted",
+            )
+
+        handler.onEvent(event)
+
+        verify { state.pollVoteAdded(pollVote.toModel()) }
+    }
+
+    @Test
+    fun `on PollVoteCastedFeedEvent for different poll, then do not call pollVoteAdded`() {
+        val poll = pollResponseData().copy(id = "different-poll")
+        val pollVote = pollVoteResponseData()
+        val event =
+            PollVoteCastedFeedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                poll = poll,
+                pollVote = pollVote,
+                type = "feeds.poll.vote_casted",
+            )
+
+        handler.onEvent(event)
+
+        verify(exactly = 0) { state.pollVoteAdded(any()) }
     }
 
     @Test

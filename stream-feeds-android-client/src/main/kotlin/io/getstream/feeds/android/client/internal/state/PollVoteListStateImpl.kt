@@ -24,9 +24,11 @@ import io.getstream.feeds.android.client.api.state.query.PollVotesFilterField
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollVotesSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
+import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * An observable state object that manages the current state of a poll vote list.
@@ -61,6 +63,10 @@ internal class PollVoteListStateImpl(override val query: PollVotesQuery) :
         this.queryConfig = queryConfig
         // Merge the new votes with the existing ones (keeping the sort order)
         _votes.value = _votes.value.mergeSorted(result.models, PollVoteData::id, votesSorting)
+    }
+
+    override fun pollVoteAdded(vote: PollVoteData) {
+        _votes.update { current -> current.upsertSorted(vote, PollVoteData::id, votesSorting) }
     }
 
     override fun pollVoteRemoved(voteId: String) {
@@ -101,6 +107,9 @@ internal interface PollVoteListStateUpdates {
         result: PaginationResult<PollVoteData>,
         queryConfig: QueryConfiguration<PollVotesFilterField, PollVotesSort>,
     )
+
+    /** Handles the addition of a new poll vote to the list. */
+    fun pollVoteAdded(vote: PollVoteData)
 
     /** Handles the removal of a poll vote from the list. */
     fun pollVoteRemoved(voteId: String)
