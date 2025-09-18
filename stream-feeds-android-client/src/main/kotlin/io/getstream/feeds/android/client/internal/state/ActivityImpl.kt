@@ -255,7 +255,7 @@ internal class ActivityImpl(
         return pollId().flatMap { pollId ->
             pollsRepository
                 .castPollVote(activityId = activityId, pollId = pollId, request = request)
-                .onSuccess { _state.onPollVoteCasted(it) }
+                .onSuccess { it?.let { vote -> _state.onPollVoteCasted(vote, pollId) } }
         }
     }
 
@@ -268,7 +268,7 @@ internal class ActivityImpl(
                     voteId = voteId,
                     userId = userId,
                 )
-                .onSuccess { _state.onPollVoteRemoved(it) }
+                .onSuccess { it?.let { vote -> _state.onPollVoteRemoved(vote, pollId) } }
         }
     }
 

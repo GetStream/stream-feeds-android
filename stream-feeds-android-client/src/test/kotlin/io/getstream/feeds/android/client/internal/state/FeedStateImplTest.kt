@@ -21,6 +21,8 @@ import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
+import io.getstream.feeds.android.client.api.model.PollData
+import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQueryConfig
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
@@ -32,6 +34,8 @@ import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.getstream.feeds.android.client.internal.test.TestData.followData
+import io.getstream.feeds.android.client.internal.test.TestData.pollData
+import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
 import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -304,6 +308,105 @@ internal class FeedStateImplTest {
         assertEquals(emptyList<ActivityData>(), activities)
     }
 
+    @Test
+    fun `on onPollClosed, then mark poll as closed in activities`() = runTest {
+        val poll = pollData("poll-1", "Test Poll", isClosed = false)
+        val activity = setupActivityWithPoll(poll)
+
+        feedState.onPollClosed("poll-1")
+
+        expectActivityWithPoll(activity, poll.copy(isClosed = true))
+    }
+
+    @Test
+    fun `on onPollDeleted, then remove poll from activities`() = runTest {
+        val poll = pollData("poll-1", "Test Poll")
+        val activity = setupActivityWithPoll(poll)
+
+        feedState.onPollDeleted("poll-1")
+
+        expectActivityWithPoll(activity, null)
+    }
+
+    @Test
+    fun `on onPollUpdated, then preserve own votes when updating poll in activities`() = runTest {
+        val ownVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
+        val poll = pollData("poll-1", "Test Poll", ownVotes = listOf(ownVote))
+        val activity = setupActivityWithPoll(poll)
+
+        val updatedPoll = pollData("poll-1", "Updated Poll", ownVotes = emptyList())
+        feedState.onPollUpdated(updatedPoll)
+
+        expectActivityWithPoll(activity, updatedPoll.copy(ownVotes = listOf(ownVote)))
+    }
+
+    @Test
+    fun `on onPollVoteCasted, then update poll with new vote in activities`() = runTest {
+        val poll = pollData("poll-1", "Test Poll")
+        val activity = setupActivityWithPoll(poll)
+        val vote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
+
+        feedState.onPollVoteCasted(vote, "poll-1")
+
+        val expectedPoll =
+            poll.copy(
+                voteCount = 1,
+                ownVotes = listOf(vote),
+                latestVotesByOption = mapOf("option-1" to listOf(vote)),
+                voteCountsByOption = mapOf("option-1" to 1),
+            )
+        expectActivityWithPoll(activity, expectedPoll)
+    }
+
+    @Test
+    fun `on onPollVoteChanged, then update poll with changed vote in activities`() = runTest {
+        val originalVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
+        val poll = pollWithVote("poll-1", originalVote)
+        val activity = setupActivityWithPoll(poll)
+        val changedVote = pollVoteData("vote-1", "poll-1", "option-2", currentUserId)
+
+        feedState.onPollVoteChanged(changedVote, "poll-1")
+
+        val expectedPoll =
+            poll.copy(
+                voteCount = 1,
+                ownVotes = listOf(changedVote),
+                latestVotesByOption =
+                    mapOf("option-1" to emptyList(), "option-2" to listOf(changedVote)),
+                voteCountsByOption = mapOf("option-1" to 0, "option-2" to 1),
+            )
+        expectActivityWithPoll(activity, expectedPoll)
+    }
+
+    @Test
+    fun `on onPollVoteRemoved, then remove vote from poll in activities`() = runTest {
+        val vote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
+        val poll = pollWithVote("poll-1", vote)
+        val activity = setupActivityWithPoll(poll)
+
+        feedState.onPollVoteRemoved(vote, "poll-1")
+
+        val expectedPoll =
+            poll.copy(
+                voteCount = 0,
+                ownVotes = emptyList(),
+                latestVotesByOption = mapOf("option-1" to emptyList()),
+                voteCountsByOption = mapOf("option-1" to 0),
+            )
+        expectActivityWithPoll(activity, expectedPoll)
+    }
+
+    @Test
+    fun `on poll events with different poll id, then keep existing polls unchanged`() = runTest {
+        val poll = pollData("poll-1", "Test Poll")
+        val activity = setupActivityWithPoll(poll)
+        val vote = pollVoteData("vote-1", "poll-2", "option-1", currentUserId)
+
+        feedState.onPollVoteCasted(vote, "poll-2")
+
+        expectActivityWithPoll(activity, poll)
+    }
+
     // Helper functions
     private fun setupInitialState(
         activities: List<ActivityData> = listOf(activityData("activity-1")),
@@ -358,4 +461,25 @@ internal class FeedStateImplTest {
 
     private fun createQueryConfig() =
         ActivitiesQueryConfig(filter = null, sort = ActivitiesSort.Default)
+
+    private fun setupActivityWithPoll(poll: PollData): ActivityData {
+        val activity = activityData("activity-1", poll = poll)
+        setupInitialState(listOf(activity))
+        return activity
+    }
+
+    private fun expectActivityWithPoll(activity: ActivityData, expectedPoll: PollData?) {
+        val expectedActivity = activity.copy(poll = expectedPoll)
+        assertEquals(listOf(expectedActivity), feedState.activities.value)
+    }
+
+    private fun pollWithVote(pollId: String, vote: PollVoteData): PollData =
+        pollData(
+            pollId,
+            "Test Poll",
+            voteCount = 1,
+            ownVotes = listOf(vote),
+            latestVotesByOption = mapOf(vote.optionId to listOf(vote)),
+            voteCountsByOption = mapOf(vote.optionId to 1),
+        )
 }

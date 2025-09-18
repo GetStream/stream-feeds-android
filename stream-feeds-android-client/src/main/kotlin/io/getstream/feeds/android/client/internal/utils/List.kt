@@ -19,6 +19,19 @@ import io.getstream.android.core.api.sort.CompositeComparator
 import io.getstream.android.core.api.sort.Sort
 
 /**
+ * Updates elements in the list that match the given [filter] by applying the [update] function.
+ * Elements that don't match the filter remain unchanged.
+ *
+ * @param filter A predicate function that determines whether an element should be updated.
+ * @param update A function that takes an element and returns its updated version.
+ * @return A new list containing the updated elements. Elements that did not match the filter are
+ *   included unchanged.
+ */
+internal inline fun <T> List<T>.updateIf(filter: (T) -> Boolean, update: (T) -> T): List<T> = map {
+    if (filter(it)) update(it) else it
+}
+
+/**
  * Updates an existing element in the list or inserts a new one if not found.
  *
  * This function performs an upsert operation by finding an element with the same ID (as determined

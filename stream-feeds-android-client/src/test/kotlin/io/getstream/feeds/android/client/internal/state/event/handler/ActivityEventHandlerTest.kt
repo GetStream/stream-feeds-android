@@ -229,7 +229,7 @@ internal class ActivityEventHandlerTest {
         testEventHandling(
             matchingEvent = matchingEvent,
             nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onPollVoteCasted(pollVote.toModel(), poll.toModel()) },
+            verifyBlock = { state.onPollVoteCasted(pollVote.toModel(), poll.id) },
         )
     }
 
@@ -250,7 +250,7 @@ internal class ActivityEventHandlerTest {
         testEventHandling(
             matchingEvent = matchingEvent,
             nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onPollVoteChanged(pollVote.toModel(), poll.toModel()) },
+            verifyBlock = { state.onPollVoteChanged(pollVote.toModel(), poll.id) },
         )
     }
 
@@ -271,7 +271,7 @@ internal class ActivityEventHandlerTest {
         testEventHandling(
             matchingEvent = matchingEvent,
             nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onPollVoteRemoved(pollVote.toModel(), poll.toModel()) },
+            verifyBlock = { state.onPollVoteRemoved(pollVote.toModel(), poll.id) },
         )
     }
 

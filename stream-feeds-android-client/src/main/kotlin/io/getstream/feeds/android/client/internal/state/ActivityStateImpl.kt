@@ -26,10 +26,13 @@ import io.getstream.feeds.android.client.api.model.addBookmark
 import io.getstream.feeds.android.client.api.model.addOption
 import io.getstream.feeds.android.client.api.model.addReaction
 import io.getstream.feeds.android.client.api.model.castVote
+import io.getstream.feeds.android.client.api.model.changeVote
 import io.getstream.feeds.android.client.api.model.deleteBookmark
 import io.getstream.feeds.android.client.api.model.removeOption
 import io.getstream.feeds.android.client.api.model.removeReaction
 import io.getstream.feeds.android.client.api.model.removeVote
+import io.getstream.feeds.android.client.api.model.setClosed
+import io.getstream.feeds.android.client.api.model.update
 import io.getstream.feeds.android.client.api.model.updateOption
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.api.state.ActivityState
@@ -88,7 +91,7 @@ internal class ActivityStateImpl(
 
     override fun onPollClosed(poll: PollData) {
         if (_poll.value?.id != poll.id) return
-        _poll.update { poll }
+        _poll.update { current -> current?.setClosed() }
     }
 
     override fun onPollDeleted(pollId: String) {
@@ -98,7 +101,7 @@ internal class ActivityStateImpl(
 
     override fun onPollUpdated(poll: PollData) {
         if (_poll.value?.id != poll.id) return
-        _poll.update { poll }
+        _poll.update { current -> current?.update(poll) }
     }
 
     override fun onOptionCreated(option: PollOptionData) {
@@ -113,28 +116,18 @@ internal class ActivityStateImpl(
         _poll.update { current -> current?.updateOption(option) }
     }
 
-    override fun onPollVoteCasted(vote: PollVoteData, poll: PollData) {
-        if (_poll.value?.id != poll.id) return
-        _poll.update { poll }
-    }
-
-    override fun onPollVoteCasted(vote: PollVoteData?) {
-        if (vote == null) return
+    override fun onPollVoteCasted(vote: PollVoteData, pollId: String) {
+        if (_poll.value?.id != pollId) return
         _poll.update { current -> current?.castVote(vote, currentUserId) }
     }
 
-    override fun onPollVoteChanged(vote: PollVoteData, poll: PollData) {
-        if (_poll.value?.id != poll.id) return
-        _poll.update { poll }
+    override fun onPollVoteChanged(vote: PollVoteData, pollId: String) {
+        if (_poll.value?.id != pollId) return
+        _poll.update { current -> current?.changeVote(vote, currentUserId) }
     }
 
-    override fun onPollVoteRemoved(vote: PollVoteData, poll: PollData) {
-        if (_poll.value?.id != poll.id) return
-        _poll.update { poll }
-    }
-
-    override fun onPollVoteRemoved(vote: PollVoteData?) {
-        if (vote == null) return
+    override fun onPollVoteRemoved(vote: PollVoteData, pollId: String) {
+        if (_poll.value?.id != pollId) return
         _poll.update { current -> current?.removeVote(vote, currentUserId) }
     }
 }
@@ -237,37 +230,23 @@ internal interface ActivityStateUpdates {
      * Called when a vote is casted on the poll.
      *
      * @param vote The vote that was casted.
-     * @param poll The poll associated with the vote.
+     * @param pollId The ID of the poll associated with the vote.
      */
-    fun onPollVoteCasted(vote: PollVoteData, poll: PollData)
-
-    /**
-     * Called when a vote is casted on the poll.
-     *
-     * @param vote The vote that was casted, or null if the vote was not successful.
-     */
-    fun onPollVoteCasted(vote: PollVoteData?)
+    fun onPollVoteCasted(vote: PollVoteData, pollId: String)
 
     /**
      * Called when a vote is changed on the poll.
      *
      * @param vote The updated vote data.
-     * @param poll The poll associated with the vote.
+     * @param pollId The ID of the poll associated with the changed vote.
      */
-    fun onPollVoteChanged(vote: PollVoteData, poll: PollData)
+    fun onPollVoteChanged(vote: PollVoteData, pollId: String)
 
     /**
      * Called when a vote is removed from the poll.
      *
      * @param vote The vote that was removed.
-     * @param poll The poll associated with the vote.
+     * @param pollId The ID of the poll associated with the removed vote.
      */
-    fun onPollVoteRemoved(vote: PollVoteData, poll: PollData)
-
-    /**
-     * Called when a vote is removed from the poll.
-     *
-     * @param vote The vote that was removed, or null if the vote was not found.
-     */
-    fun onPollVoteRemoved(vote: PollVoteData?)
+    fun onPollVoteRemoved(vote: PollVoteData, pollId: String)
 }
