@@ -134,6 +134,48 @@ internal class MemberListStateImplTest {
     }
 
     @Test
+    fun `on memberAdded, then add member`() = runTest {
+        val initialMembers = listOf(feedMemberData(), feedMemberData("user-2"))
+        val paginationResult =
+            PaginationResult(models = initialMembers, pagination = PaginationData())
+        val queryConfig =
+            QueryConfiguration<MembersFilterField, MembersSort>(
+                filter = null,
+                sort = MembersSort.Default,
+            )
+        memberListState.onQueryMoreMembers(paginationResult, queryConfig)
+
+        val newMember = feedMemberData("user-3")
+        memberListState.onMemberAdded(newMember)
+
+        assertEquals(initialMembers + newMember, memberListState.members.value)
+    }
+
+    @Test
+    fun `on memberAdded with existing id, then update member`() = runTest {
+        val initialMembers = listOf(feedMemberData(), feedMemberData("user-2"))
+        val paginationResult =
+            PaginationResult(
+                models = initialMembers,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
+        val queryConfig =
+            QueryConfiguration<MembersFilterField, MembersSort>(
+                filter = null,
+                sort = MembersSort.Default,
+            )
+        memberListState.onQueryMoreMembers(paginationResult, queryConfig)
+
+        val updatedMember = feedMemberData("user-1", role = "admin")
+        memberListState.onMemberAdded(updatedMember)
+
+        val updatedMembers = memberListState.members.value
+        assertEquals(2, updatedMembers.size)
+        assertEquals(updatedMember, updatedMembers.find { it.id == updatedMember.id })
+        assertEquals(initialMembers[1], updatedMembers.find { it.id == initialMembers[1].id })
+    }
+
+    @Test
     fun `on clear, then remove all members`() = runTest {
         val initialMembers = listOf(feedMemberData(), feedMemberData("user-2"))
         val paginationResult =

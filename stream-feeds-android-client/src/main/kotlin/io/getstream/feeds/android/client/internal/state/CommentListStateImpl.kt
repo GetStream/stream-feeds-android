@@ -22,6 +22,7 @@ import io.getstream.feeds.android.client.api.state.CommentListState
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
 import io.getstream.feeds.android.client.api.state.query.toComparator
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
+import io.getstream.feeds.android.client.internal.utils.treeRemoveFirst
 import io.getstream.feeds.android.client.internal.utils.treeUpdateFirst
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -76,6 +77,18 @@ internal class CommentListStateImpl(override val query: CommentsQuery) : Comment
             )
         }
     }
+
+    override fun onCommentRemoved(commentId: String) {
+        _comments.update { current ->
+            current.treeRemoveFirst(
+                matcher = { it.id == commentId },
+                childrenSelector = { it.replies.orEmpty() },
+                updateChildren = { parent, children ->
+                    parent.copy(replies = children, replyCount = parent.replyCount - 1)
+                },
+            )
+        }
+    }
 }
 
 internal interface CommentListMutableState : CommentListState, CommentListStateUpdates
@@ -98,4 +111,11 @@ internal interface CommentListStateUpdates {
      * @param comment The updated comment data.
      */
     fun onCommentUpdated(comment: CommentData)
+
+    /**
+     * Handles the removal of a comment from the list.
+     *
+     * @param commentId The ID of the removed comment.
+     */
+    fun onCommentRemoved(commentId: String)
 }

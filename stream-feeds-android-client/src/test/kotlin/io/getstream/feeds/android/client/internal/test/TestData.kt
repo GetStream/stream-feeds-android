@@ -30,6 +30,8 @@ import io.getstream.feeds.android.client.api.model.FileUploadConfigData
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.FollowStatus
 import io.getstream.feeds.android.client.api.model.ModerationConfigData
+import io.getstream.feeds.android.client.api.model.PaginationData
+import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollOptionData
 import io.getstream.feeds.android.client.api.model.PollVoteData
@@ -149,6 +151,7 @@ internal object TestData {
     ): FeedsReactionData =
         FeedsReactionData(
             activityId = activityId,
+            commentId = null,
             createdAt = createdAt,
             custom = null,
             type = type,
@@ -275,12 +278,12 @@ internal object TestData {
             updatedAt = Date(1000),
         )
 
-    fun activityResponse(): ActivityResponse =
+    fun activityResponse(id: String = ""): ActivityResponse =
         ActivityResponse(
             bookmarkCount = 0,
             commentCount = 0,
             createdAt = Date(1000),
-            id = "",
+            id = id,
             popularity = 0,
             reactionCount = 0,
             score = 0f,
@@ -682,5 +685,11 @@ internal object TestData {
             createdAt = Date(1000),
             updatedAt = Date(1000),
             user = userResponse(),
+        )
+
+    fun <T> defaultPaginationResult(list: List<T>): PaginationResult<T> =
+        PaginationResult(
+            models = list,
+            pagination = PaginationData(next = "next-cursor", previous = null),
         )
 }

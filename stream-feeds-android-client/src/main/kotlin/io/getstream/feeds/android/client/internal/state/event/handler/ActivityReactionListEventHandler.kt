@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.ActivityReactionListStateUpdates
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
 import io.getstream.feeds.android.network.models.WSEvent
 
@@ -28,6 +29,12 @@ internal class ActivityReactionListEventHandler(
 
     override fun onEvent(event: WSEvent) {
         when (event) {
+            is ActivityReactionAddedEvent -> {
+                if (event.activity.id == activityId) {
+                    state.onReactionAdded(event.reaction.toModel())
+                }
+            }
+
             is ActivityReactionDeletedEvent -> {
                 if (event.activity.id == activityId) {
                     state.onReactionRemoved(event.reaction.toModel())

@@ -26,9 +26,11 @@ import io.getstream.feeds.android.client.api.state.query.MembersFilterField
 import io.getstream.feeds.android.client.api.state.query.MembersQuery
 import io.getstream.feeds.android.client.api.state.query.MembersSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
+import io.getstream.feeds.android.client.internal.utils.upsert
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * An observable state object that manages the current state of a member list.
@@ -64,6 +66,10 @@ internal class MemberListStateImpl(override val query: MembersQuery) : MemberLis
         // Merge the new members with the existing ones (keeping the sort order)
         _members.value =
             _members.value.mergeSorted(result.models, FeedMemberData::id, membersSorting)
+    }
+
+    override fun onMemberAdded(member: FeedMemberData) {
+        _members.update { current -> current.upsert(member, FeedMemberData::id) }
     }
 
     override fun onMemberRemoved(memberId: String) {
@@ -123,6 +129,9 @@ internal interface MemberListStateUpdates {
         result: PaginationResult<FeedMemberData>,
         queryConfig: QueryConfiguration<MembersFilterField, MembersSort>,
     )
+
+    /** Handles the addition of a new member. */
+    fun onMemberAdded(member: FeedMemberData)
 
     /** Handles the removal of a member by their ID. */
     fun onMemberRemoved(memberId: String)

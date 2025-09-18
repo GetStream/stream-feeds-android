@@ -146,4 +146,48 @@ internal class BookmarkListStateImplTest {
         assertNull(bookmarkWithoutFolder?.folder)
         assertEquals(initialBookmarks[1], updatedBookmarks.find { it.id == initialBookmarks[1].id })
     }
+
+    @Test
+    fun `on bookmarkRemoved, then remove specific bookmark`() = runTest {
+        val initialBookmarks =
+            listOf(
+                bookmarkData("activity-1", "user-1"),
+                bookmarkData("activity-2", "user-2"),
+                bookmarkData("activity-3", "user-3"),
+            )
+        val paginationResult =
+            PaginationResult(models = initialBookmarks, pagination = PaginationData())
+        val queryConfig =
+            QueryConfiguration<BookmarksFilterField, BookmarksSort>(
+                filter = null,
+                sort = BookmarksSort.Default,
+            )
+        bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
+
+        val bookmarkToRemove = initialBookmarks[1]
+        bookmarkListState.onBookmarkRemoved(bookmarkToRemove)
+
+        val remainingBookmarks = bookmarkListState.bookmarks.value
+        assertEquals(2, remainingBookmarks.size)
+        assertEquals(listOf(initialBookmarks[0], initialBookmarks[2]), remainingBookmarks)
+    }
+
+    @Test
+    fun `on bookmarkRemoved with nonexistent bookmark, then keep all bookmarks`() = runTest {
+        val initialBookmarks =
+            listOf(bookmarkData("activity-1", "user-1"), bookmarkData("activity-2", "user-2"))
+        val paginationResult =
+            PaginationResult(models = initialBookmarks, pagination = PaginationData())
+        val queryConfig =
+            QueryConfiguration<BookmarksFilterField, BookmarksSort>(
+                filter = null,
+                sort = BookmarksSort.Default,
+            )
+        bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
+
+        val nonexistentBookmark = bookmarkData("activity-999", "user-999")
+        bookmarkListState.onBookmarkRemoved(nonexistentBookmark)
+
+        assertEquals(initialBookmarks, bookmarkListState.bookmarks.value)
+    }
 }

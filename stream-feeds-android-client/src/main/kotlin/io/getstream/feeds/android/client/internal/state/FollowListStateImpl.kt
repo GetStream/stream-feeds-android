@@ -27,6 +27,7 @@ import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * An observable state object that manages the current state of a follow list.
@@ -73,6 +74,10 @@ internal class FollowListStateImpl(override val query: FollowsQuery) : FollowLis
                 }
             }
     }
+
+    override fun onFollowRemoved(follow: FollowData) {
+        _follows.update { current -> current.filter { it.id != follow.id } }
+    }
 }
 
 /**
@@ -94,4 +99,7 @@ internal interface FollowListStateUpdates {
 
     /** Handles the update of a follow data. */
     fun onFollowUpdated(follow: FollowData)
+
+    /** Handles the removal of a follow. */
+    fun onFollowRemoved(follow: FollowData)
 }

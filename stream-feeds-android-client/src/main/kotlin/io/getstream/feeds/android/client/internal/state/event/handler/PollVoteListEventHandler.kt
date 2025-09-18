@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.PollVoteListStateUpdates
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.network.models.PollVoteCastedFeedEvent
 import io.getstream.feeds.android.network.models.PollVoteChangedFeedEvent
 import io.getstream.feeds.android.network.models.PollVoteRemovedFeedEvent
 import io.getstream.feeds.android.network.models.WSEvent
@@ -35,10 +36,16 @@ internal class PollVoteListEventHandler(
 
     override fun onEvent(event: WSEvent) {
         when (event) {
+            is PollVoteCastedFeedEvent -> {
+                if (event.poll.id != pollId) return
+                state.pollVoteAdded(event.pollVote.toModel())
+            }
+
             is PollVoteChangedFeedEvent -> {
                 if (event.poll.id != pollId) return
                 state.pollVoteUpdated(event.pollVote.toModel())
             }
+
             is PollVoteRemovedFeedEvent -> {
                 if (event.poll.id != pollId) return
                 state.pollVoteRemoved(event.pollVote.id)

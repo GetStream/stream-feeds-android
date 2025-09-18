@@ -16,7 +16,8 @@
 package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.client.api.state.query.CommentsSortDataFields
-import io.getstream.feeds.android.client.internal.utils.upsert
+import io.getstream.feeds.android.client.internal.model.addReaction
+import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import io.getstream.feeds.android.network.models.Attachment
 import io.getstream.feeds.android.network.models.RepliesMeta
@@ -169,38 +170,21 @@ public data class ThreadedCommentData(
 internal fun ThreadedCommentData.addReaction(
     reaction: FeedsReactionData,
     currentUserId: String,
-): ThreadedCommentData {
-    val ownReaction = reaction.user.id == currentUserId
-    val updatedOwnReactions =
-        if (ownReaction) {
-            ownReactions.upsert(reaction, FeedsReactionData::id)
-        } else {
-            ownReactions
-        }
-    val inserted = updatedOwnReactions.size > ownReactions.size
-    val updatedLatestReactions = latestReactions.upsert(reaction, FeedsReactionData::id)
-    val reactionGroup =
-        this.reactionGroups[reaction.type]
-            ?: ReactionGroupData(count = 1, reaction.createdAt, reaction.createdAt)
-    // Increment the count if:
-    // 1. The reaction is from another user (not own reaction)
-    // 2. The reaction is from the current user, but it's a new reaction (not an update of existing)
-    val updatedReactionGroup =
-        if (!ownReaction || inserted) {
-            reactionGroup.increment(reaction.createdAt)
-        } else {
-            reactionGroup
-        }
-    val updatedReactionGroups =
-        this.reactionGroups.toMutableMap().apply { this[reaction.type] = updatedReactionGroup }
-    val updatedReactionCount = updatedReactionGroups.values.sumOf(ReactionGroupData::count)
-    return this.copy(
-        latestReactions = updatedLatestReactions,
-        reactionGroups = updatedReactionGroups,
-        reactionCount = updatedReactionCount,
-        ownReactions = updatedOwnReactions,
-    )
-}
+): ThreadedCommentData =
+    addReaction(
+        ownReactions = ownReactions,
+        latestReactions = latestReactions,
+        reactionGroups = reactionGroups,
+        reaction = reaction,
+        currentUserId = currentUserId,
+    ) { latestReactions, reactionGroups, reactionCount, ownReactions ->
+        copy(
+            latestReactions = latestReactions,
+            reactionGroups = reactionGroups,
+            reactionCount = reactionCount,
+            ownReactions = ownReactions,
+        )
+    }
 
 /**
  * Removes a reaction from the comment, updating the latest reactions, reaction groups, reaction
@@ -213,48 +197,21 @@ internal fun ThreadedCommentData.addReaction(
 internal fun ThreadedCommentData.removeReaction(
     reaction: FeedsReactionData,
     currentUserId: String,
-): ThreadedCommentData {
-    val ownReaction = reaction.user.id == currentUserId
-    val updatedOwnReactions =
-        if (ownReaction) {
-            this.ownReactions.filter { it.id != reaction.id }
-        } else {
-            this.ownReactions
-        }
-    val removed = updatedOwnReactions.size < this.ownReactions.size
-    val updatedLatestReactions = this.latestReactions.filter { it.id != reaction.id }
-    val reactionGroup = this.reactionGroups[reaction.type]
-    if (reactionGroup == null) {
-        // If there is no reaction group for this type, just update latest and own reactions.
-        // Note: This is only a hypothetical case, as we should always have a reaction group.
-        return this.copy(
-            latestReactions = updatedLatestReactions,
-            ownReactions = updatedOwnReactions,
+): ThreadedCommentData =
+    removeReaction(
+        ownReactions = ownReactions,
+        latestReactions = latestReactions,
+        reactionGroups = reactionGroups,
+        reaction = reaction,
+        currentUserId = currentUserId,
+    ) { latestReactions, reactionGroups, reactionCount, ownReactions ->
+        copy(
+            latestReactions = latestReactions,
+            reactionGroups = reactionGroups ?: this.reactionGroups,
+            reactionCount = reactionCount ?: this.reactionCount,
+            ownReactions = ownReactions,
         )
     }
-    // Decrement the count if:
-    // 1. The reaction is from another user (not own reaction)
-    // 2. The reaction is from the current user, and it was already present
-    val updatedReactionGroup =
-        if (!ownReaction || removed) {
-            reactionGroup.decrement(reaction.createdAt)
-        } else {
-            reactionGroup
-        }
-    val updatedReactionGroups =
-        if (updatedReactionGroup.isEmpty) {
-            this.reactionGroups - reaction.type // Remove empty group
-        } else {
-            this.reactionGroups.toMutableMap().apply { this[reaction.type] = updatedReactionGroup }
-        }
-    val updatedReactionCount = updatedReactionGroups.values.sumOf(ReactionGroupData::count)
-    return this.copy(
-        latestReactions = updatedLatestReactions,
-        reactionGroups = updatedReactionGroups,
-        reactionCount = updatedReactionCount,
-        ownReactions = updatedOwnReactions,
-    )
-}
 
 /**
  * Adds a reply to the comment, updating the replies list and reply count.

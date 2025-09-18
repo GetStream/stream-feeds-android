@@ -32,6 +32,7 @@ import io.getstream.feeds.android.network.models.ActivityDeletedEvent
 import io.getstream.feeds.android.network.models.ActivityPinnedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
+import io.getstream.feeds.android.network.models.ActivityRemovedFromFeedEvent
 import io.getstream.feeds.android.network.models.ActivityUnpinnedEvent
 import io.getstream.feeds.android.network.models.ActivityUpdatedEvent
 import io.getstream.feeds.android.network.models.BookmarkAddedEvent
@@ -93,6 +94,22 @@ internal class FeedEventHandlerTest {
         handler.onEvent(event)
 
         verify(exactly = 0) { state.onActivityAdded(any()) }
+    }
+
+    @Test
+    fun `on ActivityRemovedFromFeedEvent for matching feed, then call onActivityRemoved`() {
+        val activity = activityResponse()
+        val event =
+            ActivityRemovedFromFeedEvent(
+                createdAt = Date(),
+                fid = fid.rawValue,
+                activity = activity,
+                type = "feeds.activity.removed_from_feed",
+            )
+
+        handler.onEvent(event)
+
+        verify { state.onActivityRemoved(activity.id) }
     }
 
     @Test

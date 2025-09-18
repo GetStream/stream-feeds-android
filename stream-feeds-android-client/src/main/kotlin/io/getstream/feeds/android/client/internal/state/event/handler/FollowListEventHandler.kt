@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.FollowListStateUpdates
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.network.models.FollowDeletedEvent
 import io.getstream.feeds.android.network.models.FollowUpdatedEvent
 import io.getstream.feeds.android.network.models.WSEvent
 
@@ -28,6 +29,10 @@ internal class FollowListEventHandler(private val state: FollowListStateUpdates)
         when (event) {
             is FollowUpdatedEvent -> {
                 state.onFollowUpdated(event.follow.toModel())
+            }
+
+            is FollowDeletedEvent -> {
+                state.onFollowRemoved(event.follow.toModel())
             }
         }
     }

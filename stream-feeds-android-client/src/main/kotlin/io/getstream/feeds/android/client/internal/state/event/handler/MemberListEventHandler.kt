@@ -15,23 +15,37 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
+import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.MemberListStateUpdates
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.network.models.FeedMemberAddedEvent
 import io.getstream.feeds.android.network.models.FeedMemberRemovedEvent
 import io.getstream.feeds.android.network.models.FeedMemberUpdatedEvent
 import io.getstream.feeds.android.network.models.WSEvent
 
-internal class MemberListEventHandler(private val state: MemberListStateUpdates) :
-    FeedsEventListener {
+internal class MemberListEventHandler(
+    private val fid: FeedId,
+    private val state: MemberListStateUpdates,
+) : FeedsEventListener {
     override fun onEvent(event: WSEvent) {
         when (event) {
+            is FeedMemberAddedEvent -> {
+                if (event.fid == fid.rawValue) {
+                    state.onMemberAdded(event.member.toModel())
+                }
+            }
+
             is FeedMemberRemovedEvent -> {
-                state.onMemberRemoved(event.memberId)
+                if (event.fid == fid.rawValue) {
+                    state.onMemberRemoved(event.memberId)
+                }
             }
 
             is FeedMemberUpdatedEvent -> {
-                state.onMemberUpdated(event.member.toModel())
+                if (event.fid == fid.rawValue) {
+                    state.onMemberUpdated(event.member.toModel())
+                }
             }
         }
     }

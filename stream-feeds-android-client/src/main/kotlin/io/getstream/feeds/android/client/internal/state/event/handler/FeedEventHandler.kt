@@ -24,6 +24,7 @@ import io.getstream.feeds.android.network.models.ActivityDeletedEvent
 import io.getstream.feeds.android.network.models.ActivityPinnedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
+import io.getstream.feeds.android.network.models.ActivityRemovedFromFeedEvent
 import io.getstream.feeds.android.network.models.ActivityUnpinnedEvent
 import io.getstream.feeds.android.network.models.ActivityUpdatedEvent
 import io.getstream.feeds.android.network.models.BookmarkAddedEvent
@@ -69,6 +70,12 @@ internal class FeedEventHandler(private val fid: FeedId, private val state: Feed
             }
 
             is ActivityDeletedEvent -> {
+                if (event.fid == fid.rawValue) {
+                    state.onActivityRemoved(event.activity.id)
+                }
+            }
+
+            is ActivityRemovedFromFeedEvent -> {
                 if (event.fid == fid.rawValue) {
                     state.onActivityRemoved(event.activity.id)
                 }

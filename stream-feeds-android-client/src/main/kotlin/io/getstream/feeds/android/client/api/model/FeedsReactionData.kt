@@ -30,6 +30,7 @@ import java.util.Date
  */
 public data class FeedsReactionData(
     val activityId: String,
+    val commentId: String?,
     val createdAt: Date,
     val custom: Map<String, Any?>?,
     val type: String,
@@ -37,15 +38,16 @@ public data class FeedsReactionData(
     val user: UserData,
 ) {
 
-    /** Unique identifier for the reaction, generated from the activity ID and user ID. */
+    /** Unique identifier for the reaction. */
     public val id: String
-        get() = "${activityId}${user.id}"
+        get() = "${activityId}${commentId}${user.id}${type}"
 }
 
 /** Converts a [FeedsReactionResponse] to a [FeedsReactionData] model. */
 internal fun FeedsReactionResponse.toModel(): FeedsReactionData =
     FeedsReactionData(
         activityId = activityId,
+        commentId = commentId,
         createdAt = createdAt,
         custom = custom,
         type = type,

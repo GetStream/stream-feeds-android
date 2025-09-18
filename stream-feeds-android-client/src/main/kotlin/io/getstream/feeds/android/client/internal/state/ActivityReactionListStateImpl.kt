@@ -24,9 +24,11 @@ import io.getstream.feeds.android.client.api.state.query.ActivityReactionsFilter
 import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.ActivityReactionsSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
+import io.getstream.feeds.android.client.internal.utils.upsert
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * An observable state object that manages the current state of an activity reaction list.
@@ -71,6 +73,10 @@ internal class ActivityReactionListStateImpl(override val query: ActivityReactio
             _reactions.value.mergeSorted(result.models, FeedsReactionData::id, reactionsSorting)
     }
 
+    override fun onReactionAdded(reaction: FeedsReactionData) {
+        _reactions.update { current -> current.upsert(reaction, FeedsReactionData::id) }
+    }
+
     override fun onReactionRemoved(reaction: FeedsReactionData) {
         _reactions.value = _reactions.value.filter { it.id != reaction.id }
     }
@@ -100,6 +106,13 @@ internal interface ActivityReactionListStateUpdates {
         result: PaginationResult<FeedsReactionData>,
         queryConfig: QueryConfiguration<ActivityReactionsFilterField, ActivityReactionsSort>,
     )
+
+    /**
+     * Handles the addition of a new reaction to the activity.
+     *
+     * @param reaction The reaction that was added.
+     */
+    fun onReactionAdded(reaction: FeedsReactionData)
 
     /**
      * Handles the addition of a new reaction to the activity.

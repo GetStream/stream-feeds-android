@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.FeedListStateUpdates
 import io.getstream.feeds.android.client.internal.test.TestData.feedResponse
+import io.getstream.feeds.android.network.models.FeedDeletedEvent
 import io.getstream.feeds.android.network.models.FeedUpdatedEvent
 import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
@@ -45,6 +46,16 @@ internal class FeedListEventHandlerTest {
         handler.onEvent(event)
 
         verify { state.onFeedUpdated(feed.toModel()) }
+    }
+
+    @Test
+    fun `on FeedDeletedEvent, then call onFeedRemoved`() {
+        val event =
+            FeedDeletedEvent(createdAt = Date(), fid = "user:feed-1", type = "feeds.feed.deleted")
+
+        handler.onEvent(event)
+
+        verify { state.onFeedRemoved("user:feed-1") }
     }
 
     @Test

@@ -352,14 +352,18 @@ internal class FeedImpl(
         activityId: String,
         request: AddReactionRequest,
     ): Result<FeedsReactionData> {
-        return activitiesRepository.addReaction(activityId, request)
+        return activitiesRepository
+            .addReaction(activityId, request)
+            .onSuccess(_state::onReactionAdded)
     }
 
     override suspend fun deleteReaction(
         activityId: String,
         type: String,
     ): Result<FeedsReactionData> {
-        return activitiesRepository.deleteReaction(activityId = activityId, type = type)
+        return activitiesRepository
+            .deleteReaction(activityId = activityId, type = type)
+            .onSuccess(_state::onReactionRemoved)
     }
 
     override suspend fun addCommentReaction(

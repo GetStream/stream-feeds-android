@@ -19,6 +19,7 @@ import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.ActivityReactionListStateUpdates
 import io.getstream.feeds.android.client.internal.test.TestData.activityResponse
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionResponse
+import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
 import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
@@ -34,8 +35,44 @@ internal class ActivityReactionListEventHandlerTest {
     private val handler = ActivityReactionListEventHandler(activityId, state)
 
     @Test
+    fun `on ActivityReactionAddedEvent for matching activity, then call onReactionAdded`() {
+        val activity = activityResponse(activityId)
+        val reaction = feedsReactionResponse()
+        val event =
+            ActivityReactionAddedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                activity = activity,
+                reaction = reaction,
+                type = "feeds.activity.reaction.added",
+            )
+
+        handler.onEvent(event)
+
+        verify { state.onReactionAdded(reaction.toModel()) }
+    }
+
+    @Test
+    fun `on ActivityReactionAddedEvent for different activity, then do not call onReactionAdded`() {
+        val activity = activityResponse("different-activity")
+        val reaction = feedsReactionResponse()
+        val event =
+            ActivityReactionAddedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                activity = activity,
+                reaction = reaction,
+                type = "feeds.activity.reaction.added",
+            )
+
+        handler.onEvent(event)
+
+        verify(exactly = 0) { state.onReactionAdded(any()) }
+    }
+
+    @Test
     fun `on ActivityReactionDeletedEvent for matching activity, then call onReactionRemoved`() {
-        val activity = activityResponse().copy(id = activityId)
+        val activity = activityResponse(activityId)
         val reaction = feedsReactionResponse()
         val event =
             ActivityReactionDeletedEvent(
@@ -53,7 +90,7 @@ internal class ActivityReactionListEventHandlerTest {
 
     @Test
     fun `on ActivityReactionDeletedEvent for different activity, then do not call onReactionRemoved`() {
-        val activity = activityResponse().copy(id = "different-activity")
+        val activity = activityResponse("different-activity")
         val reaction = feedsReactionResponse()
         val event =
             ActivityReactionDeletedEvent(

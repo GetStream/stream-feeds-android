@@ -27,6 +27,7 @@ import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * An observable state object that manages the current state of a feed list.
@@ -66,6 +67,10 @@ internal class FeedListStateImpl(override val query: FeedsQuery) : FeedListMutab
             }
     }
 
+    override fun onFeedRemoved(feedId: String) {
+        _feeds.update { current -> current.filter { it.fid.rawValue != feedId } }
+    }
+
     override fun onQueryMoreFeeds(
         result: PaginationResult<FeedData>,
         queryConfig: QueryConfiguration<FeedsFilterField, FeedsSort>,
@@ -101,4 +106,7 @@ internal interface FeedListStateUpdates {
         result: PaginationResult<FeedData>,
         queryConfig: QueryConfiguration<FeedsFilterField, FeedsSort>,
     )
+
+    /** Handles the removal of a feed by its ID. */
+    fun onFeedRemoved(feedId: String)
 }

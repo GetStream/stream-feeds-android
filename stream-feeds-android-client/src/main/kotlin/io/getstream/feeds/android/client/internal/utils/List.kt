@@ -279,7 +279,6 @@ internal fun <T> List<T>.mergeSorted(
  * element is found, the list remains unchanged. If a [comparator] is provided, the updated list
  * will be sorted according to it.
  *
- * @param T The type of elements in the list.
  * @param matcher A function that determines whether an element should be updated.
  * @param childrenSelector A function that extracts the children of an element. This is used to
  *   recursively update nested elements.
@@ -303,6 +302,28 @@ internal fun <T> List<T>.treeUpdateFirst(
 }
 
 /**
+ * Removes the first element matching the [matcher] from a tree-like list.
+ *
+ * This function traverses the tree, finds the first element for which [matcher] returns true and
+ * removes it from the list.
+ *
+ * @param matcher A function that determines whether an element should be removed.
+ * @param childrenSelector A function that extracts the children of an element. This is used to
+ *   recursively remove nested elements.
+ * @param updateChildren A function that takes the existing element and the updated children, and
+ *   returns the updated element with the new children.
+ * @return A list with the first matching element removed. If no matching element was found, the
+ *   original list is returned.
+ */
+internal fun <T> List<T>.treeRemoveFirst(
+    matcher: (T) -> Boolean,
+    childrenSelector: (T) -> List<T>,
+    updateChildren: (T, List<T>) -> T,
+): List<T> {
+    return internalTreeUpdate(matcher, childrenSelector, null, updateChildren, null) ?: this
+}
+
+/**
  * Internal helper to update an element in a tree-like list.
  *
  * @return A new list with the updated element, or null if no update was made.
@@ -310,7 +331,7 @@ internal fun <T> List<T>.treeUpdateFirst(
 private fun <T> List<T>.internalTreeUpdate(
     matcher: (T) -> Boolean,
     childrenSelector: (T) -> List<T>,
-    updateElement: (T) -> T,
+    updateElement: ((T) -> T)?,
     updateChildren: (T, List<T>) -> T,
     comparator: Comparator<in T>?,
 ): List<T>? {
@@ -322,8 +343,12 @@ private fun <T> List<T>.internalTreeUpdate(
     val index = indexOfFirst(matcher)
     if (index >= 0) {
         return toMutableList().apply {
-            this[index] = updateElement(this[index])
-            comparator?.let(::sortWith)
+            if (updateElement == null) {
+                removeAt(index)
+            } else {
+                this[index] = updateElement(this[index])
+                comparator?.let(::sortWith)
+            }
         }
     }
 

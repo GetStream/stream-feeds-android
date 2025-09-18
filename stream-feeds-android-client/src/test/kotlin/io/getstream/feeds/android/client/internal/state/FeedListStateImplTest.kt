@@ -16,12 +16,11 @@
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.FeedData
-import io.getstream.feeds.android.client.api.model.PaginationData
-import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.query.FeedsFilterField
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.client.api.state.query.FeedsSort
+import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
 import io.getstream.feeds.android.client.internal.test.TestData.feedData
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -40,57 +39,72 @@ internal class FeedListStateImplTest {
 
     @Test
     fun `on queryMoreFeeds, then update feeds and pagination`() = runTest {
-        val feeds = listOf(feedData(), feedData("feed-2", "user", "Test Feed 2"))
-        val paginationResult =
-            PaginationResult(
-                models = feeds,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig =
-            QueryConfiguration<FeedsFilterField, FeedsSort>(filter = null, sort = FeedsSort.Default)
+        val feed1 = feedData(id = "feed-1", groupId = "user", name = "First Feed")
+        val feed2 = feedData(id = "feed-2", groupId = "user", name = "Second Feed")
+        val feeds = listOf(feed1, feed2)
+        val paginationResult = defaultPaginationResult(feeds)
 
-        feedListState.onQueryMoreFeeds(paginationResult, queryConfig)
+        feedListState.onQueryMoreFeeds(paginationResult, defaultQueryConfig)
 
         assertEquals(feeds, feedListState.feeds.value)
         assertEquals("next-cursor", feedListState.pagination?.next)
-        assertEquals(queryConfig, feedListState.queryConfig)
+        assertEquals(defaultQueryConfig, feedListState.queryConfig)
     }
 
     @Test
     fun `on feedUpdated, then update specific feed`() = runTest {
-        val initialFeeds = listOf(feedData(), feedData("feed-2", "user", "Test Feed 2"))
-        val paginationResult =
-            PaginationResult(
-                models = initialFeeds,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig =
-            QueryConfiguration<FeedsFilterField, FeedsSort>(filter = null, sort = FeedsSort.Default)
-        feedListState.onQueryMoreFeeds(paginationResult, queryConfig)
+        val feed1 = feedData(id = "feed-1", groupId = "user", name = "First Feed")
+        val feed2 = feedData(id = "feed-2", groupId = "user", name = "Second Feed")
+        val initialFeeds = listOf(feed1, feed2)
+        val paginationResult = defaultPaginationResult(initialFeeds)
+        feedListState.onQueryMoreFeeds(paginationResult, defaultQueryConfig)
 
         val updatedFeed =
-            feedData("user-1", "user", "Updated Feed", description = "Updated description")
+            feedData(
+                id = "feed-1",
+                groupId = "user",
+                name = "Updated Feed",
+                description = "Updated description",
+            )
         feedListState.onFeedUpdated(updatedFeed)
 
         val updatedFeeds = feedListState.feeds.value
-        assertEquals(listOf(updatedFeed, initialFeeds[1]), updatedFeeds)
+        assertEquals(listOf(updatedFeed, feed2), updatedFeeds)
     }
 
     @Test
     fun `on feedUpdated with non-existent feed, then keep existing feeds unchanged`() = runTest {
-        val initialFeeds = listOf(feedData(), feedData("feed-2", "user", "Test Feed 2"))
-        val paginationResult =
-            PaginationResult(
-                models = initialFeeds,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
+        val feed1 = feedData(id = "feed-1", groupId = "user", name = "First Feed")
+        val feed2 = feedData(id = "feed-2", groupId = "user", name = "Second Feed")
+        val initialFeeds = listOf(feed1, feed2)
+        val paginationResult = defaultPaginationResult(initialFeeds)
+        feedListState.onQueryMoreFeeds(paginationResult, defaultQueryConfig)
+
+        val nonExistentFeed =
+            feedData(id = "non-existent", groupId = "user", name = "Non-existent Feed")
+        feedListState.onFeedUpdated(nonExistentFeed)
+
+        assertEquals(initialFeeds, feedListState.feeds.value)
+    }
+
+    @Test
+    fun `on feedRemoved, then remove specific feed`() = runTest {
+        val feed1 = feedData(id = "feed-1", groupId = "user", name = "First Feed")
+        val feed2 = feedData(id = "feed-2", groupId = "user", name = "Second Feed")
+        val initialFeeds = listOf(feed1, feed2)
+        val paginationResult = defaultPaginationResult(initialFeeds)
         val queryConfig =
             QueryConfiguration<FeedsFilterField, FeedsSort>(filter = null, sort = FeedsSort.Default)
         feedListState.onQueryMoreFeeds(paginationResult, queryConfig)
 
-        val nonExistentFeed = feedData("non-existent", "user", "Non-existent Feed")
-        feedListState.onFeedUpdated(nonExistentFeed)
+        feedListState.onFeedRemoved("user:feed-1")
 
-        assertEquals(initialFeeds, feedListState.feeds.value)
+        val remainingFeeds = feedListState.feeds.value
+        assertEquals(listOf(feed2), remainingFeeds)
+    }
+
+    companion object {
+        private val defaultQueryConfig =
+            QueryConfiguration<FeedsFilterField, FeedsSort>(filter = null, sort = FeedsSort.Default)
     }
 }

@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.FollowListStateUpdates
 import io.getstream.feeds.android.client.internal.test.TestData.followResponse
+import io.getstream.feeds.android.network.models.FollowDeletedEvent
 import io.getstream.feeds.android.network.models.FollowUpdatedEvent
 import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.called
@@ -45,6 +46,22 @@ internal class FollowListEventHandlerTest {
         handler.onEvent(event)
 
         verify { state.onFollowUpdated(follow.toModel()) }
+    }
+
+    @Test
+    fun `on FollowDeletedEvent, then call onFollowRemoved`() {
+        val follow = followResponse()
+        val event =
+            FollowDeletedEvent(
+                createdAt = Date(),
+                fid = "user:feed-1",
+                follow = follow,
+                type = "feeds.follow.updated",
+            )
+
+        handler.onEvent(event)
+
+        verify { state.onFollowRemoved(follow.toModel()) }
     }
 
     @Test

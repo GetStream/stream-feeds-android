@@ -108,4 +108,25 @@ internal class FollowListStateImplTest {
 
             assertEquals(initialFollows, followListState.follows.value)
         }
+
+    @Test
+    fun `on followRemoved, then remove specific follow`() = runTest {
+        val initialFollows = listOf(followData(), followData("user-2", "user-3"))
+        val paginationResult =
+            PaginationResult(
+                models = initialFollows,
+                pagination = PaginationData(next = "next-cursor", previous = null),
+            )
+        val queryConfig =
+            QueryConfiguration<FollowsFilterField, FollowsSort>(
+                filter = null,
+                sort = FollowsSort.Default,
+            )
+        followListState.onQueryMoreFollows(paginationResult, queryConfig)
+
+        followListState.onFollowRemoved(initialFollows[0])
+
+        val remainingFollows = followListState.follows.value
+        assertEquals(listOf(initialFollows[1]), remainingFollows)
+    }
 }

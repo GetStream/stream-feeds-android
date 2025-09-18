@@ -19,6 +19,7 @@ import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.BookmarkListStateUpdates
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkFolderResponse
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkResponse
+import io.getstream.feeds.android.network.models.BookmarkDeletedEvent
 import io.getstream.feeds.android.network.models.BookmarkFolderDeletedEvent
 import io.getstream.feeds.android.network.models.BookmarkFolderUpdatedEvent
 import io.getstream.feeds.android.network.models.BookmarkUpdatedEvent
@@ -77,6 +78,21 @@ internal class BookmarkListEventHandlerTest {
         handler.onEvent(event)
 
         verify { state.onBookmarkUpdated(bookmark.toModel()) }
+    }
+
+    @Test
+    fun `on BookmarkDeletedEvent, then call onBookmarkRemoved`() {
+        val bookmark = bookmarkResponse()
+        val event =
+            BookmarkDeletedEvent(
+                createdAt = Date(),
+                bookmark = bookmark,
+                type = "feeds.bookmark.updated",
+            )
+
+        handler.onEvent(event)
+
+        verify { state.onBookmarkRemoved(bookmark.toModel()) }
     }
 
     @Test
