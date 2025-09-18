@@ -91,44 +91,50 @@ internal class ActivityStateImpl(
 
     override fun onPollClosed(poll: PollData) {
         if (_poll.value?.id != poll.id) return
-        _poll.update { current -> current?.setClosed() }
+        updatePoll(PollData::setClosed)
     }
 
     override fun onPollDeleted(pollId: String) {
         if (_poll.value?.id != pollId) return
-        _poll.update { null }
+        updatePoll { null }
     }
 
     override fun onPollUpdated(poll: PollData) {
         if (_poll.value?.id != poll.id) return
-        _poll.update { current -> current?.update(poll) }
+        updatePoll { update(poll) }
     }
 
     override fun onOptionCreated(option: PollOptionData) {
-        _poll.update { current -> current?.addOption(option) }
+        updatePoll { addOption(option) }
     }
 
     override fun onOptionDeleted(optionId: String) {
-        _poll.update { current -> current?.removeOption(optionId) }
+        updatePoll { removeOption(optionId) }
     }
 
     override fun onOptionUpdated(option: PollOptionData) {
-        _poll.update { current -> current?.updateOption(option) }
+        updatePoll { updateOption(option) }
     }
 
     override fun onPollVoteCasted(vote: PollVoteData, pollId: String) {
         if (_poll.value?.id != pollId) return
-        _poll.update { current -> current?.castVote(vote, currentUserId) }
+        updatePoll { castVote(vote, currentUserId) }
     }
 
     override fun onPollVoteChanged(vote: PollVoteData, pollId: String) {
         if (_poll.value?.id != pollId) return
-        _poll.update { current -> current?.changeVote(vote, currentUserId) }
+        updatePoll { changeVote(vote, currentUserId) }
     }
 
     override fun onPollVoteRemoved(vote: PollVoteData, pollId: String) {
         if (_poll.value?.id != pollId) return
-        _poll.update { current -> current?.removeVote(vote, currentUserId) }
+        updatePoll { removeVote(vote, currentUserId) }
+    }
+
+    private fun updatePoll(update: PollData.() -> PollData?) {
+        var updated: PollData? = null
+        _poll.update { current -> current?.let(update).also { updated = it } }
+        _activity.update { current -> current?.copy(poll = updated) }
     }
 }
 
