@@ -68,8 +68,14 @@ internal class ActivityStateImpl(
         get() = _poll.asStateFlow()
 
     override fun onActivityUpdated(activity: ActivityData) {
-        _activity.update { activity }
-        _poll.update { activity.poll }
+        _activity.update { current -> current?.update(activity) ?: activity }
+        _poll.update { current ->
+            if (activity.poll == null) {
+                null
+            } else {
+                current?.update(activity.poll) ?: activity.poll
+            }
+        }
     }
 
     override fun onReactionAdded(reaction: FeedsReactionData) {

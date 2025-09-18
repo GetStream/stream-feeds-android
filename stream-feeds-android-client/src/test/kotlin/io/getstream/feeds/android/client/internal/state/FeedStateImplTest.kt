@@ -17,6 +17,7 @@ package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.android.core.api.filter.equal
 import io.getstream.feeds.android.client.api.model.ActivityData
+import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.PaginationData
@@ -121,8 +122,104 @@ internal class FeedStateImplTest {
         val updatedActivity = activityData("activity-1", text = "Updated activity")
         feedState.onActivityUpdated(updatedActivity)
 
-        val activities = feedState.activities.value
-        assertEquals(listOf(updatedActivity), activities)
+        assertEquals(listOf(updatedActivity), feedState.activities.value)
+    }
+
+    @Test
+    fun `on onActivityUpdated, then preserve ownBookmarks when updating activity`() = runTest {
+        val initialBookmark = bookmarkData("activity-1", currentUserId)
+        val initialActivity =
+            activityData("activity-1", text = "Original", ownBookmarks = listOf(initialBookmark))
+        setupInitialState(listOf(initialActivity))
+
+        val updatedActivity =
+            activityData("activity-1", text = "Updated", ownBookmarks = emptyList())
+        feedState.onActivityUpdated(updatedActivity)
+
+        val expectedActivity = updatedActivity.copy(ownBookmarks = listOf(initialBookmark))
+        assertEquals(listOf(expectedActivity), feedState.activities.value)
+    }
+
+    @Test
+    fun `on onActivityUpdated, then preserve ownReactions when updating activity`() = runTest {
+        val initialReaction = feedsReactionData("activity-1", "like", currentUserId)
+        val initialActivity =
+            activityData("activity-1", text = "Original", ownReactions = listOf(initialReaction))
+        setupInitialState(listOf(initialActivity))
+
+        val updatedActivity =
+            activityData("activity-1", text = "Updated", ownReactions = emptyList())
+        feedState.onActivityUpdated(updatedActivity)
+
+        val expectedActivity = updatedActivity.copy(ownReactions = listOf(initialReaction))
+        assertEquals(listOf(expectedActivity), feedState.activities.value)
+    }
+
+    @Test
+    fun `on onActivityUpdated, then preserve poll ownVotes when updating activity`() = runTest {
+        val ownVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
+        val initialPoll = pollData("poll-1", "Test Poll", ownVotes = listOf(ownVote))
+        val initialActivity = activityData("activity-1", text = "Original", poll = initialPoll)
+        setupInitialState(listOf(initialActivity))
+
+        val updatedPoll = pollData("poll-1", "Updated Poll", ownVotes = emptyList())
+        val updatedActivity = activityData("activity-1", text = "Updated", poll = updatedPoll)
+        feedState.onActivityUpdated(updatedActivity)
+
+        val expectedPoll = updatedPoll.copy(ownVotes = listOf(ownVote))
+        val expectedActivity = updatedActivity.copy(poll = expectedPoll)
+        assertEquals(listOf(expectedActivity), feedState.activities.value)
+    }
+
+    @Test
+    fun `on onActivityUpdated, then preserve all own properties together in feed`() = runTest {
+        val initialBookmark = bookmarkData("activity-1", currentUserId)
+        val initialReaction = feedsReactionData("activity-1", "like", currentUserId)
+        val ownVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
+        val initialPoll = pollData("poll-1", "Test Poll", ownVotes = listOf(ownVote))
+        val initialActivity =
+            activityData(
+                "activity-1",
+                text = "Original",
+                poll = initialPoll,
+                ownBookmarks = listOf(initialBookmark),
+                ownReactions = listOf(initialReaction),
+            )
+        setupInitialState(listOf(initialActivity))
+
+        // Backend sends update with empty "own" properties
+        val updatedPoll = pollData("poll-1", "Updated Poll", ownVotes = emptyList())
+        val updatedActivity =
+            activityData(
+                "activity-1",
+                text = "Updated",
+                poll = updatedPoll,
+                ownBookmarks = emptyList(),
+                ownReactions = emptyList(),
+            )
+        feedState.onActivityUpdated(updatedActivity)
+
+        // Verify all "own" properties are preserved
+        val expectedPoll = updatedPoll.copy(ownVotes = listOf(ownVote))
+        val expectedActivity =
+            updatedActivity.copy(
+                poll = expectedPoll,
+                ownBookmarks = listOf(initialBookmark),
+                ownReactions = listOf(initialReaction),
+            )
+        assertEquals(listOf(expectedActivity), feedState.activities.value)
+    }
+
+    @Test
+    fun `on onActivityUpdated with new poll in feed, then set new poll`() = runTest {
+        val initialActivity = activityData("activity-1", text = "Original", poll = null)
+        setupInitialState(listOf(initialActivity))
+
+        val newPoll = pollData("poll-1", "New Poll")
+        val updatedActivity = activityData("activity-1", text = "Updated", poll = newPoll)
+        feedState.onActivityUpdated(updatedActivity)
+
+        assertEquals(listOf(updatedActivity), feedState.activities.value)
     }
 
     @Test
@@ -410,7 +507,7 @@ internal class FeedStateImplTest {
     // Helper functions
     private fun setupInitialState(
         activities: List<ActivityData> = listOf(activityData("activity-1")),
-        feed: io.getstream.feeds.android.client.api.model.FeedData = feedData(),
+        feed: FeedData = feedData(),
         followers: List<FollowData> = emptyList(),
         following: List<FollowData> = emptyList(),
         followRequests: List<FollowData> = emptyList(),
@@ -428,7 +525,7 @@ internal class FeedStateImplTest {
 
     private fun createGetOrCreateInfo(
         activities: List<ActivityData>,
-        feed: io.getstream.feeds.android.client.api.model.FeedData = feedData(),
+        feed: FeedData = feedData(),
         followers: List<FollowData> = emptyList(),
         following: List<FollowData> = emptyList(),
         followRequests: List<FollowData> = emptyList(),
