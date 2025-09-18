@@ -229,44 +229,14 @@ internal fun ThreadedCommentData.addReply(
 }
 
 /**
- * Removes a reply from the comment, updating the replies list and reply count.
- *
- * @param comment The reply comment to remove.
- * @return A new [ThreadedCommentData] instance with the updated replies and reply count.
- */
-internal fun ThreadedCommentData.removeReply(comment: ThreadedCommentData): ThreadedCommentData {
-    val replies = this.replies.orEmpty().filter { it.id != comment.id }
-    val replyCount = this.replyCount - 1
-    return this.copy(replies = replies, replyCount = replyCount)
-}
-
-/**
- * Replaces an existing reply in the comment with a new one, updating the replies list.
- *
- * @param comment The new reply comment to replace the existing one.
- * @return A new [ThreadedCommentData] instance with the updated replies.
- */
-internal fun ThreadedCommentData.replaceReply(comment: ThreadedCommentData): ThreadedCommentData {
-    val replies =
-        this.replies.orEmpty().map {
-            if (it.id == comment.id) {
-                comment
-            } else {
-                it
-            }
-        }
-    return this.copy(replies = replies)
-}
-
-/**
  * Sets the comment data for this threaded comment, replacing its properties with those from the
- * provided [CommentData]. The [ThreadedCommentData.meta] and [ThreadedCommentData.replies]
- * properties are preserved from the original instance.
+ * provided [CommentData]. [ThreadedCommentData.ownReactions] is not overwritten because "own" data
+ * coming from WS event is not reliable.
  *
  * @param comment The [CommentData] to set for this threaded comment.
  * @return A new [ThreadedCommentData] instance with the updated comment data.
  */
-internal fun ThreadedCommentData.setCommentData(comment: CommentData): ThreadedCommentData {
+internal fun ThreadedCommentData.update(comment: CommentData): ThreadedCommentData {
     return this.copy(
         attachments = comment.attachments,
         confidenceScore = comment.confidenceScore,
@@ -282,7 +252,7 @@ internal fun ThreadedCommentData.setCommentData(comment: CommentData): ThreadedC
         moderation = comment.moderation,
         objectId = comment.objectId,
         objectType = comment.objectType,
-        ownReactions = comment.ownReactions,
+        ownReactions = this.ownReactions,
         parentId = comment.parentId,
         reactionCount = comment.reactionCount,
         reactionGroups = comment.reactionGroups,

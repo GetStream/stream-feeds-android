@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.state
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
+import io.getstream.feeds.android.client.api.model.update
 import io.getstream.feeds.android.client.api.state.CommentListState
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
 import io.getstream.feeds.android.client.api.state.query.toComparator
@@ -71,7 +72,7 @@ internal class CommentListStateImpl(override val query: CommentsQuery) : Comment
             current.treeUpdateFirst(
                 matcher = { it.id == comment.id },
                 childrenSelector = { it.replies.orEmpty() },
-                updateElement = { comment },
+                updateElement = { it.update(comment) },
                 updateChildren = { parent, children -> parent.copy(replies = children) },
                 comparator = comparator,
             )

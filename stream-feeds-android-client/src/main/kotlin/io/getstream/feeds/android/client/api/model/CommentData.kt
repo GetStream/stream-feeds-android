@@ -153,3 +153,10 @@ internal fun CommentResponse.toModel(): CommentData =
         upvoteCount = upvoteCount,
         user = user.toModel(),
     )
+
+/**
+ * Updates the comment while preserving own reactions because "own" data from WS events is not
+ * reliable.
+ */
+internal fun CommentData.update(updated: CommentData): CommentData =
+    updated.copy(ownReactions = ownReactions)

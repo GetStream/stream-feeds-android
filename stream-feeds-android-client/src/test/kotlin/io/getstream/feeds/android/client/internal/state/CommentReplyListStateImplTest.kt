@@ -17,6 +17,7 @@ package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
+import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.model.addReaction
 import io.getstream.feeds.android.client.api.model.removeReaction
 import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
@@ -31,13 +32,10 @@ internal class CommentReplyListStateImplTest {
 
     private val currentUserId = "user-1"
     private val query = CommentRepliesQuery(commentId = "comment-1", limit = 10)
-
-    private fun createState() =
-        CommentReplyListStateImpl(query = query, currentUserId = currentUserId)
+    private val state = CommentReplyListStateImpl(query = query, currentUserId = currentUserId)
 
     @Test
     fun `on onQueryMoreReplies, update state with new replies and pagination`() = runTest {
-        val state = createState()
         val replies =
             listOf(
                 threadedCommentData("reply-1", text = "First reply"),
@@ -54,77 +52,54 @@ internal class CommentReplyListStateImplTest {
 
     @Test
     fun `on onQueryMoreReplies with existing replies, merge new replies`() = runTest {
-        val state = createState()
+        val initialReply = threadedCommentData("reply-1", text = "First reply")
+        setupInitialReplies(initialReply)
 
-        // Set up initial replies
-        val initialReplies = listOf(threadedCommentData("reply-1", text = "First reply"))
-        val initialPagination = PaginationData(next = "next-cursor", previous = null)
-        val initialResult =
-            PaginationResult(models = initialReplies, pagination = initialPagination)
-        state.onQueryMoreReplies(initialResult)
-
-        // Add more replies
-        val newReplies = listOf(threadedCommentData("reply-2", text = "Second reply"))
+        val newReply = threadedCommentData("reply-2", text = "Second reply")
         val newPagination = PaginationData(next = "next-cursor-2", previous = "next-cursor")
-        val newResult = PaginationResult(models = newReplies, pagination = newPagination)
+        val newResult = PaginationResult(models = listOf(newReply), pagination = newPagination)
 
         state.onQueryMoreReplies(newResult)
 
-        val expectedReplies = initialReplies + newReplies
+        val expectedReplies = listOf(initialReply, newReply)
         assertEquals(expectedReplies, state.replies.value)
         assertEquals(newPagination, state.pagination)
     }
 
     @Test
     fun `on onCommentAdded with direct reply, add reply to parent comment`() = runTest {
-        val state = createState()
         val parentComment = threadedCommentData("parent-1", text = "Parent comment")
 
-        // Set up initial state with parent comment
-        val initialResult =
-            PaginationResult(models = listOf(parentComment), pagination = PaginationData.EMPTY)
-        state.onQueryMoreReplies(initialResult)
+        setupInitialReplies(parentComment)
 
-        // Add a direct reply
         val newReply =
             threadedCommentData("reply-1", parentId = "parent-1", text = "Reply to parent")
 
         state.onCommentAdded(newReply)
 
-        // Compare expected final state
         val expectedParent = parentComment.copy(replies = listOf(newReply), replyCount = 1)
         assertEquals(listOf(expectedParent), state.replies.value)
     }
 
     @Test
     fun `on onCommentAdded with non-reply comment, ignore it`() = runTest {
-        val state = createState()
         val parentComment = threadedCommentData("parent-1", text = "Parent comment")
 
-        // Set up initial state
-        val initialResult =
-            PaginationResult(models = listOf(parentComment), pagination = PaginationData.EMPTY)
-        state.onQueryMoreReplies(initialResult)
+        setupInitialReplies(parentComment)
 
-        // Add a comment without parentId (not a reply)
         val nonReply = threadedCommentData("comment-1", parentId = null, text = "Not a reply")
 
         state.onCommentAdded(nonReply)
 
-        // State should remain unchanged
         assertEquals(listOf(parentComment), state.replies.value)
     }
 
     @Test
     fun `on onCommentRemoved with top-level comment, remove it from state`() = runTest {
-        val state = createState()
         val comment1 = threadedCommentData("comment-1", text = "First comment")
         val comment2 = threadedCommentData("comment-2", text = "Second comment")
 
-        // Set up initial state
-        val initialResult =
-            PaginationResult(models = listOf(comment1, comment2), pagination = PaginationData.EMPTY)
-        state.onQueryMoreReplies(initialResult)
+        setupInitialReplies(comment1, comment2)
 
         state.onCommentRemoved("comment-1")
 
@@ -133,7 +108,6 @@ internal class CommentReplyListStateImplTest {
 
     @Test
     fun `on onCommentRemoved with nested reply, remove it recursively`() = runTest {
-        val state = createState()
         val nestedReply =
             threadedCommentData("nested-reply", parentId = "reply-1", text = "Nested reply")
         val directReply =
@@ -147,14 +121,10 @@ internal class CommentReplyListStateImplTest {
         val parentComment =
             threadedCommentData("parent-1", text = "Parent comment", replies = listOf(directReply))
 
-        // Set up initial state
-        val initialResult =
-            PaginationResult(models = listOf(parentComment), pagination = PaginationData.EMPTY)
-        state.onQueryMoreReplies(initialResult)
+        setupInitialReplies(parentComment)
 
         state.onCommentRemoved("nested-reply")
 
-        // Expected: direct reply with no nested replies and updated count
         val expectedDirectReply = directReply.copy(replies = emptyList(), replyCount = 0)
         val expectedParent = parentComment.copy(replies = listOf(expectedDirectReply))
         assertEquals(listOf(expectedParent), state.replies.value)
@@ -162,15 +132,10 @@ internal class CommentReplyListStateImplTest {
 
     @Test
     fun `on onCommentUpdated, update comment data in nested structure`() = runTest {
-        val state = createState()
         val originalComment = threadedCommentData("comment-1", text = "Original text")
 
-        // Set up initial state
-        val initialResult =
-            PaginationResult(models = listOf(originalComment), pagination = PaginationData.EMPTY)
-        state.onQueryMoreReplies(initialResult)
+        setupInitialReplies(originalComment)
 
-        // Update the comment
         val updatedCommentData = commentData("comment-1", text = "Updated text")
 
         state.onCommentUpdated(updatedCommentData)
@@ -180,54 +145,60 @@ internal class CommentReplyListStateImplTest {
     }
 
     @Test
+    fun `on onCommentUpdated, then preserve ownReactions when updating comment`() = runTest {
+        val ownReaction = feedsReactionData("comment-1", "like", currentUserId)
+
+        val originalComment =
+            threadedCommentData(
+                "comment-1",
+                text = "Original text",
+                ownReactions = listOf(ownReaction),
+            )
+
+        setupInitialReplies(originalComment)
+
+        val updatedCommentData =
+            commentData("comment-1", text = "Updated text", ownReactions = emptyList())
+
+        state.onCommentUpdated(updatedCommentData)
+
+        val expectedComment = originalComment.copy(text = "Updated text")
+        assertEquals(listOf(expectedComment), state.replies.value)
+    }
+
+    @Test
     fun `on onCommentReactionAdded, add reaction to nested comment`() = runTest {
-        val state = createState()
         val comment = threadedCommentData("comment-1", text = "Comment with reaction")
 
-        // Set up initial state
-        val initialResult =
-            PaginationResult(models = listOf(comment), pagination = PaginationData.EMPTY)
-        state.onQueryMoreReplies(initialResult)
+        setupInitialReplies(comment)
 
-        // Add reaction
         val reaction =
             feedsReactionData(activityId = "comment-1", type = "like", userId = currentUserId)
 
         state.onCommentReactionAdded("comment-1", reaction)
 
-        // Use the actual addReaction method to compute expected state
         val expectedComment = comment.addReaction(reaction, currentUserId)
         assertEquals(listOf(expectedComment), state.replies.value)
     }
 
     @Test
     fun `on onCommentReactionRemoved, remove reaction from nested comment`() = runTest {
-        val state = createState()
         val reaction =
             feedsReactionData(activityId = "comment-1", type = "like", userId = currentUserId)
 
-        // Create comment with reaction already added using the actual method
         val baseComment = threadedCommentData("comment-1", text = "Comment with reaction")
         val commentWithReaction = baseComment.addReaction(reaction, currentUserId)
 
-        // Set up initial state
-        val initialResult =
-            PaginationResult(
-                models = listOf(commentWithReaction),
-                pagination = PaginationData.EMPTY,
-            )
-        state.onQueryMoreReplies(initialResult)
+        setupInitialReplies(commentWithReaction)
 
         state.onCommentReactionRemoved("comment-1", reaction)
 
-        // Use the actual removeReaction method to compute expected state
         val expectedComment = commentWithReaction.removeReaction(reaction, currentUserId)
         assertEquals(listOf(expectedComment), state.replies.value)
     }
 
     @Test
     fun `on onCommentReactionAdded to deeply nested comment, update correct comment`() = runTest {
-        val state = createState()
         val deeplyNestedComment =
             threadedCommentData("deep-comment", parentId = "reply-1", text = "Deep comment")
         val directReply =
@@ -240,22 +211,23 @@ internal class CommentReplyListStateImplTest {
         val parentComment =
             threadedCommentData("parent-1", text = "Parent comment", replies = listOf(directReply))
 
-        // Set up initial state
-        val initialResult =
-            PaginationResult(models = listOf(parentComment), pagination = PaginationData.EMPTY)
-        state.onQueryMoreReplies(initialResult)
+        setupInitialReplies(parentComment)
 
-        // Add reaction to deeply nested comment
         val reaction =
             feedsReactionData(activityId = "deep-comment", type = "heart", userId = currentUserId)
 
         state.onCommentReactionAdded("deep-comment", reaction)
 
-        // Build expected nested structure with reaction added using actual method
         val expectedDeepComment = deeplyNestedComment.addReaction(reaction, currentUserId)
         val expectedDirectReply = directReply.copy(replies = listOf(expectedDeepComment))
         val expectedParent = parentComment.copy(replies = listOf(expectedDirectReply))
 
         assertEquals(listOf(expectedParent), state.replies.value)
+    }
+
+    private fun setupInitialReplies(vararg replies: ThreadedCommentData) {
+        val result =
+            PaginationResult(models = replies.toList(), pagination = PaginationData("next"))
+        state.onQueryMoreReplies(result)
     }
 }

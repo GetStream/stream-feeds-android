@@ -73,6 +73,7 @@ internal object TestData {
         objectId: String? = null,
         objectType: String = "comment",
         createdAt: Date = Date(1),
+        ownReactions: List<FeedsReactionData> = emptyList(),
     ) =
         CommentData(
             id = id,
@@ -90,7 +91,7 @@ internal object TestData {
             moderation = null,
             objectId = objectId ?: id,
             objectType = objectType,
-            ownReactions = emptyList(),
+            ownReactions = ownReactions,
             reactionCount = 0,
             reactionGroups = emptyMap(),
             replies = emptyList(),
@@ -110,6 +111,7 @@ internal object TestData {
         replies: List<ThreadedCommentData> = emptyList(),
         createdAt: Date = Date(1),
         latestReactions: List<FeedsReactionData> = emptyList(),
+        ownReactions: List<FeedsReactionData> = emptyList(),
         reactionCount: Int = 0,
         reactionGroups: Map<String, ReactionGroupData> = emptyMap(),
         replyCount: Int = replies.size,
@@ -130,7 +132,7 @@ internal object TestData {
             moderation = null,
             objectId = id,
             objectType = "comment",
-            ownReactions = emptyList(),
+            ownReactions = ownReactions,
             reactionCount = reactionCount,
             reactionGroups = reactionGroups,
             replies = replies,
