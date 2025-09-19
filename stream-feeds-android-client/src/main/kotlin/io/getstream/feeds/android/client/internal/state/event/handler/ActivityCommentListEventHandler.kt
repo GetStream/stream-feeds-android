@@ -57,6 +57,8 @@ internal class ActivityCommentListEventHandler(
                     state.onCommentReactionRemoved(event.comment.id, event.reaction)
                 }
             }
+
+            else -> {}
         }
     }
 }
