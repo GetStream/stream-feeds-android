@@ -15,17 +15,16 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.CommentReactionListStateUpdates
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
-import io.getstream.feeds.android.network.models.CommentReactionDeletedEvent
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
 internal class CommentReactionListEventHandler(private val state: CommentReactionListStateUpdates) :
-    FeedsEventListener {
-    override fun onEvent(event: WSEvent) {
+    StateUpdateEventListener {
+    override fun onEvent(event: StateUpdateEvent) {
         when (event) {
-            is CommentReactionDeletedEvent -> state.onReactionRemoved(event.reaction.toModel())
+            is StateUpdateEvent.CommentReactionDeleted -> state.onReactionRemoved(event.reaction)
+            else -> {}
         }
     }
 }
