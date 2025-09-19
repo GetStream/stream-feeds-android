@@ -204,7 +204,7 @@ internal class FeedsClientImpl(
         FeedListImpl(
             query = query,
             feedsRepository = feedsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun followList(query: FollowsQuery): FollowList =

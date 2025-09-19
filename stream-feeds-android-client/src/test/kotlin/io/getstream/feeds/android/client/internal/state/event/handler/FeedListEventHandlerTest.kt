@@ -15,58 +15,39 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.FeedListStateUpdates
-import io.getstream.feeds.android.client.internal.test.TestData.feedResponse
-import io.getstream.feeds.android.network.models.FeedDeletedEvent
-import io.getstream.feeds.android.network.models.FeedUpdatedEvent
-import io.getstream.feeds.android.network.models.WSEvent
-import io.mockk.called
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedUpdated
+import io.getstream.feeds.android.client.internal.test.TestData.feedData
+import io.mockk.MockKVerificationScope
 import io.mockk.mockk
-import io.mockk.verify
-import java.util.Date
-import org.junit.Test
+import org.junit.runners.Parameterized
 
-internal class FeedListEventHandlerTest {
-    private val state: FeedListStateUpdates = mockk(relaxed = true)
+internal class FeedListEventHandlerTest(
+    testName: String,
+    event: StateUpdateEvent,
+    verifyBlock: MockKVerificationScope.(FeedListStateUpdates) -> Unit,
+) : BaseEventHandlerTest<FeedListStateUpdates>(testName, event, verifyBlock) {
 
-    private val handler = FeedListEventHandler(state)
+    override val state: FeedListStateUpdates = mockk(relaxed = true)
+    override val handler = FeedListEventHandler(state)
 
-    @Test
-    fun `on FeedUpdatedEvent, then call onFeedUpdated`() {
-        val feed = feedResponse()
-        val event =
-            FeedUpdatedEvent(
-                createdAt = Date(),
-                fid = "user:feed-1",
-                feed = feed,
-                type = "feeds.feed.updated",
+    companion object {
+        @JvmStatic
+        @Parameterized.Parameters(name = "{0}")
+        fun data(): List<Array<Any>> =
+            listOf(
+                testParams<FeedListStateUpdates>(
+                    name = "FeedUpdated calls onFeedUpdated",
+                    event = FeedUpdated(feedData()),
+                    verifyBlock = { state -> state.onFeedUpdated(feedData()) },
+                ),
+                testParams<FeedListStateUpdates>(
+                    name = "FeedDeleted calls onFeedRemoved",
+                    event = FeedDeleted("user:feed-1"),
+                    verifyBlock = { state -> state.onFeedRemoved("user:feed-1") },
+                ),
             )
-
-        handler.onEvent(event)
-
-        verify { state.onFeedUpdated(feed.toModel()) }
-    }
-
-    @Test
-    fun `on FeedDeletedEvent, then call onFeedRemoved`() {
-        val event =
-            FeedDeletedEvent(createdAt = Date(), fid = "user:feed-1", type = "feeds.feed.deleted")
-
-        handler.onEvent(event)
-
-        verify { state.onFeedRemoved("user:feed-1") }
-    }
-
-    @Test
-    fun `on unknown event, then do nothing`() {
-        val unknownEvent =
-            object : WSEvent {
-                override fun getWSEventType(): String = "unknown.event"
-            }
-
-        handler.onEvent(unknownEvent)
-
-        verify { state wasNot called }
     }
 }
