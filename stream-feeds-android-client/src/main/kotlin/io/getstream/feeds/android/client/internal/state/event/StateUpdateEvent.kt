@@ -22,6 +22,7 @@ import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.FollowData
+import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
@@ -41,6 +42,7 @@ import io.getstream.feeds.android.network.models.FeedMemberUpdatedEvent
 import io.getstream.feeds.android.network.models.FeedUpdatedEvent
 import io.getstream.feeds.android.network.models.FollowDeletedEvent
 import io.getstream.feeds.android.network.models.FollowUpdatedEvent
+import io.getstream.feeds.android.network.models.PollUpdatedFeedEvent
 import io.getstream.feeds.android.network.models.WSEvent
 
 /**
@@ -86,6 +88,8 @@ internal sealed interface StateUpdateEvent {
     data class FollowUpdated(val follow: FollowData) : StateUpdateEvent
 
     data class FollowDeleted(val follow: FollowData) : StateUpdateEvent
+
+    data class PollUpdated(val poll: PollData) : StateUpdateEvent
 }
 
 internal fun WSEvent.toModel(): StateUpdateEvent? =
@@ -129,6 +133,8 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
         is FeedMemberRemovedEvent -> StateUpdateEvent.FeedMemberRemoved(fid, memberId)
 
         is FeedMemberUpdatedEvent -> StateUpdateEvent.FeedMemberUpdated(fid, member.toModel())
+
+        is PollUpdatedFeedEvent -> StateUpdateEvent.PollUpdated(poll.toModel())
 
         else -> null
     }
