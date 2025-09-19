@@ -280,7 +280,7 @@ internal class FeedsClientImpl(
         BookmarkFolderListImpl(
             query = query,
             bookmarksRepository = bookmarksRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun commentList(query: CommentsQuery): CommentList =

@@ -15,21 +15,19 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.BookmarkFolderListStateUpdates
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
-import io.getstream.feeds.android.network.models.BookmarkFolderDeletedEvent
-import io.getstream.feeds.android.network.models.BookmarkFolderUpdatedEvent
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
 internal class BookmarkFolderListEventHandler(private val state: BookmarkFolderListStateUpdates) :
-    FeedsEventListener {
+    StateUpdateEventListener {
 
-    override fun onEvent(event: WSEvent) {
+    override fun onEvent(event: StateUpdateEvent) {
         when (event) {
-            is BookmarkFolderDeletedEvent -> state.onBookmarkFolderRemoved(event.bookmarkFolder.id)
-            is BookmarkFolderUpdatedEvent ->
-                state.onBookmarkFolderUpdated(event.bookmarkFolder.toModel())
+            is StateUpdateEvent.BookmarkFolderDeleted ->
+                state.onBookmarkFolderRemoved(event.folderId)
+            is StateUpdateEvent.BookmarkFolderUpdated -> state.onBookmarkFolderUpdated(event.folder)
+            else -> {}
         }
     }
 }
