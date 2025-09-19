@@ -19,6 +19,7 @@ import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.BookmarkFolderData
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedData
+import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.toModel
@@ -34,6 +35,9 @@ import io.getstream.feeds.android.network.models.CommentReactionAddedEvent
 import io.getstream.feeds.android.network.models.CommentReactionDeletedEvent
 import io.getstream.feeds.android.network.models.CommentUpdatedEvent
 import io.getstream.feeds.android.network.models.FeedDeletedEvent
+import io.getstream.feeds.android.network.models.FeedMemberAddedEvent
+import io.getstream.feeds.android.network.models.FeedMemberRemovedEvent
+import io.getstream.feeds.android.network.models.FeedMemberUpdatedEvent
 import io.getstream.feeds.android.network.models.FeedUpdatedEvent
 import io.getstream.feeds.android.network.models.FollowDeletedEvent
 import io.getstream.feeds.android.network.models.FollowUpdatedEvent
@@ -72,6 +76,12 @@ internal sealed interface StateUpdateEvent {
     data class FeedUpdated(val feed: FeedData) : StateUpdateEvent
 
     data class FeedDeleted(val fid: String) : StateUpdateEvent
+
+    data class FeedMemberAdded(val fid: String, val member: FeedMemberData) : StateUpdateEvent
+
+    data class FeedMemberRemoved(val fid: String, val memberId: String) : StateUpdateEvent
+
+    data class FeedMemberUpdated(val fid: String, val member: FeedMemberData) : StateUpdateEvent
 
     data class FollowUpdated(val follow: FollowData) : StateUpdateEvent
 
@@ -113,6 +123,12 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
         is FollowUpdatedEvent -> StateUpdateEvent.FollowUpdated(follow.toModel())
 
         is FollowDeletedEvent -> StateUpdateEvent.FollowDeleted(follow.toModel())
+
+        is FeedMemberAddedEvent -> StateUpdateEvent.FeedMemberAdded(fid, member.toModel())
+
+        is FeedMemberRemovedEvent -> StateUpdateEvent.FeedMemberRemoved(fid, memberId)
+
+        is FeedMemberUpdatedEvent -> StateUpdateEvent.FeedMemberUpdated(fid, member.toModel())
 
         else -> null
     }
