@@ -211,7 +211,7 @@ internal class FeedsClientImpl(
         FollowListImpl(
             query = query,
             feedsRepository = feedsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun activity(activityId: String, fid: FeedId): Activity =
