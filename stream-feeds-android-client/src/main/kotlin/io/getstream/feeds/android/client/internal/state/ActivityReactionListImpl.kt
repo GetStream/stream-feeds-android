@@ -24,7 +24,7 @@ import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.toRequest
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.ActivityReactionListEventHandler
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
 /**
  * A list of activity reactions that provides pagination, filtering, and real-time updates.
@@ -42,7 +42,7 @@ import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 internal class ActivityReactionListImpl(
     override val query: ActivityReactionsQuery,
     private val activitiesRepository: ActivitiesRepository,
-    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
+    private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
 ) : ActivityReactionList {
 
     private val _state = ActivityReactionListStateImpl(query)

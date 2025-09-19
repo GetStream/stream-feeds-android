@@ -15,31 +15,30 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.ActivityReactionListStateUpdates
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
-import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
-import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
 internal class ActivityReactionListEventHandler(
     private val activityId: String,
     private val state: ActivityReactionListStateUpdates,
-) : FeedsEventListener {
+) : StateUpdateEventListener {
 
-    override fun onEvent(event: WSEvent) {
+    override fun onEvent(event: StateUpdateEvent) {
         when (event) {
-            is ActivityReactionAddedEvent -> {
-                if (event.activity.id == activityId) {
-                    state.onReactionAdded(event.reaction.toModel())
+            is StateUpdateEvent.ActivityReactionAdded -> {
+                if (event.reaction.activityId == activityId) {
+                    state.onReactionAdded(event.reaction)
                 }
             }
 
-            is ActivityReactionDeletedEvent -> {
-                if (event.activity.id == activityId) {
-                    state.onReactionRemoved(event.reaction.toModel())
+            is StateUpdateEvent.ActivityReactionDeleted -> {
+                if (event.reaction.activityId == activityId) {
+                    state.onReactionRemoved(event.reaction)
                 }
             }
+
+            else -> {}
         }
     }
 }
