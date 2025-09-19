@@ -21,7 +21,7 @@ import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.state.query.FollowsQuery
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.followData
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -32,7 +32,7 @@ import org.junit.Test
 
 internal class FollowListImplTest {
     private val feedsRepository: FeedsRepository = mockk()
-    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> =
+    private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener> =
         mockk(relaxed = true)
     private val query = FollowsQuery(limit = 10)
 

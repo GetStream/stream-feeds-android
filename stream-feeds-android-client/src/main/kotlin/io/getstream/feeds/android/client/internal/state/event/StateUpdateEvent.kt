@@ -20,6 +20,7 @@ import io.getstream.feeds.android.client.api.model.BookmarkFolderData
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
+import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
@@ -34,6 +35,8 @@ import io.getstream.feeds.android.network.models.CommentReactionDeletedEvent
 import io.getstream.feeds.android.network.models.CommentUpdatedEvent
 import io.getstream.feeds.android.network.models.FeedDeletedEvent
 import io.getstream.feeds.android.network.models.FeedUpdatedEvent
+import io.getstream.feeds.android.network.models.FollowDeletedEvent
+import io.getstream.feeds.android.network.models.FollowUpdatedEvent
 import io.getstream.feeds.android.network.models.WSEvent
 
 /**
@@ -69,6 +72,10 @@ internal sealed interface StateUpdateEvent {
     data class FeedUpdated(val feed: FeedData) : StateUpdateEvent
 
     data class FeedDeleted(val fid: String) : StateUpdateEvent
+
+    data class FollowUpdated(val follow: FollowData) : StateUpdateEvent
+
+    data class FollowDeleted(val follow: FollowData) : StateUpdateEvent
 }
 
 internal fun WSEvent.toModel(): StateUpdateEvent? =
@@ -102,6 +109,10 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
         is FeedUpdatedEvent -> StateUpdateEvent.FeedUpdated(feed.toModel())
 
         is FeedDeletedEvent -> StateUpdateEvent.FeedDeleted(fid)
+
+        is FollowUpdatedEvent -> StateUpdateEvent.FollowUpdated(follow.toModel())
+
+        is FollowDeletedEvent -> StateUpdateEvent.FollowDeleted(follow.toModel())
 
         else -> null
     }
