@@ -15,16 +15,13 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.CommentReactionListStateUpdates
-import io.getstream.feeds.android.client.internal.test.TestData.commentResponse
-import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionResponse
-import io.getstream.feeds.android.network.models.CommentReactionDeletedEvent
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.test.TestData.commentData
+import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.mockk.called
 import io.mockk.mockk
 import io.mockk.verify
-import java.util.Date
 import org.junit.Test
 
 internal class CommentReactionListEventHandlerTest {
@@ -33,29 +30,19 @@ internal class CommentReactionListEventHandlerTest {
     private val handler = CommentReactionListEventHandler(state)
 
     @Test
-    fun `on CommentReactionDeletedEvent, then call onReactionRemoved`() {
-        val reaction = feedsReactionResponse()
-        val comment = commentResponse()
-        val event =
-            CommentReactionDeletedEvent(
-                createdAt = Date(),
-                fid = "user:feed-1",
-                comment = comment,
-                reaction = reaction,
-                type = "feeds.comment.reaction.deleted",
-            )
+    fun `on CommentReactionDeleted, then call onReactionRemoved`() {
+        val reaction = feedsReactionData()
+        val comment = commentData()
+        val event = StateUpdateEvent.CommentReactionDeleted(comment, reaction)
 
         handler.onEvent(event)
 
-        verify { state.onReactionRemoved(reaction.toModel()) }
+        verify { state.onReactionRemoved(reaction) }
     }
 
     @Test
     fun `on unknown event, then do nothing`() {
-        val unknownEvent =
-            object : WSEvent {
-                override fun getWSEventType(): String = "unknown.event"
-            }
+        val unknownEvent = StateUpdateEvent.BookmarkFolderDeleted("folder-id")
 
         handler.onEvent(unknownEvent)
 

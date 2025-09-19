@@ -310,7 +310,7 @@ internal class FeedsClientImpl(
         CommentReactionListImpl(
             query = query,
             commentsRepository = commentsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun memberList(query: MembersQuery): MemberList =
