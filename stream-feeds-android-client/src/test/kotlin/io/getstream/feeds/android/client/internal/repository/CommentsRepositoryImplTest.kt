@@ -19,11 +19,34 @@ import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.file.FileType
 import io.getstream.feeds.android.client.api.file.UploadedFile
+import io.getstream.feeds.android.client.api.model.PaginationData
+import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
+import io.getstream.feeds.android.client.api.model.toModel
+import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
+import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
+import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
+import io.getstream.feeds.android.client.api.state.query.CommentsQuery
+import io.getstream.feeds.android.client.api.state.query.toRequest
+import io.getstream.feeds.android.client.internal.repository.RepositoryTestUtils.testDelegation
+import io.getstream.feeds.android.client.internal.test.TestData.commentResponse
+import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionResponse
+import io.getstream.feeds.android.client.internal.test.TestData.userResponse
 import io.getstream.feeds.android.network.apis.FeedsApi
+import io.getstream.feeds.android.network.models.AddCommentReactionRequest
+import io.getstream.feeds.android.network.models.AddCommentReactionResponse
 import io.getstream.feeds.android.network.models.AddCommentRequest
 import io.getstream.feeds.android.network.models.AddCommentsBatchRequest
 import io.getstream.feeds.android.network.models.Attachment
+import io.getstream.feeds.android.network.models.DeleteCommentReactionResponse
+import io.getstream.feeds.android.network.models.GetCommentRepliesResponse
+import io.getstream.feeds.android.network.models.GetCommentResponse
+import io.getstream.feeds.android.network.models.GetCommentsResponse
+import io.getstream.feeds.android.network.models.QueryCommentReactionsResponse
+import io.getstream.feeds.android.network.models.QueryCommentsResponse
+import io.getstream.feeds.android.network.models.ThreadedCommentResponse
+import io.getstream.feeds.android.network.models.UpdateCommentRequest
+import io.getstream.feeds.android.network.models.UpdateCommentResponse
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -154,5 +177,237 @@ internal class CommentsRepositoryImplTest {
                 val name = firstArg<FeedUploadPayload>().file.name
                 Result.success(UploadedFile(fileUrl = "file/$name", thumbnailUrl = "thumb/$name"))
             }
+    }
+
+    @Test
+    fun `on queryComments, delegate to api and transform result`() = runTest {
+        val query = CommentsQuery(limit = 10)
+        val apiResult =
+            QueryCommentsResponse(
+                duration = "duration",
+                comments = listOf(commentResponse(), commentResponse()),
+                next = "next-cursor",
+                prev = "prev-cursor",
+            )
+
+        testDelegation(
+            apiFunction = { feedsApi.queryComments(query.toRequest()) },
+            repositoryCall = { repository.queryComments(query) },
+            apiResult = apiResult,
+            repositoryResult =
+                PaginationResult(
+                    models = apiResult.comments.map { it.toModel() },
+                    pagination = PaginationData(apiResult.next, apiResult.prev),
+                ),
+        )
+    }
+
+    @Test
+    fun `on getComments, delegate to api and transform result`() = runTest {
+        val query =
+            ActivityCommentsQuery(
+                objectId = "activityId",
+                objectType = "activity",
+                depth = 2,
+                limit = 10,
+            )
+        val apiResult =
+            GetCommentsResponse(
+                duration = "duration",
+                comments =
+                    listOf(
+                        ThreadedCommentResponse(
+                            confidenceScore = 0.9f,
+                            createdAt = java.util.Date(1000),
+                            downvoteCount = 0,
+                            id = "comment-1",
+                            objectId = "activityId",
+                            objectType = "activity",
+                            reactionCount = 5,
+                            replyCount = 0,
+                            score = 10,
+                            status = "active",
+                            updatedAt = java.util.Date(1000),
+                            upvoteCount = 5,
+                            mentionedUsers = emptyList(),
+                            ownReactions = emptyList(),
+                            user = userResponse(),
+                            text = "Test comment",
+                            replies = emptyList(),
+                        )
+                    ),
+                next = "next-cursor",
+                prev = "prev-cursor",
+            )
+
+        testDelegation(
+            apiFunction = {
+                feedsApi.getComments(
+                    objectId = query.objectId,
+                    objectType = query.objectType,
+                    depth = query.depth,
+                    sort = query.sort?.toRequest()?.value,
+                    limit = query.limit,
+                    next = query.next,
+                    prev = query.previous,
+                )
+            },
+            repositoryCall = { repository.getComments(query) },
+            apiResult = apiResult,
+            repositoryResult =
+                PaginationResult(
+                    models = apiResult.comments.map { it.toModel() },
+                    pagination = PaginationData(apiResult.next, apiResult.prev),
+                ),
+        )
+    }
+
+    @Test
+    fun `on deleteComment, delegate to api`() {
+        testDelegation(
+            apiFunction = { feedsApi.deleteComment("commentId", true) },
+            repositoryCall = { repository.deleteComment("commentId", true) },
+            apiResult = Unit,
+        )
+    }
+
+    @Test
+    fun `on getComment, delegate to api`() = runTest {
+        val apiResult = GetCommentResponse(duration = "duration", comment = commentResponse())
+
+        testDelegation(
+            apiFunction = { feedsApi.getComment("commentId") },
+            repositoryCall = { repository.getComment("commentId") },
+            apiResult = apiResult,
+            repositoryResult = apiResult.comment.toModel(),
+        )
+    }
+
+    @Test
+    fun `on updateComment, delegate to api`() = runTest {
+        val request = UpdateCommentRequest(comment = "Updated comment")
+        val apiResult = UpdateCommentResponse(duration = "duration", comment = commentResponse())
+
+        testDelegation(
+            apiFunction = { feedsApi.updateComment("commentId", request) },
+            repositoryCall = { repository.updateComment("commentId", request) },
+            apiResult = apiResult,
+            repositoryResult = apiResult.comment.toModel(),
+        )
+    }
+
+    @Test
+    fun `on addCommentReaction, delegate to api and transform result`() = runTest {
+        val request = AddCommentReactionRequest(type = "like")
+        val reactionResponse = feedsReactionResponse().copy(commentId = "commentId")
+        val apiResult =
+            AddCommentReactionResponse(
+                duration = "duration",
+                reaction = reactionResponse,
+                comment = commentResponse(),
+            )
+
+        testDelegation(
+            apiFunction = { feedsApi.addCommentReaction("commentId", request) },
+            repositoryCall = { repository.addCommentReaction("commentId", request) },
+            apiResult = apiResult,
+            repositoryResult = Pair(apiResult.reaction.toModel(), apiResult.comment.id),
+        )
+    }
+
+    @Test
+    fun `on deleteCommentReaction, delegate to api and transform result`() = runTest {
+        val reactionResponse = feedsReactionResponse().copy(commentId = "commentId")
+        val apiResult =
+            DeleteCommentReactionResponse(
+                duration = "duration",
+                reaction = reactionResponse,
+                comment = commentResponse(),
+            )
+
+        testDelegation(
+            apiFunction = { feedsApi.deleteCommentReaction("commentId", "like") },
+            repositoryCall = { repository.deleteCommentReaction("commentId", "like") },
+            apiResult = apiResult,
+            repositoryResult = Pair(apiResult.reaction.toModel(), apiResult.comment.id),
+        )
+    }
+
+    @Test
+    fun `on queryCommentReactions, delegate to api and transform result`() = runTest {
+        val query = CommentReactionsQuery(commentId = "commentId", limit = 10)
+        val reactionResponse = feedsReactionResponse().copy(commentId = "commentId")
+        val apiResult =
+            QueryCommentReactionsResponse(
+                duration = "duration",
+                reactions = listOf(reactionResponse),
+                next = "next-cursor",
+                prev = "prev-cursor",
+            )
+
+        testDelegation(
+            apiFunction = { feedsApi.queryCommentReactions("commentId", query.toRequest()) },
+            repositoryCall = { repository.queryCommentReactions("commentId", query) },
+            apiResult = apiResult,
+            repositoryResult =
+                PaginationResult(
+                    models = apiResult.reactions.map { it.toModel() },
+                    pagination = PaginationData(apiResult.next, apiResult.prev),
+                ),
+        )
+    }
+
+    @Test
+    fun `on getCommentReplies, delegate to api and transform result`() = runTest {
+        val query = CommentRepliesQuery(commentId = "commentId", depth = 2, limit = 10)
+        val apiResult =
+            GetCommentRepliesResponse(
+                duration = "duration",
+                comments =
+                    listOf(
+                        ThreadedCommentResponse(
+                            confidenceScore = 0.9f,
+                            createdAt = java.util.Date(1000),
+                            downvoteCount = 0,
+                            id = "reply-1",
+                            objectId = "commentId",
+                            objectType = "comment",
+                            reactionCount = 0,
+                            replyCount = 0,
+                            score = 5,
+                            status = "active",
+                            updatedAt = java.util.Date(1000),
+                            upvoteCount = 5,
+                            mentionedUsers = emptyList(),
+                            ownReactions = emptyList(),
+                            user = userResponse(),
+                            text = "Test reply",
+                            replies = emptyList(),
+                        )
+                    ),
+                next = "next-cursor",
+                prev = "prev-cursor",
+            )
+
+        testDelegation(
+            apiFunction = {
+                feedsApi.getCommentReplies(
+                    id = query.commentId,
+                    depth = query.depth,
+                    limit = query.limit,
+                    next = query.next,
+                    prev = query.previous,
+                    repliesLimit = query.repliesLimit,
+                    sort = query.sort?.toRequest()?.value,
+                )
+            },
+            repositoryCall = { repository.getCommentReplies(query) },
+            apiResult = apiResult,
+            repositoryResult =
+                PaginationResult(
+                    models = apiResult.comments.map { it.toModel() },
+                    pagination = PaginationData(apiResult.next, apiResult.prev),
+                ),
+        )
     }
 }

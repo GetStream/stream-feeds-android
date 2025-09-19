@@ -24,9 +24,25 @@ import io.getstream.android.core.api.model.value.StreamApiKey
 import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.Moderation
 import io.getstream.feeds.android.client.api.file.FeedUploader
+import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
 import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.api.model.UserAuthType
+import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
+import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
+import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQuery
+import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersQuery
+import io.getstream.feeds.android.client.api.state.query.BookmarksQuery
+import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
+import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
+import io.getstream.feeds.android.client.api.state.query.CommentsQuery
+import io.getstream.feeds.android.client.api.state.query.FeedQuery
+import io.getstream.feeds.android.client.api.state.query.FeedsQuery
+import io.getstream.feeds.android.client.api.state.query.FollowsQuery
+import io.getstream.feeds.android.client.api.state.query.MembersQuery
+import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
+import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
+import io.getstream.feeds.android.client.api.state.query.PollsQuery
 import io.getstream.feeds.android.client.internal.client.reconnect.ConnectionRecoveryHandler
 import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
@@ -342,5 +358,168 @@ internal class FeedsClientImplTest {
         val result = feedsClient.moderation
 
         assertEquals(moderation, result)
+    }
+
+    @Test
+    fun `feed when called with group and id, return feed with correct FeedId`() {
+        val result = feedsClient.feed("user", "test-user")
+        val expected = FeedId("user", "test-user")
+
+        assertEquals(expected, result.fid)
+    }
+
+    @Test
+    fun `feed when called with FeedId, return feed with correct FeedId`() {
+        val feedId = FeedId("user", "test-user")
+
+        val result = feedsClient.feed(feedId)
+
+        assertEquals(feedId, result.fid)
+    }
+
+    @Test
+    fun `feed when called with FeedQuery, return feed with correct FeedId`() {
+        val query = FeedQuery(group = "user", id = "test-user")
+
+        val result = feedsClient.feed(query)
+
+        assertEquals(query.fid, result.fid)
+    }
+
+    @Test
+    fun `feedList when called with query, return feed list with correct query`() {
+        val query = FeedsQuery(limit = 10)
+
+        val result = feedsClient.feedList(query)
+
+        assertEquals(query, result.query)
+    }
+
+    @Test
+    fun `followList when called with query, return follow list with correct query`() {
+        val query = FollowsQuery(limit = 10)
+
+        val result = feedsClient.followList(query)
+
+        assertEquals(query, result.query)
+    }
+
+    @Test
+    fun `activity when called with activityId and feedId, return activity with correct parameters`() {
+        val activityId = "activity-1"
+        val feedId = FeedId("user", "test-user")
+
+        val result = feedsClient.activity(activityId, feedId)
+
+        assertEquals(activityId, result.activityId)
+        assertEquals(feedId, result.fid)
+    }
+
+    @Test
+    fun `activityList when called with query, return activity list with correct query`() {
+        val query = ActivitiesQuery(limit = 10)
+
+        val result = feedsClient.activityList(query)
+
+        assertEquals(query, result.query)
+    }
+
+    @Test
+    fun `activityReactionList when called with query, return activity reaction list with correct query`() {
+        val query = ActivityReactionsQuery(activityId = "activity-1", limit = 10)
+
+        val result = feedsClient.activityReactionList(query)
+
+        assertEquals(query, result.query)
+    }
+
+    @Test
+    fun `bookmarkList when called with query, return bookmark list with correct query`() {
+        val query = BookmarksQuery(limit = 10)
+
+        val result = feedsClient.bookmarkList(query)
+
+        assertEquals(query, result.query)
+    }
+
+    @Test
+    fun `bookmarkFolderList when called with query, return bookmark folder list with correct query`() {
+        val query = BookmarkFoldersQuery(limit = 10)
+
+        val result = feedsClient.bookmarkFolderList(query)
+
+        assertEquals(query, result.query)
+    }
+
+    @Test
+    fun `commentList when called with query, return comment list with correct query`() {
+        val query = CommentsQuery(limit = 10)
+
+        val result = feedsClient.commentList(query)
+
+        assertEquals(query, result.query)
+    }
+
+    @Test
+    fun `activityCommentList when called with query, then return activity comment list with correct query`() {
+        val query = ActivityCommentsQuery(objectId = "activity-1", objectType = "activity")
+
+        val result = feedsClient.activityCommentList(query)
+
+        assertEquals(query, result.query)
+    }
+
+    @Test
+    fun `commentReplyList when called with query, return comment reply list with correct query`() {
+        val query = CommentRepliesQuery(commentId = "comment-1")
+
+        val result = feedsClient.commentReplyList(query)
+
+        assertEquals(query, result.query)
+    }
+
+    @Test
+    fun `commentReactionList when called with query, return comment reaction list with correct query`() {
+        val query = CommentReactionsQuery(commentId = "comment-1", limit = 10)
+
+        val result = feedsClient.commentReactionList(query)
+
+        assertEquals(query, result.query)
+    }
+
+    @Test
+    fun `memberList when called with query, return member list with correct query`() {
+        val query = MembersQuery(fid = FeedId("user", "test-user"), limit = 10)
+
+        val result = feedsClient.memberList(query)
+
+        assertEquals(query, result.query)
+    }
+
+    @Test
+    fun `pollVoteList when called with query, return poll vote list with correct query`() {
+        val query = PollVotesQuery(pollId = "poll-1", limit = 10)
+
+        val result = feedsClient.pollVoteList(query)
+
+        assertEquals(query, result.query)
+    }
+
+    @Test
+    fun `pollList when called with query, return poll list with correct query`() {
+        val query = PollsQuery(limit = 10)
+
+        val result = feedsClient.pollList(query)
+
+        assertEquals(query, result.query)
+    }
+
+    @Test
+    fun `moderationConfigList when called with query, return moderation config list with correct query`() {
+        val query = ModerationConfigsQuery(limit = 10)
+
+        val result = feedsClient.moderationConfigList(query)
+
+        assertEquals(query, result.query)
     }
 }
