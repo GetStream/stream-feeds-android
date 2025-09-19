@@ -16,36 +16,32 @@
 package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.CommentReplyListStateUpdates
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
-import io.getstream.feeds.android.network.models.CommentAddedEvent
-import io.getstream.feeds.android.network.models.CommentDeletedEvent
-import io.getstream.feeds.android.network.models.CommentReactionAddedEvent
-import io.getstream.feeds.android.network.models.CommentReactionDeletedEvent
-import io.getstream.feeds.android.network.models.CommentUpdatedEvent
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
 internal class CommentReplyListEventHandler(private val state: CommentReplyListStateUpdates) :
-    FeedsEventListener {
+    StateUpdateEventListener {
 
-    override fun onEvent(event: WSEvent) {
+    override fun onEvent(event: StateUpdateEvent) {
         when (event) {
-            is CommentAddedEvent -> {
-                state.onCommentAdded(ThreadedCommentData(event.comment.toModel()))
+            is StateUpdateEvent.CommentAdded -> {
+                state.onCommentAdded(ThreadedCommentData(event.comment))
             }
-            is CommentDeletedEvent -> {
+            is StateUpdateEvent.CommentDeleted -> {
                 state.onCommentRemoved(event.comment.id)
             }
-            is CommentUpdatedEvent -> {
-                state.onCommentUpdated(event.comment.toModel())
+            is StateUpdateEvent.CommentUpdated -> {
+                state.onCommentUpdated(event.comment)
             }
-            is CommentReactionAddedEvent -> {
-                state.onCommentReactionAdded(event.comment.id, event.reaction.toModel())
+            is StateUpdateEvent.CommentReactionAdded -> {
+                state.onCommentReactionAdded(event.comment.id, event.reaction)
             }
-            is CommentReactionDeletedEvent -> {
-                state.onCommentReactionRemoved(event.comment.id, event.reaction.toModel())
+            is StateUpdateEvent.CommentReactionDeleted -> {
+                state.onCommentReactionRemoved(event.comment.id, event.reaction)
             }
+
+            else -> {}
         }
     }
 }
