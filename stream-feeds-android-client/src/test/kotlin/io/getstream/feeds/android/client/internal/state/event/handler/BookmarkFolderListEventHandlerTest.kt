@@ -15,62 +15,39 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.BookmarkFolderListStateUpdates
-import io.getstream.feeds.android.client.internal.test.TestData.bookmarkFolderResponse
-import io.getstream.feeds.android.network.models.BookmarkFolderDeletedEvent
-import io.getstream.feeds.android.network.models.BookmarkFolderUpdatedEvent
-import io.getstream.feeds.android.network.models.WSEvent
-import io.mockk.called
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkFolderDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkFolderUpdated
+import io.getstream.feeds.android.client.internal.test.TestData.bookmarkFolderData
+import io.mockk.MockKVerificationScope
 import io.mockk.mockk
-import io.mockk.verify
-import java.util.Date
-import org.junit.Test
+import org.junit.runners.Parameterized
 
-internal class BookmarkFolderListEventHandlerTest {
-    private val state: BookmarkFolderListStateUpdates = mockk(relaxed = true)
+internal class BookmarkFolderListEventHandlerTest(
+    testName: String,
+    event: StateUpdateEvent,
+    verifyBlock: MockKVerificationScope.(BookmarkFolderListStateUpdates) -> Unit,
+) : BaseEventHandlerTest<BookmarkFolderListStateUpdates>(testName, event, verifyBlock) {
 
-    private val handler = BookmarkFolderListEventHandler(state)
+    override val state: BookmarkFolderListStateUpdates = mockk(relaxed = true)
+    override val handler = BookmarkFolderListEventHandler(state)
 
-    @Test
-    fun `on BookmarkFolderDeletedEvent, then call onBookmarkFolderRemoved`() {
-        val bookmarkFolder = bookmarkFolderResponse()
-        val event =
-            BookmarkFolderDeletedEvent(
-                createdAt = Date(),
-                bookmarkFolder = bookmarkFolder,
-                type = "feeds.bookmark_folder.deleted",
+    companion object {
+        @JvmStatic
+        @Parameterized.Parameters(name = "{0}")
+        fun data(): List<Array<Any>> =
+            listOf(
+                testParams<BookmarkFolderListStateUpdates>(
+                    name = "BookmarkFolderDeleted calls onBookmarkFolderRemoved",
+                    event = BookmarkFolderDeleted("folder-123"),
+                    verifyBlock = { state -> state.onBookmarkFolderRemoved("folder-123") },
+                ),
+                testParams<BookmarkFolderListStateUpdates>(
+                    name = "BookmarkFolderUpdated calls onBookmarkFolderUpdated",
+                    event = BookmarkFolderUpdated(bookmarkFolderData()),
+                    verifyBlock = { state -> state.onBookmarkFolderUpdated(bookmarkFolderData()) },
+                ),
             )
-
-        handler.onEvent(event)
-
-        verify { state.onBookmarkFolderRemoved(bookmarkFolder.id) }
-    }
-
-    @Test
-    fun `on BookmarkFolderUpdatedEvent, then call onBookmarkFolderUpdated`() {
-        val bookmarkFolder = bookmarkFolderResponse()
-        val event =
-            BookmarkFolderUpdatedEvent(
-                createdAt = Date(),
-                bookmarkFolder = bookmarkFolder,
-                type = "feeds.bookmark_folder.updated",
-            )
-
-        handler.onEvent(event)
-
-        verify { state.onBookmarkFolderUpdated(bookmarkFolder.toModel()) }
-    }
-
-    @Test
-    fun `on unknown event, then do nothing`() {
-        val unknownEvent =
-            object : WSEvent {
-                override fun getWSEventType(): String = "unknown.event"
-            }
-
-        handler.onEvent(unknownEvent)
-
-        verify { state wasNot called }
     }
 }
