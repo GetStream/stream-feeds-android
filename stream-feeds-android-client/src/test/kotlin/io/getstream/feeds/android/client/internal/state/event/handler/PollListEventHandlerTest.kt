@@ -15,47 +15,33 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.PollListStateUpdates
-import io.getstream.feeds.android.client.internal.test.TestData.pollResponseData
-import io.getstream.feeds.android.network.models.PollUpdatedFeedEvent
-import io.getstream.feeds.android.network.models.WSEvent
-import io.mockk.called
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollUpdated
+import io.getstream.feeds.android.client.internal.test.TestData.pollData
+import io.mockk.MockKVerificationScope
 import io.mockk.mockk
-import io.mockk.verify
-import java.util.Date
-import org.junit.Test
+import org.junit.runners.Parameterized
 
-internal class PollListEventHandlerTest {
-    private val state: PollListStateUpdates = mockk(relaxed = true)
+internal class PollListEventHandlerTest(
+    testName: String,
+    event: StateUpdateEvent,
+    verifyBlock: MockKVerificationScope.(PollListStateUpdates) -> Unit,
+) : BaseEventHandlerTest<PollListStateUpdates>(testName, event, verifyBlock) {
 
-    private val handler = PollListEventHandler(state)
+    override val state: PollListStateUpdates = mockk(relaxed = true)
+    override val handler = PollListEventHandler(state)
 
-    @Test
-    fun `on PollUpdatedFeedEvent, then call onPollUpdated`() {
-        val poll = pollResponseData()
-        val event =
-            PollUpdatedFeedEvent(
-                createdAt = Date(),
-                fid = "user:feed-1",
-                poll = poll,
-                type = "feeds.poll.updated",
+    companion object {
+        @JvmStatic
+        @Parameterized.Parameters(name = "{0}")
+        fun data(): List<Array<Any>> =
+            listOf(
+                testParams<PollListStateUpdates>(
+                    name = "PollUpdated",
+                    event = PollUpdated(pollData()),
+                    verifyBlock = { state -> state.onPollUpdated(pollData()) },
+                )
             )
-
-        handler.onEvent(event)
-
-        verify { state.onPollUpdated(poll.toModel()) }
-    }
-
-    @Test
-    fun `on unknown event, then do nothing`() {
-        val unknownEvent =
-            object : WSEvent {
-                override fun getWSEventType(): String = "unknown.event"
-            }
-
-        handler.onEvent(unknownEvent)
-
-        verify { state wasNot called }
     }
 }

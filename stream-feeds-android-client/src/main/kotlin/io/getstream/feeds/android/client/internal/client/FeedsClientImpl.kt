@@ -332,7 +332,7 @@ internal class FeedsClientImpl(
         PollListImpl(
             query = query,
             pollsRepository = pollsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun moderationConfigList(query: ModerationConfigsQuery): ModerationConfigList =
