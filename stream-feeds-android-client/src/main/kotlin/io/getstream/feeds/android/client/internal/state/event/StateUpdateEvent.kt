@@ -21,6 +21,8 @@ import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.toModel
+import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
+import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
 import io.getstream.feeds.android.network.models.BookmarkDeletedEvent
 import io.getstream.feeds.android.network.models.BookmarkFolderDeletedEvent
 import io.getstream.feeds.android.network.models.BookmarkFolderUpdatedEvent
@@ -39,6 +41,10 @@ import io.getstream.feeds.android.network.models.WSEvent
  * receiving a WebSocket event or having executed a successful API call that can modify the state.
  */
 internal sealed interface StateUpdateEvent {
+
+    data class ActivityReactionAdded(val reaction: FeedsReactionData) : StateUpdateEvent
+
+    data class ActivityReactionDeleted(val reaction: FeedsReactionData) : StateUpdateEvent
 
     data class BookmarkDeleted(val bookmark: BookmarkData) : StateUpdateEvent
 
@@ -67,6 +73,11 @@ internal sealed interface StateUpdateEvent {
 
 internal fun WSEvent.toModel(): StateUpdateEvent? =
     when (this) {
+        is ActivityReactionAddedEvent -> StateUpdateEvent.ActivityReactionAdded(reaction.toModel())
+
+        is ActivityReactionDeletedEvent ->
+            StateUpdateEvent.ActivityReactionDeleted(reaction.toModel())
+
         is BookmarkDeletedEvent -> StateUpdateEvent.BookmarkDeleted(bookmark.toModel())
 
         is BookmarkUpdatedEvent -> StateUpdateEvent.BookmarkUpdated(bookmark.toModel())

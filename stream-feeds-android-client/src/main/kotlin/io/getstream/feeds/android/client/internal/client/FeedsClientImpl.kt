@@ -250,7 +250,7 @@ internal class FeedsClientImpl(
         ActivityReactionListImpl(
             query = query,
             activitiesRepository = activitiesRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override suspend fun addActivity(request: AddActivityRequest): Result<ActivityData> {
