@@ -15,24 +15,35 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.internal.state.FeedListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
+import io.mockk.MockKVerificationScope
+import io.mockk.verify
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
 
-internal class FeedListEventHandler(private val state: FeedListStateUpdates) :
-    StateUpdateEventListener {
+@RunWith(Parameterized::class)
+internal abstract class BaseEventHandlerTest<State>(
+    protected val testName: String,
+    protected val event: StateUpdateEvent,
+    protected val verifyBlock: MockKVerificationScope.(State) -> Unit,
+) {
+    protected abstract val state: State
 
-    override fun onEvent(event: StateUpdateEvent) {
-        when (event) {
-            is StateUpdateEvent.FeedUpdated -> {
-                state.onFeedUpdated(event.feed)
-            }
+    protected abstract val handler: StateUpdateEventListener
 
-            is StateUpdateEvent.FeedDeleted -> {
-                state.onFeedRemoved(event.fid)
-            }
+    @Test
+    internal fun `handle event`() {
+        handler.onEvent(event)
+        verify { verifyBlock(state) }
+    }
 
-            else -> {}
-        }
+    companion object {
+        fun <S> testParams(
+            name: String,
+            event: StateUpdateEvent,
+            verifyBlock: MockKVerificationScope.(S) -> Unit,
+        ): Array<Any> = arrayOf(name, event, verifyBlock)
     }
 }

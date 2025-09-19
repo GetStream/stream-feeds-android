@@ -23,7 +23,7 @@ import io.getstream.feeds.android.client.api.state.FeedListState
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.FeedListEventHandler
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
 /**
  * Represents a list of feeds with a query and state.
@@ -36,7 +36,7 @@ import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 internal class FeedListImpl(
     override val query: FeedsQuery,
     private val feedsRepository: FeedsRepository,
-    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
+    private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
 ) : FeedList {
 
     private val _state: FeedListStateImpl = FeedListStateImpl(query)
