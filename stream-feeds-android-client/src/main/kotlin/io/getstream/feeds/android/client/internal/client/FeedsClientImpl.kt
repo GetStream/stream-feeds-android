@@ -196,7 +196,8 @@ internal class FeedsClientImpl(
             commentsRepository = commentsRepository,
             feedsRepository = feedsRepository,
             pollsRepository = pollsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            socketSubscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
             feedWatchHandler = feedWatchHandler,
         )
 
@@ -317,7 +318,7 @@ internal class FeedsClientImpl(
         MemberListImpl(
             query = query,
             feedsRepository = feedsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun pollVoteList(query: PollVotesQuery): PollVoteList =

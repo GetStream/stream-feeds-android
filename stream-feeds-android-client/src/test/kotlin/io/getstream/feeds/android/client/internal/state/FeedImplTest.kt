@@ -703,6 +703,7 @@ internal class FeedImplTest {
             commentsRepository = commentsRepository,
             feedsRepository = feedsRepository,
             pollsRepository = pollsRepository,
+            socketSubscriptionManager = mockk(relaxed = true),
             subscriptionManager = mockk(relaxed = true),
             feedWatchHandler = feedWatchHandler,
         )
