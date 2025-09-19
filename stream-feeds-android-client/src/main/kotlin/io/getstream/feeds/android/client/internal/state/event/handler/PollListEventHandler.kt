@@ -24,7 +24,8 @@ import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventList
  *
  * @property state The instance that manages updates to the poll list state.
  */
-internal class PollListEventHandler(private val state: PollListStateUpdates) : StateUpdateEventListener {
+internal class PollListEventHandler(private val state: PollListStateUpdates) :
+    StateUpdateEventListener {
 
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {

@@ -15,143 +15,64 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.PollVoteListStateUpdates
-import io.getstream.feeds.android.client.internal.test.TestData.pollResponseData
-import io.getstream.feeds.android.client.internal.test.TestData.pollVoteResponseData
-import io.getstream.feeds.android.network.models.PollVoteCastedFeedEvent
-import io.getstream.feeds.android.network.models.PollVoteChangedFeedEvent
-import io.getstream.feeds.android.network.models.PollVoteRemovedFeedEvent
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteCasted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteChanged
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteRemoved
+import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
+import io.mockk.MockKVerificationScope
 import io.mockk.called
 import io.mockk.mockk
-import io.mockk.verify
-import java.util.Date
-import org.junit.Test
+import org.junit.runners.Parameterized
 
-internal class PollVoteListEventHandlerTest {
-    private val pollId = "poll-1"
-    private val state: PollVoteListStateUpdates = mockk(relaxed = true)
+internal class PollVoteListEventHandlerTest(
+    testName: String,
+    event: StateUpdateEvent,
+    verifyBlock: MockKVerificationScope.(PollVoteListStateUpdates) -> Unit,
+) : BaseEventHandlerTest<PollVoteListStateUpdates>(testName, event, verifyBlock) {
 
-    private val handler = PollVoteListEventHandler(pollId, state)
+    override val state: PollVoteListStateUpdates = mockk(relaxed = true)
+    override val handler = PollVoteListEventHandler(pollId, state)
 
-    @Test
-    fun `on PollVoteChangedFeedEvent for matching poll, then call pollVoteUpdated`() {
-        val poll = pollResponseData().copy(id = pollId)
-        val pollVote = pollVoteResponseData()
-        val event =
-            PollVoteChangedFeedEvent(
-                createdAt = Date(),
-                fid = "user:feed-1",
-                poll = poll,
-                pollVote = pollVote,
-                type = "feeds.poll.vote_changed",
+    companion object {
+        private const val pollId = "poll-1"
+        private const val otherPollId = "other-poll"
+
+        @JvmStatic
+        @Parameterized.Parameters(name = "{0}")
+        fun data(): List<Array<Any>> =
+            listOf(
+                testParams<PollVoteListStateUpdates>(
+                    name = "PollVoteChanged matching poll",
+                    event = PollVoteChanged("feed-1", pollId, pollVoteData()),
+                    verifyBlock = { state -> state.pollVoteUpdated(pollVoteData()) },
+                ),
+                testParams<PollVoteListStateUpdates>(
+                    name = "PollVoteChanged non-matching poll",
+                    event = PollVoteChanged("feed-1", otherPollId, pollVoteData()),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<PollVoteListStateUpdates>(
+                    name = "PollVoteRemoved matching poll",
+                    event = PollVoteRemoved("feed-1", pollId, pollVoteData("poll-vote-1")),
+                    verifyBlock = { state -> state.pollVoteRemoved("poll-vote-1") },
+                ),
+                testParams<PollVoteListStateUpdates>(
+                    name = "PollVoteRemoved non-matching poll",
+                    event = PollVoteRemoved("feed-1", otherPollId, pollVoteData("poll-vote-1")),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<PollVoteListStateUpdates>(
+                    name = "PollVoteCasted matching poll",
+                    event = PollVoteCasted("feed-1", pollId, pollVoteData()),
+                    verifyBlock = { state -> state.pollVoteAdded(pollVoteData()) },
+                ),
+                testParams<PollVoteListStateUpdates>(
+                    name = "PollVoteCasted non-matching poll",
+                    event = PollVoteCasted("feed-1", otherPollId, pollVoteData()),
+                    verifyBlock = { state -> state wasNot called },
+                ),
             )
-
-        handler.onEvent(event)
-
-        verify { state.pollVoteUpdated(pollVote.toModel()) }
-    }
-
-    @Test
-    fun `on PollVoteChangedFeedEvent for different poll, then do not call pollVoteUpdated`() {
-        val poll = pollResponseData().copy(id = "different-poll")
-        val pollVote = pollVoteResponseData()
-        val event =
-            PollVoteChangedFeedEvent(
-                createdAt = Date(),
-                fid = "user:feed-1",
-                poll = poll,
-                pollVote = pollVote,
-                type = "feeds.poll.vote_changed",
-            )
-
-        handler.onEvent(event)
-
-        verify(exactly = 0) { state.pollVoteUpdated(any()) }
-    }
-
-    @Test
-    fun `on PollVoteRemovedFeedEvent for matching poll, then call pollVoteRemoved`() {
-        val poll = pollResponseData().copy(id = pollId)
-        val pollVote = pollVoteResponseData()
-        val event =
-            PollVoteRemovedFeedEvent(
-                createdAt = Date(),
-                fid = "user:feed-1",
-                poll = poll,
-                pollVote = pollVote,
-                type = "feeds.poll.vote_removed",
-            )
-
-        handler.onEvent(event)
-
-        verify { state.pollVoteRemoved(pollVote.id) }
-    }
-
-    @Test
-    fun `on PollVoteRemovedFeedEvent for different poll, then do not call pollVoteRemoved`() {
-        val poll = pollResponseData().copy(id = "different-poll")
-        val pollVote = pollVoteResponseData()
-        val event =
-            PollVoteRemovedFeedEvent(
-                createdAt = Date(),
-                fid = "user:feed-1",
-                poll = poll,
-                pollVote = pollVote,
-                type = "feeds.poll.vote_removed",
-            )
-
-        handler.onEvent(event)
-
-        verify(exactly = 0) { state.pollVoteRemoved(any()) }
-    }
-
-    @Test
-    fun `on PollVoteCastedFeedEvent for matching poll, then call pollVoteAdded`() {
-        val poll = pollResponseData().copy(id = pollId)
-        val pollVote = pollVoteResponseData()
-        val event =
-            PollVoteCastedFeedEvent(
-                createdAt = Date(),
-                fid = "user:feed-1",
-                poll = poll,
-                pollVote = pollVote,
-                type = "feeds.poll.vote_casted",
-            )
-
-        handler.onEvent(event)
-
-        verify { state.pollVoteAdded(pollVote.toModel()) }
-    }
-
-    @Test
-    fun `on PollVoteCastedFeedEvent for different poll, then do not call pollVoteAdded`() {
-        val poll = pollResponseData().copy(id = "different-poll")
-        val pollVote = pollVoteResponseData()
-        val event =
-            PollVoteCastedFeedEvent(
-                createdAt = Date(),
-                fid = "user:feed-1",
-                poll = poll,
-                pollVote = pollVote,
-                type = "feeds.poll.vote_casted",
-            )
-
-        handler.onEvent(event)
-
-        verify(exactly = 0) { state.pollVoteAdded(any()) }
-    }
-
-    @Test
-    fun `on unknown event, then do nothing`() {
-        val unknownEvent =
-            object : WSEvent {
-                override fun getWSEventType(): String = "unknown.event"
-            }
-
-        handler.onEvent(unknownEvent)
-
-        verify { state wasNot called }
     }
 }

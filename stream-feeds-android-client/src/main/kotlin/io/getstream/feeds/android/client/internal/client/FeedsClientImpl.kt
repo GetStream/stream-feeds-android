@@ -224,7 +224,6 @@ internal class FeedsClientImpl(
             commentsRepository = commentsRepository,
             pollsRepository = pollsRepository,
             subscriptionManager = stateEventsSubscriptionManager,
-            socketSubscriptionManager = feedsEventsSubscriptionManager,
             commentList =
                 ActivityCommentListImpl(
                     query =
@@ -244,7 +243,7 @@ internal class FeedsClientImpl(
             query = query,
             currentUserId = user.id,
             activitiesRepository = activitiesRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun activityReactionList(query: ActivityReactionsQuery): ActivityReactionList =
@@ -325,7 +324,7 @@ internal class FeedsClientImpl(
         PollVoteListImpl(
             query = query,
             repository = pollsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun pollList(query: PollsQuery): PollList =

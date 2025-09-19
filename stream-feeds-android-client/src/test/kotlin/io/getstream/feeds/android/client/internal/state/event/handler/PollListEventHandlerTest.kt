@@ -39,7 +39,7 @@ internal class PollListEventHandlerTest(
             listOf(
                 testParams<PollListStateUpdates>(
                     name = "PollUpdated",
-                    event = PollUpdated(pollData()),
+                    event = PollUpdated("feed-1", pollData()),
                     verifyBlock = { state -> state.onPollUpdated(pollData()) },
                 )
             )

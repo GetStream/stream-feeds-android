@@ -21,7 +21,7 @@ import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -32,7 +32,7 @@ import org.junit.Test
 
 internal class PollVoteListImplTest {
     private val pollsRepository: PollsRepository = mockk()
-    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> =
+    private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener> =
         mockk(relaxed = true)
     private val query = PollVotesQuery(pollId = "poll-1", userId = "user-1", limit = 10)
 

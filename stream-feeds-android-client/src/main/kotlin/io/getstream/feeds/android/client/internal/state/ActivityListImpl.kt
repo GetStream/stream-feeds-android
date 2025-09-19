@@ -23,7 +23,7 @@ import io.getstream.feeds.android.client.api.state.ActivityListState
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.ActivityListEventHandler
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
 /**
  * A paginated list of activities that supports real-time updates and filtering.
@@ -42,7 +42,7 @@ internal class ActivityListImpl(
     override val query: ActivitiesQuery,
     private val currentUserId: String,
     private val activitiesRepository: ActivitiesRepository,
-    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
+    private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
 ) : ActivityList {
 
     private val _state: ActivityListStateImpl = ActivityListStateImpl(query, currentUserId)
