@@ -15,19 +15,14 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.BookmarkListStateUpdates
-import io.getstream.feeds.android.client.internal.test.TestData.bookmarkFolderResponse
-import io.getstream.feeds.android.client.internal.test.TestData.bookmarkResponse
-import io.getstream.feeds.android.network.models.BookmarkDeletedEvent
-import io.getstream.feeds.android.network.models.BookmarkFolderDeletedEvent
-import io.getstream.feeds.android.network.models.BookmarkFolderUpdatedEvent
-import io.getstream.feeds.android.network.models.BookmarkUpdatedEvent
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
+import io.getstream.feeds.android.client.internal.test.TestData.bookmarkFolderData
+import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.mockk.called
 import io.mockk.mockk
 import io.mockk.verify
-import java.util.Date
 import org.junit.Test
 
 internal class BookmarkListEventHandlerTest {
@@ -37,70 +32,48 @@ internal class BookmarkListEventHandlerTest {
 
     @Test
     fun `on BookmarkFolderDeletedEvent, then call onBookmarkFolderRemoved`() {
-        val bookmarkFolder = bookmarkFolderResponse()
-        val event =
-            BookmarkFolderDeletedEvent(
-                createdAt = Date(),
-                bookmarkFolder = bookmarkFolder,
-                type = "feeds.bookmark_folder.deleted",
-            )
+        val folderId = "folder-1"
+        val event = StateUpdateEvent.BookmarkFolderDeleted(folderId)
 
         handler.onEvent(event)
 
-        verify { state.onBookmarkFolderRemoved(bookmarkFolder.id) }
+        verify { state.onBookmarkFolderRemoved(folderId) }
     }
 
     @Test
     fun `on BookmarkFolderUpdatedEvent, then call onBookmarkFolderUpdated`() {
-        val bookmarkFolder = bookmarkFolderResponse()
-        val event =
-            BookmarkFolderUpdatedEvent(
-                createdAt = Date(),
-                bookmarkFolder = bookmarkFolder,
-                type = "feeds.bookmark_folder.updated",
-            )
+        val folder = bookmarkFolderData()
+        val event = StateUpdateEvent.BookmarkFolderUpdated(folder)
 
         handler.onEvent(event)
 
-        verify { state.onBookmarkFolderUpdated(bookmarkFolder.toModel()) }
+        verify { state.onBookmarkFolderUpdated(folder) }
     }
 
     @Test
     fun `on BookmarkUpdatedEvent, then call onBookmarkUpdated`() {
-        val bookmark = bookmarkResponse()
-        val event =
-            BookmarkUpdatedEvent(
-                createdAt = Date(),
-                bookmark = bookmark,
-                type = "feeds.bookmark.updated",
-            )
+        val bookmark = bookmarkData()
+        val event = StateUpdateEvent.BookmarkUpdated(bookmark)
 
         handler.onEvent(event)
 
-        verify { state.onBookmarkUpdated(bookmark.toModel()) }
+        verify { state.onBookmarkUpdated(bookmark) }
     }
 
     @Test
     fun `on BookmarkDeletedEvent, then call onBookmarkRemoved`() {
-        val bookmark = bookmarkResponse()
-        val event =
-            BookmarkDeletedEvent(
-                createdAt = Date(),
-                bookmark = bookmark,
-                type = "feeds.bookmark.updated",
-            )
+        val bookmark = bookmarkData()
+        val event = StateUpdateEvent.BookmarkDeleted(bookmark)
 
         handler.onEvent(event)
 
-        verify { state.onBookmarkRemoved(bookmark.toModel()) }
+        verify { state.onBookmarkRemoved(bookmark) }
     }
 
     @Test
     fun `on unknown event, then do nothing`() {
-        val unknownEvent =
-            object : WSEvent {
-                override fun getWSEventType(): String = "unknown.event"
-            }
+        val comment = commentData()
+        val unknownEvent = StateUpdateEvent.CommentAdded(comment)
 
         handler.onEvent(unknownEvent)
 
