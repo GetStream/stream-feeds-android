@@ -24,6 +24,7 @@ import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.PollData
+import io.getstream.feeds.android.client.api.model.PollOptionData
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.network.models.ActivityDeletedEvent
@@ -112,6 +113,15 @@ internal sealed interface StateUpdateEvent {
     data class PollDeleted(val fid: String, val pollId: String) : StateUpdateEvent
 
     data class PollUpdated(val fid: String, val poll: PollData) : StateUpdateEvent
+
+    data class PollOptionDeleted(val fid: String, val pollId: String, val optionId: String) :
+        StateUpdateEvent
+
+    data class PollOptionAdded(val fid: String, val pollId: String, val option: PollOptionData) :
+        StateUpdateEvent
+
+    data class PollOptionUpdated(val fid: String, val pollId: String, val option: PollOptionData) :
+        StateUpdateEvent
 
     data class PollVoteCasted(val fid: String, val pollId: String, val vote: PollVoteData) :
         StateUpdateEvent

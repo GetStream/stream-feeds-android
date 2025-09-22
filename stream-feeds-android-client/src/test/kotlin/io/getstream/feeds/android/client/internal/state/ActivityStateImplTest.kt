@@ -315,7 +315,7 @@ internal class ActivityStateImplTest {
         setupInitialPoll(initialPoll)
 
         val newOption = pollOptionData("option-3", "New Option")
-        activityState.onOptionCreated(newOption)
+        activityState.onOptionCreated("poll-1", newOption)
 
         val updatedPoll = activityState.poll.value
         assertEquals(3, updatedPoll?.options?.size)
@@ -327,7 +327,7 @@ internal class ActivityStateImplTest {
         val initialPoll = pollData("poll-1", "Test Poll")
         setupInitialPoll(initialPoll)
 
-        activityState.onOptionDeleted("option-1")
+        activityState.onOptionDeleted("poll-1", "option-1")
 
         val updatedPoll = activityState.poll.value
         assertEquals(1, updatedPoll?.options?.size)
@@ -340,7 +340,7 @@ internal class ActivityStateImplTest {
         setupInitialPoll(initialPoll)
 
         val updatedOption = pollOptionData("option-1", "Updated Option Text")
-        activityState.onOptionUpdated(updatedOption)
+        activityState.onOptionUpdated("poll-1", updatedOption)
 
         val updatedPoll = activityState.poll.value
         assertEquals(updatedOption, updatedPoll?.options?.first())

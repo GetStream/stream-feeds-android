@@ -95,48 +95,44 @@ internal class ActivityStateImpl(
     }
 
     override fun onPollClosed(poll: PollData) {
-        if (_poll.value?.id != poll.id) return
-        updatePoll(PollData::setClosed)
+        updatePoll(poll.id, PollData::setClosed)
     }
 
     override fun onPollDeleted(pollId: String) {
-        if (_poll.value?.id != pollId) return
-        updatePoll { null }
+        updatePoll(pollId) { null }
     }
 
     override fun onPollUpdated(poll: PollData) {
-        if (_poll.value?.id != poll.id) return
-        updatePoll { update(poll) }
+        updatePoll(poll.id) { update(poll) }
     }
 
-    override fun onOptionCreated(option: PollOptionData) {
-        updatePoll { addOption(option) }
+    override fun onOptionCreated(pollId: String, option: PollOptionData) {
+        updatePoll(pollId) { addOption(option) }
     }
 
-    override fun onOptionDeleted(optionId: String) {
-        updatePoll { removeOption(optionId) }
+    override fun onOptionDeleted(pollId: String, optionId: String) {
+        updatePoll(pollId) { removeOption(optionId) }
     }
 
-    override fun onOptionUpdated(option: PollOptionData) {
-        updatePoll { updateOption(option) }
+    override fun onOptionUpdated(pollId: String, option: PollOptionData) {
+        updatePoll(pollId) { updateOption(option) }
     }
 
     override fun onPollVoteCasted(vote: PollVoteData, pollId: String) {
-        if (_poll.value?.id != pollId) return
-        updatePoll { castVote(vote, currentUserId) }
+        updatePoll(pollId) { castVote(vote, currentUserId) }
     }
 
     override fun onPollVoteChanged(vote: PollVoteData, pollId: String) {
-        if (_poll.value?.id != pollId) return
-        updatePoll { castVote(vote, currentUserId) }
+        updatePoll(pollId) { castVote(vote, currentUserId) }
     }
 
     override fun onPollVoteRemoved(vote: PollVoteData, pollId: String) {
-        if (_poll.value?.id != pollId) return
-        updatePoll { removeVote(vote, currentUserId) }
+        updatePoll(pollId) { removeVote(vote, currentUserId) }
     }
 
-    private fun updatePoll(update: PollData.() -> PollData?) {
+    private fun updatePoll(pollId: String, update: PollData.() -> PollData?) {
+        if (_poll.value?.id != pollId) return
+
         var updated: PollData? = null
         _poll.update { current -> current?.let(update).also { updated = it } }
         _activity.update { current -> current?.copy(poll = updated) }
@@ -219,23 +215,26 @@ internal interface ActivityStateUpdates {
     /**
      * Called when a new poll option is created.
      *
+     * @param pollId The ID of the poll associated with the new option.
      * @param option The newly created poll option data.
      */
-    fun onOptionCreated(option: PollOptionData)
+    fun onOptionCreated(pollId: String, option: PollOptionData)
 
     /**
      * Called when a poll option is deleted.
      *
+     * @param pollId The ID of the poll associated with the deleted option.
      * @param optionId The poll option ID that was deleted.
      */
-    fun onOptionDeleted(optionId: String)
+    fun onOptionDeleted(pollId: String, optionId: String)
 
     /**
      * Called when a poll option is updated.
      *
+     * @param pollId The ID of the poll associated with the updated option.
      * @param option The updated poll option data.
      */
-    fun onOptionUpdated(option: PollOptionData)
+    fun onOptionUpdated(pollId: String, option: PollOptionData)
 
     /**
      * Called when a vote is casted on the poll.

@@ -64,7 +64,7 @@ internal class ActivityImplTest {
     private val activity =
         ActivityImpl(
             activityId = "activityId",
-            fid = FeedId("feedId"),
+            fid = FeedId("group:feed"),
             currentUserId = "currentUserId",
             activitiesRepository = activitiesRepository,
             commentsRepository = commentsRepository,
@@ -116,6 +116,9 @@ internal class ActivityImplTest {
 
         assertEquals(activityData, result.getOrNull())
         assertEquals(activityData, activity.state.activity.value)
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.ActivityUpdated("group:feed", activityData))
+        }
     }
 
     @Test
@@ -167,8 +170,13 @@ internal class ActivityImplTest {
         val result = activity.deleteComment(commentId, hardDelete)
 
         assertEquals(Unit, result.getOrNull())
-        verify { stateEventListener.onEvent(StateUpdateEvent.CommentDeleted(deleteData.first)) }
         assertEquals(expectedActivity, activity.state.activity.value)
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.CommentDeleted(deleteData.first))
+            stateEventListener.onEvent(
+                StateUpdateEvent.ActivityUpdated("group:feed", expectedActivity)
+            )
+        }
     }
 
     @Test
@@ -226,25 +234,31 @@ internal class ActivityImplTest {
     @Test
     fun `on pin, delegate to repository and update state`() = runTest {
         val activityData = activityData("activityId")
-        coEvery { activitiesRepository.pin("activityId", FeedId("feedId")) } returns
+        coEvery { activitiesRepository.pin("activityId", FeedId("group:feed")) } returns
             Result.success(activityData)
 
         val result = activity.pin()
 
         assertEquals(Unit, result.getOrNull())
         assertEquals(activityData, activity.state.activity.value)
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.ActivityUpdated("group:feed", activityData))
+        }
     }
 
     @Test
     fun `on unpin, delegate to repository and update state`() = runTest {
         val activityData = activityData("activityId")
-        coEvery { activitiesRepository.unpin("activityId", FeedId("feedId")) } returns
+        coEvery { activitiesRepository.unpin("activityId", FeedId("group:feed")) } returns
             Result.success(activityData)
 
         val result = activity.unpin()
 
         assertEquals(Unit, result.getOrNull())
         assertEquals(activityData, activity.state.activity.value)
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.ActivityUpdated("group:feed", activityData))
+        }
     }
 
     @Test
@@ -260,6 +274,9 @@ internal class ActivityImplTest {
 
         assertEquals(updatedPoll, result.getOrNull())
         assertEquals(updatedPoll, activity.state.poll.value)
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.PollUpdated("group:feed", updatedPoll))
+        }
     }
 
     @Test
@@ -274,6 +291,9 @@ internal class ActivityImplTest {
 
         assertEquals(closedPoll, result.getOrNull())
         assertEquals(closedPoll, activity.state.poll.value)
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.PollUpdated("group:feed", closedPoll))
+        }
     }
 
     @Test
@@ -289,6 +309,9 @@ internal class ActivityImplTest {
 
             assertEquals(Unit, result.getOrNull())
             assertEquals(null, activity.state.poll.value)
+            verify {
+                stateEventListener.onEvent(StateUpdateEvent.PollDeleted("group:feed", "poll-1"))
+            }
         }
 
     @Test
@@ -312,6 +335,11 @@ internal class ActivityImplTest {
 
             assertEquals(option, result.getOrNull())
             assertEquals(expectedOptions, activity.state.poll.value?.options)
+            verify {
+                stateEventListener.onEvent(
+                    StateUpdateEvent.PollOptionAdded("group:feed", "poll-1", option)
+                )
+            }
         }
 
     @Test
@@ -332,6 +360,11 @@ internal class ActivityImplTest {
             assertEquals(1, actualPoll.voteCount)
             assertEquals(1, actualPoll.voteCountsByOption["option-1"])
             assertEquals(listOf(vote), actualPoll.latestVotesByOption["option-1"])
+            verify {
+                stateEventListener.onEvent(
+                    StateUpdateEvent.PollVoteCasted("group:feed", "poll-1", vote)
+                )
+            }
         }
 
     @Test
@@ -349,6 +382,11 @@ internal class ActivityImplTest {
 
             assertEquals(vote, result.getOrNull())
             assertNotNull("Poll should still exist", activity.state.poll.value)
+            verify {
+                stateEventListener.onEvent(
+                    StateUpdateEvent.PollVoteRemoved("group:feed", "poll-1", vote)
+                )
+            }
         }
 
     @Test
@@ -366,6 +404,9 @@ internal class ActivityImplTest {
 
             assertEquals(updatedPoll, result.getOrNull())
             assertEquals(updatedPoll, activity.state.poll.value)
+            verify {
+                stateEventListener.onEvent(StateUpdateEvent.PollUpdated("group:feed", updatedPoll))
+            }
         }
 
     @Test
@@ -382,6 +423,9 @@ internal class ActivityImplTest {
 
             assertEquals(updatedPoll, result.getOrNull())
             assertEquals(updatedPoll, activity.state.poll.value)
+            verify {
+                stateEventListener.onEvent(StateUpdateEvent.PollUpdated("group:feed", updatedPoll))
+            }
         }
 
     @Test
@@ -399,6 +443,11 @@ internal class ActivityImplTest {
 
         assertEquals(Unit, result.getOrNull())
         assertEquals(expectedOptions, activity.state.poll.value?.options)
+        verify {
+            stateEventListener.onEvent(
+                StateUpdateEvent.PollOptionDeleted("group:feed", "poll-1", optionId)
+            )
+        }
     }
 
     @Test
@@ -416,6 +465,11 @@ internal class ActivityImplTest {
             val result = activity.getPollOption(optionId, userId)
 
             assertEquals(option, result.getOrNull())
+            verify {
+                stateEventListener.onEvent(
+                    StateUpdateEvent.PollOptionUpdated("group:feed", "poll-1", option)
+                )
+            }
         }
 
     @Test
@@ -438,6 +492,11 @@ internal class ActivityImplTest {
 
             assertEquals(updatedOption, result.getOrNull())
             assertEquals(expectedOptions, activity.state.poll.value?.options)
+            verify {
+                stateEventListener.onEvent(
+                    StateUpdateEvent.PollOptionUpdated("group:feed", "poll-1", updatedOption)
+                )
+            }
         }
 
     private suspend fun setupActivityWithPoll(poll: PollData = pollData("poll-1")) {

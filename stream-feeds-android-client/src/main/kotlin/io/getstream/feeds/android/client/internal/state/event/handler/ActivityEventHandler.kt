@@ -83,6 +83,21 @@ internal class ActivityEventHandler(
                 state.onPollUpdated(event.poll)
             }
 
+            is StateUpdateEvent.PollOptionAdded -> {
+                if (event.fid != fid.rawValue) return
+                state.onOptionCreated(event.pollId, event.option)
+            }
+
+            is StateUpdateEvent.PollOptionDeleted -> {
+                if (event.fid != fid.rawValue) return
+                state.onOptionDeleted(event.pollId, event.optionId)
+            }
+
+            is StateUpdateEvent.PollOptionUpdated -> {
+                if (event.fid != fid.rawValue) return
+                state.onOptionUpdated(event.pollId, event.option)
+            }
+
             is StateUpdateEvent.PollVoteCasted -> {
                 if (event.fid != fid.rawValue) return
                 state.onPollVoteCasted(event.vote, event.pollId)
