@@ -136,40 +136,6 @@ internal fun PollData.castVote(vote: PollVoteData, currentUserId: String): PollD
 
     val updatedOwnVotes =
         if (vote.userId == currentUserId) {
-            this.ownVotes.upsert(vote, PollVoteData::id)
-        } else {
-            this.ownVotes
-        }
-    val votes = latestVotesByOption[vote.optionId].orEmpty()
-    val updatedOptionVotes = votes.upsert(vote, PollVoteData::id)
-    val voteCount = this.voteCountsByOption[vote.optionId] ?: 0
-    val updatedOptionVoteCounts =
-        if (votes.size != updatedOptionVotes.size) {
-            voteCount + 1
-        } else {
-            voteCount
-        }
-    val updatedLatestVotesByOption =
-        latestVotesByOption.toMutableMap().apply { this[vote.optionId] = updatedOptionVotes }
-    val updatedVoteCountsByOption =
-        voteCountsByOption.toMutableMap().apply { this[vote.optionId] = updatedOptionVoteCounts }
-    return this.copy(
-        ownVotes = updatedOwnVotes,
-        latestVotesByOption = updatedLatestVotesByOption,
-        voteCountsByOption = updatedVoteCountsByOption,
-        voteCount = updatedVoteCountsByOption.values.sum(),
-    )
-}
-
-internal fun PollData.changeVote(vote: PollVoteData, currentUserId: String): PollData {
-    // Answers and option votes are mutually exclusive, so if the vote is an answer, we don't need
-    // to update the option votes
-    if (vote.isAnswer == true) {
-        return upsertAnswer(vote = vote, currentUserId = currentUserId)
-    }
-
-    val updatedOwnVotes =
-        if (vote.userId == currentUserId) {
             ownVotes.upsert(vote, PollVoteData::id)
         } else {
             ownVotes

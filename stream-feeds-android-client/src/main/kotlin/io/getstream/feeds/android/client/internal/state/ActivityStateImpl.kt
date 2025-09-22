@@ -26,7 +26,6 @@ import io.getstream.feeds.android.client.api.model.addBookmark
 import io.getstream.feeds.android.client.api.model.addOption
 import io.getstream.feeds.android.client.api.model.addReaction
 import io.getstream.feeds.android.client.api.model.castVote
-import io.getstream.feeds.android.client.api.model.changeVote
 import io.getstream.feeds.android.client.api.model.deleteBookmark
 import io.getstream.feeds.android.client.api.model.removeOption
 import io.getstream.feeds.android.client.api.model.removeReaction
@@ -123,7 +122,7 @@ internal class ActivityStateImpl(
 
     override fun onPollVoteChanged(vote: PollVoteData, pollId: String) {
         if (_poll.value?.id != pollId) return
-        updatePoll { changeVote(vote, currentUserId) }
+        updatePoll { castVote(vote, currentUserId) }
     }
 
     override fun onPollVoteRemoved(vote: PollVoteData, pollId: String) {

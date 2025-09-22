@@ -36,7 +36,6 @@ import io.getstream.feeds.android.client.api.model.addBookmark
 import io.getstream.feeds.android.client.api.model.addComment
 import io.getstream.feeds.android.client.api.model.addReaction
 import io.getstream.feeds.android.client.api.model.castVote
-import io.getstream.feeds.android.client.api.model.changeVote
 import io.getstream.feeds.android.client.api.model.deleteBookmark
 import io.getstream.feeds.android.client.api.model.removeComment
 import io.getstream.feeds.android.client.api.model.removeReaction
@@ -347,7 +346,7 @@ internal class FeedStateImpl(
     override fun onPollVoteChanged(vote: PollVoteData, pollId: String) {
         _activities.update { current ->
             current.updateIf({ it.poll?.id == pollId }) { activity ->
-                activity.copy(poll = activity.poll?.changeVote(vote, currentUserId))
+                activity.copy(poll = activity.poll?.castVote(vote, currentUserId))
             }
         }
     }
