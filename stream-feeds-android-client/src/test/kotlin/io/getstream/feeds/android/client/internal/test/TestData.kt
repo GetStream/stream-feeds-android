@@ -468,6 +468,7 @@ internal object TestData {
         voteCount: Int = 0,
         latestVotesByOption: Map<String, List<PollVoteData>> = emptyMap(),
         voteCountsByOption: Map<String, Int> = emptyMap(),
+        options: List<PollOptionData> = listOf(pollOptionData()),
     ): PollData =
         PollData(
             allowAnswers = allowAnswers,
@@ -485,7 +486,7 @@ internal object TestData {
             latestVotesByOption = latestVotesByOption,
             maxVotesAllowed = null,
             name = name,
-            options = listOf(pollOptionData(), pollOptionData("option-2", "Test Option 2")),
+            options = options,
             ownVotes = ownVotes,
             updatedAt = Date(1000),
             voteCount = voteCount,

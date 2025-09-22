@@ -22,7 +22,6 @@ import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
-import io.getstream.feeds.android.client.internal.test.TestData.pollOptionData
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
 import io.getstream.feeds.android.client.internal.test.TestData.reactionGroupData
 import io.mockk.mockk
@@ -307,43 +306,6 @@ internal class ActivityStateImplTest {
         activityState.onPollUpdated(differentPoll)
 
         assertEquals(initialPoll, activityState.poll.value)
-    }
-
-    @Test
-    fun `on onOptionCreated, then add option to poll`() = runTest {
-        val initialPoll = pollData("poll-1", "Test Poll")
-        setupInitialPoll(initialPoll)
-
-        val newOption = pollOptionData("option-3", "New Option")
-        activityState.onOptionCreated(newOption)
-
-        val updatedPoll = activityState.poll.value
-        assertEquals(3, updatedPoll?.options?.size)
-        assertEquals(newOption, updatedPoll?.options?.last())
-    }
-
-    @Test
-    fun `on onOptionDeleted, then remove option from poll`() = runTest {
-        val initialPoll = pollData("poll-1", "Test Poll")
-        setupInitialPoll(initialPoll)
-
-        activityState.onOptionDeleted("option-1")
-
-        val updatedPoll = activityState.poll.value
-        assertEquals(1, updatedPoll?.options?.size)
-        assertEquals("option-2", updatedPoll?.options?.first()?.id)
-    }
-
-    @Test
-    fun `on onOptionUpdated, then update option in poll`() = runTest {
-        val initialPoll = pollData("poll-1", "Test Poll")
-        setupInitialPoll(initialPoll)
-
-        val updatedOption = pollOptionData("option-1", "Updated Option Text")
-        activityState.onOptionUpdated(updatedOption)
-
-        val updatedPoll = activityState.poll.value
-        assertEquals(updatedOption, updatedPoll?.options?.first())
     }
 
     @Test
