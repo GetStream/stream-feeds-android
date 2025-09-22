@@ -73,7 +73,7 @@ internal class BookmarkListEventHandlerTest {
     @Test
     fun `on unknown event, then do nothing`() {
         val comment = commentData()
-        val unknownEvent = StateUpdateEvent.CommentAdded(comment)
+        val unknownEvent = StateUpdateEvent.CommentAdded("feed-1", comment)
 
         handler.onEvent(unknownEvent)
 

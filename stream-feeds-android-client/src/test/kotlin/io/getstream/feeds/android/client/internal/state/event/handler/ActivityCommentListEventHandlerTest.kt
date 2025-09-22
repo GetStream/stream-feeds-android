@@ -34,7 +34,7 @@ internal class ActivityCommentListEventHandlerTest {
     @Test
     fun `on CommentAdded for matching object, then call onCommentAdded`() {
         val comment = commentData(objectId = objectId, objectType = objectType)
-        val event = StateUpdateEvent.CommentAdded(comment)
+        val event = StateUpdateEvent.CommentAdded("feed-1", comment)
 
         handler.onEvent(event)
 
@@ -44,7 +44,7 @@ internal class ActivityCommentListEventHandlerTest {
     @Test
     fun `on CommentAdded for different object, then do not call onCommentAdded`() {
         val comment = commentData(objectId = "different-activity", objectType = objectType)
-        val event = StateUpdateEvent.CommentAdded(comment)
+        val event = StateUpdateEvent.CommentAdded("feed-1", comment)
 
         handler.onEvent(event)
 
@@ -54,7 +54,7 @@ internal class ActivityCommentListEventHandlerTest {
     @Test
     fun `on CommentDeleted for matching object, then call onCommentRemoved`() {
         val comment = commentData(objectId = objectId, objectType = objectType)
-        val event = StateUpdateEvent.CommentDeleted(comment)
+        val event = StateUpdateEvent.CommentDeleted("feed-1", comment)
 
         handler.onEvent(event)
 

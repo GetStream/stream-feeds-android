@@ -39,7 +39,6 @@ import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.FeedEventHandler
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.utils.flatMap
 import io.getstream.feeds.android.network.models.AcceptFollowRequest
@@ -83,8 +82,6 @@ import io.getstream.feeds.android.network.models.UpdateFeedRequest
  * @property feedsRepository The [FeedsRepository] used to manage feed data and operations.
  * @property pollsRepository The [PollsRepository] used to manage polls in the feed.
  * @property subscriptionManager The manager for state update subscriptions.
- * @param socketSubscriptionManager The [StreamSubscriptionManager] used to manage WebSocket
- *   subscriptions for feed events.
  */
 internal class FeedImpl(
     private val query: FeedQuery,
@@ -95,7 +92,6 @@ internal class FeedImpl(
     private val feedsRepository: FeedsRepository,
     private val pollsRepository: PollsRepository,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
-    socketSubscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
     private val feedWatchHandler: FeedWatchHandler,
 ) : Feed {
 
@@ -116,7 +112,7 @@ internal class FeedImpl(
     private val eventHandler = FeedEventHandler(fid = fid, state = _state)
 
     init {
-        socketSubscriptionManager.subscribe(eventHandler)
+        subscriptionManager.subscribe(eventHandler)
     }
 
     private val group: String

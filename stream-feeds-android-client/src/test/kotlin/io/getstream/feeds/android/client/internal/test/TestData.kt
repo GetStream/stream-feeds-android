@@ -355,8 +355,8 @@ internal object TestData {
         )
 
     fun followData(
-        sourceUserId: String = "user-1",
-        targetUserId: String = "user-2",
+        sourceFid: String = "user:user-1",
+        targetFid: String = "user:user-2",
         createdAt: Date = Date(1000),
         updatedAt: Date = Date(1000),
     ): FollowData =
@@ -370,16 +370,16 @@ internal object TestData {
             sourceFeed =
                 FeedData(
                     createdAt = createdAt,
-                    createdBy = userData(sourceUserId),
+                    createdBy = userData(sourceFid),
                     custom = emptyMap(),
                     deletedAt = null,
                     description = "Test feed",
-                    fid = FeedId("user:$sourceUserId"),
+                    fid = FeedId(sourceFid),
                     filterTags = emptyList(),
                     followerCount = 0,
                     followingCount = 0,
                     groupId = "user",
-                    id = sourceUserId,
+                    id = sourceFid,
                     memberCount = 0,
                     ownCapabilities = emptyList(),
                     ownMembership = null,
@@ -392,16 +392,16 @@ internal object TestData {
             targetFeed =
                 FeedData(
                     createdAt = createdAt,
-                    createdBy = userData(targetUserId),
+                    createdBy = userData(targetFid),
                     custom = emptyMap(),
                     deletedAt = null,
                     description = "Target feed",
-                    fid = FeedId("user:$targetUserId"),
+                    fid = FeedId(targetFid),
                     filterTags = emptyList(),
                     followerCount = 0,
                     followingCount = 0,
                     groupId = "user",
-                    id = targetUserId,
+                    id = targetFid,
                     memberCount = 0,
                     ownCapabilities = emptyList(),
                     ownMembership = null,
