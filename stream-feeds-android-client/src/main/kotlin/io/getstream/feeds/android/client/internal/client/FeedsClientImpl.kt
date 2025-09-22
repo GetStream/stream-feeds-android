@@ -196,7 +196,6 @@ internal class FeedsClientImpl(
             commentsRepository = commentsRepository,
             feedsRepository = feedsRepository,
             pollsRepository = pollsRepository,
-            socketSubscriptionManager = feedsEventsSubscriptionManager,
             subscriptionManager = stateEventsSubscriptionManager,
             feedWatchHandler = feedWatchHandler,
         )

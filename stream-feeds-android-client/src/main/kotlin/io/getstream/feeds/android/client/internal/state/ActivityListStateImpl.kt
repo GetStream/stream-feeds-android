@@ -82,8 +82,8 @@ internal class ActivityListStateImpl(
         }
     }
 
-    override fun onActivityRemoved(activity: ActivityData) {
-        _activities.update { current -> current.filter { it.id != activity.id } }
+    override fun onActivityRemoved(activityId: String) {
+        _activities.update { current -> current.filter { it.id != activityId } }
     }
 
     override fun onActivityUpdated(activity: ActivityData) {
@@ -194,9 +194,9 @@ internal interface ActivityListStateUpdates {
     /**
      * Called when an activity is removed from the list.
      *
-     * @param activity The activity that was removed.
+     * @param activityId The ID of the activity that was removed.
      */
-    fun onActivityRemoved(activity: ActivityData)
+    fun onActivityRemoved(activityId: String)
 
     /**
      * Called when an activity is updated in the list.

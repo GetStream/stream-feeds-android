@@ -56,8 +56,8 @@ internal class FollowListStateImplTest {
 
         val updatedFollow =
             followData(
-                sourceUserId = "user-1",
-                targetUserId = "user-2",
+                sourceFid = "user:user-1",
+                targetFid = "user:user-2",
                 createdAt = java.util.Date(1000),
             )
         followListState.onFollowUpdated(updatedFollow)

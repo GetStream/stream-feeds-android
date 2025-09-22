@@ -33,7 +33,7 @@ internal class CommentReplyListEventHandlerTest {
     @Test
     fun `on CommentAdded, then call onCommentAdded`() {
         val comment = commentData()
-        val event = StateUpdateEvent.CommentAdded(comment)
+        val event = StateUpdateEvent.CommentAdded("feed-1", comment)
 
         handler.onEvent(event)
 
@@ -43,7 +43,7 @@ internal class CommentReplyListEventHandlerTest {
     @Test
     fun `on CommentDeleted, then call onCommentRemoved`() {
         val comment = commentData()
-        val event = StateUpdateEvent.CommentDeleted(comment)
+        val event = StateUpdateEvent.CommentDeleted("feed-1", comment)
 
         handler.onEvent(event)
 

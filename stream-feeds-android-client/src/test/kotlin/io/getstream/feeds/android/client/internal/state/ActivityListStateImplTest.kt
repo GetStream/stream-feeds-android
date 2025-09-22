@@ -71,7 +71,7 @@ internal class ActivityListStateImplTest {
         val paginationResult = defaultPaginationResult(initialActivities)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
-        activityListState.onActivityRemoved(initialActivities[0])
+        activityListState.onActivityRemoved(initialActivities[0].id)
 
         val remainingActivities = activityListState.activities.value
         assertEquals(listOf(initialActivities[1]), remainingActivities)

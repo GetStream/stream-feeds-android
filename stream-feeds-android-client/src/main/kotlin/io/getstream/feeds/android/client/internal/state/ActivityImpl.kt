@@ -115,7 +115,9 @@ internal class ActivityImpl(
     ): Result<CommentData> {
         return commentsRepository
             .addComment(request = request, attachmentUploadProgress = attachmentUploadProgress)
-            .onSuccess { subscriptionManager.onEvent(StateUpdateEvent.CommentAdded(it)) }
+            .onSuccess {
+                subscriptionManager.onEvent(StateUpdateEvent.CommentAdded(fid.rawValue, it))
+            }
     }
 
     override suspend fun addCommentsBatch(
@@ -124,7 +126,9 @@ internal class ActivityImpl(
     ): Result<List<CommentData>> {
         return commentsRepository.addCommentsBatch(requests, attachmentUploadProgress).onSuccess {
             comments ->
-            comments.forEach { subscriptionManager.onEvent(StateUpdateEvent.CommentAdded(it)) }
+            comments.forEach {
+                subscriptionManager.onEvent(StateUpdateEvent.CommentAdded(fid.rawValue, it))
+            }
         }
     }
 
@@ -132,7 +136,7 @@ internal class ActivityImpl(
         return commentsRepository
             .deleteComment(commentId, hardDelete)
             .onSuccess { (comment, activity) ->
-                subscriptionManager.onEvent(StateUpdateEvent.CommentDeleted(comment))
+                subscriptionManager.onEvent(StateUpdateEvent.CommentDeleted(fid.rawValue, comment))
                 subscriptionManager.onEvent(
                     StateUpdateEvent.ActivityUpdated(fid.rawValue, activity)
                 )
