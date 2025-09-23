@@ -34,6 +34,8 @@ import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
@@ -43,6 +45,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionDat
 import io.getstream.feeds.android.client.internal.test.TestData.followData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import io.getstream.feeds.android.client.internal.test.TestData.reactionGroupData
+import io.getstream.feeds.android.client.internal.test.TestSubscriptionManager
 import io.getstream.feeds.android.network.models.AddBookmarkRequest
 import io.getstream.feeds.android.network.models.AddCommentReactionRequest
 import io.getstream.feeds.android.network.models.AddReactionRequest
@@ -74,6 +77,7 @@ internal class FeedImplTest {
     private val feedsRepository: FeedsRepository = mockk(relaxed = true)
     private val pollsRepository: PollsRepository = mockk(relaxed = true)
     private val feedWatchHandler: FeedWatchHandler = mockk(relaxed = true)
+    private val stateEventListener: StateUpdateEventListener = mockk(relaxed = true)
 
     @Test
     fun `on getOrCreate with watch enabled, then call feedWatchHandler`() = runTest {
@@ -117,7 +121,7 @@ internal class FeedImplTest {
     }
 
     @Test
-    fun `on addActivity, delegate to repository and notify state on success`() = runTest {
+    fun `on addActivity, delegate to repository and fire event on success`() = runTest {
         val feed = createFeed()
         val request = FeedAddActivityRequest(type = "post", text = "Nice post")
         val attachmentUploadProgress: (FeedUploadPayload, Double) -> Unit = { _, _ -> }
@@ -127,7 +131,10 @@ internal class FeedImplTest {
 
         feed.addActivity(request, attachmentUploadProgress)
 
-        coVerify { activitiesRepository.addActivity(request, attachmentUploadProgress) }
+        coVerify {
+            activitiesRepository.addActivity(request, attachmentUploadProgress)
+            stateEventListener.onEvent(StateUpdateEvent.ActivityAdded("group:id", activityData))
+        }
         assertEquals(listOf(activityData), feed.state.activities.value)
     }
 
@@ -145,10 +152,10 @@ internal class FeedImplTest {
     }
 
     @Test
-    fun `on updateFeed, delegate to repository and update state`() = runTest {
+    fun `on updateFeed, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val request = UpdateFeedRequest(custom = mapOf("key" to "value"))
-        val updatedFeedData = feedData("user-feed", "user", "Updated Feed")
+        val updatedFeedData = feedData("id", "group", "Updated Feed")
         coEvery { feedsRepository.updateFeed("group", "id", request) } returns
             Result.success(updatedFeedData)
 
@@ -156,10 +163,11 @@ internal class FeedImplTest {
 
         assertEquals(updatedFeedData, result.getOrNull())
         assertEquals(updatedFeedData, feed.state.feed.value)
+        verify { stateEventListener.onEvent(StateUpdateEvent.FeedUpdated(updatedFeedData)) }
     }
 
     @Test
-    fun `on deleteFeed, delegate to repository and clear state`() = runTest {
+    fun `on deleteFeed, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val hardDelete = true
         // Set up initial state with some data
@@ -177,10 +185,11 @@ internal class FeedImplTest {
         assertEquals(Unit, result.getOrNull())
         assertNull(feed.state.feed.value)
         assertTrue("Activities should be cleared", feed.state.activities.value.isEmpty())
+        verify { stateEventListener.onEvent(StateUpdateEvent.FeedDeleted("group:id")) }
     }
 
     @Test
-    fun `on updateActivity, delegate to repository and update state`() = runTest {
+    fun `on updateActivity, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val activityId = "activity-1"
         val request = UpdateActivityRequest(text = "Updated activity")
@@ -201,10 +210,15 @@ internal class FeedImplTest {
         val stateActivities = feed.state.activities.value
         assertEquals(1, stateActivities.size)
         assertEquals("Updated activity", stateActivities.first().text)
+        verify {
+            stateEventListener.onEvent(
+                StateUpdateEvent.ActivityUpdated("group:id", updatedActivity)
+            )
+        }
     }
 
     @Test
-    fun `on deleteActivity, delegate to repository and remove from state`() = runTest {
+    fun `on deleteActivity, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val activityId = "activity-1"
         val hardDelete = false
@@ -222,10 +236,13 @@ internal class FeedImplTest {
 
         assertEquals(Unit, result.getOrNull())
         assertTrue("Activity should be removed from state", feed.state.activities.value.isEmpty())
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.ActivityDeleted("group:id", activityId))
+        }
     }
 
     @Test
-    fun `on repost, delegate to repository and add to state`() = runTest {
+    fun `on repost, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val parentActivityId = "parent-activity"
         val text = "Repost text"
@@ -240,10 +257,13 @@ internal class FeedImplTest {
         val stateActivities = feed.state.activities.value
         assertEquals(1, stateActivities.size)
         assertEquals(text, stateActivities.first().text)
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.ActivityAdded("group:id", repostActivity))
+        }
     }
 
     @Test
-    fun `on addBookmark, delegate to repository and update activity state`() = runTest {
+    fun `on addBookmark, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val activityId = "activity-1"
         val request = AddBookmarkRequest(folderId = "folder-1")
@@ -265,10 +285,11 @@ internal class FeedImplTest {
         assertEquals(1, stateActivities.size)
         // The activity should be updated with bookmark info
         assertNotNull("Activity should be updated with bookmark", stateActivities.first())
+        verify { stateEventListener.onEvent(StateUpdateEvent.BookmarkAdded(bookmark)) }
     }
 
     @Test
-    fun `on deleteBookmark, delegate to repository and update activity state`() = runTest {
+    fun `on deleteBookmark, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val activityId = "activity-1"
         val folderId = "folder-1"
@@ -290,6 +311,7 @@ internal class FeedImplTest {
         assertEquals(1, stateActivities.size)
         // The activity should be updated to remove bookmark
         assertNotNull("Activity should be updated after bookmark removal", stateActivities.first())
+        verify { stateEventListener.onEvent(StateUpdateEvent.BookmarkDeleted(bookmark)) }
     }
 
     @Test
@@ -316,22 +338,23 @@ internal class FeedImplTest {
     }
 
     @Test
-    fun `on unfollow, delegate to repository and update following state`() = runTest {
+    fun `on unfollow, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val targetFid = FeedId("user:target")
-        val follow = followData("id", "target")
+        val follow = followData("group:id", "user:target")
 
         // Set up initial state with follow
         val feedInfo = getOrCreateInfo(feedData()).copy(following = listOf(follow))
         coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
         feed.getOrCreate()
 
-        coEvery { feedsRepository.unfollow(any(), any()) } returns Result.success(Unit)
+        coEvery { feedsRepository.unfollow(any(), any()) } returns Result.success(follow)
 
         val result = feed.unfollow(targetFid)
 
         assertEquals(Unit, result.getOrNull())
         assertTrue("Following should be removed from state", feed.state.following.value.isEmpty())
+        verify { stateEventListener.onEvent(StateUpdateEvent.FollowDeleted(follow)) }
     }
 
     @Test
@@ -376,7 +399,7 @@ internal class FeedImplTest {
     }
 
     @Test
-    fun `on queryMoreActivities, delegate to repository and update state`() = runTest {
+    fun `on queryMoreActivities, delegate to repository`() = runTest {
         val feed = createFeed()
         val limit = 10
         val newActivity = activityData("activity-2")
@@ -469,14 +492,15 @@ internal class FeedImplTest {
     }
 
     @Test
-    fun `on deleteComment, delegate to repository and update activity state`() = runTest {
+    fun `on deleteComment, delegate to repository and fire events`() = runTest {
         val feed = createFeed()
         val commentId = "comment-1"
         val hardDelete = true
         val activityId = "activity-1"
         val originalActivity = activityData(activityId, "Original activity")
         val updatedActivity = activityData(activityId, "Updated activity after comment deletion")
-        val deleteData = commentData() to updatedActivity
+        val comment = commentData(commentId)
+        val deleteData = comment to updatedActivity
 
         // Set up initial state with the original activity
         val feedInfo = getOrCreateInfo(feedData(), listOf(originalActivity))
@@ -490,6 +514,12 @@ internal class FeedImplTest {
 
         assertEquals(Unit, result.getOrNull())
         assertEquals(listOf(updatedActivity), feed.state.activities.value)
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.CommentDeleted("group:id", comment))
+            stateEventListener.onEvent(
+                StateUpdateEvent.ActivityUpdated("group:id", updatedActivity)
+            )
+        }
     }
 
     @Test
@@ -585,7 +615,7 @@ internal class FeedImplTest {
     }
 
     @Test
-    fun `on addReaction, delegate to repository and update state`() = runTest {
+    fun `on addReaction, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val activityId = "activity-1"
         val request = AddReactionRequest(type = "like")
@@ -606,10 +636,13 @@ internal class FeedImplTest {
         val updatedActivity = feed.state.activities.value.first()
         assertEquals(listOf(reaction), updatedActivity.ownReactions)
         assertEquals(1, updatedActivity.reactionCount)
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.ActivityReactionAdded("group:id", reaction))
+        }
     }
 
     @Test
-    fun `on deleteReaction, delegate to repository and update state`() = runTest {
+    fun `on deleteReaction, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val activityId = "activity-1"
         val type = "like"
@@ -635,6 +668,11 @@ internal class FeedImplTest {
         val updatedActivity = feed.state.activities.value.first()
         assertTrue("There should be no reaction", updatedActivity.ownReactions.isEmpty())
         assertEquals(0, updatedActivity.reactionCount)
+        verify {
+            stateEventListener.onEvent(
+                StateUpdateEvent.ActivityReactionDeleted("group:id", reaction)
+            )
+        }
     }
 
     @Test
@@ -703,7 +741,7 @@ internal class FeedImplTest {
             commentsRepository = commentsRepository,
             feedsRepository = feedsRepository,
             pollsRepository = pollsRepository,
-            subscriptionManager = mockk(relaxed = true),
+            subscriptionManager = TestSubscriptionManager(stateEventListener),
             feedWatchHandler = feedWatchHandler,
         )
 

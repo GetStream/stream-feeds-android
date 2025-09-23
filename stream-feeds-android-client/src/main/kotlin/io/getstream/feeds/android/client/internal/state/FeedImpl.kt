@@ -38,8 +38,10 @@ import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.handler.FeedEventHandler
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
+import io.getstream.feeds.android.client.internal.subscribe.onEvent
 import io.getstream.feeds.android.client.internal.utils.flatMap
 import io.getstream.feeds.android.network.models.AcceptFollowRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
@@ -145,13 +147,13 @@ internal class FeedImpl(
     override suspend fun updateFeed(request: UpdateFeedRequest): Result<FeedData> {
         return feedsRepository
             .updateFeed(feedGroupId = group, feedId = id, request = request)
-            .onSuccess { _state.onFeedUpdated(it) }
+            .onSuccess { subscriptionManager.onEvent(StateUpdateEvent.FeedUpdated(it)) }
     }
 
     override suspend fun deleteFeed(hardDelete: Boolean): Result<Unit> {
         return feedsRepository
             .deleteFeed(feedGroupId = group, feedId = id, hardDelete = hardDelete)
-            .onSuccess { _state.onFeedDeleted() }
+            .onSuccess { subscriptionManager.onEvent(StateUpdateEvent.FeedDeleted(fid.rawValue)) }
     }
 
     override suspend fun addActivity(
@@ -159,7 +161,7 @@ internal class FeedImpl(
         attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?,
     ): Result<ActivityData> {
         return activitiesRepository.addActivity(request, attachmentUploadProgress).onSuccess {
-            _state.onActivityAdded(it)
+            subscriptionManager.onEvent(StateUpdateEvent.ActivityAdded(fid.rawValue, it))
         }
     }
 
@@ -168,13 +170,13 @@ internal class FeedImpl(
         request: UpdateActivityRequest,
     ): Result<ActivityData> {
         return activitiesRepository.updateActivity(id, request).onSuccess {
-            _state.onActivityUpdated(it)
+            subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(fid.rawValue, it))
         }
     }
 
     override suspend fun deleteActivity(id: String, hardDelete: Boolean): Result<Unit> {
         return activitiesRepository.deleteActivity(id, hardDelete).onSuccess {
-            _state.onActivityRemoved(id)
+            subscriptionManager.onEvent(StateUpdateEvent.ActivityDeleted(fid.rawValue, id))
         }
     }
 
@@ -195,7 +197,7 @@ internal class FeedImpl(
                 parentId = activityId,
             )
         return activitiesRepository.addActivity(FeedAddActivityRequest(request)).onSuccess {
-            _state.onActivityAdded(it)
+            subscriptionManager.onEvent(StateUpdateEvent.ActivityAdded(fid.rawValue, it))
         }
     }
 
@@ -233,7 +235,7 @@ internal class FeedImpl(
         request: AddBookmarkRequest,
     ): Result<BookmarkData> {
         return bookmarksRepository.addBookmark(activityId, request).onSuccess {
-            _state.onBookmarkAdded(it)
+            subscriptionManager.onEvent(StateUpdateEvent.BookmarkAdded(it))
         }
     }
 
@@ -250,7 +252,7 @@ internal class FeedImpl(
     ): Result<BookmarkData> {
         return bookmarksRepository
             .deleteBookmark(activityId = activityId, folderId = folderId)
-            .onSuccess { _state.onBookmarkRemoved(it) }
+            .onSuccess { subscriptionManager.onEvent(StateUpdateEvent.BookmarkDeleted(it)) }
     }
 
     override suspend fun getComment(commentId: String): Result<CommentData> {
@@ -271,10 +273,17 @@ internal class FeedImpl(
         return commentsRepository.updateComment(commentId, request)
     }
 
+    // TODO [G.] review all repo calls in this class to ensure events are sent where needed. e.g. we
+    //  had no CommentDeleted equivalent below
     override suspend fun deleteComment(commentId: String, hardDelete: Boolean?): Result<Unit> {
         return commentsRepository
             .deleteComment(commentId, hardDelete)
-            .onSuccess { _state.onActivityUpdated(it.second) }
+            .onSuccess { (comment, activity) ->
+                subscriptionManager.onEvent(StateUpdateEvent.CommentDeleted(fid.rawValue, comment))
+                subscriptionManager.onEvent(
+                    StateUpdateEvent.ActivityUpdated(fid.rawValue, activity)
+                )
+            }
             .map {}
     }
 
@@ -296,13 +305,16 @@ internal class FeedImpl(
                 source = fid.rawValue,
                 target = targetFid.rawValue,
             )
-        return feedsRepository.follow(request).onSuccess { _state.onFollowAdded(it) }
+        return feedsRepository.follow(request).onSuccess {
+            subscriptionManager.onEvent(StateUpdateEvent.FollowAdded(it))
+        }
     }
 
     override suspend fun unfollow(targetFid: FeedId): Result<Unit> {
-        return feedsRepository.unfollow(source = fid, target = targetFid).onSuccess {
-            _state.onUnfollow(sourceFid = fid, targetFid = targetFid)
-        }
+        return feedsRepository
+            .unfollow(source = fid, target = targetFid)
+            .onSuccess { subscriptionManager.onEvent(StateUpdateEvent.FollowDeleted(it)) }
+            .map {}
     }
 
     override suspend fun acceptFollow(sourceFid: FeedId, role: String?): Result<FollowData> {
@@ -313,16 +325,14 @@ internal class FeedImpl(
                 target = fid.rawValue,
             )
         return feedsRepository.acceptFollow(request).onSuccess { follow ->
-            _state.onFollowRequestRemoved(follow.id)
-            _state.onFollowAdded(follow)
+            subscriptionManager.onEvent(StateUpdateEvent.FollowAdded(follow))
         }
     }
 
     override suspend fun rejectFollow(sourceFid: FeedId): Result<FollowData> {
         val request = RejectFollowRequest(source = sourceFid.rawValue, target = fid.rawValue)
         return feedsRepository.rejectFollow(request).onSuccess { follow ->
-            _state.onFollowRequestRemoved(follow.id)
-            _state.onFollowRemoved(follow)
+            subscriptionManager.onEvent(StateUpdateEvent.FollowDeleted(follow))
         }
     }
 
@@ -354,18 +364,18 @@ internal class FeedImpl(
         activityId: String,
         request: AddReactionRequest,
     ): Result<FeedsReactionData> {
-        return activitiesRepository
-            .addReaction(activityId, request)
-            .onSuccess(_state::onReactionAdded)
+        return activitiesRepository.addReaction(activityId, request).onSuccess {
+            subscriptionManager.onEvent(StateUpdateEvent.ActivityReactionAdded(fid.rawValue, it))
+        }
     }
 
     override suspend fun deleteReaction(
         activityId: String,
         type: String,
     ): Result<FeedsReactionData> {
-        return activitiesRepository
-            .deleteReaction(activityId = activityId, type = type)
-            .onSuccess(_state::onReactionRemoved)
+        return activitiesRepository.deleteReaction(activityId = activityId, type = type).onSuccess {
+            subscriptionManager.onEvent(StateUpdateEvent.ActivityReactionDeleted(fid.rawValue, it))
+        }
     }
 
     override suspend fun addCommentReaction(
