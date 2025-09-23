@@ -243,7 +243,9 @@ internal class FeedImpl(
         activityId: String,
         request: UpdateBookmarkRequest,
     ): Result<BookmarkData> {
-        return bookmarksRepository.updateBookmark(activityId, request)
+        return bookmarksRepository.updateBookmark(activityId, request).onSuccess {
+            subscriptionManager.onEvent(StateUpdateEvent.BookmarkUpdated(it))
+        }
     }
 
     override suspend fun deleteBookmark(
@@ -256,25 +258,29 @@ internal class FeedImpl(
     }
 
     override suspend fun getComment(commentId: String): Result<CommentData> {
-        return commentsRepository.getComment(commentId)
+        return commentsRepository.getComment(commentId).onSuccess {
+            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(it))
+        }
     }
 
     override suspend fun addComment(
         request: ActivityAddCommentRequest,
         attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?,
     ): Result<CommentData> {
-        return commentsRepository.addComment(request, attachmentUploadProgress)
+        return commentsRepository.addComment(request, attachmentUploadProgress).onSuccess {
+            subscriptionManager.onEvent(StateUpdateEvent.CommentAdded(fid.rawValue, it))
+        }
     }
 
     override suspend fun updateComment(
         commentId: String,
         request: UpdateCommentRequest,
     ): Result<CommentData> {
-        return commentsRepository.updateComment(commentId, request)
+        return commentsRepository.updateComment(commentId, request).onSuccess {
+            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(it))
+        }
     }
 
-    // TODO [G.] review all repo calls in this class to ensure events are sent where needed. e.g. we
-    //  had no CommentDeleted equivalent below
     override suspend fun deleteComment(commentId: String, hardDelete: Boolean?): Result<Unit> {
         return commentsRepository
             .deleteComment(commentId, hardDelete)
@@ -353,11 +359,15 @@ internal class FeedImpl(
     }
 
     override suspend fun acceptFeedMember(): Result<FeedMemberData> {
-        return feedsRepository.acceptFeedMember(feedGroupId = group, feedId = id)
+        return feedsRepository.acceptFeedMember(feedGroupId = group, feedId = id).onSuccess {
+            subscriptionManager.onEvent(StateUpdateEvent.FeedMemberAdded(fid.rawValue, it))
+        }
     }
 
     override suspend fun rejectFeedMember(): Result<FeedMemberData> {
-        return feedsRepository.rejectFeedMember(feedGroupId = group, feedId = id)
+        return feedsRepository.rejectFeedMember(feedGroupId = group, feedId = id).onSuccess {
+            subscriptionManager.onEvent(StateUpdateEvent.FeedMemberRemoved(fid.rawValue, it.id))
+        }
     }
 
     override suspend fun addReaction(
@@ -382,16 +392,28 @@ internal class FeedImpl(
         commentId: String,
         request: AddCommentReactionRequest,
     ): Result<FeedsReactionData> {
-        return commentsRepository.addCommentReaction(commentId, request).map { it.first }
+        return commentsRepository
+            .addCommentReaction(commentId, request)
+            .onSuccess { (reaction, comment) ->
+                subscriptionManager.onEvent(
+                    StateUpdateEvent.CommentReactionAdded(comment, reaction)
+                )
+            }
+            .map { it.first }
     }
 
     override suspend fun deleteCommentReaction(
         commentId: String,
         type: String,
     ): Result<FeedsReactionData> {
-        return commentsRepository.deleteCommentReaction(commentId = commentId, type = type).map {
-            it.first
-        }
+        return commentsRepository
+            .deleteCommentReaction(commentId = commentId, type = type)
+            .onSuccess { (reaction, comment) ->
+                subscriptionManager.onEvent(
+                    StateUpdateEvent.CommentReactionDeleted(comment, reaction)
+                )
+            }
+            .map { it.first }
     }
 
     override suspend fun createPoll(
@@ -405,7 +427,9 @@ internal class FeedImpl(
                     pollId = poll.id,
                     type = activityType,
                 )
-            activitiesRepository.addActivity(FeedAddActivityRequest(request))
+            activitiesRepository.addActivity(FeedAddActivityRequest(request)).onSuccess {
+                subscriptionManager.onEvent(StateUpdateEvent.ActivityAdded(fid.rawValue, it))
+            }
         }
     }
 }
