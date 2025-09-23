@@ -366,6 +366,7 @@ internal class FeedStateImpl(
             _following.update { it.upsert(follow, FollowData::id) }
         } else if (follow.isFollowerOf(fid)) {
             _followers.update { it.upsert(follow, FollowData::id) }
+            _followRequests.update { current -> current.filter { it.id != follow.id } }
         }
     }
 

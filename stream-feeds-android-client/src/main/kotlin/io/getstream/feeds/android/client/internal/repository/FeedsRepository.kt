@@ -76,7 +76,7 @@ internal interface FeedsRepository {
 
     suspend fun follow(request: FollowRequest): Result<FollowData>
 
-    suspend fun unfollow(source: FeedId, target: FeedId): Result<Unit>
+    suspend fun unfollow(source: FeedId, target: FeedId): Result<FollowData>
 
     suspend fun acceptFollow(request: AcceptFollowRequest): Result<FollowData>
 

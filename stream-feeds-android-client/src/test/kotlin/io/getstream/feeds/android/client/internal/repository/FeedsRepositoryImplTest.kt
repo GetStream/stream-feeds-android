@@ -48,6 +48,7 @@ import io.getstream.feeds.android.network.models.FollowRequest
 import io.getstream.feeds.android.network.models.QueryFeedMembersRequest
 import io.getstream.feeds.android.network.models.QueryFollowsRequest
 import io.getstream.feeds.android.network.models.RejectFollowRequest
+import io.getstream.feeds.android.network.models.UnfollowResponse
 import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.network.models.UpdateFeedRequest
 import io.mockk.mockk
@@ -190,12 +191,14 @@ internal class FeedsRepositoryImplTest {
     fun `on unfollow, delegate to api`() = runTest {
         val source = FeedId("user:user-1")
         val target = FeedId("user:user-2")
+        val followResponseData = followResponse()
+        val unfollowResponse = UnfollowResponse(duration = "duration", follow = followResponseData)
 
         testDelegation(
             apiFunction = { feedsApi.unfollow("user:user-1", "user:user-2") },
             repositoryCall = { repository.unfollow(source, target) },
-            apiResult = Unit,
-            repositoryResult = Unit,
+            apiResult = unfollowResponse,
+            repositoryResult = unfollowResponse.follow.toModel(),
         )
     }
 

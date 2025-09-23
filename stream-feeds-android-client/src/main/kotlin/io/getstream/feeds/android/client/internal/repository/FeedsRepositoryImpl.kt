@@ -135,8 +135,8 @@ internal class FeedsRepositoryImpl(private val api: FeedsApi) : FeedsRepository 
         api.follow(request).follow.toModel()
     }
 
-    override suspend fun unfollow(source: FeedId, target: FeedId): Result<Unit> = runSafely {
-        api.unfollow(source = source.rawValue, target = target.rawValue)
+    override suspend fun unfollow(source: FeedId, target: FeedId): Result<FollowData> = runSafely {
+        api.unfollow(source = source.rawValue, target = target.rawValue).follow.toModel()
     }
 
     override suspend fun acceptFollow(request: AcceptFollowRequest): Result<FollowData> =

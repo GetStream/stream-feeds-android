@@ -16,6 +16,7 @@
 package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.internal.state.FeedStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
@@ -123,19 +124,19 @@ internal class FeedEventHandler(private val fid: FeedId, private val state: Feed
             }
 
             is StateUpdateEvent.FollowAdded -> {
-                if (event.follow.run { sourceFeed.fid == fid || targetFeed.fid == fid }) {
+                if (event.follow.matchesFeed()) {
                     state.onFollowAdded(event.follow)
                 }
             }
 
             is StateUpdateEvent.FollowDeleted -> {
-                if (event.follow.run { sourceFeed.fid == fid || targetFeed.fid == fid }) {
+                if (event.follow.matchesFeed()) {
                     state.onFollowRemoved(event.follow)
                 }
             }
 
             is StateUpdateEvent.FollowUpdated -> {
-                if (event.follow.run { sourceFeed.fid == fid || targetFeed.fid == fid }) {
+                if (event.follow.matchesFeed()) {
                     state.onFollowUpdated(event.follow)
                 }
             }
@@ -190,4 +191,6 @@ internal class FeedEventHandler(private val fid: FeedId, private val state: Feed
             }
         }
     }
+
+    private fun FollowData.matchesFeed() = sourceFeed.fid == fid || targetFeed.fid == fid
 }
