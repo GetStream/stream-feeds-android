@@ -30,6 +30,7 @@ import io.getstream.feeds.android.client.api.state.query.CommentsQuery
 import io.getstream.feeds.android.client.api.state.query.toRequest
 import io.getstream.feeds.android.client.internal.repository.RepositoryTestUtils.testDelegation
 import io.getstream.feeds.android.client.internal.test.TestData.commentResponse
+import io.getstream.feeds.android.client.internal.test.TestData.deleteCommentResponse
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionResponse
 import io.getstream.feeds.android.client.internal.test.TestData.userResponse
 import io.getstream.feeds.android.network.apis.FeedsApi
@@ -264,10 +265,12 @@ internal class CommentsRepositoryImplTest {
 
     @Test
     fun `on deleteComment, delegate to api`() {
+        val apiResult = deleteCommentResponse()
         testDelegation(
             apiFunction = { feedsApi.deleteComment("commentId", true) },
             repositoryCall = { repository.deleteComment("commentId", true) },
-            apiResult = Unit,
+            apiResult = apiResult,
+            repositoryResult = apiResult.comment.toModel() to apiResult.activity.toModel(),
         )
     }
 

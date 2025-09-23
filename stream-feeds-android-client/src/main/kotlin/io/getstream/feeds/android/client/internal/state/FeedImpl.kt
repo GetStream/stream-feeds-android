@@ -273,7 +273,10 @@ internal class FeedImpl(
     }
 
     override suspend fun deleteComment(commentId: String, hardDelete: Boolean?): Result<Unit> {
-        return commentsRepository.deleteComment(commentId, hardDelete)
+        return commentsRepository
+            .deleteComment(commentId, hardDelete)
+            .onSuccess { _state.onActivityUpdated(it.second) }
+            .map {}
     }
 
     override suspend fun queryFollowSuggestions(limit: Int?): Result<List<FeedData>> {

@@ -469,17 +469,27 @@ internal class FeedImplTest {
     }
 
     @Test
-    fun `on deleteComment, delegate to repository`() = runTest {
+    fun `on deleteComment, delegate to repository and update activity state`() = runTest {
         val feed = createFeed()
         val commentId = "comment-1"
         val hardDelete = true
+        val activityId = "activity-1"
+        val originalActivity = activityData(activityId, "Original activity")
+        val updatedActivity = activityData(activityId, "Updated activity after comment deletion")
+        val deleteData = commentData() to updatedActivity
+
+        // Set up initial state with the original activity
+        val feedInfo = getOrCreateInfo(feedData(), listOf(originalActivity))
+        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
+        feed.getOrCreate()
 
         coEvery { commentsRepository.deleteComment(commentId, hardDelete) } returns
-            Result.success(Unit)
+            Result.success(deleteData)
 
         val result = feed.deleteComment(commentId, hardDelete)
 
         assertEquals(Unit, result.getOrNull())
+        assertEquals(listOf(updatedActivity), feed.state.activities.value)
     }
 
     @Test
