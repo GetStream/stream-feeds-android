@@ -27,6 +27,7 @@ import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * An observable state object that manages the current state of a moderation config list.
@@ -62,8 +63,9 @@ internal class ModerationConfigListStateImpl(override val query: ModerationConfi
         _pagination = result.pagination
         this.queryConfig = queryConfig
         // Merge the new configs with the existing ones (keeping the sort order)
-        _configs.value =
-            _configs.value.mergeSorted(result.models, ModerationConfigData::id, configsSorting)
+        _configs.update { current ->
+            current.mergeSorted(result.models, ModerationConfigData::id, configsSorting)
+        }
     }
 }
 

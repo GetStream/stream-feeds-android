@@ -127,17 +127,17 @@ internal class FeedStateImpl(
         get() = _activitiesPagination
 
     override fun onQueryFeed(result: GetOrCreateInfo) {
-        _activities.value = result.activities.models
+        _activities.update { result.activities.models }
         _activitiesPagination = result.activities.pagination
         activitiesQueryConfig = result.activitiesQueryConfig
-        _aggregatedActivities.value = result.aggregatedActivities
-        _feed.value = result.feed
-        _followers.value = result.followers
-        _following.value = result.following
-        _followRequests.value = result.followRequests
-        _ownCapabilities.value = result.ownCapabilities
-        _pinnedActivities.value = result.pinnedActivities
-        _notificationStatus.value = result.notificationStatus
+        _aggregatedActivities.update { result.aggregatedActivities }
+        _feed.update { result.feed }
+        _followers.update { result.followers }
+        _following.update { result.following }
+        _followRequests.update { result.followRequests }
+        _ownCapabilities.update { result.ownCapabilities }
+        _pinnedActivities.update { result.pinnedActivities }
+        _notificationStatus.update { result.notificationStatus }
 
         // Members are managed by the paginated list
         memberListState.onQueryMoreMembers(result.members, QueryConfiguration(null, null))
@@ -150,101 +150,109 @@ internal class FeedStateImpl(
         _activitiesPagination = result.pagination
         activitiesQueryConfig = queryConfig
         // Merge the new activities with the existing ones (keeping the sort order)
-        _activities.value =
-            _activities.value.mergeSorted(result.models, ActivityData::id, activitiesSorting)
+        _activities.update { current ->
+            current.mergeSorted(result.models, ActivityData::id, activitiesSorting)
+        }
     }
 
     override fun onActivityAdded(activity: ActivityData) {
-        _activities.value =
-            _activities.value.upsertSorted(activity, ActivityData::id, activitiesSorting)
+        _activities.update { current ->
+            current.upsertSorted(activity, ActivityData::id, activitiesSorting)
+        }
     }
 
     override fun onActivityUpdated(activity: ActivityData) {
         // Update the activities list
-        _activities.value =
-            _activities.value.upsertSorted(activity, ActivityData::id, activitiesSorting)
+        _activities.update { current ->
+            current.upsertSorted(activity, ActivityData::id, activitiesSorting)
+        }
         // Update the pinned activities if the activity is pinned
-        _pinnedActivities.value =
-            _pinnedActivities.value.map { pin ->
+        _pinnedActivities.update { current ->
+            current.map { pin ->
                 if (pin.activity.id == activity.id) {
                     pin.copy(activity = activity)
                 } else {
                     pin
                 }
             }
+        }
     }
 
     override fun onActivityRemoved(activityId: String) {
-        _activities.value = _activities.value.filter { it.id != activityId }
+        _activities.update { current -> current.filter { it.id != activityId } }
         // Also remove the activity from pinned activities if it exists
-        _pinnedActivities.value = _pinnedActivities.value.filter { it.activity.id != activityId }
+        _pinnedActivities.update { current -> current.filter { it.activity.id != activityId } }
     }
 
     override fun onActivityPinned(activityPin: ActivityPinData) {
-        _pinnedActivities.value = _pinnedActivities.value.upsert(activityPin, ActivityPinData::id)
+        _pinnedActivities.update { current -> current.upsert(activityPin, ActivityPinData::id) }
     }
 
     override fun onActivityUnpinned(activityId: String) {
-        _pinnedActivities.value = _pinnedActivities.value.filter { it.activity.id != activityId }
+        _pinnedActivities.update { current -> current.filter { it.activity.id != activityId } }
     }
 
     override fun onBookmarkAdded(bookmark: BookmarkData) {
-        _activities.value =
-            _activities.value.map {
+        _activities.update { current ->
+            current.map {
                 if (it.id == bookmark.activity.id) {
                     it.addBookmark(bookmark, currentUserId)
                 } else {
                     it
                 }
             }
+        }
     }
 
     override fun onBookmarkRemoved(bookmark: BookmarkData) {
-        _activities.value =
-            _activities.value.map {
+        _activities.update { current ->
+            current.map {
                 if (it.id == bookmark.activity.id) {
                     it.deleteBookmark(bookmark, currentUserId)
                 } else {
                     it
                 }
             }
+        }
     }
 
     override fun onCommentAdded(comment: CommentData) {
-        _activities.value =
-            _activities.value.map {
+        _activities.update { current ->
+            current.map {
                 if (it.id == comment.objectId) {
                     it.addComment(comment)
                 } else {
                     it
                 }
             }
+        }
     }
 
     override fun onCommentRemoved(comment: CommentData) {
-        _activities.value =
-            _activities.value.map {
+        _activities.update { current ->
+            current.map {
                 if (it.id == comment.objectId) {
                     it.removeComment(comment)
                 } else {
                     it
                 }
             }
+        }
     }
 
     override fun onFeedDeleted() {
-        _activities.value = emptyList()
-        _feed.value = null
-        _followers.value = emptyList()
-        _following.value = emptyList()
-        _followRequests.value = emptyList()
-        _ownCapabilities.value = emptyList()
+        _activities.update { emptyList() }
+        _feed.update { null }
+        _followers.update { emptyList() }
+        _following.update { emptyList() }
+        _followRequests.update { emptyList() }
+        _ownCapabilities.update { emptyList() }
         // Clear the member list state
         memberListState.clear()
     }
 
     override fun onFeedUpdated(feed: FeedData) {
-        _feed.value = feed
+        _feed.update { feed }
     }
 
     override fun onFollowAdded(follow: FollowData) {
@@ -260,36 +268,39 @@ internal class FeedStateImpl(
     }
 
     override fun onUnfollow(sourceFid: FeedId, targetFid: FeedId) {
-        _following.value =
-            _following.value.filterNot {
+        _following.update { current ->
+            current.filterNot {
                 it.sourceFeed.id == sourceFid.id && it.targetFeed.id == targetFid.id
             }
+        }
     }
 
     override fun onFollowRequestRemoved(id: String) {
-        _followRequests.value = _followRequests.value.filter { it.id != id }
+        _followRequests.update { current -> current.filter { it.id != id } }
     }
 
     override fun onReactionAdded(reaction: FeedsReactionData) {
-        _activities.value =
-            _activities.value.map { activity ->
+        _activities.update { current ->
+            current.map { activity ->
                 if (activity.id == reaction.activityId) {
                     activity.addReaction(reaction, currentUserId)
                 } else {
                     activity
                 }
             }
+        }
     }
 
     override fun onReactionRemoved(reaction: FeedsReactionData) {
-        _activities.value =
-            _activities.value.map { activity ->
+        _activities.update { current ->
+            current.map { activity ->
                 if (activity.id == reaction.activityId) {
                     activity.removeReaction(reaction, currentUserId)
                 } else {
                     activity
                 }
             }
+        }
     }
 
     override fun onNotificationFeedUpdated(
@@ -300,8 +311,8 @@ internal class FeedStateImpl(
         //  in the aggregated activities. Remove this method if this is fixed on BE, or remove the
         //  comment if this is the expected behaviour.
         //  See: [FEEDS-684]
-        _aggregatedActivities.value = enrichWithUserData(aggregatedActivities)
-        _notificationStatus.value = notificationStatus
+        _aggregatedActivities.update { enrichWithUserData(aggregatedActivities) }
+        _notificationStatus.update { notificationStatus }
     }
 
     private fun addFollow(follow: FollowData) {
@@ -315,9 +326,9 @@ internal class FeedStateImpl(
     }
 
     private fun removeFollow(follow: FollowData) {
-        _following.value = _following.value.filter { it.id != follow.id }
-        _followers.value = _followers.value.filter { it.id != follow.id }
-        _followRequests.value = _followRequests.value.filter { it.id != follow.id }
+        _following.update { current -> current.filter { it.id != follow.id } }
+        _followers.update { current -> current.filter { it.id != follow.id } }
+        _followRequests.update { current -> current.filter { it.id != follow.id } }
     }
 
     private fun updateFollow(follow: FollowData) {

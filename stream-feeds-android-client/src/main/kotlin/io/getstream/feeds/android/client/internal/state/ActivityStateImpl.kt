@@ -66,8 +66,8 @@ internal class ActivityStateImpl(
         get() = _poll.asStateFlow()
 
     override fun onActivityUpdated(activity: ActivityData) {
-        _activity.value = activity
-        _poll.value = activity.poll
+        _activity.update { activity }
+        _poll.update { activity.poll }
     }
 
     override fun onReactionAdded(reaction: FeedsReactionData) {
@@ -88,54 +88,54 @@ internal class ActivityStateImpl(
 
     override fun onPollClosed(poll: PollData) {
         if (_poll.value?.id != poll.id) return
-        _poll.value = poll
+        _poll.update { poll }
     }
 
     override fun onPollDeleted(pollId: String) {
         if (_poll.value?.id != pollId) return
-        _poll.value = null
+        _poll.update { null }
     }
 
     override fun onPollUpdated(poll: PollData) {
         if (_poll.value?.id != poll.id) return
-        _poll.value = poll
+        _poll.update { poll }
     }
 
     override fun onOptionCreated(option: PollOptionData) {
-        _poll.value = _poll.value?.addOption(option)
+        _poll.update { current -> current?.addOption(option) }
     }
 
     override fun onOptionDeleted(optionId: String) {
-        _poll.value = _poll.value?.removeOption(optionId)
+        _poll.update { current -> current?.removeOption(optionId) }
     }
 
     override fun onOptionUpdated(option: PollOptionData) {
-        _poll.value = _poll.value?.updateOption(option)
+        _poll.update { current -> current?.updateOption(option) }
     }
 
     override fun onPollVoteCasted(vote: PollVoteData, poll: PollData) {
         if (_poll.value?.id != poll.id) return
-        _poll.value = poll
+        _poll.update { poll }
     }
 
     override fun onPollVoteCasted(vote: PollVoteData?) {
         if (vote == null) return
-        _poll.value = _poll.value?.castVote(vote, currentUserId)
+        _poll.update { current -> current?.castVote(vote, currentUserId) }
     }
 
     override fun onPollVoteChanged(vote: PollVoteData, poll: PollData) {
         if (_poll.value?.id != poll.id) return
-        _poll.value = poll
+        _poll.update { poll }
     }
 
     override fun onPollVoteRemoved(vote: PollVoteData, poll: PollData) {
         if (_poll.value?.id != poll.id) return
-        _poll.value = poll
+        _poll.update { poll }
     }
 
     override fun onPollVoteRemoved(vote: PollVoteData?) {
         if (vote == null) return
-        _poll.value = _poll.value?.removeVote(vote, currentUserId)
+        _poll.update { current -> current?.removeVote(vote, currentUserId) }
     }
 }
 

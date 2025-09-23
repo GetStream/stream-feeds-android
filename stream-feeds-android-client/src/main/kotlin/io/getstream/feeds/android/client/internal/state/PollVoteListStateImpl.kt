@@ -62,7 +62,9 @@ internal class PollVoteListStateImpl(override val query: PollVotesQuery) :
         // Update the query configuration for future queries
         this.queryConfig = queryConfig
         // Merge the new votes with the existing ones (keeping the sort order)
-        _votes.value = _votes.value.mergeSorted(result.models, PollVoteData::id, votesSorting)
+        _votes.update { current ->
+            current.mergeSorted(result.models, PollVoteData::id, votesSorting)
+        }
     }
 
     override fun pollVoteAdded(vote: PollVoteData) {
@@ -70,12 +72,12 @@ internal class PollVoteListStateImpl(override val query: PollVotesQuery) :
     }
 
     override fun pollVoteRemoved(voteId: String) {
-        _votes.value = _votes.value.filter { it.id != voteId }
+        _votes.update { current -> current.filter { it.id != voteId } }
     }
 
     override fun pollVoteUpdated(vote: PollVoteData) {
-        _votes.value =
-            _votes.value.map {
+        _votes.update { current ->
+            current.map {
                 if (it.id == vote.id) {
                     // Update the existing vote with the new data
                     vote
@@ -83,6 +85,7 @@ internal class PollVoteListStateImpl(override val query: PollVotesQuery) :
                     it
                 }
             }
+        }
     }
 }
 

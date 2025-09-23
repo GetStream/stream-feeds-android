@@ -27,6 +27,7 @@ import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * An observable state object that manages the current state of a poll list.
@@ -62,12 +63,12 @@ internal class PollListStateImpl(override val query: PollsQuery) : PollListMutab
         // Update the query configuration for future queries
         this.queryConfig = queryConfig
         // Merge the new polls with the existing ones (keeping the sort order)
-        _polls.value = _polls.value.mergeSorted(result.models, PollData::id, pollsSorting)
+        _polls.update { current -> current.mergeSorted(result.models, PollData::id, pollsSorting) }
     }
 
     override fun onPollUpdated(poll: PollData) {
-        _polls.value =
-            _polls.value.map {
+        _polls.update { current ->
+            current.map {
                 if (it.id == poll.id) {
                     // Update the existing poll with the new data
                     poll
@@ -75,6 +76,7 @@ internal class PollListStateImpl(override val query: PollsQuery) : PollListMutab
                     it
                 }
             }
+        }
     }
 }
 

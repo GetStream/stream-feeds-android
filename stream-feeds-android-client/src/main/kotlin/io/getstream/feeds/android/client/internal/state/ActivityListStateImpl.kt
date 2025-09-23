@@ -37,6 +37,7 @@ import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * An observable state object that manages the activities list and handles real-time updates.
@@ -77,22 +78,24 @@ internal class ActivityListStateImpl(
         // Update the query configuration for future queries
         this.queryConfig = queryConfig
         // Merge the new activities with the existing ones (keeping the sort order)
-        _activities.value =
-            _activities.value.mergeSorted(result.models, ActivityData::id, activitiesSorting)
+        _activities.update { current ->
+            current.mergeSorted(result.models, ActivityData::id, activitiesSorting)
+        }
     }
 
     override fun onActivityRemoved(activity: ActivityData) {
-        _activities.value = _activities.value.filter { it.id != activity.id }
+        _activities.update { current -> current.filter { it.id != activity.id } }
     }
 
     override fun onActivityUpdated(activity: ActivityData) {
-        _activities.value =
-            _activities.value.upsertSorted(activity, ActivityData::id, activitiesSorting)
+        _activities.update { current ->
+            current.upsertSorted(activity, ActivityData::id, activitiesSorting)
+        }
     }
 
     override fun onBookmarkAdded(bookmark: BookmarkData) {
-        _activities.value =
-            _activities.value.map { activity ->
+        _activities.update { current ->
+            current.map { activity ->
                 if (activity.id == bookmark.activity.id) {
                     // If the activity matches the bookmark, add the bookmark to it
                     activity.addBookmark(bookmark, currentUserId)
@@ -100,11 +103,12 @@ internal class ActivityListStateImpl(
                     activity
                 }
             }
+        }
     }
 
     override fun onBookmarkRemoved(bookmark: BookmarkData) {
-        _activities.value =
-            _activities.value.map { activity ->
+        _activities.update { current ->
+            current.map { activity ->
                 if (activity.id == bookmark.activity.id) {
                     // If the activity matches the bookmark, remove the bookmark from it
                     activity.deleteBookmark(bookmark, currentUserId)
@@ -112,33 +116,36 @@ internal class ActivityListStateImpl(
                     activity
                 }
             }
+        }
     }
 
     override fun onCommentAdded(comment: CommentData) {
-        _activities.value =
-            _activities.value.map { activity ->
+        _activities.update { current ->
+            current.map { activity ->
                 if (activity.id == comment.objectId) {
                     activity.addComment(comment)
                 } else {
                     activity
                 }
             }
+        }
     }
 
     override fun onCommentRemoved(comment: CommentData) {
-        _activities.value =
-            _activities.value.map { activity ->
+        _activities.update { current ->
+            current.map { activity ->
                 if (activity.id == comment.objectId) {
                     activity.removeComment(comment)
                 } else {
                     activity
                 }
             }
+        }
     }
 
     override fun onReactionAdded(reaction: FeedsReactionData) {
-        _activities.value =
-            _activities.value.map { activity ->
+        _activities.update { current ->
+            current.map { activity ->
                 if (activity.id == reaction.activityId) {
                     // Add the reaction to the activity
                     activity.addReaction(reaction, currentUserId)
@@ -146,11 +153,12 @@ internal class ActivityListStateImpl(
                     activity
                 }
             }
+        }
     }
 
     override fun onReactionRemoved(reaction: FeedsReactionData) {
-        _activities.value =
-            _activities.value.map { activity ->
+        _activities.update { current ->
+            current.map { activity ->
                 if (activity.id == reaction.activityId) {
                     // Remove the reaction from the activity
                     activity.removeReaction(reaction, currentUserId)
@@ -158,6 +166,7 @@ internal class ActivityListStateImpl(
                     activity
                 }
             }
+        }
     }
 }
 
