@@ -70,6 +70,22 @@ public data class PollData(
 )
 
 /**
+ * Mark the poll as closed. This function creates a new [PollData] instance with the `isClosed`
+ * property set to `true`.
+ *
+ * @return A new [PollData] instance with the poll marked as closed.
+ */
+internal fun PollData.setClosed(): PollData = copy(isClosed = true)
+
+/**
+ * Update the poll while preserving own votes because "own" data from WS events is not reliable.
+ *
+ * @param updated The updated [PollData] instance.
+ * @return A new [PollData] instance with updated data and preserved own votes.
+ */
+internal fun PollData.update(updated: PollData): PollData = updated.copy(ownVotes = ownVotes)
+
+/**
  * Extension function to add a new option to the poll. This function creates a new [PollData]
  * instance with the new option added to the existing options.
  *
@@ -112,26 +128,40 @@ internal fun PollData.updateOption(option: PollOptionData): PollData {
 }
 
 internal fun PollData.castVote(vote: PollVoteData, currentUserId: String): PollData {
+    // Answers and option votes are mutually exclusive, so if the vote is an answer, we don't need
+    // to update the option votes
+    if (vote.isAnswer == true) {
+        return upsertAnswer(vote = vote, currentUserId = currentUserId)
+    }
+
     val updatedOwnVotes =
         if (vote.userId == currentUserId) {
-            this.ownVotes.upsert(vote, PollVoteData::id)
+            ownVotes.upsert(vote, PollVoteData::id)
         } else {
-            this.ownVotes
+            ownVotes
         }
-    val votes = latestVotesByOption[vote.optionId].orEmpty()
-    val updatedOptionVotes = votes.upsert(vote, PollVoteData::id)
-    val voteCount = this.voteCountsByOption[vote.optionId] ?: 0
-    val updatedOptionVoteCounts =
-        if (votes.size != updatedOptionVotes.size) {
-            voteCount + 1
-        } else {
-            voteCount
+
+    val updatedLatestVotesByOption = latestVotesByOption.toMutableMap()
+    val updatedVoteCountsByOption = voteCountsByOption.toMutableMap()
+
+    for ((optionId, voteList) in latestVotesByOption) {
+        val oldVoteIndex = voteList.indexOfFirst { it.id == vote.id }
+        // If the old vote is found, remove it, decrement the vote count, and break the loop
+        if (oldVoteIndex >= 0) {
+            updatedLatestVotesByOption[optionId] =
+                voteList.toMutableList().apply { removeAt(oldVoteIndex) }
+            updatedVoteCountsByOption[optionId] =
+                updatedVoteCountsByOption[optionId]?.dec()?.coerceAtLeast(0) ?: 0
+            break
         }
-    val updatedLatestVotesByOption =
-        latestVotesByOption.toMutableMap().apply { this[vote.optionId] = updatedOptionVotes }
-    val updatedVoteCountsByOption =
-        voteCountsByOption.toMutableMap().apply { this[vote.optionId] = updatedOptionVoteCounts }
-    return this.copy(
+    }
+
+    // Add the new vote to the appropriate option and increment the vote count
+    updatedLatestVotesByOption[vote.optionId] =
+        mutableListOf(vote).apply { updatedLatestVotesByOption[vote.optionId]?.let(::addAll) }
+    updatedVoteCountsByOption[vote.optionId] = updatedVoteCountsByOption[vote.optionId]?.inc() ?: 1
+
+    return copy(
         ownVotes = updatedOwnVotes,
         latestVotesByOption = updatedLatestVotesByOption,
         voteCountsByOption = updatedVoteCountsByOption,
@@ -150,6 +180,12 @@ internal fun PollData.castVote(vote: PollVoteData, currentUserId: String): PollD
  * @return A new [PollData] instance with the specified vote removed.
  */
 internal fun PollData.removeVote(vote: PollVoteData, currentUserId: String): PollData {
+    // Answers and option votes are mutually exclusive, so if the vote is an answer, we don't need
+    // to update the option votes
+    if (vote.isAnswer == true) {
+        return removeAnswer(vote, currentUserId)
+    }
+
     val updatedOwnVotes =
         if (vote.userId == currentUserId) {
             this.ownVotes.filter { it.id != vote.id }
@@ -174,6 +210,52 @@ internal fun PollData.removeVote(vote: PollVoteData, currentUserId: String): Pol
         latestVotesByOption = updatedLatestVotesByOption,
         voteCountsByOption = updatedVoteCountsByOption,
         voteCount = updatedVoteCountsByOption.values.sum(),
+    )
+}
+
+private fun PollData.upsertAnswer(vote: PollVoteData, currentUserId: String): PollData {
+    val updatedOwnVotes =
+        if (vote.userId == currentUserId) {
+            ownVotes.upsert(vote, PollVoteData::id)
+        } else {
+            ownVotes
+        }
+
+    val updatedAnswers = latestAnswers.upsert(vote, PollVoteData::id)
+    val updatedAnswerCount =
+        if (updatedAnswers.size != latestAnswers.size) {
+            answersCount + 1
+        } else {
+            answersCount
+        }
+
+    return copy(
+        ownVotes = updatedOwnVotes,
+        latestAnswers = updatedAnswers,
+        answersCount = updatedAnswerCount,
+    )
+}
+
+private fun PollData.removeAnswer(vote: PollVoteData, currentUserId: String): PollData {
+    val updatedOwnVotes =
+        if (vote.userId == currentUserId) {
+            ownVotes.filter { it.id != vote.id }
+        } else {
+            ownVotes
+        }
+
+    val updatedAnswers = latestAnswers.filter { it.id != vote.id }
+    val updatedAnswerCount =
+        if (latestAnswers.size != updatedAnswers.size) {
+            (answersCount - 1).coerceAtLeast(0)
+        } else {
+            answersCount
+        }
+
+    return copy(
+        ownVotes = updatedOwnVotes,
+        latestAnswers = updatedAnswers,
+        answersCount = updatedAnswerCount,
     )
 }
 

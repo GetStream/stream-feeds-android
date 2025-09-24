@@ -98,22 +98,19 @@ internal class ActivityEventHandler(
             is PollVoteCastedFeedEvent -> {
                 if (event.fid != fid.rawValue) return
                 val vote = event.pollVote.toModel()
-                val poll = event.poll.toModel()
-                state.onPollVoteCasted(vote, poll)
+                state.onPollVoteCasted(vote, event.poll.id)
             }
 
             is PollVoteChangedFeedEvent -> {
                 if (event.fid != fid.rawValue) return
                 val vote = event.pollVote.toModel()
-                val poll = event.poll.toModel()
-                state.onPollVoteChanged(vote, poll)
+                state.onPollVoteChanged(vote, event.poll.id)
             }
 
             is PollVoteRemovedFeedEvent -> {
                 if (event.fid != fid.rawValue) return
                 val vote = event.pollVote.toModel()
-                val poll = event.poll.toModel()
-                state.onPollVoteRemoved(vote, poll)
+                state.onPollVoteRemoved(vote, event.poll.id)
             }
         }
     }

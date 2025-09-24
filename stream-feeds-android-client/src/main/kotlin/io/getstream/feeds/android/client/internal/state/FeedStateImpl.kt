@@ -30,19 +30,25 @@ import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.PollData
+import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.model.addBookmark
 import io.getstream.feeds.android.client.api.model.addComment
 import io.getstream.feeds.android.client.api.model.addReaction
+import io.getstream.feeds.android.client.api.model.castVote
 import io.getstream.feeds.android.client.api.model.deleteBookmark
 import io.getstream.feeds.android.client.api.model.removeComment
 import io.getstream.feeds.android.client.api.model.removeReaction
+import io.getstream.feeds.android.client.api.model.removeVote
+import io.getstream.feeds.android.client.api.model.setClosed
+import io.getstream.feeds.android.client.api.model.update
 import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQueryConfig
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
+import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import io.getstream.feeds.android.network.models.FeedOwnCapability
@@ -307,6 +313,52 @@ internal class FeedStateImpl(
         }
     }
 
+    override fun onPollClosed(id: String) {
+        _activities.update { current ->
+            current.updateIf({ it.poll?.id == id }) { activity ->
+                activity.copy(poll = activity.poll?.setClosed())
+            }
+        }
+    }
+
+    override fun onPollDeleted(id: String) {
+        _activities.update { current ->
+            current.updateIf({ it.poll?.id == id }) { activity -> activity.copy(poll = null) }
+        }
+    }
+
+    override fun onPollUpdated(poll: PollData) {
+        _activities.update { current ->
+            current.updateIf({ it.poll?.id == poll.id }) { activity ->
+                activity.copy(poll = activity.poll?.update(poll))
+            }
+        }
+    }
+
+    override fun onPollVoteCasted(vote: PollVoteData, pollId: String) {
+        _activities.update { current ->
+            current.updateIf({ it.poll?.id == pollId }) { activity ->
+                activity.copy(poll = activity.poll?.castVote(vote, currentUserId))
+            }
+        }
+    }
+
+    override fun onPollVoteChanged(vote: PollVoteData, pollId: String) {
+        _activities.update { current ->
+            current.updateIf({ it.poll?.id == pollId }) { activity ->
+                activity.copy(poll = activity.poll?.castVote(vote, currentUserId))
+            }
+        }
+    }
+
+    override fun onPollVoteRemoved(vote: PollVoteData, pollId: String) {
+        _activities.update { current ->
+            current.updateIf({ it.poll?.id == pollId }) { activity ->
+                activity.copy(poll = activity.poll?.removeVote(vote, currentUserId))
+            }
+        }
+    }
+
     override fun onNotificationFeedUpdated(
         aggregatedActivities: List<AggregatedActivityData>,
         notificationStatus: NotificationStatusResponse?,
@@ -353,18 +405,6 @@ internal class FeedStateImpl(
                     it.copy(user = user)
                 }
             it.copy(activities = activities)
-        }
-    }
-
-    override fun onPollChanged(id: String, data: PollData?) {
-        _activities.update { current ->
-            current.map { activity ->
-                if (activity.poll?.id == id) {
-                    activity.copy(poll = data)
-                } else {
-                    activity
-                }
-            }
         }
     }
 }
@@ -448,13 +488,23 @@ internal interface FeedStateUpdates {
     /** Handles updates to the feed state when a reaction is removed. */
     fun onReactionRemoved(reaction: FeedsReactionData)
 
-    /**
-     * Handles updates to the feed state when a poll is changed.
-     *
-     * @param id The ID of the poll that has changed.
-     * @param data The updated poll data, or null if the poll was removed.
-     */
-    fun onPollChanged(id: String, data: PollData?)
+    /** Handles updates to the feed state when a poll is closed. */
+    fun onPollClosed(id: String)
+
+    /** Handles updates to the feed state when a poll is deleted. */
+    fun onPollDeleted(id: String)
+
+    /** Handles updates to the feed state when a poll is updated. */
+    fun onPollUpdated(poll: PollData)
+
+    /** Handles updates to the feed state when a poll vote is casted. */
+    fun onPollVoteCasted(vote: PollVoteData, pollId: String)
+
+    /** Handles updates to the feed state when a poll vote is changed. */
+    fun onPollVoteChanged(vote: PollVoteData, pollId: String)
+
+    /** Handles updates to the feed state when a poll vote is removed. */
+    fun onPollVoteRemoved(vote: PollVoteData, pollId: String)
 
     /**
      * Handles updates to a notification feed.

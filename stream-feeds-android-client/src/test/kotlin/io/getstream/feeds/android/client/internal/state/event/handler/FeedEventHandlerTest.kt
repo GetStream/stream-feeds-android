@@ -391,7 +391,7 @@ internal class FeedEventHandlerTest {
     }
 
     @Test
-    fun `on PollClosedFeedEvent for matching feed, then call onPollChanged`() {
+    fun `on PollClosedFeedEvent for matching feed, then call onPollClosed`() {
         val poll = pollResponseData()
         val event =
             PollClosedFeedEvent(
@@ -403,11 +403,11 @@ internal class FeedEventHandlerTest {
 
         handler.onEvent(event)
 
-        verify { state.onPollChanged(poll.id, poll.toModel()) }
+        verify { state.onPollClosed(poll.id) }
     }
 
     @Test
-    fun `on PollDeletedFeedEvent for matching feed, then call onPollChanged with null`() {
+    fun `on PollDeletedFeedEvent for matching feed, then call onPollDeleted`() {
         val poll = pollResponseData()
         val event =
             PollDeletedFeedEvent(
@@ -419,11 +419,11 @@ internal class FeedEventHandlerTest {
 
         handler.onEvent(event)
 
-        verify { state.onPollChanged(poll.id, null) }
+        verify { state.onPollDeleted(poll.id) }
     }
 
     @Test
-    fun `on PollUpdatedFeedEvent for matching feed, then call onPollChanged`() {
+    fun `on PollUpdatedFeedEvent for matching feed, then call onPollUpdated`() {
         val poll = pollResponseData()
         val event =
             PollUpdatedFeedEvent(
@@ -435,11 +435,11 @@ internal class FeedEventHandlerTest {
 
         handler.onEvent(event)
 
-        verify { state.onPollChanged(poll.id, poll.toModel()) }
+        verify { state.onPollUpdated(poll.toModel()) }
     }
 
     @Test
-    fun `on PollVoteCastedFeedEvent for matching feed, then call onPollChanged`() {
+    fun `on PollVoteCastedFeedEvent for matching feed, then call onPollVoteCasted`() {
         val poll = pollResponseData()
         val pollVote = pollVoteResponseData()
         val event =
@@ -453,11 +453,11 @@ internal class FeedEventHandlerTest {
 
         handler.onEvent(event)
 
-        verify { state.onPollChanged(poll.id, poll.toModel()) }
+        verify { state.onPollVoteCasted(pollVote.toModel(), poll.id) }
     }
 
     @Test
-    fun `on PollVoteChangedFeedEvent for matching feed, then call onPollChanged`() {
+    fun `on PollVoteChangedFeedEvent for matching feed, then call onPollVoteChanged`() {
         val poll = pollResponseData()
         val pollVote = pollVoteResponseData()
         val event =
@@ -471,11 +471,11 @@ internal class FeedEventHandlerTest {
 
         handler.onEvent(event)
 
-        verify { state.onPollChanged(poll.id, poll.toModel()) }
+        verify { state.onPollVoteChanged(pollVote.toModel(), poll.id) }
     }
 
     @Test
-    fun `on PollVoteRemovedFeedEvent for matching feed, then call onPollChanged`() {
+    fun `on PollVoteRemovedFeedEvent for matching feed, then call onPollVoteRemoved`() {
         val poll = pollResponseData()
         val pollVote = pollVoteResponseData()
         val event =
@@ -489,7 +489,7 @@ internal class FeedEventHandlerTest {
 
         handler.onEvent(event)
 
-        verify { state.onPollChanged(poll.id, poll.toModel()) }
+        verify { state.onPollVoteRemoved(pollVote.toModel(), poll.id) }
     }
 
     @Test

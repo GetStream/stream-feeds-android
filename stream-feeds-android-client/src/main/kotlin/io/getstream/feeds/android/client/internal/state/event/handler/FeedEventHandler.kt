@@ -177,37 +177,37 @@ internal class FeedEventHandler(private val fid: FeedId, private val state: Feed
 
             is PollClosedFeedEvent -> {
                 if (event.fid == fid.rawValue) {
-                    state.onPollChanged(event.poll.id, event.poll.toModel())
+                    state.onPollClosed(event.poll.id)
                 }
             }
 
             is PollDeletedFeedEvent -> {
                 if (event.fid == fid.rawValue) {
-                    state.onPollChanged(event.poll.id, null)
+                    state.onPollDeleted(event.poll.id)
                 }
             }
 
             is PollUpdatedFeedEvent -> {
                 if (event.fid == fid.rawValue) {
-                    state.onPollChanged(event.poll.id, event.poll.toModel())
+                    state.onPollUpdated(event.poll.toModel())
                 }
             }
 
             is PollVoteCastedFeedEvent -> {
                 if (event.fid == fid.rawValue) {
-                    state.onPollChanged(event.poll.id, event.poll.toModel())
+                    state.onPollVoteCasted(event.pollVote.toModel(), event.poll.id)
                 }
             }
 
             is PollVoteChangedFeedEvent -> {
                 if (event.fid == fid.rawValue) {
-                    state.onPollChanged(event.poll.id, event.poll.toModel())
+                    state.onPollVoteChanged(event.pollVote.toModel(), event.poll.id)
                 }
             }
 
             is PollVoteRemovedFeedEvent -> {
                 if (event.fid == fid.rawValue) {
-                    state.onPollChanged(event.poll.id, event.poll.toModel())
+                    state.onPollVoteRemoved(event.pollVote.toModel(), event.poll.id)
                 }
             }
 
