@@ -111,8 +111,7 @@ public data class PollsFilterField(
         /**
          * Filter by maximum votes allowed.
          *
-         * Supported operators: `equal`, `notEqual`, `greater`, `greaterOrEqual`, `less`,
-         * `lessOrEqual`
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
         public val maxVotesAllowed: PollsFilterField =
             PollsFilterField("max_votes_allowed", PollData::maxVotesAllowed)

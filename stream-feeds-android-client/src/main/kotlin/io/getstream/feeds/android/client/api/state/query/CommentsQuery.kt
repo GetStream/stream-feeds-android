@@ -99,7 +99,7 @@ public data class CommentsFilterField(
         /**
          * Filter by object type.
          *
-         * Supported operators: `equal`, `notEqual`, `in`, `notIn`
+         * Supported operators: `equal`, `in`
          */
         public val objectType: CommentsFilterField =
             CommentsFilterField("object_type", CommentData::objectType)
@@ -131,7 +131,7 @@ public data class CommentsFilterField(
         /**
          * Filter by comment status.
          *
-         * Supported operators: `equal`, `notEqual`, `in`
+         * Supported operators: `equal`, `in`
          */
         public val status: CommentsFilterField = CommentsFilterField("status", CommentData::status)
 

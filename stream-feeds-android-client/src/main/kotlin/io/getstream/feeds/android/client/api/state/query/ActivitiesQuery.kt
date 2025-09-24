@@ -101,8 +101,7 @@ public data class ActivitiesFilterField(
         /**
          * Filter by activity popularity score.
          *
-         * Supported operators: `equal`, `notEqual`, `greater`, `greaterOrEqual`, `less`,
-         * `lessOrEqual`
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
         public val popularity: ActivitiesFilterField =
             ActivitiesFilterField("popularity", ActivityData::popularity)
@@ -140,8 +139,8 @@ public data class ActivitiesFilterField(
         /**
          * Filter by activity expiration timestamp.
          *
-         * Supported operators: `equal`, `notEqual`, `greater`, `greaterOrEqual`, `less`,
-         * `lessOrEqual`, `exists`
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`,
+         * `exists`
          */
         public val expiresAt: ActivitiesFilterField =
             ActivitiesFilterField("expires_at", ActivityData::expiresAt)

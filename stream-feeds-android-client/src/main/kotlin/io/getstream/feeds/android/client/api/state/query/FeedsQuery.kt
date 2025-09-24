@@ -131,8 +131,7 @@ public data class FeedsFilterField(
         /**
          * Filter by follower count.
          *
-         * Supported operators: `equal`, `notEqual`, `greater`, `greaterOrEqual`, `less`,
-         * `lessOrEqual`
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
         public val followerCount: FeedsFilterField =
             FeedsFilterField("follower_count", FeedData::followerCount)
@@ -140,8 +139,7 @@ public data class FeedsFilterField(
         /**
          * Filter by following count.
          *
-         * Supported operators: `equal`, `notEqual`, `greater`, `greaterOrEqual`, `less`,
-         * `lessOrEqual`
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
         public val followingCount: FeedsFilterField =
             FeedsFilterField("following_count", FeedData::followingCount)
@@ -149,8 +147,7 @@ public data class FeedsFilterField(
         /**
          * Filter by member count.
          *
-         * Supported operators: `equal`, `notEqual`, `greater`, `greaterOrEqual`, `less`,
-         * `lessOrEqual`
+         * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
         public val memberCount: FeedsFilterField =
             FeedsFilterField("member_count", FeedData::memberCount)
