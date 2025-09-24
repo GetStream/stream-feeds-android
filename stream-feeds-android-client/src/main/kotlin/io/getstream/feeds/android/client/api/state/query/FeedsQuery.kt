@@ -65,10 +65,12 @@ public data class FeedsQuery(
     public val watch: Boolean = true,
 )
 
+/** A type alias representing a filter specifically for [FeedData] using [FeedsFilterField]. */
 public typealias FeedsFilter = Filter<FeedData, FeedsFilterField>
 
 internal typealias FeedsQueryConfig = QueryConfiguration<FeedData, FeedsFilterField, FeedsSort>
 
+/** Represents a field that can be used to filter feeds. */
 public data class FeedsFilterField(
     override val remote: String,
     override val localValue: (FeedData) -> Any?,

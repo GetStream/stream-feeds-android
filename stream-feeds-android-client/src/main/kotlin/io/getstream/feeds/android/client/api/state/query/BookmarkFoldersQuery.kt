@@ -52,11 +52,16 @@ public data class BookmarkFoldersQuery(
     public val previous: String? = null,
 )
 
+/**
+ * A type alias representing a filter specifically for [BookmarkFolderData] using
+ * [BookmarkFoldersFilterField].
+ */
 public typealias BookmarkFoldersFilter = Filter<BookmarkFolderData, BookmarkFoldersFilterField>
 
 internal typealias BookmarkFoldersQueryConfig =
     QueryConfiguration<BookmarkFolderData, BookmarkFoldersFilterField, BookmarkFoldersSort>
 
+/** Represents a field that can be used to filter bookmark folders. */
 public data class BookmarkFoldersFilterField(
     override val remote: String,
     override val localValue: (BookmarkFolderData) -> Any?,

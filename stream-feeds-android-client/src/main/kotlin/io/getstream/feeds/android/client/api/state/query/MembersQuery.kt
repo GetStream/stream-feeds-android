@@ -55,11 +55,15 @@ public data class MembersQuery(
     public val previous: String? = null,
 )
 
+/**
+ * A type alias representing a filter specifically for [FeedMemberData] using [MembersFilterField].
+ */
 public typealias MembersFilter = Filter<FeedMemberData, MembersFilterField>
 
 internal typealias MembersQueryConfig =
     QueryConfiguration<FeedMemberData, MembersFilterField, MembersSort>
 
+/** Represents a field that can be used to filter feed members. */
 public data class MembersFilterField(
     override val remote: String,
     override val localValue: (FeedMemberData) -> Any?,

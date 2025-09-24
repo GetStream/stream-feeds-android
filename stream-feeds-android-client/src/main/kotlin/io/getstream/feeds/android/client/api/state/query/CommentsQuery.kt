@@ -71,8 +71,12 @@ public data class CommentsQuery(
     public val sort: CommentsSort? = null,
 )
 
+/**
+ * A type alias representing a filter specifically for [CommentData] using [CommentsFilterField].
+ */
 public typealias CommentsFilter = Filter<CommentData, CommentsFilterField>
 
+/** Represents a field that can be used to filter comments. */
 public data class CommentsFilterField(
     override val remote: String,
     override val localValue: (CommentData) -> Any?,

@@ -59,11 +59,16 @@ public data class CommentReactionsQuery(
     public val sort: List<CommentReactionsSort>? = null,
 )
 
+/**
+ * A type alias representing a filter specifically for [FeedsReactionData] using
+ * [CommentReactionsFilterField].
+ */
 public typealias CommentReactionsFilter = Filter<FeedsReactionData, CommentReactionsFilterField>
 
 internal typealias CommentReactionsQueryConfig =
     QueryConfiguration<FeedsReactionData, CommentReactionsFilterField, CommentReactionsSort>
 
+/** Represents a field that can be used to filter comment reactions. */
 public data class CommentReactionsFilterField(
     override val remote: String,
     override val localValue: (FeedsReactionData) -> Any?,

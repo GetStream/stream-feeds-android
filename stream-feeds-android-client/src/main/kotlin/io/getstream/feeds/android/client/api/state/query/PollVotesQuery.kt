@@ -56,11 +56,15 @@ public data class PollVotesQuery(
     public val sort: List<PollVotesSort>? = null,
 )
 
+/**
+ * A type alias representing a filter specifically for [PollVoteData] using [PollVotesFilterField].
+ */
 public typealias PollVotesFilter = Filter<PollVoteData, PollVotesFilterField>
 
 internal typealias PollVotesQueryConfig =
     QueryConfiguration<PollVoteData, PollVotesFilterField, PollVotesSort>
 
+/** Represents a field that can be used to filter poll votes. */
 public data class PollVotesFilterField(
     override val remote: String,
     override val localValue: (PollVoteData) -> Any?,

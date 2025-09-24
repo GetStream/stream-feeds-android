@@ -47,12 +47,17 @@ public data class ModerationConfigsQuery(
     public val sort: List<ModerationConfigSort>? = null,
 )
 
+/**
+ * A type alias representing a filter specifically for [ModerationConfigData] using
+ * [ModerationConfigsFilterField].
+ */
 public typealias ModerationConfigsFilter =
     Filter<ModerationConfigData, ModerationConfigsFilterField>
 
 internal typealias ModerationConfigsQueryConfig =
     QueryConfiguration<ModerationConfigData, ModerationConfigsFilterField, ModerationConfigSort>
 
+/** Represents a field that can be used to filter moderation configurations. */
 public data class ModerationConfigsFilterField(
     override val remote: String,
     override val localValue: (ModerationConfigData) -> Any?,

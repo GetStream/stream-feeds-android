@@ -61,11 +61,15 @@ public data class ActivitiesQuery(
     public val previous: String? = null,
 )
 
+/**
+ * A type alias representing a filter specifically for [ActivityData] using [ActivitiesFilterField].
+ */
 public typealias ActivitiesFilter = Filter<ActivityData, ActivitiesFilterField>
 
 internal typealias ActivitiesQueryConfig =
     QueryConfiguration<ActivityData, ActivitiesFilterField, ActivitiesSort>
 
+/** Represents a field that can be used to filter activities. */
 public data class ActivitiesFilterField(
     override val remote: String,
     override val localValue: (ActivityData) -> Any?,

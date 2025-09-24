@@ -52,10 +52,12 @@ public data class PollsQuery(
     public val sort: List<PollsSort>? = null,
 )
 
+/** A type alias representing a filter specifically for [PollData] using [PollsFilterField]. */
 public typealias PollsFilter = Filter<PollData, PollsFilterField>
 
 internal typealias PollsQueryConfig = QueryConfiguration<PollData, PollsFilterField, PollsSort>
 
+/** Represents a field that can be used to filter polls. */
 public data class PollsFilterField(
     override val remote: String,
     override val localValue: (PollData) -> Any?,

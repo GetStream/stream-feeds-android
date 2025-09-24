@@ -54,11 +54,16 @@ public data class ActivityReactionsQuery(
     public val sort: List<ActivityReactionsSort>? = null,
 )
 
+/**
+ * A type alias representing a filter specifically for [FeedsReactionData] using
+ * [ActivityReactionsFilterField].
+ */
 public typealias ActivityReactionsFilter = Filter<FeedsReactionData, ActivityReactionsFilterField>
 
 internal typealias ActivityReactionsQueryConfig =
     QueryConfiguration<FeedsReactionData, ActivityReactionsFilterField, ActivityReactionsSort>
 
+/** Represents a field that can be used to filter activity reactions. */
 public data class ActivityReactionsFilterField(
     override val remote: String,
     override val localValue: (FeedsReactionData) -> Any?,

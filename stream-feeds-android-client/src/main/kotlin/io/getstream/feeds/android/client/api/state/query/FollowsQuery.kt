@@ -52,11 +52,13 @@ public data class FollowsQuery(
     public val previous: String? = null,
 )
 
+/** A type alias representing a filter specifically for [FollowData] using [FollowsFilterField]. */
 public typealias FollowsFilter = Filter<FollowData, FollowsFilterField>
 
 internal typealias FollowsQueryConfig =
     QueryConfiguration<FollowData, FollowsFilterField, FollowsSort>
 
+/** Represents a field that can be used to filter follows. */
 public data class FollowsFilterField(
     override val remote: String,
     override val localValue: (FollowData) -> Any?,
