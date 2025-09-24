@@ -96,7 +96,11 @@ internal class BookmarkListStateImpl(override val query: BookmarksQuery) :
         }
     }
 
-    override fun onBookmarkUpdated(bookmark: BookmarkData) {
+    override fun onBookmarkRemoved(bookmark: BookmarkData) {
+        _bookmarks.update { current -> current.filter { it.id != bookmark.id } }
+    }
+
+    override fun onBookmarkUpserted(bookmark: BookmarkData) {
         _bookmarks.update { current ->
             current.map {
                 if (it.id == bookmark.id) {
@@ -107,10 +111,6 @@ internal class BookmarkListStateImpl(override val query: BookmarksQuery) :
                 }
             }
         }
-    }
-
-    override fun onBookmarkRemoved(bookmark: BookmarkData) {
-        _bookmarks.update { current -> current.filter { it.id != bookmark.id } }
     }
 }
 
@@ -134,7 +134,7 @@ internal interface BookmarkListStateUpdates {
 
     fun onBookmarkFolderUpdated(folder: BookmarkFolderData)
 
-    fun onBookmarkUpdated(bookmark: BookmarkData)
-
     fun onBookmarkRemoved(bookmark: BookmarkData)
+
+    fun onBookmarkUpserted(bookmark: BookmarkData)
 }

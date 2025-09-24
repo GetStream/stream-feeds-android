@@ -199,9 +199,14 @@ internal fun ActivityResponse.Visibility.toModel(): ActivityDataVisibility =
 
 /**
  * Extension function to update the activity while preserving own bookmarks, reactions, and poll
- * votes because "own" data from WS events is not reliable.
+ * votes because "own" data from WS events is not reliable. Optionally, different instances can be
+ * provided to be used instead of the current ones.
  */
-internal fun ActivityData.update(updated: ActivityData): ActivityData =
+internal fun ActivityData.update(
+    updated: ActivityData,
+    ownBookmarks: List<BookmarkData> = this.ownBookmarks,
+    ownReactions: List<FeedsReactionData> = this.ownReactions,
+): ActivityData =
     updated.copy(
         ownBookmarks = ownBookmarks,
         ownReactions = ownReactions,
@@ -237,45 +242,47 @@ internal fun ActivityData.removeComment(comment: CommentData): ActivityData {
 }
 
 /**
- * Adds a bookmark to the activity, updating the own bookmarks and bookmark count.
+ * Calls [changeBookmarks] with a [filter] operation to remove the bookmark.
  *
- * @param bookmark The bookmark to be added.
- * @param currentUserId The ID of the current user, used to determine if the bookmark belongs to
- *   them.
- * @return A new [ActivityData] instance with the updated own bookmarks and bookmark count.
+ * @see changeBookmarks
  */
-internal fun ActivityData.addBookmark(bookmark: BookmarkData, currentUserId: String): ActivityData {
-    val updatedOwnBookmarks =
-        if (bookmark.user.id == currentUserId) {
-            this.ownBookmarks.upsert(bookmark, BookmarkData::id)
-        } else {
-            this.ownBookmarks
-        }
-    return this.copy(ownBookmarks = updatedOwnBookmarks, bookmarkCount = this.bookmarkCount + 1)
-}
+internal fun ActivityData.deleteBookmark(bookmark: BookmarkData, currentUserId: String) =
+    changeBookmarks(bookmark, currentUserId) { filter { it.id != bookmark.id } }
 
 /**
- * Deletes a bookmark from the activity, updating the own bookmarks and bookmark count.
+ * Calls [changeBookmarks] with an [upsert] operation.
  *
- * @param bookmark The bookmark to be deleted.
- * @param currentUserId The ID of the current user, used to determine if the bookmark belongs to
- *   them.
- * @return A new [ActivityData] instance with the updated own bookmarks and bookmark count.
+ * @see changeBookmarks
  */
-internal fun ActivityData.deleteBookmark(
+internal fun ActivityData.upsertBookmark(
     bookmark: BookmarkData,
     currentUserId: String,
+): ActivityData = changeBookmarks(bookmark, currentUserId) { upsert(bookmark, BookmarkData::id) }
+
+/**
+ * Merges the receiver activity with [bookmark]'s [BookmarkData.activity] and updates own bookmarks
+ * using the provided [updateOwnBookmarks] function if the bookmark belongs to the current user.
+ *
+ * @param bookmark The bookmark that was added or removed.
+ * @param currentUserId The ID of the current user, used to determine if the bookmark belongs to
+ *   them.
+ * @param updateOwnBookmarks A function that takes the current list of own bookmarks and returns the
+ *   updated list of own bookmarks.
+ * @return The updated [ActivityData] instance.
+ */
+internal inline fun ActivityData.changeBookmarks(
+    bookmark: BookmarkData,
+    currentUserId: String,
+    updateOwnBookmarks: List<BookmarkData>.() -> List<BookmarkData>,
 ): ActivityData {
     val updatedOwnBookmarks =
         if (bookmark.user.id == currentUserId) {
-            this.ownBookmarks.filter { it.id != bookmark.id }
+            this.ownBookmarks.updateOwnBookmarks()
         } else {
             this.ownBookmarks
         }
-    return this.copy(
-        ownBookmarks = updatedOwnBookmarks,
-        bookmarkCount = max(0, this.bookmarkCount - 1),
-    )
+
+    return update(updated = bookmark.activity, ownBookmarks = updatedOwnBookmarks)
 }
 
 /**
