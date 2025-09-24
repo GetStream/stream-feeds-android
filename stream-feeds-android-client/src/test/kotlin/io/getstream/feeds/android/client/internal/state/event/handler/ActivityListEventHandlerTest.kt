@@ -60,13 +60,13 @@ internal class ActivityListEventHandlerTest {
     }
 
     @Test
-    fun `on BookmarkAdded, then call onBookmarkAdded`() {
+    fun `on BookmarkUpserted, then call onBookmarkUpserted`() {
         val bookmark = bookmarkData()
-        val event = StateUpdateEvent.BookmarkAdded(bookmark)
+        val event = StateUpdateEvent.BookmarkUpserted(bookmark)
 
         handler.onEvent(event)
 
-        verify { state.onBookmarkAdded(bookmark) }
+        verify { state.onBookmarkUpserted(bookmark) }
     }
 
     @Test

@@ -291,14 +291,10 @@ internal class FeedImplTest {
 
         val result = feed.addBookmark(activityId, request)
 
-        val updated =
-            activity.copy(
-                ownBookmarks = listOf(bookmark),
-                bookmarkCount = activity.bookmarkCount + 1,
-            )
+        val updated = bookmark.activity.copy(ownBookmarks = listOf(bookmark))
         assertEquals(bookmark, result.getOrNull())
         assertEquals(listOf(updated), feed.state.activities.value)
-        verify { stateEventListener.onEvent(StateUpdateEvent.BookmarkAdded(bookmark)) }
+        verify { stateEventListener.onEvent(StateUpdateEvent.BookmarkUpserted(bookmark)) }
     }
 
     @Test
@@ -472,7 +468,7 @@ internal class FeedImplTest {
         val result = feed.updateBookmark(activityId, request)
 
         assertEquals(bookmark, result.getOrNull())
-        verify { stateEventListener.onEvent(StateUpdateEvent.BookmarkUpdated(bookmark)) }
+        verify { stateEventListener.onEvent(StateUpdateEvent.BookmarkUpserted(bookmark)) }
     }
 
     @Test

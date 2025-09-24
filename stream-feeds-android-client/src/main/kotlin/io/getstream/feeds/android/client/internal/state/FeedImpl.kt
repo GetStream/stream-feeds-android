@@ -235,7 +235,7 @@ internal class FeedImpl(
         request: AddBookmarkRequest,
     ): Result<BookmarkData> {
         return bookmarksRepository.addBookmark(activityId, request).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.BookmarkAdded(it))
+            subscriptionManager.onEvent(StateUpdateEvent.BookmarkUpserted(it))
         }
     }
 
@@ -244,7 +244,7 @@ internal class FeedImpl(
         request: UpdateBookmarkRequest,
     ): Result<BookmarkData> {
         return bookmarksRepository.updateBookmark(activityId, request).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.BookmarkUpdated(it))
+            subscriptionManager.onEvent(StateUpdateEvent.BookmarkUpserted(it))
         }
     }
 

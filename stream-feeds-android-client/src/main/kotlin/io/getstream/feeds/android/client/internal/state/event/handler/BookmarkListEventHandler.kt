@@ -28,8 +28,8 @@ internal class BookmarkListEventHandler(private val state: BookmarkListStateUpda
                 state.onBookmarkFolderRemoved(event.folderId)
 
             is StateUpdateEvent.BookmarkFolderUpdated -> state.onBookmarkFolderUpdated(event.folder)
-            is StateUpdateEvent.BookmarkUpdated -> state.onBookmarkUpdated(event.bookmark)
             is StateUpdateEvent.BookmarkDeleted -> state.onBookmarkRemoved(event.bookmark)
+            is StateUpdateEvent.BookmarkUpserted -> state.onBookmarkUpserted(event.bookmark)
             else -> {}
         }
     }

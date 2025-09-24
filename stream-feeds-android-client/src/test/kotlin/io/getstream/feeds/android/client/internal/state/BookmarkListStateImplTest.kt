@@ -52,13 +52,13 @@ internal class BookmarkListStateImplTest {
     }
 
     @Test
-    fun `on bookmarkUpdated, then update specific bookmark`() = runTest {
+    fun `on onBookmarkUpserted, then update specific bookmark`() = runTest {
         val initialBookmarks = listOf(bookmarkData(), bookmarkData("bookmark-2", "user-2"))
         val paginationResult = defaultPaginationResult(initialBookmarks)
         bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
 
         val updatedBookmark = bookmarkData("activity-1", "user-1")
-        bookmarkListState.onBookmarkUpdated(updatedBookmark)
+        bookmarkListState.onBookmarkUpserted(updatedBookmark)
 
         val updatedBookmarks = bookmarkListState.bookmarks.value
         assertEquals(updatedBookmark, updatedBookmarks.find { it.id == updatedBookmark.id })

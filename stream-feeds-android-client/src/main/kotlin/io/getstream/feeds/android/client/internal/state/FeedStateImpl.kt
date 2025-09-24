@@ -32,7 +32,6 @@ import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
-import io.getstream.feeds.android.client.api.model.addBookmark
 import io.getstream.feeds.android.client.api.model.addComment
 import io.getstream.feeds.android.client.api.model.addReaction
 import io.getstream.feeds.android.client.api.model.castVote
@@ -42,6 +41,7 @@ import io.getstream.feeds.android.client.api.model.removeReaction
 import io.getstream.feeds.android.client.api.model.removeVote
 import io.getstream.feeds.android.client.api.model.setClosed
 import io.getstream.feeds.android.client.api.model.update
+import io.getstream.feeds.android.client.api.model.upsertBookmark
 import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQueryConfig
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
@@ -191,26 +191,18 @@ internal class FeedStateImpl(
         _pinnedActivities.update { current -> current.filter { it.activity.id != activityId } }
     }
 
-    override fun onBookmarkAdded(bookmark: BookmarkData) {
+    override fun onBookmarkRemoved(bookmark: BookmarkData) {
         _activities.update { current ->
-            current.map {
-                if (it.id == bookmark.activity.id) {
-                    it.addBookmark(bookmark, currentUserId)
-                } else {
-                    it
-                }
+            current.updateIf({ it.id == bookmark.activity.id }) { activity ->
+                activity.deleteBookmark(bookmark, currentUserId)
             }
         }
     }
 
-    override fun onBookmarkRemoved(bookmark: BookmarkData) {
+    override fun onBookmarkUpserted(bookmark: BookmarkData) {
         _activities.update { current ->
-            current.map {
-                if (it.id == bookmark.activity.id) {
-                    it.deleteBookmark(bookmark, currentUserId)
-                } else {
-                    it
-                }
+            current.updateIf({ it.id == bookmark.activity.id }) { activity ->
+                activity.upsertBookmark(bookmark, currentUserId)
             }
         }
     }
@@ -438,11 +430,11 @@ internal interface FeedStateUpdates {
     /** Handles updates to the feed state when an activity is unpinned. */
     fun onActivityUnpinned(activityId: String)
 
-    /** Handles updates to the feed state when a bookmark is added or removed. */
-    fun onBookmarkAdded(bookmark: BookmarkData)
-
     /** Handles updates to the feed state when a bookmark is removed. */
     fun onBookmarkRemoved(bookmark: BookmarkData)
+
+    /** Handles updates to the feed state when a bookmark is added or updated. */
+    fun onBookmarkUpserted(bookmark: BookmarkData)
 
     /** Handles updates to the feed state when a comment is added or removed. */
     fun onCommentAdded(comment: CommentData)

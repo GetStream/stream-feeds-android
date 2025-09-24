@@ -87,15 +87,15 @@ internal class FeedEventHandler(private val fid: FeedId, private val state: Feed
                 }
             }
 
-            is StateUpdateEvent.BookmarkAdded -> {
-                if (event.bookmark.activity.feeds.contains(fid.rawValue)) {
-                    state.onBookmarkAdded(event.bookmark)
-                }
-            }
-
             is StateUpdateEvent.BookmarkDeleted -> {
                 if (event.bookmark.activity.feeds.contains(fid.rawValue)) {
                     state.onBookmarkRemoved(event.bookmark)
+                }
+            }
+
+            is StateUpdateEvent.BookmarkUpserted -> {
+                if (event.bookmark.activity.feeds.contains(fid.rawValue)) {
+                    state.onBookmarkUpserted(event.bookmark)
                 }
             }
 

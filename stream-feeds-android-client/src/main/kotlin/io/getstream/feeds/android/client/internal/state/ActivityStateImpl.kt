@@ -22,7 +22,6 @@ import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollOptionData
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
-import io.getstream.feeds.android.client.api.model.addBookmark
 import io.getstream.feeds.android.client.api.model.addOption
 import io.getstream.feeds.android.client.api.model.addReaction
 import io.getstream.feeds.android.client.api.model.castVote
@@ -33,6 +32,7 @@ import io.getstream.feeds.android.client.api.model.removeVote
 import io.getstream.feeds.android.client.api.model.setClosed
 import io.getstream.feeds.android.client.api.model.update
 import io.getstream.feeds.android.client.api.model.updateOption
+import io.getstream.feeds.android.client.api.model.upsertBookmark
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.api.state.ActivityState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -86,12 +86,12 @@ internal class ActivityStateImpl(
         _activity.update { current -> current?.removeReaction(reaction, currentUserId) }
     }
 
-    override fun onBookmarkAdded(bookmark: BookmarkData) {
-        _activity.update { current -> current?.addBookmark(bookmark, currentUserId) }
-    }
-
     override fun onBookmarkRemoved(bookmark: BookmarkData) {
         _activity.update { current -> current?.deleteBookmark(bookmark, currentUserId) }
+    }
+
+    override fun onBookmarkUpserted(bookmark: BookmarkData) {
+        _activity.update { current -> current?.upsertBookmark(bookmark, currentUserId) }
     }
 
     override fun onPollClosed(poll: PollData) {
@@ -178,18 +178,18 @@ internal interface ActivityStateUpdates {
     fun onReactionRemoved(reaction: FeedsReactionData)
 
     /**
-     * Called when a bookmark is added to the activity.
-     *
-     * @param bookmark The bookmark that was added.
-     */
-    fun onBookmarkAdded(bookmark: BookmarkData)
-
-    /**
      * Called when a bookmark is removed from the activity.
      *
      * @param bookmark The bookmark that was deleted.
      */
     fun onBookmarkRemoved(bookmark: BookmarkData)
+
+    /**
+     * Called when a bookmark is added to or updated in an activity.
+     *
+     * @param bookmark The bookmark that was added or updated.
+     */
+    fun onBookmarkUpserted(bookmark: BookmarkData)
 
     /**
      * Called when the associated poll is closed.

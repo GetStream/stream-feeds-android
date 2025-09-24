@@ -233,14 +233,14 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on bookmarkAdded, then add bookmark to activity`() = runTest {
+    fun `on onBookmarkUpserted, then add bookmark to activity`() = runTest {
         setupInitialState(listOf(activityData("activity-1")))
 
         val bookmark = bookmarkData("activity-1", currentUserId)
-        feedState.onBookmarkAdded(bookmark)
+        feedState.onBookmarkUpserted(bookmark)
 
-        val activityWithBookmark = feedState.activities.value.find { it.id == "activity-1" }
-        assertEquals(1, activityWithBookmark?.bookmarkCount)
+        val expected = bookmark.activity.copy(ownBookmarks = listOf(bookmark))
+        assertEquals(listOf(expected), feedState.activities.value)
     }
 
     @Test
@@ -248,7 +248,7 @@ internal class FeedStateImplTest {
         setupInitialState(listOf(activityData("activity-1")))
 
         val bookmark = bookmarkData("activity-1", currentUserId)
-        feedState.onBookmarkAdded(bookmark)
+        feedState.onBookmarkUpserted(bookmark)
         feedState.onBookmarkRemoved(bookmark)
 
         val activityWithoutBookmark = feedState.activities.value.find { it.id == "activity-1" }

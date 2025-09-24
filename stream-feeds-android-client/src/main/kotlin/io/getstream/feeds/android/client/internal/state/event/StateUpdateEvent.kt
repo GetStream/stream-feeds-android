@@ -91,11 +91,9 @@ internal sealed interface StateUpdateEvent {
     data class ActivityReactionDeleted(val fid: String, val reaction: FeedsReactionData) :
         StateUpdateEvent
 
-    data class BookmarkAdded(val bookmark: BookmarkData) : StateUpdateEvent
-
     data class BookmarkDeleted(val bookmark: BookmarkData) : StateUpdateEvent
 
-    data class BookmarkUpdated(val bookmark: BookmarkData) : StateUpdateEvent
+    data class BookmarkUpserted(val bookmark: BookmarkData) : StateUpdateEvent
 
     data class BookmarkFolderDeleted(val folderId: String) : StateUpdateEvent
 
@@ -182,11 +180,11 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
         is ActivityReactionDeletedEvent ->
             StateUpdateEvent.ActivityReactionDeleted(fid, reaction.toModel())
 
-        is BookmarkAddedEvent -> StateUpdateEvent.BookmarkAdded(bookmark.toModel())
+        is BookmarkAddedEvent -> StateUpdateEvent.BookmarkUpserted(bookmark.toModel())
 
         is BookmarkDeletedEvent -> StateUpdateEvent.BookmarkDeleted(bookmark.toModel())
 
-        is BookmarkUpdatedEvent -> StateUpdateEvent.BookmarkUpdated(bookmark.toModel())
+        is BookmarkUpdatedEvent -> StateUpdateEvent.BookmarkUpserted(bookmark.toModel())
 
         is BookmarkFolderDeletedEvent -> StateUpdateEvent.BookmarkFolderDeleted(bookmarkFolder.id)
 
