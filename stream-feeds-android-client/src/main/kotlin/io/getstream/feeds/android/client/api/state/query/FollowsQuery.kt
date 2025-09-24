@@ -85,7 +85,7 @@ public data class FollowsFilterField(
          *
          * Supported operators: `equal`, `in`
          */
-        public val status: FollowsFilterField = FollowsFilterField("status") { it.status.string }
+        public val status: FollowsFilterField = FollowsFilterField("status") { it.status.value }
 
         /**
          * Filter by creation timestamp.
