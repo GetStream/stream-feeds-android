@@ -16,12 +16,10 @@
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.FollowData
-import io.getstream.feeds.android.client.api.model.PaginationData
-import io.getstream.feeds.android.client.api.model.PaginationResult
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
-import io.getstream.feeds.android.client.api.state.query.FollowsFilterField
 import io.getstream.feeds.android.client.api.state.query.FollowsQuery
+import io.getstream.feeds.android.client.api.state.query.FollowsQueryConfig
 import io.getstream.feeds.android.client.api.state.query.FollowsSort
+import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
 import io.getstream.feeds.android.client.internal.test.TestData.followData
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -41,16 +39,7 @@ internal class FollowListStateImplTest {
     @Test
     fun `on queryMoreFollows, then update follows and pagination`() = runTest {
         val follows = listOf(followData(), followData("user-2", "user-3"))
-        val paginationResult =
-            PaginationResult(
-                models = follows,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig =
-            QueryConfiguration<FollowsFilterField, FollowsSort>(
-                filter = null,
-                sort = FollowsSort.Default,
-            )
+        val paginationResult = defaultPaginationResult(follows)
 
         followListState.onQueryMoreFollows(paginationResult, queryConfig)
 
@@ -62,16 +51,7 @@ internal class FollowListStateImplTest {
     @Test
     fun `on followUpdated, then update specific follow`() = runTest {
         val initialFollows = listOf(followData(), followData("user-2", "user-3"))
-        val paginationResult =
-            PaginationResult(
-                models = initialFollows,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig =
-            QueryConfiguration<FollowsFilterField, FollowsSort>(
-                filter = null,
-                sort = FollowsSort.Default,
-            )
+        val paginationResult = defaultPaginationResult(initialFollows)
         followListState.onQueryMoreFollows(paginationResult, queryConfig)
 
         val updatedFollow =
@@ -91,16 +71,7 @@ internal class FollowListStateImplTest {
     fun `on followUpdated with non-existent follow, then keep existing follows unchanged`() =
         runTest {
             val initialFollows = listOf(followData(), followData("user-2", "user-3"))
-            val paginationResult =
-                PaginationResult(
-                    models = initialFollows,
-                    pagination = PaginationData(next = "next-cursor", previous = null),
-                )
-            val queryConfig =
-                QueryConfiguration<FollowsFilterField, FollowsSort>(
-                    filter = null,
-                    sort = FollowsSort.Default,
-                )
+            val paginationResult = defaultPaginationResult(initialFollows)
             followListState.onQueryMoreFollows(paginationResult, queryConfig)
 
             val nonExistentFollow = followData("user-4", "user-5")
@@ -112,21 +83,16 @@ internal class FollowListStateImplTest {
     @Test
     fun `on followRemoved, then remove specific follow`() = runTest {
         val initialFollows = listOf(followData(), followData("user-2", "user-3"))
-        val paginationResult =
-            PaginationResult(
-                models = initialFollows,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig =
-            QueryConfiguration<FollowsFilterField, FollowsSort>(
-                filter = null,
-                sort = FollowsSort.Default,
-            )
+        val paginationResult = defaultPaginationResult(initialFollows)
         followListState.onQueryMoreFollows(paginationResult, queryConfig)
 
         followListState.onFollowRemoved(initialFollows[0])
 
         val remainingFollows = followListState.follows.value
         assertEquals(listOf(initialFollows[1]), remainingFollows)
+    }
+
+    companion object {
+        private val queryConfig = FollowsQueryConfig(filter = null, sort = FollowsSort.Default)
     }
 }

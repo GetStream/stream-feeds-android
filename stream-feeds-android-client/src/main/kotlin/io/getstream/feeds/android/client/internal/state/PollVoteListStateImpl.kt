@@ -18,10 +18,9 @@ package io.getstream.feeds.android.client.internal.state
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.PollVoteData
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.PollVoteListState
-import io.getstream.feeds.android.client.api.state.query.PollVotesFilterField
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
+import io.getstream.feeds.android.client.api.state.query.PollVotesQueryConfig
 import io.getstream.feeds.android.client.api.state.query.PollVotesSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
@@ -40,7 +39,7 @@ internal class PollVoteListStateImpl(override val query: PollVotesQuery) :
 
     private val _votes: MutableStateFlow<List<PollVoteData>> = MutableStateFlow(emptyList())
 
-    internal var queryConfig: QueryConfiguration<PollVotesFilterField, PollVotesSort>? = null
+    internal var queryConfig: PollVotesQueryConfig? = null
         private set
 
     private var _pagination: PaginationData? = null
@@ -56,7 +55,7 @@ internal class PollVoteListStateImpl(override val query: PollVotesQuery) :
 
     override fun onQueryMorePollVotes(
         result: PaginationResult<PollVoteData>,
-        queryConfig: QueryConfiguration<PollVotesFilterField, PollVotesSort>,
+        queryConfig: PollVotesQueryConfig,
     ) {
         _pagination = result.pagination
         // Update the query configuration for future queries
@@ -108,7 +107,7 @@ internal interface PollVoteListStateUpdates {
      */
     fun onQueryMorePollVotes(
         result: PaginationResult<PollVoteData>,
-        queryConfig: QueryConfiguration<PollVotesFilterField, PollVotesSort>,
+        queryConfig: PollVotesQueryConfig,
     )
 
     /** Handles the addition of a new poll vote to the list. */

@@ -17,12 +17,13 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.filter.Sort
-import io.getstream.android.core.api.filter.SortDirection
-import io.getstream.android.core.api.filter.SortField
 import io.getstream.android.core.api.filter.toRequest
+import io.getstream.android.core.api.sort.Sort
+import io.getstream.android.core.api.sort.SortDirection
+import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
+import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.network.models.QueryFeedMembersRequest
 
@@ -54,58 +55,56 @@ public data class MembersQuery(
     public val previous: String? = null,
 )
 
-public typealias MembersFilter = Filter<MembersFilterField>
+/**
+ * A type alias representing a filter specifically for [FeedMemberData] using [MembersFilterField].
+ */
+public typealias MembersFilter = Filter<FeedMemberData, MembersFilterField>
 
-public data class MembersFilterField(override val remote: String) : FilterField {
+internal typealias MembersQueryConfig =
+    QueryConfiguration<FeedMemberData, MembersFilterField, MembersSort>
+
+/** Represents a field that can be used to filter feed members. */
+public data class MembersFilterField(
+    override val remote: String,
+    override val localValue: (FeedMemberData) -> Any?,
+) : FilterField<FeedMemberData> {
     public companion object {
         /**
          * Filter by creation timestamp.
          *
          * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
-        public val createdAt: MembersFilterField = MembersFilterField("created_at")
+        public val createdAt: MembersFilterField =
+            MembersFilterField("created_at", FeedMemberData::createdAt)
 
         /**
          * Filter by member role.
          *
          * Supported operators: `equal`, `in`
          */
-        public val role: MembersFilterField = MembersFilterField("role")
+        public val role: MembersFilterField = MembersFilterField("role", FeedMemberData::role)
 
         /**
          * Filter by member status.
          *
          * Supported operators: `equal`, `in`
          */
-        public val status: MembersFilterField = MembersFilterField("status")
+        public val status: MembersFilterField = MembersFilterField("status") { it.status.value }
 
         /**
          * Filter by last update timestamp.
          *
          * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
-        public val updatedAt: MembersFilterField = MembersFilterField("updated_at")
+        public val updatedAt: MembersFilterField =
+            MembersFilterField("updated_at", FeedMemberData::updatedAt)
 
         /**
          * Filter by user ID.
          *
          * Supported operators: `equal`, `in`
          */
-        public val userId: MembersFilterField = MembersFilterField("user_id")
-
-        /**
-         * Filter by feed ID.
-         *
-         * Supported operators: `equal`, `in`
-         */
-        public val fid: MembersFilterField = MembersFilterField("fid")
-
-        /**
-         * Filter by request.
-         *
-         * Supported operators: `equal`
-         */
-        public val request: MembersFilterField = MembersFilterField("request")
+        public val userId: MembersFilterField = MembersFilterField("user_id") { it.user.id }
     }
 }
 

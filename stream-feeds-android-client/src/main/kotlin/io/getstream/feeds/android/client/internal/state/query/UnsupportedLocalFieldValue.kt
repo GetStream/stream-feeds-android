@@ -13,19 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getstream.feeds.android.client.api.model
+package io.getstream.feeds.android.client.internal.state.query
 
-import io.getstream.android.core.api.filter.Filter
-import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.sort.Sort
+private object UnsupportedLocalFieldValue
 
 /**
- * Wrapper around the query configuration consisting of a [Filter] and a list of [Sort] operations.
- *
- * @property filter The filter for the query.
- * @property sort The list of sorting operations for the query.
+ * Placeholder to indicate cases where we don't support extracting the local value for a filter
+ * field
  */
-internal data class QueryConfiguration<T, F : FilterField<T>, S : Sort<T>>(
-    val filter: Filter<T, F>?,
-    val sort: List<S>?,
-)
+internal val unsupportedLocalValue: (Any) -> Any? = { UnsupportedLocalFieldValue }

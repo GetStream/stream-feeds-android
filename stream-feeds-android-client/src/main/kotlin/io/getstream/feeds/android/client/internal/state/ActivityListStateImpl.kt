@@ -21,7 +21,6 @@ import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.model.addBookmark
 import io.getstream.feeds.android.client.api.model.addComment
 import io.getstream.feeds.android.client.api.model.addReaction
@@ -29,8 +28,8 @@ import io.getstream.feeds.android.client.api.model.deleteBookmark
 import io.getstream.feeds.android.client.api.model.removeComment
 import io.getstream.feeds.android.client.api.model.removeReaction
 import io.getstream.feeds.android.client.api.state.ActivityListState
-import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
+import io.getstream.feeds.android.client.api.state.query.ActivitiesQueryConfig
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
@@ -56,7 +55,7 @@ internal class ActivityListStateImpl(
 
     private val _activities: MutableStateFlow<List<ActivityData>> = MutableStateFlow(emptyList())
 
-    internal var queryConfig: QueryConfiguration<ActivitiesFilterField, ActivitiesSort>? = null
+    internal var queryConfig: ActivitiesQueryConfig? = null
         private set
 
     private var _pagination: PaginationData? = null
@@ -72,7 +71,7 @@ internal class ActivityListStateImpl(
 
     override fun onQueryMoreActivities(
         result: PaginationResult<ActivityData>,
-        queryConfig: QueryConfiguration<ActivitiesFilterField, ActivitiesSort>,
+        queryConfig: ActivitiesQueryConfig,
     ) {
         _pagination = result.pagination
         // Update the query configuration for future queries
@@ -189,7 +188,7 @@ internal interface ActivityListStateUpdates {
      */
     fun onQueryMoreActivities(
         result: PaginationResult<ActivityData>,
-        queryConfig: QueryConfiguration<ActivitiesFilterField, ActivitiesSort>,
+        queryConfig: ActivitiesQueryConfig,
     )
 
     /**

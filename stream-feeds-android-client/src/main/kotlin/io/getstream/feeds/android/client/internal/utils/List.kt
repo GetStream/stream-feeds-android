@@ -15,8 +15,8 @@
  */
 package io.getstream.feeds.android.client.internal.utils
 
-import io.getstream.android.core.api.filter.CompositeComparator
-import io.getstream.android.core.api.filter.Sort
+import io.getstream.android.core.api.sort.CompositeComparator
+import io.getstream.android.core.api.sort.Sort
 
 /**
  * Updates an existing element in the list or inserts a new one if not found.

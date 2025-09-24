@@ -18,10 +18,9 @@ package io.getstream.feeds.android.client.internal.state
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.FeedListState
-import io.getstream.feeds.android.client.api.state.query.FeedsFilterField
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
+import io.getstream.feeds.android.client.api.state.query.FeedsQueryConfig
 import io.getstream.feeds.android.client.api.state.query.FeedsSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +43,7 @@ internal class FeedListStateImpl(override val query: FeedsQuery) : FeedListMutab
 
     private var _pagination: PaginationData? = null
 
-    internal var queryConfig: QueryConfiguration<FeedsFilterField, FeedsSort>? = null
+    internal var queryConfig: FeedsQueryConfig? = null
         private set
 
     private val feedsSorting: List<FeedsSort>
@@ -74,7 +73,7 @@ internal class FeedListStateImpl(override val query: FeedsQuery) : FeedListMutab
 
     override fun onQueryMoreFeeds(
         result: PaginationResult<FeedData>,
-        queryConfig: QueryConfiguration<FeedsFilterField, FeedsSort>,
+        queryConfig: FeedsQueryConfig,
     ) {
         _pagination = result.pagination
         this.queryConfig = queryConfig
@@ -105,10 +104,7 @@ internal interface FeedListStateUpdates {
     fun onFeedUpdated(feed: FeedData)
 
     /** Handles the result of a query for more feeds. */
-    fun onQueryMoreFeeds(
-        result: PaginationResult<FeedData>,
-        queryConfig: QueryConfiguration<FeedsFilterField, FeedsSort>,
-    )
+    fun onQueryMoreFeeds(result: PaginationResult<FeedData>, queryConfig: FeedsQueryConfig)
 
     /** Handles the removal of a feed by its ID. */
     fun onFeedRemoved(feedId: String)

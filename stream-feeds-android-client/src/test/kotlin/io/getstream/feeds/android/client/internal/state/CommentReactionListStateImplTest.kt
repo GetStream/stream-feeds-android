@@ -16,12 +16,10 @@
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
-import io.getstream.feeds.android.client.api.model.PaginationData
-import io.getstream.feeds.android.client.api.model.PaginationResult
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
-import io.getstream.feeds.android.client.api.state.query.CommentReactionsFilterField
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
+import io.getstream.feeds.android.client.api.state.query.CommentReactionsQueryConfig
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsSort
+import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -42,16 +40,7 @@ internal class CommentReactionListStateImplTest {
     fun `on queryMoreReactions, then update reactions and pagination`() = runTest {
         val reactions =
             listOf(feedsReactionData(), feedsReactionData("reaction-2", "comment-1", "user-2"))
-        val paginationResult =
-            PaginationResult(
-                models = reactions,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig =
-            QueryConfiguration<CommentReactionsFilterField, CommentReactionsSort>(
-                filter = null,
-                sort = CommentReactionsSort.Default,
-            )
+        val paginationResult = defaultPaginationResult(reactions)
 
         commentReactionListState.onQueryMoreReactions(paginationResult, queryConfig)
 
@@ -64,21 +53,17 @@ internal class CommentReactionListStateImplTest {
     fun `on reactionRemoved, then remove specific reaction`() = runTest {
         val initialReactions =
             listOf(feedsReactionData(), feedsReactionData("reaction-2", "comment-1", "user-2"))
-        val paginationResult =
-            PaginationResult(
-                models = initialReactions,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
-        val queryConfig =
-            QueryConfiguration<CommentReactionsFilterField, CommentReactionsSort>(
-                filter = null,
-                sort = CommentReactionsSort.Default,
-            )
+        val paginationResult = defaultPaginationResult(initialReactions)
         commentReactionListState.onQueryMoreReactions(paginationResult, queryConfig)
 
         commentReactionListState.onReactionRemoved(initialReactions[0])
 
         val remainingReactions = commentReactionListState.reactions.value
         assertEquals(initialReactions.drop(1), remainingReactions)
+    }
+
+    companion object {
+        private val queryConfig =
+            CommentReactionsQueryConfig(filter = null, sort = CommentReactionsSort.Default)
     }
 }

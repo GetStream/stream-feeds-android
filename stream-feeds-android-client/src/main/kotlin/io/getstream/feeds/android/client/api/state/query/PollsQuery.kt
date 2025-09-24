@@ -17,11 +17,12 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.filter.Sort
-import io.getstream.android.core.api.filter.SortDirection
-import io.getstream.android.core.api.filter.SortField
 import io.getstream.android.core.api.filter.toRequest
+import io.getstream.android.core.api.sort.Sort
+import io.getstream.android.core.api.sort.SortDirection
+import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.PollData
+import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.network.models.QueryPollsRequest
 
@@ -51,16 +52,24 @@ public data class PollsQuery(
     public val sort: List<PollsSort>? = null,
 )
 
-public typealias PollsFilter = Filter<PollsFilterField>
+/** A type alias representing a filter specifically for [PollData] using [PollsFilterField]. */
+public typealias PollsFilter = Filter<PollData, PollsFilterField>
 
-public data class PollsFilterField(override val remote: String) : FilterField {
+internal typealias PollsQueryConfig = QueryConfiguration<PollData, PollsFilterField, PollsSort>
+
+/** Represents a field that can be used to filter polls. */
+public data class PollsFilterField(
+    override val remote: String,
+    override val localValue: (PollData) -> Any?,
+) : FilterField<PollData> {
     public companion object {
         /**
          * Filter by allow answers setting.
          *
          * Supported operators: `equal`
          */
-        public val allowAnswers: PollsFilterField = PollsFilterField("allow_answers")
+        public val allowAnswers: PollsFilterField =
+            PollsFilterField("allow_answers", PollData::allowAnswers)
 
         /**
          * Filter by allow user suggested options setting.
@@ -68,63 +77,66 @@ public data class PollsFilterField(override val remote: String) : FilterField {
          * Supported operators: `equal`
          */
         public val allowUserSuggestedOptions: PollsFilterField =
-            PollsFilterField("allow_user_suggested_options")
+            PollsFilterField("allow_user_suggested_options", PollData::allowUserSuggestedOptions)
 
         /**
          * Filter by creation timestamp.
          *
          * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
-        public val createdAt: PollsFilterField = PollsFilterField("created_at")
+        public val createdAt: PollsFilterField = PollsFilterField("created_at", PollData::createdAt)
 
         /**
          * Filter by creator's user ID.
          *
          * Supported operators: `equal`, `in`
          */
-        public val createdById: PollsFilterField = PollsFilterField("created_by_id")
+        public val createdById: PollsFilterField =
+            PollsFilterField("created_by_id", PollData::createdById)
 
         /**
          * Filter by poll ID.
          *
          * Supported operators: `equal`, `in`
          */
-        public val id: PollsFilterField = PollsFilterField("id")
+        public val id: PollsFilterField = PollsFilterField("id", PollData::id)
 
         /**
          * Filter by closed status.
          *
          * Supported operators: `equal`
          */
-        public val isClosed: PollsFilterField = PollsFilterField("is_closed")
+        public val isClosed: PollsFilterField = PollsFilterField("is_closed", PollData::isClosed)
 
         /**
          * Filter by maximum votes allowed.
          *
          * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
-        public val maxVotesAllowed: PollsFilterField = PollsFilterField("max_votes_allowed")
+        public val maxVotesAllowed: PollsFilterField =
+            PollsFilterField("max_votes_allowed", PollData::maxVotesAllowed)
 
         /**
          * Filter by poll name.
          *
          * Supported operators: `equal`, `in`
          */
-        public val name: PollsFilterField = PollsFilterField("name")
+        public val name: PollsFilterField = PollsFilterField("name", PollData::name)
 
         /**
          * Filter by last update timestamp.
          *
          * Supported operators: `equal`, `greater`, `greaterOrEqual`, `less`, `lessOrEqual`
          */
-        public val updatedAt: PollsFilterField = PollsFilterField("updated_at")
+        public val updatedAt: PollsFilterField = PollsFilterField("updated_at", PollData::updatedAt)
 
         /**
          * Filter by voting visibility.
          *
          * Supported operators: `equal`
          */
-        public val votingVisibility: PollsFilterField = PollsFilterField("voting_visibility")
+        public val votingVisibility: PollsFilterField =
+            PollsFilterField("voting_visibility", PollData::votingVisibility)
     }
 }
 

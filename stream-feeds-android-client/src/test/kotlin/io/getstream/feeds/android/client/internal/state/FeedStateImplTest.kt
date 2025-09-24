@@ -15,13 +15,14 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
+import io.getstream.android.core.api.filter.equal
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
+import io.getstream.feeds.android.client.api.state.query.ActivitiesQueryConfig
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
@@ -230,6 +231,79 @@ internal class FeedStateImplTest {
         assertEquals(emptyList<FeedOwnCapability>(), feedState.ownCapabilities.value)
     }
 
+    @Test
+    fun `on activityAdded with matching filter, then add activity`() = runTest {
+        val filter = ActivitiesFilterField.type.equal("post")
+        val feedStateWithFilter =
+            FeedStateImpl(
+                feedQuery.copy(activityFilter = filter),
+                currentUserId,
+                mockMemberListState,
+            )
+
+        val matchingActivity = activityData("activity-1", type = "post")
+        feedStateWithFilter.onActivityAdded(matchingActivity)
+
+        val activities = feedStateWithFilter.activities.value
+        assertEquals(listOf(matchingActivity), activities)
+    }
+
+    @Test
+    fun `on activityAdded with non-matching filter, then do not add activity`() = runTest {
+        val filter = ActivitiesFilterField.type.equal("comment")
+        val feedStateWithFilter =
+            FeedStateImpl(
+                feedQuery.copy(activityFilter = filter),
+                currentUserId,
+                mockMemberListState,
+            )
+
+        val nonMatchingActivity = activityData("activity-1", type = "post")
+        feedStateWithFilter.onActivityAdded(nonMatchingActivity)
+
+        val activities = feedStateWithFilter.activities.value
+        assertEquals(emptyList<ActivityData>(), activities)
+    }
+
+    @Test
+    fun `on activityUpdated with matching filter, then update activity`() = runTest {
+        val filter = ActivitiesFilterField.type.equal("post")
+        val feedStateWithFilter =
+            FeedStateImpl(
+                feedQuery.copy(activityFilter = filter),
+                currentUserId,
+                mockMemberListState,
+            )
+
+        val initialActivity = activityData("activity-1", type = "post")
+        feedStateWithFilter.onActivityAdded(initialActivity)
+
+        val updatedActivity = activityData("activity-1", type = "post", text = "Updated text")
+        feedStateWithFilter.onActivityUpdated(updatedActivity)
+
+        val activities = feedStateWithFilter.activities.value
+        assertEquals(listOf(updatedActivity), activities)
+    }
+
+    @Test
+    fun `on activityUpdated with non-matching filter, then do not update activity`() = runTest {
+        val filter = ActivitiesFilterField.type.equal("comment")
+        val feedStateWithFilter =
+            FeedStateImpl(
+                feedQuery.copy(activityFilter = filter),
+                currentUserId,
+                mockMemberListState,
+            )
+
+        setupInitialState(listOf(activityData("activity-1", type = "post")))
+
+        val updatedActivity = activityData("activity-1", type = "post", text = "Updated text")
+        feedStateWithFilter.onActivityUpdated(updatedActivity)
+
+        val activities = feedStateWithFilter.activities.value
+        assertEquals(emptyList<ActivityData>(), activities)
+    }
+
     // Helper functions
     private fun setupInitialState(
         activities: List<ActivityData> = listOf(activityData("activity-1")),
@@ -283,8 +357,5 @@ internal class FeedStateImplTest {
     }
 
     private fun createQueryConfig() =
-        QueryConfiguration<ActivitiesFilterField, ActivitiesSort>(
-            filter = null,
-            sort = ActivitiesSort.Default,
-        )
+        ActivitiesQueryConfig(filter = null, sort = ActivitiesSort.Default)
 }

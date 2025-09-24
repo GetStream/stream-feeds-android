@@ -75,9 +75,9 @@ public data class FollowData(
 /**
  * Sealed class representing the status of a follow relationship.
  *
- * @property string The string representation of the follow status.
+ * @property value The string representation of the follow status.
  */
-public sealed class FollowStatus(public val string: String) {
+public sealed class FollowStatus(public val value: String) {
 
     /** Represents a follow relationship that has been accepted. */
     public object Accepted : FollowStatus("accepted")
