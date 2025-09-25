@@ -77,11 +77,11 @@ internal class FeedImplTest {
     private val pollsRepository: PollsRepository = mockk(relaxed = true)
     private val feedWatchHandler: FeedWatchHandler = mockk(relaxed = true)
     private val stateEventListener: StateUpdateEventListener = mockk(relaxed = true)
+    private val fid = FeedId("group:id")
 
     @Test
     fun `on getOrCreate with watch enabled, then call feedWatchHandler`() = runTest {
         val feed = createFeed(watch = true)
-        val feedId = FeedId("group:id")
         val testFeedData = feedData()
         val feedInfo = getOrCreateInfo(testFeedData)
         coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
@@ -90,7 +90,7 @@ internal class FeedImplTest {
 
         assertEquals(feedInfo.feed, result.getOrNull())
         assertEquals(feedInfo.feed, feed.state.feed.value)
-        verify { feedWatchHandler.onStartWatching(feedId) }
+        verify { feedWatchHandler.onStartWatching(fid) }
     }
 
     @Test
@@ -706,7 +706,9 @@ internal class FeedImplTest {
 
         assertEquals(reaction, result.getOrNull())
         verify {
-            stateEventListener.onEvent(StateUpdateEvent.CommentReactionUpserted(comment, reaction))
+            stateEventListener.onEvent(
+                StateUpdateEvent.CommentReactionUpserted(fid.rawValue, comment, reaction)
+            )
         }
     }
 
@@ -725,7 +727,9 @@ internal class FeedImplTest {
 
         assertEquals(reaction, result.getOrNull())
         verify {
-            stateEventListener.onEvent(StateUpdateEvent.CommentReactionDeleted(comment, reaction))
+            stateEventListener.onEvent(
+                StateUpdateEvent.CommentReactionDeleted(fid.rawValue, comment, reaction)
+            )
         }
     }
 
@@ -759,7 +763,7 @@ internal class FeedImplTest {
 
     private fun createFeed(watch: Boolean = false) =
         FeedImpl(
-            query = FeedQuery(group = "group", id = "id", watch = watch),
+            query = FeedQuery(fid, watch = watch),
             currentUserId = "user",
             activitiesRepository = activitiesRepository,
             bookmarksRepository = bookmarksRepository,

@@ -33,7 +33,7 @@ internal class CommentReactionListEventHandlerTest {
     fun `on CommentReactionDeleted, then call onReactionRemoved`() {
         val reaction = feedsReactionData()
         val comment = commentData()
-        val event = StateUpdateEvent.CommentReactionDeleted(comment, reaction)
+        val event = StateUpdateEvent.CommentReactionDeleted("feed-1", comment, reaction)
 
         handler.onEvent(event)
 

@@ -111,6 +111,18 @@ internal class FeedEventHandler(private val fid: FeedId, private val state: Feed
                 }
             }
 
+            is StateUpdateEvent.CommentReactionDeleted -> {
+                if (event.fid == fid.rawValue) {
+                    state.onCommentReactionRemoved(event.comment, event.reaction)
+                }
+            }
+
+            is StateUpdateEvent.CommentReactionUpserted -> {
+                if (event.fid == fid.rawValue) {
+                    state.onCommentReactionUpserted(event.comment, event.reaction)
+                }
+            }
+
             is StateUpdateEvent.FeedDeleted -> {
                 if (event.fid == fid.rawValue) {
                     state.onFeedDeleted()

@@ -15,6 +15,7 @@
  */
 package io.getstream.feeds.android.client.api.model
 
+import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.network.models.ActivityLocation
 import io.getstream.feeds.android.network.models.ActivityResponse
@@ -334,3 +335,27 @@ internal inline fun ActivityData.changeReactions(
 
     return update(updated, ownReactions = updatedOwnReactions)
 }
+
+internal fun ActivityData.removeCommentReaction(
+    updated: CommentData,
+    reaction: FeedsReactionData,
+    currentUserId: String,
+): ActivityData =
+    copy(
+        comments =
+            comments.updateIf({ it.id == updated.id }) { comment ->
+                comment.removeReaction(updated, reaction, currentUserId)
+            }
+    )
+
+internal fun ActivityData.upsertCommentReaction(
+    updated: CommentData,
+    reaction: FeedsReactionData,
+    currentUserId: String,
+): ActivityData =
+    copy(
+        comments =
+            comments.updateIf({ it.id == updated.id }) { comment ->
+                comment.upsertReaction(updated, reaction, currentUserId)
+            }
+    )

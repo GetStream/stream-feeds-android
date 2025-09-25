@@ -60,11 +60,12 @@ internal class ActivityImplTest {
         every { state } returns commentListState
     }
     private val stateEventListener: StateUpdateEventListener = mockk(relaxed = true)
+    private val fid = FeedId("group:feed")
 
     private val activity =
         ActivityImpl(
             activityId = "activityId",
-            fid = FeedId("group:feed"),
+            fid = fid,
             currentUserId = "currentUserId",
             activitiesRepository = activitiesRepository,
             commentsRepository = commentsRepository,
@@ -83,7 +84,7 @@ internal class ActivityImplTest {
         activity.addComment(request, progress)
 
         verify {
-            stateEventListener.onEvent(StateUpdateEvent.CommentAdded("group:feed", commentData))
+            stateEventListener.onEvent(StateUpdateEvent.CommentAdded(fid.rawValue, commentData))
         }
     }
 
@@ -101,7 +102,7 @@ internal class ActivityImplTest {
         activity.addCommentsBatch(requests)
 
         commentData.forEach { data ->
-            verify { stateEventListener.onEvent(StateUpdateEvent.CommentAdded("group:feed", data)) }
+            verify { stateEventListener.onEvent(StateUpdateEvent.CommentAdded(fid.rawValue, data)) }
         }
     }
 
@@ -119,7 +120,7 @@ internal class ActivityImplTest {
         assertEquals(activityData, result.getOrNull())
         assertEquals(activityData, activity.state.activity.value)
         verify {
-            stateEventListener.onEvent(StateUpdateEvent.ActivityUpdated("group:feed", activityData))
+            stateEventListener.onEvent(StateUpdateEvent.ActivityUpdated(fid.rawValue, activityData))
         }
     }
 
@@ -175,10 +176,10 @@ internal class ActivityImplTest {
         assertEquals(expectedActivity, activity.state.activity.value)
         verify {
             stateEventListener.onEvent(
-                StateUpdateEvent.CommentDeleted("group:feed", deleteData.first)
+                StateUpdateEvent.CommentDeleted(fid.rawValue, deleteData.first)
             )
             stateEventListener.onEvent(
-                StateUpdateEvent.ActivityUpdated("group:feed", expectedActivity)
+                StateUpdateEvent.ActivityUpdated(fid.rawValue, expectedActivity)
             )
         }
     }
@@ -211,7 +212,7 @@ internal class ActivityImplTest {
         assertEquals(reactionData, result.getOrNull())
         verify {
             stateEventListener.onEvent(
-                StateUpdateEvent.CommentReactionUpserted(commentData, reactionData)
+                StateUpdateEvent.CommentReactionUpserted(fid.rawValue, commentData, reactionData)
             )
         }
     }
@@ -230,7 +231,7 @@ internal class ActivityImplTest {
         assertEquals(reactionData, result.getOrNull())
         verify {
             stateEventListener.onEvent(
-                StateUpdateEvent.CommentReactionDeleted(commentData, reactionData)
+                StateUpdateEvent.CommentReactionDeleted(fid.rawValue, commentData, reactionData)
             )
         }
     }
@@ -238,22 +239,21 @@ internal class ActivityImplTest {
     @Test
     fun `on pin, delegate to repository and update state`() = runTest {
         val activityData = activityData("activityId")
-        coEvery { activitiesRepository.pin("activityId", FeedId("group:feed")) } returns
-            Result.success(activityData)
+        coEvery { activitiesRepository.pin("activityId", fid) } returns Result.success(activityData)
 
         val result = activity.pin()
 
         assertEquals(Unit, result.getOrNull())
         assertEquals(activityData, activity.state.activity.value)
         verify {
-            stateEventListener.onEvent(StateUpdateEvent.ActivityUpdated("group:feed", activityData))
+            stateEventListener.onEvent(StateUpdateEvent.ActivityUpdated(fid.rawValue, activityData))
         }
     }
 
     @Test
     fun `on unpin, delegate to repository and update state`() = runTest {
         val activityData = activityData("activityId")
-        coEvery { activitiesRepository.unpin("activityId", FeedId("group:feed")) } returns
+        coEvery { activitiesRepository.unpin("activityId", fid) } returns
             Result.success(activityData)
 
         val result = activity.unpin()
@@ -261,7 +261,7 @@ internal class ActivityImplTest {
         assertEquals(Unit, result.getOrNull())
         assertEquals(activityData, activity.state.activity.value)
         verify {
-            stateEventListener.onEvent(StateUpdateEvent.ActivityUpdated("group:feed", activityData))
+            stateEventListener.onEvent(StateUpdateEvent.ActivityUpdated(fid.rawValue, activityData))
         }
     }
 
@@ -279,7 +279,7 @@ internal class ActivityImplTest {
         assertEquals(updatedPoll, result.getOrNull())
         assertEquals(updatedPoll, activity.state.poll.value)
         verify {
-            stateEventListener.onEvent(StateUpdateEvent.PollUpdated("group:feed", updatedPoll))
+            stateEventListener.onEvent(StateUpdateEvent.PollUpdated(fid.rawValue, updatedPoll))
         }
     }
 
@@ -296,7 +296,7 @@ internal class ActivityImplTest {
         assertEquals(closedPoll, result.getOrNull())
         assertEquals(closedPoll, activity.state.poll.value)
         verify {
-            stateEventListener.onEvent(StateUpdateEvent.PollUpdated("group:feed", closedPoll))
+            stateEventListener.onEvent(StateUpdateEvent.PollUpdated(fid.rawValue, closedPoll))
         }
     }
 
@@ -314,7 +314,7 @@ internal class ActivityImplTest {
             assertEquals(Unit, result.getOrNull())
             assertEquals(null, activity.state.poll.value)
             verify {
-                stateEventListener.onEvent(StateUpdateEvent.PollDeleted("group:feed", "poll-1"))
+                stateEventListener.onEvent(StateUpdateEvent.PollDeleted(fid.rawValue, "poll-1"))
             }
         }
 
@@ -341,7 +341,7 @@ internal class ActivityImplTest {
             assertEquals(expectedOptions, activity.state.poll.value?.options)
             verify {
                 stateEventListener.onEvent(
-                    StateUpdateEvent.PollOptionAdded("group:feed", "poll-1", option)
+                    StateUpdateEvent.PollOptionAdded(fid.rawValue, "poll-1", option)
                 )
             }
         }
@@ -366,7 +366,7 @@ internal class ActivityImplTest {
             assertEquals(listOf(vote), actualPoll.latestVotesByOption["option-1"])
             verify {
                 stateEventListener.onEvent(
-                    StateUpdateEvent.PollVoteCasted("group:feed", "poll-1", vote)
+                    StateUpdateEvent.PollVoteCasted(fid.rawValue, "poll-1", vote)
                 )
             }
         }
@@ -388,7 +388,7 @@ internal class ActivityImplTest {
             assertNotNull("Poll should still exist", activity.state.poll.value)
             verify {
                 stateEventListener.onEvent(
-                    StateUpdateEvent.PollVoteRemoved("group:feed", "poll-1", vote)
+                    StateUpdateEvent.PollVoteRemoved(fid.rawValue, "poll-1", vote)
                 )
             }
         }
@@ -409,7 +409,7 @@ internal class ActivityImplTest {
             assertEquals(updatedPoll, result.getOrNull())
             assertEquals(updatedPoll, activity.state.poll.value)
             verify {
-                stateEventListener.onEvent(StateUpdateEvent.PollUpdated("group:feed", updatedPoll))
+                stateEventListener.onEvent(StateUpdateEvent.PollUpdated(fid.rawValue, updatedPoll))
             }
         }
 
@@ -428,7 +428,7 @@ internal class ActivityImplTest {
             assertEquals(updatedPoll, result.getOrNull())
             assertEquals(updatedPoll, activity.state.poll.value)
             verify {
-                stateEventListener.onEvent(StateUpdateEvent.PollUpdated("group:feed", updatedPoll))
+                stateEventListener.onEvent(StateUpdateEvent.PollUpdated(fid.rawValue, updatedPoll))
             }
         }
 
@@ -449,7 +449,7 @@ internal class ActivityImplTest {
         assertEquals(expectedOptions, activity.state.poll.value?.options)
         verify {
             stateEventListener.onEvent(
-                StateUpdateEvent.PollOptionDeleted("group:feed", "poll-1", optionId)
+                StateUpdateEvent.PollOptionDeleted(fid.rawValue, "poll-1", optionId)
             )
         }
     }
@@ -471,7 +471,7 @@ internal class ActivityImplTest {
             assertEquals(option, result.getOrNull())
             verify {
                 stateEventListener.onEvent(
-                    StateUpdateEvent.PollOptionUpdated("group:feed", "poll-1", option)
+                    StateUpdateEvent.PollOptionUpdated(fid.rawValue, "poll-1", option)
                 )
             }
         }
@@ -498,7 +498,7 @@ internal class ActivityImplTest {
             assertEquals(expectedOptions, activity.state.poll.value?.options)
             verify {
                 stateEventListener.onEvent(
-                    StateUpdateEvent.PollOptionUpdated("group:feed", "poll-1", updatedOption)
+                    StateUpdateEvent.PollOptionUpdated(fid.rawValue, "poll-1", updatedOption)
                 )
             }
         }
