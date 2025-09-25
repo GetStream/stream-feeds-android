@@ -17,44 +17,65 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.internal.state.CommentListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionAdded
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentUpdated
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
+import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
+import io.mockk.MockKVerificationScope
 import io.mockk.called
 import io.mockk.mockk
-import io.mockk.verify
-import org.junit.Test
+import org.junit.runners.Parameterized
 
-internal class CommentListEventHandlerTest {
+internal class CommentListEventHandlerTest(
+    testName: String,
+    event: StateUpdateEvent,
+    verifyBlock: MockKVerificationScope.(CommentListStateUpdates) -> Unit,
+) : BaseEventHandlerTest<CommentListStateUpdates>(testName, event, verifyBlock) {
 
-    private val state: CommentListStateUpdates = mockk(relaxed = true)
-    private val handler = CommentListEventHandler(state)
+    override val state: CommentListStateUpdates = mockk(relaxed = true)
+    override val handler = CommentListEventHandler(state)
 
-    @Test
-    fun `on CommentUpdatedEvent, then call onCommentUpdated`() {
-        val comment = commentData()
-        val event = StateUpdateEvent.CommentUpdated(comment)
+    companion object {
+        private val comment = commentData()
+        private val reaction = feedsReactionData()
 
-        handler.onEvent(event)
-
-        verify { state.onCommentUpdated(comment) }
-    }
-
-    @Test
-    fun `on CommentDeletedEvent, then call onCommentRemoved`() {
-        val comment = commentData()
-        val event = StateUpdateEvent.CommentDeleted("feed-1", comment)
-
-        handler.onEvent(event)
-
-        verify { state.onCommentRemoved(comment.id) }
-    }
-
-    @Test
-    fun `on unknown event, then do nothing`() {
-        val comment = commentData()
-        val unknownEvent = StateUpdateEvent.CommentAdded("feed-1", comment)
-
-        handler.onEvent(unknownEvent)
-
-        verify { state wasNot called }
+        @JvmStatic
+        @Parameterized.Parameters(name = "{0}")
+        fun data(): Collection<Array<Any>> =
+            listOf(
+                testParams<CommentListStateUpdates>(
+                    name = "CommentUpdated",
+                    event = CommentUpdated(comment),
+                    verifyBlock = { state -> state.onCommentUpdated(comment) },
+                ),
+                testParams<CommentListStateUpdates>(
+                    name = "CommentDeleted",
+                    event = CommentDeleted("feed-1", comment),
+                    verifyBlock = { state -> state.onCommentRemoved(comment.id) },
+                ),
+                testParams<CommentListStateUpdates>(
+                    name = "CommentReactionAdded",
+                    event = CommentReactionAdded("feed-1", comment, reaction),
+                    verifyBlock = { state -> state.onCommentReactionUpserted(comment, reaction) },
+                ),
+                testParams<CommentListStateUpdates>(
+                    name = "CommentReactionDeleted",
+                    event = CommentReactionDeleted("feed-1", comment, reaction),
+                    verifyBlock = { state -> state.onCommentReactionRemoved(comment, reaction) },
+                ),
+                testParams<CommentListStateUpdates>(
+                    name = "CommentReactionUpdated",
+                    event = CommentReactionUpdated("feed-1", comment, reaction),
+                    verifyBlock = { state -> state.onCommentReactionUpserted(comment, reaction) },
+                ),
+                testParams<CommentListStateUpdates>(
+                    name = "unknown event",
+                    event = StateUpdateEvent.CommentAdded("feed-1", comment),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+            )
     }
 }
