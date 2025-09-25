@@ -204,6 +204,7 @@ internal object TestData {
         poll: PollData? = null,
         ownBookmarks: List<BookmarkData> = emptyList(),
         ownReactions: List<FeedsReactionData> = emptyList(),
+        feeds: List<String> = emptyList(),
     ): ActivityData =
         ActivityData(
             attachments = emptyList(),
@@ -216,7 +217,7 @@ internal object TestData {
             deletedAt = null,
             editedAt = null,
             expiresAt = null,
-            feeds = emptyList(),
+            feeds = feeds,
             filterTags = emptyList(),
             id = id,
             interestTags = emptyList(),
@@ -259,6 +260,16 @@ internal object TestData {
             blockedFileExtensions = emptyList(),
             blockedMimeTypes = emptyList(),
             sizeLimit = 0,
+        )
+
+    fun bookmarkData(activity: ActivityData): BookmarkData =
+        BookmarkData(
+            activity = activity,
+            createdAt = Date(1000),
+            custom = emptyMap(),
+            folder = null,
+            updatedAt = Date(1000),
+            user = userData("user-1"),
         )
 
     fun bookmarkData(
