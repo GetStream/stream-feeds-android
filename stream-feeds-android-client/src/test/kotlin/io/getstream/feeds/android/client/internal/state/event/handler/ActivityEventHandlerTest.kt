@@ -18,240 +18,241 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.internal.state.ActivityStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionAdded
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkAdded
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollClosed
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteCasted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteChanged
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteRemoved
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
+import io.mockk.MockKVerificationScope
 import io.mockk.called
-import io.mockk.clearMocks
 import io.mockk.mockk
-import io.mockk.verify
-import org.junit.Test
+import org.junit.runners.Parameterized
 
-internal class ActivityEventHandlerTest {
+internal class ActivityEventHandlerTest(
+    testName: String,
+    event: StateUpdateEvent,
+    verifyBlock: MockKVerificationScope.(ActivityStateUpdates) -> Unit,
+) : BaseEventHandlerTest<ActivityStateUpdates>(testName, event, verifyBlock) {
 
-    private val fid = FeedId("user", "activity-1")
-    private val differentFid = "user:different-activity"
-    private val state: ActivityStateUpdates = mockk(relaxed = true)
-    private val activityId = "test-activity-id"
-    private val handler = ActivityEventHandler(fid, activityId, state)
+    override val state: ActivityStateUpdates = mockk(relaxed = true)
+    override val handler: StateUpdateEventListener = ActivityEventHandler(fid, activityId, state)
 
-    @Test
-    fun `on ActivityReactionAdded, then handle based on feed and activity match`() {
-        val activity = activityData(activityId)
-        val reaction = feedsReactionData(activityId)
-        val matchingEvent = StateUpdateEvent.ActivityReactionAdded(fid.rawValue, activity, reaction)
-        val nonMatchingEvent =
-            StateUpdateEvent.ActivityReactionAdded(differentFid, activity, reaction)
+    companion object {
+        private val fid = FeedId("user", "activity-1")
+        private const val otherFid = "user:other-activity"
+        private const val activityId = "test-activity-id"
+        private const val otherId = "other-activity"
+        private val activity = activityData(activityId)
+        private val matchingBookmark =
+            bookmarkData(activityData(activityId, feeds = listOf(fid.rawValue)))
+        private val nonMatchingActivityBookmark =
+            bookmarkData(activityData(otherId, feeds = listOf(fid.rawValue)))
+        private val nonMatchingFeedBookmark =
+            bookmarkData(activityData(activityId, feeds = listOf(otherFid)))
 
-        testEventHandling(
-            matchingEvent = matchingEvent,
-            nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onReactionUpserted(reaction, activity) },
-        )
-    }
-
-    @Test
-    fun `on ActivityReactionUpdated, then handle based on feed and activity match`() {
-        val activity = activityData(activityId)
-        val reaction = feedsReactionData(activityId)
-        val matchingEvent =
-            StateUpdateEvent.ActivityReactionUpdated(fid.rawValue, activity, reaction)
-        val nonMatchingEvent =
-            StateUpdateEvent.ActivityReactionUpdated(differentFid, activity, reaction)
-
-        testEventHandling(
-            matchingEvent = matchingEvent,
-            nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onReactionUpserted(reaction, activity) },
-        )
-    }
-
-    @Test
-    fun `on ActivityReactionDeleted, then handle based on feed and activity match`() {
-        val activity = activityData(activityId)
-        val reaction = feedsReactionData(activityId)
-        val matchingEvent =
-            StateUpdateEvent.ActivityReactionDeleted(fid.rawValue, activity, reaction)
-        val nonMatchingEvent =
-            StateUpdateEvent.ActivityReactionDeleted(differentFid, activity, reaction)
-
-        testEventHandling(
-            matchingEvent = matchingEvent,
-            nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onReactionRemoved(reaction, activity) },
-        )
-    }
-
-    @Test
-    fun `on ActivityUpdated, then handle based on feed and activity match`() {
-        val activity = activityData(activityId)
-        val matchingEvent = StateUpdateEvent.ActivityUpdated(fid.rawValue, activity)
-        val nonMatchingEvent = StateUpdateEvent.ActivityUpdated(differentFid, activity)
-
-        testEventHandling(
-            matchingEvent = matchingEvent,
-            nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onActivityUpdated(activity) },
-        )
-    }
-
-    @Test
-    fun `on BookmarkAdded, then handle based on feed and activity match`() {
-        val matchingActivity = activityData(activityId).copy(feeds = listOf(fid.rawValue))
-        val matchingBookmark = bookmarkData().copy(activity = matchingActivity)
-        val matchingEvent = StateUpdateEvent.BookmarkAdded(matchingBookmark)
-
-        val nonMatchingActivity = matchingActivity.copy(feeds = listOf(differentFid))
-        val nonMatchingBookmark = matchingBookmark.copy(activity = nonMatchingActivity)
-        val nonMatchingEvent = StateUpdateEvent.BookmarkAdded(nonMatchingBookmark)
-
-        testEventHandling(
-            matchingEvent = matchingEvent,
-            nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onBookmarkUpserted(matchingBookmark) },
-        )
-    }
-
-    @Test
-    fun `on BookmarkUpdated, then handle based on feed and activity match`() {
-        val matchingActivity = activityData(activityId).copy(feeds = listOf(fid.rawValue))
-        val matchingBookmark = bookmarkData().copy(activity = matchingActivity)
-        val matchingEvent = StateUpdateEvent.BookmarkUpdated(matchingBookmark)
-
-        val nonMatchingActivity = matchingActivity.copy(feeds = listOf(differentFid))
-        val nonMatchingBookmark = matchingBookmark.copy(activity = nonMatchingActivity)
-        val nonMatchingEvent = StateUpdateEvent.BookmarkUpdated(nonMatchingBookmark)
-
-        testEventHandling(
-            matchingEvent = matchingEvent,
-            nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onBookmarkUpserted(matchingBookmark) },
-        )
-    }
-
-    @Test
-    fun `on BookmarkDeleted, then handle based on feed and activity match`() {
-        val matchingActivity = activityData(activityId).copy(feeds = listOf(fid.rawValue))
-        val matchingBookmark = bookmarkData().copy(activity = matchingActivity)
-        val matchingEvent = StateUpdateEvent.BookmarkDeleted(matchingBookmark)
-
-        val nonMatchingActivity = matchingActivity.copy(feeds = listOf(differentFid))
-        val nonMatchingBookmark = matchingBookmark.copy(activity = nonMatchingActivity)
-        val nonMatchingEvent = StateUpdateEvent.BookmarkDeleted(nonMatchingBookmark)
-
-        testEventHandling(
-            matchingEvent = matchingEvent,
-            nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onBookmarkRemoved(matchingBookmark) },
-        )
-    }
-
-    @Test
-    fun `on PollClosed, then handle based on feed match`() {
-        val poll = pollData()
-        val matchingEvent = StateUpdateEvent.PollClosed(fid.rawValue, poll)
-        val nonMatchingEvent = StateUpdateEvent.PollClosed(differentFid, poll)
-
-        testEventHandling(
-            matchingEvent = matchingEvent,
-            nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onPollClosed(poll) },
-        )
-    }
-
-    @Test
-    fun `on PollDeleted, then handle based on feed match`() {
-        val pollId = "poll-1"
-        val matchingEvent = StateUpdateEvent.PollDeleted(fid.rawValue, pollId)
-        val nonMatchingEvent = StateUpdateEvent.PollDeleted(differentFid, pollId)
-
-        testEventHandling(
-            matchingEvent = matchingEvent,
-            nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onPollDeleted(pollId) },
-        )
-    }
-
-    @Test
-    fun `on PollUpdated, then handle based on feed match`() {
-        val poll = pollData()
-        val matchingEvent = StateUpdateEvent.PollUpdated(fid.rawValue, poll)
-        val nonMatchingEvent = StateUpdateEvent.PollUpdated(differentFid, poll)
-
-        testEventHandling(
-            matchingEvent = matchingEvent,
-            nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onPollUpdated(poll) },
-        )
-    }
-
-    @Test
-    fun `on PollVoteCasted, then handle based on feed match`() {
-        val pollId = "poll-1"
-        val pollVote = pollVoteData()
-        val matchingEvent = StateUpdateEvent.PollVoteCasted(fid.rawValue, pollId, pollVote)
-        val nonMatchingEvent = StateUpdateEvent.PollVoteCasted(differentFid, pollId, pollVote)
-
-        testEventHandling(
-            matchingEvent = matchingEvent,
-            nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onPollVoteCasted(pollVote, pollId) },
-        )
-    }
-
-    @Test
-    fun `on PollVoteChanged, then handle based on feed match`() {
-        val pollId = "poll-1"
-        val pollVote = pollVoteData()
-        val matchingEvent = StateUpdateEvent.PollVoteChanged(fid.rawValue, pollId, pollVote)
-        val nonMatchingEvent = StateUpdateEvent.PollVoteChanged(differentFid, pollId, pollVote)
-
-        testEventHandling(
-            matchingEvent = matchingEvent,
-            nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onPollVoteChanged(pollVote, pollId) },
-        )
-    }
-
-    @Test
-    fun `on PollVoteRemoved, then handle based on feed match`() {
-        val pollId = "poll-1"
-        val pollVote = pollVoteData()
-        val matchingEvent = StateUpdateEvent.PollVoteRemoved(fid.rawValue, pollId, pollVote)
-        val nonMatchingEvent = StateUpdateEvent.PollVoteRemoved(differentFid, pollId, pollVote)
-
-        testEventHandling(
-            matchingEvent = matchingEvent,
-            nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onPollVoteRemoved(pollVote, pollId) },
-        )
-    }
-
-    @Test
-    fun `on unknown event, then do nothing`() {
-        val unknownEvent = StateUpdateEvent.FeedDeleted("feed-id")
-
-        handler.onEvent(unknownEvent)
-
-        verify { state wasNot called }
-    }
-
-    private fun testEventHandling(
-        matchingEvent: StateUpdateEvent,
-        nonMatchingEvent: StateUpdateEvent,
-        verifyBlock: () -> Unit,
-    ) {
-        // Test matching event
-        handler.onEvent(matchingEvent)
-        verify { verifyBlock() }
-
-        // Reset mock for clean verification
-        clearMocks(state)
-
-        // Test non-matching event
-        handler.onEvent(nonMatchingEvent)
-        verify { state wasNot called }
+        @JvmStatic
+        @Parameterized.Parameters(name = "{0}")
+        fun data(): Collection<Array<Any>> =
+            listOf(
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityReactionAdded matching feed and activity",
+                    event =
+                        ActivityReactionAdded(
+                            fid.rawValue,
+                            activity,
+                            feedsReactionData(activityId),
+                        ),
+                    verifyBlock = { it.onReactionUpserted(feedsReactionData(activityId), activity) },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityReactionAdded non-matching feed",
+                    event =
+                        ActivityReactionAdded(otherFid, activity, feedsReactionData(activityId)),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityReactionAdded non-matching activity",
+                    event =
+                        ActivityReactionAdded(fid.rawValue, activity, feedsReactionData(otherId)),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityReactionDeleted matching feed and activity",
+                    event =
+                        ActivityReactionDeleted(
+                            fid.rawValue,
+                            activity,
+                            feedsReactionData(activityId),
+                        ),
+                    verifyBlock = { it.onReactionRemoved(feedsReactionData(activityId), activity) },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityReactionDeleted non-matching feed",
+                    event =
+                        ActivityReactionDeleted(otherFid, activity, feedsReactionData(activityId)),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityReactionDeleted non-matching activity",
+                    event =
+                        ActivityReactionDeleted(fid.rawValue, activity, feedsReactionData(otherId)),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityReactionUpdated matching feed and activity",
+                    event =
+                        ActivityReactionUpdated(
+                            fid.rawValue,
+                            activity,
+                            feedsReactionData(activityId),
+                        ),
+                    verifyBlock = { it.onReactionUpserted(feedsReactionData(activityId), activity) },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityReactionUpdated non-matching feed",
+                    event =
+                        ActivityReactionUpdated(otherFid, activity, feedsReactionData(activityId)),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityReactionUpdated non-matching activity",
+                    event =
+                        ActivityReactionUpdated(fid.rawValue, activity, feedsReactionData(otherId)),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityUpdated matching feed and activity",
+                    event = StateUpdateEvent.ActivityUpdated(fid.rawValue, activity),
+                    verifyBlock = { it.onActivityUpdated(activity) },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityUpdated non-matching feed",
+                    event = StateUpdateEvent.ActivityUpdated(otherFid, activity),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityUpdated non-matching activity",
+                    event = StateUpdateEvent.ActivityUpdated(fid.rawValue, activityData(otherId)),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "BookmarkDeleted matching feed and activity",
+                    event = BookmarkDeleted(matchingBookmark),
+                    verifyBlock = { it.onBookmarkRemoved(matchingBookmark) },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "BookmarkDeleted non-matching feed",
+                    event = BookmarkDeleted(nonMatchingFeedBookmark),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "BookmarkDeleted non-matching activity",
+                    event = BookmarkDeleted(nonMatchingActivityBookmark),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "BookmarkAdded matching feed and activity",
+                    event = BookmarkAdded(matchingBookmark),
+                    verifyBlock = { it.onBookmarkUpserted(matchingBookmark) },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "BookmarkAdded non-matching feed",
+                    event = BookmarkAdded(nonMatchingFeedBookmark),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "BookmarkAdded non-matching activity",
+                    event = BookmarkAdded(nonMatchingActivityBookmark),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "BookmarkUpdated matching feed and activity",
+                    event = BookmarkUpdated(matchingBookmark),
+                    verifyBlock = { it.onBookmarkUpserted(matchingBookmark) },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "BookmarkUpdated non-matching feed",
+                    event = BookmarkUpdated(nonMatchingFeedBookmark),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "BookmarkUpdated non-matching activity",
+                    event = BookmarkUpdated(nonMatchingActivityBookmark),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "PollClosed matching feed",
+                    event = PollClosed(fid.rawValue, pollData()),
+                    verifyBlock = { it.onPollClosed(pollData()) },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "PollClosed non-matching feed",
+                    event = PollClosed(otherFid, pollData()),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "PollDeleted matching feed",
+                    event = PollDeleted(fid.rawValue, "poll-1"),
+                    verifyBlock = { it.onPollDeleted("poll-1") },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "PollDeleted non-matching feed",
+                    event = PollDeleted(otherFid, "poll-1"),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "PollUpdated matching feed",
+                    event = PollUpdated(fid.rawValue, pollData()),
+                    verifyBlock = { it.onPollUpdated(pollData()) },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "PollUpdated non-matching feed",
+                    event = PollUpdated(otherFid, pollData()),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "PollVoteCasted matching feed",
+                    event = PollVoteCasted(fid.rawValue, "poll-1", pollVoteData()),
+                    verifyBlock = { it.onPollVoteCasted(pollVoteData(), "poll-1") },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "PollVoteCasted non-matching feed",
+                    event = PollVoteCasted(otherFid, "poll-1", pollVoteData()),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "PollVoteChanged matching feed",
+                    event = PollVoteChanged(fid.rawValue, "poll-1", pollVoteData()),
+                    verifyBlock = { it.onPollVoteChanged(pollVoteData(), "poll-1") },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "PollVoteChanged non-matching feed",
+                    event = PollVoteChanged(otherFid, "poll-1", pollVoteData()),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "PollVoteRemoved matching feed",
+                    event = PollVoteRemoved(fid.rawValue, "poll-1", pollVoteData()),
+                    verifyBlock = { it.onPollVoteRemoved(pollVoteData(), "poll-1") },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "PollVoteRemoved non-matching feed",
+                    event = PollVoteRemoved(otherFid, "poll-1", pollVoteData()),
+                    verifyBlock = { it wasNot called },
+                ),
+            )
     }
 }
