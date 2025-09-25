@@ -314,7 +314,7 @@ internal class CommentsRepositoryImplTest {
             apiFunction = { feedsApi.addCommentReaction("commentId", request) },
             repositoryCall = { repository.addCommentReaction("commentId", request) },
             apiResult = apiResult,
-            repositoryResult = Pair(apiResult.reaction.toModel(), apiResult.comment.id),
+            repositoryResult = Pair(apiResult.reaction.toModel(), apiResult.comment.toModel()),
         )
     }
 
@@ -332,7 +332,7 @@ internal class CommentsRepositoryImplTest {
             apiFunction = { feedsApi.deleteCommentReaction("commentId", "like") },
             repositoryCall = { repository.deleteCommentReaction("commentId", "like") },
             apiResult = apiResult,
-            repositoryResult = Pair(apiResult.reaction.toModel(), apiResult.comment.id),
+            repositoryResult = Pair(apiResult.reaction.toModel(), apiResult.comment.toModel()),
         )
     }
 

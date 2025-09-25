@@ -90,7 +90,9 @@ import io.getstream.feeds.android.client.internal.state.MemberListImpl
 import io.getstream.feeds.android.client.internal.state.ModerationConfigListImpl
 import io.getstream.feeds.android.client.internal.state.PollListImpl
 import io.getstream.feeds.android.client.internal.state.PollVoteListImpl
+import io.getstream.feeds.android.client.internal.state.event.toModel
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.network.models.ActivityRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
@@ -108,6 +110,7 @@ import kotlinx.coroutines.launch
 internal class FeedsClientImpl(
     private val coreClient: StreamClient,
     private val feedsEventsSubscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
+    private val stateEventsSubscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
     override val apiKey: StreamApiKey,
     override val user: User,
     private val connectionRecoveryHandler: ConnectionRecoveryHandler,
@@ -148,6 +151,11 @@ internal class FeedsClientImpl(
                     logger.v { "[onEvent] Received event from core: $event" }
                     _events.tryEmit(event)
                     feedsEventsSubscriptionManager.forEach { it.onEvent(event) }
+                    event.toModel()?.let { stateEvent ->
+                        stateEventsSubscriptionManager.forEach { listener ->
+                            listener.onEvent(stateEvent)
+                        }
+                    }
                 } else {
                     logger.e { "[onEvent] Received non-WSEvent: $event" }
                 }
@@ -214,7 +222,8 @@ internal class FeedsClientImpl(
             activitiesRepository = activitiesRepository,
             commentsRepository = commentsRepository,
             pollsRepository = pollsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
+            socketSubscriptionManager = feedsEventsSubscriptionManager,
             commentList =
                 ActivityCommentListImpl(
                     query =
@@ -225,7 +234,7 @@ internal class FeedsClientImpl(
                         ),
                     currentUserId = user.id,
                     commentsRepository = commentsRepository,
-                    subscriptionManager = feedsEventsSubscriptionManager,
+                    subscriptionManager = stateEventsSubscriptionManager,
                 ),
         )
 
@@ -286,7 +295,7 @@ internal class FeedsClientImpl(
             query = query,
             currentUserId = user.id,
             commentsRepository = commentsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun commentReplyList(query: CommentRepliesQuery): CommentReplyList =

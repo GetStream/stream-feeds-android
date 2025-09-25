@@ -125,7 +125,7 @@ internal interface CommentsRepository {
     suspend fun addCommentReaction(
         commentId: String,
         request: AddCommentReactionRequest,
-    ): Result<Pair<FeedsReactionData, String>>
+    ): Result<Pair<FeedsReactionData, CommentData>>
 
     /**
      * Deletes a reaction from a comment.
@@ -137,7 +137,7 @@ internal interface CommentsRepository {
     suspend fun deleteCommentReaction(
         commentId: String,
         type: String,
-    ): Result<Pair<FeedsReactionData, String>>
+    ): Result<Pair<FeedsReactionData, CommentData>>
 
     /**
      * Queries reactions for a specific comment.

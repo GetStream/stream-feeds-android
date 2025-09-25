@@ -282,6 +282,12 @@ internal fun createFeedsClient(
                 maxStrongSubscriptions = Integer.MAX_VALUE,
                 maxWeakSubscriptions = Integer.MAX_VALUE,
             ),
+        stateEventsSubscriptionManager =
+            StreamSubscriptionManager(
+                logProvider.taggedLogger("StateEventSubscriptions"),
+                maxStrongSubscriptions = Integer.MAX_VALUE,
+                maxWeakSubscriptions = Integer.MAX_VALUE,
+            ),
         feedWatchHandler = feedWatchHandler,
         errorBus = errorBus,
         scope = clientScope,

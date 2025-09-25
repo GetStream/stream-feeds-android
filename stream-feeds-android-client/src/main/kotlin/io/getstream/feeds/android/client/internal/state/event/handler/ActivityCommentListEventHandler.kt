@@ -16,51 +16,45 @@
 package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.ActivityCommentListStateUpdates
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
-import io.getstream.feeds.android.network.models.CommentAddedEvent
-import io.getstream.feeds.android.network.models.CommentDeletedEvent
-import io.getstream.feeds.android.network.models.CommentReactionAddedEvent
-import io.getstream.feeds.android.network.models.CommentReactionDeletedEvent
-import io.getstream.feeds.android.network.models.CommentUpdatedEvent
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
 internal class ActivityCommentListEventHandler(
     private val objectId: String,
     private val objectType: String,
     private val state: ActivityCommentListStateUpdates,
-) : FeedsEventListener {
+) : StateUpdateEventListener {
 
-    override fun onEvent(event: WSEvent) {
+    override fun onEvent(event: StateUpdateEvent) {
         when (event) {
-            is CommentAddedEvent -> {
+            is StateUpdateEvent.CommentAdded -> {
                 if (event.comment.objectId == objectId && event.comment.objectType == objectType) {
-                    state.onCommentAdded(ThreadedCommentData(event.comment.toModel()))
+                    state.onCommentAdded(ThreadedCommentData(event.comment))
                 }
             }
 
-            is CommentDeletedEvent -> {
+            is StateUpdateEvent.CommentDeleted -> {
                 if (event.comment.objectId == objectId && event.comment.objectType == objectType) {
                     state.onCommentRemoved(event.comment.id)
                 }
             }
 
-            is CommentUpdatedEvent -> {
+            is StateUpdateEvent.CommentUpdated -> {
                 if (event.comment.objectId == objectId && event.comment.objectType == objectType) {
-                    state.onCommentUpdated(event.comment.toModel())
+                    state.onCommentUpdated(event.comment)
                 }
             }
 
-            is CommentReactionAddedEvent -> {
+            is StateUpdateEvent.CommentReactionAdded -> {
                 if (event.comment.objectId == objectId && event.comment.objectType == objectType) {
-                    state.onCommentReactionAdded(event.comment.id, event.reaction.toModel())
+                    state.onCommentReactionAdded(event.comment.id, event.reaction)
                 }
             }
 
-            is CommentReactionDeletedEvent -> {
+            is StateUpdateEvent.CommentReactionDeleted -> {
                 if (event.comment.objectId == objectId && event.comment.objectType == objectType) {
-                    state.onCommentReactionRemoved(event.comment.id, event.reaction.toModel())
+                    state.onCommentReactionRemoved(event.comment.id, event.reaction)
                 }
             }
         }

@@ -143,17 +143,17 @@ internal class CommentsRepositoryImpl(
     override suspend fun addCommentReaction(
         commentId: String,
         request: AddCommentReactionRequest,
-    ): Result<Pair<FeedsReactionData, String>> = runSafely {
+    ): Result<Pair<FeedsReactionData, CommentData>> = runSafely {
         val response = api.addCommentReaction(commentId, request)
-        Pair(response.reaction.toModel(), response.comment.id)
+        Pair(response.reaction.toModel(), response.comment.toModel())
     }
 
     override suspend fun deleteCommentReaction(
         commentId: String,
         type: String,
-    ): Result<Pair<FeedsReactionData, String>> = runSafely {
+    ): Result<Pair<FeedsReactionData, CommentData>> = runSafely {
         val response = api.deleteCommentReaction(id = commentId, type = type)
-        Pair(response.reaction.toModel(), response.comment.id)
+        Pair(response.reaction.toModel(), response.comment.toModel())
     }
 
     override suspend fun queryCommentReactions(

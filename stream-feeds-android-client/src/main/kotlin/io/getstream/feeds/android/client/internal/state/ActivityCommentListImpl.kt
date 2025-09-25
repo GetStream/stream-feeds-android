@@ -22,7 +22,7 @@ import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.ActivityCommentListEventHandler
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
 /**
  * A paginated list of activities that supports real-time updates and filtering.
@@ -39,7 +39,7 @@ internal class ActivityCommentListImpl(
     override val query: ActivityCommentsQuery,
     private val currentUserId: String,
     private val commentsRepository: CommentsRepository,
-    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
+    subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
 ) : ActivityCommentList {
 
     private val _state: ActivityCommentListStateImpl =
@@ -72,10 +72,6 @@ internal class ActivityCommentListImpl(
         val nextQuery = query.copy(limit = limit, next = next, previous = null)
         return queryComments(nextQuery)
     }
-
-    /** Internal property to access the mutable state of the comment list. */
-    internal val mutableState: ActivityCommentListMutableState
-        get() = _state
 
     private suspend fun queryComments(
         query: ActivityCommentsQuery

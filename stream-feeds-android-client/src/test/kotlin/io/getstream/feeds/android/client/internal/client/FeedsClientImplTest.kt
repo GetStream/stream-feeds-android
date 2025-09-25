@@ -55,6 +55,7 @@ import io.getstream.feeds.android.client.internal.repository.FilesRepository
 import io.getstream.feeds.android.client.internal.repository.ModerationRepository
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.appData
 import io.getstream.feeds.android.network.models.ActivityRequest
@@ -82,6 +83,9 @@ internal class FeedsClientImplTest {
     private val coreClient: StreamClient = mockk(relaxed = true)
     private val feedsEventsSubscriptionManager: StreamSubscriptionManager<FeedsEventListener> =
         mockk(relaxed = true)
+    private val stateEventsSubscriptionManager:
+        StreamSubscriptionManager<StateUpdateEventListener> =
+        mockk(relaxed = true)
     private val apiKey: StreamApiKey = StreamApiKey.fromString("test-api-key")
     private val user: User = User(id = "test-user", type = UserAuthType.REGULAR)
     private val connectionRecoveryHandler: ConnectionRecoveryHandler = mockk(relaxed = true)
@@ -105,6 +109,7 @@ internal class FeedsClientImplTest {
         FeedsClientImpl(
             coreClient = coreClient,
             feedsEventsSubscriptionManager = feedsEventsSubscriptionManager,
+            stateEventsSubscriptionManager = stateEventsSubscriptionManager,
             apiKey = apiKey,
             user = user,
             connectionRecoveryHandler = connectionRecoveryHandler,
@@ -161,6 +166,7 @@ internal class FeedsClientImplTest {
             FeedsClientImpl(
                 coreClient = coreClient,
                 feedsEventsSubscriptionManager = feedsEventsSubscriptionManager,
+                stateEventsSubscriptionManager = stateEventsSubscriptionManager,
                 apiKey = apiKey,
                 user = anonymousUser,
                 connectionRecoveryHandler = connectionRecoveryHandler,

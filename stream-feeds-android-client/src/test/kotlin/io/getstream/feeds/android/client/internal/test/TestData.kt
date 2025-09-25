@@ -71,6 +71,7 @@ internal object TestData {
         id: String = "comment-id",
         text: String = "Test comment",
         objectId: String? = null,
+        objectType: String = "comment",
         createdAt: Date = Date(1),
     ) =
         CommentData(
@@ -88,7 +89,7 @@ internal object TestData {
             meta = null,
             moderation = null,
             objectId = objectId ?: id,
-            objectType = "comment",
+            objectType = objectType,
             ownReactions = emptyList(),
             reactionCount = 0,
             reactionGroups = emptyMap(),
