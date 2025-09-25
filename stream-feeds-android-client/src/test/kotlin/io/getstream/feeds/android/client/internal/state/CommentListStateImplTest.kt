@@ -15,6 +15,7 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
+import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
@@ -28,7 +29,8 @@ import org.junit.Test
 internal class CommentListStateImplTest {
 
     private val query = CommentsQuery(null, sort = CommentsSort.First)
-    private val state = CommentListStateImpl(query)
+    private val currentUserId = "user-id"
+    private val state = CommentListStateImpl(query, currentUserId)
 
     @Test
     fun `onQueryMoreComments, merge comments and update pagination`() {
@@ -51,28 +53,22 @@ internal class CommentListStateImplTest {
     fun `onCommentUpdated, update the comment in the list`() {
         val comment1 = commentData("1", text = "First", createdAt = Date(3))
         val comment2 = commentData("2", text = "Second", createdAt = Date(4))
-        val result =
-            PaginationResult(listOf(comment1, comment2), PaginationData("next", "previous"))
         val updatedComment2 = comment2.copy(text = "Updated Second", createdAt = Date(2))
-        val expected = listOf(updatedComment2, comment1)
+        setupInitialComments(comment1, comment2)
 
-        state.onQueryMoreComments(result)
         state.onCommentUpdated(updatedComment2)
 
-        assertEquals(expected, state.comments.value)
+        assertEquals(listOf(updatedComment2, comment1), state.comments.value)
     }
 
     @Test
     fun `on onCommentUpdated, then preserve ownReactions when updating comment`() {
         val ownReaction = feedsReactionData("activity-1", "like", "current-user")
-
         val originalComment =
             commentData("comment-1", "Original text", ownReactions = listOf(ownReaction))
-        val result = PaginationResult(listOf(originalComment), PaginationData("next", "previous"))
-
         val updatedComment = commentData("comment-1", "Updated text", ownReactions = emptyList())
+        setupInitialComments(originalComment)
 
-        state.onQueryMoreComments(result)
         state.onCommentUpdated(updatedComment)
 
         val expectedComment = updatedComment.copy(ownReactions = listOf(ownReaction))
@@ -84,13 +80,8 @@ internal class CommentListStateImplTest {
         val comment1 = commentData("1", text = "First", createdAt = Date(1))
         val comment2 = commentData("2", text = "Second", createdAt = Date(2))
         val comment3 = commentData("3", text = "Third", createdAt = Date(3))
-        val result =
-            PaginationResult(
-                models = listOf(comment1, comment2, comment3),
-                pagination = PaginationData("next", "previous"),
-            )
+        setupInitialComments(comment1, comment2, comment3)
 
-        state.onQueryMoreComments(result)
         state.onCommentRemoved("2")
 
         val expected = listOf(comment1, comment3)
@@ -105,13 +96,85 @@ internal class CommentListStateImplTest {
         val parentComment =
             commentData("parent", text = "Parent", createdAt = Date(1))
                 .copy(replies = listOf(reply1, reply2, reply3), replyCount = 3)
+        setupInitialComments(parentComment)
 
-        val result = PaginationResult(models = listOf(parentComment), pagination = PaginationData())
-
-        state.onQueryMoreComments(result)
         state.onCommentRemoved("reply2")
 
         val expectedParent = parentComment.copy(replies = listOf(reply1, reply3), replyCount = 2)
         assertEquals(listOf(expectedParent), state.comments.value)
+    }
+
+    @Test
+    fun `on onCommentReactionRemoved for top-level comment, then remove reaction`() {
+        val reaction = feedsReactionData(commentId = "comment-1", userId = currentUserId)
+        val comment = commentData("comment-1", text = "Original", ownReactions = listOf(reaction))
+        setupInitialComments(comment)
+
+        val updatedComment = commentData("comment-1", text = "Updated")
+        state.onCommentReactionRemoved(updatedComment, reaction)
+
+        val expectedComment = updatedComment.copy(ownReactions = emptyList())
+        assertEquals(listOf(expectedComment), state.comments.value)
+    }
+
+    @Test
+    fun `on onCommentReactionRemoved for nested reply, then remove reaction from reply`() {
+        val replyReaction = feedsReactionData(commentId = "reply-1", userId = currentUserId)
+        val reply =
+            commentData(
+                "reply-1",
+                text = "Reply",
+                createdAt = Date(2),
+                ownReactions = listOf(replyReaction),
+            )
+        val parentComment =
+            commentData("parent", text = "Parent", createdAt = Date(1))
+                .copy(replies = listOf(reply), replyCount = 1)
+        setupInitialComments(parentComment)
+
+        val updatedReply = commentData("reply-1", text = "Updated Reply")
+        state.onCommentReactionUpserted(updatedReply, replyReaction)
+        state.onCommentReactionRemoved(updatedReply, replyReaction)
+
+        val expectedReply = updatedReply.copy(ownReactions = emptyList())
+        val expectedParent = parentComment.copy(replies = listOf(expectedReply))
+        assertEquals(listOf(expectedParent), state.comments.value)
+    }
+
+    @Test
+    fun `on onCommentReactionUpserted for top-level comment, then upsert reaction`() {
+        val reaction = feedsReactionData(commentId = "comment-1", userId = currentUserId)
+        val comment = commentData("comment-1", text = "Original")
+        setupInitialComments(comment)
+
+        val updatedComment = commentData("comment-1", text = "Updated")
+        state.onCommentReactionUpserted(updatedComment, reaction)
+
+        val expectedComment = updatedComment.copy(ownReactions = listOf(reaction))
+        assertEquals(listOf(expectedComment), state.comments.value)
+    }
+
+    @Test
+    fun `on onCommentReactionUpserted for nested reply, then upsert reaction in reply`() {
+        val replyReaction = feedsReactionData(commentId = "reply-1", userId = currentUserId)
+        val parentComment =
+            commentData("parent", text = "Parent", createdAt = Date(1))
+                .copy(
+                    replies = listOf(commentData("reply-1", text = "Reply", createdAt = Date(2))),
+                    replyCount = 1,
+                )
+        setupInitialComments(parentComment)
+
+        val updatedReply = commentData("reply-1", text = "Updated Reply")
+        state.onCommentReactionUpserted(updatedReply, replyReaction)
+
+        val expectedReply = updatedReply.copy(ownReactions = listOf(replyReaction))
+        val expectedParent = parentComment.copy(replies = listOf(expectedReply))
+        assertEquals(listOf(expectedParent), state.comments.value)
+    }
+
+    private fun setupInitialComments(vararg comments: CommentData) {
+        val result = PaginationResult(comments.toList(), PaginationData("next", "previous"))
+        state.onQueryMoreComments(result)
     }
 }

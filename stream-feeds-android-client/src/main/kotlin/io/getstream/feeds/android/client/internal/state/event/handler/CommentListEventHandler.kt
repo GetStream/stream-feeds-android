@@ -26,6 +26,10 @@ internal class CommentListEventHandler(private val state: CommentListStateUpdate
         when (event) {
             is StateUpdateEvent.CommentDeleted -> state.onCommentRemoved(event.comment.id)
             is StateUpdateEvent.CommentUpdated -> state.onCommentUpdated(event.comment)
+            is StateUpdateEvent.CommentReactionDeleted ->
+                state.onCommentReactionRemoved(event.comment, event.reaction)
+            is StateUpdateEvent.CommentReactionUpserted ->
+                state.onCommentReactionUpserted(event.comment, event.reaction)
             else -> Unit
         }
     }

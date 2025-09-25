@@ -39,10 +39,11 @@ import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventList
 internal class CommentListImpl(
     override val query: CommentsQuery,
     private val commentsRepository: CommentsRepository,
+    currentUserId: String,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
 ) : CommentList {
 
-    private val _state: CommentListStateImpl = CommentListStateImpl(query)
+    private val _state: CommentListStateImpl = CommentListStateImpl(query, currentUserId)
 
     private val eventHandler = CommentListEventHandler(_state)
 

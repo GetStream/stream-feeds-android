@@ -286,6 +286,7 @@ internal class FeedsClientImpl(
         CommentListImpl(
             query = query,
             commentsRepository = commentsRepository,
+            currentUserId = user.id,
             subscriptionManager = stateEventsSubscriptionManager,
         )
 

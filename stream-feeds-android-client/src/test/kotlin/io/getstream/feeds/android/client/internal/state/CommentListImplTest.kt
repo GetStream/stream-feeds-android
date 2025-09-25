@@ -35,11 +35,13 @@ internal class CommentListImplTest {
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener> =
         mockk(relaxed = true)
     private val query = CommentsQuery(filter = null, limit = 10)
+    private val currentUserId = "user-id"
 
     private val commentList =
         CommentListImpl(
             query = query,
             commentsRepository = commentsRepository,
+            currentUserId = currentUserId,
             subscriptionManager = subscriptionManager,
         )
 
