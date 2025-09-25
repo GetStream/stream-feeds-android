@@ -68,6 +68,14 @@ internal class ActivityEventHandler(
                 state.onBookmarkUpserted(event.bookmark)
             }
 
+            is StateUpdateEvent.CommentAdded,
+            is StateUpdateEvent.CommentDeleted,
+            is StateUpdateEvent.CommentUpdated,
+            is StateUpdateEvent.CommentReactionDeleted,
+            is StateUpdateEvent.CommentReactionUpserted -> {
+                // Handled by ActivityCommentListEventHandler
+            }
+
             is StateUpdateEvent.PollClosed -> {
                 if (event.fid != fid.rawValue) return
                 state.onPollClosed(event.poll)
