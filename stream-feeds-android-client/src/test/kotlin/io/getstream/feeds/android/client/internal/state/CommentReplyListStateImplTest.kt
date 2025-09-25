@@ -18,8 +18,8 @@ package io.getstream.feeds.android.client.internal.state
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
-import io.getstream.feeds.android.client.api.model.addReaction
 import io.getstream.feeds.android.client.api.model.removeReaction
+import io.getstream.feeds.android.client.api.model.upsertReaction
 import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
@@ -131,20 +131,6 @@ internal class CommentReplyListStateImplTest {
     }
 
     @Test
-    fun `on onCommentUpdated, update comment data in nested structure`() = runTest {
-        val originalComment = threadedCommentData("comment-1", text = "Original text")
-
-        setupInitialReplies(originalComment)
-
-        val updatedCommentData = commentData("comment-1", text = "Updated text")
-
-        state.onCommentUpdated(updatedCommentData)
-
-        val expectedComment = originalComment.copy(text = "Updated text")
-        assertEquals(listOf(expectedComment), state.replies.value)
-    }
-
-    @Test
     fun `on onCommentUpdated, then preserve ownReactions when updating comment`() = runTest {
         val ownReaction = feedsReactionData("comment-1", "like", currentUserId)
 
@@ -167,17 +153,18 @@ internal class CommentReplyListStateImplTest {
     }
 
     @Test
-    fun `on onCommentReactionAdded, add reaction to nested comment`() = runTest {
+    fun `on onCommentReactionUpserted, add reaction to nested comment`() = runTest {
         val comment = threadedCommentData("comment-1", text = "Comment with reaction")
+        val update = commentData("comment-1", text = "Comment with reaction")
 
         setupInitialReplies(comment)
 
         val reaction =
             feedsReactionData(activityId = "comment-1", type = "like", userId = currentUserId)
 
-        state.onCommentReactionAdded("comment-1", reaction)
+        state.onCommentReactionUpserted(update, reaction)
 
-        val expectedComment = comment.addReaction(reaction, currentUserId)
+        val expectedComment = comment.upsertReaction(update, reaction, currentUserId)
         assertEquals(listOf(expectedComment), state.replies.value)
     }
 
@@ -185,45 +172,57 @@ internal class CommentReplyListStateImplTest {
     fun `on onCommentReactionRemoved, remove reaction from nested comment`() = runTest {
         val reaction =
             feedsReactionData(activityId = "comment-1", type = "like", userId = currentUserId)
+        val update = commentData("comment-1", text = "Comment with reaction")
 
         val baseComment = threadedCommentData("comment-1", text = "Comment with reaction")
-        val commentWithReaction = baseComment.addReaction(reaction, currentUserId)
+        val commentWithReaction = baseComment.upsertReaction(update, reaction, currentUserId)
 
         setupInitialReplies(commentWithReaction)
 
-        state.onCommentReactionRemoved("comment-1", reaction)
+        state.onCommentReactionRemoved(update, reaction)
 
-        val expectedComment = commentWithReaction.removeReaction(reaction, currentUserId)
+        val expectedComment = commentWithReaction.removeReaction(update, reaction, currentUserId)
         assertEquals(listOf(expectedComment), state.replies.value)
     }
 
     @Test
-    fun `on onCommentReactionAdded to deeply nested comment, update correct comment`() = runTest {
-        val deeplyNestedComment =
-            threadedCommentData("deep-comment", parentId = "reply-1", text = "Deep comment")
-        val directReply =
-            threadedCommentData(
-                "reply-1",
-                parentId = "parent-1",
-                text = "Direct reply",
-                replies = listOf(deeplyNestedComment),
-            )
-        val parentComment =
-            threadedCommentData("parent-1", text = "Parent comment", replies = listOf(directReply))
+    fun `on onCommentReactionUpserted to deeply nested comment, update correct comment`() =
+        runTest {
+            val deeplyNestedComment =
+                threadedCommentData("deep-comment", parentId = "reply-1", text = "Deep comment")
+            val directReply =
+                threadedCommentData(
+                    "reply-1",
+                    parentId = "parent-1",
+                    text = "Direct reply",
+                    replies = listOf(deeplyNestedComment),
+                )
+            val parentComment =
+                threadedCommentData(
+                    "parent-1",
+                    text = "Parent comment",
+                    replies = listOf(directReply),
+                )
+            val update = commentData("deep-comment", objectId = "reply-1", text = "Deep comment")
 
-        setupInitialReplies(parentComment)
+            setupInitialReplies(parentComment)
 
-        val reaction =
-            feedsReactionData(activityId = "deep-comment", type = "heart", userId = currentUserId)
+            val reaction =
+                feedsReactionData(
+                    activityId = "deep-comment",
+                    type = "heart",
+                    userId = currentUserId,
+                )
 
-        state.onCommentReactionAdded("deep-comment", reaction)
+            state.onCommentReactionUpserted(update, reaction)
 
-        val expectedDeepComment = deeplyNestedComment.addReaction(reaction, currentUserId)
-        val expectedDirectReply = directReply.copy(replies = listOf(expectedDeepComment))
-        val expectedParent = parentComment.copy(replies = listOf(expectedDirectReply))
+            val expectedDeepComment =
+                deeplyNestedComment.upsertReaction(update, reaction, currentUserId)
+            val expectedDirectReply = directReply.copy(replies = listOf(expectedDeepComment))
+            val expectedParent = parentComment.copy(replies = listOf(expectedDirectReply))
 
-        assertEquals(listOf(expectedParent), state.replies.value)
-    }
+            assertEquals(listOf(expectedParent), state.replies.value)
+        }
 
     private fun setupInitialReplies(vararg replies: ThreadedCommentData) {
         val result =

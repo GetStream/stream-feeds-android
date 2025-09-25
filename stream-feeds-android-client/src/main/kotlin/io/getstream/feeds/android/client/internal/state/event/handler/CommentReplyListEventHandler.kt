@@ -34,11 +34,11 @@ internal class CommentReplyListEventHandler(private val state: CommentReplyListS
             is StateUpdateEvent.CommentUpdated -> {
                 state.onCommentUpdated(event.comment)
             }
-            is StateUpdateEvent.CommentReactionAdded -> {
-                state.onCommentReactionAdded(event.comment.id, event.reaction)
+            is StateUpdateEvent.CommentReactionUpserted -> {
+                state.onCommentReactionUpserted(event.comment, event.reaction)
             }
             is StateUpdateEvent.CommentReactionDeleted -> {
-                state.onCommentReactionRemoved(event.comment.id, event.reaction)
+                state.onCommentReactionRemoved(event.comment, event.reaction)
             }
 
             else -> {}

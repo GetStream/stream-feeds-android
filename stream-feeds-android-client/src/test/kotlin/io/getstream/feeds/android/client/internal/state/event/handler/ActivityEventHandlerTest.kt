@@ -38,28 +38,34 @@ internal class ActivityEventHandlerTest {
     private val handler = ActivityEventHandler(fid, activityId, state)
 
     @Test
-    fun `on ActivityReactionAdded, then handle based on feed and activity match`() {
+    fun `on ActivityReactionUpserted, then handle based on feed and activity match`() {
+        val activity = activityData(activityId)
         val reaction = feedsReactionData(activityId)
-        val matchingEvent = StateUpdateEvent.ActivityReactionAdded(fid.rawValue, reaction)
-        val nonMatchingEvent = StateUpdateEvent.ActivityReactionAdded(differentFid, reaction)
+        val matchingEvent =
+            StateUpdateEvent.ActivityReactionUpserted(fid.rawValue, activity, reaction)
+        val nonMatchingEvent =
+            StateUpdateEvent.ActivityReactionUpserted(differentFid, activity, reaction)
 
         testEventHandling(
             matchingEvent = matchingEvent,
             nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onReactionAdded(reaction) },
+            verifyBlock = { state.onReactionUpserted(reaction, activity) },
         )
     }
 
     @Test
     fun `on ActivityReactionDeleted, then handle based on feed and activity match`() {
+        val activity = activityData(activityId)
         val reaction = feedsReactionData(activityId)
-        val matchingEvent = StateUpdateEvent.ActivityReactionDeleted(fid.rawValue, reaction)
-        val nonMatchingEvent = StateUpdateEvent.ActivityReactionDeleted(differentFid, reaction)
+        val matchingEvent =
+            StateUpdateEvent.ActivityReactionDeleted(fid.rawValue, activity, reaction)
+        val nonMatchingEvent =
+            StateUpdateEvent.ActivityReactionDeleted(differentFid, activity, reaction)
 
         testEventHandling(
             matchingEvent = matchingEvent,
             nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onReactionRemoved(reaction) },
+            verifyBlock = { state.onReactionRemoved(reaction, activity) },
         )
     }
 

@@ -26,9 +26,9 @@ internal class ActivityReactionListEventHandler(
 
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
-            is StateUpdateEvent.ActivityReactionAdded -> {
+            is StateUpdateEvent.ActivityReactionUpserted -> {
                 if (event.reaction.activityId == activityId) {
-                    state.onReactionAdded(event.reaction)
+                    state.onReactionUpserted(event.reaction)
                 }
             }
 

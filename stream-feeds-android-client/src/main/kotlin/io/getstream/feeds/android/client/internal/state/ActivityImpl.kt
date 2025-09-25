@@ -161,7 +161,7 @@ internal class ActivityImpl(
             .addCommentReaction(commentId, request)
             .onSuccess { (reaction, comment) ->
                 subscriptionManager.onEvent(
-                    StateUpdateEvent.CommentReactionAdded(comment, reaction)
+                    StateUpdateEvent.CommentReactionUpserted(comment, reaction)
                 )
             }
             .map { it.first }

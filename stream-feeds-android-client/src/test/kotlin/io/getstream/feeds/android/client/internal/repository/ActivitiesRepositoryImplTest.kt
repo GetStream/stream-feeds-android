@@ -234,7 +234,7 @@ internal class ActivitiesRepositoryImplTest {
             apiFunction = { feedsApi.addReaction("activityId", request) },
             repositoryCall = { repository.addReaction("activityId", request) },
             apiResult = apiResult,
-            repositoryResult = apiResult.reaction.toModel(),
+            repositoryResult = apiResult.reaction.toModel() to apiResult.activity.toModel(),
         )
     }
 
@@ -247,7 +247,7 @@ internal class ActivitiesRepositoryImplTest {
             apiFunction = { feedsApi.deleteActivityReaction("activityId", "type") },
             repositoryCall = { repository.deleteReaction("activityId", "type") },
             apiResult = apiResult,
-            repositoryResult = apiResult.reaction.toModel(),
+            repositoryResult = apiResult.reaction.toModel() to apiResult.activity.toModel(),
         )
     }
 

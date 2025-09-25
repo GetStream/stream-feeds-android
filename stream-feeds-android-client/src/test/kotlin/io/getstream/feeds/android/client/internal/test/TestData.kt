@@ -74,10 +74,11 @@ internal object TestData {
         objectType: String = "comment",
         createdAt: Date = Date(1),
         ownReactions: List<FeedsReactionData> = emptyList(),
+        parentId: String? = null,
     ) =
         CommentData(
             id = id,
-            parentId = null,
+            parentId = parentId,
             attachments = null,
             confidenceScore = 0f,
             controversyScore = null,

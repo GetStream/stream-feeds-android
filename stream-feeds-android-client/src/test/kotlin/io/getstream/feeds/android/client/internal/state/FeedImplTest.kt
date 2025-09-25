@@ -45,7 +45,6 @@ import io.getstream.feeds.android.client.internal.test.TestData.feedMemberData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.getstream.feeds.android.client.internal.test.TestData.followData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
-import io.getstream.feeds.android.client.internal.test.TestData.reactionGroupData
 import io.getstream.feeds.android.client.internal.test.TestSubscriptionManager
 import io.getstream.feeds.android.network.models.AddBookmarkRequest
 import io.getstream.feeds.android.network.models.AddCommentReactionRequest
@@ -638,29 +637,25 @@ internal class FeedImplTest {
         val activityId = "activity-1"
         val request = AddReactionRequest(type = "like")
         val reaction = feedsReactionData(activityId = activityId, type = "like", userId = "user")
-        val activity = activityData(activityId)
 
         // Set up initial state with activity
-        val feedInfo = getOrCreateInfo(feedData(), listOf(activity))
+        val feedInfo = getOrCreateInfo(feedData(), listOf(activityData(activityId)))
         coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
         feed.getOrCreate()
 
+        val updatedActivity = activityData(activityId, text = "Updated activity")
         coEvery { activitiesRepository.addReaction(activityId, request) } returns
-            Result.success(reaction)
+            Result.success(reaction to updatedActivity)
 
         val result = feed.addReaction(activityId, request)
 
-        val updated =
-            activity.copy(
-                ownReactions = activity.ownReactions + reaction,
-                latestReactions = activity.latestReactions + reaction,
-                reactionGroups = mapOf("like" to reactionGroupData(count = 1)),
-                reactionCount = 1,
-            )
+        val expected = updatedActivity.copy(ownReactions = listOf(reaction))
         assertEquals(reaction, result.getOrNull())
-        assertEquals(listOf(updated), feed.state.activities.value)
+        assertEquals(listOf(expected), feed.state.activities.value)
         verify {
-            stateEventListener.onEvent(StateUpdateEvent.ActivityReactionAdded("group:id", reaction))
+            stateEventListener.onEvent(
+                StateUpdateEvent.ActivityReactionUpserted("group:id", updatedActivity, reaction)
+            )
         }
     }
 
@@ -670,35 +665,28 @@ internal class FeedImplTest {
         val activityId = "activity-1"
         val type = "like"
         val reaction = feedsReactionData(activityId = activityId, type = type, userId = "user")
-        coEvery { activitiesRepository.deleteReaction(activityId, type) } returns
-            Result.success(reaction)
 
         // Set up initial state with activity that has a reaction
-        val activityWithReaction =
-            activityData(activityId)
-                .copy(
-                    ownReactions = listOf(reaction),
-                    reactionCount = 1,
-                    reactionGroups = mapOf("like" to reactionGroupData(count = 1)),
-                )
-        val feedInfo = getOrCreateInfo(feedData(), listOf(activityWithReaction))
+        val feedInfo =
+            getOrCreateInfo(
+                feedData(),
+                listOf(activityData(activityId, ownReactions = listOf(reaction))),
+            )
         coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
         feed.getOrCreate()
 
+        val updatedActivity = activityData(activityId, text = "Updated activity")
+        coEvery { activitiesRepository.deleteReaction(activityId, type) } returns
+            Result.success(reaction to updatedActivity)
+
         val result = feed.deleteReaction(activityId, type)
 
-        val updated =
-            activityWithReaction.copy(
-                ownReactions = emptyList(),
-                latestReactions = emptyList(),
-                reactionGroups = emptyMap(),
-                reactionCount = 0,
-            )
+        val expected = updatedActivity.copy(ownReactions = emptyList())
         assertEquals(reaction, result.getOrNull())
-        assertEquals(listOf(updated), feed.state.activities.value)
+        assertEquals(listOf(expected), feed.state.activities.value)
         verify {
             stateEventListener.onEvent(
-                StateUpdateEvent.ActivityReactionDeleted("group:id", reaction)
+                StateUpdateEvent.ActivityReactionDeleted("group:id", updatedActivity, reaction)
             )
         }
     }
@@ -718,7 +706,7 @@ internal class FeedImplTest {
 
         assertEquals(reaction, result.getOrNull())
         verify {
-            stateEventListener.onEvent(StateUpdateEvent.CommentReactionAdded(comment, reaction))
+            stateEventListener.onEvent(StateUpdateEvent.CommentReactionUpserted(comment, reaction))
         }
     }
 
