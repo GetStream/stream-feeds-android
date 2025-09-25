@@ -196,6 +196,8 @@ internal object TestData {
         text: String? = null,
         type: String = "post",
         poll: PollData? = null,
+        ownBookmarks: List<BookmarkData> = emptyList(),
+        ownReactions: List<FeedsReactionData> = emptyList(),
     ): ActivityData =
         ActivityData(
             attachments = emptyList(),
@@ -217,8 +219,8 @@ internal object TestData {
             mentionedUsers = emptyList(),
             moderation = null,
             notificationContext = null,
-            ownBookmarks = emptyList(),
-            ownReactions = emptyList(),
+            ownBookmarks = ownBookmarks,
+            ownReactions = ownReactions,
             parent = null,
             poll = poll,
             popularity = 0,

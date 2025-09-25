@@ -198,6 +198,17 @@ internal fun ActivityResponse.Visibility.toModel(): ActivityDataVisibility =
     }
 
 /**
+ * Extension function to update the activity while preserving own bookmarks, reactions, and poll
+ * votes because "own" data from WS events is not reliable.
+ */
+internal fun ActivityData.update(updated: ActivityData): ActivityData =
+    updated.copy(
+        ownBookmarks = ownBookmarks,
+        ownReactions = ownReactions,
+        poll = updated.poll?.let { poll?.update(it) ?: it },
+    )
+
+/**
  * Adds a comment to the activity, updating the comment count and the list of comments.
  *
  * @param comment The comment to be added.

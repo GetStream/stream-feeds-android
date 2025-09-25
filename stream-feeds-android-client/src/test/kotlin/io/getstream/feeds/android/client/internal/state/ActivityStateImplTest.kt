@@ -15,6 +15,7 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
+import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
@@ -42,7 +43,7 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on activityUpdated, then update activity and poll`() = runTest {
+    fun `on onActivityUpdated, then update activity and poll`() = runTest {
         val poll = pollData()
         val activityWithPoll = activityData(poll = poll)
 
@@ -53,9 +54,107 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on reactionAdded, then add reaction to activity`() = runTest {
+    fun `on onActivityUpdated, then preserve ownBookmarks when updating activity`() = runTest {
+        val initialBookmark = bookmarkData("activity-1", currentUserId)
+        val initialActivity =
+            activityData("activity-1", text = "Original", ownBookmarks = listOf(initialBookmark))
+        val updatedActivity =
+            activityData("activity-1", text = "Updated", ownBookmarks = emptyList())
+        setupAndUpdateActivity(initialActivity, updatedActivity)
+
+        val expectedActivity = updatedActivity.copy(ownBookmarks = listOf(initialBookmark))
+        assertEquals(expectedActivity, activityState.activity.value)
+    }
+
+    @Test
+    fun `on onActivityUpdated, then preserve ownReactions when updating activity`() = runTest {
+        val initialReaction = feedsReactionData("activity-1", "like", currentUserId)
+        val initialActivity =
+            activityData("activity-1", text = "Original", ownReactions = listOf(initialReaction))
+        val updatedActivity =
+            activityData("activity-1", text = "Updated", ownReactions = emptyList())
+        setupAndUpdateActivity(initialActivity, updatedActivity)
+
+        val expectedActivity = updatedActivity.copy(ownReactions = listOf(initialReaction))
+        assertEquals(expectedActivity, activityState.activity.value)
+    }
+
+    @Test
+    fun `on onActivityUpdated, then preserve poll ownVotes when updating activity`() = runTest {
+        val ownVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
+        val initialPoll = pollData("poll-1", "Test Poll", ownVotes = listOf(ownVote))
+        val initialActivity = activityData("activity-1", text = "Original", poll = initialPoll)
+        val updatedPoll = pollData("poll-1", "Updated Poll", ownVotes = emptyList())
+        val updatedActivity = activityData("activity-1", text = "Updated", poll = updatedPoll)
+        setupAndUpdateActivity(initialActivity, updatedActivity)
+
+        val expectedPoll = updatedPoll.copy(ownVotes = listOf(ownVote))
+        val expectedActivity = updatedActivity.copy(poll = expectedPoll)
+        expectActivityAndPoll(expectedActivity, expectedPoll)
+    }
+
+    @Test
+    fun `on onActivityUpdated with poll removed, then clear poll state`() = runTest {
+        val initialPoll = pollData("poll-1", "Test Poll")
+        val initialActivity = activityData("activity-1", text = "Original", poll = initialPoll)
+        val updatedActivity = activityData("activity-1", text = "Updated", poll = null)
+        setupAndUpdateActivity(initialActivity, updatedActivity)
+
+        assertEquals(updatedActivity, activityState.activity.value)
+        assertNull(activityState.poll.value)
+    }
+
+    @Test
+    fun `on onActivityUpdated with new poll, then set new poll`() = runTest {
+        val initialActivity = activityData("activity-1", text = "Original", poll = null)
+        val newPoll = pollData("poll-1", "New Poll")
+        val updatedActivity = activityData("activity-1", text = "Updated", poll = newPoll)
+        setupAndUpdateActivity(initialActivity, updatedActivity)
+
+        expectActivityAndPoll(updatedActivity, newPoll)
+    }
+
+    @Test
+    fun `on onActivityUpdated, then preserve all own properties together`() = runTest {
+        val initialBookmark = bookmarkData("activity-1", currentUserId)
+        val initialReaction = feedsReactionData("activity-1", "like", currentUserId)
+        val ownVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
+        val initialPoll = pollData("poll-1", "Test Poll", ownVotes = listOf(ownVote))
+        val initialActivity =
+            activityData(
+                "activity-1",
+                text = "Original",
+                poll = initialPoll,
+                ownBookmarks = listOf(initialBookmark),
+                ownReactions = listOf(initialReaction),
+            )
+        // Backend sends update with empty "own" properties
+        val updatedPoll = pollData("poll-1", "Updated Poll", ownVotes = emptyList())
+        val updatedActivity =
+            activityData(
+                "activity-1",
+                text = "Updated",
+                poll = updatedPoll,
+                ownBookmarks = emptyList(),
+                ownReactions = emptyList(),
+            )
+        setupAndUpdateActivity(initialActivity, updatedActivity)
+
+        // Verify all "own" properties are preserved
+        val expectedPoll = updatedPoll.copy(ownVotes = listOf(ownVote))
+        val expectedActivity =
+            updatedActivity.copy(
+                poll = expectedPoll,
+                ownBookmarks = listOf(initialBookmark),
+                ownReactions = listOf(initialReaction),
+            )
+        expectActivityAndPoll(expectedActivity, expectedPoll)
+    }
+
+    @Test
+    fun `on onReactionAdded, then add reaction to activity`() = runTest {
         val initialActivity = activityData("activity-1")
-        activityState.onActivityUpdated(initialActivity)
+        setupInitialActivity(initialActivity)
 
         val reaction = feedsReactionData("activity-1", "like", currentUserId)
         activityState.onReactionAdded(reaction)
@@ -71,9 +170,9 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on reactionRemoved, then remove reaction from activity`() = runTest {
+    fun `on onReactionRemoved, then remove reaction from activity`() = runTest {
         val initialActivity = activityData("activity-1")
-        activityState.onActivityUpdated(initialActivity)
+        setupInitialActivity(initialActivity)
 
         val reaction = feedsReactionData("activity-1", "like", currentUserId)
         activityState.onReactionAdded(reaction)
@@ -90,9 +189,9 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on bookmarkAdded, then add bookmark to activity`() = runTest {
+    fun `on onBookmarkAdded, then add bookmark to activity`() = runTest {
         val initialActivity = activityData("activity-1")
-        activityState.onActivityUpdated(initialActivity)
+        setupInitialActivity(initialActivity)
 
         val bookmark = bookmarkData("activity-1", currentUserId)
         activityState.onBookmarkAdded(bookmark)
@@ -103,9 +202,9 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on bookmarkRemoved, then remove bookmark from activity`() = runTest {
+    fun `on onBookmarkRemoved, then remove bookmark from activity`() = runTest {
         val initialActivity = activityData("activity-1")
-        activityState.onActivityUpdated(initialActivity)
+        setupInitialActivity(initialActivity)
 
         val bookmark = bookmarkData("activity-1", currentUserId)
         activityState.onBookmarkAdded(bookmark)
@@ -116,7 +215,7 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on reactionAdded from different user, then update latestReactions but not ownReactions`() =
+    fun `on onReactionAdded from other user, then update latestReactions but not ownReactions`() =
         runTest {
             val initialActivity = activityData("activity-1")
             activityState.onActivityUpdated(initialActivity)
@@ -135,9 +234,9 @@ internal class ActivityStateImplTest {
         }
 
     @Test
-    fun `on bookmarkAdded from different user, then update count but not ownBookmarks`() = runTest {
+    fun `on onBookmarkAdded from other user, then update count but not ownBookmarks`() = runTest {
         val initialActivity = activityData("activity-1")
-        activityState.onActivityUpdated(initialActivity)
+        setupInitialActivity(initialActivity)
 
         val bookmark = bookmarkData("activity-1", "other-user")
         activityState.onBookmarkAdded(bookmark)
@@ -211,7 +310,7 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on optionCreated, then add option to poll`() = runTest {
+    fun `on onOptionCreated, then add option to poll`() = runTest {
         val initialPoll = pollData("poll-1", "Test Poll")
         setupInitialPoll(initialPoll)
 
@@ -224,7 +323,7 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on optionDeleted, then remove option from poll`() = runTest {
+    fun `on onOptionDeleted, then remove option from poll`() = runTest {
         val initialPoll = pollData("poll-1", "Test Poll")
         setupInitialPoll(initialPoll)
 
@@ -236,7 +335,7 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on optionUpdated, then update option in poll`() = runTest {
+    fun `on onOptionUpdated, then update option in poll`() = runTest {
         val initialPoll = pollData("poll-1", "Test Poll")
         setupInitialPoll(initialPoll)
 
@@ -451,8 +550,22 @@ internal class ActivityStateImplTest {
         assertEquals(expectedPoll, activityState.poll.value)
     }
 
+    private fun setupInitialActivity(activity: ActivityData) {
+        activityState.onActivityUpdated(activity)
+    }
+
     private fun setupInitialPoll(poll: PollData) {
         val activity = activityData(poll = poll)
         activityState.onActivityUpdated(activity)
+    }
+
+    private fun setupAndUpdateActivity(initial: ActivityData, updated: ActivityData) {
+        activityState.onActivityUpdated(initial)
+        activityState.onActivityUpdated(updated)
+    }
+
+    private fun expectActivityAndPoll(expectedActivity: ActivityData, expectedPoll: PollData) {
+        assertEquals(expectedActivity, activityState.activity.value)
+        assertEquals(expectedPoll, activityState.poll.value)
     }
 }

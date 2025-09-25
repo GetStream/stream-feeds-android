@@ -174,16 +174,12 @@ internal class FeedStateImpl(
 
         // Update the activities list
         _activities.update { current ->
-            current.upsertSorted(activity, ActivityData::id, activitiesSorting)
+            current.updateIf({ it.id == activity.id }) { it.update(activity) }
         }
         // Update the pinned activities if the activity is pinned
         _pinnedActivities.update { current ->
-            current.map { pin ->
-                if (pin.activity.id == activity.id) {
-                    pin.copy(activity = activity)
-                } else {
-                    pin
-                }
+            current.updateIf({ it.activity.id == activity.id }) { pin ->
+                pin.copy(activity = pin.activity.update(activity))
             }
         }
     }
