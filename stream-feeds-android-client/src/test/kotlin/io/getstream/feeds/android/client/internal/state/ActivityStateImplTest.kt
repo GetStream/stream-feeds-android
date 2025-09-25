@@ -23,7 +23,6 @@ import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
-import io.getstream.feeds.android.client.internal.test.TestData.reactionGroupData
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -151,40 +150,45 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on onReactionAdded, then add reaction to activity`() = runTest {
-        val initialActivity = activityData("activity-1")
-        setupInitialActivity(initialActivity)
+    fun `on onReactionUpserted from current user, then update activity and own reactions`() =
+        runTest {
+            val initialActivity = activityData("activity-1")
+            setupInitialActivity(initialActivity)
 
-        val reaction = feedsReactionData("activity-1", "like", currentUserId)
-        activityState.onReactionAdded(reaction)
+            val reaction = feedsReactionData("activity-1", "like", currentUserId)
+            val updatedActivity = activityData("activity-1", text = "Updated activity")
+            activityState.onReactionUpserted(reaction, updatedActivity)
 
-        val expectedActivity =
-            initialActivity.copy(
-                reactionCount = 1,
-                ownReactions = listOf(reaction),
-                latestReactions = listOf(reaction),
-                reactionGroups = mapOf("like" to reactionGroupData(count = 1)),
-            )
-        assertEquals(expectedActivity, activityState.activity.value)
-    }
+            val expected = updatedActivity.copy(ownReactions = listOf(reaction))
+            assertEquals(expected, activityState.activity.value)
+        }
+
+    @Test
+    fun `on onReactionUpserted from other user, then update activity and keep ownReactions`() =
+        runTest {
+            val initialActivity = activityData("activity-1")
+            activityState.onActivityUpdated(initialActivity)
+
+            val reaction = feedsReactionData("activity-1", "like", "other-user")
+            val updatedActivity = activityData("activity-1", text = "Updated activity")
+            activityState.onReactionUpserted(reaction, updatedActivity)
+
+            val expected = updatedActivity.copy(ownReactions = emptyList())
+            assertEquals(expected, activityState.activity.value)
+        }
 
     @Test
     fun `on onReactionRemoved, then remove reaction from activity`() = runTest {
-        val initialActivity = activityData("activity-1")
+        val reaction = feedsReactionData("activity-1", "like", currentUserId)
+        val initialActivity =
+            activityData("activity-1", text = "With reaction", ownReactions = listOf(reaction))
         setupInitialActivity(initialActivity)
 
-        val reaction = feedsReactionData("activity-1", "like", currentUserId)
-        activityState.onReactionAdded(reaction)
-        activityState.onReactionRemoved(reaction)
+        val updatedActivity = activityData("activity-1", text = "Updated activity")
+        activityState.onReactionRemoved(reaction, updatedActivity)
 
-        val expectedActivity =
-            initialActivity.copy(
-                reactionCount = 0,
-                ownReactions = emptyList(),
-                latestReactions = emptyList(),
-                reactionGroups = emptyMap(),
-            )
-        assertEquals(expectedActivity, activityState.activity.value)
+        val expected = updatedActivity.copy(ownReactions = emptyList())
+        assertEquals(expected, activityState.activity.value)
     }
 
     @Test
@@ -211,25 +215,6 @@ internal class ActivityStateImplTest {
         val expectedActivity = initialActivity.copy(bookmarkCount = 0, ownBookmarks = emptyList())
         assertEquals(expectedActivity, activityState.activity.value)
     }
-
-    @Test
-    fun `on onReactionAdded from other user, then update latestReactions but not ownReactions`() =
-        runTest {
-            val initialActivity = activityData("activity-1")
-            activityState.onActivityUpdated(initialActivity)
-
-            val reaction = feedsReactionData("activity-1", "like", "other-user")
-            activityState.onReactionAdded(reaction)
-
-            val expectedActivity =
-                initialActivity.copy(
-                    reactionCount = 1,
-                    ownReactions = emptyList(),
-                    latestReactions = listOf(reaction),
-                    reactionGroups = mapOf("like" to reactionGroupData(count = 1)),
-                )
-            assertEquals(expectedActivity, activityState.activity.value)
-        }
 
     @Test
     fun `on onBookmarkUpserted from other user, then update count but not ownBookmarks`() =

@@ -96,27 +96,48 @@ internal class FeedEventHandlerTest {
 
     @Test
     fun `on ActivityReactionAdded, then handle based on feed match`() {
+        val activity = activityData()
         val reaction = feedsReactionData("activity-1")
-        val matchingEvent = StateUpdateEvent.ActivityReactionAdded(fid.rawValue, reaction)
-        val nonMatchingEvent = StateUpdateEvent.ActivityReactionAdded("group:different", reaction)
+        val matchingEvent = StateUpdateEvent.ActivityReactionAdded(fid.rawValue, activity, reaction)
+        val nonMatchingEvent =
+            StateUpdateEvent.ActivityReactionAdded("group:different", activity, reaction)
 
         testEventHandling(
             matchingEvent = matchingEvent,
             nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onReactionAdded(reaction) },
+            verifyBlock = { state.onReactionUpserted(reaction, activity) },
+        )
+    }
+
+    @Test
+    fun `on ActivityReactionUpdated, then handle based on feed match`() {
+        val activity = activityData()
+        val reaction = feedsReactionData("activity-1")
+        val matchingEvent =
+            StateUpdateEvent.ActivityReactionUpdated(fid.rawValue, activity, reaction)
+        val nonMatchingEvent =
+            StateUpdateEvent.ActivityReactionUpdated("group:different", activity, reaction)
+
+        testEventHandling(
+            matchingEvent = matchingEvent,
+            nonMatchingEvent = nonMatchingEvent,
+            verifyBlock = { state.onReactionUpserted(reaction, activity) },
         )
     }
 
     @Test
     fun `on ActivityReactionDeleted, then handle based on feed match`() {
+        val activity = activityData()
         val reaction = feedsReactionData("activity-1")
-        val matchingEvent = StateUpdateEvent.ActivityReactionDeleted(fid.rawValue, reaction)
-        val nonMatchingEvent = StateUpdateEvent.ActivityReactionDeleted("group:different", reaction)
+        val matchingEvent =
+            StateUpdateEvent.ActivityReactionDeleted(fid.rawValue, activity, reaction)
+        val nonMatchingEvent =
+            StateUpdateEvent.ActivityReactionDeleted("group:different", activity, reaction)
 
         testEventHandling(
             matchingEvent = matchingEvent,
             nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onReactionRemoved(reaction) },
+            verifyBlock = { state.onReactionRemoved(reaction, activity) },
         )
     }
 

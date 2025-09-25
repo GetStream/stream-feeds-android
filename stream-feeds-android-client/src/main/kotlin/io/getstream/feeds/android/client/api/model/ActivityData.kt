@@ -15,8 +15,6 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.client.internal.model.addReaction
-import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.network.models.ActivityLocation
@@ -303,55 +301,53 @@ internal inline fun ActivityData.changeBookmarks(
 }
 
 /**
- * Adds a reaction to the activity, updating the latest reactions, reaction groups, reaction count,
- * and own reactions.
+ * Calls [changeReactions] with a [filter] operation to remove the reaction.
  *
- * @param reaction The reaction to be added.
- * @param currentUserId The ID of the current user, used to determine if the reaction belongs to.
- * @return A new [ActivityData] instance with the updated reactions and counts.
- */
-internal fun ActivityData.addReaction(
-    reaction: FeedsReactionData,
-    currentUserId: String,
-): ActivityData =
-    addReaction(
-        ownReactions = ownReactions,
-        latestReactions = latestReactions,
-        reactionGroups = reactionGroups,
-        reaction = reaction,
-        currentUserId = currentUserId,
-    ) { latestReactions, reactionGroups, reactionCount, ownReactions ->
-        copy(
-            latestReactions = latestReactions,
-            reactionGroups = reactionGroups,
-            reactionCount = reactionCount,
-            ownReactions = ownReactions,
-        )
-    }
-
-/**
- * Removes a reaction from the activity, updating the latest reactions, reaction groups, reaction
- * count, and own reactions.
- *
- * @param reaction The reaction to be removed.
- * @param currentUserId The ID of the current user, used to determine if the reaction belongs to.
- * @return A new [ActivityData] instance with the updated reactions and counts.
+ * @see changeReactions
  */
 internal fun ActivityData.removeReaction(
+    updated: ActivityData,
     reaction: FeedsReactionData,
     currentUserId: String,
 ): ActivityData =
-    removeReaction(
-        ownReactions = ownReactions,
-        latestReactions = latestReactions,
-        reactionGroups = reactionGroups,
-        reaction = reaction,
-        currentUserId = currentUserId,
-    ) { latestReactions, reactionGroups, reactionCount, ownReactions ->
-        copy(
-            latestReactions = latestReactions,
-            reactionGroups = reactionGroups ?: this.reactionGroups,
-            reactionCount = reactionCount ?: this.reactionCount,
-            ownReactions = ownReactions,
-        )
-    }
+    changeReactions(updated, reaction, currentUserId) { filter { it.id != reaction.id } }
+
+/**
+ * Calls [changeReactions] with an [upsert] operation.
+ *
+ * @see changeReactions
+ */
+internal fun ActivityData.upsertReaction(
+    updated: ActivityData,
+    reaction: FeedsReactionData,
+    currentUserId: String,
+): ActivityData =
+    changeReactions(updated, reaction, currentUserId) { upsert(reaction, FeedsReactionData::id) }
+
+/**
+ * Merges the receiver activity with [updated] and updates own reactions using the provided
+ * [updateOwnReactions] function if the reaction belongs to the current user.
+ *
+ * @param updated The updated activity data to merge with the current activity.
+ * @param reaction The reaction that was added or removed.
+ * @param currentUserId The ID of the current user, used to determine if the reaction belongs to
+ *   them.
+ * @param updateOwnReactions A function that takes the current list of own reactions and returns the
+ *   updated list of own reactions.
+ * @return The updated [ActivityData] instance.
+ */
+internal inline fun ActivityData.changeReactions(
+    updated: ActivityData,
+    reaction: FeedsReactionData,
+    currentUserId: String,
+    updateOwnReactions: List<FeedsReactionData>.() -> List<FeedsReactionData>,
+): ActivityData {
+    val updatedOwnReactions =
+        if (reaction.user.id == currentUserId) {
+            this.ownReactions.updateOwnReactions()
+        } else {
+            this.ownReactions
+        }
+
+    return update(updated, ownReactions = updatedOwnReactions)
+}

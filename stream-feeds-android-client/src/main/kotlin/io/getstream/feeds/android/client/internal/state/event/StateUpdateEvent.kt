@@ -33,6 +33,7 @@ import io.getstream.feeds.android.network.models.ActivityDeletedEvent
 import io.getstream.feeds.android.network.models.ActivityPinnedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
+import io.getstream.feeds.android.network.models.ActivityReactionUpdatedEvent
 import io.getstream.feeds.android.network.models.ActivityRemovedFromFeedEvent
 import io.getstream.feeds.android.network.models.ActivityUnpinnedEvent
 import io.getstream.feeds.android.network.models.ActivityUpdatedEvent
@@ -46,6 +47,7 @@ import io.getstream.feeds.android.network.models.CommentAddedEvent
 import io.getstream.feeds.android.network.models.CommentDeletedEvent
 import io.getstream.feeds.android.network.models.CommentReactionAddedEvent
 import io.getstream.feeds.android.network.models.CommentReactionDeletedEvent
+import io.getstream.feeds.android.network.models.CommentReactionUpdatedEvent
 import io.getstream.feeds.android.network.models.CommentUpdatedEvent
 import io.getstream.feeds.android.network.models.FeedDeletedEvent
 import io.getstream.feeds.android.network.models.FeedMemberAddedEvent
@@ -84,11 +86,23 @@ internal sealed interface StateUpdateEvent {
 
     data class ActivityUnpinned(val fid: String, val activityId: String) : StateUpdateEvent
 
-    data class ActivityReactionAdded(val fid: String, val reaction: FeedsReactionData) :
-        StateUpdateEvent
+    data class ActivityReactionAdded(
+        val fid: String,
+        val activity: ActivityData,
+        val reaction: FeedsReactionData,
+    ) : StateUpdateEvent
 
-    data class ActivityReactionDeleted(val fid: String, val reaction: FeedsReactionData) :
-        StateUpdateEvent
+    data class ActivityReactionDeleted(
+        val fid: String,
+        val activity: ActivityData,
+        val reaction: FeedsReactionData,
+    ) : StateUpdateEvent
+
+    data class ActivityReactionUpdated(
+        val fid: String,
+        val activity: ActivityData,
+        val reaction: FeedsReactionData,
+    ) : StateUpdateEvent
 
     data class BookmarkAdded(val bookmark: BookmarkData) : StateUpdateEvent
 
@@ -110,6 +124,9 @@ internal sealed interface StateUpdateEvent {
         StateUpdateEvent
 
     data class CommentReactionDeleted(val comment: CommentData, val reaction: FeedsReactionData) :
+        StateUpdateEvent
+
+    data class CommentReactionUpdated(val comment: CommentData, val reaction: FeedsReactionData) :
         StateUpdateEvent
 
     data class FeedUpdated(val feed: FeedData) : StateUpdateEvent
@@ -167,10 +184,13 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
             StateUpdateEvent.ActivityUnpinned(fid, pinnedActivity.activity.id)
 
         is ActivityReactionAddedEvent ->
-            StateUpdateEvent.ActivityReactionAdded(fid, reaction.toModel())
+            StateUpdateEvent.ActivityReactionAdded(fid, activity.toModel(), reaction.toModel())
 
         is ActivityReactionDeletedEvent ->
-            StateUpdateEvent.ActivityReactionDeleted(fid, reaction.toModel())
+            StateUpdateEvent.ActivityReactionDeleted(fid, activity.toModel(), reaction.toModel())
+
+        is ActivityReactionUpdatedEvent ->
+            StateUpdateEvent.ActivityReactionUpdated(fid, activity.toModel(), reaction.toModel())
 
         is BookmarkAddedEvent -> StateUpdateEvent.BookmarkAdded(bookmark.toModel())
 
@@ -194,6 +214,9 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
 
         is CommentReactionDeletedEvent ->
             StateUpdateEvent.CommentReactionDeleted(comment.toModel(), reaction.toModel())
+
+        is CommentReactionUpdatedEvent ->
+            StateUpdateEvent.CommentReactionUpdated(comment.toModel(), reaction.toModel())
 
         is FeedUpdatedEvent -> StateUpdateEvent.FeedUpdated(feed.toModel())
 

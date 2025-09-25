@@ -16,8 +16,7 @@
 package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.client.api.state.query.CommentsSortDataFields
-import io.getstream.feeds.android.client.internal.model.addReaction
-import io.getstream.feeds.android.client.internal.model.removeReaction
+import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import io.getstream.feeds.android.network.models.Attachment
 import io.getstream.feeds.android.network.models.RepliesMeta
@@ -160,58 +159,56 @@ public data class ThreadedCommentData(
 }
 
 /**
- * Adds a reaction to the comment, updating the latest reactions, reaction groups, reaction count,
- * and own reactions if applicable.
+ * Calls [changeReactions] with a [filter] operation to remove the reaction.
  *
- * @param reaction The reaction to add.
- * @param currentUserId The ID of the current user, used to update own reactions.
- * @return A new [ThreadedCommentData] instance with the updated reaction data.
- */
-internal fun ThreadedCommentData.addReaction(
-    reaction: FeedsReactionData,
-    currentUserId: String,
-): ThreadedCommentData =
-    addReaction(
-        ownReactions = ownReactions,
-        latestReactions = latestReactions,
-        reactionGroups = reactionGroups,
-        reaction = reaction,
-        currentUserId = currentUserId,
-    ) { latestReactions, reactionGroups, reactionCount, ownReactions ->
-        copy(
-            latestReactions = latestReactions,
-            reactionGroups = reactionGroups,
-            reactionCount = reactionCount,
-            ownReactions = ownReactions,
-        )
-    }
-
-/**
- * Removes a reaction from the comment, updating the latest reactions, reaction groups, reaction
- * count, and own reactions if applicable.
- *
- * @param reaction The reaction to remove.
- * @param currentUserId The ID of the current user, used to update own reactions.
- * @return A new [ThreadedCommentData] instance with the updated reaction data.
+ * @see changeReactions
  */
 internal fun ThreadedCommentData.removeReaction(
+    updated: CommentData,
     reaction: FeedsReactionData,
     currentUserId: String,
 ): ThreadedCommentData =
-    removeReaction(
-        ownReactions = ownReactions,
-        latestReactions = latestReactions,
-        reactionGroups = reactionGroups,
-        reaction = reaction,
-        currentUserId = currentUserId,
-    ) { latestReactions, reactionGroups, reactionCount, ownReactions ->
-        copy(
-            latestReactions = latestReactions,
-            reactionGroups = reactionGroups ?: this.reactionGroups,
-            reactionCount = reactionCount ?: this.reactionCount,
-            ownReactions = ownReactions,
-        )
-    }
+    changeReactions(updated, reaction, currentUserId) { filter { it.id != reaction.id } }
+
+/**
+ * Calls [changeReactions] with an [upsert] operation.
+ *
+ * @see changeReactions
+ */
+internal fun ThreadedCommentData.upsertReaction(
+    updated: CommentData,
+    reaction: FeedsReactionData,
+    currentUserId: String,
+): ThreadedCommentData =
+    changeReactions(updated, reaction, currentUserId) { upsert(reaction, FeedsReactionData::id) }
+
+/**
+ * Merges the receiver comment with [updated] and updates own reactions using the provided
+ * [updateOwnReactions] function if the reaction belongs to the current user.
+ *
+ * @param updated The updated comment data to merge with the current one.
+ * @param reaction The reaction that was added or removed.
+ * @param currentUserId The ID of the current user, used to determine if the reaction belongs to
+ *   them.
+ * @param updateOwnReactions A function that takes the current list of own reactions and returns the
+ *   updated list of own reactions.
+ * @return The updated [ThreadedCommentData] instance.
+ */
+internal inline fun ThreadedCommentData.changeReactions(
+    updated: CommentData,
+    reaction: FeedsReactionData,
+    currentUserId: String,
+    updateOwnReactions: List<FeedsReactionData>.() -> List<FeedsReactionData>,
+): ThreadedCommentData {
+    val updatedOwnReactions =
+        if (reaction.user.id == currentUserId) {
+            this.ownReactions.updateOwnReactions()
+        } else {
+            this.ownReactions
+        }
+
+    return update(updated, ownReactions = updatedOwnReactions)
+}
 
 /**
  * Adds a reply to the comment, updating the replies list and reply count.
@@ -231,12 +228,16 @@ internal fun ThreadedCommentData.addReply(
 /**
  * Sets the comment data for this threaded comment, replacing its properties with those from the
  * provided [CommentData]. [ThreadedCommentData.ownReactions] is not overwritten because "own" data
- * coming from WS event is not reliable.
+ * coming from WS event is not reliable. Optionally, a different instance can be provided to be used
+ * instead of the current one.
  *
  * @param comment The [CommentData] to set for this threaded comment.
  * @return A new [ThreadedCommentData] instance with the updated comment data.
  */
-internal fun ThreadedCommentData.update(comment: CommentData): ThreadedCommentData {
+internal fun ThreadedCommentData.update(
+    comment: CommentData,
+    ownReactions: List<FeedsReactionData> = this.ownReactions,
+): ThreadedCommentData {
     return this.copy(
         attachments = comment.attachments,
         confidenceScore = comment.confidenceScore,
@@ -252,7 +253,7 @@ internal fun ThreadedCommentData.update(comment: CommentData): ThreadedCommentDa
         moderation = comment.moderation,
         objectId = comment.objectId,
         objectType = comment.objectType,
-        ownReactions = this.ownReactions,
+        ownReactions = ownReactions,
         parentId = comment.parentId,
         reactionCount = comment.reactionCount,
         reactionGroups = comment.reactionGroups,
