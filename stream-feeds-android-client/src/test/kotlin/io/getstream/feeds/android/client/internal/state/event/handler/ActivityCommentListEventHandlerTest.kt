@@ -75,7 +75,7 @@ internal class ActivityCommentListEventHandlerTest {
     fun `on CommentReactionAdded for matching object, then call onCommentReactionUpserted`() {
         val comment = commentData(objectId = objectId, objectType = objectType)
         val reaction = feedsReactionData()
-        val event = StateUpdateEvent.CommentReactionAdded(comment, reaction)
+        val event = StateUpdateEvent.CommentReactionAdded("feed-1", comment, reaction)
 
         handler.onEvent(event)
 
@@ -86,7 +86,7 @@ internal class ActivityCommentListEventHandlerTest {
     fun `on CommentReactionUpdated for matching object, then call onCommentReactionUpserted`() {
         val comment = commentData(objectId = objectId, objectType = objectType)
         val reaction = feedsReactionData()
-        val event = StateUpdateEvent.CommentReactionUpdated(comment, reaction)
+        val event = StateUpdateEvent.CommentReactionUpdated("feed-1", comment, reaction)
 
         handler.onEvent(event)
 
@@ -97,7 +97,7 @@ internal class ActivityCommentListEventHandlerTest {
     fun `on CommentReactionDeleted for matching object, then call onCommentReactionRemoved`() {
         val comment = commentData(objectId = objectId, objectType = objectType)
         val reaction = feedsReactionData()
-        val event = StateUpdateEvent.CommentReactionDeleted(comment, reaction)
+        val event = StateUpdateEvent.CommentReactionDeleted("feed-1", comment, reaction)
 
         handler.onEvent(event)
 

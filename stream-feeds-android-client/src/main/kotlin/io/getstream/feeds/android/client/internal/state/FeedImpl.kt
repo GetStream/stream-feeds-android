@@ -406,7 +406,7 @@ internal class FeedImpl(
             .addCommentReaction(commentId, request)
             .onSuccess { (reaction, comment) ->
                 subscriptionManager.onEvent(
-                    StateUpdateEvent.CommentReactionAdded(comment, reaction)
+                    StateUpdateEvent.CommentReactionAdded(fid.rawValue, comment, reaction)
                 )
             }
             .map { it.first }
@@ -420,7 +420,7 @@ internal class FeedImpl(
             .deleteCommentReaction(commentId = commentId, type = type)
             .onSuccess { (reaction, comment) ->
                 subscriptionManager.onEvent(
-                    StateUpdateEvent.CommentReactionDeleted(comment, reaction)
+                    StateUpdateEvent.CommentReactionDeleted(fid.rawValue, comment, reaction)
                 )
             }
             .map { it.first }

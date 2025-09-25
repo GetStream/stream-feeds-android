@@ -16,6 +16,7 @@
 package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.client.api.state.query.CommentsSortDataFields
+import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.network.models.Attachment
 import io.getstream.feeds.android.network.models.CommentResponse
 import java.util.Date
@@ -141,5 +142,57 @@ internal fun CommentResponse.toModel(): CommentData =
  * Updates the comment while preserving own reactions because "own" data from WS events is not
  * reliable.
  */
-internal fun CommentData.update(updated: CommentData): CommentData =
-    updated.copy(ownReactions = ownReactions)
+internal fun CommentData.update(
+    updated: CommentData,
+    ownReactions: List<FeedsReactionData> = this.ownReactions,
+): CommentData = updated.copy(ownReactions = ownReactions)
+
+/**
+ * Removes a reaction from the comment, updating the latest reactions, reaction groups, reaction
+ * count, and own reactions.
+ *
+ * @param updated The updated comment data.
+ * @param reaction The reaction to remove.
+ * @param currentUserId The ID of the current user, used to determine if the reaction belongs to
+ *   them.
+ * @return A new [CommentData] instance with the updated reactions and counts.
+ */
+internal fun CommentData.removeReaction(
+    updated: CommentData,
+    reaction: FeedsReactionData,
+    currentUserId: String,
+): CommentData =
+    changeReactions(updated, reaction, currentUserId) { filter { it.id != reaction.id } }
+
+/**
+ * Merges the receiver comment with [updated] and upserts the given [reaction] into own reactions if
+ * it belongs to the current user.
+ *
+ * @param updated The updated comment data.
+ * @param reaction The reaction to be added.
+ * @param currentUserId The ID of the current user, used to determine if the reaction belongs to
+ *   them.
+ * @return A new [CommentData] instance with the updated reactions and counts.
+ */
+internal fun CommentData.upsertReaction(
+    updated: CommentData,
+    reaction: FeedsReactionData,
+    currentUserId: String,
+): CommentData =
+    changeReactions(updated, reaction, currentUserId) { upsert(reaction, FeedsReactionData::id) }
+
+internal inline fun CommentData.changeReactions(
+    updated: CommentData,
+    reaction: FeedsReactionData,
+    currentUserId: String,
+    updateOwnReactions: List<FeedsReactionData>.() -> List<FeedsReactionData>,
+): CommentData {
+    val updatedOwnReactions =
+        if (reaction.user.id == currentUserId) {
+            this.ownReactions.updateOwnReactions()
+        } else {
+            this.ownReactions
+        }
+
+    return update(updated, ownReactions = updatedOwnReactions)
+}

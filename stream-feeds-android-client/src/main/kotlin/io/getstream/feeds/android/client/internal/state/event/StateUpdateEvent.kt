@@ -120,14 +120,23 @@ internal sealed interface StateUpdateEvent {
 
     data class CommentUpdated(val comment: CommentData) : StateUpdateEvent
 
-    data class CommentReactionAdded(val comment: CommentData, val reaction: FeedsReactionData) :
-        StateUpdateEvent
+    data class CommentReactionAdded(
+        val fid: String,
+        val comment: CommentData,
+        val reaction: FeedsReactionData,
+    ) : StateUpdateEvent
 
-    data class CommentReactionDeleted(val comment: CommentData, val reaction: FeedsReactionData) :
-        StateUpdateEvent
+    data class CommentReactionDeleted(
+        val fid: String,
+        val comment: CommentData,
+        val reaction: FeedsReactionData,
+    ) : StateUpdateEvent
 
-    data class CommentReactionUpdated(val comment: CommentData, val reaction: FeedsReactionData) :
-        StateUpdateEvent
+    data class CommentReactionUpdated(
+        val fid: String,
+        val comment: CommentData,
+        val reaction: FeedsReactionData,
+    ) : StateUpdateEvent
 
     data class FeedUpdated(val feed: FeedData) : StateUpdateEvent
 
@@ -210,13 +219,13 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
         is CommentDeletedEvent -> StateUpdateEvent.CommentDeleted(fid, comment.toModel())
 
         is CommentReactionAddedEvent ->
-            StateUpdateEvent.CommentReactionAdded(comment.toModel(), reaction.toModel())
+            StateUpdateEvent.CommentReactionAdded(fid, comment.toModel(), reaction.toModel())
 
         is CommentReactionDeletedEvent ->
-            StateUpdateEvent.CommentReactionDeleted(comment.toModel(), reaction.toModel())
+            StateUpdateEvent.CommentReactionDeleted(fid, comment.toModel(), reaction.toModel())
 
         is CommentReactionUpdatedEvent ->
-            StateUpdateEvent.CommentReactionUpdated(comment.toModel(), reaction.toModel())
+            StateUpdateEvent.CommentReactionUpdated(fid, comment.toModel(), reaction.toModel())
 
         is FeedUpdatedEvent -> StateUpdateEvent.FeedUpdated(feed.toModel())
 
