@@ -636,7 +636,8 @@ public interface FeedsApi {
 
     /**
      * Update a follow Updates a follow's custom data, push preference, and follower role. Source
-     * owner can update custom data and push preference. Target owner can update follower role.
+     * owner can update custom data and push preference. Follower role can only be updated via
+     * server-side requests.
      */
     @PATCH("/api/v2/feeds/follows")
     public suspend fun updateFollow(

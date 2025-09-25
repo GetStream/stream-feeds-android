@@ -37,7 +37,6 @@ import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionDat
 import io.getstream.feeds.android.client.internal.test.TestData.followData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
-import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -329,7 +328,6 @@ internal class FeedStateImplTest {
         assertEquals(emptyList<FollowData>(), feedState.followers.value)
         assertEquals(emptyList<FollowData>(), feedState.following.value)
         assertEquals(emptyList<FollowData>(), feedState.followRequests.value)
-        assertEquals(emptyList<FeedOwnCapability>(), feedState.ownCapabilities.value)
     }
 
     @Test
@@ -544,7 +542,6 @@ internal class FeedStateImplTest {
             followers = followers,
             following = following,
             followRequests = followRequests,
-            ownCapabilities = emptyList(),
             pinnedActivities = emptyList(),
             aggregatedActivities = emptyList(),
             notificationStatus = null,

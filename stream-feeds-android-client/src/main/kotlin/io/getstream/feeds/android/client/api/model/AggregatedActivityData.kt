@@ -31,6 +31,7 @@ import java.util.Date
  * @property score The score associated with this aggregation.
  * @property updatedAt The date and time when this aggregation was last updated.
  * @property userCount The number of unique users involved in these activities.
+ * @property userCountTruncated Indicates if the user count is truncated.
  */
 public data class AggregatedActivityData(
     public val activities: List<ActivityData>,
@@ -40,6 +41,7 @@ public data class AggregatedActivityData(
     public val score: Float,
     public val updatedAt: Date,
     public val userCount: Int,
+    public val userCountTruncated: Boolean,
 ) {
 
     /**
@@ -63,5 +65,6 @@ internal fun AggregatedActivityResponse.toModel(): AggregatedActivityData {
         score = score,
         updatedAt = updatedAt,
         userCount = userCount,
+        userCountTruncated = userCountTruncated,
     )
 }

@@ -27,6 +27,7 @@ public data class AddReactionRequest(
     @Json(name = "type") public val type: kotlin.String,
     @Json(name = "create_notification_activity")
     public val createNotificationActivity: kotlin.Boolean? = null,
+    @Json(name = "enforce_unique") public val enforceUnique: kotlin.Boolean? = null,
     @Json(name = "skip_push") public val skipPush: kotlin.Boolean? = null,
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),

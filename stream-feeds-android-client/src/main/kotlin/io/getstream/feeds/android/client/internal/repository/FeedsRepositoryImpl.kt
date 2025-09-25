@@ -76,7 +76,6 @@ internal class FeedsRepositoryImpl(private val api: FeedsApi) : FeedsRepository 
                     models = response.members.map { it.toModel() },
                     pagination = response.memberPagination?.toModel() ?: PaginationData.EMPTY,
                 ),
-            ownCapabilities = response.ownCapabilities,
             pinnedActivities = response.pinnedActivities.map { it.toModel() },
             aggregatedActivities = response.aggregatedActivities.map { it.toModel() },
             notificationStatus = response.notificationStatus,

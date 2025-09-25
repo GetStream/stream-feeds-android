@@ -48,10 +48,6 @@ public data class GetOrCreateFeedResponse(
     public val members:
         kotlin.collections.List<io.getstream.feeds.android.network.models.FeedMemberResponse> =
         emptyList(),
-    @Json(name = "own_capabilities")
-    public val ownCapabilities:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.FeedOwnCapability> =
-        emptyList(),
     @Json(name = "pinned_activities")
     public val pinnedActivities:
         kotlin.collections.List<io.getstream.feeds.android.network.models.ActivityPinResponse> =
@@ -59,10 +55,6 @@ public data class GetOrCreateFeedResponse(
     @Json(name = "feed") public val feed: io.getstream.feeds.android.network.models.FeedResponse,
     @Json(name = "next") public val next: kotlin.String? = null,
     @Json(name = "prev") public val prev: kotlin.String? = null,
-    @Json(name = "own_follows")
-    public val ownFollows:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.FollowResponse>? =
-        emptyList(),
     @Json(name = "followers_pagination")
     public val followersPagination: io.getstream.feeds.android.network.models.PagerResponse? = null,
     @Json(name = "following_pagination")
@@ -73,6 +65,4 @@ public data class GetOrCreateFeedResponse(
     public val notificationStatus:
         io.getstream.feeds.android.network.models.NotificationStatusResponse? =
         null,
-    @Json(name = "own_membership")
-    public val ownMembership: io.getstream.feeds.android.network.models.FeedMemberResponse? = null,
 )

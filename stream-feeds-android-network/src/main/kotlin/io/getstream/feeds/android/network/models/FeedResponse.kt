@@ -42,10 +42,16 @@ public data class FeedResponse(
     @Json(name = "visibility") public val visibility: kotlin.String? = null,
     @Json(name = "filter_tags")
     public val filterTags: kotlin.collections.List<kotlin.String>? = emptyList(),
+    @Json(name = "own_capabilities")
+    public val ownCapabilities:
+        kotlin.collections.List<io.getstream.feeds.android.network.models.FeedOwnCapability>? =
+        emptyList(),
     @Json(name = "own_follows")
     public val ownFollows:
         kotlin.collections.List<io.getstream.feeds.android.network.models.FollowResponse>? =
         emptyList(),
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "own_membership")
+    public val ownMembership: io.getstream.feeds.android.network.models.FeedMemberResponse? = null,
 )

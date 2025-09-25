@@ -24,9 +24,13 @@ import kotlin.io.*
 
 /**  */
 public data class HarmConfig(
+    @Json(name = "cooldown_period") public val cooldownPeriod: kotlin.Int,
     @Json(name = "severity") public val severity: kotlin.Int,
+    @Json(name = "threshold") public val threshold: kotlin.Int,
     @Json(name = "action_sequences")
     public val actionSequences:
         kotlin.collections.List<io.getstream.feeds.android.network.models.ActionSequence> =
         emptyList(),
+    @Json(name = "harm_types")
+    public val harmTypes: kotlin.collections.List<kotlin.String> = emptyList(),
 )

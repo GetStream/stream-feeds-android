@@ -26,13 +26,6 @@ public data class RuleBuilderAction(
     @Json(name = "type") public val type: kotlin.String? = null,
     @Json(name = "ban_options")
     public val banOptions: io.getstream.feeds.android.network.models.BanOptions? = null,
-    @Json(name = "flag_content_options")
-    public val flagContentOptions: io.getstream.feeds.android.network.models.FlagContentOptions? =
-        null,
     @Json(name = "flag_user_options")
     public val flagUserOptions: io.getstream.feeds.android.network.models.FlagUserOptions? = null,
-    @Json(name = "remove_content_options")
-    public val removeContentOptions:
-        io.getstream.feeds.android.network.models.BlockContentOptions? =
-        null,
 )

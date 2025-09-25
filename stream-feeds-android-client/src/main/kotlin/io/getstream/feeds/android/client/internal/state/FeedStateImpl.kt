@@ -51,7 +51,6 @@ import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
-import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.getstream.feeds.android.network.models.NotificationStatusResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -81,8 +80,6 @@ internal class FeedStateImpl(
     private val _followers: MutableStateFlow<List<FollowData>> = MutableStateFlow(emptyList())
     private val _following: MutableStateFlow<List<FollowData>> = MutableStateFlow(emptyList())
     private val _followRequests: MutableStateFlow<List<FollowData>> = MutableStateFlow(emptyList())
-    private val _ownCapabilities: MutableStateFlow<List<FeedOwnCapability>> =
-        MutableStateFlow(emptyList())
     private val _pinnedActivities: MutableStateFlow<List<ActivityPinData>> =
         MutableStateFlow(emptyList())
     private val _notificationStatus: MutableStateFlow<NotificationStatusResponse?> =
@@ -120,9 +117,6 @@ internal class FeedStateImpl(
     override val members: StateFlow<List<FeedMemberData>>
         get() = memberListState.members
 
-    override val ownCapabilities: StateFlow<List<FeedOwnCapability>>
-        get() = _ownCapabilities.asStateFlow()
-
     override val pinnedActivities: StateFlow<List<ActivityPinData>>
         get() = _pinnedActivities.asStateFlow()
 
@@ -141,7 +135,6 @@ internal class FeedStateImpl(
         _followers.update { result.followers }
         _following.update { result.following }
         _followRequests.update { result.followRequests }
-        _ownCapabilities.update { result.ownCapabilities }
         _pinnedActivities.update { result.pinnedActivities }
         _notificationStatus.update { result.notificationStatus }
 
@@ -252,7 +245,6 @@ internal class FeedStateImpl(
         _followers.update { emptyList() }
         _following.update { emptyList() }
         _followRequests.update { emptyList() }
-        _ownCapabilities.update { emptyList() }
         // Clear the member list state
         memberListState.clear()
     }

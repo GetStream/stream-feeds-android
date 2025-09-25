@@ -19,16 +19,16 @@ package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
 import kotlin.collections.*
-import kotlin.collections.Map
+import kotlin.collections.List
 import kotlin.io.*
 
 /**  */
 public data class VideoCallRuleConfig(
+    @Json(name = "flag_all_labels") public val flagAllLabels: kotlin.Boolean,
+    @Json(name = "flagged_labels")
+    public val flaggedLabels: kotlin.collections.List<kotlin.String> = emptyList(),
     @Json(name = "rules")
     public val rules:
-        kotlin.collections.Map<
-            kotlin.String,
-            io.getstream.feeds.android.network.models.HarmConfig,
-        > =
-        emptyMap()
+        kotlin.collections.List<io.getstream.feeds.android.network.models.HarmConfig> =
+        emptyList(),
 )

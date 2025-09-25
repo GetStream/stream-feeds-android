@@ -34,40 +34,41 @@ public sealed class FeedOwnCapability(public val value: kotlin.String) {
         public fun fromString(s: kotlin.String): FeedOwnCapability =
             when (s) {
                 "add-activity" -> AddActivity
+                "add-activity-bookmark" -> AddActivityBookmark
                 "add-activity-reaction" -> AddActivityReaction
                 "add-comment" -> AddComment
                 "add-comment-reaction" -> AddCommentReaction
-                "bookmark-activity" -> BookmarkActivity
                 "create-feed" -> CreateFeed
-                "delete-bookmark" -> DeleteBookmark
-                "delete-comment" -> DeleteComment
+                "delete-any-activity" -> DeleteAnyActivity
+                "delete-any-comment" -> DeleteAnyComment
                 "delete-feed" -> DeleteFeed
-                "edit-bookmark" -> EditBookmark
+                "delete-own-activity" -> DeleteOwnActivity
+                "delete-own-activity-bookmark" -> DeleteOwnActivityBookmark
+                "delete-own-activity-reaction" -> DeleteOwnActivityReaction
+                "delete-own-comment" -> DeleteOwnComment
+                "delete-own-comment-reaction" -> DeleteOwnCommentReaction
                 "follow" -> Follow
-                "invite-feed" -> InviteFeed
-                "join-feed" -> JoinFeed
-                "leave-feed" -> LeaveFeed
-                "manage-feed-group" -> ManageFeedGroup
-                "mark-activity" -> MarkActivity
                 "pin-activity" -> PinActivity
                 "query-feed-members" -> QueryFeedMembers
                 "query-follows" -> QueryFollows
                 "read-activities" -> ReadActivities
                 "read-feed" -> ReadFeed
-                "remove-activity" -> RemoveActivity
-                "remove-activity-reaction" -> RemoveActivityReaction
-                "remove-comment-reaction" -> RemoveCommentReaction
                 "unfollow" -> Unfollow
-                "update-activity" -> UpdateActivity
-                "update-comment" -> UpdateComment
+                "update-any-activity" -> UpdateAnyActivity
+                "update-any-comment" -> UpdateAnyComment
                 "update-feed" -> UpdateFeed
                 "update-feed-followers" -> UpdateFeedFollowers
                 "update-feed-members" -> UpdateFeedMembers
+                "update-own-activity" -> UpdateOwnActivity
+                "update-own-activity-bookmark" -> UpdateOwnActivityBookmark
+                "update-own-comment" -> UpdateOwnComment
                 else -> Unknown(s)
             }
     }
 
     public object AddActivity : FeedOwnCapability("add-activity")
+
+    public object AddActivityBookmark : FeedOwnCapability("add-activity-bookmark")
 
     public object AddActivityReaction : FeedOwnCapability("add-activity-reaction")
 
@@ -75,29 +76,25 @@ public sealed class FeedOwnCapability(public val value: kotlin.String) {
 
     public object AddCommentReaction : FeedOwnCapability("add-comment-reaction")
 
-    public object BookmarkActivity : FeedOwnCapability("bookmark-activity")
-
     public object CreateFeed : FeedOwnCapability("create-feed")
 
-    public object DeleteBookmark : FeedOwnCapability("delete-bookmark")
+    public object DeleteAnyActivity : FeedOwnCapability("delete-any-activity")
 
-    public object DeleteComment : FeedOwnCapability("delete-comment")
+    public object DeleteAnyComment : FeedOwnCapability("delete-any-comment")
 
     public object DeleteFeed : FeedOwnCapability("delete-feed")
 
-    public object EditBookmark : FeedOwnCapability("edit-bookmark")
+    public object DeleteOwnActivity : FeedOwnCapability("delete-own-activity")
+
+    public object DeleteOwnActivityBookmark : FeedOwnCapability("delete-own-activity-bookmark")
+
+    public object DeleteOwnActivityReaction : FeedOwnCapability("delete-own-activity-reaction")
+
+    public object DeleteOwnComment : FeedOwnCapability("delete-own-comment")
+
+    public object DeleteOwnCommentReaction : FeedOwnCapability("delete-own-comment-reaction")
 
     public object Follow : FeedOwnCapability("follow")
-
-    public object InviteFeed : FeedOwnCapability("invite-feed")
-
-    public object JoinFeed : FeedOwnCapability("join-feed")
-
-    public object LeaveFeed : FeedOwnCapability("leave-feed")
-
-    public object ManageFeedGroup : FeedOwnCapability("manage-feed-group")
-
-    public object MarkActivity : FeedOwnCapability("mark-activity")
 
     public object PinActivity : FeedOwnCapability("pin-activity")
 
@@ -109,23 +106,23 @@ public sealed class FeedOwnCapability(public val value: kotlin.String) {
 
     public object ReadFeed : FeedOwnCapability("read-feed")
 
-    public object RemoveActivity : FeedOwnCapability("remove-activity")
-
-    public object RemoveActivityReaction : FeedOwnCapability("remove-activity-reaction")
-
-    public object RemoveCommentReaction : FeedOwnCapability("remove-comment-reaction")
-
     public object Unfollow : FeedOwnCapability("unfollow")
 
-    public object UpdateActivity : FeedOwnCapability("update-activity")
+    public object UpdateAnyActivity : FeedOwnCapability("update-any-activity")
 
-    public object UpdateComment : FeedOwnCapability("update-comment")
+    public object UpdateAnyComment : FeedOwnCapability("update-any-comment")
 
     public object UpdateFeed : FeedOwnCapability("update-feed")
 
     public object UpdateFeedFollowers : FeedOwnCapability("update-feed-followers")
 
     public object UpdateFeedMembers : FeedOwnCapability("update-feed-members")
+
+    public object UpdateOwnActivity : FeedOwnCapability("update-own-activity")
+
+    public object UpdateOwnActivityBookmark : FeedOwnCapability("update-own-activity-bookmark")
+
+    public object UpdateOwnComment : FeedOwnCapability("update-own-comment")
 
     public data class Unknown(val unknownValue: kotlin.String) : FeedOwnCapability(unknownValue)
 
