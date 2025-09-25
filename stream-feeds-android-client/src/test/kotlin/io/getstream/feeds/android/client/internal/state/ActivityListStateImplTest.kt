@@ -42,59 +42,59 @@ internal class ActivityListStateImplTest {
 
     @Test
     fun `on queryMoreActivities, then update activities and pagination`() = runTest {
-        val activities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult = defaultPaginationResult(activities)
+        val activity1 = activityData("activity-1")
+        val activity2 = activityData("activity-2")
 
+        val paginationResult = defaultPaginationResult(listOf(activity1, activity2))
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
-        assertEquals(activities, activityListState.activities.value)
+        assertEquals(listOf(activity1, activity2), activityListState.activities.value)
         assertEquals("next-cursor", activityListState.pagination?.next)
         assertEquals(queryConfig, activityListState.queryConfig)
     }
 
     @Test
     fun `on onActivityUpdated, then update specific activity`() = runTest {
-        val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult = defaultPaginationResult(initialActivities)
-        activityListState.onQueryMoreActivities(paginationResult, queryConfig)
+        val activity1 = activityData("activity-1")
+        val activity2 = activityData("activity-2")
+        setupInitialActivities(activity1, activity2)
 
         val updatedActivity = activityData("activity-1", text = "Updated activity")
         activityListState.onActivityUpdated(updatedActivity)
 
-        val updatedActivities = activityListState.activities.value
-        assertEquals(listOf(updatedActivity, initialActivities[1]), updatedActivities)
+        assertEquals(listOf(updatedActivity, activity2), activityListState.activities.value)
     }
 
     @Test
     fun `on onActivityRemoved, then remove specific activity`() = runTest {
-        val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult = defaultPaginationResult(initialActivities)
-        activityListState.onQueryMoreActivities(paginationResult, queryConfig)
+        val activity1 = activityData("activity-1")
+        val activity2 = activityData("activity-2")
+        setupInitialActivities(activity1, activity2)
 
-        activityListState.onActivityRemoved(initialActivities[0].id)
+        activityListState.onActivityRemoved(activity1.id)
 
-        val remainingActivities = activityListState.activities.value
-        assertEquals(listOf(initialActivities[1]), remainingActivities)
+        assertEquals(listOf(activity2), activityListState.activities.value)
     }
 
     @Test
     fun `on onBookmarkUpserted, then add bookmark to activity`() = runTest {
-        val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult = defaultPaginationResult(initialActivities)
-        activityListState.onQueryMoreActivities(paginationResult, queryConfig)
+        val activity1 = activityData("activity-1")
+        val activity2 = activityData("activity-2")
+        setupInitialActivities(activity1, activity2)
+
         val bookmark = bookmarkData("activity-1", currentUserId)
         val expected = bookmark.activity.copy(ownBookmarks = listOf(bookmark))
 
         activityListState.onBookmarkUpserted(bookmark)
 
-        assertEquals(listOf(expected, initialActivities[1]), activityListState.activities.value)
+        assertEquals(listOf(expected, activity2), activityListState.activities.value)
     }
 
     @Test
     fun `on onBookmarkRemoved, then remove bookmark from activity`() = runTest {
-        val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult = defaultPaginationResult(initialActivities)
-        activityListState.onQueryMoreActivities(paginationResult, queryConfig)
+        val activity1 = activityData("activity-1")
+        val activity2 = activityData("activity-2")
+        setupInitialActivities(activity1, activity2)
 
         val bookmark = bookmarkData("activity-1", currentUserId)
         activityListState.onBookmarkUpserted(bookmark)
@@ -106,9 +106,9 @@ internal class ActivityListStateImplTest {
 
     @Test
     fun `on onCommentAdded, then add comment to activity`() = runTest {
-        val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult = defaultPaginationResult(initialActivities)
-        activityListState.onQueryMoreActivities(paginationResult, queryConfig)
+        val activity1 = activityData("activity-1")
+        val activity2 = activityData("activity-2")
+        setupInitialActivities(activity1, activity2)
 
         val comment = commentData("comment-1", objectId = "activity-1")
         activityListState.onCommentAdded(comment)
@@ -119,9 +119,9 @@ internal class ActivityListStateImplTest {
 
     @Test
     fun `on onCommentRemoved, then remove comment from activity`() = runTest {
-        val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult = defaultPaginationResult(initialActivities)
-        activityListState.onQueryMoreActivities(paginationResult, queryConfig)
+        val activity1 = activityData("activity-1")
+        val activity2 = activityData("activity-2")
+        setupInitialActivities(activity1, activity2)
 
         val comment = commentData("comment-1", objectId = "activity-1")
         activityListState.onCommentAdded(comment)
@@ -133,34 +133,69 @@ internal class ActivityListStateImplTest {
 
     @Test
     fun `on onReactionUpserted, then add reaction to activity`() = runTest {
-        val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
-        val paginationResult = defaultPaginationResult(initialActivities)
-        activityListState.onQueryMoreActivities(paginationResult, queryConfig)
+        val activity1 = activityData("activity-1")
+        val activity2 = activityData("activity-2")
+        setupInitialActivities(activity1, activity2)
 
         val reaction = feedsReactionData("activity-1", "like", currentUserId)
         val updatedActivity = activityData("activity-1", text = "Updated activity")
         activityListState.onReactionUpserted(reaction, updatedActivity)
 
         val expected = updatedActivity.copy(ownReactions = listOf(reaction))
-        assertEquals(listOf(expected, initialActivities[1]), activityListState.activities.value)
+        assertEquals(listOf(expected, activity2), activityListState.activities.value)
     }
 
     @Test
     fun `on onReactionRemoved, then remove reaction from activity`() = runTest {
         val reaction = feedsReactionData("activity-1", "like", currentUserId)
-        val initialActivities =
-            listOf(
-                activityData("activity-1", ownReactions = listOf(reaction)),
-                activityData("activity-2"),
-            )
-        val paginationResult = defaultPaginationResult(initialActivities)
-        activityListState.onQueryMoreActivities(paginationResult, queryConfig)
+        val activity1 = activityData("activity-1", ownReactions = listOf(reaction))
+        val activity2 = activityData("activity-2")
+        setupInitialActivities(activity1, activity2)
 
         val updatedActivity = activityData("activity-1", text = "Updated activity")
         activityListState.onReactionRemoved(reaction, updatedActivity)
 
         val expected = updatedActivity.copy(ownReactions = emptyList())
-        assertEquals(listOf(expected, initialActivities[1]), activityListState.activities.value)
+        assertEquals(listOf(expected, activity2), activityListState.activities.value)
+    }
+
+    @Test
+    fun `on onCommentReactionRemoved, then remove comment reaction from activity`() = runTest {
+        val reaction = feedsReactionData(commentId = "comment-1", userId = currentUserId)
+        val comment =
+            commentData("comment-1", objectId = "activity-1", ownReactions = listOf(reaction))
+        val activity1 = activityData("activity-1", comments = listOf(comment))
+        val activity2 = activityData("activity-2")
+        setupInitialActivities(activity1, activity2)
+
+        val updatedComment = commentData("comment-1", objectId = "activity-1", text = "Updated")
+        activityListState.onCommentReactionUpserted(updatedComment, reaction)
+        activityListState.onCommentReactionRemoved(updatedComment, reaction)
+
+        val expectedComment = updatedComment.copy(ownReactions = emptyList())
+        val expectedActivity = activity1.copy(comments = listOf(expectedComment))
+        assertEquals(listOf(expectedActivity, activity2), activityListState.activities.value)
+    }
+
+    @Test
+    fun `on onCommentReactionUpserted, then upsert comment reaction in activity`() = runTest {
+        val comment = commentData("comment-1", objectId = "activity-1")
+        val activity1 = activityData("activity-1", comments = listOf(comment))
+        val activity2 = activityData("activity-2")
+        setupInitialActivities(activity1, activity2)
+
+        val reaction = feedsReactionData(commentId = "comment-1", userId = currentUserId)
+        val updatedComment = commentData("comment-1", objectId = "activity-1", text = "Updated")
+        activityListState.onCommentReactionUpserted(updatedComment, reaction)
+
+        val expectedComment = updatedComment.copy(ownReactions = listOf(reaction))
+        val expectedActivity = activity1.copy(comments = listOf(expectedComment))
+        assertEquals(listOf(expectedActivity, activity2), activityListState.activities.value)
+    }
+
+    private fun setupInitialActivities(vararg activities: ActivityData) {
+        val paginationResult = defaultPaginationResult(activities.toList())
+        activityListState.onQueryMoreActivities(paginationResult, queryConfig)
     }
 
     companion object {
