@@ -25,12 +25,12 @@ import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollOptionData
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
-import io.getstream.feeds.android.client.api.model.addOption
-import io.getstream.feeds.android.client.api.model.removeOption
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
-import io.getstream.feeds.android.client.api.model.updateOption
 import io.getstream.feeds.android.client.api.state.Activity
 import io.getstream.feeds.android.client.api.state.ActivityState
+import io.getstream.feeds.android.client.internal.model.addOption
+import io.getstream.feeds.android.client.internal.model.removeOption
+import io.getstream.feeds.android.client.internal.model.updateOption
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
