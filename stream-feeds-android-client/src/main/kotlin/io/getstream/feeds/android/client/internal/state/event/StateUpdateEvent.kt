@@ -15,9 +15,15 @@
  */
 package io.getstream.feeds.android.client.internal.state.event
 
+import io.getstream.feeds.android.client.api.model.BookmarkData
+import io.getstream.feeds.android.client.api.model.BookmarkFolderData
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.toModel
+import io.getstream.feeds.android.network.models.BookmarkDeletedEvent
+import io.getstream.feeds.android.network.models.BookmarkFolderDeletedEvent
+import io.getstream.feeds.android.network.models.BookmarkFolderUpdatedEvent
+import io.getstream.feeds.android.network.models.BookmarkUpdatedEvent
 import io.getstream.feeds.android.network.models.CommentAddedEvent
 import io.getstream.feeds.android.network.models.CommentDeletedEvent
 import io.getstream.feeds.android.network.models.CommentReactionAddedEvent
@@ -30,6 +36,14 @@ import io.getstream.feeds.android.network.models.WSEvent
  * receiving a WebSocket event or having executed a successful API call that can modify the state.
  */
 internal sealed interface StateUpdateEvent {
+
+    data class BookmarkDeleted(val bookmark: BookmarkData) : StateUpdateEvent
+
+    data class BookmarkUpdated(val bookmark: BookmarkData) : StateUpdateEvent
+
+    data class BookmarkFolderDeleted(val folderId: String) : StateUpdateEvent
+
+    data class BookmarkFolderUpdated(val folder: BookmarkFolderData) : StateUpdateEvent
 
     data class CommentAdded(val comment: CommentData) : StateUpdateEvent
 
@@ -46,6 +60,15 @@ internal sealed interface StateUpdateEvent {
 
 internal fun WSEvent.toModel(): StateUpdateEvent? =
     when (this) {
+        is BookmarkDeletedEvent -> StateUpdateEvent.BookmarkDeleted(bookmark.toModel())
+
+        is BookmarkUpdatedEvent -> StateUpdateEvent.BookmarkUpdated(bookmark.toModel())
+
+        is BookmarkFolderDeletedEvent -> StateUpdateEvent.BookmarkFolderDeleted(bookmarkFolder.id)
+
+        is BookmarkFolderUpdatedEvent ->
+            StateUpdateEvent.BookmarkFolderUpdated(bookmarkFolder.toModel())
+
         is CommentAddedEvent -> StateUpdateEvent.CommentAdded(comment.toModel())
 
         is CommentUpdatedEvent -> StateUpdateEvent.CommentUpdated(comment.toModel())

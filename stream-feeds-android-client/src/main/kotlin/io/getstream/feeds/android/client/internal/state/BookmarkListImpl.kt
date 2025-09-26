@@ -23,7 +23,7 @@ import io.getstream.feeds.android.client.api.state.BookmarkListState
 import io.getstream.feeds.android.client.api.state.query.BookmarksQuery
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.BookmarkListEventHandler
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
 /**
  * A class that manages a paginated list of bookmarks.
@@ -39,7 +39,7 @@ import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 internal class BookmarkListImpl(
     override val query: BookmarksQuery,
     private val bookmarksRepository: BookmarksRepository,
-    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
+    private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
 ) : BookmarkList {
 
     private val _state: BookmarkListStateImpl = BookmarkListStateImpl(query)

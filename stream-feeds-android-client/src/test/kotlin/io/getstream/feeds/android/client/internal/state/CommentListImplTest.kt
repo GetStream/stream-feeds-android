@@ -21,7 +21,7 @@ import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -32,7 +32,7 @@ import org.junit.Test
 
 internal class CommentListImplTest {
     private val commentsRepository: CommentsRepository = mockk()
-    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener> =
+    private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener> =
         mockk(relaxed = true)
     private val query = CommentsQuery(filter = null, limit = 10)
 
