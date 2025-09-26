@@ -19,11 +19,30 @@ import io.getstream.feeds.android.client.internal.state.CommentReactionListState
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
-internal class CommentReactionListEventHandler(private val state: CommentReactionListStateUpdates) :
-    StateUpdateEventListener {
+internal class CommentReactionListEventHandler(
+    private val commentId: String,
+    private val state: CommentReactionListStateUpdates,
+) : StateUpdateEventListener {
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
-            is StateUpdateEvent.CommentReactionDeleted -> state.onReactionRemoved(event.reaction)
+            is StateUpdateEvent.CommentReactionAdded -> {
+                if (event.comment.id == commentId) {
+                    state.onReactionUpserted(event.reaction)
+                }
+            }
+
+            is StateUpdateEvent.CommentReactionDeleted -> {
+                if (event.comment.id == commentId) {
+                    state.onReactionRemoved(event.reaction)
+                }
+            }
+
+            is StateUpdateEvent.CommentReactionUpdated -> {
+                if (event.comment.id == commentId) {
+                    state.onReactionUpserted(event.reaction)
+                }
+            }
+
             else -> {}
         }
     }

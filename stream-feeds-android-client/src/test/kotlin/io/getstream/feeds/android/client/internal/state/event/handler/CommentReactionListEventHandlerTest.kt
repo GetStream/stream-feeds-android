@@ -17,35 +17,64 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.internal.state.CommentReactionListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionAdded
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpdated
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
+import io.mockk.MockKVerificationScope
 import io.mockk.called
 import io.mockk.mockk
-import io.mockk.verify
-import org.junit.Test
+import org.junit.runners.Parameterized
 
-internal class CommentReactionListEventHandlerTest {
-    private val state: CommentReactionListStateUpdates = mockk(relaxed = true)
+internal class CommentReactionListEventHandlerTest(
+    testName: String,
+    event: StateUpdateEvent,
+    verifyBlock: MockKVerificationScope.(CommentReactionListStateUpdates) -> Unit,
+) : BaseEventHandlerTest<CommentReactionListStateUpdates>(testName, event, verifyBlock) {
 
-    private val handler = CommentReactionListEventHandler(state)
+    override val state: CommentReactionListStateUpdates = mockk(relaxed = true)
+    override val handler = CommentReactionListEventHandler("comment-1", state)
 
-    @Test
-    fun `on CommentReactionDeleted, then call onReactionRemoved`() {
-        val reaction = feedsReactionData()
-        val comment = commentData()
-        val event = StateUpdateEvent.CommentReactionDeleted("feed-1", comment, reaction)
+    companion object {
+        private val reaction = feedsReactionData()
+        private val matchingComment = commentData("comment-1")
+        private val nonMatchingComment = commentData("different-comment")
 
-        handler.onEvent(event)
-
-        verify { state.onReactionRemoved(reaction) }
-    }
-
-    @Test
-    fun `on unknown event, then do nothing`() {
-        val unknownEvent = StateUpdateEvent.BookmarkFolderDeleted("folder-id")
-
-        handler.onEvent(unknownEvent)
-
-        verify { state wasNot called }
+        @JvmStatic
+        @Parameterized.Parameters(name = "{0}")
+        fun data(): Collection<Array<Any>> =
+            listOf(
+                testParams<CommentReactionListStateUpdates>(
+                    name = "CommentReactionAdded matching comment",
+                    event = CommentReactionAdded("feed-1", matchingComment, reaction),
+                    verifyBlock = { state -> state.onReactionUpserted(reaction) },
+                ),
+                testParams<CommentReactionListStateUpdates>(
+                    name = "CommentReactionAdded non-matching comment",
+                    event = CommentReactionAdded("feed-1", nonMatchingComment, reaction),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<CommentReactionListStateUpdates>(
+                    name = "CommentReactionDeleted matching comment",
+                    event = CommentReactionDeleted("feed-1", matchingComment, reaction),
+                    verifyBlock = { state -> state.onReactionRemoved(reaction) },
+                ),
+                testParams<CommentReactionListStateUpdates>(
+                    name = "CommentReactionDeleted non-matching comment",
+                    event = CommentReactionDeleted("feed-1", nonMatchingComment, reaction),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<CommentReactionListStateUpdates>(
+                    name = "CommentReactionUpdated matching comment",
+                    event = CommentReactionUpdated("feed-1", matchingComment, reaction),
+                    verifyBlock = { state -> state.onReactionUpserted(reaction) },
+                ),
+                testParams<CommentReactionListStateUpdates>(
+                    name = "CommentReactionUpdated non-matching comment",
+                    event = CommentReactionUpdated("feed-1", nonMatchingComment, reaction),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+            )
     }
 }
