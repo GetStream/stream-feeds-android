@@ -20,6 +20,7 @@ import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentsSort
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
+import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import java.util.Date
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -59,6 +60,23 @@ internal class CommentListStateImplTest {
         state.onCommentUpdated(updatedComment2)
 
         assertEquals(expected, state.comments.value)
+    }
+
+    @Test
+    fun `on onCommentUpdated, then preserve ownReactions when updating comment`() {
+        val ownReaction = feedsReactionData("activity-1", "like", "current-user")
+
+        val originalComment =
+            commentData("comment-1", "Original text", ownReactions = listOf(ownReaction))
+        val result = PaginationResult(listOf(originalComment), PaginationData("next", "previous"))
+
+        val updatedComment = commentData("comment-1", "Updated text", ownReactions = emptyList())
+
+        state.onQueryMoreComments(result)
+        state.onCommentUpdated(updatedComment)
+
+        val expectedComment = updatedComment.copy(ownReactions = listOf(ownReaction))
+        assertEquals(listOf(expectedComment), state.comments.value)
     }
 
     @Test

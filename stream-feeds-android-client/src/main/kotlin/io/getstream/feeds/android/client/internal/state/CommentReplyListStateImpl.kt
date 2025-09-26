@@ -23,7 +23,7 @@ import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.model.addReaction
 import io.getstream.feeds.android.client.api.model.addReply
 import io.getstream.feeds.android.client.api.model.removeReaction
-import io.getstream.feeds.android.client.api.model.setCommentData
+import io.getstream.feeds.android.client.api.model.update
 import io.getstream.feeds.android.client.api.state.CommentReplyListState
 import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
 import io.getstream.feeds.android.client.api.state.query.toComparator
@@ -145,7 +145,7 @@ internal class CommentReplyListStateImpl(
     ): ThreadedCommentData {
         // If this comment is the parent, update it directly
         if (parent.id == updatedComment.id) {
-            return parent.setCommentData(updatedComment)
+            return parent.update(updatedComment)
         }
         // If the parent has no replies, return it unchanged
         if (parent.replies.isNullOrEmpty()) {

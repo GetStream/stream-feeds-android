@@ -23,7 +23,7 @@ import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.model.addReaction
 import io.getstream.feeds.android.client.api.model.addReply
 import io.getstream.feeds.android.client.api.model.removeReaction
-import io.getstream.feeds.android.client.api.model.setCommentData
+import io.getstream.feeds.android.client.api.model.update
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.query.toComparator
@@ -88,7 +88,7 @@ internal class ActivityCommentListStateImpl(
             current.treeUpdateFirst(
                 matcher = { it.id == comment.id },
                 childrenSelector = { it.replies.orEmpty() },
-                updateElement = { it.setCommentData(comment) },
+                updateElement = { it.update(comment) },
                 updateChildren = { parent, children -> parent.copy(replies = children) },
                 comparator = commentsComparator,
             )

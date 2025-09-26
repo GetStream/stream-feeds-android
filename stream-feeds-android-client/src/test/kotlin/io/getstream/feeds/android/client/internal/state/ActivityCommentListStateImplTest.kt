@@ -150,6 +150,24 @@ internal class ActivityCommentListStateImplTest {
     }
 
     @Test
+    fun `on onCommentUpdated, then preserve ownReactions when updating threaded comment`() {
+        val ownReaction = feedsReactionData("c1", "like", "user_1")
+        val originalComment =
+            threadedCommentData(
+                id = "c1",
+                text = "Original comment",
+                ownReactions = listOf(ownReaction),
+            )
+        val update = commentData(id = "c1", text = "Updated comment", ownReactions = emptyList())
+
+        state.onCommentAdded(originalComment)
+        state.onCommentUpdated(update)
+
+        val expectedComment = originalComment.copy(text = "Updated comment")
+        assertEquals(listOf(expectedComment), state.comments.value)
+    }
+
+    @Test
     fun `onCommentRemoved when it's a top-level comment, then remove it from the list`() {
         val comment1 = threadedCommentData(id = "c1", createdAt = Date(1))
         val comment2 = threadedCommentData(id = "c2", createdAt = Date(2))
