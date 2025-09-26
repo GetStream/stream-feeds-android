@@ -18,89 +18,110 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.internal.state.ActivityCommentListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentAdded
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionAdded
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentUpdated
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
+import io.mockk.MockKVerificationScope
+import io.mockk.called
 import io.mockk.mockk
-import io.mockk.verify
-import org.junit.Test
+import org.junit.runners.Parameterized
 
-internal class ActivityCommentListEventHandlerTest {
-    private val objectId = "activity-1"
-    private val objectType = "activity"
-    private val state: ActivityCommentListStateUpdates = mockk(relaxed = true)
+internal class ActivityCommentListEventHandlerTest(
+    testName: String,
+    event: StateUpdateEvent,
+    verifyBlock: MockKVerificationScope.(ActivityCommentListStateUpdates) -> Unit,
+) : BaseEventHandlerTest<ActivityCommentListStateUpdates>(testName, event, verifyBlock) {
 
-    private val handler = ActivityCommentListEventHandler(objectId, objectType, state)
+    override val state: ActivityCommentListStateUpdates = mockk(relaxed = true)
+    override val handler = ActivityCommentListEventHandler(objectId, objectType, state)
 
-    @Test
-    fun `on CommentAdded for matching object, then call onCommentAdded`() {
-        val comment = commentData(objectId = objectId, objectType = objectType)
-        val event = StateUpdateEvent.CommentAdded("feed-1", comment)
+    companion object {
+        private const val objectId = "activity-1"
+        private const val objectType = "activity"
+        private const val differentObjectId = "different-activity"
+        private val matchingComment = commentData(objectId = objectId, objectType = objectType)
+        private val nonMatchingComment =
+            commentData(objectId = differentObjectId, objectType = objectType)
 
-        handler.onEvent(event)
-
-        verify { state.onCommentAdded(ThreadedCommentData(comment)) }
-    }
-
-    @Test
-    fun `on CommentAdded for different object, then do not call onCommentAdded`() {
-        val comment = commentData(objectId = "different-activity", objectType = objectType)
-        val event = StateUpdateEvent.CommentAdded("feed-1", comment)
-
-        handler.onEvent(event)
-
-        verify(exactly = 0) { state.onCommentAdded(any()) }
-    }
-
-    @Test
-    fun `on CommentDeleted for matching object, then call onCommentRemoved`() {
-        val comment = commentData(objectId = objectId, objectType = objectType)
-        val event = StateUpdateEvent.CommentDeleted("feed-1", comment)
-
-        handler.onEvent(event)
-
-        verify { state.onCommentRemoved(comment.id) }
-    }
-
-    @Test
-    fun `on CommentUpdated for matching object, then call onCommentUpdated`() {
-        val comment = commentData(objectId = objectId, objectType = objectType)
-        val event = StateUpdateEvent.CommentUpdated(comment)
-
-        handler.onEvent(event)
-
-        verify { state.onCommentUpdated(comment) }
-    }
-
-    @Test
-    fun `on CommentReactionAdded for matching object, then call onCommentReactionUpserted`() {
-        val comment = commentData(objectId = objectId, objectType = objectType)
-        val reaction = feedsReactionData()
-        val event = StateUpdateEvent.CommentReactionAdded("feed-1", comment, reaction)
-
-        handler.onEvent(event)
-
-        verify { state.onCommentReactionUpserted(comment, reaction) }
-    }
-
-    @Test
-    fun `on CommentReactionUpdated for matching object, then call onCommentReactionUpserted`() {
-        val comment = commentData(objectId = objectId, objectType = objectType)
-        val reaction = feedsReactionData()
-        val event = StateUpdateEvent.CommentReactionUpdated("feed-1", comment, reaction)
-
-        handler.onEvent(event)
-
-        verify { state.onCommentReactionUpserted(comment, reaction) }
-    }
-
-    @Test
-    fun `on CommentReactionDeleted for matching object, then call onCommentReactionRemoved`() {
-        val comment = commentData(objectId = objectId, objectType = objectType)
-        val reaction = feedsReactionData()
-        val event = StateUpdateEvent.CommentReactionDeleted("feed-1", comment, reaction)
-
-        handler.onEvent(event)
-
-        verify { state.onCommentReactionRemoved(comment, reaction) }
+        @JvmStatic
+        @Parameterized.Parameters(name = "{0}")
+        fun data(): List<Array<Any>> =
+            listOf(
+                testParams<ActivityCommentListStateUpdates>(
+                    name = "CommentAdded matching object",
+                    event = CommentAdded("feed-1", matchingComment),
+                    verifyBlock = { state ->
+                        state.onCommentAdded(ThreadedCommentData(matchingComment))
+                    },
+                ),
+                testParams<ActivityCommentListStateUpdates>(
+                    name = "CommentAdded non-matching object",
+                    event = CommentAdded("feed-1", nonMatchingComment),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<ActivityCommentListStateUpdates>(
+                    name = "CommentDeleted matching object",
+                    event = CommentDeleted("feed-1", matchingComment),
+                    verifyBlock = { state -> state.onCommentRemoved(matchingComment.id) },
+                ),
+                testParams<ActivityCommentListStateUpdates>(
+                    name = "CommentDeleted non-matching object",
+                    event = CommentDeleted("feed-1", nonMatchingComment),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<ActivityCommentListStateUpdates>(
+                    name = "CommentUpdated matching object",
+                    event = CommentUpdated(matchingComment),
+                    verifyBlock = { state -> state.onCommentUpdated(matchingComment) },
+                ),
+                testParams<ActivityCommentListStateUpdates>(
+                    name = "CommentUpdated non-matching object",
+                    event = CommentUpdated(nonMatchingComment),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<ActivityCommentListStateUpdates>(
+                    name = "CommentReactionAdded matching object",
+                    event = CommentReactionAdded("feed-1", matchingComment, feedsReactionData()),
+                    verifyBlock = { state ->
+                        state.onCommentReactionUpserted(matchingComment, feedsReactionData())
+                    },
+                ),
+                testParams<ActivityCommentListStateUpdates>(
+                    name = "CommentReactionAdded non-matching object",
+                    event = CommentReactionAdded("feed-1", nonMatchingComment, feedsReactionData()),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<ActivityCommentListStateUpdates>(
+                    name = "CommentReactionDeleted matching object",
+                    event = CommentReactionDeleted("feed-1", matchingComment, feedsReactionData()),
+                    verifyBlock = { state ->
+                        state.onCommentReactionRemoved(matchingComment, feedsReactionData())
+                    },
+                ),
+                testParams<ActivityCommentListStateUpdates>(
+                    name = "CommentReactionDeleted non-matching object",
+                    event =
+                        CommentReactionDeleted("feed-1", nonMatchingComment, feedsReactionData()),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<ActivityCommentListStateUpdates>(
+                    name = "CommentReactionUpdated matching object",
+                    event = CommentReactionUpdated("feed-1", matchingComment, feedsReactionData()),
+                    verifyBlock = { state ->
+                        state.onCommentReactionUpserted(matchingComment, feedsReactionData())
+                    },
+                ),
+                testParams<ActivityCommentListStateUpdates>(
+                    name = "CommentReactionUpdated non-matching object",
+                    event =
+                        CommentReactionUpdated("feed-1", nonMatchingComment, feedsReactionData()),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+            )
     }
 }
