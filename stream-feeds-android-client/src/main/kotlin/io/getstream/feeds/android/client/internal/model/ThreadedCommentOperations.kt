@@ -18,7 +18,6 @@ package io.getstream.feeds.android.client.internal.model
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
-import io.getstream.feeds.android.client.api.model.changeReactions
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.api.state.query.CommentsSortDataFields
 import io.getstream.feeds.android.client.internal.utils.upsert
