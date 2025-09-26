@@ -32,6 +32,7 @@ import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
 import io.getstream.feeds.android.client.api.state.query.toRequest
 import io.getstream.feeds.android.client.internal.file.uploadAll
+import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.AddCommentReactionRequest
 import io.getstream.feeds.android.network.models.AddCommentRequest

@@ -20,13 +20,13 @@ import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
-import io.getstream.feeds.android.client.api.model.addReply
-import io.getstream.feeds.android.client.api.model.removeReaction
-import io.getstream.feeds.android.client.api.model.update
-import io.getstream.feeds.android.client.api.model.upsertReaction
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.query.toComparator
+import io.getstream.feeds.android.client.internal.model.addReply
+import io.getstream.feeds.android.client.internal.model.removeReaction
+import io.getstream.feeds.android.client.internal.model.update
+import io.getstream.feeds.android.client.internal.model.upsertReaction
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.treeRemoveFirst
 import io.getstream.feeds.android.client.internal.utils.treeUpdateFirst

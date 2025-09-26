@@ -28,6 +28,7 @@ import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
 import io.getstream.feeds.android.client.api.state.query.toRequest
+import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.client.internal.repository.RepositoryTestUtils.testDelegation
 import io.getstream.feeds.android.client.internal.test.TestData.commentResponse
 import io.getstream.feeds.android.client.internal.test.TestData.deleteCommentResponse
