@@ -287,7 +287,7 @@ internal class FeedsClientImpl(
         CommentListImpl(
             query = query,
             commentsRepository = commentsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun activityCommentList(query: ActivityCommentsQuery): ActivityCommentList =

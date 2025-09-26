@@ -15,16 +15,12 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.CommentListStateUpdates
-import io.getstream.feeds.android.client.internal.test.TestData.commentResponse
-import io.getstream.feeds.android.network.models.CommentDeletedEvent
-import io.getstream.feeds.android.network.models.CommentUpdatedEvent
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.mockk.called
 import io.mockk.mockk
 import io.mockk.verify
-import java.util.Date
 import org.junit.Test
 
 internal class CommentListEventHandlerTest {
@@ -34,42 +30,28 @@ internal class CommentListEventHandlerTest {
 
     @Test
     fun `on CommentUpdatedEvent, then call onCommentUpdated`() {
-        val comment = commentResponse()
-        val event =
-            CommentUpdatedEvent(
-                createdAt = Date(),
-                fid = "user:feed-1",
-                comment = comment,
-                type = "feeds.comment.updated",
-            )
+        val comment = commentData()
+        val event = StateUpdateEvent.CommentUpdated(comment)
 
         handler.onEvent(event)
 
-        verify { state.onCommentUpdated(comment.toModel()) }
+        verify { state.onCommentUpdated(comment) }
     }
 
     @Test
     fun `on CommentDeletedEvent, then call onCommentRemoved`() {
-        val comment = commentResponse()
-        val event =
-            CommentDeletedEvent(
-                createdAt = Date(),
-                fid = "user:feed-1",
-                comment = comment,
-                type = "feeds.comment.deleted",
-            )
+        val comment = commentData()
+        val event = StateUpdateEvent.CommentDeleted(comment)
 
         handler.onEvent(event)
 
-        verify { state.onCommentRemoved(event.comment.id) }
+        verify { state.onCommentRemoved(comment.id) }
     }
 
     @Test
     fun `on unknown event, then do nothing`() {
-        val unknownEvent =
-            object : WSEvent {
-                override fun getWSEventType(): String = "unknown.event"
-            }
+        val comment = commentData()
+        val unknownEvent = StateUpdateEvent.CommentAdded(comment)
 
         handler.onEvent(unknownEvent)
 
