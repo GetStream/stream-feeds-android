@@ -30,6 +30,7 @@ import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.client.api.state.query.toRequest
+import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.AcceptFollowRequest
 import io.getstream.feeds.android.network.models.FollowRequest
