@@ -88,7 +88,6 @@ internal class FeedsRepositoryImplTest {
                     followRequests = emptyList(),
                     members =
                         PaginationResult(models = emptyList(), pagination = PaginationData.EMPTY),
-                    ownCapabilities = emptyList(),
                     pinnedActivities = emptyList(),
                     aggregatedActivities = emptyList(),
                     notificationStatus = null,

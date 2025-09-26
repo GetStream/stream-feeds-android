@@ -24,7 +24,6 @@ import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
-import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.getstream.feeds.android.network.models.NotificationStatusResponse
 import kotlinx.coroutines.flow.StateFlow
 
@@ -63,9 +62,6 @@ public interface FeedState {
 
     /** The list of members in this feed. */
     public val members: StateFlow<List<FeedMemberData>>
-
-    /** The capabilities that the current user has for this feed. */
-    public val ownCapabilities: StateFlow<List<FeedOwnCapability>>
 
     /** The list of pinned activities and its pinning state. */
     public val pinnedActivities: StateFlow<List<ActivityPinData>>

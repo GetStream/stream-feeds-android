@@ -57,6 +57,10 @@ public object Serializer {
                     .DeleteMessagesAdapter()
             )
             .add(
+                io.getstream.feeds.android.network.models.BanOptions.DeleteMessages
+                    .DeleteMessagesAdapter()
+            )
+            .add(
                 io.getstream.feeds.android.network.models.BanRequest.DeleteMessages
                     .DeleteMessagesAdapter()
             )

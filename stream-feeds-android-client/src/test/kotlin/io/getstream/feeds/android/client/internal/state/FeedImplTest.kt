@@ -720,7 +720,6 @@ internal class FeedImplTest {
             following = emptyList(),
             followRequests = emptyList(),
             members = PaginationResult(models = emptyList(), pagination = PaginationData.EMPTY),
-            ownCapabilities = emptyList(),
             pinnedActivities = emptyList(),
             aggregatedActivities = emptyList(),
             notificationStatus = null,

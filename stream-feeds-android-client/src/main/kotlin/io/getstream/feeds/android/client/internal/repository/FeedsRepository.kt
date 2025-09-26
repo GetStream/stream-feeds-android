@@ -28,7 +28,6 @@ import io.getstream.feeds.android.client.api.state.query.ActivitiesQueryConfig
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.network.models.AcceptFollowRequest
-import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.getstream.feeds.android.network.models.FollowRequest
 import io.getstream.feeds.android.network.models.NotificationStatusResponse
 import io.getstream.feeds.android.network.models.QueryFeedMembersRequest
@@ -116,7 +115,6 @@ internal interface FeedsRepository {
  * @property following A list of feeds that this feed is following.
  * @property followRequests A list of follow requests for the feed.
  * @property members A paginated result of members in the feed.
- * @property ownCapabilities The capabilities that the current user has on the feed.
  * @property pinnedActivities A list of activities that are pinned in the feed.
  * @property aggregatedActivities A list of aggregated activities in the feed.
  * @property notificationStatus The notification status for the feed, if available.
@@ -129,7 +127,6 @@ internal data class GetOrCreateInfo(
     val following: List<FollowData>,
     val followRequests: List<FollowData>,
     val members: PaginationResult<FeedMemberData>,
-    val ownCapabilities: List<FeedOwnCapability>,
     val pinnedActivities: List<ActivityPinData>,
     val aggregatedActivities: List<AggregatedActivityData>,
     val notificationStatus: NotificationStatusResponse?,

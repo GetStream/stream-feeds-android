@@ -30,6 +30,7 @@ public data class AggregatedActivityResponse(
     @Json(name = "score") public val score: kotlin.Float,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
     @Json(name = "user_count") public val userCount: kotlin.Int,
+    @Json(name = "user_count_truncated") public val userCountTruncated: kotlin.Boolean,
     @Json(name = "activities")
     public val activities:
         kotlin.collections.List<io.getstream.feeds.android.network.models.ActivityResponse> =

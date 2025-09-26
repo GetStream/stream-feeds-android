@@ -17,14 +17,57 @@
 
 package io.getstream.feeds.android.network.models
 
+import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonReader
+import com.squareup.moshi.JsonWriter
+import com.squareup.moshi.ToJson
 import kotlin.collections.*
 import kotlin.io.*
 
 /**  */
 public data class BanOptions(
+    @Json(name = "delete_messages") public val deleteMessages: DeleteMessages? = null,
     @Json(name = "duration") public val duration: kotlin.Int? = null,
     @Json(name = "ip_ban") public val ipBan: kotlin.Boolean? = null,
     @Json(name = "reason") public val reason: kotlin.String? = null,
     @Json(name = "shadow_ban") public val shadowBan: kotlin.Boolean? = null,
-)
+) {
+
+    /** DeleteMessages Enum */
+    public sealed class DeleteMessages(public val value: kotlin.String) {
+        override fun toString(): String = value
+
+        public companion object {
+            public fun fromString(s: kotlin.String): DeleteMessages =
+                when (s) {
+                    "hard" -> Hard
+                    "pruning" -> Pruning
+                    "soft" -> Soft
+                    else -> Unknown(s)
+                }
+        }
+
+        public object Hard : DeleteMessages("hard")
+
+        public object Pruning : DeleteMessages("pruning")
+
+        public object Soft : DeleteMessages("soft")
+
+        public data class Unknown(val unknownValue: kotlin.String) : DeleteMessages(unknownValue)
+
+        public class DeleteMessagesAdapter : JsonAdapter<DeleteMessages>() {
+            @FromJson
+            override fun fromJson(reader: JsonReader): DeleteMessages? {
+                val s = reader.nextString() ?: return null
+                return DeleteMessages.fromString(s)
+            }
+
+            @ToJson
+            override fun toJson(writer: JsonWriter, value: DeleteMessages?) {
+                writer.value(value?.value)
+            }
+        }
+    }
+}

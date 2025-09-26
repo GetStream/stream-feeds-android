@@ -15,6 +15,7 @@
  */
 package io.getstream.feeds.android.client.api.model
 
+import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.getstream.feeds.android.network.models.FeedResponse
 import java.util.Date
 
@@ -51,6 +52,8 @@ public data class FeedData(
     public val groupId: String,
     public val id: String,
     public val memberCount: Int,
+    public val ownCapabilities: List<FeedOwnCapability>,
+    public val ownMembership: FeedMemberData?,
     public val name: String,
     public val pinCount: Int,
     public val updatedAt: Date,
@@ -72,6 +75,8 @@ public fun FeedResponse.toModel(): FeedData =
         groupId = groupId,
         id = id,
         memberCount = memberCount,
+        ownCapabilities = ownCapabilities.orEmpty(),
+        ownMembership = ownMembership?.toModel(),
         name = name,
         pinCount = pinCount,
         updatedAt = updatedAt,
