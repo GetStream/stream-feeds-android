@@ -15,8 +15,6 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.network.models.ModerationV2Response
-
 /**
  * Model representing content moderation results from Stream's moderation system.
  *
@@ -38,15 +36,3 @@ public data class Moderation(
     public val imageHarms: List<String>,
     public val textHarms: List<String>,
 )
-
-/** Extension function to convert a [ModerationV2Response] to a [Moderation] model. */
-internal fun ModerationV2Response.toModel(): Moderation =
-    Moderation(
-        action = action,
-        originalText = originalText,
-        blocklistMatched = blocklistMatched,
-        platformCircumvented = platformCircumvented,
-        semanticFilterMatched = semanticFilterMatched,
-        imageHarms = imageHarms ?: emptyList(),
-        textHarms = textHarms ?: emptyList(),
-    )

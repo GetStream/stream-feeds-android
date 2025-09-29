@@ -22,7 +22,6 @@ import io.getstream.feeds.android.network.models.AutomodPlatformCircumventionCon
 import io.getstream.feeds.android.network.models.AutomodSemanticFiltersConfig
 import io.getstream.feeds.android.network.models.AutomodToxicityConfig
 import io.getstream.feeds.android.network.models.BlockListConfig
-import io.getstream.feeds.android.network.models.ConfigResponse
 import io.getstream.feeds.android.network.models.VelocityFilterConfig
 import java.util.Date
 
@@ -44,21 +43,3 @@ public data class ModerationConfigData(
     public val id: String
         get() = key
 }
-
-/** Maps [ConfigResponse] to [ModerationConfigData]. */
-internal fun ConfigResponse.toModel(): ModerationConfigData =
-    ModerationConfigData(
-        aiImageConfig = aiImageConfig,
-        aiTextConfig = aiTextConfig,
-        aiVideoConfig = aiVideoConfig,
-        async = async,
-        automodPlatformCircumventionConfig = automodPlatformCircumventionConfig,
-        automodSemanticFiltersConfig = automodSemanticFiltersConfig,
-        automodToxicityConfig = automodToxicityConfig,
-        blockListConfig = blockListConfig,
-        createdAt = createdAt,
-        key = key,
-        team = team,
-        updatedAt = updatedAt,
-        velocityFilterConfig = velocityFilterConfig,
-    )
