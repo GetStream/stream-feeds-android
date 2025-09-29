@@ -15,8 +15,6 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.client.internal.model.toModel
-import io.getstream.feeds.android.network.models.AggregatedActivityResponse
 import java.util.Date
 
 /**
@@ -54,18 +52,4 @@ public data class AggregatedActivityData(
     public val id: String
         get() =
             activities.firstOrNull()?.id ?: "$activityCount-$userCount-$score-$createdAt-($group)"
-}
-
-/** Converts an [AggregatedActivityResponse] to an [AggregatedActivityData] model. */
-internal fun AggregatedActivityResponse.toModel(): AggregatedActivityData {
-    return AggregatedActivityData(
-        activities = activities.map { it.toModel() },
-        activityCount = activityCount,
-        createdAt = createdAt,
-        group = group,
-        score = score,
-        updatedAt = updatedAt,
-        userCount = userCount,
-        userCountTruncated = userCountTruncated,
-    )
 }
