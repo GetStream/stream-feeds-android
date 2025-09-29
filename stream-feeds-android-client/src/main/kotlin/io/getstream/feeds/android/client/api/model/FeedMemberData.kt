@@ -15,6 +15,7 @@
  */
 package io.getstream.feeds.android.client.api.model
 
+import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.network.models.FeedMemberResponse
 import java.util.Date
 
