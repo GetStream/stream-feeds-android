@@ -574,9 +574,10 @@ internal object TestData {
         groupId: String = "user",
         name: String = "Test Feed",
         description: String = "Test feed description",
+        createdAt: Long = 1000,
     ): FeedData =
         FeedData(
-            createdAt = Date(1000),
+            createdAt = Date(createdAt),
             createdBy = userData(id),
             custom = emptyMap(),
             deletedAt = null,

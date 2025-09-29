@@ -15,21 +15,33 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
+import io.getstream.feeds.android.client.api.state.query.FeedsFilter
 import io.getstream.feeds.android.client.internal.state.FeedListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.query.matches
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
-internal class FeedListEventHandler(private val state: FeedListStateUpdates) :
-    StateUpdateEventListener {
+internal class FeedListEventHandler(
+    private val filter: FeedsFilter?,
+    private val state: FeedListStateUpdates,
+) : StateUpdateEventListener {
 
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
-            is StateUpdateEvent.FeedUpdated -> {
-                state.onFeedUpdated(event.feed)
+            is StateUpdateEvent.FeedAdded -> {
+                if (event.feed matches filter) {
+                    state.onFeedUpserted(event.feed)
+                }
             }
 
             is StateUpdateEvent.FeedDeleted -> {
                 state.onFeedRemoved(event.fid)
+            }
+
+            is StateUpdateEvent.FeedUpdated -> {
+                if (event.feed matches filter) {
+                    state.onFeedUpserted(event.feed)
+                }
             }
 
             else -> {}

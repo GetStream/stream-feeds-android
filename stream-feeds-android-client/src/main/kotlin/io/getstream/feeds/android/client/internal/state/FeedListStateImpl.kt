@@ -23,6 +23,7 @@ import io.getstream.feeds.android.client.api.state.query.FeedsSort
 import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.state.query.FeedsQueryConfig
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
+import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -55,22 +56,6 @@ internal class FeedListStateImpl(override val query: FeedsQuery) : FeedListMutab
     override val pagination: PaginationData?
         get() = _pagination
 
-    override fun onFeedUpdated(feed: FeedData) {
-        _feeds.update { current ->
-            current.map {
-                if (it.fid == feed.fid) {
-                    feed
-                } else {
-                    it
-                }
-            }
-        }
-    }
-
-    override fun onFeedRemoved(feedId: String) {
-        _feeds.update { current -> current.filter { it.fid.rawValue != feedId } }
-    }
-
     override fun onQueryMoreFeeds(
         result: PaginationResult<FeedData>,
         queryConfig: FeedsQueryConfig,
@@ -81,6 +66,14 @@ internal class FeedListStateImpl(override val query: FeedsQuery) : FeedListMutab
         _feeds.update { current ->
             current.mergeSorted(result.models, { it.fid.rawValue }, feedsSorting)
         }
+    }
+
+    override fun onFeedRemoved(feedId: String) {
+        _feeds.update { current -> current.filter { it.fid.rawValue != feedId } }
+    }
+
+    override fun onFeedUpserted(feed: FeedData) {
+        _feeds.update { current -> current.upsertSorted(feed, FeedData::fid, feedsSorting) }
     }
 }
 
@@ -100,12 +93,12 @@ internal interface FeedListMutableState : FeedListState, FeedListStateUpdates
  */
 internal interface FeedListStateUpdates {
 
-    /** Handles updates to a specific feed. */
-    fun onFeedUpdated(feed: FeedData)
-
     /** Handles the result of a query for more feeds. */
     fun onQueryMoreFeeds(result: PaginationResult<FeedData>, queryConfig: FeedsQueryConfig)
 
     /** Handles the removal of a feed by its ID. */
     fun onFeedRemoved(feedId: String)
+
+    /** Handles updates to a specific feed. */
+    fun onFeedUpserted(feed: FeedData)
 }
