@@ -15,7 +15,6 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.network.models.FollowResponse
 import java.util.Date
 
 /**
@@ -53,23 +52,6 @@ public data class FollowData(
      */
     public val id: String
         get() = "${sourceFeed.fid}${targetFeed.fid}${createdAt.time}"
-
-    internal val isFollower: Boolean
-        get() = status == FollowStatus.Accepted
-
-    internal val isFollowing: Boolean
-        get() = status == FollowStatus.Accepted
-
-    internal val isFollowRequest: Boolean
-        get() = status == FollowStatus.Pending
-
-    internal fun isFollowerOf(fid: FeedId): Boolean {
-        return isFollower && targetFeed.fid == fid
-    }
-
-    internal fun isFollowing(fid: FeedId): Boolean {
-        return isFollowing && sourceFeed.fid == fid
-    }
 }
 
 /**
@@ -91,36 +73,3 @@ public sealed class FollowStatus(public val value: String) {
     /** Represents an unknown follow status. */
     public data class Unknown(val unknownValue: String) : FollowStatus(unknownValue)
 }
-
-/** Converts a [FollowResponse] to a [FollowData] model. */
-internal fun FollowResponse.toModel(): FollowData =
-    FollowData(
-        createdAt = createdAt,
-        custom = custom,
-        followerRole = followerRole,
-        pushPreference = pushPreference.value,
-        requestAcceptedAt = requestAcceptedAt,
-        requestRejectedAt = requestRejectedAt,
-        sourceFeed = sourceFeed.toModel(),
-        status =
-            when (status) {
-                FollowResponse.Status.Accepted -> FollowStatus.Accepted
-                FollowResponse.Status.Pending -> FollowStatus.Pending
-                FollowResponse.Status.Rejected -> FollowStatus.Rejected
-                is FollowResponse.Status.Unknown ->
-                    FollowStatus.Unknown(
-                        unknownValue = (status as FollowResponse.Status.Unknown).unknownValue
-                    )
-            },
-        targetFeed = targetFeed.toModel(),
-        updatedAt = updatedAt,
-    )
-
-/** Converts a [FollowResponse.PushPreference] to a [String] representation. */
-internal fun FollowResponse.Status.toModel(): FollowStatus =
-    when (this) {
-        FollowResponse.Status.Accepted -> FollowStatus.Accepted
-        FollowResponse.Status.Pending -> FollowStatus.Pending
-        FollowResponse.Status.Rejected -> FollowStatus.Rejected
-        is FollowResponse.Status.Unknown -> FollowStatus.Unknown(unknownValue)
-    }

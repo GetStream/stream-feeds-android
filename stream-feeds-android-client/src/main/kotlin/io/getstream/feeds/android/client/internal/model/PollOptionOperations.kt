@@ -13,21 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getstream.feeds.android.client.api.model
+package io.getstream.feeds.android.client.internal.model
 
-import java.util.Date
+import io.getstream.feeds.android.client.api.model.PollOptionData
+import io.getstream.feeds.android.network.models.PollOptionResponseData
 
 /**
- * Data class representing a group of reactions.
- *
- * @property count The number of reactions in the group.
- * @property firstReactionAt The date and time of the first reaction.
- * @property lastReactionAt The date and time of the last reaction.
+ * Converts a [io.getstream.feeds.android.network.models.PollOptionResponseData] to a
+ * [io.getstream.feeds.android.client.api.model.PollOptionData] model.
  */
-public data class ReactionGroupData(
-    val count: Int,
-    val firstReactionAt: Date,
-    val lastReactionAt: Date,
-)
-
-/** Returns true if the reaction group is empty (count is 0 or less). */
+internal fun PollOptionResponseData.toModel(): PollOptionData =
+    PollOptionData(custom = custom, id = id, text = text)

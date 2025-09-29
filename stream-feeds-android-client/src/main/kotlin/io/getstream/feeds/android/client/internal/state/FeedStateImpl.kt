@@ -38,6 +38,9 @@ import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.model.addComment
 import io.getstream.feeds.android.client.internal.model.castVote
 import io.getstream.feeds.android.client.internal.model.deleteBookmark
+import io.getstream.feeds.android.client.internal.model.isFollowRequest
+import io.getstream.feeds.android.client.internal.model.isFollowerOf
+import io.getstream.feeds.android.client.internal.model.isFollowing
 import io.getstream.feeds.android.client.internal.model.removeComment
 import io.getstream.feeds.android.client.internal.model.removeCommentReaction
 import io.getstream.feeds.android.client.internal.model.removeReaction
