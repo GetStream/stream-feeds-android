@@ -22,7 +22,7 @@ import io.getstream.feeds.android.client.api.state.CommentListState
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.CommentListEventHandler
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
 /**
  * A class representing a paginated list of comments for a specific query.
@@ -39,7 +39,7 @@ import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 internal class CommentListImpl(
     override val query: CommentsQuery,
     private val commentsRepository: CommentsRepository,
-    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
+    private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
 ) : CommentList {
 
     private val _state: CommentListStateImpl = CommentListStateImpl(query)
