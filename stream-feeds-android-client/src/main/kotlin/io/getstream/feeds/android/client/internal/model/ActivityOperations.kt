@@ -119,22 +119,6 @@ internal fun ActivityData.removeComment(comment: CommentData): ActivityData {
     return this.copy(comments = updatedComments, commentCount = max(0, this.commentCount - 1))
 }
 
-internal fun List<ActivityData>.deleteBookmark(
-    bookmark: BookmarkData,
-    currentUserId: String,
-): List<ActivityData> =
-    updateIf({ it.id == bookmark.activity.id }) { activity ->
-        activity.deleteBookmark(bookmark, currentUserId)
-    }
-
-internal fun List<ActivityData>.upsertBookmark(
-    bookmark: BookmarkData,
-    currentUserId: String,
-): List<ActivityData> =
-    updateIf({ it.id == bookmark.activity.id }) { activity ->
-        activity.upsertBookmark(bookmark, currentUserId)
-    }
-
 /**
  * Calls [changeBookmarks] with a [filter] operation to remove the bookmark.
  *
@@ -230,24 +214,6 @@ internal inline fun ActivityData.changeReactions(
 
     return update(updated, ownReactions = updatedOwnReactions)
 }
-
-internal fun List<ActivityData>.removeCommentReaction(
-    comment: CommentData,
-    reaction: FeedsReactionData,
-    currentUserId: String,
-): List<ActivityData> =
-    updateIf({ it.id == comment.objectId }) { activity ->
-        activity.removeCommentReaction(comment, reaction, currentUserId)
-    }
-
-internal fun List<ActivityData>.upsertCommentReaction(
-    comment: CommentData,
-    reaction: FeedsReactionData,
-    currentUserId: String,
-): List<ActivityData> =
-    updateIf({ it.id == comment.objectId }) { activity ->
-        activity.upsertCommentReaction(comment, reaction, currentUserId)
-    }
 
 internal fun ActivityData.removeCommentReaction(
     updated: CommentData,

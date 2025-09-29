@@ -17,6 +17,7 @@ package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.android.core.api.filter.equal
 import io.getstream.feeds.android.client.api.model.ActivityData
+import io.getstream.feeds.android.client.api.model.ActivityPinData
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FollowData
@@ -30,6 +31,7 @@ import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
 import io.getstream.feeds.android.client.internal.state.query.ActivitiesQueryConfig
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
+import io.getstream.feeds.android.client.internal.test.TestData.activityPin
 import io.getstream.feeds.android.client.internal.test.TestData.aggregatedActivityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
@@ -118,12 +120,16 @@ internal class FeedStateImplTest {
 
     @Test
     fun `on onActivityUpdated, then update activity`() = runTest {
-        setupInitialState(listOf(activityData("activity-1")))
+        val initialActivity = activityData("activity-1")
+        val activityPin = activityPin(initialActivity)
+        setupInitialState(listOf(initialActivity), listOf(activityPin))
 
         val updatedActivity = activityData("activity-1", text = "Updated activity")
         feedState.onActivityUpdated(updatedActivity)
 
         assertEquals(listOf(updatedActivity), feedState.activities.value)
+        val expectedPinnedActivity = activityPin.copy(activity = updatedActivity)
+        assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
     }
 
     @Test
@@ -236,18 +242,24 @@ internal class FeedStateImplTest {
 
     @Test
     fun `on onBookmarkUpserted, then add bookmark to activity`() = runTest {
-        setupInitialState(listOf(activityData("activity-1")))
+        val initialActivity = activityData("activity-1")
+        val activityPin = activityPin(initialActivity)
+        setupInitialState(listOf(initialActivity), listOf(activityPin))
 
         val bookmark = bookmarkData("activity-1", currentUserId)
         feedState.onBookmarkUpserted(bookmark)
 
         val expected = bookmark.activity.copy(ownBookmarks = listOf(bookmark))
         assertEquals(listOf(expected), feedState.activities.value)
+        val expectedPinnedActivity = activityPin.copy(activity = expected)
+        assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
     }
 
     @Test
     fun `on onBookmarkRemoved, then remove bookmark from activity`() = runTest {
-        setupInitialState(listOf(activityData("activity-1")))
+        val initialActivity = activityData("activity-1")
+        val activityPin = activityPin(initialActivity)
+        setupInitialState(listOf(initialActivity), listOf(activityPin))
 
         val bookmark = bookmarkData("activity-1", currentUserId)
         feedState.onBookmarkUpserted(bookmark)
@@ -255,22 +267,32 @@ internal class FeedStateImplTest {
 
         val activityWithoutBookmark = feedState.activities.value.find { it.id == "activity-1" }
         assertEquals(0, activityWithoutBookmark?.bookmarkCount)
+        val pinnedActivityWithoutBookmark =
+            feedState.pinnedActivities.value.find { it.activity.id == "activity-1" }
+        assertEquals(0, pinnedActivityWithoutBookmark?.activity?.bookmarkCount)
     }
 
     @Test
     fun `on onCommentAdded, then add comment to activity`() = runTest {
-        setupInitialState(listOf(activityData("activity-1")))
+        val initialActivity = activityData("activity-1")
+        val activityPin = activityPin(initialActivity)
+        setupInitialState(listOf(initialActivity), listOf(activityPin))
 
         val comment = commentData("comment-1", objectId = "activity-1")
         feedState.onCommentAdded(comment)
 
         val activityWithComment = feedState.activities.value.find { it.id == "activity-1" }
         assertEquals(1, activityWithComment?.commentCount)
+        val pinnedActivityWithComment =
+            feedState.pinnedActivities.value.find { it.activity.id == "activity-1" }
+        assertEquals(1, pinnedActivityWithComment?.activity?.commentCount)
     }
 
     @Test
     fun `on onCommentRemoved, then remove comment from activity`() = runTest {
-        setupInitialState(listOf(activityData("activity-1")))
+        val initialActivity = activityData("activity-1")
+        val activityPin = activityPin(initialActivity)
+        setupInitialState(listOf(initialActivity), listOf(activityPin))
 
         val comment = commentData("comment-1", objectId = "activity-1")
         feedState.onCommentAdded(comment)
@@ -278,6 +300,9 @@ internal class FeedStateImplTest {
 
         val activityWithoutComment = feedState.activities.value.find { it.id == "activity-1" }
         assertEquals(0, activityWithoutComment?.commentCount)
+        val pinnedActivityWithoutComment =
+            feedState.pinnedActivities.value.find { it.activity.id == "activity-1" }
+        assertEquals(0, pinnedActivityWithoutComment?.activity?.commentCount)
     }
 
     @Test
@@ -286,7 +311,8 @@ internal class FeedStateImplTest {
         val comment =
             commentData("comment-1", objectId = "activity-1", ownReactions = listOf(reaction))
         val activity = activityData("activity-1").copy(comments = listOf(comment))
-        setupInitialState(listOf(activity))
+        val activityPin = activityPin(activity)
+        setupInitialState(listOf(activity), listOf(activityPin))
 
         val updatedComment = commentData("comment-1", objectId = "activity-1", text = "Updated")
         feedState.onCommentReactionUpserted(updatedComment, reaction)
@@ -295,13 +321,16 @@ internal class FeedStateImplTest {
         val expectedActivity =
             activity.copy(comments = listOf(updatedComment.copy(ownReactions = emptyList())))
         assertEquals(listOf(expectedActivity), feedState.activities.value)
+        val expectedPinnedActivity = activityPin.copy(activity = expectedActivity)
+        assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
     }
 
     @Test
     fun `on onCommentReactionUpserted, then upsert comment reaction in activity`() = runTest {
         val comment = commentData("comment-1", objectId = "activity-1")
         val activity = activityData("activity-1").copy(comments = listOf(comment))
-        setupInitialState(listOf(activity))
+        val activityPin = activityPin(activity)
+        setupInitialState(listOf(activity), listOf(activityPin))
 
         val reaction = feedsReactionData(commentId = "comment-1")
         val updatedComment = commentData("comment-1", objectId = "activity-1", text = "Updated")
@@ -310,12 +339,15 @@ internal class FeedStateImplTest {
         val expectedActivity =
             activity.copy(comments = listOf(updatedComment.copy(ownReactions = listOf(reaction))))
         assertEquals(listOf(expectedActivity), feedState.activities.value)
+        val expectedPinnedActivity = activityPin.copy(activity = expectedActivity)
+        assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
     }
 
     @Test
     fun `on onReactionUpserted, then add reaction to activity`() = runTest {
         val activity = activityData("activity-1")
-        setupInitialState(listOf(activity))
+        val activityPin = activityPin(activity)
+        setupInitialState(listOf(activity), listOf(activityPin))
 
         val reaction = feedsReactionData("activity-1", currentUserId)
         val updatedActivity = activityData("activity-1", text = "Updated activity")
@@ -323,19 +355,24 @@ internal class FeedStateImplTest {
 
         val expected = updatedActivity.copy(ownReactions = listOf(reaction))
         assertEquals(listOf(expected), feedState.activities.value)
+        val expectedPinnedActivity = activityPin.copy(activity = expected)
+        assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
     }
 
     @Test
     fun `on onReactionRemoved, then remove reaction from activity`() = runTest {
         val reaction = feedsReactionData("activity-1", currentUserId)
         val activity = activityData("activity-1", ownReactions = listOf(reaction))
-        setupInitialState(listOf(activity))
+        val activityPin = activityPin(activity)
+        setupInitialState(listOf(activity), listOf(activityPin))
 
         val updatedActivity = activityData("activity-1", text = "Updated activity")
         feedState.onReactionRemoved(reaction, updatedActivity)
 
         val expected = updatedActivity.copy(ownReactions = emptyList())
         assertEquals(listOf(expected), feedState.activities.value)
+        val expectedPinnedActivity = activityPin.copy(activity = expected)
+        assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
     }
 
     @Test
@@ -443,39 +480,58 @@ internal class FeedStateImplTest {
     @Test
     fun `on onPollClosed, then mark poll as closed in activities`() = runTest {
         val poll = pollData("poll-1", "Test Poll", isClosed = false)
-        val activity = setupActivityWithPoll(poll)
+        val activity = activityData("activity-1", poll = poll)
+        val activityPin = activityPin(activity)
+        setupInitialState(listOf(activity), listOf(activityPin))
 
         feedState.onPollClosed("poll-1")
 
-        expectActivityWithPoll(activity, poll.copy(isClosed = true))
+        val expectedPoll = poll.copy(isClosed = true)
+        val expectedActivity = activity.copy(poll = expectedPoll)
+        assertEquals(listOf(expectedActivity), feedState.activities.value)
+        val expectedPinnedActivity = activityPin.copy(activity = expectedActivity)
+        assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
     }
 
     @Test
     fun `on onPollDeleted, then remove poll from activities`() = runTest {
         val poll = pollData("poll-1", "Test Poll")
-        val activity = setupActivityWithPoll(poll)
+        val activity = activityData("activity-1", poll = poll)
+        val activityPin = activityPin(activity)
+        setupInitialState(listOf(activity), listOf(activityPin))
 
         feedState.onPollDeleted("poll-1")
 
-        expectActivityWithPoll(activity, null)
+        val expectedActivity = activity.copy(poll = null)
+        assertEquals(listOf(expectedActivity), feedState.activities.value)
+        val expectedPinnedActivity = activityPin.copy(activity = expectedActivity)
+        assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
     }
 
     @Test
     fun `on onPollUpdated, then preserve own votes when updating poll in activities`() = runTest {
         val ownVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
         val poll = pollData("poll-1", "Test Poll", ownVotes = listOf(ownVote))
-        val activity = setupActivityWithPoll(poll)
+        val activity = activityData("activity-1", poll = poll)
+        val activityPin = activityPin(activity)
+        setupInitialState(listOf(activity), listOf(activityPin))
 
         val updatedPoll = pollData("poll-1", "Updated Poll", ownVotes = emptyList())
         feedState.onPollUpdated(updatedPoll)
 
-        expectActivityWithPoll(activity, updatedPoll.copy(ownVotes = listOf(ownVote)))
+        val expectedPoll = updatedPoll.copy(ownVotes = listOf(ownVote))
+        val expectedActivity = activity.copy(poll = expectedPoll)
+        assertEquals(listOf(expectedActivity), feedState.activities.value)
+        val expectedPinnedActivity = activityPin.copy(activity = expectedActivity)
+        assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
     }
 
     @Test
     fun `on onPollVoteCasted, then update poll with new vote in activities`() = runTest {
         val poll = pollData("poll-1", "Test Poll")
-        val activity = setupActivityWithPoll(poll)
+        val activity = activityData("activity-1", poll = poll)
+        val activityPin = activityPin(activity)
+        setupInitialState(listOf(activity), listOf(activityPin))
         val vote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
 
         feedState.onPollVoteCasted(vote, "poll-1")
@@ -487,14 +543,19 @@ internal class FeedStateImplTest {
                 latestVotesByOption = mapOf("option-1" to listOf(vote)),
                 voteCountsByOption = mapOf("option-1" to 1),
             )
-        expectActivityWithPoll(activity, expectedPoll)
+        val expectedActivity = activity.copy(poll = expectedPoll)
+        assertEquals(listOf(expectedActivity), feedState.activities.value)
+        val expectedPinnedActivity = activityPin.copy(activity = expectedActivity)
+        assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
     }
 
     @Test
     fun `on onPollVoteChanged, then update poll with changed vote in activities`() = runTest {
         val originalVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
         val poll = pollWithVote("poll-1", originalVote)
-        val activity = setupActivityWithPoll(poll)
+        val activity = activityData("activity-1", poll = poll)
+        val activityPin = activityPin(activity)
+        setupInitialState(listOf(activity), listOf(activityPin))
         val changedVote = pollVoteData("vote-1", "poll-1", "option-2", currentUserId)
 
         feedState.onPollVoteChanged(changedVote, "poll-1")
@@ -507,14 +568,19 @@ internal class FeedStateImplTest {
                     mapOf("option-1" to emptyList(), "option-2" to listOf(changedVote)),
                 voteCountsByOption = mapOf("option-1" to 0, "option-2" to 1),
             )
-        expectActivityWithPoll(activity, expectedPoll)
+        val expectedActivity = activity.copy(poll = expectedPoll)
+        assertEquals(listOf(expectedActivity), feedState.activities.value)
+        val expectedPinnedActivity = activityPin.copy(activity = expectedActivity)
+        assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
     }
 
     @Test
     fun `on onPollVoteRemoved, then remove vote from poll in activities`() = runTest {
         val vote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
         val poll = pollWithVote("poll-1", vote)
-        val activity = setupActivityWithPoll(poll)
+        val activity = activityData("activity-1", poll = poll)
+        val activityPin = activityPin(activity)
+        setupInitialState(listOf(activity), listOf(activityPin))
 
         feedState.onPollVoteRemoved(vote, "poll-1")
 
@@ -525,7 +591,10 @@ internal class FeedStateImplTest {
                 latestVotesByOption = mapOf("option-1" to emptyList()),
                 voteCountsByOption = mapOf("option-1" to 0),
             )
-        expectActivityWithPoll(activity, expectedPoll)
+        val expectedActivity = activity.copy(poll = expectedPoll)
+        assertEquals(listOf(expectedActivity), feedState.activities.value)
+        val expectedPinnedActivity = activityPin.copy(activity = expectedActivity)
+        assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
     }
 
     @Test
@@ -562,6 +631,7 @@ internal class FeedStateImplTest {
     // Helper functions
     private fun setupInitialState(
         activities: List<ActivityData> = listOf(activityData("activity-1")),
+        pinnedActivities: List<ActivityPinData> = emptyList(),
         feed: FeedData = feedData(),
         followers: List<FollowData> = emptyList(),
         following: List<FollowData> = emptyList(),
@@ -570,6 +640,7 @@ internal class FeedStateImplTest {
         val result =
             createGetOrCreateInfo(
                 activities = activities,
+                pinnedActivities = pinnedActivities,
                 feed = feed,
                 followers = followers,
                 following = following,
@@ -584,6 +655,7 @@ internal class FeedStateImplTest {
         followers: List<FollowData> = emptyList(),
         following: List<FollowData> = emptyList(),
         followRequests: List<FollowData> = emptyList(),
+        pinnedActivities: List<ActivityPinData> = emptyList(),
     ): GetOrCreateInfo {
         val paginationResult =
             PaginationResult(
@@ -599,7 +671,7 @@ internal class FeedStateImplTest {
             followers = followers,
             following = following,
             followRequests = followRequests,
-            pinnedActivities = emptyList(),
+            pinnedActivities = pinnedActivities,
             aggregatedActivities = emptyList(),
             notificationStatus = null,
             members =
