@@ -17,11 +17,11 @@ package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
-import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.state.CommentReactionListState
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
-import io.getstream.feeds.android.client.api.state.query.CommentReactionsQueryConfig
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsSort
+import io.getstream.feeds.android.client.internal.model.PaginationResult
+import io.getstream.feeds.android.client.internal.state.query.CommentReactionsQueryConfig
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.upsert
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -18,7 +18,7 @@ package io.getstream.feeds.android.client.internal.state
 import io.getstream.feeds.android.client.api.model.ModerationConfigData
 import io.getstream.feeds.android.client.api.state.query.ModerationConfigSort
 import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
-import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQueryConfig
+import io.getstream.feeds.android.client.internal.state.query.ModerationConfigsQueryConfig
 import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
 import io.getstream.feeds.android.client.internal.test.TestData.moderationConfigData
 import kotlinx.coroutines.test.runTest

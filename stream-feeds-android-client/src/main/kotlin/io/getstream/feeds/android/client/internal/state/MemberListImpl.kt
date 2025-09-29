@@ -17,13 +17,13 @@ package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.model.FeedMemberData
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.MemberList
 import io.getstream.feeds.android.client.api.state.MemberListState
 import io.getstream.feeds.android.client.api.state.query.MembersQuery
-import io.getstream.feeds.android.client.api.state.query.toRequest
+import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.MemberListEventHandler
+import io.getstream.feeds.android.client.internal.state.query.toRequest
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
 /**

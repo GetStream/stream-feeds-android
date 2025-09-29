@@ -17,14 +17,10 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.filter.toRequest
 import io.getstream.android.core.api.sort.Sort
 import io.getstream.android.core.api.sort.SortDirection
 import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.FollowData
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
-import io.getstream.feeds.android.client.internal.model.mapping.toRequest
-import io.getstream.feeds.android.network.models.QueryFollowsRequest
 
 /**
  * A query for retrieving follows with filtering, sorting, and pagination options.
@@ -54,9 +50,6 @@ public data class FollowsQuery(
 
 /** A type alias representing a filter specifically for [FollowData] using [FollowsFilterField]. */
 public typealias FollowsFilter = Filter<FollowData, FollowsFilterField>
-
-internal typealias FollowsQueryConfig =
-    QueryConfiguration<FollowData, FollowsFilterField, FollowsSort>
 
 /** Represents a field that can be used to filter follows. */
 public data class FollowsFilterField(
@@ -138,11 +131,3 @@ public sealed interface FollowsSortField : SortField<FollowData> {
 }
 
 /** Converts the [FollowsQuery] to a [QueryFollowsRequest]. */
-internal fun FollowsQuery.toRequest(): QueryFollowsRequest =
-    QueryFollowsRequest(
-        filter = filter?.toRequest(),
-        sort = sort?.map { it.toRequest() },
-        limit = limit,
-        next = next,
-        prev = previous,
-    )

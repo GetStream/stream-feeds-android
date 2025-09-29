@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.repository
 import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.toModel
+import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.network.apis.FeedsApi
 
 /**

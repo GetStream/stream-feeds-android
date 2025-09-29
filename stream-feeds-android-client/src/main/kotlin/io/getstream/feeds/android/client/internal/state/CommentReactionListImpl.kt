@@ -17,10 +17,10 @@ package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.CommentReactionList
 import io.getstream.feeds.android.client.api.state.CommentReactionListState
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
+import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.CommentReactionListEventHandler
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener

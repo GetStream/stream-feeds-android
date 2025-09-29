@@ -17,15 +17,11 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.filter.toRequest
 import io.getstream.android.core.api.sort.Sort
 import io.getstream.android.core.api.sort.SortDirection
 import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.FeedData
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
-import io.getstream.feeds.android.client.internal.model.mapping.toRequest
 import io.getstream.feeds.android.client.internal.state.query.unsupportedLocalValue
-import io.getstream.feeds.android.network.models.QueryFeedsRequest
 
 /**
  * A query for retrieving feeds with filtering, sorting, and pagination options.
@@ -67,8 +63,6 @@ public data class FeedsQuery(
 
 /** A type alias representing a filter specifically for [FeedData] using [FeedsFilterField]. */
 public typealias FeedsFilter = Filter<FeedData, FeedsFilterField>
-
-internal typealias FeedsQueryConfig = QueryConfiguration<FeedData, FeedsFilterField, FeedsSort>
 
 /** Represents a field that can be used to filter feeds. */
 public data class FeedsFilterField(
@@ -275,21 +269,3 @@ public sealed interface FeedsSortField : SortField<FeedData> {
         FeedsSortField,
         SortField<FeedData> by SortField.create("following_count", FeedData::followingCount)
 }
-
-/**
- * Converts the [FeedsQuery] to a [QueryFeedsRequest].
- *
- * This function maps the properties of the [FeedsQuery] to the corresponding fields in the
- * [QueryFeedsRequest], allowing it to be used in API requests.
- *
- * @return A [QueryFeedsRequest] object with the properties from this query.
- */
-internal fun FeedsQuery.toRequest(): QueryFeedsRequest =
-    QueryFeedsRequest(
-        limit = limit,
-        next = next,
-        prev = previous,
-        watch = watch,
-        sort = sort?.map { it.toRequest() },
-        filter = filter?.toRequest(),
-    )

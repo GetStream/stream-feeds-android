@@ -17,10 +17,10 @@ package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.model.BookmarkData
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.state.BookmarkList
 import io.getstream.feeds.android.client.api.state.BookmarkListState
 import io.getstream.feeds.android.client.api.state.query.BookmarksQuery
+import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.BookmarkListEventHandler
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener

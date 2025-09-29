@@ -17,14 +17,10 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.filter.toRequest
 import io.getstream.android.core.api.sort.Sort
 import io.getstream.android.core.api.sort.SortDirection
 import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.ModerationConfigData
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
-import io.getstream.feeds.android.client.internal.model.mapping.toRequest
-import io.getstream.feeds.android.network.models.QueryModerationConfigsRequest
 
 /**
  * A query configuration for fetching moderation configurations.
@@ -53,9 +49,6 @@ public data class ModerationConfigsQuery(
  */
 public typealias ModerationConfigsFilter =
     Filter<ModerationConfigData, ModerationConfigsFilterField>
-
-internal typealias ModerationConfigsQueryConfig =
-    QueryConfiguration<ModerationConfigData, ModerationConfigsFilterField, ModerationConfigSort>
 
 /** Represents a field that can be used to filter moderation configurations. */
 public data class ModerationConfigsFilterField(
@@ -159,11 +152,3 @@ public sealed interface ModerationConfigsSortField : SortField<ModerationConfigD
 }
 
 /** Converts this [ModerationConfigsQuery] to a [QueryModerationConfigsRequest]. */
-internal fun ModerationConfigsQuery.toRequest(): QueryModerationConfigsRequest =
-    QueryModerationConfigsRequest(
-        filter = filter?.toRequest(),
-        limit = limit,
-        next = next,
-        prev = previous,
-        sort = sort?.map { it.toRequest() },
-    )

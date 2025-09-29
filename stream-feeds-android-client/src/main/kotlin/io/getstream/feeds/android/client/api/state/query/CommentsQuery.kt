@@ -17,9 +17,7 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.filter.toRequest
 import io.getstream.feeds.android.client.api.model.CommentData
-import io.getstream.feeds.android.network.models.QueryCommentsRequest
 import java.util.Date
 
 /**
@@ -210,49 +208,9 @@ public sealed interface CommentsSort {
     public data object Top : CommentsSort
 }
 
-/** Converts a [CommentsQuery] to the corresponding [QueryCommentsRequest]. */
-internal fun CommentsQuery.toRequest(): QueryCommentsRequest =
-    QueryCommentsRequest(
-        filter = filter?.toRequest().orEmpty(),
-        limit = limit,
-        next = next,
-        prev = previous,
-        sort = sort?.toRequest(),
-    )
-
-/**
- * Converts a [CommentsSort] to the corresponding [QueryCommentsRequest.Sort].
- *
- * @return The [QueryCommentsRequest.Sort] representation of this [CommentsSort].
- */
-internal fun CommentsSort.toRequest(): QueryCommentsRequest.Sort =
-    when (this) {
-        CommentsSort.Best -> QueryCommentsRequest.Sort.Best
-        CommentsSort.Controversial -> QueryCommentsRequest.Sort.Controversial
-        CommentsSort.First -> QueryCommentsRequest.Sort.First
-        CommentsSort.Last -> QueryCommentsRequest.Sort.Last
-        CommentsSort.Top -> QueryCommentsRequest.Sort.Top
-    }
-
 internal interface CommentsSortDataFields {
     val createdAt: Date
     val confidenceScore: Float
     val controversyScore: Float?
     val score: Int
 }
-
-internal fun CommentsSort?.toComparator(): Comparator<CommentsSortDataFields> =
-    when (this) {
-        CommentsSort.Top ->
-            compareByDescending(CommentsSortDataFields::score)
-                .thenByDescending(CommentsSortDataFields::createdAt)
-
-        CommentsSort.Best ->
-            compareByDescending(CommentsSortDataFields::confidenceScore)
-                .thenByDescending(CommentsSortDataFields::createdAt)
-
-        CommentsSort.Controversial -> compareByDescending { it.controversyScore ?: -1f }
-        CommentsSort.First -> compareBy(CommentsSortDataFields::createdAt)
-        CommentsSort.Last,
-        null -> compareByDescending(CommentsSortDataFields::createdAt)
-    }

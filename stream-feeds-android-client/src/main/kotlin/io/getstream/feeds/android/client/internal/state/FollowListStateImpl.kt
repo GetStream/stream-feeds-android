@@ -17,11 +17,11 @@ package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.PaginationData
-import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.state.FollowListState
 import io.getstream.feeds.android.client.api.state.query.FollowsQuery
-import io.getstream.feeds.android.client.api.state.query.FollowsQueryConfig
 import io.getstream.feeds.android.client.api.state.query.FollowsSort
+import io.getstream.feeds.android.client.internal.model.PaginationResult
+import io.getstream.feeds.android.client.internal.state.query.FollowsQueryConfig
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

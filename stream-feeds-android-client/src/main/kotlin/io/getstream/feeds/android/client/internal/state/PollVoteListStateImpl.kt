@@ -16,12 +16,12 @@
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.PaginationData
-import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.state.PollVoteListState
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
-import io.getstream.feeds.android.client.api.state.query.PollVotesQueryConfig
 import io.getstream.feeds.android.client.api.state.query.PollVotesSort
+import io.getstream.feeds.android.client.internal.model.PaginationResult
+import io.getstream.feeds.android.client.internal.state.query.PollVotesQueryConfig
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import kotlinx.coroutines.flow.MutableStateFlow

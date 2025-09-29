@@ -17,8 +17,8 @@ package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
-import io.getstream.feeds.android.client.api.state.query.PollsQueryConfig
 import io.getstream.feeds.android.client.api.state.query.PollsSort
+import io.getstream.feeds.android.client.internal.state.query.PollsQueryConfig
 import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import kotlinx.coroutines.test.runTest

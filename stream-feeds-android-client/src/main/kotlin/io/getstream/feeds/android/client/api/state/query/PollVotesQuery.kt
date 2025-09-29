@@ -17,14 +17,10 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.filter.toRequest
 import io.getstream.android.core.api.sort.Sort
 import io.getstream.android.core.api.sort.SortDirection
 import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.PollVoteData
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
-import io.getstream.feeds.android.client.internal.model.mapping.toRequest
-import io.getstream.feeds.android.network.models.QueryPollVotesRequest
 
 /**
  * A query for retrieving poll votes with filtering, sorting, and pagination options.
@@ -60,9 +56,6 @@ public data class PollVotesQuery(
  * A type alias representing a filter specifically for [PollVoteData] using [PollVotesFilterField].
  */
 public typealias PollVotesFilter = Filter<PollVoteData, PollVotesFilterField>
-
-internal typealias PollVotesQueryConfig =
-    QueryConfiguration<PollVoteData, PollVotesFilterField, PollVotesSort>
 
 /** Represents a field that can be used to filter poll votes. */
 public data class PollVotesFilterField(
@@ -193,11 +186,3 @@ public sealed interface PollVotesSortField : SortField<PollVoteData> {
 }
 
 /** Converts this [PollVotesQuery] to a [QueryPollVotesRequest]. */
-internal fun PollVotesQuery.toRequest(): QueryPollVotesRequest =
-    QueryPollVotesRequest(
-        filter = filter?.toRequest(),
-        limit = limit,
-        next = next,
-        prev = previous,
-        sort = sort?.map { it.toRequest() },
-    )

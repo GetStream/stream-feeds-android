@@ -17,14 +17,10 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.filter.toRequest
 import io.getstream.android.core.api.sort.Sort
 import io.getstream.android.core.api.sort.SortDirection
 import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.BookmarkFolderData
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
-import io.getstream.feeds.android.client.internal.model.mapping.toRequest
-import io.getstream.feeds.android.network.models.QueryBookmarkFoldersRequest
 
 /**
  * A query for retrieving bookmark folders with filtering, sorting, and pagination options.
@@ -57,9 +53,6 @@ public data class BookmarkFoldersQuery(
  * [BookmarkFoldersFilterField].
  */
 public typealias BookmarkFoldersFilter = Filter<BookmarkFolderData, BookmarkFoldersFilterField>
-
-internal typealias BookmarkFoldersQueryConfig =
-    QueryConfiguration<BookmarkFolderData, BookmarkFoldersFilterField, BookmarkFoldersSort>
 
 /** Represents a field that can be used to filter bookmark folders. */
 public data class BookmarkFoldersFilterField(
@@ -144,15 +137,4 @@ public sealed interface BookmarkFoldersSortField : SortField<BookmarkFolderData>
             "updated_at",
             BookmarkFolderData::updatedAt,
         )
-}
-
-/** Converts the [BookmarkFoldersQuery] to a [QueryBookmarkFoldersRequest]. */
-internal fun BookmarkFoldersQuery.toRequest(): QueryBookmarkFoldersRequest {
-    return QueryBookmarkFoldersRequest(
-        filter = filter?.toRequest(),
-        sort = sort?.map { it.toRequest() },
-        limit = limit,
-        next = next,
-        prev = previous,
-    )
 }

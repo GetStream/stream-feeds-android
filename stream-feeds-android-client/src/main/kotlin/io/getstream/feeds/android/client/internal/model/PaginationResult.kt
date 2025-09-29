@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getstream.feeds.android.client.api.model
+package io.getstream.feeds.android.client.internal.model
 
-import io.getstream.android.core.api.filter.Filter
-import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.sort.Sort
+import io.getstream.feeds.android.client.api.model.PaginationData
 
 /**
- * Wrapper around the query configuration consisting of a [Filter] and a list of [Sort] operations.
+ * Data class representing a paginated result containing a list of models and pagination data.
  *
- * @property filter The filter for the query.
- * @property sort The list of sorting operations for the query.
+ * @param T The type of the models in the list.
+ * @property models The list of models in the paginated result.
+ * @property pagination The pagination data for the result.
  */
-internal data class QueryConfiguration<T, F : FilterField<T>, S : Sort<T>>(
-    val filter: Filter<T, F>?,
-    val sort: List<S>?,
-)
+internal data class PaginationResult<T>(val models: List<T>, val pagination: PaginationData)

@@ -17,14 +17,10 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.filter.toRequest
 import io.getstream.android.core.api.sort.Sort
 import io.getstream.android.core.api.sort.SortDirection
 import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.ActivityData
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
-import io.getstream.feeds.android.client.internal.model.mapping.toRequest
-import io.getstream.feeds.android.network.models.QueryActivitiesRequest
 
 /**
  * A query for retrieving activities with filtering, sorting, and pagination options.
@@ -65,9 +61,6 @@ public data class ActivitiesQuery(
  * A type alias representing a filter specifically for [ActivityData] using [ActivitiesFilterField].
  */
 public typealias ActivitiesFilter = Filter<ActivityData, ActivitiesFilterField>
-
-internal typealias ActivitiesQueryConfig =
-    QueryConfiguration<ActivityData, ActivitiesFilterField, ActivitiesSort>
 
 /** Represents a field that can be used to filter activities. */
 public data class ActivitiesFilterField(
@@ -202,13 +195,3 @@ public sealed interface ActivitiesSortField : SortField<ActivityData> {
         ActivitiesSortField,
         SortField<ActivityData> by SortField.create("popularity", ActivityData::popularity)
 }
-
-/** Converts the [ActivitiesQuery] to a [QueryActivitiesRequest]. */
-internal fun ActivitiesQuery.toRequest(): QueryActivitiesRequest =
-    QueryActivitiesRequest(
-        filter = filter?.toRequest(),
-        sort = sort?.map { it.toRequest() },
-        limit = limit,
-        next = next,
-        prev = previous,
-    )
