@@ -91,12 +91,12 @@ internal class ActivityEventHandler(
 
             is StateUpdateEvent.PollVoteCasted -> {
                 if (event.fid != fid.rawValue) return
-                state.onPollVoteCasted(event.vote, event.pollId)
+                state.onPollVoteUpserted(event.vote, event.pollId)
             }
 
             is StateUpdateEvent.PollVoteChanged -> {
                 if (event.fid != fid.rawValue) return
-                state.onPollVoteChanged(event.vote, event.pollId)
+                state.onPollVoteUpserted(event.vote, event.pollId)
             }
 
             is StateUpdateEvent.PollVoteRemoved -> {

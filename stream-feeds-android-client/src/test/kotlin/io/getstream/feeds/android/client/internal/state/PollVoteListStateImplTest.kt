@@ -49,21 +49,6 @@ internal class PollVoteListStateImplTest {
     }
 
     @Test
-    fun `on pollVoteUpdated, then update specific vote`() = runTest {
-        val initialVotes =
-            listOf(pollVoteData(), pollVoteData("vote-2", "poll-1", "option-2", "user-2"))
-        val paginationResult = defaultPaginationResult(initialVotes)
-        pollVoteListState.onQueryMorePollVotes(paginationResult, queryConfig)
-
-        val updatedVote =
-            pollVoteData("vote-1", "poll-1", "option-1", "user-1", answerText = "Updated answer")
-        pollVoteListState.pollVoteUpdated(updatedVote)
-
-        val updatedVotes = pollVoteListState.votes.value
-        assertEquals(listOf(updatedVote, initialVotes[1]), updatedVotes)
-    }
-
-    @Test
     fun `on pollVoteRemoved, then remove specific vote`() = runTest {
         val initialVotes =
             listOf(pollVoteData(), pollVoteData("vote-2", "poll-1", "option-2", "user-2"))
@@ -77,41 +62,28 @@ internal class PollVoteListStateImplTest {
     }
 
     @Test
-    fun `on pollVoteUpdated with non-existent vote, then keep unchanged`() = runTest {
-        val initialVotes =
-            listOf(pollVoteData(), pollVoteData("vote-2", "poll-1", "option-2", "user-2"))
-        val paginationResult = defaultPaginationResult(initialVotes)
-        pollVoteListState.onQueryMorePollVotes(paginationResult, queryConfig)
-
-        val nonExistentVote = pollVoteData("non-existent", "poll-1", "option-1", "user-3")
-        pollVoteListState.pollVoteUpdated(nonExistentVote)
-
-        assertEquals(initialVotes, pollVoteListState.votes.value)
-    }
-
-    @Test
-    fun `on pollVoteAdded with new vote, then add vote to list in sorted order`() = runTest {
+    fun `on pollVoteUpserted with new vote, then add vote to list in sorted order`() = runTest {
         val initial =
             listOf(pollVoteData("vote-1"), pollVoteData("vote-3", "poll-1", "option-3", "user-3"))
         val pagination = defaultPaginationResult(initial)
         pollVoteListState.onQueryMorePollVotes(pagination, queryConfig)
 
         val newVote = pollVoteData("vote-2", "poll-1", "option-2", "user-2")
-        pollVoteListState.pollVoteAdded(newVote)
+        pollVoteListState.pollVoteUpserted(newVote)
 
         val expectedVotes = listOf(initial[0], newVote, initial[1])
         assertEquals(expectedVotes, pollVoteListState.votes.value)
     }
 
     @Test
-    fun `on pollVoteAdded with existing vote, then update existing vote`() = runTest {
+    fun `on pollVoteUpserted with existing vote, then update existing vote`() = runTest {
         val initial =
             pollVoteData("vote-1", "poll-1", "option-1", "user-1", answerText = "Original")
         val pagination = defaultPaginationResult(listOf(initial))
         pollVoteListState.onQueryMorePollVotes(pagination, queryConfig)
 
         val updated = pollVoteData("vote-1", "poll-1", "option-1", "user-1", answerText = "Updated")
-        pollVoteListState.pollVoteAdded(updated)
+        pollVoteListState.pollVoteUpserted(updated)
 
         assertEquals(listOf(updated), pollVoteListState.votes.value)
     }

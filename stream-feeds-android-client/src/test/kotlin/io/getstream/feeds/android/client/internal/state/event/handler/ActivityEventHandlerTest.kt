@@ -215,7 +215,7 @@ internal class ActivityEventHandlerTest(
                 testParams<ActivityStateUpdates>(
                     name = "PollVoteCasted matching feed",
                     event = PollVoteCasted(fid.rawValue, "poll-1", pollVoteData()),
-                    verifyBlock = { it.onPollVoteCasted(pollVoteData(), "poll-1") },
+                    verifyBlock = { it.onPollVoteUpserted(pollVoteData(), "poll-1") },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "PollVoteCasted non-matching feed",
@@ -225,7 +225,7 @@ internal class ActivityEventHandlerTest(
                 testParams<ActivityStateUpdates>(
                     name = "PollVoteChanged matching feed",
                     event = PollVoteChanged(fid.rawValue, "poll-1", pollVoteData()),
-                    verifyBlock = { it.onPollVoteChanged(pollVoteData(), "poll-1") },
+                    verifyBlock = { it.onPollVoteUpserted(pollVoteData(), "poll-1") },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "PollVoteChanged non-matching feed",

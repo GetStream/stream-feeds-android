@@ -18,7 +18,6 @@ package io.getstream.feeds.android.client.internal.model
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollOptionData
 import io.getstream.feeds.android.client.api.model.PollVoteData
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.network.models.PollResponseData
 import kotlin.math.max
@@ -122,7 +121,7 @@ internal fun PollData.updateOption(option: PollOptionData): PollData {
  * @param currentUserId The ID of the current user, used to determine if the vote belongs to them.
  * @return A new [PollData] instance with the specified vote added or updated.
  */
-internal fun PollData.castVote(vote: PollVoteData, currentUserId: String): PollData {
+internal fun PollData.upsertVote(vote: PollVoteData, currentUserId: String): PollData {
     // Answers and option votes are mutually exclusive, so if the vote is an answer, we don't need
     // to update the option votes
     if (vote.isAnswer == true) {

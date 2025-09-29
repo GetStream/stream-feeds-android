@@ -34,19 +34,18 @@ internal class PollVoteListEventHandler(
         when (event) {
             is StateUpdateEvent.PollVoteCasted -> {
                 if (event.pollId != pollId) return
-                state.pollVoteAdded(event.vote)
+                state.pollVoteUpserted(event.vote)
             }
 
             is StateUpdateEvent.PollVoteChanged -> {
                 if (event.pollId != pollId) return
-                state.pollVoteUpdated(event.vote)
+                state.pollVoteUpserted(event.vote)
             }
 
             is StateUpdateEvent.PollVoteRemoved -> {
                 if (event.pollId != pollId) return
                 state.pollVoteRemoved(event.vote.id)
             }
-
             else -> {}
         }
     }

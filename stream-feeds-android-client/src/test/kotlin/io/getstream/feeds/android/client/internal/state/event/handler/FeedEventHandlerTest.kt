@@ -382,7 +382,7 @@ internal class FeedEventHandlerTest(
                 testParams<FeedStateUpdates>(
                     name = "PollVoteCasted matching feed",
                     event = PollVoteCasted(fid.rawValue, pollId, pollVote),
-                    verifyBlock = { state -> state.onPollVoteCasted(pollVote, pollId) },
+                    verifyBlock = { state -> state.onPollVoteUpserted(pollVote, pollId) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "PollVoteCasted non-matching feed",
@@ -392,7 +392,7 @@ internal class FeedEventHandlerTest(
                 testParams<FeedStateUpdates>(
                     name = "PollVoteChanged matching feed",
                     event = PollVoteChanged(fid.rawValue, pollId, pollVote),
-                    verifyBlock = { state -> state.onPollVoteChanged(pollVote, pollId) },
+                    verifyBlock = { state -> state.onPollVoteUpserted(pollVote, pollId) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "PollVoteChanged non-matching feed",

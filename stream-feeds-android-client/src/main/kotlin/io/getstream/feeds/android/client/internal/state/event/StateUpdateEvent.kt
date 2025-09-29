@@ -165,13 +165,13 @@ internal sealed interface StateUpdateEvent {
 
     data class PollUpdated(val fid: String, val poll: PollData) : StateUpdateEvent
 
+    data class PollVoteRemoved(val fid: String, val pollId: String, val vote: PollVoteData) :
+        StateUpdateEvent
+
     data class PollVoteCasted(val fid: String, val pollId: String, val vote: PollVoteData) :
         StateUpdateEvent
 
     data class PollVoteChanged(val fid: String, val pollId: String, val vote: PollVoteData) :
-        StateUpdateEvent
-
-    data class PollVoteRemoved(val fid: String, val pollId: String, val vote: PollVoteData) :
         StateUpdateEvent
 }
 

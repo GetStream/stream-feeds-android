@@ -36,7 +36,6 @@ import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.model.addComment
-import io.getstream.feeds.android.client.internal.model.castVote
 import io.getstream.feeds.android.client.internal.model.deleteBookmark
 import io.getstream.feeds.android.client.internal.model.isFollowRequest
 import io.getstream.feeds.android.client.internal.model.isFollowerOf
@@ -49,6 +48,7 @@ import io.getstream.feeds.android.client.internal.model.update
 import io.getstream.feeds.android.client.internal.model.upsertBookmark
 import io.getstream.feeds.android.client.internal.model.upsertCommentReaction
 import io.getstream.feeds.android.client.internal.model.upsertReaction
+import io.getstream.feeds.android.client.internal.model.upsertVote
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
 import io.getstream.feeds.android.client.internal.state.query.ActivitiesQueryConfig
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
@@ -282,21 +282,15 @@ internal class FeedStateImpl(
         }
     }
 
-    override fun onPollVoteCasted(vote: PollVoteData, pollId: String) {
-        updateActivitiesWhere({ it.poll?.id == pollId }) { activity ->
-            activity.copy(poll = activity.poll?.castVote(vote, currentUserId))
-        }
-    }
-
-    override fun onPollVoteChanged(vote: PollVoteData, pollId: String) {
-        updateActivitiesWhere({ it.poll?.id == pollId }) { activity ->
-            activity.copy(poll = activity.poll?.castVote(vote, currentUserId))
-        }
-    }
-
     override fun onPollVoteRemoved(vote: PollVoteData, pollId: String) {
         updateActivitiesWhere({ it.poll?.id == pollId }) { activity ->
             activity.copy(poll = activity.poll?.removeVote(vote, currentUserId))
+        }
+    }
+
+    override fun onPollVoteUpserted(vote: PollVoteData, pollId: String) {
+        updateActivitiesWhere({ it.poll?.id == pollId }) { activity ->
+            activity.copy(poll = activity.poll?.upsertVote(vote, currentUserId))
         }
     }
 
@@ -435,14 +429,11 @@ internal interface FeedStateUpdates {
     /** Handles updates to the feed state when a poll is updated. */
     fun onPollUpdated(poll: PollData)
 
-    /** Handles updates to the feed state when a poll vote is casted. */
-    fun onPollVoteCasted(vote: PollVoteData, pollId: String)
-
-    /** Handles updates to the feed state when a poll vote is changed. */
-    fun onPollVoteChanged(vote: PollVoteData, pollId: String)
-
     /** Handles updates to the feed state when a poll vote is removed. */
     fun onPollVoteRemoved(vote: PollVoteData, pollId: String)
+
+    /** Handles updates to the feed state when a poll vote is casted or changed. */
+    fun onPollVoteUpserted(vote: PollVoteData, pollId: String)
 
     /**
      * Handles updates to a notification feed.
