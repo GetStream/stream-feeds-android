@@ -180,12 +180,6 @@ internal class FeedEventHandler(private val fid: FeedId, private val state: Feed
                 }
             }
 
-            is StateUpdateEvent.PollClosed -> {
-                if (event.fid == fid.rawValue) {
-                    state.onPollClosed(event.poll.id)
-                }
-            }
-
             is StateUpdateEvent.PollDeleted -> {
                 if (event.fid == fid.rawValue) {
                     state.onPollDeleted(event.pollId)

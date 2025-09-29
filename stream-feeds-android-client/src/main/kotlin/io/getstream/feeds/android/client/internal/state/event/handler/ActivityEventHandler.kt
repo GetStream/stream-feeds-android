@@ -79,11 +79,6 @@ internal class ActivityEventHandler(
                 state.onBookmarkUpserted(event.bookmark)
             }
 
-            is StateUpdateEvent.PollClosed -> {
-                if (event.fid != fid.rawValue) return
-                state.onPollClosed(event.poll)
-            }
-
             is StateUpdateEvent.PollDeleted -> {
                 if (event.fid != fid.rawValue) return
                 state.onPollDeleted(event.pollId)

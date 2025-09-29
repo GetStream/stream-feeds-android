@@ -27,7 +27,6 @@ import io.getstream.feeds.android.client.internal.model.castVote
 import io.getstream.feeds.android.client.internal.model.deleteBookmark
 import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.model.removeVote
-import io.getstream.feeds.android.client.internal.model.setClosed
 import io.getstream.feeds.android.client.internal.model.update
 import io.getstream.feeds.android.client.internal.model.upsertBookmark
 import io.getstream.feeds.android.client.internal.model.upsertReaction
@@ -88,10 +87,6 @@ internal class ActivityStateImpl(
 
     override fun onBookmarkUpserted(bookmark: BookmarkData) {
         _activity.update { current -> current?.upsertBookmark(bookmark, currentUserId) }
-    }
-
-    override fun onPollClosed(poll: PollData) {
-        updatePoll(poll.id, PollData::setClosed)
     }
 
     override fun onPollDeleted(pollId: String) {
@@ -176,13 +171,6 @@ internal interface ActivityStateUpdates {
      * @param bookmark The bookmark that was added or updated.
      */
     fun onBookmarkUpserted(bookmark: BookmarkData)
-
-    /**
-     * Called when the associated poll is closed.
-     *
-     * @param poll The updated poll data.
-     */
-    fun onPollClosed(poll: PollData)
 
     /**
      * Called when the associated poll is deleted.

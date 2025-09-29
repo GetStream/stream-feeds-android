@@ -161,8 +161,6 @@ internal sealed interface StateUpdateEvent {
         val notificationStatus: NotificationStatusResponse?,
     ) : StateUpdateEvent
 
-    data class PollClosed(val fid: String, val poll: PollData) : StateUpdateEvent
-
     data class PollDeleted(val fid: String, val pollId: String) : StateUpdateEvent
 
     data class PollUpdated(val fid: String, val poll: PollData) : StateUpdateEvent
@@ -252,7 +250,7 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
 
         is FeedMemberUpdatedEvent -> StateUpdateEvent.FeedMemberUpdated(fid, member.toModel())
 
-        is PollClosedFeedEvent -> StateUpdateEvent.PollClosed(fid, poll.toModel())
+        is PollClosedFeedEvent -> StateUpdateEvent.PollUpdated(fid, poll.toModel())
 
         is PollDeletedFeedEvent -> StateUpdateEvent.PollDeleted(fid, poll.id)
 

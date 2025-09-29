@@ -71,14 +71,6 @@ internal fun PollData.update(
 internal fun PollData.update(updated: PollData): PollData = updated.copy(ownVotes = ownVotes)
 
 /**
- * Mark the poll as closed. This function creates a new [PollData] instance with the `isClosed`
- * property set to `true`.
- *
- * @return A new [PollData] instance with the poll marked as closed.
- */
-internal fun PollData.setClosed(): PollData = copy(isClosed = true)
-
-/**
  * Extension function to add a new option to the poll. This function creates a new [PollData]
  * instance with the new option added to the existing options.
  *

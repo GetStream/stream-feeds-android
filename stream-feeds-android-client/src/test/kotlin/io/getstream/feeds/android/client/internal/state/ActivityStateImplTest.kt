@@ -230,28 +230,6 @@ internal class ActivityStateImplTest {
         }
 
     @Test
-    fun `on onPollClosed, then update poll`() = runTest {
-        val initialPoll = pollData()
-        setupInitialPoll(initialPoll)
-
-        val closedPoll = pollData("poll-1", isClosed = true)
-        activityState.onPollClosed(closedPoll)
-
-        assertEquals(closedPoll, activityState.poll.value)
-    }
-
-    @Test
-    fun `on onPollClosed with different poll id, then keep existing poll`() = runTest {
-        val initialPoll = pollData("poll-1", "Test Poll")
-        setupInitialPoll(initialPoll)
-
-        val differentPoll = pollData("poll-2", isClosed = true)
-        activityState.onPollClosed(differentPoll)
-
-        assertEquals(initialPoll, activityState.poll.value)
-    }
-
-    @Test
     fun `on onPollDeleted, then remove poll`() = runTest {
         val initialPoll = pollData("poll-1", "Test Poll")
         setupInitialPoll(initialPoll)
@@ -470,17 +448,6 @@ internal class ActivityStateImplTest {
 
         val expectedPoll =
             initialPoll.copy(answersCount = 0, ownVotes = emptyList(), latestAnswers = emptyList())
-        assertEquals(expectedPoll, activityState.poll.value)
-    }
-
-    @Test
-    fun `on onPollClosed, then mark poll as closed`() = runTest {
-        val initialPoll = pollData("poll-1", "Test Poll", isClosed = false)
-        setupInitialPoll(initialPoll)
-
-        activityState.onPollClosed(initialPoll)
-
-        val expectedPoll = initialPoll.copy(isClosed = true)
         assertEquals(expectedPoll, activityState.poll.value)
     }
 

@@ -478,22 +478,6 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on onPollClosed, then mark poll as closed in activities`() = runTest {
-        val poll = pollData("poll-1", "Test Poll", isClosed = false)
-        val activity = activityData("activity-1", poll = poll)
-        val activityPin = activityPin(activity)
-        setupInitialState(listOf(activity), listOf(activityPin))
-
-        feedState.onPollClosed("poll-1")
-
-        val expectedPoll = poll.copy(isClosed = true)
-        val expectedActivity = activity.copy(poll = expectedPoll)
-        assertEquals(listOf(expectedActivity), feedState.activities.value)
-        val expectedPinnedActivity = activityPin.copy(activity = expectedActivity)
-        assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
-    }
-
-    @Test
     fun `on onPollDeleted, then remove poll from activities`() = runTest {
         val poll = pollData("poll-1", "Test Poll")
         val activity = activityData("activity-1", poll = poll)

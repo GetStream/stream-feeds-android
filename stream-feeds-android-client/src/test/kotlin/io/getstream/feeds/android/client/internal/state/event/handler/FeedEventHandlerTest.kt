@@ -43,7 +43,6 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.F
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FollowDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FollowUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.NotificationFeedUpdated
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollClosed
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteCasted
@@ -358,16 +357,6 @@ internal class FeedEventHandlerTest(
                             aggregatedActivities,
                             notificationStatus,
                         ),
-                    verifyBlock = { state -> state wasNot called },
-                ),
-                testParams<FeedStateUpdates>(
-                    name = "PollClosed matching feed",
-                    event = PollClosed(fid.rawValue, poll),
-                    verifyBlock = { state -> state.onPollClosed(poll.id) },
-                ),
-                testParams<FeedStateUpdates>(
-                    name = "PollClosed non-matching feed",
-                    event = PollClosed("group:different", poll),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(

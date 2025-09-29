@@ -45,7 +45,6 @@ import io.getstream.feeds.android.client.internal.model.removeComment
 import io.getstream.feeds.android.client.internal.model.removeCommentReaction
 import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.model.removeVote
-import io.getstream.feeds.android.client.internal.model.setClosed
 import io.getstream.feeds.android.client.internal.model.update
 import io.getstream.feeds.android.client.internal.model.upsertBookmark
 import io.getstream.feeds.android.client.internal.model.upsertCommentReaction
@@ -273,12 +272,6 @@ internal class FeedStateImpl(
         }
     }
 
-    override fun onPollClosed(id: String) {
-        updateActivitiesWhere({ it.poll?.id == id }) { activity ->
-            activity.copy(poll = activity.poll?.setClosed())
-        }
-    }
-
     override fun onPollDeleted(id: String) {
         updateActivitiesWhere({ it.poll?.id == id }) { activity -> activity.copy(poll = null) }
     }
@@ -435,9 +428,6 @@ internal interface FeedStateUpdates {
 
     /** Handles updates to the feed state when a reaction is removed. */
     fun onReactionRemoved(reaction: FeedsReactionData, activity: ActivityData)
-
-    /** Handles updates to the feed state when a poll is closed. */
-    fun onPollClosed(id: String)
 
     /** Handles updates to the feed state when a poll is deleted. */
     fun onPollDeleted(id: String)
