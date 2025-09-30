@@ -125,7 +125,7 @@ internal class ActivityListStateImplTest {
         setupInitialActivities(activity1, activity2)
 
         val comment = commentData("comment-1", objectId = "activity-1")
-        activityListState.onCommentAdded(comment)
+        activityListState.onCommentUpserted(comment)
 
         val activityWithComment = activityListState.activities.value.first()
         assertEquals(1, activityWithComment.commentCount)
@@ -138,7 +138,7 @@ internal class ActivityListStateImplTest {
         setupInitialActivities(activity1, activity2)
 
         val comment = commentData("comment-1", objectId = "activity-1")
-        activityListState.onCommentAdded(comment)
+        activityListState.onCommentUpserted(comment)
         activityListState.onCommentRemoved(comment)
 
         val activityWithoutComment = activityListState.activities.value.first()

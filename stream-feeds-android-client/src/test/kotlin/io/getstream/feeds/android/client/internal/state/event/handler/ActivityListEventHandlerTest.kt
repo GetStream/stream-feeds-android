@@ -33,6 +33,7 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.C
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentUpdated
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
@@ -150,12 +151,17 @@ internal class ActivityListEventHandlerTest(
                 testParams<ActivityListStateUpdates>(
                     name = "CommentAdded",
                     event = CommentAdded("feed-1", commentData()),
-                    verifyBlock = { state -> state.onCommentAdded(commentData()) },
+                    verifyBlock = { state -> state.onCommentUpserted(commentData()) },
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "CommentDeleted",
                     event = CommentDeleted("feed-1", commentData()),
                     verifyBlock = { state -> state.onCommentRemoved(commentData()) },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "CommentUpdated",
+                    event = CommentUpdated("feed-1", commentData()),
+                    verifyBlock = { state -> state.onCommentUpserted(commentData()) },
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "CommentReactionAdded",
