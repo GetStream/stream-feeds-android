@@ -23,6 +23,7 @@ import io.getstream.feeds.android.client.api.state.query.FollowsSort
 import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.state.query.FollowsQueryConfig
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
+import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -65,16 +66,8 @@ internal class FollowListStateImpl(override val query: FollowsQuery) : FollowLis
         }
     }
 
-    override fun onFollowUpdated(follow: FollowData) {
-        _follows.update { current ->
-            current.map {
-                if (it.id == follow.id) {
-                    follow
-                } else {
-                    it
-                }
-            }
-        }
+    override fun onFollowUpserted(follow: FollowData) {
+        _follows.update { current -> current.upsertSorted(follow, FollowData::id, followsSorting) }
     }
 
     override fun onFollowRemoved(follow: FollowData) {
@@ -96,8 +89,8 @@ internal interface FollowListStateUpdates {
     /** Handles the result of a query for more follows. */
     fun onQueryMoreFollows(result: PaginationResult<FollowData>, queryConfig: FollowsQueryConfig)
 
-    /** Handles the update of a follow data. */
-    fun onFollowUpdated(follow: FollowData)
+    /** Handles the addition or update of a follow. */
+    fun onFollowUpserted(follow: FollowData)
 
     /** Handles the removal of a follow. */
     fun onFollowRemoved(follow: FollowData)

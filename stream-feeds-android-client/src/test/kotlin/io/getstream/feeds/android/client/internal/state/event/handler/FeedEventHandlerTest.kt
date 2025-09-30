@@ -325,7 +325,7 @@ internal class FeedEventHandlerTest(
                 testParams<FeedStateUpdates>(
                     name = "FollowAdded matching feed",
                     event = FollowAdded(matchingFollow),
-                    verifyBlock = { state -> state.onFollowAdded(matchingFollow) },
+                    verifyBlock = { state -> state.onFollowUpdated(matchingFollow) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "FollowAdded non-matching feed",

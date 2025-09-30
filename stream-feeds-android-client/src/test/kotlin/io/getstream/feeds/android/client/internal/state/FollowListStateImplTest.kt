@@ -49,18 +49,14 @@ internal class FollowListStateImplTest {
     }
 
     @Test
-    fun `on followUpdated, then update specific follow`() = runTest {
+    fun `on followUpserted, then update specific follow`() = runTest {
         val initialFollows = listOf(followData(), followData("user-2", "user-3"))
         val paginationResult = defaultPaginationResult(initialFollows)
         followListState.onQueryMoreFollows(paginationResult, queryConfig)
 
         val updatedFollow =
-            followData(
-                sourceFid = "user:user-1",
-                targetFid = "user:user-2",
-                createdAt = java.util.Date(1000),
-            )
-        followListState.onFollowUpdated(updatedFollow)
+            followData(sourceFid = "user:user-1", targetFid = "user:user-2", createdAt = 1000)
+        followListState.onFollowUpserted(updatedFollow)
 
         val updatedFollows = followListState.follows.value
         assertEquals(updatedFollow, updatedFollows.find { it.id == updatedFollow.id })
@@ -68,17 +64,20 @@ internal class FollowListStateImplTest {
     }
 
     @Test
-    fun `on followUpdated with non-existent follow, then keep existing follows unchanged`() =
-        runTest {
-            val initialFollows = listOf(followData(), followData("user-2", "user-3"))
-            val paginationResult = defaultPaginationResult(initialFollows)
-            followListState.onQueryMoreFollows(paginationResult, queryConfig)
+    fun `on followUpserted with non-existent follow, then insert in sorted position`() = runTest {
+        val follow1 = followData("user-1", "user-2", createdAt = 2000)
+        val follow2 = followData("user-2", "user-3", createdAt = 1000)
+        val initialFollows = listOf(follow1, follow2)
+        val paginationResult = defaultPaginationResult(initialFollows)
+        followListState.onQueryMoreFollows(paginationResult, queryConfig)
 
-            val nonExistentFollow = followData("user-4", "user-5")
-            followListState.onFollowUpdated(nonExistentFollow)
+        val newFollow = followData("user-4", "user-5", createdAt = 1500)
+        followListState.onFollowUpserted(newFollow)
 
-            assertEquals(initialFollows, followListState.follows.value)
-        }
+        // Expect follows to be sorted by createdAt in descending order (newest first)
+        val expectedFollows = listOf(follow1, newFollow, follow2)
+        assertEquals(expectedFollows, followListState.follows.value)
+    }
 
     @Test
     fun `on followRemoved, then remove specific follow`() = runTest {

@@ -15,21 +15,33 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
+import io.getstream.feeds.android.client.api.state.query.FollowsFilter
 import io.getstream.feeds.android.client.internal.state.FollowListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.query.matches
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
-internal class FollowListEventHandler(private val state: FollowListStateUpdates) :
-    StateUpdateEventListener {
+internal class FollowListEventHandler(
+    private val filter: FollowsFilter?,
+    private val state: FollowListStateUpdates,
+) : StateUpdateEventListener {
 
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
-            is StateUpdateEvent.FollowUpdated -> {
-                state.onFollowUpdated(event.follow)
+            is StateUpdateEvent.FollowAdded -> {
+                if (event.follow matches filter) {
+                    state.onFollowUpserted(event.follow)
+                }
             }
 
             is StateUpdateEvent.FollowDeleted -> {
                 state.onFollowRemoved(event.follow)
+            }
+
+            is StateUpdateEvent.FollowUpdated -> {
+                if (event.follow matches filter) {
+                    state.onFollowUpserted(event.follow)
+                }
             }
 
             else -> {}

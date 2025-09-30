@@ -161,7 +161,7 @@ internal class FeedEventHandler(
 
             is StateUpdateEvent.FollowAdded -> {
                 if (event.follow.matchesFeed()) {
-                    state.onFollowAdded(event.follow)
+                    state.onFollowUpdated(event.follow)
                 }
             }
 
