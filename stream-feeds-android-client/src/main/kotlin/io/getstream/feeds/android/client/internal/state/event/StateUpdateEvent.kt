@@ -155,9 +155,9 @@ internal sealed interface StateUpdateEvent {
 
     data class FollowAdded(val follow: FollowData) : StateUpdateEvent
 
-    data class FollowUpdated(val follow: FollowData) : StateUpdateEvent
-
     data class FollowDeleted(val follow: FollowData) : StateUpdateEvent
+
+    data class FollowUpdated(val follow: FollowData) : StateUpdateEvent
 
     data class NotificationFeedUpdated(
         val fid: String,
