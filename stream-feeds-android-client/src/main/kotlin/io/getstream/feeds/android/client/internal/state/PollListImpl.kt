@@ -40,15 +40,16 @@ import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventList
  */
 internal class PollListImpl(
     override val query: PollsQuery,
+    private val currentUserId: String,
     private val pollsRepository: PollsRepository,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
-    private val _state: PollListStateImpl = PollListStateImpl(query),
 ) : PollList {
+    private val _state: PollListStateImpl = PollListStateImpl(currentUserId = currentUserId, query)
 
     override val state: PollListState
         get() = _state
 
-    private val eventHandler = PollListEventHandler(_state)
+    private val eventHandler = PollListEventHandler(query.filter, _state)
 
     init {
         subscriptionManager.subscribe(eventHandler)
