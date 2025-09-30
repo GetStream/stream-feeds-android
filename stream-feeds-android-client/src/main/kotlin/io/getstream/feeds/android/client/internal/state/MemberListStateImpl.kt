@@ -69,17 +69,11 @@ internal class MemberListStateImpl(override val query: MembersQuery) : MemberLis
         }
     }
 
-    override fun onMemberAdded(member: FeedMemberData) {
-        _members.update { current ->
-            current.upsertSorted(member, FeedMemberData::id, membersSorting)
-        }
-    }
-
     override fun onMemberRemoved(memberId: String) {
         _members.update { current -> current.filter { it.id != memberId } }
     }
 
-    override fun onMemberUpdated(member: FeedMemberData) {
+    override fun onMemberUpserted(member: FeedMemberData) {
         _members.update { current ->
             current.upsertSorted(member, FeedMemberData::id, membersSorting)
         }
@@ -133,14 +127,11 @@ internal interface MemberListStateUpdates {
         queryConfig: MembersQueryConfig,
     )
 
-    /** Handles the addition of a new member. */
-    fun onMemberAdded(member: FeedMemberData)
-
     /** Handles the removal of a member by their ID. */
     fun onMemberRemoved(memberId: String)
 
-    /** Handles the update of a member's data. */
-    fun onMemberUpdated(member: FeedMemberData)
+    /** Handles the addition or update of a member. */
+    fun onMemberUpserted(member: FeedMemberData)
 
     /** Handles updates to multiple members. */
     fun onMembersUpdated(updates: ModelUpdates<FeedMemberData>)
