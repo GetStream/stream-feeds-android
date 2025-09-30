@@ -17,12 +17,17 @@ package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PollData
+import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.state.PollListState
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
 import io.getstream.feeds.android.client.api.state.query.PollsSort
 import io.getstream.feeds.android.client.internal.model.PaginationResult
+import io.getstream.feeds.android.client.internal.model.removeVote
+import io.getstream.feeds.android.client.internal.model.update
+import io.getstream.feeds.android.client.internal.model.upsertVote
 import io.getstream.feeds.android.client.internal.state.query.PollsQueryConfig
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
+import io.getstream.feeds.android.client.internal.utils.updateIf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,7 +41,10 @@ import kotlinx.coroutines.flow.update
  *
  * @property query The query used to fetch the polls.
  */
-internal class PollListStateImpl(override val query: PollsQuery) : PollListMutableState {
+internal class PollListStateImpl(
+    private val currentUserId: String,
+    override val query: PollsQuery,
+) : PollListMutableState {
 
     private val _polls: MutableStateFlow<List<PollData>> = MutableStateFlow(emptyList())
 
@@ -65,16 +73,23 @@ internal class PollListStateImpl(override val query: PollsQuery) : PollListMutab
         _polls.update { current -> current.mergeSorted(result.models, PollData::id, pollsSorting) }
     }
 
+    override fun onPollDeleted(pollId: String) {
+        _polls.update { current -> current.filterNot { it.id == pollId } }
+    }
+
     override fun onPollUpdated(poll: PollData) {
+        _polls.update { current -> current.updateIf({ it.id == poll.id }) { it.update(poll) } }
+    }
+
+    override fun onPollVoteUpserted(pollId: String, vote: PollVoteData) {
         _polls.update { current ->
-            current.map {
-                if (it.id == poll.id) {
-                    // Update the existing poll with the new data
-                    poll
-                } else {
-                    it
-                }
-            }
+            current.updateIf({ it.id == pollId }) { it.upsertVote(vote, currentUserId) }
+        }
+    }
+
+    override fun onPollVoteRemoved(pollId: String, vote: PollVoteData) {
+        _polls.update { current ->
+            current.updateIf({ it.id == pollId }) { it.removeVote(vote, currentUserId) }
         }
     }
 }
@@ -99,9 +114,32 @@ internal interface PollListStateUpdates {
     fun onQueryMorePolls(result: PaginationResult<PollData>, queryConfig: PollsQueryConfig)
 
     /**
+     * Called when a poll is deleted.
+     *
+     * @param pollId The ID of the deleted poll.
+     */
+    fun onPollDeleted(pollId: String)
+
+    /**
      * Called when a poll is updated.
      *
      * @param poll The updated poll data.
      */
     fun onPollUpdated(poll: PollData)
+
+    /**
+     * Called when a poll vote is added or updated.
+     *
+     * @param pollId The ID of the poll.
+     * @param vote The vote that was added or updated.
+     */
+    fun onPollVoteUpserted(pollId: String, vote: PollVoteData)
+
+    /**
+     * Called when a poll vote is removed.
+     *
+     * @param pollId The ID of the poll.
+     * @param vote The vote that was removed.
+     */
+    fun onPollVoteRemoved(pollId: String, vote: PollVoteData)
 }

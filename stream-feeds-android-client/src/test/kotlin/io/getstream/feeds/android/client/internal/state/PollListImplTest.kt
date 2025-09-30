@@ -39,6 +39,7 @@ internal class PollListImplTest {
     private val pollList =
         PollListImpl(
             query = query,
+            currentUserId = "user-1",
             pollsRepository = pollsRepository,
             subscriptionManager = subscriptionManager,
         )

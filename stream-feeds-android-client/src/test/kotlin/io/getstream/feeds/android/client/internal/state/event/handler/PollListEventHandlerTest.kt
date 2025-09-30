@@ -15,11 +15,19 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
+import io.getstream.android.core.api.filter.equal
+import io.getstream.feeds.android.client.api.state.query.PollsFilterField
 import io.getstream.feeds.android.client.internal.state.PollListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteCasted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteChanged
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteRemoved
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
+import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
 import io.mockk.MockKVerificationScope
+import io.mockk.called
 import io.mockk.mockk
 import org.junit.runners.Parameterized
 
@@ -30,18 +38,48 @@ internal class PollListEventHandlerTest(
 ) : BaseEventHandlerTest<PollListStateUpdates>(testName, event, verifyBlock) {
 
     override val state: PollListStateUpdates = mockk(relaxed = true)
-    override val handler = PollListEventHandler(state)
+    override val handler = PollListEventHandler(filter, state)
 
     companion object {
+        private val filter = PollsFilterField.name.equal("Test Poll")
+        private val matchingPoll = pollData(name = "Test Poll")
+        private val nonMatchingPoll = pollData(name = "Different Poll")
+        private val pollVote = pollVoteData()
+
         @JvmStatic
         @Parameterized.Parameters(name = "{0}")
         fun data(): List<Array<Any>> =
             listOf(
                 testParams<PollListStateUpdates>(
-                    name = "PollUpdated",
-                    event = PollUpdated("feed-1", pollData()),
-                    verifyBlock = { state -> state.onPollUpdated(pollData()) },
-                )
+                    name = "PollDeleted",
+                    event = PollDeleted("feed-1", "poll-1"),
+                    verifyBlock = { state -> state.onPollDeleted("poll-1") },
+                ),
+                testParams<PollListStateUpdates>(
+                    name = "PollUpdated matching filter",
+                    event = PollUpdated("feed-1", matchingPoll),
+                    verifyBlock = { state -> state.onPollUpdated(matchingPoll) },
+                ),
+                testParams<PollListStateUpdates>(
+                    name = "PollUpdated non-matching filter",
+                    event = PollUpdated("feed-1", nonMatchingPoll),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<PollListStateUpdates>(
+                    name = "PollVoteCasted",
+                    event = PollVoteCasted("feed-1", "poll-1", pollVote),
+                    verifyBlock = { state -> state.onPollVoteUpserted("poll-1", pollVote) },
+                ),
+                testParams<PollListStateUpdates>(
+                    name = "PollVoteChanged",
+                    event = PollVoteChanged("feed-1", "poll-1", pollVote),
+                    verifyBlock = { state -> state.onPollVoteUpserted("poll-1", pollVote) },
+                ),
+                testParams<PollListStateUpdates>(
+                    name = "PollVoteRemoved",
+                    event = PollVoteRemoved("feed-1", "poll-1", pollVote),
+                    verifyBlock = { state -> state.onPollVoteRemoved("poll-1", pollVote) },
+                ),
             )
     }
 }

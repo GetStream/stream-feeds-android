@@ -15,8 +15,10 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
+import io.getstream.feeds.android.client.api.state.query.PollsFilter
 import io.getstream.feeds.android.client.internal.state.PollListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.query.matches
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
 /**
@@ -24,13 +26,33 @@ import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventList
  *
  * @property state The instance that manages updates to the poll list state.
  */
-internal class PollListEventHandler(private val state: PollListStateUpdates) :
-    StateUpdateEventListener {
+internal class PollListEventHandler(
+    private val filter: PollsFilter?,
+    private val state: PollListStateUpdates,
+) : StateUpdateEventListener {
 
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
+            is StateUpdateEvent.PollDeleted -> {
+                state.onPollDeleted(event.pollId)
+            }
+
             is StateUpdateEvent.PollUpdated -> {
-                state.onPollUpdated(event.poll)
+                if (event.poll matches filter) {
+                    state.onPollUpdated(event.poll)
+                }
+            }
+
+            is StateUpdateEvent.PollVoteCasted -> {
+                state.onPollVoteUpserted(event.pollId, event.vote)
+            }
+
+            is StateUpdateEvent.PollVoteChanged -> {
+                state.onPollVoteUpserted(event.pollId, event.vote)
+            }
+
+            is StateUpdateEvent.PollVoteRemoved -> {
+                state.onPollVoteRemoved(event.pollId, event.vote)
             }
 
             else -> {}
