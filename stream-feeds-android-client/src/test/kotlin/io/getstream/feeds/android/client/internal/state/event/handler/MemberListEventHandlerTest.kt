@@ -15,7 +15,9 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
+import io.getstream.android.core.api.filter.equal
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.state.query.MembersFilterField
 import io.getstream.feeds.android.client.internal.state.MemberListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedMemberAdded
@@ -34,24 +36,32 @@ internal class MemberListEventHandlerTest(
 ) : BaseEventHandlerTest<MemberListStateUpdates>(testName, event, verifyBlock) {
 
     override val state: MemberListStateUpdates = mockk(relaxed = true)
-    override val handler = MemberListEventHandler(FeedId(fid), state)
+    override val handler = MemberListEventHandler(FeedId(fid), testFilter, state)
 
     companion object {
         private val fid = "user:feed-1"
         private const val differentFeedId = "user:different-feed"
+        private val testFilter = MembersFilterField.role.equal("admin")
 
         @JvmStatic
         @Parameterized.Parameters(name = "{0}")
         fun data(): List<Array<Any>> =
             listOf(
                 testParams<MemberListStateUpdates>(
-                    name = "FeedMemberAdded matching feed",
-                    event = FeedMemberAdded(fid, feedMemberData()),
-                    verifyBlock = { state -> state.onMemberAdded(feedMemberData()) },
+                    name = "FeedMemberAdded matching feed and filter",
+                    event = FeedMemberAdded(fid, feedMemberData(role = "admin")),
+                    verifyBlock = { state ->
+                        state.onMemberUpserted(feedMemberData(role = "admin"))
+                    },
                 ),
                 testParams<MemberListStateUpdates>(
                     name = "FeedMemberAdded non-matching feed",
-                    event = FeedMemberAdded(differentFeedId, feedMemberData()),
+                    event = FeedMemberAdded(differentFeedId, feedMemberData(role = "admin")),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<MemberListStateUpdates>(
+                    name = "FeedMemberAdded non-matching filter",
+                    event = FeedMemberAdded(fid, feedMemberData(role = "member")),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<MemberListStateUpdates>(
@@ -65,13 +75,20 @@ internal class MemberListEventHandlerTest(
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<MemberListStateUpdates>(
-                    name = "FeedMemberUpdated matching feed",
-                    event = FeedMemberUpdated(fid, feedMemberData()),
-                    verifyBlock = { state -> state.onMemberUpdated(feedMemberData()) },
+                    name = "FeedMemberUpdated matching feed and filter",
+                    event = FeedMemberUpdated(fid, feedMemberData(role = "admin")),
+                    verifyBlock = { state ->
+                        state.onMemberUpserted(feedMemberData(role = "admin"))
+                    },
                 ),
                 testParams<MemberListStateUpdates>(
                     name = "FeedMemberUpdated non-matching feed",
-                    event = FeedMemberUpdated(differentFeedId, feedMemberData()),
+                    event = FeedMemberUpdated(differentFeedId, feedMemberData(role = "admin")),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<MemberListStateUpdates>(
+                    name = "FeedMemberUpdated non-matching filter",
+                    event = FeedMemberUpdated(fid, feedMemberData(role = "member")),
                     verifyBlock = { state -> state wasNot called },
                 ),
             )
