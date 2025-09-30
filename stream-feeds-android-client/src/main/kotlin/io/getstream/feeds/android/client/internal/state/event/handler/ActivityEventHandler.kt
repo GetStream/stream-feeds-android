@@ -41,6 +41,16 @@ internal class ActivityEventHandler(
      */
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
+            is StateUpdateEvent.ActivityDeleted -> {
+                if (event.fid != fid.rawValue || event.activityId != activityId) return
+                state.onActivityRemoved()
+            }
+
+            is StateUpdateEvent.ActivityUpdated -> {
+                if (event.fid != fid.rawValue || event.activity.id != activityId) return
+                state.onActivityUpdated(event.activity)
+            }
+
             is StateUpdateEvent.ActivityReactionAdded -> {
                 if (event.fid != fid.rawValue || event.reaction.activityId != activityId) return
                 state.onReactionUpserted(event.reaction, event.activity)
@@ -54,11 +64,6 @@ internal class ActivityEventHandler(
             is StateUpdateEvent.ActivityReactionUpdated -> {
                 if (event.fid != fid.rawValue || event.reaction.activityId != activityId) return
                 state.onReactionUpserted(event.reaction, event.activity)
-            }
-
-            is StateUpdateEvent.ActivityUpdated -> {
-                if (event.fid != fid.rawValue || event.activity.id != activityId) return
-                state.onActivityUpdated(event.activity)
             }
 
             is StateUpdateEvent.BookmarkAdded -> {

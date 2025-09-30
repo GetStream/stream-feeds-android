@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.internal.state.ActivityStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpdated
@@ -145,6 +146,21 @@ internal class ActivityEventHandlerTest(
                 testParams<ActivityStateUpdates>(
                     name = "ActivityUpdated non-matching activity",
                     event = StateUpdateEvent.ActivityUpdated(fid.rawValue, activityData(otherId)),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityDeleted matching feed and activity",
+                    event = ActivityDeleted(fid.rawValue, activityId),
+                    verifyBlock = { it.onActivityRemoved() },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityDeleted non-matching feed",
+                    event = ActivityDeleted(otherFid, activityId),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityDeleted non-matching activity",
+                    event = ActivityDeleted(fid.rawValue, "other-activity"),
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
