@@ -24,12 +24,12 @@ import io.getstream.feeds.android.client.api.state.ActivityListState
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.internal.model.PaginationResult
-import io.getstream.feeds.android.client.internal.model.addComment
 import io.getstream.feeds.android.client.internal.model.deleteBookmark
 import io.getstream.feeds.android.client.internal.model.removeComment
 import io.getstream.feeds.android.client.internal.model.removeCommentReaction
 import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.model.upsertBookmark
+import io.getstream.feeds.android.client.internal.model.upsertComment
 import io.getstream.feeds.android.client.internal.model.upsertCommentReaction
 import io.getstream.feeds.android.client.internal.model.upsertReaction
 import io.getstream.feeds.android.client.internal.state.query.ActivitiesQueryConfig
@@ -115,7 +115,7 @@ internal class ActivityListStateImpl(
         _activities.update { current ->
             current.map { activity ->
                 if (activity.id == comment.objectId) {
-                    activity.addComment(comment)
+                    activity.upsertComment(comment)
                 } else {
                     activity
                 }

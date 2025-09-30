@@ -232,7 +232,7 @@ internal class FeedStateImplTest {
         setupInitialState(listOf(initialActivity), listOf(activityPin))
 
         val comment = commentData("comment-1", objectId = "activity-1")
-        feedState.onCommentAdded(comment)
+        feedState.onCommentUpserted(comment)
 
         val activityWithComment = feedState.activities.value.find { it.id == "activity-1" }
         assertEquals(1, activityWithComment?.commentCount)
@@ -248,7 +248,7 @@ internal class FeedStateImplTest {
         setupInitialState(listOf(initialActivity), listOf(activityPin))
 
         val comment = commentData("comment-1", objectId = "activity-1")
-        feedState.onCommentAdded(comment)
+        feedState.onCommentUpserted(comment)
         feedState.onCommentRemoved(comment)
 
         val activityWithoutComment = feedState.activities.value.find { it.id == "activity-1" }
