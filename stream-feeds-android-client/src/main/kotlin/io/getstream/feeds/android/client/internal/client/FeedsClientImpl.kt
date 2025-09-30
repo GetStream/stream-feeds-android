@@ -204,7 +204,7 @@ internal class FeedsClientImpl(
         FeedListImpl(
             query = query,
             feedsRepository = feedsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun followList(query: FollowsQuery): FollowList =
@@ -250,7 +250,7 @@ internal class FeedsClientImpl(
         ActivityReactionListImpl(
             query = query,
             activitiesRepository = activitiesRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override suspend fun addActivity(request: AddActivityRequest): Result<ActivityData> {
@@ -280,7 +280,7 @@ internal class FeedsClientImpl(
         BookmarkFolderListImpl(
             query = query,
             bookmarksRepository = bookmarksRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun commentList(query: CommentsQuery): CommentList =
@@ -310,7 +310,7 @@ internal class FeedsClientImpl(
         CommentReactionListImpl(
             query = query,
             commentsRepository = commentsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun memberList(query: MembersQuery): MemberList =

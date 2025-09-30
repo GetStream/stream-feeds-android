@@ -15,19 +15,35 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.internal.state.BookmarkFolderListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
+import io.mockk.MockKVerificationScope
+import io.mockk.verify
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
 
-internal class BookmarkFolderListEventHandler(private val state: BookmarkFolderListStateUpdates) :
-    StateUpdateEventListener {
+@RunWith(Parameterized::class)
+internal abstract class BaseEventHandlerTest<State>(
+    protected val testName: String,
+    protected val event: StateUpdateEvent,
+    protected val verifyBlock: MockKVerificationScope.(State) -> Unit,
+) {
+    protected abstract val state: State
 
-    override fun onEvent(event: StateUpdateEvent) {
-        when (event) {
-            is StateUpdateEvent.BookmarkFolderDeleted ->
-                state.onBookmarkFolderRemoved(event.folderId)
-            is StateUpdateEvent.BookmarkFolderUpdated -> state.onBookmarkFolderUpdated(event.folder)
-            else -> {}
-        }
+    protected abstract val handler: StateUpdateEventListener
+
+    @Test
+    internal fun `handle event`() {
+        handler.onEvent(event)
+        verify { verifyBlock(state) }
+    }
+
+    companion object {
+        fun <S> testParams(
+            name: String,
+            event: StateUpdateEvent,
+            verifyBlock: MockKVerificationScope.(S) -> Unit,
+        ): Array<Any> = arrayOf(name, event, verifyBlock)
     }
 }
