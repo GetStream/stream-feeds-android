@@ -111,14 +111,10 @@ internal class ActivityListStateImpl(
         }
     }
 
-    override fun onCommentAdded(comment: CommentData) {
+    override fun onCommentUpserted(comment: CommentData) {
         _activities.update { current ->
-            current.map { activity ->
-                if (activity.id == comment.objectId) {
-                    activity.upsertComment(comment)
-                } else {
-                    activity
-                }
+            current.updateIf({ it.id == comment.objectId }) { activity ->
+                activity.upsertComment(comment)
             }
         }
     }
@@ -219,11 +215,11 @@ internal interface ActivityListStateUpdates {
     fun onBookmarkUpserted(bookmark: BookmarkData)
 
     /**
-     * Called when a comment is added to an activity.
+     * Called when a comment is added to or updated in the activity.
      *
-     * @param comment The comment that was added.
+     * @param comment The comment that was added or updated.
      */
-    fun onCommentAdded(comment: CommentData)
+    fun onCommentUpserted(comment: CommentData)
 
     /**
      * Called when a comment is removed from an activity.
