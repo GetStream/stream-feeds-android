@@ -76,12 +76,12 @@ internal class ActivityCommentListEventHandlerTest(
                 ),
                 testParams<ActivityCommentListStateUpdates>(
                     name = "CommentUpdated matching object",
-                    event = CommentUpdated(matchingComment),
+                    event = CommentUpdated("feed-1", matchingComment),
                     verifyBlock = { state -> state.onCommentUpdated(matchingComment) },
                 ),
                 testParams<ActivityCommentListStateUpdates>(
                     name = "CommentUpdated non-matching object",
-                    event = CommentUpdated(nonMatchingComment),
+                    event = CommentUpdated("feed-1", nonMatchingComment),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<ActivityCommentListStateUpdates>(

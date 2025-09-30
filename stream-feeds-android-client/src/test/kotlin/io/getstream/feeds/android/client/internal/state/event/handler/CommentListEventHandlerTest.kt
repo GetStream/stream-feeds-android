@@ -48,7 +48,7 @@ internal class CommentListEventHandlerTest(
             listOf(
                 testParams<CommentListStateUpdates>(
                     name = "CommentUpdated",
-                    event = CommentUpdated(comment),
+                    event = CommentUpdated("feed-1", comment),
                     verifyBlock = { state -> state.onCommentUpdated(comment) },
                 ),
                 testParams<CommentListStateUpdates>(

@@ -119,13 +119,19 @@ internal class FeedEventHandler(
 
             is StateUpdateEvent.CommentAdded -> {
                 if (event.fid == fid.rawValue) {
-                    state.onCommentAdded(event.comment)
+                    state.onCommentUpserted(event.comment)
                 }
             }
 
             is StateUpdateEvent.CommentDeleted -> {
                 if (event.fid == fid.rawValue) {
                     state.onCommentRemoved(event.comment)
+                }
+            }
+
+            is StateUpdateEvent.CommentUpdated -> {
+                if (event.fid == fid.rawValue) {
+                    state.onCommentUpserted(event.comment)
                 }
             }
 

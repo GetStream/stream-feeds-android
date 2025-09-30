@@ -159,7 +159,9 @@ internal class ActivityImplTest {
         val result = activity.getComment(commentId)
 
         assertEquals(comment, result.getOrNull())
-        verify { stateEventListener.onEvent(StateUpdateEvent.CommentUpdated(comment)) }
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.CommentUpdated(fid.rawValue, comment))
+        }
     }
 
     @Test
@@ -196,7 +198,11 @@ internal class ActivityImplTest {
         val result = activity.updateComment(commentId, request)
 
         assertEquals(updatedComment, result.getOrNull())
-        verify { stateEventListener.onEvent(StateUpdateEvent.CommentUpdated(updatedComment)) }
+        verify {
+            stateEventListener.onEvent(
+                StateUpdateEvent.CommentUpdated(fid.rawValue, updatedComment)
+            )
+        }
     }
 
     @Test

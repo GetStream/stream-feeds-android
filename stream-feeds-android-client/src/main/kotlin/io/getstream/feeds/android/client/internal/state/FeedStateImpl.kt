@@ -34,7 +34,6 @@ import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
-import io.getstream.feeds.android.client.internal.model.addComment
 import io.getstream.feeds.android.client.internal.model.deleteBookmark
 import io.getstream.feeds.android.client.internal.model.isFollowRequest
 import io.getstream.feeds.android.client.internal.model.isFollowerOf
@@ -45,6 +44,7 @@ import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.model.removeVote
 import io.getstream.feeds.android.client.internal.model.update
 import io.getstream.feeds.android.client.internal.model.upsertBookmark
+import io.getstream.feeds.android.client.internal.model.upsertComment
 import io.getstream.feeds.android.client.internal.model.upsertCommentReaction
 import io.getstream.feeds.android.client.internal.model.upsertReaction
 import io.getstream.feeds.android.client.internal.model.upsertVote
@@ -195,9 +195,9 @@ internal class FeedStateImpl(
         }
     }
 
-    override fun onCommentAdded(comment: CommentData) {
+    override fun onCommentUpserted(comment: CommentData) {
         updateActivitiesWhere({ it.id == comment.objectId }) { activity ->
-            activity.addComment(comment)
+            activity.upsertComment(comment)
         }
     }
 
@@ -389,7 +389,7 @@ internal interface FeedStateUpdates {
     fun onBookmarkUpserted(bookmark: BookmarkData)
 
     /** Handles updates to the feed state when a comment is added or removed. */
-    fun onCommentAdded(comment: CommentData)
+    fun onCommentUpserted(comment: CommentData)
 
     /** Handles updates to the feed state when a comment is removed. */
     fun onCommentRemoved(comment: CommentData)

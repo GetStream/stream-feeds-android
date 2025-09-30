@@ -108,7 +108,7 @@ internal class ActivityImpl(
 
     override suspend fun getComment(commentId: String): Result<CommentData> {
         return commentsRepository.getComment(commentId).onSuccess { comment ->
-            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(comment))
+            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(fid.rawValue, comment))
         }
     }
 
@@ -152,7 +152,7 @@ internal class ActivityImpl(
         request: UpdateCommentRequest,
     ): Result<CommentData> {
         return commentsRepository.updateComment(commentId, request).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(it))
+            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(fid.rawValue, it))
         }
     }
 

@@ -458,7 +458,9 @@ internal class FeedImplTest {
         val result = feed.getComment(commentId)
 
         assertEquals(comment, result.getOrNull())
-        verify { stateEventListener.onEvent(StateUpdateEvent.CommentUpdated(comment)) }
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.CommentUpdated(fid.rawValue, comment))
+        }
     }
 
     @Test
@@ -474,7 +476,9 @@ internal class FeedImplTest {
         val result = feed.updateComment(commentId, request)
 
         assertEquals(comment, result.getOrNull())
-        verify { stateEventListener.onEvent(StateUpdateEvent.CommentUpdated(comment)) }
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.CommentUpdated(fid.rawValue, comment))
+        }
     }
 
     @Test
