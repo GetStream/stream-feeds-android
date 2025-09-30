@@ -244,7 +244,7 @@ internal class FeedsClientImpl(
             query = query,
             currentUserId = user.id,
             activitiesRepository = activitiesRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun activityReactionList(query: ActivityReactionsQuery): ActivityReactionList =

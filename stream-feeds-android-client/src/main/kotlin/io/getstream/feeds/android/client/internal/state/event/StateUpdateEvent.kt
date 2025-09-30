@@ -15,6 +15,7 @@
  */
 package io.getstream.feeds.android.client.internal.state.event
 
+import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.BookmarkFolderData
 import io.getstream.feeds.android.client.api.model.CommentData
@@ -25,8 +26,10 @@ import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.model.toModel
+import io.getstream.feeds.android.network.models.ActivityDeletedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
+import io.getstream.feeds.android.network.models.BookmarkAddedEvent
 import io.getstream.feeds.android.network.models.BookmarkDeletedEvent
 import io.getstream.feeds.android.network.models.BookmarkFolderDeletedEvent
 import io.getstream.feeds.android.network.models.BookmarkFolderUpdatedEvent
@@ -57,9 +60,15 @@ import io.getstream.feeds.android.network.models.WSEvent
  */
 internal sealed interface StateUpdateEvent {
 
-    data class ActivityReactionAdded(val reaction: FeedsReactionData) : StateUpdateEvent
+    data class ActivityDeleted(val activity: ActivityData) : StateUpdateEvent
 
-    data class ActivityReactionDeleted(val reaction: FeedsReactionData) : StateUpdateEvent
+    data class ActivityReactionAdded(val fid: String, val reaction: FeedsReactionData) :
+        StateUpdateEvent
+
+    data class ActivityReactionDeleted(val fid: String, val reaction: FeedsReactionData) :
+        StateUpdateEvent
+
+    data class BookmarkAdded(val bookmark: BookmarkData) : StateUpdateEvent
 
     data class BookmarkDeleted(val bookmark: BookmarkData) : StateUpdateEvent
 
@@ -113,10 +122,15 @@ internal sealed interface StateUpdateEvent {
 
 internal fun WSEvent.toModel(): StateUpdateEvent? =
     when (this) {
-        is ActivityReactionAddedEvent -> StateUpdateEvent.ActivityReactionAdded(reaction.toModel())
+        is ActivityDeletedEvent -> StateUpdateEvent.ActivityDeleted(activity.toModel())
+
+        is ActivityReactionAddedEvent ->
+            StateUpdateEvent.ActivityReactionAdded(fid, reaction.toModel())
 
         is ActivityReactionDeletedEvent ->
-            StateUpdateEvent.ActivityReactionDeleted(reaction.toModel())
+            StateUpdateEvent.ActivityReactionDeleted(fid, reaction.toModel())
+
+        is BookmarkAddedEvent -> StateUpdateEvent.BookmarkAdded(bookmark.toModel())
 
         is BookmarkDeletedEvent -> StateUpdateEvent.BookmarkDeleted(bookmark.toModel())
 
