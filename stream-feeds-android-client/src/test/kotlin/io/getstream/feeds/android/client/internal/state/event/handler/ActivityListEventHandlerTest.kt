@@ -76,9 +76,16 @@ internal class ActivityListEventHandlerTest(
                     verifyBlock = { state -> state.onActivityRemoved("activity-1") },
                 ),
                 testParams<ActivityListStateUpdates>(
-                    name = "ActivityUpdated",
-                    event = ActivityUpdated("feed-1", activityData("activity-1")),
-                    verifyBlock = { state -> state.onActivityUpserted(activityData("activity-1")) },
+                    name = "ActivityUpdated with matching filter",
+                    event = ActivityUpdated("feed-1", activityData("activity-1", type = "post")),
+                    verifyBlock = { state ->
+                        state.onActivityUpserted(activityData("activity-1", type = "post"))
+                    },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "ActivityUpdated with non-matching filter",
+                    event = ActivityUpdated("feed-1", activityData("activity-1", type = "story")),
+                    verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "ActivityReactionAdded",

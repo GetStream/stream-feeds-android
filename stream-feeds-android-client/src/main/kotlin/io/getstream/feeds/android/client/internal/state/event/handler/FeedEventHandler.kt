@@ -46,7 +46,7 @@ internal class FeedEventHandler(
         when (event) {
             is StateUpdateEvent.ActivityAdded -> {
                 if (event.fid == fid.rawValue && event.activity matches activityFilter) {
-                    state.onActivityAdded(event.activity)
+                    state.onActivityUpserted(event.activity)
                 }
             }
 
@@ -58,7 +58,7 @@ internal class FeedEventHandler(
 
             is StateUpdateEvent.ActivityUpdated -> {
                 if (event.fid == fid.rawValue && event.activity matches activityFilter) {
-                    state.onActivityUpdated(event.activity)
+                    state.onActivityUpserted(event.activity)
                 }
             }
 

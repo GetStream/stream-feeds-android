@@ -22,6 +22,7 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.A
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkUpdated
@@ -134,21 +135,6 @@ internal class ActivityEventHandlerTest(
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
-                    name = "ActivityUpdated matching feed and activity",
-                    event = StateUpdateEvent.ActivityUpdated(fid.rawValue, activity),
-                    verifyBlock = { it.onActivityUpdated(activity) },
-                ),
-                testParams<ActivityStateUpdates>(
-                    name = "ActivityUpdated non-matching feed",
-                    event = StateUpdateEvent.ActivityUpdated(otherFid, activity),
-                    verifyBlock = { it wasNot called },
-                ),
-                testParams<ActivityStateUpdates>(
-                    name = "ActivityUpdated non-matching activity",
-                    event = StateUpdateEvent.ActivityUpdated(fid.rawValue, activityData(otherId)),
-                    verifyBlock = { it wasNot called },
-                ),
-                testParams<ActivityStateUpdates>(
                     name = "ActivityDeleted matching feed and activity",
                     event = ActivityDeleted(fid.rawValue, activityId),
                     verifyBlock = { it.onActivityRemoved() },
@@ -161,6 +147,21 @@ internal class ActivityEventHandlerTest(
                 testParams<ActivityStateUpdates>(
                     name = "ActivityDeleted non-matching activity",
                     event = ActivityDeleted(fid.rawValue, "other-activity"),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityUpdated matching feed and activity",
+                    event = ActivityUpdated(fid.rawValue, activity),
+                    verifyBlock = { it.onActivityUpdated(activity) },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityUpdated non-matching feed",
+                    event = ActivityUpdated(otherFid, activity),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityUpdated non-matching activity",
+                    event = ActivityUpdated(fid.rawValue, activityData("other-activity")),
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(

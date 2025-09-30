@@ -119,7 +119,7 @@ internal class FeedEventHandlerTest(
                 testParams<FeedStateUpdates>(
                     name = "ActivityAdded matching feed and filter",
                     event = ActivityAdded(fid.rawValue, activity),
-                    verifyBlock = { state -> state.onActivityAdded(activity) },
+                    verifyBlock = { state -> state.onActivityUpserted(activity) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityAdded non-matching feed",
@@ -184,7 +184,7 @@ internal class FeedEventHandlerTest(
                 testParams<FeedStateUpdates>(
                     name = "ActivityUpdated matching feed and filter",
                     event = ActivityUpdated(fid.rawValue, activity),
-                    verifyBlock = { state -> state.onActivityUpdated(activity) },
+                    verifyBlock = { state -> state.onActivityUpserted(activity) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityUpdated non-matching feed",
