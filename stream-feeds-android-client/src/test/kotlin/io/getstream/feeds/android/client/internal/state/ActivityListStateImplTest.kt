@@ -54,15 +54,29 @@ internal class ActivityListStateImplTest {
     }
 
     @Test
-    fun `on onActivityUpdated, then update specific activity`() = runTest {
+    fun `on onActivityUpserted, then update specific activity`() = runTest {
         val activity1 = activityData("activity-1")
         val activity2 = activityData("activity-2")
         setupInitialActivities(activity1, activity2)
 
         val updatedActivity = activityData("activity-1", text = "Updated activity")
-        activityListState.onActivityUpdated(updatedActivity)
+        activityListState.onActivityUpserted(updatedActivity)
 
         assertEquals(listOf(updatedActivity, activity2), activityListState.activities.value)
+    }
+
+    @Test
+    fun `on onActivityUpserted with new activity, then insert it in sorted position`() = runTest {
+        val activity1 = activityData("activity-1", createdAt = 1000)
+        val activity2 = activityData("activity-2", createdAt = 2000)
+        setupInitialActivities(activity2, activity1)
+
+        val newActivity = activityData("activity-new", createdAt = 1500)
+        activityListState.onActivityUpserted(newActivity)
+
+        // Default sort is by createdAt descending
+        val expectedActivities = listOf(activity2, newActivity, activity1)
+        assertEquals(expectedActivities, activityListState.activities.value)
     }
 
     @Test

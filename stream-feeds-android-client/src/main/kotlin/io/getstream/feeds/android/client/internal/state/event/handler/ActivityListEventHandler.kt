@@ -15,16 +15,32 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
+import io.getstream.feeds.android.client.api.state.query.ActivitiesFilter
 import io.getstream.feeds.android.client.internal.state.ActivityListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.query.matches
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
-internal class ActivityListEventHandler(private val state: ActivityListStateUpdates) :
-    StateUpdateEventListener {
+internal class ActivityListEventHandler(
+    private val filter: ActivitiesFilter?,
+    private val state: ActivityListStateUpdates,
+) : StateUpdateEventListener {
 
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
+            is StateUpdateEvent.ActivityAdded -> {
+                if (event.activity matches filter) {
+                    state.onActivityUpserted(event.activity)
+                }
+            }
+
             is StateUpdateEvent.ActivityDeleted -> state.onActivityRemoved(event.activityId)
+            is StateUpdateEvent.ActivityUpdated -> {
+                if (event.activity matches filter) {
+                    state.onActivityUpserted(event.activity)
+                }
+            }
+
             is StateUpdateEvent.ActivityReactionAdded ->
                 state.onReactionUpserted(event.reaction, event.activity)
 
@@ -47,6 +63,7 @@ internal class ActivityListEventHandler(private val state: ActivityListStateUpda
 
             is StateUpdateEvent.CommentReactionUpdated ->
                 state.onCommentReactionUpserted(event.comment, event.reaction)
+
             else -> {
                 // No action needed for other event types
             }
