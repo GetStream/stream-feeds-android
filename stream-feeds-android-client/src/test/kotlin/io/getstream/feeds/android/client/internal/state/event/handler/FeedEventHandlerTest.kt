@@ -15,9 +15,11 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
+import io.getstream.android.core.api.filter.equal
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
 import io.getstream.feeds.android.client.internal.state.FeedStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityAdded
@@ -73,12 +75,14 @@ internal class FeedEventHandlerTest(
 ) : BaseEventHandlerTest<FeedStateUpdates>(testName, event, verifyBlock) {
 
     override val state: FeedStateUpdates = mockk(relaxed = true)
-    override val handler = FeedEventHandler(fid, state)
+    override val handler = FeedEventHandler(fid, filter, state)
 
     companion object {
         private val fid = FeedId("group", "feed-1")
+        private val filter = ActivitiesFilterField.type.equal("post")
         private const val activityId = "activity-1"
-        private val activity = activityData(activityId)
+        private val activity = activityData(activityId, type = "post")
+        private val nonMatchingActivity = activityData(activityId, type = "comment")
         private val reaction = feedsReactionData(activityId)
         private val matchingBookmark =
             bookmarkData(activityData(feeds = listOf(fid.rawValue, "other:feed")))
@@ -114,13 +118,18 @@ internal class FeedEventHandlerTest(
         fun data(): List<Array<Any>> =
             listOf(
                 testParams<FeedStateUpdates>(
-                    name = "ActivityAdded matching feed",
+                    name = "ActivityAdded matching feed and filter",
                     event = ActivityAdded(fid.rawValue, activity),
                     verifyBlock = { state -> state.onActivityAdded(activity) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityAdded non-matching feed",
                     event = ActivityAdded("group:different", activity),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<FeedStateUpdates>(
+                    name = "ActivityAdded non-matching filter",
+                    event = ActivityAdded(fid.rawValue, nonMatchingActivity),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
@@ -174,13 +183,18 @@ internal class FeedEventHandlerTest(
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
-                    name = "ActivityUpdated matching feed",
+                    name = "ActivityUpdated matching feed and filter",
                     event = ActivityUpdated(fid.rawValue, activity),
                     verifyBlock = { state -> state.onActivityUpdated(activity) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityUpdated non-matching feed",
                     event = ActivityUpdated("group:different", activity),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<FeedStateUpdates>(
+                    name = "ActivityUpdated non-matching filter",
+                    event = ActivityUpdated(fid.rawValue, nonMatchingActivity),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(

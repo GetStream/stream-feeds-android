@@ -111,7 +111,8 @@ internal class FeedImpl(
             memberListState = memberList.mutableState,
         )
 
-    private val eventHandler = FeedEventHandler(fid = fid, state = _state)
+    private val eventHandler =
+        FeedEventHandler(fid = fid, filter = query.activityFilter, state = _state)
 
     init {
         subscriptionManager.subscribe(eventHandler)

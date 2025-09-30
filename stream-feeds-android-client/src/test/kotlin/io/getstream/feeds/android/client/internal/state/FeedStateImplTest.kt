@@ -15,7 +15,6 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
-import io.getstream.android.core.api.filter.equal
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.ActivityPinData
 import io.getstream.feeds.android.client.api.model.AggregatedActivityData
@@ -25,7 +24,6 @@ import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollVoteData
-import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
@@ -403,79 +401,6 @@ internal class FeedStateImplTest {
         assertEquals(emptyList<FollowData>(), feedState.followers.value)
         assertEquals(emptyList<FollowData>(), feedState.following.value)
         assertEquals(emptyList<FollowData>(), feedState.followRequests.value)
-    }
-
-    @Test
-    fun `on activityAdded with matching filter, then add activity`() = runTest {
-        val filter = ActivitiesFilterField.type.equal("post")
-        val feedStateWithFilter =
-            FeedStateImpl(
-                feedQuery.copy(activityFilter = filter),
-                currentUserId,
-                mockMemberListState,
-            )
-
-        val matchingActivity = activityData("activity-1", type = "post")
-        feedStateWithFilter.onActivityAdded(matchingActivity)
-
-        val activities = feedStateWithFilter.activities.value
-        assertEquals(listOf(matchingActivity), activities)
-    }
-
-    @Test
-    fun `on activityAdded with non-matching filter, then do not add activity`() = runTest {
-        val filter = ActivitiesFilterField.type.equal("comment")
-        val feedStateWithFilter =
-            FeedStateImpl(
-                feedQuery.copy(activityFilter = filter),
-                currentUserId,
-                mockMemberListState,
-            )
-
-        val nonMatchingActivity = activityData("activity-1", type = "post")
-        feedStateWithFilter.onActivityAdded(nonMatchingActivity)
-
-        val activities = feedStateWithFilter.activities.value
-        assertEquals(emptyList<ActivityData>(), activities)
-    }
-
-    @Test
-    fun `on activityUpdated with matching filter, then update activity`() = runTest {
-        val filter = ActivitiesFilterField.type.equal("post")
-        val feedStateWithFilter =
-            FeedStateImpl(
-                feedQuery.copy(activityFilter = filter),
-                currentUserId,
-                mockMemberListState,
-            )
-
-        val initialActivity = activityData("activity-1", type = "post")
-        feedStateWithFilter.onActivityAdded(initialActivity)
-
-        val updatedActivity = activityData("activity-1", type = "post", text = "Updated text")
-        feedStateWithFilter.onActivityUpdated(updatedActivity)
-
-        val activities = feedStateWithFilter.activities.value
-        assertEquals(listOf(updatedActivity), activities)
-    }
-
-    @Test
-    fun `on activityUpdated with non-matching filter, then do not update activity`() = runTest {
-        val filter = ActivitiesFilterField.type.equal("comment")
-        val feedStateWithFilter =
-            FeedStateImpl(
-                feedQuery.copy(activityFilter = filter),
-                currentUserId,
-                mockMemberListState,
-            )
-
-        setupInitialState(listOf(activityData("activity-1", type = "post")))
-
-        val updatedActivity = activityData("activity-1", type = "post", text = "Updated text")
-        feedStateWithFilter.onActivityUpdated(updatedActivity)
-
-        val activities = feedStateWithFilter.activities.value
-        assertEquals(emptyList<ActivityData>(), activities)
     }
 
     @Test
