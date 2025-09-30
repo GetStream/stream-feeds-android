@@ -23,7 +23,7 @@ import io.getstream.feeds.android.client.api.state.PollVoteListState
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.PollVoteListEventHandler
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
 /**
  * An implementation of [PollVoteList] that manages the state and queries for poll votes.
@@ -41,7 +41,7 @@ import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 internal class PollVoteListImpl(
     override val query: PollVotesQuery,
     private val repository: PollsRepository,
-    private val subscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
+    private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
     private val _state: PollVoteListStateImpl = PollVoteListStateImpl(query),
 ) : PollVoteList {
 

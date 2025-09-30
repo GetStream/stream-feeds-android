@@ -325,7 +325,7 @@ internal class FeedsClientImpl(
         PollVoteListImpl(
             query = query,
             repository = pollsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun pollList(query: PollsQuery): PollList =

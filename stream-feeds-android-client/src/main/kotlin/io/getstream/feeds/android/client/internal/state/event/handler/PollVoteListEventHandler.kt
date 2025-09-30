@@ -15,13 +15,9 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.PollVoteListStateUpdates
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
-import io.getstream.feeds.android.network.models.PollVoteCastedFeedEvent
-import io.getstream.feeds.android.network.models.PollVoteChangedFeedEvent
-import io.getstream.feeds.android.network.models.PollVoteRemovedFeedEvent
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
 /**
  * Handles events related to poll vote lists in the feed state.
@@ -32,24 +28,26 @@ import io.getstream.feeds.android.network.models.WSEvent
 internal class PollVoteListEventHandler(
     private val pollId: String,
     private val state: PollVoteListStateUpdates,
-) : FeedsEventListener {
+) : StateUpdateEventListener {
 
-    override fun onEvent(event: WSEvent) {
+    override fun onEvent(event: StateUpdateEvent) {
         when (event) {
-            is PollVoteCastedFeedEvent -> {
-                if (event.poll.id != pollId) return
-                state.pollVoteAdded(event.pollVote.toModel())
+            is StateUpdateEvent.PollVoteCasted -> {
+                if (event.pollId != pollId) return
+                state.pollVoteAdded(event.vote)
             }
 
-            is PollVoteChangedFeedEvent -> {
-                if (event.poll.id != pollId) return
-                state.pollVoteUpdated(event.pollVote.toModel())
+            is StateUpdateEvent.PollVoteChanged -> {
+                if (event.pollId != pollId) return
+                state.pollVoteUpdated(event.vote)
             }
 
-            is PollVoteRemovedFeedEvent -> {
-                if (event.poll.id != pollId) return
-                state.pollVoteRemoved(event.pollVote.id)
+            is StateUpdateEvent.PollVoteRemoved -> {
+                if (event.pollId != pollId) return
+                state.pollVoteRemoved(event.vote.id)
             }
+
+            else -> {}
         }
     }
 }
