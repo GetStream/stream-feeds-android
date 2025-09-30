@@ -106,25 +106,25 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on onActivityAdded, then add activity`() = runTest {
+    fun `on onActivityUpserted, then add activity`() = runTest {
         val initialActivity = activityData()
         setupInitialState(listOf(initialActivity))
 
         val newActivity = activityData("activity-2")
-        feedState.onActivityAdded(newActivity)
+        feedState.onActivityUpserted(newActivity)
 
         val activities = feedState.activities.value
         assertEquals(listOf(initialActivity, newActivity), activities)
     }
 
     @Test
-    fun `on onActivityUpdated, then update activity`() = runTest {
+    fun `on onActivityUpserted, then update activity`() = runTest {
         val initialActivity = activityData("activity-1")
         val activityPin = activityPin(initialActivity)
         setupInitialState(listOf(initialActivity), listOf(activityPin))
 
         val updatedActivity = activityData("activity-1", text = "Updated activity")
-        feedState.onActivityUpdated(updatedActivity)
+        feedState.onActivityUpserted(updatedActivity)
 
         assertEquals(listOf(updatedActivity), feedState.activities.value)
         val expectedPinnedActivity = activityPin.copy(activity = updatedActivity)
@@ -132,53 +132,7 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on onActivityUpdated, then preserve ownBookmarks when updating activity`() = runTest {
-        val initialBookmark = bookmarkData("activity-1", currentUserId)
-        val initialActivity =
-            activityData("activity-1", text = "Original", ownBookmarks = listOf(initialBookmark))
-        setupInitialState(listOf(initialActivity))
-
-        val updatedActivity =
-            activityData("activity-1", text = "Updated", ownBookmarks = emptyList())
-        feedState.onActivityUpdated(updatedActivity)
-
-        val expectedActivity = updatedActivity.copy(ownBookmarks = listOf(initialBookmark))
-        assertEquals(listOf(expectedActivity), feedState.activities.value)
-    }
-
-    @Test
-    fun `on onActivityUpdated, then preserve ownReactions when updating activity`() = runTest {
-        val initialReaction = feedsReactionData("activity-1", "like", currentUserId)
-        val initialActivity =
-            activityData("activity-1", text = "Original", ownReactions = listOf(initialReaction))
-        setupInitialState(listOf(initialActivity))
-
-        val updatedActivity =
-            activityData("activity-1", text = "Updated", ownReactions = emptyList())
-        feedState.onActivityUpdated(updatedActivity)
-
-        val expectedActivity = updatedActivity.copy(ownReactions = listOf(initialReaction))
-        assertEquals(listOf(expectedActivity), feedState.activities.value)
-    }
-
-    @Test
-    fun `on onActivityUpdated, then preserve poll ownVotes when updating activity`() = runTest {
-        val ownVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
-        val initialPoll = pollData("poll-1", "Test Poll", ownVotes = listOf(ownVote))
-        val initialActivity = activityData("activity-1", text = "Original", poll = initialPoll)
-        setupInitialState(listOf(initialActivity))
-
-        val updatedPoll = pollData("poll-1", "Updated Poll", ownVotes = emptyList())
-        val updatedActivity = activityData("activity-1", text = "Updated", poll = updatedPoll)
-        feedState.onActivityUpdated(updatedActivity)
-
-        val expectedPoll = updatedPoll.copy(ownVotes = listOf(ownVote))
-        val expectedActivity = updatedActivity.copy(poll = expectedPoll)
-        assertEquals(listOf(expectedActivity), feedState.activities.value)
-    }
-
-    @Test
-    fun `on onActivityUpdated, then preserve all own properties together in feed`() = runTest {
+    fun `on onActivityUpserted, then preserve own properties in activity`() = runTest {
         val initialBookmark = bookmarkData("activity-1", currentUserId)
         val initialReaction = feedsReactionData("activity-1", "like", currentUserId)
         val ownVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
@@ -203,7 +157,7 @@ internal class FeedStateImplTest {
                 ownBookmarks = emptyList(),
                 ownReactions = emptyList(),
             )
-        feedState.onActivityUpdated(updatedActivity)
+        feedState.onActivityUpserted(updatedActivity)
 
         // Verify all "own" properties are preserved
         val expectedPoll = updatedPoll.copy(ownVotes = listOf(ownVote))
@@ -217,13 +171,13 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on onActivityUpdated with new poll in feed, then set new poll`() = runTest {
+    fun `on onActivityUpserted with new poll in feed, then set new poll`() = runTest {
         val initialActivity = activityData("activity-1", text = "Original", poll = null)
         setupInitialState(listOf(initialActivity))
 
         val newPoll = pollData("poll-1", "New Poll")
         val updatedActivity = activityData("activity-1", text = "Updated", poll = newPoll)
-        feedState.onActivityUpdated(updatedActivity)
+        feedState.onActivityUpserted(updatedActivity)
 
         assertEquals(listOf(updatedActivity), feedState.activities.value)
     }
