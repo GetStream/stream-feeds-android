@@ -33,7 +33,6 @@ import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.handler.ActivityEventHandler
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.subscribe.onEvent
 import io.getstream.feeds.android.client.internal.utils.flatMap
@@ -62,8 +61,6 @@ import io.getstream.feeds.android.network.models.UpdatePollRequest
  * @property pollsRepository The repository used to fetch and manage polls.
  * @property commentList The list of comments associated with this activity.
  * @property subscriptionManager The manager for state update subscriptions.
- * @property socketSubscriptionManager The manager for WebSocket subscriptions to receive real-time
- *   updates.
  */
 internal class ActivityImpl(
     override val activityId: String,
@@ -74,7 +71,6 @@ internal class ActivityImpl(
     private val pollsRepository: PollsRepository,
     private val commentList: ActivityCommentListImpl,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
-    socketSubscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
 ) : Activity {
 
     private val _state: ActivityStateImpl = ActivityStateImpl(currentUserId, commentList.state)
@@ -83,7 +79,7 @@ internal class ActivityImpl(
         ActivityEventHandler(fid = fid, activityId = activityId, state = _state)
 
     init {
-        socketSubscriptionManager.subscribe(eventHandler)
+        subscriptionManager.subscribe(eventHandler)
     }
 
     override val state: ActivityState

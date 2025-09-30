@@ -15,7 +15,6 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
-import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.PollData
@@ -25,7 +24,6 @@ import io.getstream.feeds.android.client.internal.repository.ActivitiesRepositor
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
@@ -62,8 +60,6 @@ internal class ActivityImplTest {
         every { state } returns commentListState
     }
     private val stateEventListener: StateUpdateEventListener = mockk(relaxed = true)
-    private val socketSubscriptionManager: StreamSubscriptionManager<FeedsEventListener> =
-        mockk(relaxed = true)
 
     private val activity =
         ActivityImpl(
@@ -75,7 +71,6 @@ internal class ActivityImplTest {
             pollsRepository = pollsRepository,
             commentList = activityCommentListImpl,
             subscriptionManager = TestSubscriptionManager(stateEventListener),
-            socketSubscriptionManager = socketSubscriptionManager,
         )
 
     @Test

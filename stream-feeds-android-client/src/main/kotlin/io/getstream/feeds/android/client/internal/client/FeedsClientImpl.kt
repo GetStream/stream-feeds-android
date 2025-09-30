@@ -224,7 +224,6 @@ internal class FeedsClientImpl(
             commentsRepository = commentsRepository,
             pollsRepository = pollsRepository,
             subscriptionManager = stateEventsSubscriptionManager,
-            socketSubscriptionManager = feedsEventsSubscriptionManager,
             commentList =
                 ActivityCommentListImpl(
                     query =

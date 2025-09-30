@@ -16,30 +16,17 @@
 package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.api.model.FeedId
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.ActivityStateUpdates
-import io.getstream.feeds.android.client.internal.test.TestData.activityResponse
-import io.getstream.feeds.android.client.internal.test.TestData.bookmarkResponse
-import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionResponse
-import io.getstream.feeds.android.client.internal.test.TestData.pollResponseData
-import io.getstream.feeds.android.client.internal.test.TestData.pollVoteResponseData
-import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
-import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
-import io.getstream.feeds.android.network.models.ActivityUpdatedEvent
-import io.getstream.feeds.android.network.models.BookmarkAddedEvent
-import io.getstream.feeds.android.network.models.BookmarkDeletedEvent
-import io.getstream.feeds.android.network.models.PollClosedFeedEvent
-import io.getstream.feeds.android.network.models.PollDeletedFeedEvent
-import io.getstream.feeds.android.network.models.PollUpdatedFeedEvent
-import io.getstream.feeds.android.network.models.PollVoteCastedFeedEvent
-import io.getstream.feeds.android.network.models.PollVoteChangedFeedEvent
-import io.getstream.feeds.android.network.models.PollVoteRemovedFeedEvent
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.test.TestData.activityData
+import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
+import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
+import io.getstream.feeds.android.client.internal.test.TestData.pollData
+import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
 import io.mockk.called
 import io.mockk.clearMocks
 import io.mockk.mockk
 import io.mockk.verify
-import java.util.Date
 import org.junit.Test
 
 internal class ActivityEventHandlerTest {
@@ -51,236 +38,162 @@ internal class ActivityEventHandlerTest {
     private val handler = ActivityEventHandler(fid, activityId, state)
 
     @Test
-    fun `on ActivityReactionAddedEvent, then handle based on feed and activity match`() {
-        val activity = activityResponse(activityId)
-        val reaction = feedsReactionResponse()
-        val matchingEvent =
-            ActivityReactionAddedEvent(
-                createdAt = Date(),
-                fid = fid.rawValue,
-                activity = activity,
-                reaction = reaction,
-                type = "activity.reaction.added",
-            )
-        val nonMatchingEvent = matchingEvent.copy(fid = differentFid)
+    fun `on ActivityReactionAdded, then handle based on feed and activity match`() {
+        val reaction = feedsReactionData(activityId)
+        val matchingEvent = StateUpdateEvent.ActivityReactionAdded(fid.rawValue, reaction)
+        val nonMatchingEvent = StateUpdateEvent.ActivityReactionAdded(differentFid, reaction)
 
         testEventHandling(
             matchingEvent = matchingEvent,
             nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onReactionAdded(reaction.toModel()) },
+            verifyBlock = { state.onReactionAdded(reaction) },
         )
     }
 
     @Test
-    fun `on ActivityReactionDeletedEvent, then handle based on feed and activity match`() {
-        val activity = activityResponse(activityId)
-        val reaction = feedsReactionResponse()
-        val matchingEvent =
-            ActivityReactionDeletedEvent(
-                createdAt = Date(),
-                fid = fid.rawValue,
-                activity = activity,
-                reaction = reaction,
-                type = "activity.reaction.deleted",
-            )
-        val nonMatchingEvent = matchingEvent.copy(fid = differentFid)
+    fun `on ActivityReactionDeleted, then handle based on feed and activity match`() {
+        val reaction = feedsReactionData(activityId)
+        val matchingEvent = StateUpdateEvent.ActivityReactionDeleted(fid.rawValue, reaction)
+        val nonMatchingEvent = StateUpdateEvent.ActivityReactionDeleted(differentFid, reaction)
 
         testEventHandling(
             matchingEvent = matchingEvent,
             nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onReactionRemoved(reaction.toModel()) },
+            verifyBlock = { state.onReactionRemoved(reaction) },
         )
     }
 
     @Test
-    fun `on ActivityUpdatedEvent, then handle based on feed and activity match`() {
-        val activity = activityResponse(activityId)
-        val matchingEvent =
-            ActivityUpdatedEvent(
-                createdAt = Date(),
-                fid = fid.rawValue,
-                activity = activity,
-                type = "activity.updated",
-            )
-        val nonMatchingEvent = matchingEvent.copy(fid = differentFid)
+    fun `on ActivityUpdated, then handle based on feed and activity match`() {
+        val activity = activityData(activityId)
+        val matchingEvent = StateUpdateEvent.ActivityUpdated(fid.rawValue, activity)
+        val nonMatchingEvent = StateUpdateEvent.ActivityUpdated(differentFid, activity)
 
         testEventHandling(
             matchingEvent = matchingEvent,
             nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onActivityUpdated(activity.toModel()) },
+            verifyBlock = { state.onActivityUpdated(activity) },
         )
     }
 
     @Test
-    fun `on BookmarkAddedEvent, then handle based on feed and activity match`() {
-        val bookmark = bookmarkResponse()
-        val matchingActivity = bookmark.activity.copy(feeds = listOf(fid.rawValue), id = activityId)
-        val matchingBookmark = bookmark.copy(activity = matchingActivity)
-        val matchingEvent =
-            BookmarkAddedEvent(
-                createdAt = Date(),
-                bookmark = matchingBookmark,
-                type = "bookmark.added",
-            )
+    fun `on BookmarkAdded, then handle based on feed and activity match`() {
+        val matchingActivity = activityData(activityId).copy(feeds = listOf(fid.rawValue))
+        val matchingBookmark = bookmarkData().copy(activity = matchingActivity)
+        val matchingEvent = StateUpdateEvent.BookmarkAdded(matchingBookmark)
+
         val nonMatchingActivity = matchingActivity.copy(feeds = listOf(differentFid))
         val nonMatchingBookmark = matchingBookmark.copy(activity = nonMatchingActivity)
-        val nonMatchingEvent = matchingEvent.copy(bookmark = nonMatchingBookmark)
+        val nonMatchingEvent = StateUpdateEvent.BookmarkAdded(nonMatchingBookmark)
 
         testEventHandling(
             matchingEvent = matchingEvent,
             nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onBookmarkAdded(matchingBookmark.toModel()) },
+            verifyBlock = { state.onBookmarkAdded(matchingBookmark) },
         )
     }
 
     @Test
-    fun `on BookmarkDeletedEvent, then handle based on feed and activity match`() {
-        val bookmark = bookmarkResponse()
-        val matchingActivity = bookmark.activity.copy(feeds = listOf(fid.rawValue), id = activityId)
-        val matchingBookmark = bookmark.copy(activity = matchingActivity)
-        val matchingEvent =
-            BookmarkDeletedEvent(
-                createdAt = Date(),
-                bookmark = matchingBookmark,
-                type = "bookmark.deleted",
-            )
+    fun `on BookmarkDeleted, then handle based on feed and activity match`() {
+        val matchingActivity = activityData(activityId).copy(feeds = listOf(fid.rawValue))
+        val matchingBookmark = bookmarkData().copy(activity = matchingActivity)
+        val matchingEvent = StateUpdateEvent.BookmarkDeleted(matchingBookmark)
+
         val nonMatchingActivity = matchingActivity.copy(feeds = listOf(differentFid))
         val nonMatchingBookmark = matchingBookmark.copy(activity = nonMatchingActivity)
-        val nonMatchingEvent = matchingEvent.copy(bookmark = nonMatchingBookmark)
+        val nonMatchingEvent = StateUpdateEvent.BookmarkDeleted(nonMatchingBookmark)
 
         testEventHandling(
             matchingEvent = matchingEvent,
             nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onBookmarkRemoved(matchingBookmark.toModel()) },
+            verifyBlock = { state.onBookmarkRemoved(matchingBookmark) },
         )
     }
 
     @Test
-    fun `on PollClosedFeedEvent, then handle based on feed match`() {
-        val poll = pollResponseData()
-        val matchingEvent =
-            PollClosedFeedEvent(
-                createdAt = Date(),
-                fid = fid.rawValue,
-                poll = poll,
-                type = "feeds.poll.closed",
-            )
-        val nonMatchingEvent = matchingEvent.copy(fid = differentFid)
+    fun `on PollClosed, then handle based on feed match`() {
+        val poll = pollData()
+        val matchingEvent = StateUpdateEvent.PollClosed(fid.rawValue, poll)
+        val nonMatchingEvent = StateUpdateEvent.PollClosed(differentFid, poll)
 
         testEventHandling(
             matchingEvent = matchingEvent,
             nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onPollClosed(poll.toModel()) },
+            verifyBlock = { state.onPollClosed(poll) },
         )
     }
 
     @Test
-    fun `on PollDeletedFeedEvent, then handle based on feed match`() {
-        val poll = pollResponseData()
-        val matchingEvent =
-            PollDeletedFeedEvent(
-                createdAt = Date(),
-                fid = fid.rawValue,
-                poll = poll,
-                type = "feeds.poll.deleted",
-            )
-        val nonMatchingEvent = matchingEvent.copy(fid = differentFid)
+    fun `on PollDeleted, then handle based on feed match`() {
+        val pollId = "poll-1"
+        val matchingEvent = StateUpdateEvent.PollDeleted(fid.rawValue, pollId)
+        val nonMatchingEvent = StateUpdateEvent.PollDeleted(differentFid, pollId)
 
         testEventHandling(
             matchingEvent = matchingEvent,
             nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onPollDeleted(poll.id) },
+            verifyBlock = { state.onPollDeleted(pollId) },
         )
     }
 
     @Test
-    fun `on PollUpdatedFeedEvent, then handle based on feed match`() {
-        val poll = pollResponseData()
-        val matchingEvent =
-            PollUpdatedFeedEvent(
-                createdAt = Date(),
-                fid = fid.rawValue,
-                poll = poll,
-                type = "feeds.poll.updated",
-            )
-        val nonMatchingEvent = matchingEvent.copy(fid = differentFid)
+    fun `on PollUpdated, then handle based on feed match`() {
+        val poll = pollData()
+        val matchingEvent = StateUpdateEvent.PollUpdated(fid.rawValue, poll)
+        val nonMatchingEvent = StateUpdateEvent.PollUpdated(differentFid, poll)
 
         testEventHandling(
             matchingEvent = matchingEvent,
             nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onPollUpdated(poll.toModel()) },
+            verifyBlock = { state.onPollUpdated(poll) },
         )
     }
 
     @Test
-    fun `on PollVoteCastedFeedEvent, then handle based on feed match`() {
-        val poll = pollResponseData()
-        val pollVote = pollVoteResponseData()
-        val matchingEvent =
-            PollVoteCastedFeedEvent(
-                createdAt = Date(),
-                fid = fid.rawValue,
-                poll = poll,
-                pollVote = pollVote,
-                type = "feeds.poll.vote.casted",
-            )
-        val nonMatchingEvent = matchingEvent.copy(fid = differentFid)
+    fun `on PollVoteCasted, then handle based on feed match`() {
+        val pollId = "poll-1"
+        val pollVote = pollVoteData()
+        val matchingEvent = StateUpdateEvent.PollVoteCasted(fid.rawValue, pollId, pollVote)
+        val nonMatchingEvent = StateUpdateEvent.PollVoteCasted(differentFid, pollId, pollVote)
 
         testEventHandling(
             matchingEvent = matchingEvent,
             nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onPollVoteCasted(pollVote.toModel(), poll.id) },
+            verifyBlock = { state.onPollVoteCasted(pollVote, pollId) },
         )
     }
 
     @Test
-    fun `on PollVoteChangedFeedEvent, then handle based on feed match`() {
-        val poll = pollResponseData()
-        val pollVote = pollVoteResponseData()
-        val matchingEvent =
-            PollVoteChangedFeedEvent(
-                createdAt = Date(),
-                fid = fid.rawValue,
-                poll = poll,
-                pollVote = pollVote,
-                type = "feeds.poll.vote.changed",
-            )
-        val nonMatchingEvent = matchingEvent.copy(fid = differentFid)
+    fun `on PollVoteChanged, then handle based on feed match`() {
+        val pollId = "poll-1"
+        val pollVote = pollVoteData()
+        val matchingEvent = StateUpdateEvent.PollVoteChanged(fid.rawValue, pollId, pollVote)
+        val nonMatchingEvent = StateUpdateEvent.PollVoteChanged(differentFid, pollId, pollVote)
 
         testEventHandling(
             matchingEvent = matchingEvent,
             nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onPollVoteChanged(pollVote.toModel(), poll.id) },
+            verifyBlock = { state.onPollVoteChanged(pollVote, pollId) },
         )
     }
 
     @Test
-    fun `on PollVoteRemovedFeedEvent, then handle based on feed match`() {
-        val poll = pollResponseData()
-        val pollVote = pollVoteResponseData()
-        val matchingEvent =
-            PollVoteRemovedFeedEvent(
-                createdAt = Date(),
-                fid = fid.rawValue,
-                poll = poll,
-                pollVote = pollVote,
-                type = "feeds.poll.vote.removed",
-            )
-        val nonMatchingEvent = matchingEvent.copy(fid = differentFid)
+    fun `on PollVoteRemoved, then handle based on feed match`() {
+        val pollId = "poll-1"
+        val pollVote = pollVoteData()
+        val matchingEvent = StateUpdateEvent.PollVoteRemoved(fid.rawValue, pollId, pollVote)
+        val nonMatchingEvent = StateUpdateEvent.PollVoteRemoved(differentFid, pollId, pollVote)
 
         testEventHandling(
             matchingEvent = matchingEvent,
             nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onPollVoteRemoved(pollVote.toModel(), poll.id) },
+            verifyBlock = { state.onPollVoteRemoved(pollVote, pollId) },
         )
     }
 
     @Test
     fun `on unknown event, then do nothing`() {
-        val unknownEvent =
-            object : WSEvent {
-                override fun getWSEventType(): String = "unknown.event"
-            }
+        val unknownEvent = StateUpdateEvent.FeedDeleted("feed-id")
 
         handler.onEvent(unknownEvent)
 
@@ -288,8 +201,8 @@ internal class ActivityEventHandlerTest {
     }
 
     private fun testEventHandling(
-        matchingEvent: WSEvent,
-        nonMatchingEvent: WSEvent,
+        matchingEvent: StateUpdateEvent,
+        nonMatchingEvent: StateUpdateEvent,
         verifyBlock: () -> Unit,
     ) {
         // Test matching event
