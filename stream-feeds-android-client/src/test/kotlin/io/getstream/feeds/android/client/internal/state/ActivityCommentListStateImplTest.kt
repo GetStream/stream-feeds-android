@@ -16,10 +16,12 @@
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.PaginationData
+import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentsSort
 import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
+import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.getstream.feeds.android.client.internal.test.TestData.reactionGroupData
 import io.getstream.feeds.android.client.internal.test.TestData.threadedCommentData
@@ -68,83 +70,69 @@ internal class ActivityCommentListStateImplTest {
 
     @Test
     fun `onCommentAdded when has no parent, then add it at the top-level in the correct position`() {
-        val comment1 = threadedCommentData(id = "c1", createdAt = Date(1))
-        val comment2 = threadedCommentData(id = "c2", createdAt = Date(2))
-        val comment3 = threadedCommentData(id = "c3", createdAt = Date(3))
-        val expected = listOf(comment1, comment2, comment3)
+        val comment1 = commentData(id = "c1", createdAt = Date(1))
+        val comment2 = commentData(id = "c2", createdAt = Date(2))
+        val comment3 = commentData(id = "c3", createdAt = Date(3))
+        val expected = listOf(comment1, comment2, comment3).map(::ThreadedCommentData)
 
-        state.onCommentAdded(comment1)
-        state.onCommentAdded(comment3)
-        state.onCommentAdded(comment2)
+        state.onCommentUpserted(comment1)
+        state.onCommentUpserted(comment3)
+        state.onCommentUpserted(comment2)
 
         assertEquals(expected, state.comments.value)
     }
 
     @Test
     fun `onCommentAdded when has a parent, then add it as a child in the correct position`() {
-        val parent =
-            threadedCommentData(
-                id = "c1",
-                replies =
-                    listOf(
-                        threadedCommentData("c2", parentId = "c1", createdAt = Date(2)),
-                        threadedCommentData("c4", parentId = "c1", createdAt = Date(4)),
-                    ),
+        val initialReplies =
+            listOf(
+                threadedCommentData("c2", parentId = "c1", createdAt = Date(2)),
+                threadedCommentData("c4", parentId = "c1", createdAt = Date(4)),
             )
-        val reply = threadedCommentData("c3", parentId = "c1", createdAt = Date(3))
+        val parent = threadedCommentData(id = "c1", replies = initialReplies, replyCount = 2)
+        val reply = commentData(id = "c3", parentId = "c1", createdAt = Date(3))
+        val expectedReply =
+            threadedCommentData(id = "c3", parentId = "c1", createdAt = Date(3), replies = null)
+
+        setupInitialState(parent)
+        state.onCommentUpserted(reply)
+
         val expected =
-            threadedCommentData(
-                id = "c1",
-                replies =
-                    listOf(
-                        threadedCommentData("c2", parentId = "c1", createdAt = Date(2)),
-                        threadedCommentData("c3", parentId = "c1", createdAt = Date(3)),
-                        threadedCommentData("c4", parentId = "c1", createdAt = Date(4)),
-                    ),
+            parent.copy(
+                replies = listOf(initialReplies[0], expectedReply, initialReplies[1]),
+                replyCount = 3,
             )
-
-        state.onCommentAdded(parent)
-        state.onCommentAdded(reply)
-
         assertEquals(listOf(expected), state.comments.value)
     }
 
     @Test
     fun `onCommentUpdated when it's at the top level, then update it in the list`() {
-        val existingComment = threadedCommentData(id = "c1", createdAt = Date(1))
+        val initialComment = threadedCommentData(id = "c1", createdAt = Date(1))
         val update = commentData(id = "c1", text = "Updated comment")
         val expected = threadedCommentData(id = "c1", text = "Updated comment", createdAt = Date(1))
 
-        state.onCommentAdded(existingComment)
-        state.onCommentUpdated(update)
+        setupInitialState(initialComment)
+        state.onCommentUpserted(update)
 
         assertEquals(listOf(expected), state.comments.value)
     }
 
     @Test
     fun `onCommentUpdated when it's a reply, then update it in the parent's replies`() {
-        val parent =
-            threadedCommentData(
-                id = "c1",
-                replies =
-                    listOf(
-                        threadedCommentData("c2", createdAt = Date(2)),
-                        threadedCommentData("c3", createdAt = Date(3)),
-                    ),
+        val initialReplies =
+            listOf(
+                threadedCommentData("c2", parentId = "c1", createdAt = Date(2)),
+                threadedCommentData("c3", parentId = "c1", createdAt = Date(3)),
             )
-        val update = commentData(id = "c2", text = "Updated reply", createdAt = Date(4))
-        val expected =
-            threadedCommentData(
-                id = "c1",
-                replies =
-                    listOf(
-                        threadedCommentData("c3", createdAt = Date(3)),
-                        threadedCommentData("c2", text = "Updated reply", createdAt = Date(4)),
-                    ),
-            )
+        val parent = threadedCommentData(id = "c1", replies = initialReplies)
+        val update =
+            commentData(id = "c2", parentId = "c1", text = "Updated reply", createdAt = Date(4))
+        val updatedReply =
+            threadedCommentData("c2", parentId = "c1", text = "Updated reply", createdAt = Date(4))
+        val expected = parent.copy(replies = listOf(initialReplies[1], updatedReply))
 
-        state.onCommentAdded(parent)
-        state.onCommentUpdated(update)
+        setupInitialState(parent)
+        state.onCommentUpserted(update)
 
         assertEquals(listOf(expected), state.comments.value)
     }
@@ -160,8 +148,8 @@ internal class ActivityCommentListStateImplTest {
             )
         val update = commentData(id = "c1", text = "Updated comment", ownReactions = emptyList())
 
-        state.onCommentAdded(originalComment)
-        state.onCommentUpdated(update)
+        setupInitialState(originalComment)
+        state.onCommentUpserted(update)
 
         val expectedComment = originalComment.copy(text = "Updated comment")
         assertEquals(listOf(expectedComment), state.comments.value)
@@ -172,13 +160,12 @@ internal class ActivityCommentListStateImplTest {
         val comment1 = threadedCommentData(id = "c1", createdAt = Date(1))
         val comment2 = threadedCommentData(id = "c2", createdAt = Date(2))
         val comment3 = threadedCommentData(id = "c3", createdAt = Date(3))
-        val expected = listOf(comment1, comment3)
+        val initialComments = listOf(comment1, comment2, comment3)
 
-        state.onCommentAdded(comment1)
-        state.onCommentAdded(comment2)
-        state.onCommentAdded(comment3)
+        setupInitialState(*initialComments.toTypedArray())
         state.onCommentRemoved("c2")
 
+        val expected = listOf(comment1, comment3)
         assertEquals(expected, state.comments.value)
     }
 
@@ -187,12 +174,13 @@ internal class ActivityCommentListStateImplTest {
         val child2 = threadedCommentData("c2", parentId = "c1", createdAt = Date(2))
         val child3 = threadedCommentData("c3", parentId = "c1", createdAt = Date(3))
         val child4 = threadedCommentData("c4", parentId = "c1", createdAt = Date(4))
-        val parent = threadedCommentData(id = "c1", replies = listOf(child2, child3, child4))
-        val expected = parent.copy(replies = listOf(child2, child4), replyCount = 2)
+        val initialReplies = listOf(child2, child3, child4)
+        val parent = threadedCommentData(id = "c1", replies = initialReplies)
 
-        state.onCommentAdded(parent)
+        setupInitialState(parent)
         state.onCommentRemoved("c3")
 
+        val expected = parent.copy(replies = listOf(child2, child4), replyCount = 2)
         assertEquals(listOf(expected), state.comments.value)
     }
 
@@ -207,11 +195,11 @@ internal class ActivityCommentListStateImplTest {
                 createdAt = Date(2),
             )
         val update = commentData(id = "c1", text = "Updated comment")
-        val expected = comment.copy(text = "Updated comment")
 
-        state.onCommentAdded(comment)
+        setupInitialState(comment)
         state.onCommentReactionUpserted(update, reaction)
 
+        val expected = comment.copy(text = "Updated comment")
         assertEquals(listOf(expected), state.comments.value)
     }
 
@@ -227,11 +215,11 @@ internal class ActivityCommentListStateImplTest {
                 createdAt = Date(2),
             )
         val update = commentData(id = "c2", parentId = "c1", text = "Updated text")
-        val expected = parent.copy(replies = listOf(child.copy(text = "Updated text")))
 
-        state.onCommentAdded(parent)
+        setupInitialState(parent)
         state.onCommentReactionUpserted(update, reaction)
 
+        val expected = parent.copy(replies = listOf(child.copy(text = "Updated text")))
         assertEquals(listOf(expected), state.comments.value)
     }
 
@@ -247,6 +235,10 @@ internal class ActivityCommentListStateImplTest {
                 reactionGroups = mapOf("like" to reactionGroupData()),
             )
         val update = commentData(id = "c1", text = "Updated comment")
+
+        setupInitialState(comment)
+        state.onCommentReactionRemoved(update, reaction)
+
         val expected =
             comment.copy(
                 text = "Updated comment",
@@ -254,10 +246,6 @@ internal class ActivityCommentListStateImplTest {
                 reactionCount = 0,
                 reactionGroups = emptyMap(),
             )
-
-        state.onCommentAdded(comment)
-        state.onCommentReactionRemoved(update, reaction)
-
         assertEquals(listOf(expected), state.comments.value)
     }
 
@@ -289,7 +277,7 @@ internal class ActivityCommentListStateImplTest {
                     )
             )
 
-        state.onCommentAdded(parent)
+        setupInitialState(parent)
         state.onCommentReactionRemoved(update, reaction)
 
         assertEquals(listOf(expected), state.comments.value)
@@ -301,11 +289,13 @@ internal class ActivityCommentListStateImplTest {
         val comment2 = threadedCommentData(id = "c2", createdAt = Date(2))
         val comment3 = threadedCommentData(id = "c3", createdAt = Date(3))
 
-        state.onCommentAdded(comment1)
-        state.onCommentAdded(comment2)
-        state.onCommentAdded(comment3)
+        setupInitialState(comment1, comment2, comment3)
         state.onActivityRemoved()
 
         assertEquals(emptyList<Any>(), state.comments.value)
+    }
+
+    private fun setupInitialState(vararg initialComments: ThreadedCommentData) {
+        state.onQueryMoreComments(defaultPaginationResult(initialComments.toList()))
     }
 }

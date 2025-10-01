@@ -110,13 +110,13 @@ internal object TestData {
         id: String,
         parentId: String? = null,
         text: String = "Test comment",
-        replies: List<ThreadedCommentData> = emptyList(),
+        replies: List<ThreadedCommentData>? = emptyList(),
         createdAt: Date = Date(1),
         latestReactions: List<FeedsReactionData> = emptyList(),
         ownReactions: List<FeedsReactionData> = emptyList(),
         reactionCount: Int = 0,
         reactionGroups: Map<String, ReactionGroupData> = emptyMap(),
-        replyCount: Int = replies.size,
+        replyCount: Int = replies?.size ?: 0,
     ): ThreadedCommentData {
         return ThreadedCommentData(
             id = id,
