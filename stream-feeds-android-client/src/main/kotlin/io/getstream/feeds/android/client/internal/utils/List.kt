@@ -127,29 +127,34 @@ internal fun <T> MutableList<T>.insertSorted(element: T, sort: List<Sort<T>>): L
  * @param idSelector A function that extracts a unique identifier from an element. This is used to
  *   determine if an element already exists in the list.
  * @param comparator The comparator used to determine the sort order and insertion point.
+ * @param update A function that takes the old and new elements and returns the updated element.
+ *   Used only if an existing element is found.
  * @return A new sorted list containing the upserted element. If an existing element was found, it
- *   will be replaced and repositioned; otherwise, the new element will be inserted in the correct
- *   sorted position.
+ *   will be updated and repositioned; otherwise, the new element will be inserted in the correct
+ *   sorted position as-is.
  */
 internal fun <T> List<T>.upsertSorted(
     element: T,
     idSelector: (T) -> String,
     comparator: Comparator<in T>,
+    update: (old: T, new: T) -> T = { _, new -> new },
 ): List<T> {
     val elementId = idSelector(element)
     val existingIndex = this.indexOfFirst { idSelector(it) == elementId }
 
     return if (existingIndex >= 0) {
         // Element exists - check if sort order has changed
-        val existingElement = this[existingIndex]
-        val sortComparison = comparator.compare(existingElement, element)
+        val updatedElement = update(this[existingIndex], element)
+        val sortComparison = comparator.compare(this[existingIndex], updatedElement)
 
         if (sortComparison == 0) {
             // Sort order hasn't changed - replace in place to preserve position
-            this.toMutableList().apply { this[existingIndex] = element }.toImmutableList()
+            this.toMutableList().apply { this[existingIndex] = updatedElement }
         } else {
             // Sort order has changed - remove and insert at correct position
-            this.toMutableList().apply { removeAt(existingIndex) }.insertSorted(element, comparator)
+            this.toMutableList()
+                .apply { removeAt(existingIndex) }
+                .insertSorted(updatedElement, comparator)
         }
     } else {
         // Element doesn't exist - insert at correct position
@@ -178,15 +183,18 @@ internal fun <T> List<T>.upsertSorted(
  *   determine if an element already exists in the list.
  * @param sort A list of [Sort] configurations that define the sort order and insertion point. The
  *   sorts are applied in sequence, with earlier sorts taking precedence.
+ * @param update A function that takes the old and new element and returns the updated element. Used
+ *   only if an existing element is found.
  * @return A new sorted list containing the upserted element. If an existing element was found, it
- *   will be replaced and repositioned; otherwise, the new element will be inserted in the correct
- *   sorted position.
+ *   will be updated and repositioned; otherwise, the new element will be inserted in the correct
+ *   sorted position as-is.
  */
 internal fun <T> List<T>.upsertSorted(
     element: T,
     idSelector: (T) -> String,
     sort: List<Sort<T>>,
-): List<T> = upsertSorted(element, idSelector, CompositeComparator(sort))
+    update: (old: T, new: T) -> T = { _, new -> new },
+): List<T> = upsertSorted(element, idSelector, CompositeComparator(sort), update)
 
 /**
  * Merges two sorted arrays while maintaining the sort order and handling duplicates.
