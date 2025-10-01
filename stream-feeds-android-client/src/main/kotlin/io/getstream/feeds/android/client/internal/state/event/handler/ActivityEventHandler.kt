@@ -84,6 +84,36 @@ internal class ActivityEventHandler(
                 state.onBookmarkUpserted(event.bookmark)
             }
 
+            is StateUpdateEvent.CommentAdded -> {
+                if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
+                state.onCommentUpserted(event.comment)
+            }
+
+            is StateUpdateEvent.CommentDeleted -> {
+                if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
+                state.onCommentRemoved(event.comment.id)
+            }
+
+            is StateUpdateEvent.CommentUpdated -> {
+                if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
+                state.onCommentUpserted(event.comment)
+            }
+
+            is StateUpdateEvent.CommentReactionAdded -> {
+                if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
+                state.onCommentReactionUpserted(event.comment, event.reaction)
+            }
+
+            is StateUpdateEvent.CommentReactionDeleted -> {
+                if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
+                state.onCommentReactionRemoved(event.comment, event.reaction)
+            }
+
+            is StateUpdateEvent.CommentReactionUpdated -> {
+                if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
+                state.onCommentReactionUpserted(event.comment, event.reaction)
+            }
+
             is StateUpdateEvent.PollDeleted -> {
                 if (event.fid != fid.rawValue) return
                 state.onPollDeleted(event.pollId)

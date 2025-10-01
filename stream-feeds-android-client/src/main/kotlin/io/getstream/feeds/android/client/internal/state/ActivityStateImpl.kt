@@ -17,6 +17,7 @@ package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.BookmarkData
+import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollVoteData
@@ -24,10 +25,14 @@ import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.api.state.ActivityState
 import io.getstream.feeds.android.client.internal.model.deleteBookmark
+import io.getstream.feeds.android.client.internal.model.removeComment
+import io.getstream.feeds.android.client.internal.model.removeCommentReaction
 import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.model.removeVote
 import io.getstream.feeds.android.client.internal.model.update
 import io.getstream.feeds.android.client.internal.model.upsertBookmark
+import io.getstream.feeds.android.client.internal.model.upsertComment
+import io.getstream.feeds.android.client.internal.model.upsertCommentReaction
 import io.getstream.feeds.android.client.internal.model.upsertReaction
 import io.getstream.feeds.android.client.internal.model.upsertVote
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -92,6 +97,26 @@ internal class ActivityStateImpl(
 
     override fun onBookmarkUpserted(bookmark: BookmarkData) {
         _activity.update { current -> current?.upsertBookmark(bookmark, currentUserId) }
+    }
+
+    override fun onCommentRemoved(commentId: String) {
+        _activity.update { current -> current?.removeComment(commentId) }
+    }
+
+    override fun onCommentUpserted(comment: CommentData) {
+        _activity.update { current -> current?.upsertComment(comment) }
+    }
+
+    override fun onCommentReactionRemoved(comment: CommentData, reaction: FeedsReactionData) {
+        _activity.update { current ->
+            current?.removeCommentReaction(comment, reaction, currentUserId)
+        }
+    }
+
+    override fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData) {
+        _activity.update { current ->
+            current?.upsertCommentReaction(comment, reaction, currentUserId)
+        }
     }
 
     override fun onPollDeleted(pollId: String) {
@@ -174,6 +199,36 @@ internal interface ActivityStateUpdates {
      * @param bookmark The bookmark that was added or updated.
      */
     fun onBookmarkUpserted(bookmark: BookmarkData)
+
+    /**
+     * Called when a comment is removed from the activity.
+     *
+     * @param commentId The ID of the comment that was removed.
+     */
+    fun onCommentRemoved(commentId: String)
+
+    /**
+     * Called when a comment is added to or updated in the activity.
+     *
+     * @param comment The comment that was added or updated.
+     */
+    fun onCommentUpserted(comment: CommentData)
+
+    /**
+     * Called when a reaction is removed from a comment.
+     *
+     * @param comment The comment from which the reaction was removed.
+     * @param reaction The reaction that was removed.
+     */
+    fun onCommentReactionRemoved(comment: CommentData, reaction: FeedsReactionData)
+
+    /**
+     * Called when a reaction is added to or updated in a comment.
+     *
+     * @param comment The comment to which the reaction was added or updated.
+     * @param reaction The reaction that was added or updated.
+     */
+    fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData)
 
     /**
      * Called when the associated poll is deleted.

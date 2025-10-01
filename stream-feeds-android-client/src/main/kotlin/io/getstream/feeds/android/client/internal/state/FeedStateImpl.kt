@@ -203,7 +203,7 @@ internal class FeedStateImpl(
 
     override fun onCommentRemoved(comment: CommentData) {
         updateActivitiesWhere({ it.id == comment.objectId }) { activity ->
-            activity.removeComment(comment)
+            activity.removeComment(comment.id)
         }
     }
 

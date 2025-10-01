@@ -20,6 +20,7 @@ import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
+import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
@@ -432,6 +433,72 @@ internal class ActivityStateImplTest {
 
         val expectedPoll = updatedPollFromBackend.copy(ownVotes = listOf(ownVote))
         assertEquals(expectedPoll, activityState.poll.value)
+    }
+
+    @Test
+    fun `on onCommentUpserted, add comment to activity`() = runTest {
+        val initialActivity = activityData("activity-1", comments = emptyList())
+        setupInitialActivity(initialActivity)
+
+        val comment = commentData("comment-1", objectId = "activity-1")
+        activityState.onCommentUpserted(comment)
+
+        val expectedActivity = initialActivity.copy(commentCount = 1, comments = listOf(comment))
+        assertEquals(expectedActivity, activityState.activity.value)
+    }
+
+    @Test
+    fun `on onCommentUpserted, update existing comment in activity`() = runTest {
+        val originalComment = commentData("comment-1", text = "Original", objectId = "activity-1")
+        val initialActivity = activityData("activity-1", comments = listOf(originalComment))
+        setupInitialActivity(initialActivity)
+
+        val updatedComment = commentData("comment-1", text = "Updated", objectId = "activity-1")
+        activityState.onCommentUpserted(updatedComment)
+
+        val expectedActivity = initialActivity.copy(comments = listOf(updatedComment))
+        assertEquals(expectedActivity, activityState.activity.value)
+    }
+
+    @Test
+    fun `on onCommentRemoved, remove comment from activity`() = runTest {
+        val comment = commentData("comment-1", objectId = "activity-1")
+        val initialActivity = activityData("activity-1", comments = listOf(comment))
+        setupInitialActivity(initialActivity)
+
+        activityState.onCommentRemoved("comment-1")
+
+        val expectedActivity = initialActivity.copy(commentCount = 0, comments = emptyList())
+        assertEquals(expectedActivity, activityState.activity.value)
+    }
+
+    @Test
+    fun `on onCommentReactionUpserted, add reaction to comment in activity`() = runTest {
+        val comment = commentData("comment-1", objectId = "activity-1", ownReactions = emptyList())
+        val initialActivity = activityData("activity-1", comments = listOf(comment))
+        setupInitialActivity(initialActivity)
+
+        val reaction = feedsReactionData("comment-1", "like", currentUserId)
+        activityState.onCommentReactionUpserted(comment, reaction)
+
+        val expectedComment = comment.copy(ownReactions = listOf(reaction))
+        val expectedActivity = initialActivity.copy(comments = listOf(expectedComment))
+        assertEquals(expectedActivity, activityState.activity.value)
+    }
+
+    @Test
+    fun `on onCommentReactionRemoved, remove reaction from comment in activity`() = runTest {
+        val reaction = feedsReactionData("comment-1", "like", currentUserId)
+        val comment =
+            commentData("comment-1", objectId = "activity-1", ownReactions = listOf(reaction))
+        val initialActivity = activityData("activity-1", comments = listOf(comment))
+        setupInitialActivity(initialActivity)
+
+        activityState.onCommentReactionRemoved(comment, reaction)
+
+        val expectedComment = comment.copy(ownReactions = emptyList())
+        val expectedActivity = initialActivity.copy(comments = listOf(expectedComment))
+        assertEquals(expectedActivity, activityState.activity.value)
     }
 
     private fun setupInitialActivity(activity: ActivityData) {
