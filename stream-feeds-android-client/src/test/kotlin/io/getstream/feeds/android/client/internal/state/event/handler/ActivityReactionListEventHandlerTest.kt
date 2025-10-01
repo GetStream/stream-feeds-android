@@ -17,6 +17,7 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.internal.state.ActivityReactionListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpdated
@@ -44,6 +45,16 @@ internal class ActivityReactionListEventHandlerTest(
         @Parameterized.Parameters(name = "{0}")
         fun data(): List<Array<Any>> =
             listOf(
+                testParams<ActivityReactionListStateUpdates>(
+                    name = "ActivityDeleted matching activity",
+                    event = ActivityDeleted("feed-1", activityId),
+                    verifyBlock = { state -> state.onActivityRemoved() },
+                ),
+                testParams<ActivityReactionListStateUpdates>(
+                    name = "ActivityDeleted non-matching activity",
+                    event = ActivityDeleted("feed-1", differentActivityId),
+                    verifyBlock = { state -> state wasNot called },
+                ),
                 testParams<ActivityReactionListStateUpdates>(
                     name = "ActivityReactionAdded for matching activity",
                     event =

@@ -62,6 +62,18 @@ internal class ActivityReactionListStateImplTest {
         assertEquals(listOf(initialReactions[1]), remainingReactions)
     }
 
+    @Test
+    fun `on onActivityRemoved, clear all reactions`() = runTest {
+        val reactions =
+            listOf(feedsReactionData(), feedsReactionData("reaction-2", "activity-1", "user-2"))
+        val paginationResult = defaultPaginationResult(reactions)
+
+        activityReactionListState.onQueryMoreActivityReactions(paginationResult, queryConfig)
+        activityReactionListState.onActivityRemoved()
+
+        assertEquals(emptyList<FeedsReactionData>(), activityReactionListState.reactions.value)
+    }
+
     companion object {
         private val queryConfig =
             ActivityReactionsQueryConfig(filter = null, sort = ActivityReactionsSort.Default)

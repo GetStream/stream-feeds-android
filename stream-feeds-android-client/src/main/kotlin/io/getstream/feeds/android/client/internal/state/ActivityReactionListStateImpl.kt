@@ -58,6 +58,10 @@ internal class ActivityReactionListStateImpl(override val query: ActivityReactio
     override val pagination: PaginationData?
         get() = _pagination
 
+    override fun onActivityRemoved() {
+        _reactions.update { emptyList() }
+    }
+
     override fun onQueryMoreActivityReactions(
         result: PaginationResult<FeedsReactionData>,
         queryConfig: ActivityReactionsQueryConfig,
@@ -92,6 +96,9 @@ internal interface ActivityReactionListMutableState :
 
 /** Interface for handling updates to the state of activity reactions in a list. */
 internal interface ActivityReactionListStateUpdates {
+
+    /** Handles the deletion of the parent activity. */
+    fun onActivityRemoved()
 
     /**
      * Handles the loading of activity reactions.
