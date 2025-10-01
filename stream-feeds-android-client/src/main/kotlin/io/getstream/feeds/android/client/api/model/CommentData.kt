@@ -18,7 +18,6 @@ package io.getstream.feeds.android.client.api.model
 import io.getstream.feeds.android.client.api.state.query.CommentsSortDataFields
 import io.getstream.feeds.android.network.models.Attachment
 import io.getstream.feeds.android.network.models.CommentResponse
-import io.getstream.feeds.android.network.models.RepliesMeta
 import java.util.Date
 
 /**
@@ -58,8 +57,6 @@ import java.util.Date
  *   size manageable.
  * @property mentionedUsers Users mentioned in the comment. This property contains the list of users
  *   who were mentioned in the comment using @mentions or similar functionality.
- * @property meta Metadata about the comment's replies structure. This property contains information
- *   about the threading structure of replies such as reply counts and pagination information.
  * @property moderation Moderation state for the comment.
  * @property objectId The ID of the object this comment belongs to (e.g., activity ID).
  * @property objectType The type of object this comment belongs to (e.g., "activity").
@@ -71,9 +68,6 @@ import java.util.Date
  *   total count of all reactions across all types.
  * @property reactionGroups Groups of reactions by type. This property organizes reactions by their
  *   type (e.g., "like", "love", "laugh") and provides counts and metadata for each reaction type.
- * @property replies The replies to this comment, if any. This property contains the nested replies
- *   to this comment, supporting threaded comment structures. For comments without replies, this is
- *   `null`.
  * @property replyCount The number of replies to this comment. This property tracks the total count
  *   of replies, which may be different from the actual number of replies loaded in the `replies`
  *   property due to pagination or loading limits.
@@ -98,7 +92,6 @@ public data class CommentData(
     val id: String,
     val latestReactions: List<FeedsReactionData>,
     val mentionedUsers: List<UserData>,
-    val meta: RepliesMeta?,
     val moderation: Moderation?,
     val objectId: String,
     val objectType: String,
@@ -106,7 +99,6 @@ public data class CommentData(
     val parentId: String?,
     val reactionCount: Int,
     val reactionGroups: Map<String, ReactionGroupData>,
-    val replies: List<CommentData>?,
     val replyCount: Int,
     override val score: Int,
     val status: String,
@@ -114,14 +106,7 @@ public data class CommentData(
     val updatedAt: Date,
     val upvoteCount: Int,
     val user: UserData,
-) : CommentsSortDataFields {
-    /**
-     * Indicates whether this comment has threaded replies. Returns true if replies are loaded (not
-     * null).
-     */
-    val isThreaded: Boolean
-        get() = replies != null
-}
+) : CommentsSortDataFields
 
 /** Converts a [CommentResponse] to a [CommentData] model. */
 internal fun CommentResponse.toModel(): CommentData =
@@ -136,7 +121,6 @@ internal fun CommentResponse.toModel(): CommentData =
         id = id,
         latestReactions = latestReactions?.map { it.toModel() }.orEmpty(),
         mentionedUsers = mentionedUsers.map { it.toModel() },
-        meta = null,
         moderation = moderation?.toModel(),
         objectId = objectId,
         objectType = objectType,
@@ -144,7 +128,6 @@ internal fun CommentResponse.toModel(): CommentData =
         parentId = parentId,
         reactionCount = reactionCount,
         reactionGroups = reactionGroups?.mapValues { it.value.toModel() }.orEmpty(),
-        replies = null,
         replyCount = replyCount,
         score = score,
         status = status,

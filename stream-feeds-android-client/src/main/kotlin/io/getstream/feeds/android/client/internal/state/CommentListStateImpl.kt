@@ -23,8 +23,7 @@ import io.getstream.feeds.android.client.api.state.CommentListState
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
 import io.getstream.feeds.android.client.api.state.query.toComparator
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
-import io.getstream.feeds.android.client.internal.utils.treeRemoveFirst
-import io.getstream.feeds.android.client.internal.utils.treeUpdateFirst
+import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -69,26 +68,17 @@ internal class CommentListStateImpl(override val query: CommentsQuery) : Comment
 
     override fun onCommentUpdated(comment: CommentData) {
         _comments.update { current ->
-            current.treeUpdateFirst(
-                matcher = { it.id == comment.id },
-                childrenSelector = { it.replies.orEmpty() },
-                updateElement = { it.update(comment) },
-                updateChildren = { parent, children -> parent.copy(replies = children) },
+            current.upsertSorted(
+                element = comment,
+                idSelector = CommentData::id,
                 comparator = comparator,
+                update = CommentData::update,
             )
         }
     }
 
     override fun onCommentRemoved(commentId: String) {
-        _comments.update { current ->
-            current.treeRemoveFirst(
-                matcher = { it.id == commentId },
-                childrenSelector = { it.replies.orEmpty() },
-                updateChildren = { parent, children ->
-                    parent.copy(replies = children, replyCount = parent.replyCount - 1)
-                },
-            )
-        }
+        _comments.update { current -> current.filter { it.id != commentId } }
     }
 }
 
