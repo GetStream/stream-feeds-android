@@ -44,7 +44,7 @@ internal class ActivityListEventHandlerTest {
     @Test
     fun `on ActivityReactionAdded, then call onReactionAdded`() {
         val reaction = feedsReactionData("activity-1")
-        val event = StateUpdateEvent.ActivityReactionAdded("feed-1", reaction)
+        val event = StateUpdateEvent.ActivityReactionAdded(reaction)
 
         handler.onEvent(event)
 
@@ -54,7 +54,7 @@ internal class ActivityListEventHandlerTest {
     @Test
     fun `on ActivityReactionDeleted, then call onReactionRemoved`() {
         val reaction = feedsReactionData("activity-1")
-        val event = StateUpdateEvent.ActivityReactionDeleted("feed-1", reaction)
+        val event = StateUpdateEvent.ActivityReactionDeleted(reaction)
 
         handler.onEvent(event)
 

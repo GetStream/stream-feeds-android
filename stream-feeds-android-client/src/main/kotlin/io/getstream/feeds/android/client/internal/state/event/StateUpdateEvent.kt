@@ -62,11 +62,9 @@ internal sealed interface StateUpdateEvent {
 
     data class ActivityDeleted(val activity: ActivityData) : StateUpdateEvent
 
-    data class ActivityReactionAdded(val fid: String, val reaction: FeedsReactionData) :
-        StateUpdateEvent
+    data class ActivityReactionAdded(val reaction: FeedsReactionData) : StateUpdateEvent
 
-    data class ActivityReactionDeleted(val fid: String, val reaction: FeedsReactionData) :
-        StateUpdateEvent
+    data class ActivityReactionDeleted(val reaction: FeedsReactionData) : StateUpdateEvent
 
     data class BookmarkAdded(val bookmark: BookmarkData) : StateUpdateEvent
 
@@ -124,11 +122,10 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
     when (this) {
         is ActivityDeletedEvent -> StateUpdateEvent.ActivityDeleted(activity.toModel())
 
-        is ActivityReactionAddedEvent ->
-            StateUpdateEvent.ActivityReactionAdded(fid, reaction.toModel())
+        is ActivityReactionAddedEvent -> StateUpdateEvent.ActivityReactionAdded(reaction.toModel())
 
         is ActivityReactionDeletedEvent ->
-            StateUpdateEvent.ActivityReactionDeleted(fid, reaction.toModel())
+            StateUpdateEvent.ActivityReactionDeleted(reaction.toModel())
 
         is BookmarkAddedEvent -> StateUpdateEvent.BookmarkAdded(bookmark.toModel())
 

@@ -32,7 +32,7 @@ internal class ActivityReactionListEventHandlerTest {
     @Test
     fun `on ActivityReactionAdded for matching activity, then call onReactionAdded`() {
         val reaction = feedsReactionData(activityId)
-        val event = StateUpdateEvent.ActivityReactionAdded("feed-1", reaction)
+        val event = StateUpdateEvent.ActivityReactionAdded(reaction)
 
         handler.onEvent(event)
 
@@ -42,7 +42,7 @@ internal class ActivityReactionListEventHandlerTest {
     @Test
     fun `on ActivityReactionAdded for different activity, then do not call onReactionAdded`() {
         val reaction = feedsReactionData("different-activity")
-        val event = StateUpdateEvent.ActivityReactionAdded("feed-1", reaction)
+        val event = StateUpdateEvent.ActivityReactionAdded(reaction)
 
         handler.onEvent(event)
 
@@ -52,7 +52,7 @@ internal class ActivityReactionListEventHandlerTest {
     @Test
     fun `on ActivityReactionDeleted for matching activity, then call onReactionRemoved`() {
         val reaction = feedsReactionData(activityId)
-        val event = StateUpdateEvent.ActivityReactionDeleted("feed-1", reaction)
+        val event = StateUpdateEvent.ActivityReactionDeleted(reaction)
 
         handler.onEvent(event)
 
@@ -62,7 +62,7 @@ internal class ActivityReactionListEventHandlerTest {
     @Test
     fun `on ActivityReactionDeleted for different activity, then do not call onReactionRemoved`() {
         val reaction = feedsReactionData("different-activity")
-        val event = StateUpdateEvent.ActivityReactionDeleted("feed-1", reaction)
+        val event = StateUpdateEvent.ActivityReactionDeleted(reaction)
 
         handler.onEvent(event)
 
