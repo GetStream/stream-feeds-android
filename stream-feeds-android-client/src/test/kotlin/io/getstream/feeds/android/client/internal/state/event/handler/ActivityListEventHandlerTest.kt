@@ -15,24 +15,15 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.ActivityListStateUpdates
-import io.getstream.feeds.android.client.internal.test.TestData.activityResponse
-import io.getstream.feeds.android.client.internal.test.TestData.bookmarkResponse
-import io.getstream.feeds.android.client.internal.test.TestData.commentResponse
-import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionResponse
-import io.getstream.feeds.android.network.models.ActivityDeletedEvent
-import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
-import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
-import io.getstream.feeds.android.network.models.BookmarkAddedEvent
-import io.getstream.feeds.android.network.models.BookmarkDeletedEvent
-import io.getstream.feeds.android.network.models.CommentAddedEvent
-import io.getstream.feeds.android.network.models.CommentDeletedEvent
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.test.TestData.activityData
+import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
+import io.getstream.feeds.android.client.internal.test.TestData.commentData
+import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.mockk.called
 import io.mockk.mockk
 import io.mockk.verify
-import java.util.Date
 import org.junit.Test
 
 internal class ActivityListEventHandlerTest {
@@ -41,126 +32,78 @@ internal class ActivityListEventHandlerTest {
     private val handler = ActivityListEventHandler(state)
 
     @Test
-    fun `on ActivityDeletedEvent, then call onActivityRemoved`() {
-        val activity = activityResponse()
-        val event =
-            ActivityDeletedEvent(
-                createdAt = Date(),
-                fid = "user:feed-1",
-                activity = activity,
-                type = "feeds.activity.deleted",
-            )
+    fun `on ActivityDeleted, then call onActivityRemoved`() {
+        val activity = activityData()
+        val event = StateUpdateEvent.ActivityDeleted(activity)
 
         handler.onEvent(event)
 
-        verify { state.onActivityRemoved(activity.toModel()) }
+        verify { state.onActivityRemoved(activity) }
     }
 
     @Test
-    fun `on ActivityReactionAddedEvent, then call onReactionAdded`() {
-        val activity = activityResponse()
-        val reaction = feedsReactionResponse()
-        val event =
-            ActivityReactionAddedEvent(
-                createdAt = Date(),
-                fid = "user:feed-1",
-                activity = activity,
-                reaction = reaction,
-                type = "feeds.activity.reaction.added",
-            )
+    fun `on ActivityReactionAdded, then call onReactionAdded`() {
+        val reaction = feedsReactionData("activity-1")
+        val event = StateUpdateEvent.ActivityReactionAdded(reaction)
 
         handler.onEvent(event)
 
-        verify { state.onReactionAdded(reaction.toModel()) }
+        verify { state.onReactionAdded(reaction) }
     }
 
     @Test
-    fun `on ActivityReactionDeletedEvent, then call onReactionRemoved`() {
-        val activity = activityResponse()
-        val reaction = feedsReactionResponse()
-        val event =
-            ActivityReactionDeletedEvent(
-                createdAt = Date(),
-                fid = "user:feed-1",
-                activity = activity,
-                reaction = reaction,
-                type = "feeds.activity.reaction.deleted",
-            )
+    fun `on ActivityReactionDeleted, then call onReactionRemoved`() {
+        val reaction = feedsReactionData("activity-1")
+        val event = StateUpdateEvent.ActivityReactionDeleted(reaction)
 
         handler.onEvent(event)
 
-        verify { state.onReactionRemoved(reaction.toModel()) }
+        verify { state.onReactionRemoved(reaction) }
     }
 
     @Test
-    fun `on BookmarkAddedEvent, then call onBookmarkAdded`() {
-        val bookmark = bookmarkResponse()
-        val event =
-            BookmarkAddedEvent(
-                createdAt = Date(),
-                bookmark = bookmark,
-                type = "feeds.bookmark.added",
-            )
+    fun `on BookmarkAdded, then call onBookmarkAdded`() {
+        val bookmark = bookmarkData()
+        val event = StateUpdateEvent.BookmarkAdded(bookmark)
 
         handler.onEvent(event)
 
-        verify { state.onBookmarkAdded(bookmark.toModel()) }
+        verify { state.onBookmarkAdded(bookmark) }
     }
 
     @Test
-    fun `on BookmarkDeletedEvent, then call onBookmarkRemoved`() {
-        val bookmark = bookmarkResponse()
-        val event =
-            BookmarkDeletedEvent(
-                createdAt = Date(),
-                bookmark = bookmark,
-                type = "feeds.bookmark.deleted",
-            )
+    fun `on BookmarkDeleted, then call onBookmarkRemoved`() {
+        val bookmark = bookmarkData()
+        val event = StateUpdateEvent.BookmarkDeleted(bookmark)
 
         handler.onEvent(event)
 
-        verify { state.onBookmarkRemoved(bookmark.toModel()) }
+        verify { state.onBookmarkRemoved(bookmark) }
     }
 
     @Test
-    fun `on CommentAddedEvent, then call onCommentAdded`() {
-        val comment = commentResponse()
-        val event =
-            CommentAddedEvent(
-                createdAt = Date(),
-                fid = "user:feed-1",
-                comment = comment,
-                activity = activityResponse(),
-                type = "feeds.comment.added",
-            )
+    fun `on CommentAdded, then call onCommentAdded`() {
+        val comment = commentData()
+        val event = StateUpdateEvent.CommentAdded(comment)
 
         handler.onEvent(event)
 
-        verify { state.onCommentAdded(comment.toModel()) }
+        verify { state.onCommentAdded(comment) }
     }
 
     @Test
-    fun `on CommentDeletedEvent, then call onCommentRemoved`() {
-        val comment = commentResponse()
-        val event =
-            CommentDeletedEvent(
-                createdAt = Date(),
-                fid = "user:feed-1",
-                comment = comment,
-                type = "feeds.comment.deleted",
-            )
+    fun `on CommentDeleted, then call onCommentRemoved`() {
+        val comment = commentData()
+        val event = StateUpdateEvent.CommentDeleted(comment)
 
         handler.onEvent(event)
 
-        verify { state.onCommentRemoved(comment.toModel()) }
+        verify { state.onCommentRemoved(comment) }
     }
 
     @Test
     fun `on unknown event, then do nothing`() {
-        val unknownEvent =
-            object : WSEvent {
-                override fun getWSEventType(): String = "unknown.event"
-            }
+        val unknownEvent = StateUpdateEvent.FeedDeleted("feed-id")
 
         handler.onEvent(unknownEvent)
 

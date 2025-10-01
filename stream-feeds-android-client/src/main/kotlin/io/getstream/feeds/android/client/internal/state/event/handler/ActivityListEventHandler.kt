@@ -15,30 +15,22 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.ActivityListStateUpdates
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
-import io.getstream.feeds.android.network.models.ActivityDeletedEvent
-import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
-import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
-import io.getstream.feeds.android.network.models.BookmarkAddedEvent
-import io.getstream.feeds.android.network.models.BookmarkDeletedEvent
-import io.getstream.feeds.android.network.models.CommentAddedEvent
-import io.getstream.feeds.android.network.models.CommentDeletedEvent
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
 internal class ActivityListEventHandler(private val state: ActivityListStateUpdates) :
-    FeedsEventListener {
+    StateUpdateEventListener {
 
-    override fun onEvent(event: WSEvent) {
+    override fun onEvent(event: StateUpdateEvent) {
         when (event) {
-            is ActivityDeletedEvent -> state.onActivityRemoved(event.activity.toModel())
-            is ActivityReactionAddedEvent -> state.onReactionAdded(event.reaction.toModel())
-            is ActivityReactionDeletedEvent -> state.onReactionRemoved(event.reaction.toModel())
-            is BookmarkAddedEvent -> state.onBookmarkAdded(event.bookmark.toModel())
-            is BookmarkDeletedEvent -> state.onBookmarkRemoved(event.bookmark.toModel())
-            is CommentAddedEvent -> state.onCommentAdded(event.comment.toModel())
-            is CommentDeletedEvent -> state.onCommentRemoved(event.comment.toModel())
+            is StateUpdateEvent.ActivityDeleted -> state.onActivityRemoved(event.activity)
+            is StateUpdateEvent.ActivityReactionAdded -> state.onReactionAdded(event.reaction)
+            is StateUpdateEvent.ActivityReactionDeleted -> state.onReactionRemoved(event.reaction)
+            is StateUpdateEvent.BookmarkAdded -> state.onBookmarkAdded(event.bookmark)
+            is StateUpdateEvent.BookmarkDeleted -> state.onBookmarkRemoved(event.bookmark)
+            is StateUpdateEvent.CommentAdded -> state.onCommentAdded(event.comment)
+            is StateUpdateEvent.CommentDeleted -> state.onCommentRemoved(event.comment)
             else -> {
                 // No action needed for other event types
             }

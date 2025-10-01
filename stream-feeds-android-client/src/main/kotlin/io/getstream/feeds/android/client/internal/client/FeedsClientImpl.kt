@@ -196,7 +196,8 @@ internal class FeedsClientImpl(
             commentsRepository = commentsRepository,
             feedsRepository = feedsRepository,
             pollsRepository = pollsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            socketSubscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
             feedWatchHandler = feedWatchHandler,
         )
 
@@ -211,7 +212,7 @@ internal class FeedsClientImpl(
         FollowListImpl(
             query = query,
             feedsRepository = feedsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun activity(activityId: String, fid: FeedId): Activity =
@@ -243,7 +244,7 @@ internal class FeedsClientImpl(
             query = query,
             currentUserId = user.id,
             activitiesRepository = activitiesRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun activityReactionList(query: ActivityReactionsQuery): ActivityReactionList =
@@ -303,7 +304,7 @@ internal class FeedsClientImpl(
             query = query,
             currentUserId = user.id,
             commentsRepository = commentsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun commentReactionList(query: CommentReactionsQuery): CommentReactionList =
@@ -317,21 +318,21 @@ internal class FeedsClientImpl(
         MemberListImpl(
             query = query,
             feedsRepository = feedsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun pollVoteList(query: PollVotesQuery): PollVoteList =
         PollVoteListImpl(
             query = query,
             repository = pollsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun pollList(query: PollsQuery): PollList =
         PollListImpl(
             query = query,
             pollsRepository = pollsRepository,
-            subscriptionManager = feedsEventsSubscriptionManager,
+            subscriptionManager = stateEventsSubscriptionManager,
         )
 
     override fun moderationConfigList(query: ModerationConfigsQuery): ModerationConfigList =

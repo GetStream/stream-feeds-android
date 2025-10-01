@@ -15,64 +15,39 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.FollowListStateUpdates
-import io.getstream.feeds.android.client.internal.test.TestData.followResponse
-import io.getstream.feeds.android.network.models.FollowDeletedEvent
-import io.getstream.feeds.android.network.models.FollowUpdatedEvent
-import io.getstream.feeds.android.network.models.WSEvent
-import io.mockk.called
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FollowDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FollowUpdated
+import io.getstream.feeds.android.client.internal.test.TestData.followData
+import io.mockk.MockKVerificationScope
 import io.mockk.mockk
-import io.mockk.verify
-import java.util.Date
-import org.junit.Test
+import org.junit.runners.Parameterized
 
-internal class FollowListEventHandlerTest {
-    private val state: FollowListStateUpdates = mockk(relaxed = true)
+internal class FollowListEventHandlerTest(
+    testName: String,
+    event: StateUpdateEvent,
+    verifyBlock: MockKVerificationScope.(FollowListStateUpdates) -> Unit,
+) : BaseEventHandlerTest<FollowListStateUpdates>(testName, event, verifyBlock) {
 
-    private val handler = FollowListEventHandler(state)
+    override val state: FollowListStateUpdates = mockk(relaxed = true)
+    override val handler = FollowListEventHandler(state)
 
-    @Test
-    fun `on FollowUpdatedEvent, then call onFollowUpdated`() {
-        val follow = followResponse()
-        val event =
-            FollowUpdatedEvent(
-                createdAt = Date(),
-                fid = "user:feed-1",
-                follow = follow,
-                type = "feeds.follow.updated",
+    companion object {
+        @JvmStatic
+        @Parameterized.Parameters(name = "{0}")
+        fun data(): List<Array<Any>> =
+            listOf(
+                testParams<FollowListStateUpdates>(
+                    name = "FollowUpdated",
+                    event = FollowUpdated(followData()),
+                    verifyBlock = { state -> state.onFollowUpdated(followData()) },
+                ),
+                testParams<FollowListStateUpdates>(
+                    name = "FollowDeleted",
+                    event = FollowDeleted(followData()),
+                    verifyBlock = { state -> state.onFollowRemoved(followData()) },
+                ),
             )
-
-        handler.onEvent(event)
-
-        verify { state.onFollowUpdated(follow.toModel()) }
-    }
-
-    @Test
-    fun `on FollowDeletedEvent, then call onFollowRemoved`() {
-        val follow = followResponse()
-        val event =
-            FollowDeletedEvent(
-                createdAt = Date(),
-                fid = "user:feed-1",
-                follow = follow,
-                type = "feeds.follow.updated",
-            )
-
-        handler.onEvent(event)
-
-        verify { state.onFollowRemoved(follow.toModel()) }
-    }
-
-    @Test
-    fun `on unknown event, then do nothing`() {
-        val unknownEvent =
-            object : WSEvent {
-                override fun getWSEventType(): String = "unknown.event"
-            }
-
-        handler.onEvent(unknownEvent)
-
-        verify { state wasNot called }
     }
 }

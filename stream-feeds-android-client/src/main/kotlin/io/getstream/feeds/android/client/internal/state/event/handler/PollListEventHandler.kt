@@ -15,24 +15,25 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.state.PollListStateUpdates
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
-import io.getstream.feeds.android.network.models.PollUpdatedFeedEvent
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
 /**
  * Handles events related to poll updates in the poll list state.
  *
  * @property state The instance that manages updates to the poll list state.
  */
-internal class PollListEventHandler(private val state: PollListStateUpdates) : FeedsEventListener {
+internal class PollListEventHandler(private val state: PollListStateUpdates) :
+    StateUpdateEventListener {
 
-    override fun onEvent(event: WSEvent) {
+    override fun onEvent(event: StateUpdateEvent) {
         when (event) {
-            is PollUpdatedFeedEvent -> {
-                state.onPollUpdated(event.poll.toModel())
+            is StateUpdateEvent.PollUpdated -> {
+                state.onPollUpdated(event.poll)
             }
+
+            else -> {}
         }
     }
 }

@@ -15,14 +15,21 @@
  */
 package io.getstream.feeds.android.client.internal.state.event
 
+import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.BookmarkFolderData
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedData
+import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
+import io.getstream.feeds.android.client.api.model.FollowData
+import io.getstream.feeds.android.client.api.model.PollData
+import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.model.toModel
+import io.getstream.feeds.android.network.models.ActivityDeletedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
+import io.getstream.feeds.android.network.models.BookmarkAddedEvent
 import io.getstream.feeds.android.network.models.BookmarkDeletedEvent
 import io.getstream.feeds.android.network.models.BookmarkFolderDeletedEvent
 import io.getstream.feeds.android.network.models.BookmarkFolderUpdatedEvent
@@ -33,7 +40,18 @@ import io.getstream.feeds.android.network.models.CommentReactionAddedEvent
 import io.getstream.feeds.android.network.models.CommentReactionDeletedEvent
 import io.getstream.feeds.android.network.models.CommentUpdatedEvent
 import io.getstream.feeds.android.network.models.FeedDeletedEvent
+import io.getstream.feeds.android.network.models.FeedMemberAddedEvent
+import io.getstream.feeds.android.network.models.FeedMemberRemovedEvent
+import io.getstream.feeds.android.network.models.FeedMemberUpdatedEvent
 import io.getstream.feeds.android.network.models.FeedUpdatedEvent
+import io.getstream.feeds.android.network.models.FollowDeletedEvent
+import io.getstream.feeds.android.network.models.FollowUpdatedEvent
+import io.getstream.feeds.android.network.models.PollClosedFeedEvent
+import io.getstream.feeds.android.network.models.PollDeletedFeedEvent
+import io.getstream.feeds.android.network.models.PollUpdatedFeedEvent
+import io.getstream.feeds.android.network.models.PollVoteCastedFeedEvent
+import io.getstream.feeds.android.network.models.PollVoteChangedFeedEvent
+import io.getstream.feeds.android.network.models.PollVoteRemovedFeedEvent
 import io.getstream.feeds.android.network.models.WSEvent
 
 /**
@@ -42,9 +60,13 @@ import io.getstream.feeds.android.network.models.WSEvent
  */
 internal sealed interface StateUpdateEvent {
 
+    data class ActivityDeleted(val activity: ActivityData) : StateUpdateEvent
+
     data class ActivityReactionAdded(val reaction: FeedsReactionData) : StateUpdateEvent
 
     data class ActivityReactionDeleted(val reaction: FeedsReactionData) : StateUpdateEvent
+
+    data class BookmarkAdded(val bookmark: BookmarkData) : StateUpdateEvent
 
     data class BookmarkDeleted(val bookmark: BookmarkData) : StateUpdateEvent
 
@@ -69,14 +91,43 @@ internal sealed interface StateUpdateEvent {
     data class FeedUpdated(val feed: FeedData) : StateUpdateEvent
 
     data class FeedDeleted(val fid: String) : StateUpdateEvent
+
+    data class FeedMemberAdded(val fid: String, val member: FeedMemberData) : StateUpdateEvent
+
+    data class FeedMemberRemoved(val fid: String, val memberId: String) : StateUpdateEvent
+
+    data class FeedMemberUpdated(val fid: String, val member: FeedMemberData) : StateUpdateEvent
+
+    data class FollowUpdated(val follow: FollowData) : StateUpdateEvent
+
+    data class FollowDeleted(val follow: FollowData) : StateUpdateEvent
+
+    data class PollClosed(val fid: String, val poll: PollData) : StateUpdateEvent
+
+    data class PollDeleted(val fid: String, val pollId: String) : StateUpdateEvent
+
+    data class PollUpdated(val fid: String, val poll: PollData) : StateUpdateEvent
+
+    data class PollVoteCasted(val fid: String, val pollId: String, val vote: PollVoteData) :
+        StateUpdateEvent
+
+    data class PollVoteChanged(val fid: String, val pollId: String, val vote: PollVoteData) :
+        StateUpdateEvent
+
+    data class PollVoteRemoved(val fid: String, val pollId: String, val vote: PollVoteData) :
+        StateUpdateEvent
 }
 
 internal fun WSEvent.toModel(): StateUpdateEvent? =
     when (this) {
+        is ActivityDeletedEvent -> StateUpdateEvent.ActivityDeleted(activity.toModel())
+
         is ActivityReactionAddedEvent -> StateUpdateEvent.ActivityReactionAdded(reaction.toModel())
 
         is ActivityReactionDeletedEvent ->
             StateUpdateEvent.ActivityReactionDeleted(reaction.toModel())
+
+        is BookmarkAddedEvent -> StateUpdateEvent.BookmarkAdded(bookmark.toModel())
 
         is BookmarkDeletedEvent -> StateUpdateEvent.BookmarkDeleted(bookmark.toModel())
 
@@ -102,6 +153,31 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
         is FeedUpdatedEvent -> StateUpdateEvent.FeedUpdated(feed.toModel())
 
         is FeedDeletedEvent -> StateUpdateEvent.FeedDeleted(fid)
+
+        is FollowUpdatedEvent -> StateUpdateEvent.FollowUpdated(follow.toModel())
+
+        is FollowDeletedEvent -> StateUpdateEvent.FollowDeleted(follow.toModel())
+
+        is FeedMemberAddedEvent -> StateUpdateEvent.FeedMemberAdded(fid, member.toModel())
+
+        is FeedMemberRemovedEvent -> StateUpdateEvent.FeedMemberRemoved(fid, memberId)
+
+        is FeedMemberUpdatedEvent -> StateUpdateEvent.FeedMemberUpdated(fid, member.toModel())
+
+        is PollClosedFeedEvent -> StateUpdateEvent.PollClosed(fid, poll.toModel())
+
+        is PollDeletedFeedEvent -> StateUpdateEvent.PollDeleted(fid, poll.id)
+
+        is PollUpdatedFeedEvent -> StateUpdateEvent.PollUpdated(fid, poll.toModel())
+
+        is PollVoteCastedFeedEvent ->
+            StateUpdateEvent.PollVoteCasted(fid, poll.id, pollVote.toModel())
+
+        is PollVoteChangedFeedEvent ->
+            StateUpdateEvent.PollVoteChanged(fid, poll.id, pollVote.toModel())
+
+        is PollVoteRemovedFeedEvent ->
+            StateUpdateEvent.PollVoteRemoved(fid, poll.id, pollVote.toModel())
 
         else -> null
     }
