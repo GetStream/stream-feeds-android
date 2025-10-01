@@ -53,6 +53,10 @@ internal class PollVoteListStateImpl(override val query: PollVotesQuery) :
     override val pagination: PaginationData?
         get() = _pagination
 
+    override fun onPollDeleted() {
+        _votes.update { emptyList() }
+    }
+
     override fun onQueryMorePollVotes(
         result: PaginationResult<PollVoteData>,
         queryConfig: PollVotesQueryConfig,
@@ -85,6 +89,9 @@ internal interface PollVoteListMutableState : PollVoteListState, PollVoteListSta
 
 /** Interface for handling updates to the poll vote list state. */
 internal interface PollVoteListStateUpdates {
+
+    /** Handles the deletion of the parent poll. */
+    fun onPollDeleted()
 
     /**
      * Handles updates to the poll vote list state when new poll votes are fetched.
