@@ -15,7 +15,6 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.internal.state.ActivityCommentListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
@@ -66,9 +65,7 @@ internal class ActivityCommentListEventHandlerTest(
                 testParams<ActivityCommentListStateUpdates>(
                     name = "CommentAdded matching object",
                     event = CommentAdded("feed-1", matchingComment),
-                    verifyBlock = { state ->
-                        state.onCommentAdded(ThreadedCommentData(matchingComment))
-                    },
+                    verifyBlock = { state -> state.onCommentUpserted(matchingComment) },
                 ),
                 testParams<ActivityCommentListStateUpdates>(
                     name = "CommentAdded non-matching object",
@@ -88,7 +85,7 @@ internal class ActivityCommentListEventHandlerTest(
                 testParams<ActivityCommentListStateUpdates>(
                     name = "CommentUpdated matching object",
                     event = CommentUpdated("feed-1", matchingComment),
-                    verifyBlock = { state -> state.onCommentUpdated(matchingComment) },
+                    verifyBlock = { state -> state.onCommentUpserted(matchingComment) },
                 ),
                 testParams<ActivityCommentListStateUpdates>(
                     name = "CommentUpdated non-matching object",

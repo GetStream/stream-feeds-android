@@ -15,7 +15,6 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.internal.state.CommentReplyListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
@@ -26,17 +25,21 @@ internal class CommentReplyListEventHandler(private val state: CommentReplyListS
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
             is StateUpdateEvent.CommentAdded -> {
-                state.onCommentAdded(ThreadedCommentData(event.comment))
+                state.onCommentUpserted(event.comment)
             }
+
             is StateUpdateEvent.CommentDeleted -> {
                 state.onCommentRemoved(event.comment.id)
             }
+
             is StateUpdateEvent.CommentUpdated -> {
-                state.onCommentUpdated(event.comment)
+                state.onCommentUpserted(event.comment)
             }
+
             is StateUpdateEvent.CommentReactionAdded -> {
                 state.onCommentReactionUpserted(event.comment, event.reaction)
             }
+
             is StateUpdateEvent.CommentReactionDeleted -> {
                 state.onCommentReactionRemoved(event.comment, event.reaction)
             }

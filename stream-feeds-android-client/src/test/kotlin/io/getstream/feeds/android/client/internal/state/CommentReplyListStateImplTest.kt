@@ -73,12 +73,12 @@ internal class CommentReplyListStateImplTest {
 
         setupInitialReplies(parentComment)
 
-        val newReply =
-            threadedCommentData("reply-1", parentId = "parent-1", text = "Reply to parent")
+        val newReply = commentData("reply-1", parentId = "parent-1", text = "Reply to parent")
 
-        state.onCommentAdded(newReply)
+        state.onCommentUpserted(newReply)
 
-        val expectedParent = parentComment.copy(replies = listOf(newReply), replyCount = 1)
+        val expectedParent =
+            parentComment.copy(replies = listOf(ThreadedCommentData(newReply)), replyCount = 1)
         assertEquals(listOf(expectedParent), state.replies.value)
     }
 
@@ -88,9 +88,9 @@ internal class CommentReplyListStateImplTest {
 
         setupInitialReplies(parentComment)
 
-        val nonReply = threadedCommentData("comment-1", parentId = null, text = "Not a reply")
+        val nonReply = commentData("comment-1", parentId = null, text = "Not a reply")
 
-        state.onCommentAdded(nonReply)
+        state.onCommentUpserted(nonReply)
 
         assertEquals(listOf(parentComment), state.replies.value)
     }
@@ -165,24 +165,44 @@ internal class CommentReplyListStateImplTest {
 
     @Test
     fun `on onCommentUpdated, then preserve ownReactions when updating comment`() = runTest {
-        val ownReaction = feedsReactionData("comment-1", "like", currentUserId)
-
-        val originalComment =
+        val ownReaction = feedsReactionData("reply-1", "like", currentUserId)
+        val parentComment =
             threadedCommentData(
-                "comment-1",
-                text = "Original text",
-                ownReactions = listOf(ownReaction),
+                "parent-1",
+                text = "Parent comment",
+                replies =
+                    listOf(
+                        threadedCommentData(
+                            "reply-1",
+                            parentId = "parent-1",
+                            text = "Original text",
+                            ownReactions = listOf(ownReaction),
+                        )
+                    ),
+                replyCount = 1,
             )
 
-        setupInitialReplies(originalComment)
+        setupInitialReplies(parentComment)
 
         val updatedCommentData =
-            commentData("comment-1", text = "Updated text", ownReactions = emptyList())
+            commentData(
+                "reply-1",
+                parentId = "parent-1",
+                text = "Updated text",
+                ownReactions = emptyList(),
+            )
 
-        state.onCommentUpdated(updatedCommentData)
+        state.onCommentUpserted(updatedCommentData)
 
-        val expectedComment = originalComment.copy(text = "Updated text")
-        assertEquals(listOf(expectedComment), state.replies.value)
+        val expectedReply =
+            threadedCommentData(
+                "reply-1",
+                parentId = "parent-1",
+                text = "Updated text",
+                ownReactions = listOf(ownReaction),
+            )
+        val expectedParent = parentComment.copy(replies = listOf(expectedReply))
+        assertEquals(listOf(expectedParent), state.replies.value)
     }
 
     @Test

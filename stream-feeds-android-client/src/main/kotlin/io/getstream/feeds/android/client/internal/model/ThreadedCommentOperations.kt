@@ -18,7 +18,6 @@ package io.getstream.feeds.android.client.internal.model
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.api.state.query.CommentsSortDataFields
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
@@ -151,16 +150,52 @@ internal inline fun ThreadedCommentData.changeReactions(
 }
 
 /**
- * Adds a reply to the comment, updating the replies list and reply count.
+ * Searches for the parent comment of the given [reply] and upserts it in the replies list.
  *
- * @param comment The reply comment to add.
+ * @param reply The reply comment to upsert.
+ * @param comparator The comparator used to maintain the sort order of replies.
+ * @return A new [ThreadedCommentData] instance with the updated replies.
+ */
+internal fun ThreadedCommentData.upsertNestedReply(
+    reply: CommentData,
+    comparator: Comparator<CommentsSortDataFields>,
+): ThreadedCommentData =
+    when {
+        // If this comment is the parent, upsert the reply directly
+        id == reply.parentId -> upsertReply(reply, comparator)
+        // If this comment has no replies, return it unchanged
+        replies.isNullOrEmpty() -> this
+        // If this comment has replies, recursively search through them
+        else -> {
+            val updatedReplies =
+                replies.map { replyComment -> replyComment.upsertNestedReply(reply, comparator) }
+            copy(replies = updatedReplies)
+        }
+    }
+
+/**
+ * Adds or updates a reply in the replies list and updates the reply count accordingly.
+ *
+ * @param reply The reply comment to upsert.
  * @return A new [ThreadedCommentData] instance with the updated replies and reply count.
  */
-internal fun ThreadedCommentData.addReply(
-    comment: ThreadedCommentData,
+private fun ThreadedCommentData.upsertReply(
+    reply: CommentData,
     comparator: Comparator<CommentsSortDataFields>,
 ): ThreadedCommentData {
-    val replies = this.replies.orEmpty().upsertSorted(comment, ThreadedCommentData::id, comparator)
-    val replyCount = this.replyCount + 1
-    return this.copy(replies = replies, replyCount = replyCount)
+    val currentReplies = replies.orEmpty()
+    val updatedReplies =
+        currentReplies.upsertSorted(
+            element = ThreadedCommentData(reply),
+            idSelector = ThreadedCommentData::id,
+            comparator = comparator,
+            update = { it.update(reply) },
+        )
+    val updatedCount =
+        if (updatedReplies.size > currentReplies.size) {
+            replyCount + 1
+        } else {
+            replyCount
+        }
+    return copy(replies = updatedReplies, replyCount = updatedCount)
 }
