@@ -15,17 +15,27 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
+import io.getstream.feeds.android.client.api.state.query.CommentsFilter
 import io.getstream.feeds.android.client.internal.state.CommentListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.query.matches
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
-internal class CommentListEventHandler(private val state: CommentListStateUpdates) :
-    StateUpdateEventListener {
+internal class CommentListEventHandler(
+    private val filter: CommentsFilter?,
+    private val state: CommentListStateUpdates,
+) : StateUpdateEventListener {
 
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
+            is StateUpdateEvent.CommentAdded -> {
+                if (event.comment matches filter) {
+                    state.onCommentUpserted(event.comment)
+                }
+            }
+
             is StateUpdateEvent.CommentDeleted -> state.onCommentRemoved(event.comment.id)
-            is StateUpdateEvent.CommentUpdated -> state.onCommentUpdated(event.comment)
+            is StateUpdateEvent.CommentUpdated -> state.onCommentUpserted(event.comment)
             is StateUpdateEvent.CommentReactionAdded ->
                 state.onCommentReactionUpserted(event.comment, event.reaction)
 
@@ -34,6 +44,7 @@ internal class CommentListEventHandler(private val state: CommentListStateUpdate
 
             is StateUpdateEvent.CommentReactionUpdated ->
                 state.onCommentReactionUpserted(event.comment, event.reaction)
+
             else -> Unit
         }
     }

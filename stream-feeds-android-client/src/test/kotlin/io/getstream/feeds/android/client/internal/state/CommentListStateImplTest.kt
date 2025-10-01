@@ -56,7 +56,7 @@ internal class CommentListStateImplTest {
         val updatedComment2 = comment2.copy(text = "Updated Second", createdAt = Date(2))
         setupInitialComments(comment1, comment2)
 
-        state.onCommentUpdated(updatedComment2)
+        state.onCommentUpserted(updatedComment2)
 
         assertEquals(listOf(updatedComment2, comment1), state.comments.value)
     }
@@ -69,7 +69,7 @@ internal class CommentListStateImplTest {
         val updatedComment = commentData("comment-1", "Updated text", ownReactions = emptyList())
         setupInitialComments(originalComment)
 
-        state.onCommentUpdated(updatedComment)
+        state.onCommentUpserted(updatedComment)
 
         val expectedComment = updatedComment.copy(ownReactions = listOf(ownReaction))
         assertEquals(listOf(expectedComment), state.comments.value)
