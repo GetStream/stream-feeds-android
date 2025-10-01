@@ -34,10 +34,17 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.C
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteCasted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteChanged
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteRemoved
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
+import io.getstream.feeds.android.client.internal.test.TestData.pollData
+import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
 import io.mockk.MockKVerificationScope
 import io.mockk.called
 import io.mockk.mockk
@@ -183,6 +190,31 @@ internal class ActivityListEventHandlerTest(
                     verifyBlock = { state ->
                         state.onCommentReactionUpserted(commentData(), feedsReactionData())
                     },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "PollDeleted",
+                    event = PollDeleted("feed-1", "poll-1"),
+                    verifyBlock = { state -> state.onPollDeleted("poll-1") },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "PollUpdated",
+                    event = PollUpdated("feed-1", pollData()),
+                    verifyBlock = { state -> state.onPollUpdated(pollData()) },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "PollVoteCasted",
+                    event = PollVoteCasted("feed-1", "poll-1", pollVoteData()),
+                    verifyBlock = { state -> state.onPollVoteUpserted("poll-1", pollVoteData()) },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "PollVoteChanged",
+                    event = PollVoteChanged("feed-1", "poll-1", pollVoteData()),
+                    verifyBlock = { state -> state.onPollVoteUpserted("poll-1", pollVoteData()) },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "PollVoteRemoved",
+                    event = PollVoteRemoved("feed-1", "poll-1", pollVoteData()),
+                    verifyBlock = { state -> state.onPollVoteRemoved("poll-1", pollVoteData()) },
                 ),
             )
     }

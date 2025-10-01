@@ -65,6 +65,15 @@ internal class ActivityListEventHandler(
             is StateUpdateEvent.CommentReactionUpdated ->
                 state.onCommentReactionUpserted(event.comment, event.reaction)
 
+            is StateUpdateEvent.PollDeleted -> state.onPollDeleted(event.pollId)
+            is StateUpdateEvent.PollUpdated -> state.onPollUpdated(event.poll)
+            is StateUpdateEvent.PollVoteCasted -> state.onPollVoteUpserted(event.pollId, event.vote)
+
+            is StateUpdateEvent.PollVoteChanged ->
+                state.onPollVoteUpserted(event.pollId, event.vote)
+
+            is StateUpdateEvent.PollVoteRemoved -> state.onPollVoteRemoved(event.pollId, event.vote)
+
             else -> {
                 // No action needed for other event types
             }
