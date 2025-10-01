@@ -79,7 +79,7 @@ internal class CommentListStateImpl(
                 element = comment,
                 idSelector = CommentData::id,
                 comparator = comparator,
-                update = CommentData::update,
+                update = { it.update(comment) },
             )
         }
     }
