@@ -294,4 +294,18 @@ internal class ActivityCommentListStateImplTest {
 
         assertEquals(listOf(expected), state.comments.value)
     }
+
+    @Test
+    fun `on onActivityRemoved, clear all comments`() {
+        val comment1 = threadedCommentData(id = "c1", createdAt = Date(1))
+        val comment2 = threadedCommentData(id = "c2", createdAt = Date(2))
+        val comment3 = threadedCommentData(id = "c3", createdAt = Date(3))
+
+        state.onCommentAdded(comment1)
+        state.onCommentAdded(comment2)
+        state.onCommentAdded(comment3)
+        state.onActivityRemoved()
+
+        assertEquals(emptyList<Any>(), state.comments.value)
+    }
 }

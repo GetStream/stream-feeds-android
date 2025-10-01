@@ -28,6 +28,12 @@ internal class ActivityCommentListEventHandler(
 
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
+            is StateUpdateEvent.ActivityDeleted -> {
+                if (event.activityId == objectId) {
+                    state.onActivityRemoved()
+                }
+            }
+
             is StateUpdateEvent.CommentAdded -> {
                 if (event.comment.objectId == objectId && event.comment.objectType == objectType) {
                     state.onCommentAdded(ThreadedCommentData(event.comment))
