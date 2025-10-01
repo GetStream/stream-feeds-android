@@ -32,6 +32,11 @@ internal class PollVoteListEventHandler(
 
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
+            is StateUpdateEvent.PollDeleted -> {
+                if (event.pollId != pollId) return
+                state.onPollDeleted()
+            }
+
             is StateUpdateEvent.PollVoteCasted -> {
                 if (event.pollId != pollId) return
                 state.pollVoteUpserted(event.vote)
