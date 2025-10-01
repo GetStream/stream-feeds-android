@@ -25,6 +25,12 @@ internal class CommentReactionListEventHandler(
 ) : StateUpdateEventListener {
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
+            is StateUpdateEvent.CommentDeleted -> {
+                if (event.comment.id == commentId) {
+                    state.onCommentRemoved()
+                }
+            }
+
             is StateUpdateEvent.CommentReactionAdded -> {
                 if (event.comment.id == commentId) {
                     state.onReactionUpserted(event.reaction)
