@@ -15,7 +15,6 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.internal.state.CommentReplyListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentAdded
@@ -47,9 +46,7 @@ internal class CommentReplyListEventHandlerTest(
                 testParams<CommentReplyListStateUpdates>(
                     name = "CommentAdded",
                     event = CommentAdded("feed-1", commentData()),
-                    verifyBlock = { state ->
-                        state.onCommentAdded(ThreadedCommentData(commentData()))
-                    },
+                    verifyBlock = { state -> state.onCommentUpserted(commentData()) },
                 ),
                 testParams<CommentReplyListStateUpdates>(
                     name = "CommentDeleted",
@@ -59,7 +56,7 @@ internal class CommentReplyListEventHandlerTest(
                 testParams<CommentReplyListStateUpdates>(
                     name = "CommentUpdated",
                     event = CommentUpdated("feed-1", commentData()),
-                    verifyBlock = { state -> state.onCommentUpdated(commentData()) },
+                    verifyBlock = { state -> state.onCommentUpserted(commentData()) },
                 ),
                 testParams<CommentReplyListStateUpdates>(
                     name = "CommentReactionAdded",

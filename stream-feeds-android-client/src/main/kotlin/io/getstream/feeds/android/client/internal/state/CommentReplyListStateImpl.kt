@@ -22,9 +22,9 @@ import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.state.CommentReplyListState
 import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
-import io.getstream.feeds.android.client.internal.model.addReply
 import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.model.update
+import io.getstream.feeds.android.client.internal.model.upsertNestedReply
 import io.getstream.feeds.android.client.internal.model.upsertReaction
 import io.getstream.feeds.android.client.internal.state.query.toComparator
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -66,14 +66,6 @@ internal class CommentReplyListStateImpl(
         _replies.update { current -> current + result.models }
     }
 
-    override fun onCommentAdded(comment: ThreadedCommentData) {
-        if (comment.parentId == null) {
-            // Comment is not a reply, ignore it
-            return
-        }
-        _replies.update { current -> current.map { addNestedReply(it, comment) } }
-    }
-
     override fun onCommentRemoved(commentId: String) {
         if (commentId == query.commentId) {
             // If the deleted comment is the parent comment, we clear the entire state
@@ -96,8 +88,12 @@ internal class CommentReplyListStateImpl(
         }
     }
 
-    override fun onCommentUpdated(comment: CommentData) {
-        _replies.update { current -> current.map { parent -> updateNestedReply(parent, comment) } }
+    override fun onCommentUpserted(comment: CommentData) {
+        if (comment.parentId == null) {
+            // Comment is not a reply, ignore it
+            return
+        }
+        _replies.update { current -> current.map { it.upsertNestedReply(comment, comparator) } }
     }
 
     override fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData) {
@@ -110,22 +106,6 @@ internal class CommentReplyListStateImpl(
         _replies.update { current ->
             current.map { parent -> removeNestedReplyReaction(parent, comment, reaction) }
         }
-    }
-
-    private fun addNestedReply(
-        parent: ThreadedCommentData,
-        reply: ThreadedCommentData,
-    ): ThreadedCommentData {
-        // If this comment is the parent, add the reply directly
-        if (parent.id == reply.parentId) {
-            return parent.addReply(reply, comparator)
-        }
-        // If the parent has no replies, return it unchanged
-        if (parent.replies.isNullOrEmpty()) {
-            return parent
-        }
-        // Otherwise, recursively search for the parent in the replies
-        return parent.copy(replies = parent.replies.map { child -> addNestedReply(child, reply) })
     }
 
     private fun removeNestedReply(
@@ -145,24 +125,6 @@ internal class CommentReplyListStateImpl(
         // If not found, recursively check each reply
         return comment.copy(
             replies = comment.replies.map { child -> removeNestedReply(child, commentIdToRemove) }
-        )
-    }
-
-    private fun updateNestedReply(
-        parent: ThreadedCommentData,
-        updatedComment: CommentData,
-    ): ThreadedCommentData {
-        // If this comment is the parent, update it directly
-        if (parent.id == updatedComment.id) {
-            return parent.update(updatedComment)
-        }
-        // If the parent has no replies, return it unchanged
-        if (parent.replies.isNullOrEmpty()) {
-            return parent
-        }
-        // Otherwise, recursively search for the comment to update in the replies
-        return parent.copy(
-            replies = parent.replies.map { child -> updateNestedReply(child, updatedComment) }
         )
     }
 
@@ -224,13 +186,6 @@ internal interface CommentReplyListStateUpdates {
     fun onQueryMoreReplies(result: PaginationResult<ThreadedCommentData>)
 
     /**
-     * Handles the addition of a new comment reply.
-     *
-     * @param comment The comment data for the newly added reply.
-     */
-    fun onCommentAdded(comment: ThreadedCommentData)
-
-    /**
      * Handles the removal of a comment reply.
      *
      * @param commentId The ID of the comment that was removed.
@@ -238,11 +193,11 @@ internal interface CommentReplyListStateUpdates {
     fun onCommentRemoved(commentId: String)
 
     /**
-     * Handles the update of an existing comment reply.
+     * Handles the addition of a new comment reply.
      *
-     * @param comment The updated comment data for the reply.
+     * @param comment The comment data for the newly added reply.
      */
-    fun onCommentUpdated(comment: CommentData)
+    fun onCommentUpserted(comment: CommentData)
 
     /**
      * Handles the addition of a reaction to a comment reply.
