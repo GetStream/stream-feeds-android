@@ -75,6 +75,15 @@ internal class CommentReplyListStateImpl(
     }
 
     override fun onCommentRemoved(commentId: String) {
+        if (commentId == query.commentId) {
+            // If the deleted comment is the parent comment, we clear the entire state
+            _replies.update { emptyList() }
+        } else {
+            onReplyRemoved(commentId)
+        }
+    }
+
+    private fun onReplyRemoved(commentId: String) {
         _replies.update { current ->
             val filteredTopLevel = current.filter { it.id != commentId }
             if (filteredTopLevel.size != current.size) {
