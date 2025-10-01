@@ -405,8 +405,8 @@ internal class ListUpsertSortedTest {
                 element = newUser,
                 idSelector = TestUser::id,
                 comparator = ageComparator,
-                update = { old, new ->
-                    old.copy(name = "${old.name} Updated", age = new.age, score = new.score)
+                update = {
+                    it.copy(name = "${it.name} Updated", age = newUser.age, score = newUser.score)
                 },
             )
 
@@ -436,9 +436,7 @@ internal class ListUpsertSortedTest {
                 element = newUser,
                 idSelector = TestUser::id,
                 comparator = ageComparator,
-                update = { old, new ->
-                    old.copy(name = "${old.name}-${new.name}", score = new.score)
-                },
+                update = { it.copy(name = "${it.name}-${newUser.name}", score = newUser.score) },
             )
 
         val expected =
