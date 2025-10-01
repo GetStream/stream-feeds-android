@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.internal.state.ActivityCommentListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionAdded
@@ -52,6 +53,16 @@ internal class ActivityCommentListEventHandlerTest(
         @Parameterized.Parameters(name = "{0}")
         fun data(): List<Array<Any>> =
             listOf(
+                testParams<ActivityCommentListStateUpdates>(
+                    name = "ActivityDeleted matching activity",
+                    event = ActivityDeleted("feed-1", objectId),
+                    verifyBlock = { state -> state.onActivityRemoved() },
+                ),
+                testParams<ActivityCommentListStateUpdates>(
+                    name = "ActivityDeleted non-matching activity",
+                    event = ActivityDeleted("feed-1", differentObjectId),
+                    verifyBlock = { state -> state wasNot called },
+                ),
                 testParams<ActivityCommentListStateUpdates>(
                     name = "CommentAdded matching object",
                     event = CommentAdded("feed-1", matchingComment),
