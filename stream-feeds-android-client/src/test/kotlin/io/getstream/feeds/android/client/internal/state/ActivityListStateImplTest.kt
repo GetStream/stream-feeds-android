@@ -24,6 +24,8 @@ import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
+import io.getstream.feeds.android.client.internal.test.TestData.pollData
+import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -204,6 +206,97 @@ internal class ActivityListStateImplTest {
 
         val expectedComment = updatedComment.copy(ownReactions = listOf(reaction))
         val expectedActivity = activity1.copy(comments = listOf(expectedComment))
+        assertEquals(listOf(expectedActivity, activity2), activityListState.activities.value)
+    }
+
+    @Test
+    fun `on onPollDeleted, remove poll from activity`() = runTest {
+        val poll = pollData("poll-1", "Test Poll")
+        val activity1 = activityData("activity-1", poll = poll)
+        val activity2 = activityData("activity-2")
+        setupInitialActivities(activity1, activity2)
+
+        activityListState.onPollDeleted("poll-1")
+
+        val expectedActivity = activity1.copy(poll = null)
+        assertEquals(listOf(expectedActivity, activity2), activityListState.activities.value)
+    }
+
+    @Test
+    fun `on onPollUpdated, update poll in activity`() = runTest {
+        val originalPoll = pollData("poll-1", "Original Poll")
+        val activity1 = activityData("activity-1", poll = originalPoll)
+        val activity2 = activityData("activity-2")
+        setupInitialActivities(activity1, activity2)
+
+        val updatedPoll = pollData("poll-1", "Updated Poll", description = "Updated description")
+        activityListState.onPollUpdated(updatedPoll)
+
+        val expectedActivity = activity1.copy(poll = updatedPoll)
+        assertEquals(listOf(expectedActivity, activity2), activityListState.activities.value)
+    }
+
+    @Test
+    fun `on onPollUpdated with non-matching poll, keep activities unchanged`() = runTest {
+        val poll = pollData("poll-1", "Test Poll")
+        val activity1 = activityData("activity-1", poll = poll)
+        val activity2 = activityData("activity-2")
+        val initialActivities = listOf(activity1, activity2)
+        setupInitialActivities(activity1, activity2)
+
+        val differentPoll = pollData("different-poll", "Different Poll")
+        activityListState.onPollUpdated(differentPoll)
+
+        assertEquals(initialActivities, activityListState.activities.value)
+    }
+
+    @Test
+    fun `on onPollVoteUpserted, update poll with new vote`() = runTest {
+        val originalPoll = pollData("poll-1", "Test Poll")
+        val activity1 = activityData("activity-1", poll = originalPoll)
+        val activity2 = activityData("activity-2")
+        setupInitialActivities(activity1, activity2)
+
+        val vote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
+        activityListState.onPollVoteUpserted("poll-1", vote)
+
+        val expectedPoll =
+            originalPoll.copy(
+                ownVotes = listOf(vote),
+                latestVotesByOption = mapOf("option-1" to listOf(vote)),
+                voteCountsByOption = mapOf("option-1" to 1),
+                voteCount = 1,
+            )
+        val expectedActivity = activity1.copy(poll = expectedPoll)
+        assertEquals(listOf(expectedActivity, activity2), activityListState.activities.value)
+    }
+
+    @Test
+    fun `on onPollVoteRemoved, update poll with vote removed`() = runTest {
+        val existingVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
+        val originalPoll =
+            pollData(
+                "poll-1",
+                "Test Poll",
+                ownVotes = listOf(existingVote),
+                latestVotesByOption = mapOf("option-1" to listOf(existingVote)),
+                voteCountsByOption = mapOf("option-1" to 1),
+                voteCount = 1,
+            )
+        val activity1 = activityData("activity-1", poll = originalPoll)
+        val activity2 = activityData("activity-2")
+        setupInitialActivities(activity1, activity2)
+
+        activityListState.onPollVoteRemoved("poll-1", existingVote)
+
+        val expectedPoll =
+            originalPoll.copy(
+                ownVotes = emptyList(),
+                latestVotesByOption = mapOf("option-1" to emptyList()),
+                voteCountsByOption = mapOf("option-1" to 0),
+                voteCount = 0,
+            )
+        val expectedActivity = activity1.copy(poll = expectedPoll)
         assertEquals(listOf(expectedActivity, activity2), activityListState.activities.value)
     }
 
