@@ -56,13 +56,10 @@ internal class ActivityListEventHandler(
             is StateUpdateEvent.CommentAdded -> state.onCommentUpserted(event.comment)
             is StateUpdateEvent.CommentDeleted -> state.onCommentRemoved(event.comment)
             is StateUpdateEvent.CommentUpdated -> state.onCommentUpserted(event.comment)
-            is StateUpdateEvent.CommentReactionAdded ->
-                state.onCommentReactionUpserted(event.comment, event.reaction)
-
             is StateUpdateEvent.CommentReactionDeleted ->
                 state.onCommentReactionRemoved(event.comment, event.reaction)
 
-            is StateUpdateEvent.CommentReactionUpdated ->
+            is StateUpdateEvent.CommentReactionUpserted ->
                 state.onCommentReactionUpserted(event.comment, event.reaction)
 
             is StateUpdateEvent.PollDeleted -> state.onPollDeleted(event.pollId)

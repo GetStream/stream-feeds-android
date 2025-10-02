@@ -18,9 +18,8 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.internal.state.CommentReactionListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpserted
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.mockk.MockKVerificationScope
@@ -57,16 +56,6 @@ internal class CommentReactionListEventHandlerTest(
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<CommentReactionListStateUpdates>(
-                    name = "CommentReactionAdded matching comment",
-                    event = CommentReactionAdded("feed-1", matchingComment, reaction),
-                    verifyBlock = { state -> state.onReactionUpserted(reaction) },
-                ),
-                testParams<CommentReactionListStateUpdates>(
-                    name = "CommentReactionAdded non-matching comment",
-                    event = CommentReactionAdded("feed-1", nonMatchingComment, reaction),
-                    verifyBlock = { state -> state wasNot called },
-                ),
-                testParams<CommentReactionListStateUpdates>(
                     name = "CommentReactionDeleted matching comment",
                     event = CommentReactionDeleted("feed-1", matchingComment, reaction),
                     verifyBlock = { state -> state.onReactionRemoved(reaction) },
@@ -77,13 +66,13 @@ internal class CommentReactionListEventHandlerTest(
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<CommentReactionListStateUpdates>(
-                    name = "CommentReactionUpdated matching comment",
-                    event = CommentReactionUpdated("feed-1", matchingComment, reaction),
+                    name = "CommentReactionUpserted matching comment",
+                    event = CommentReactionUpserted("feed-1", matchingComment, reaction),
                     verifyBlock = { state -> state.onReactionUpserted(reaction) },
                 ),
                 testParams<CommentReactionListStateUpdates>(
-                    name = "CommentReactionUpdated non-matching comment",
-                    event = CommentReactionUpdated("feed-1", nonMatchingComment, reaction),
+                    name = "CommentReactionUpserted non-matching comment",
+                    event = CommentReactionUpserted("feed-1", nonMatchingComment, reaction),
                     verifyBlock = { state -> state wasNot called },
                 ),
             )

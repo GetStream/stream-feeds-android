@@ -99,17 +99,12 @@ internal class ActivityEventHandler(
                 state.onCommentUpserted(event.comment)
             }
 
-            is StateUpdateEvent.CommentReactionAdded -> {
-                if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
-                state.onCommentReactionUpserted(event.comment, event.reaction)
-            }
-
             is StateUpdateEvent.CommentReactionDeleted -> {
                 if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
                 state.onCommentReactionRemoved(event.comment, event.reaction)
             }
 
-            is StateUpdateEvent.CommentReactionUpdated -> {
+            is StateUpdateEvent.CommentReactionUpserted -> {
                 if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
                 state.onCommentReactionUpserted(event.comment, event.reaction)
             }

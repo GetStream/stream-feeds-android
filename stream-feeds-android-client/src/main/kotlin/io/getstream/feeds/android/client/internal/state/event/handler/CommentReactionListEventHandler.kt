@@ -31,19 +31,13 @@ internal class CommentReactionListEventHandler(
                 }
             }
 
-            is StateUpdateEvent.CommentReactionAdded -> {
-                if (event.comment.id == commentId) {
-                    state.onReactionUpserted(event.reaction)
-                }
-            }
-
             is StateUpdateEvent.CommentReactionDeleted -> {
                 if (event.comment.id == commentId) {
                     state.onReactionRemoved(event.reaction)
                 }
             }
 
-            is StateUpdateEvent.CommentReactionUpdated -> {
+            is StateUpdateEvent.CommentReactionUpserted -> {
                 if (event.comment.id == commentId) {
                     state.onReactionUpserted(event.reaction)
                 }

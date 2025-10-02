@@ -96,7 +96,7 @@ internal class StateUpdateEventToModelTest(
                 commentAdded().shouldMapTo<StateUpdateEvent.CommentAdded>(),
                 commentUpdated().shouldMapTo<StateUpdateEvent.CommentUpdated>(),
                 commentDeleted().shouldMapTo<StateUpdateEvent.CommentDeleted>(),
-                commentReactionAdded().shouldMapTo<StateUpdateEvent.CommentReactionAdded>(),
+                commentReactionAdded().shouldMapTo<StateUpdateEvent.CommentReactionUpserted>(),
                 commentReactionDeleted().shouldMapTo<StateUpdateEvent.CommentReactionDeleted>(),
                 feedUpdated().shouldMapTo<StateUpdateEvent.FeedUpdated>(),
                 feedDeleted().shouldMapTo<StateUpdateEvent.FeedDeleted>(),
