@@ -232,8 +232,7 @@ internal fun ActivityData.upsertCommentReaction(
     updated: CommentData,
     reaction: FeedsReactionData,
     currentUserId: String,
-    // TODO [G.] remove when all call sites pass the parameter
-    enforceUnique: Boolean = false,
+    enforceUnique: Boolean,
 ): ActivityData =
     copy(
         comments =

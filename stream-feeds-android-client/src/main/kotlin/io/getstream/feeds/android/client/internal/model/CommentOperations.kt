@@ -89,8 +89,7 @@ internal fun CommentData.upsertReaction(
     updated: CommentData,
     reaction: FeedsReactionData,
     currentUserId: String,
-    // TODO [G.] remove when all call sites pass the parameter
-    enforceUnique: Boolean = false,
+    enforceUnique: Boolean,
 ): CommentData =
     changeReactions(updated, reaction, currentUserId) { upsertReaction(reaction, enforceUnique) }
 
