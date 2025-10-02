@@ -18,9 +18,8 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.internal.state.ActivityReactionListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpserted
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.mockk.MockKVerificationScope
@@ -56,28 +55,6 @@ internal class ActivityReactionListEventHandlerTest(
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<ActivityReactionListStateUpdates>(
-                    name = "ActivityReactionAdded for matching activity",
-                    event =
-                        ActivityReactionAdded(
-                            "feed-1",
-                            activityData(activityId),
-                            feedsReactionData(activityId),
-                        ),
-                    verifyBlock = { state ->
-                        state.onReactionUpserted(feedsReactionData(activityId))
-                    },
-                ),
-                testParams<ActivityReactionListStateUpdates>(
-                    name = "ActivityReactionAdded for different activity",
-                    event =
-                        ActivityReactionAdded(
-                            "feed-1",
-                            activityData(differentActivityId),
-                            feedsReactionData(differentActivityId),
-                        ),
-                    verifyBlock = { state -> state wasNot called },
-                ),
-                testParams<ActivityReactionListStateUpdates>(
                     name = "ActivityReactionDeleted for matching activity",
                     event =
                         ActivityReactionDeleted(
@@ -100,9 +77,9 @@ internal class ActivityReactionListEventHandlerTest(
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<ActivityReactionListStateUpdates>(
-                    name = "ActivityReactionUpdated for matching activity",
+                    name = "ActivityReactionUpserted for matching activity",
                     event =
-                        ActivityReactionUpdated(
+                        ActivityReactionUpserted(
                             "feed-1",
                             activityData(activityId),
                             feedsReactionData(activityId),
@@ -112,9 +89,9 @@ internal class ActivityReactionListEventHandlerTest(
                     },
                 ),
                 testParams<ActivityReactionListStateUpdates>(
-                    name = "ActivityReactionUpdated for different activity",
+                    name = "ActivityReactionUpserted for different activity",
                     event =
-                        ActivityReactionUpdated(
+                        ActivityReactionUpserted(
                             "feed-1",
                             activityData(differentActivityId),
                             feedsReactionData(differentActivityId),
