@@ -59,7 +59,11 @@ internal class ActivityCommentListEventHandler(
 
             is StateUpdateEvent.CommentReactionUpserted -> {
                 if (event.comment.objectId == objectId && event.comment.objectType == objectType) {
-                    state.onCommentReactionUpserted(event.comment, event.reaction)
+                    state.onCommentReactionUpserted(
+                        event.comment,
+                        event.reaction,
+                        event.enforceUnique,
+                    )
                 }
             }
 
