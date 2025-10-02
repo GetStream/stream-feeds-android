@@ -268,7 +268,7 @@ internal class FeedStateImplTest {
         setupInitialState(listOf(activity), listOf(activityPin))
 
         val updatedComment = commentData("comment-1", objectId = "activity-1", text = "Updated")
-        feedState.onCommentReactionUpserted(updatedComment, reaction)
+        feedState.onCommentReactionUpserted(updatedComment, reaction, enforceUnique = false)
         feedState.onCommentReactionRemoved(updatedComment, reaction)
 
         val expectedActivity =
@@ -287,7 +287,7 @@ internal class FeedStateImplTest {
 
         val reaction = feedsReactionData(commentId = "comment-1")
         val updatedComment = commentData("comment-1", objectId = "activity-1", text = "Updated")
-        feedState.onCommentReactionUpserted(updatedComment, reaction)
+        feedState.onCommentReactionUpserted(updatedComment, reaction, enforceUnique = false)
 
         val expectedActivity =
             activity.copy(comments = listOf(updatedComment.copy(ownReactions = listOf(reaction))))
@@ -295,6 +295,45 @@ internal class FeedStateImplTest {
         val expectedPinnedActivity = activityPin.copy(activity = expectedActivity)
         assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
     }
+
+    @Test
+    fun `on onCommentReactionUpserted with enforceUnique true, then replace all existing user reactions with single new one`() =
+        runTest {
+            val existingReactions =
+                listOf(
+                    feedsReactionData(
+                        commentId = "comment-1",
+                        type = "like",
+                        userId = currentUserId,
+                    ),
+                    feedsReactionData(
+                        commentId = "comment-1",
+                        type = "heart",
+                        userId = currentUserId,
+                    ),
+                )
+
+            val comment =
+                commentData("comment-1", objectId = "activity-1", ownReactions = existingReactions)
+            val activity = activityData("activity-1").copy(comments = listOf(comment))
+            val activityPin = activityPin(activity)
+            setupInitialState(listOf(activity), listOf(activityPin))
+
+            val newReaction =
+                feedsReactionData(commentId = "comment-1", type = "smile", userId = currentUserId)
+            val updatedComment =
+                commentData("comment-1", objectId = "activity-1", ownReactions = existingReactions)
+
+            feedState.onCommentReactionUpserted(updatedComment, newReaction, enforceUnique = true)
+
+            val expectedActivity =
+                activity.copy(
+                    comments = listOf(updatedComment.copy(ownReactions = listOf(newReaction)))
+                )
+            assertEquals(listOf(expectedActivity), feedState.activities.value)
+            val expectedPinnedActivity = activityPin.copy(activity = expectedActivity)
+            assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
+        }
 
     @Test
     fun `on onReactionUpserted, then add reaction to activity`() = runTest {
