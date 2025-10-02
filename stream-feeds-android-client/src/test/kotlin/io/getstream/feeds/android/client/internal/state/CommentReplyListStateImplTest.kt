@@ -218,7 +218,7 @@ internal class CommentReplyListStateImplTest {
         val reaction =
             feedsReactionData(activityId = "comment-1", type = "like", userId = currentUserId)
 
-        state.onCommentReactionUpserted(update, reaction)
+        state.onCommentReactionUpserted(update, reaction, enforceUnique = false)
 
         val expectedComment = comment.upsertReaction(update, reaction, currentUserId)
         assertEquals(listOf(expectedComment), state.replies.value)
@@ -270,7 +270,7 @@ internal class CommentReplyListStateImplTest {
                     userId = currentUserId,
                 )
 
-            state.onCommentReactionUpserted(update, reaction)
+            state.onCommentReactionUpserted(update, reaction, enforceUnique = false)
 
             val expectedDeepComment =
                 deeplyNestedComment.upsertReaction(update, reaction, currentUserId)
@@ -278,6 +278,38 @@ internal class CommentReplyListStateImplTest {
             val expectedParent = parentComment.copy(replies = listOf(expectedDirectReply))
 
             assertEquals(listOf(expectedParent), state.replies.value)
+        }
+
+    @Test
+    fun `on onCommentReactionUpserted with enforceUnique true, then replace all existing user reactions with single new one`() =
+        runTest {
+            val existingReactions =
+                listOf(
+                    feedsReactionData(
+                        activityId = "comment-1",
+                        type = "like",
+                        userId = currentUserId,
+                    ),
+                    feedsReactionData(
+                        activityId = "comment-1",
+                        type = "heart",
+                        userId = currentUserId,
+                    ),
+                )
+
+            val comment = threadedCommentData("comment-1", ownReactions = existingReactions)
+            val update = commentData("comment-1", ownReactions = existingReactions)
+
+            setupInitialReplies(comment)
+
+            val newReaction =
+                feedsReactionData(activityId = "comment-1", type = "smile", userId = currentUserId)
+
+            state.onCommentReactionUpserted(update, newReaction, enforceUnique = true)
+
+            val expectedComment =
+                comment.upsertReaction(update, newReaction, currentUserId, enforceUnique = true)
+            assertEquals(listOf(expectedComment), state.replies.value)
         }
 
     private fun setupInitialReplies(vararg replies: ThreadedCommentData) {

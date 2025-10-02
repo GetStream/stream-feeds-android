@@ -40,7 +40,7 @@ internal class CommentListEventHandler(
                 state.onCommentReactionRemoved(event.comment, event.reaction)
 
             is StateUpdateEvent.CommentReactionUpserted ->
-                state.onCommentReactionUpserted(event.comment, event.reaction)
+                state.onCommentReactionUpserted(event.comment, event.reaction, event.enforceUnique)
 
             else -> Unit
         }

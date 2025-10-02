@@ -79,7 +79,9 @@ internal class CommentListEventHandlerTest(
                 testParams<CommentListStateUpdates>(
                     name = "CommentReactionUpserted",
                     event = CommentReactionUpserted("feed-1", comment, reaction, false),
-                    verifyBlock = { state -> state.onCommentReactionUpserted(comment, reaction) },
+                    verifyBlock = { state ->
+                        state.onCommentReactionUpserted(comment, reaction, false)
+                    },
                 ),
             )
     }
