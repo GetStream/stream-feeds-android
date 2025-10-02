@@ -101,7 +101,7 @@ internal class ActivityEventHandler(
 
             is StateUpdateEvent.CommentReactionUpserted -> {
                 if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
-                state.onCommentReactionUpserted(event.comment, event.reaction)
+                state.onCommentReactionUpserted(event.comment, event.reaction, event.enforceUnique)
             }
 
             is StateUpdateEvent.PollDeleted -> {
