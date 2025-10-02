@@ -691,7 +691,7 @@ internal class FeedImplTest {
         assertEquals(reaction, result.getOrNull())
         verify {
             stateEventListener.onEvent(
-                StateUpdateEvent.CommentReactionUpserted(fid.rawValue, comment, reaction)
+                StateUpdateEvent.CommentReactionUpserted(fid.rawValue, comment, reaction, false)
             )
         }
     }
