@@ -21,9 +21,8 @@ import io.getstream.feeds.android.client.internal.state.ActivityListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpserted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkDeleted
@@ -95,21 +94,6 @@ internal class ActivityListEventHandlerTest(
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<ActivityListStateUpdates>(
-                    name = "ActivityReactionAdded",
-                    event =
-                        ActivityReactionAdded(
-                            "feed-1",
-                            activityData("activity-1"),
-                            feedsReactionData("activity-1"),
-                        ),
-                    verifyBlock = { state ->
-                        state.onReactionUpserted(
-                            feedsReactionData("activity-1"),
-                            activityData("activity-1"),
-                        )
-                    },
-                ),
-                testParams<ActivityListStateUpdates>(
                     name = "ActivityReactionDeleted",
                     event =
                         ActivityReactionDeleted(
@@ -125,9 +109,9 @@ internal class ActivityListEventHandlerTest(
                     },
                 ),
                 testParams<ActivityListStateUpdates>(
-                    name = "ActivityReactionUpdated",
+                    name = "ActivityReactionUpserted",
                     event =
-                        ActivityReactionUpdated(
+                        ActivityReactionUpserted(
                             "feed-1",
                             activityData("activity-1"),
                             feedsReactionData("activity-1"),

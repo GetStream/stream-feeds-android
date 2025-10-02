@@ -41,13 +41,10 @@ internal class ActivityListEventHandler(
                 }
             }
 
-            is StateUpdateEvent.ActivityReactionAdded ->
-                state.onReactionUpserted(event.reaction, event.activity)
-
             is StateUpdateEvent.ActivityReactionDeleted ->
                 state.onReactionRemoved(event.reaction, event.activity)
 
-            is StateUpdateEvent.ActivityReactionUpdated ->
+            is StateUpdateEvent.ActivityReactionUpserted ->
                 state.onReactionUpserted(event.reaction, event.activity)
 
             is StateUpdateEvent.BookmarkAdded -> state.onBookmarkUpserted(event.bookmark)
