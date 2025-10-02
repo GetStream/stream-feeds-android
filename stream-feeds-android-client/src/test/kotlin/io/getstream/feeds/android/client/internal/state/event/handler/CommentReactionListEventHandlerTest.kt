@@ -68,7 +68,7 @@ internal class CommentReactionListEventHandlerTest(
                 testParams<CommentReactionListStateUpdates>(
                     name = "CommentReactionUpserted matching comment",
                     event = CommentReactionUpserted("feed-1", matchingComment, reaction, false),
-                    verifyBlock = { state -> state.onReactionUpserted(reaction) },
+                    verifyBlock = { state -> state.onReactionUpserted(reaction, false) },
                 ),
                 testParams<CommentReactionListStateUpdates>(
                     name = "CommentReactionUpserted non-matching comment",

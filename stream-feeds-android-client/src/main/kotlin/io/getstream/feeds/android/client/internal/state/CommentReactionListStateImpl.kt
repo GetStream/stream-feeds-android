@@ -21,9 +21,9 @@ import io.getstream.feeds.android.client.api.state.CommentReactionListState
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsSort
 import io.getstream.feeds.android.client.internal.model.PaginationResult
+import io.getstream.feeds.android.client.internal.model.upsertReaction
 import io.getstream.feeds.android.client.internal.state.query.CommentReactionsQueryConfig
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
-import io.getstream.feeds.android.client.internal.utils.upsert
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -77,8 +77,8 @@ internal class CommentReactionListStateImpl(override val query: CommentReactions
         _reactions.update { current -> current.filter { it.id != reaction.id } }
     }
 
-    override fun onReactionUpserted(reaction: FeedsReactionData) {
-        _reactions.update { current -> current.upsert(reaction, FeedsReactionData::id) }
+    override fun onReactionUpserted(reaction: FeedsReactionData, enforceUnique: Boolean) {
+        _reactions.update { current -> current.upsertReaction(reaction, enforceUnique) }
     }
 }
 
@@ -112,6 +112,7 @@ internal interface CommentReactionListStateUpdates {
      * Handles the addition or update of a reaction to the comment.
      *
      * @param reaction The reaction that was added or updated.
+     * @param enforceUnique Whether to replace existing reactions by the same user.
      */
-    fun onReactionUpserted(reaction: FeedsReactionData)
+    fun onReactionUpserted(reaction: FeedsReactionData, enforceUnique: Boolean)
 }

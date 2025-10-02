@@ -118,8 +118,7 @@ internal fun ThreadedCommentData.upsertReaction(
     updated: CommentData,
     reaction: FeedsReactionData,
     currentUserId: String,
-    // TODO [G.] remove default after passing the parameter in all call sites
-    enforceUnique: Boolean = false,
+    enforceUnique: Boolean,
 ): ThreadedCommentData =
     changeReactions(updated, reaction, currentUserId) { upsertReaction(reaction, enforceUnique) }
 
