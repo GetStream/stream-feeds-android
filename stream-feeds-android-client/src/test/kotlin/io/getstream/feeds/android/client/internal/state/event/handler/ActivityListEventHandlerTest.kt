@@ -115,6 +115,7 @@ internal class ActivityListEventHandlerTest(
                             "feed-1",
                             activityData("activity-1"),
                             feedsReactionData("activity-1"),
+                            true,
                         ),
                     verifyBlock = { state ->
                         state.onReactionUpserted(

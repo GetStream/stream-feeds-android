@@ -185,8 +185,10 @@ internal fun ActivityData.upsertReaction(
     updated: ActivityData,
     reaction: FeedsReactionData,
     currentUserId: String,
+    // TODO [G.] remove when all call sites pass the parameter
+    enforceUnique: Boolean = false,
 ): ActivityData =
-    changeReactions(updated, reaction, currentUserId) { upsert(reaction, FeedsReactionData::id) }
+    changeReactions(updated, reaction, currentUserId) { upsertReaction(reaction, enforceUnique) }
 
 /**
  * Merges the receiver activity with [updated] and updates own reactions using the provided

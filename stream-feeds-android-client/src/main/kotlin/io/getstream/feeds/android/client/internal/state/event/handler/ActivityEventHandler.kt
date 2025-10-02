@@ -58,7 +58,7 @@ internal class ActivityEventHandler(
 
             is StateUpdateEvent.ActivityReactionUpserted -> {
                 if (event.fid != fid.rawValue || event.reaction.activityId != activityId) return
-                state.onReactionUpserted(event.reaction, event.activity)
+                state.onReactionUpserted(event.reaction, event.activity, event.enforceUnique)
             }
 
             is StateUpdateEvent.BookmarkAdded -> {

@@ -83,6 +83,7 @@ internal class ActivityReactionListEventHandlerTest(
                             "feed-1",
                             activityData(activityId),
                             feedsReactionData(activityId),
+                            true,
                         ),
                     verifyBlock = { state ->
                         state.onReactionUpserted(feedsReactionData(activityId))
@@ -95,6 +96,7 @@ internal class ActivityReactionListEventHandlerTest(
                             "feed-1",
                             activityData(differentActivityId),
                             feedsReactionData(differentActivityId),
+                            true,
                         ),
                     verifyBlock = { state -> state wasNot called },
                 ),
