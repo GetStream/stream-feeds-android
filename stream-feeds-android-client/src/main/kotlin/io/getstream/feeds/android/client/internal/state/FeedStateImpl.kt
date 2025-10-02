@@ -213,9 +213,13 @@ internal class FeedStateImpl(
         }
     }
 
-    override fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData) {
+    override fun onCommentReactionUpserted(
+        comment: CommentData,
+        reaction: FeedsReactionData,
+        enforceUnique: Boolean,
+    ) {
         updateActivitiesWhere({ it.id == comment.objectId }) { activity ->
-            activity.upsertCommentReaction(comment, reaction, currentUserId)
+            activity.upsertCommentReaction(comment, reaction, currentUserId, enforceUnique)
         }
     }
 
@@ -398,7 +402,11 @@ internal interface FeedStateUpdates {
     fun onCommentReactionRemoved(comment: CommentData, reaction: FeedsReactionData)
 
     /** Handles updates to the feed state when a comment reaction is added or updated. */
-    fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData)
+    fun onCommentReactionUpserted(
+        comment: CommentData,
+        reaction: FeedsReactionData,
+        enforceUnique: Boolean,
+    )
 
     /** Handles updates to the feed state when the feed is deleted. */
     fun onFeedDeleted()

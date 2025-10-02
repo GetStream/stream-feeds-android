@@ -281,7 +281,7 @@ internal class FeedEventHandlerTest(
                     name = "CommentReactionUpserted matching feed",
                     event = CommentReactionUpserted(fid.rawValue, comment, commentReaction, false),
                     verifyBlock = { state ->
-                        state.onCommentReactionUpserted(comment, commentReaction)
+                        state.onCommentReactionUpserted(comment, commentReaction, false)
                     },
                 ),
                 testParams<FeedStateUpdates>(

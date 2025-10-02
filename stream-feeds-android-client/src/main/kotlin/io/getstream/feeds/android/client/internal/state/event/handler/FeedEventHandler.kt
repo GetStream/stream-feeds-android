@@ -137,7 +137,11 @@ internal class FeedEventHandler(
 
             is StateUpdateEvent.CommentReactionUpserted -> {
                 if (event.fid == fid.rawValue) {
-                    state.onCommentReactionUpserted(event.comment, event.reaction)
+                    state.onCommentReactionUpserted(
+                        event.comment,
+                        event.reaction,
+                        event.enforceUnique,
+                    )
                 }
             }
 
