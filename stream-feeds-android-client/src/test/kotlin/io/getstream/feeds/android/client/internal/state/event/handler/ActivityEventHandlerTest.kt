@@ -323,7 +323,9 @@ internal class ActivityEventHandlerTest(
                             commentReaction,
                             false,
                         ),
-                    verifyBlock = { it.onCommentReactionUpserted(matchingComment, commentReaction) },
+                    verifyBlock = {
+                        it.onCommentReactionUpserted(matchingComment, commentReaction, false)
+                    },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "CommentReactionUpserted non-matching feed",

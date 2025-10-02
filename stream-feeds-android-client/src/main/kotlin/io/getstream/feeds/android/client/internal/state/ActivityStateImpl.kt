@@ -113,9 +113,13 @@ internal class ActivityStateImpl(
         }
     }
 
-    override fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData) {
+    override fun onCommentReactionUpserted(
+        comment: CommentData,
+        reaction: FeedsReactionData,
+        enforceUnique: Boolean,
+    ) {
         _activity.update { current ->
-            current?.upsertCommentReaction(comment, reaction, currentUserId)
+            current?.upsertCommentReaction(comment, reaction, currentUserId, enforceUnique)
         }
     }
 
@@ -227,8 +231,13 @@ internal interface ActivityStateUpdates {
      *
      * @param comment The comment to which the reaction was added or updated.
      * @param reaction The reaction that was added or updated.
+     * @param enforceUnique Whether to replace existing reactions by the same user.
      */
-    fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData)
+    fun onCommentReactionUpserted(
+        comment: CommentData,
+        reaction: FeedsReactionData,
+        enforceUnique: Boolean,
+    )
 
     /**
      * Called when the associated poll is deleted.
