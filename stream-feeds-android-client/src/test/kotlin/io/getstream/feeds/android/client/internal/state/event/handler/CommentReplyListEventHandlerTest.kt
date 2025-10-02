@@ -67,7 +67,7 @@ internal class CommentReplyListEventHandlerTest(
                             false,
                         ),
                     verifyBlock = { state ->
-                        state.onCommentReactionUpserted(commentData(), feedsReactionData())
+                        state.onCommentReactionUpserted(commentData(), feedsReactionData(), false)
                     },
                 ),
                 testParams<CommentReplyListStateUpdates>(
