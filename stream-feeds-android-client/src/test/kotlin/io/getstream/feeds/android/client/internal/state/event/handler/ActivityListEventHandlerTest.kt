@@ -121,6 +121,7 @@ internal class ActivityListEventHandlerTest(
                         state.onReactionUpserted(
                             feedsReactionData("activity-1"),
                             activityData("activity-1"),
+                            true,
                         )
                     },
                 ),
