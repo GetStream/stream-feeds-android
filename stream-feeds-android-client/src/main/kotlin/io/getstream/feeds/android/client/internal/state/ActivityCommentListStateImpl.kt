@@ -103,8 +103,14 @@ internal class ActivityCommentListStateImpl(
         }
     }
 
-    override fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData) {
-        _comments.update { current -> current.map { upsertCommentReaction(it, comment, reaction) } }
+    override fun onCommentReactionUpserted(
+        comment: CommentData,
+        reaction: FeedsReactionData,
+        enforceUnique: Boolean,
+    ) {
+        _comments.update { current ->
+            current.map { upsertCommentReaction(it, comment, reaction, enforceUnique) }
+        }
     }
 
     override fun onCommentReactionRemoved(comment: CommentData, reaction: FeedsReactionData) {
@@ -115,10 +121,11 @@ internal class ActivityCommentListStateImpl(
         comment: ThreadedCommentData,
         update: CommentData,
         reaction: FeedsReactionData,
+        enforceUnique: Boolean,
     ): ThreadedCommentData {
         if (comment.id == update.id) {
             // If this comment matches the target, upsert the reaction
-            return comment.upsertReaction(update, reaction, currentUserId)
+            return comment.upsertReaction(update, reaction, currentUserId, enforceUnique)
         }
         if (comment.replies.isNullOrEmpty()) {
             // If there are no replies, return unchanged
@@ -126,7 +133,9 @@ internal class ActivityCommentListStateImpl(
         }
         // Recursively search through replies
         val updatedReplies =
-            comment.replies.map { reply -> upsertCommentReaction(reply, update, reaction) }
+            comment.replies.map { reply ->
+                upsertCommentReaction(reply, update, reaction, enforceUnique)
+            }
         return comment.copy(replies = updatedReplies)
     }
 
@@ -186,8 +195,13 @@ internal interface ActivityCommentListStateUpdates {
      *
      * @param comment The comment the reaction belongs to.
      * @param reaction The reaction data that was added.
+     * @param enforceUnique Whether to replace existing reactions by the same user.
      */
-    fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData)
+    fun onCommentReactionUpserted(
+        comment: CommentData,
+        reaction: FeedsReactionData,
+        enforceUnique: Boolean,
+    )
 
     /**
      * Handles the removal of a reaction from a comment.

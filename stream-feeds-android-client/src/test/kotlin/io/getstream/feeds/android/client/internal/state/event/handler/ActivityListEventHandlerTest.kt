@@ -162,7 +162,13 @@ internal class ActivityListEventHandlerTest(
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "CommentReactionUpserted",
-                    event = CommentReactionUpserted("feed-1", commentData(), feedsReactionData()),
+                    event =
+                        CommentReactionUpserted(
+                            "feed-1",
+                            commentData(),
+                            feedsReactionData(),
+                            false,
+                        ),
                     verifyBlock = { state ->
                         state.onCommentReactionUpserted(commentData(), feedsReactionData())
                     },

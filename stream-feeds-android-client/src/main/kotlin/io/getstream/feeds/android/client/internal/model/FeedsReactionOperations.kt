@@ -16,6 +16,8 @@
 package io.getstream.feeds.android.client.internal.model
 
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
+import io.getstream.feeds.android.client.internal.utils.insertUniqueBy
+import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.network.models.FeedsReactionResponse
 
 /**
@@ -32,3 +34,17 @@ internal fun FeedsReactionResponse.toModel(): FeedsReactionData =
         updatedAt = updatedAt,
         user = user.toModel(),
     )
+
+/**
+ * Inserts or updates a reaction in the list. If [enforceUnique] is true, it ensures that only one
+ * reaction per user exists in the list.
+ */
+internal fun List<FeedsReactionData>.upsertReaction(
+    reaction: FeedsReactionData,
+    enforceUnique: Boolean,
+): List<FeedsReactionData> =
+    if (enforceUnique) {
+        insertUniqueBy(reaction, FeedsReactionData::userReactionsGroupId)
+    } else {
+        upsert(reaction, FeedsReactionData::id)
+    }

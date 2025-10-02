@@ -279,14 +279,15 @@ internal class FeedEventHandlerTest(
                 ),
                 testParams<FeedStateUpdates>(
                     name = "CommentReactionUpserted matching feed",
-                    event = CommentReactionUpserted(fid.rawValue, comment, commentReaction),
+                    event = CommentReactionUpserted(fid.rawValue, comment, commentReaction, false),
                     verifyBlock = { state ->
                         state.onCommentReactionUpserted(comment, commentReaction)
                     },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "CommentReactionUpserted non-matching feed",
-                    event = CommentReactionUpserted("group:different", comment, commentReaction),
+                    event =
+                        CommentReactionUpserted("group:different", comment, commentReaction, false),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
