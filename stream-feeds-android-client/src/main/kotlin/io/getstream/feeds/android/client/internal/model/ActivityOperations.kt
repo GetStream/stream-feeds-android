@@ -232,10 +232,12 @@ internal fun ActivityData.upsertCommentReaction(
     updated: CommentData,
     reaction: FeedsReactionData,
     currentUserId: String,
+    // TODO [G.] remove when all call sites pass the parameter
+    enforceUnique: Boolean = false,
 ): ActivityData =
     copy(
         comments =
             comments.updateIf({ it.id == updated.id }) { comment ->
-                comment.upsertReaction(updated, reaction, currentUserId)
+                comment.upsertReaction(updated, reaction, currentUserId, enforceUnique)
             }
     )

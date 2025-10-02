@@ -185,7 +185,7 @@ internal class ActivityListStateImplTest {
         setupInitialActivities(activity1, activity2)
 
         val updatedComment = commentData("comment-1", objectId = "activity-1", text = "Updated")
-        activityListState.onCommentReactionUpserted(updatedComment, reaction)
+        activityListState.onCommentReactionUpserted(updatedComment, reaction, enforceUnique = false)
         activityListState.onCommentReactionRemoved(updatedComment, reaction)
 
         val expectedComment = updatedComment.copy(ownReactions = emptyList())
@@ -202,12 +202,51 @@ internal class ActivityListStateImplTest {
 
         val reaction = feedsReactionData(commentId = "comment-1", userId = currentUserId)
         val updatedComment = commentData("comment-1", objectId = "activity-1", text = "Updated")
-        activityListState.onCommentReactionUpserted(updatedComment, reaction)
+        activityListState.onCommentReactionUpserted(updatedComment, reaction, enforceUnique = false)
 
         val expectedComment = updatedComment.copy(ownReactions = listOf(reaction))
         val expectedActivity = activity1.copy(comments = listOf(expectedComment))
         assertEquals(listOf(expectedActivity, activity2), activityListState.activities.value)
     }
+
+    @Test
+    fun `on onCommentReactionUpserted with enforceUnique true, then replace all existing user reactions with single new one`() =
+        runTest {
+            val existingReactions =
+                listOf(
+                    feedsReactionData(
+                        commentId = "comment-1",
+                        type = "like",
+                        userId = currentUserId,
+                    ),
+                    feedsReactionData(
+                        commentId = "comment-1",
+                        type = "heart",
+                        userId = currentUserId,
+                    ),
+                )
+
+            val comment =
+                commentData("comment-1", objectId = "activity-1", ownReactions = existingReactions)
+            val activity1 = activityData("activity-1", comments = listOf(comment))
+            val activity2 = activityData("activity-2")
+            setupInitialActivities(activity1, activity2)
+
+            val newReaction =
+                feedsReactionData(commentId = "comment-1", type = "smile", userId = currentUserId)
+            val updatedComment =
+                commentData("comment-1", objectId = "activity-1", ownReactions = existingReactions)
+
+            activityListState.onCommentReactionUpserted(
+                updatedComment,
+                newReaction,
+                enforceUnique = true,
+            )
+
+            val expectedComment = updatedComment.copy(ownReactions = listOf(newReaction))
+            val expectedActivity = activity1.copy(comments = listOf(expectedComment))
+            assertEquals(listOf(expectedActivity, activity2), activityListState.activities.value)
+        }
 
     @Test
     fun `on onPollDeleted, remove poll from activity`() = runTest {
