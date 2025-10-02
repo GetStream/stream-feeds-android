@@ -46,7 +46,7 @@ internal class ThreadedCommentDataTest {
         val expected = originalComment.copy(text = "Updated text")
 
         // When
-        val result = originalComment.upsertReaction(update, newReaction, currentUserId)
+        val result = originalComment.upsertReaction(update, newReaction, currentUserId, false)
 
         // Then
         assertEquals(expected, result)
@@ -73,7 +73,7 @@ internal class ThreadedCommentDataTest {
             )
 
         // When
-        val result = originalComment.upsertReaction(update, newReaction, currentUserId)
+        val result = originalComment.upsertReaction(update, newReaction, currentUserId, false)
 
         // Then
         assertEquals(expected, result)
