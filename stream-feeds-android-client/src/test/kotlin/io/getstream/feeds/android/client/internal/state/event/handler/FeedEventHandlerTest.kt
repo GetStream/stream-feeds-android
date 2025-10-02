@@ -36,9 +36,8 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.B
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpserted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedUpdated
@@ -278,18 +277,6 @@ internal class FeedEventHandlerTest(
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
-                    name = "CommentReactionAdded matching feed",
-                    event = CommentReactionAdded(fid.rawValue, comment, commentReaction),
-                    verifyBlock = { state ->
-                        state.onCommentReactionUpserted(comment, commentReaction)
-                    },
-                ),
-                testParams<FeedStateUpdates>(
-                    name = "CommentReactionAdded non-matching feed",
-                    event = CommentReactionAdded("group:different", comment, commentReaction),
-                    verifyBlock = { state -> state wasNot called },
-                ),
-                testParams<FeedStateUpdates>(
                     name = "CommentReactionDeleted matching feed",
                     event = CommentReactionDeleted(fid.rawValue, comment, commentReaction),
                     verifyBlock = { state ->
@@ -302,15 +289,15 @@ internal class FeedEventHandlerTest(
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
-                    name = "CommentReactionUpdated matching feed",
-                    event = CommentReactionUpdated(fid.rawValue, comment, commentReaction),
+                    name = "CommentReactionUpserted matching feed",
+                    event = CommentReactionUpserted(fid.rawValue, comment, commentReaction),
                     verifyBlock = { state ->
                         state.onCommentReactionUpserted(comment, commentReaction)
                     },
                 ),
                 testParams<FeedStateUpdates>(
-                    name = "CommentReactionUpdated non-matching feed",
-                    event = CommentReactionUpdated("group:different", comment, commentReaction),
+                    name = "CommentReactionUpserted non-matching feed",
+                    event = CommentReactionUpserted("group:different", comment, commentReaction),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(

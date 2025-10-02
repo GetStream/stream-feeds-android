@@ -407,7 +407,7 @@ internal class FeedImpl(
             .addCommentReaction(commentId, request)
             .onSuccess { (reaction, comment) ->
                 subscriptionManager.onEvent(
-                    StateUpdateEvent.CommentReactionAdded(fid.rawValue, comment, reaction)
+                    StateUpdateEvent.CommentReactionUpserted(fid.rawValue, comment, reaction)
                 )
             }
             .map { it.first }
