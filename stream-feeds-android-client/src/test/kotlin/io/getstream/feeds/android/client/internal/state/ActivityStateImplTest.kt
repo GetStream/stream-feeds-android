@@ -168,7 +168,7 @@ internal class ActivityStateImplTest {
 
             val reaction = feedsReactionData("activity-1", "like", currentUserId)
             val updatedActivity = activityData("activity-1", text = "Updated activity")
-            activityState.onReactionUpserted(reaction, updatedActivity)
+            activityState.onReactionUpserted(reaction, updatedActivity, enforceUnique = false)
 
             val expected = updatedActivity.copy(ownReactions = listOf(reaction))
             assertEquals(expected, activityState.activity.value)
@@ -182,7 +182,7 @@ internal class ActivityStateImplTest {
 
             val reaction = feedsReactionData("activity-1", "like", "other-user")
             val updatedActivity = activityData("activity-1", text = "Updated activity")
-            activityState.onReactionUpserted(reaction, updatedActivity)
+            activityState.onReactionUpserted(reaction, updatedActivity, enforceUnique = false)
 
             val expected = updatedActivity.copy(ownReactions = emptyList())
             assertEquals(expected, activityState.activity.value)

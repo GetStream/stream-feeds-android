@@ -105,13 +105,21 @@ internal class ActivityEventHandlerTest(
                             fid.rawValue,
                             activity,
                             feedsReactionData(activityId),
+                            false,
                         ),
-                    verifyBlock = { it.onReactionUpserted(feedsReactionData(activityId), activity) },
+                    verifyBlock = {
+                        it.onReactionUpserted(feedsReactionData(activityId), activity, false)
+                    },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "ActivityReactionUpserted non-matching feed",
                     event =
-                        ActivityReactionUpserted(otherFid, activity, feedsReactionData(activityId)),
+                        ActivityReactionUpserted(
+                            otherFid,
+                            activity,
+                            feedsReactionData(activityId),
+                            false,
+                        ),
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
@@ -121,6 +129,7 @@ internal class ActivityEventHandlerTest(
                             fid.rawValue,
                             activity,
                             feedsReactionData(otherId),
+                            false,
                         ),
                     verifyBlock = { it wasNot called },
                 ),
