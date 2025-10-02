@@ -69,19 +69,13 @@ internal class FeedEventHandler(
                 }
             }
 
-            is StateUpdateEvent.ActivityReactionAdded -> {
-                if (event.fid == fid.rawValue) {
-                    state.onReactionUpserted(event.reaction, event.activity)
-                }
-            }
-
             is StateUpdateEvent.ActivityReactionDeleted -> {
                 if (event.fid == fid.rawValue) {
                     state.onReactionRemoved(event.reaction, event.activity)
                 }
             }
 
-            is StateUpdateEvent.ActivityReactionUpdated -> {
+            is StateUpdateEvent.ActivityReactionUpserted -> {
                 if (event.fid == fid.rawValue) {
                     state.onReactionUpserted(event.reaction, event.activity)
                 }

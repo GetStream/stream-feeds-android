@@ -89,19 +89,13 @@ internal sealed interface StateUpdateEvent {
 
     data class ActivityUnpinned(val fid: String, val activityId: String) : StateUpdateEvent
 
-    data class ActivityReactionAdded(
-        val fid: String,
-        val activity: ActivityData,
-        val reaction: FeedsReactionData,
-    ) : StateUpdateEvent
-
     data class ActivityReactionDeleted(
         val fid: String,
         val activity: ActivityData,
         val reaction: FeedsReactionData,
     ) : StateUpdateEvent
 
-    data class ActivityReactionUpdated(
+    data class ActivityReactionUpserted(
         val fid: String,
         val activity: ActivityData,
         val reaction: FeedsReactionData,
@@ -195,13 +189,13 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
             StateUpdateEvent.ActivityUnpinned(fid, pinnedActivity.activity.id)
 
         is ActivityReactionAddedEvent ->
-            StateUpdateEvent.ActivityReactionAdded(fid, activity.toModel(), reaction.toModel())
+            StateUpdateEvent.ActivityReactionUpserted(fid, activity.toModel(), reaction.toModel())
 
         is ActivityReactionDeletedEvent ->
             StateUpdateEvent.ActivityReactionDeleted(fid, activity.toModel(), reaction.toModel())
 
         is ActivityReactionUpdatedEvent ->
-            StateUpdateEvent.ActivityReactionUpdated(fid, activity.toModel(), reaction.toModel())
+            StateUpdateEvent.ActivityReactionUpserted(fid, activity.toModel(), reaction.toModel())
 
         is BookmarkAddedEvent -> StateUpdateEvent.BookmarkAdded(bookmark.toModel())
 

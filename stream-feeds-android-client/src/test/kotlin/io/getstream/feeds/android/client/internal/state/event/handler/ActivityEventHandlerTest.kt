@@ -19,9 +19,8 @@ import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.internal.state.ActivityStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpserted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkDeleted
@@ -78,28 +77,6 @@ internal class ActivityEventHandlerTest(
         fun data(): Collection<Array<Any>> =
             listOf(
                 testParams<ActivityStateUpdates>(
-                    name = "ActivityReactionAdded matching feed and activity",
-                    event =
-                        ActivityReactionAdded(
-                            fid.rawValue,
-                            activity,
-                            feedsReactionData(activityId),
-                        ),
-                    verifyBlock = { it.onReactionUpserted(feedsReactionData(activityId), activity) },
-                ),
-                testParams<ActivityStateUpdates>(
-                    name = "ActivityReactionAdded non-matching feed",
-                    event =
-                        ActivityReactionAdded(otherFid, activity, feedsReactionData(activityId)),
-                    verifyBlock = { it wasNot called },
-                ),
-                testParams<ActivityStateUpdates>(
-                    name = "ActivityReactionAdded non-matching activity",
-                    event =
-                        ActivityReactionAdded(fid.rawValue, activity, feedsReactionData(otherId)),
-                    verifyBlock = { it wasNot called },
-                ),
-                testParams<ActivityStateUpdates>(
                     name = "ActivityReactionDeleted matching feed and activity",
                     event =
                         ActivityReactionDeleted(
@@ -122,9 +99,9 @@ internal class ActivityEventHandlerTest(
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
-                    name = "ActivityReactionUpdated matching feed and activity",
+                    name = "ActivityReactionUpserted matching feed and activity",
                     event =
-                        ActivityReactionUpdated(
+                        ActivityReactionUpserted(
                             fid.rawValue,
                             activity,
                             feedsReactionData(activityId),
@@ -132,15 +109,19 @@ internal class ActivityEventHandlerTest(
                     verifyBlock = { it.onReactionUpserted(feedsReactionData(activityId), activity) },
                 ),
                 testParams<ActivityStateUpdates>(
-                    name = "ActivityReactionUpdated non-matching feed",
+                    name = "ActivityReactionUpserted non-matching feed",
                     event =
-                        ActivityReactionUpdated(otherFid, activity, feedsReactionData(activityId)),
+                        ActivityReactionUpserted(otherFid, activity, feedsReactionData(activityId)),
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
-                    name = "ActivityReactionUpdated non-matching activity",
+                    name = "ActivityReactionUpserted non-matching activity",
                     event =
-                        ActivityReactionUpdated(fid.rawValue, activity, feedsReactionData(otherId)),
+                        ActivityReactionUpserted(
+                            fid.rawValue,
+                            activity,
+                            feedsReactionData(otherId),
+                        ),
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(

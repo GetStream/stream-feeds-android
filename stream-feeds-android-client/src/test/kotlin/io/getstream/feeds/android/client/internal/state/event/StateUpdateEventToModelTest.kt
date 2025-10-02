@@ -86,7 +86,7 @@ internal class StateUpdateEventToModelTest(
                 activityUpdated().shouldMapTo<StateUpdateEvent.ActivityUpdated>(),
                 activityPinned().shouldMapTo<StateUpdateEvent.ActivityPinned>(),
                 activityUnpinned().shouldMapTo<StateUpdateEvent.ActivityUnpinned>(),
-                activityReactionAdded().shouldMapTo<StateUpdateEvent.ActivityReactionAdded>(),
+                activityReactionAdded().shouldMapTo<StateUpdateEvent.ActivityReactionUpserted>(),
                 activityReactionDeleted().shouldMapTo<StateUpdateEvent.ActivityReactionDeleted>(),
                 bookmarkAdded().shouldMapTo<StateUpdateEvent.BookmarkAdded>(),
                 bookmarkDeleted().shouldMapTo<StateUpdateEvent.BookmarkDeleted>(),
