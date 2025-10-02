@@ -163,7 +163,7 @@ internal class FeedEventHandlerTest(
                 testParams<FeedStateUpdates>(
                     name = "ActivityReactionUpserted matching feed",
                     event = ActivityReactionUpserted(fid.rawValue, activity, reaction, true),
-                    verifyBlock = { state -> state.onReactionUpserted(reaction, activity) },
+                    verifyBlock = { state -> state.onReactionUpserted(reaction, activity, true) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityReactionUpserted non-matching feed",

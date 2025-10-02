@@ -77,7 +77,7 @@ internal class FeedEventHandler(
 
             is StateUpdateEvent.ActivityReactionUpserted -> {
                 if (event.fid == fid.rawValue) {
-                    state.onReactionUpserted(event.reaction, event.activity)
+                    state.onReactionUpserted(event.reaction, event.activity, event.enforceUnique)
                 }
             }
 
