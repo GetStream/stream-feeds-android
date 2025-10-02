@@ -343,7 +343,7 @@ internal class FeedStateImplTest {
 
         val reaction = feedsReactionData("activity-1", currentUserId)
         val updatedActivity = activityData("activity-1", text = "Updated activity")
-        feedState.onReactionUpserted(reaction, updatedActivity)
+        feedState.onReactionUpserted(reaction, updatedActivity, enforceUnique = false)
 
         val expected = updatedActivity.copy(ownReactions = listOf(reaction))
         assertEquals(listOf(expected), feedState.activities.value)
