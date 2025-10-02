@@ -185,8 +185,7 @@ internal fun ActivityData.upsertReaction(
     updated: ActivityData,
     reaction: FeedsReactionData,
     currentUserId: String,
-    // TODO [G.] remove when all call sites pass the parameter
-    enforceUnique: Boolean = false,
+    enforceUnique: Boolean,
 ): ActivityData =
     changeReactions(updated, reaction, currentUserId) { upsertReaction(reaction, enforceUnique) }
 
