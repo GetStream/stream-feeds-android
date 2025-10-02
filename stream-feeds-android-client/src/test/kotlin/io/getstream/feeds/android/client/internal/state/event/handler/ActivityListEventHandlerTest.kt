@@ -30,9 +30,8 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.B
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpserted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollUpdated
@@ -171,13 +170,6 @@ internal class ActivityListEventHandlerTest(
                     verifyBlock = { state -> state.onCommentUpserted(commentData()) },
                 ),
                 testParams<ActivityListStateUpdates>(
-                    name = "CommentReactionAdded",
-                    event = CommentReactionAdded("feed-1", commentData(), feedsReactionData()),
-                    verifyBlock = { state ->
-                        state.onCommentReactionUpserted(commentData(), feedsReactionData())
-                    },
-                ),
-                testParams<ActivityListStateUpdates>(
                     name = "CommentReactionDeleted",
                     event = CommentReactionDeleted("feed-1", commentData(), feedsReactionData()),
                     verifyBlock = { state ->
@@ -185,8 +177,8 @@ internal class ActivityListEventHandlerTest(
                     },
                 ),
                 testParams<ActivityListStateUpdates>(
-                    name = "CommentReactionUpdated",
-                    event = CommentReactionUpdated("feed-1", commentData(), feedsReactionData()),
+                    name = "CommentReactionUpserted",
+                    event = CommentReactionUpserted("feed-1", commentData(), feedsReactionData()),
                     verifyBlock = { state ->
                         state.onCommentReactionUpserted(commentData(), feedsReactionData())
                     },
