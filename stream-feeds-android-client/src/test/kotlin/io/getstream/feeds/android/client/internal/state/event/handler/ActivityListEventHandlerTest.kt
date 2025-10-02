@@ -170,7 +170,7 @@ internal class ActivityListEventHandlerTest(
                             false,
                         ),
                     verifyBlock = { state ->
-                        state.onCommentReactionUpserted(commentData(), feedsReactionData())
+                        state.onCommentReactionUpserted(commentData(), feedsReactionData(), false)
                     },
                 ),
                 testParams<ActivityListStateUpdates>(
