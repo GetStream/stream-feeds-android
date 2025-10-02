@@ -96,10 +96,14 @@ internal class CommentListStateImpl(
         }
     }
 
-    override fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData) {
+    override fun onCommentReactionUpserted(
+        comment: CommentData,
+        reaction: FeedsReactionData,
+        enforceUnique: Boolean,
+    ) {
         _comments.update { current ->
             current.updateIf({ it.id == comment.id }) {
-                it.upsertReaction(comment, reaction, currentUserId)
+                it.upsertReaction(comment, reaction, currentUserId, enforceUnique)
             }
         }
     }
@@ -146,6 +150,11 @@ internal interface CommentListStateUpdates {
      *
      * @param comment The comment to which the reaction was added or updated.
      * @param reaction The reaction that was added or updated.
+     * @param enforceUnique Whether to replace existing reactions by the same user.
      */
-    fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData)
+    fun onCommentReactionUpserted(
+        comment: CommentData,
+        reaction: FeedsReactionData,
+        enforceUnique: Boolean,
+    )
 }
