@@ -83,8 +83,14 @@ internal class ActivityStateImpl(
         }
     }
 
-    override fun onReactionUpserted(reaction: FeedsReactionData, activity: ActivityData) {
-        _activity.update { current -> current?.upsertReaction(activity, reaction, currentUserId) }
+    override fun onReactionUpserted(
+        reaction: FeedsReactionData,
+        activity: ActivityData,
+        enforceUnique: Boolean,
+    ) {
+        _activity.update { current ->
+            current?.upsertReaction(activity, reaction, currentUserId, enforceUnique)
+        }
     }
 
     override fun onReactionRemoved(reaction: FeedsReactionData, activity: ActivityData) {
@@ -179,8 +185,13 @@ internal interface ActivityStateUpdates {
      *
      * @param reaction The reaction that was added or updated.
      * @param activity The activity the reaction belongs to.
+     * @param enforceUnique Whether to replace existing reactions by the same user.
      */
-    fun onReactionUpserted(reaction: FeedsReactionData, activity: ActivityData)
+    fun onReactionUpserted(
+        reaction: FeedsReactionData,
+        activity: ActivityData,
+        enforceUnique: Boolean,
+    )
 
     /**
      * Called when a reaction is removed from the activity.

@@ -162,12 +162,12 @@ internal class FeedEventHandlerTest(
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityReactionUpserted matching feed",
-                    event = ActivityReactionUpserted(fid.rawValue, activity, reaction),
+                    event = ActivityReactionUpserted(fid.rawValue, activity, reaction, true),
                     verifyBlock = { state -> state.onReactionUpserted(reaction, activity) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityReactionUpserted non-matching feed",
-                    event = ActivityReactionUpserted("group:different", activity, reaction),
+                    event = ActivityReactionUpserted("group:different", activity, reaction, true),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
