@@ -29,6 +29,7 @@ import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.network.models.ActivityDeletedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
+import io.getstream.feeds.android.network.models.ActivityUpdatedEvent
 import io.getstream.feeds.android.network.models.BookmarkAddedEvent
 import io.getstream.feeds.android.network.models.BookmarkDeletedEvent
 import io.getstream.feeds.android.network.models.BookmarkFolderDeletedEvent
@@ -62,9 +63,13 @@ internal sealed interface StateUpdateEvent {
 
     data class ActivityDeleted(val activity: ActivityData) : StateUpdateEvent
 
-    data class ActivityReactionAdded(val reaction: FeedsReactionData) : StateUpdateEvent
+    data class ActivityUpdated(val fid: String, val activity: ActivityData) : StateUpdateEvent
 
-    data class ActivityReactionDeleted(val reaction: FeedsReactionData) : StateUpdateEvent
+    data class ActivityReactionAdded(val fid: String, val reaction: FeedsReactionData) :
+        StateUpdateEvent
+
+    data class ActivityReactionDeleted(val fid: String, val reaction: FeedsReactionData) :
+        StateUpdateEvent
 
     data class BookmarkAdded(val bookmark: BookmarkData) : StateUpdateEvent
 
@@ -122,10 +127,13 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
     when (this) {
         is ActivityDeletedEvent -> StateUpdateEvent.ActivityDeleted(activity.toModel())
 
-        is ActivityReactionAddedEvent -> StateUpdateEvent.ActivityReactionAdded(reaction.toModel())
+        is ActivityUpdatedEvent -> StateUpdateEvent.ActivityUpdated(fid, activity.toModel())
+
+        is ActivityReactionAddedEvent ->
+            StateUpdateEvent.ActivityReactionAdded(fid, reaction.toModel())
 
         is ActivityReactionDeletedEvent ->
-            StateUpdateEvent.ActivityReactionDeleted(reaction.toModel())
+            StateUpdateEvent.ActivityReactionDeleted(fid, reaction.toModel())
 
         is BookmarkAddedEvent -> StateUpdateEvent.BookmarkAdded(bookmark.toModel())
 

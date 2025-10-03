@@ -19,20 +19,16 @@ import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PollData
-import io.getstream.feeds.android.client.api.model.PollOptionData
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.model.addBookmark
-import io.getstream.feeds.android.client.api.model.addOption
 import io.getstream.feeds.android.client.api.model.addReaction
 import io.getstream.feeds.android.client.api.model.castVote
 import io.getstream.feeds.android.client.api.model.deleteBookmark
-import io.getstream.feeds.android.client.api.model.removeOption
 import io.getstream.feeds.android.client.api.model.removeReaction
 import io.getstream.feeds.android.client.api.model.removeVote
 import io.getstream.feeds.android.client.api.model.setClosed
 import io.getstream.feeds.android.client.api.model.update
-import io.getstream.feeds.android.client.api.model.updateOption
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.api.state.ActivityState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -95,48 +91,32 @@ internal class ActivityStateImpl(
     }
 
     override fun onPollClosed(poll: PollData) {
-        if (_poll.value?.id != poll.id) return
-        updatePoll(PollData::setClosed)
+        updatePoll(poll.id, PollData::setClosed)
     }
 
     override fun onPollDeleted(pollId: String) {
-        if (_poll.value?.id != pollId) return
-        updatePoll { null }
+        updatePoll(pollId) { null }
     }
 
     override fun onPollUpdated(poll: PollData) {
-        if (_poll.value?.id != poll.id) return
-        updatePoll { update(poll) }
-    }
-
-    override fun onOptionCreated(option: PollOptionData) {
-        updatePoll { addOption(option) }
-    }
-
-    override fun onOptionDeleted(optionId: String) {
-        updatePoll { removeOption(optionId) }
-    }
-
-    override fun onOptionUpdated(option: PollOptionData) {
-        updatePoll { updateOption(option) }
+        updatePoll(poll.id) { update(poll) }
     }
 
     override fun onPollVoteCasted(vote: PollVoteData, pollId: String) {
-        if (_poll.value?.id != pollId) return
-        updatePoll { castVote(vote, currentUserId) }
+        updatePoll(pollId) { castVote(vote, currentUserId) }
     }
 
     override fun onPollVoteChanged(vote: PollVoteData, pollId: String) {
-        if (_poll.value?.id != pollId) return
-        updatePoll { castVote(vote, currentUserId) }
+        updatePoll(pollId) { castVote(vote, currentUserId) }
     }
 
     override fun onPollVoteRemoved(vote: PollVoteData, pollId: String) {
-        if (_poll.value?.id != pollId) return
-        updatePoll { removeVote(vote, currentUserId) }
+        updatePoll(pollId) { removeVote(vote, currentUserId) }
     }
 
-    private fun updatePoll(update: PollData.() -> PollData?) {
+    private fun updatePoll(pollId: String, update: PollData.() -> PollData?) {
+        if (_poll.value?.id != pollId) return
+
         var updated: PollData? = null
         _poll.update { current -> current?.let(update).also { updated = it } }
         _activity.update { current -> current?.copy(poll = updated) }
@@ -215,27 +195,6 @@ internal interface ActivityStateUpdates {
      * @param poll The updated poll data.
      */
     fun onPollUpdated(poll: PollData)
-
-    /**
-     * Called when a new poll option is created.
-     *
-     * @param option The newly created poll option data.
-     */
-    fun onOptionCreated(option: PollOptionData)
-
-    /**
-     * Called when a poll option is deleted.
-     *
-     * @param optionId The poll option ID that was deleted.
-     */
-    fun onOptionDeleted(optionId: String)
-
-    /**
-     * Called when a poll option is updated.
-     *
-     * @param option The updated poll option data.
-     */
-    fun onOptionUpdated(option: PollOptionData)
 
     /**
      * Called when a vote is casted on the poll.
