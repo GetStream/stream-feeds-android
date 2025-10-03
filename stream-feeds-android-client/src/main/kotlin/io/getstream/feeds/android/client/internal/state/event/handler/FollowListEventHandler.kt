@@ -41,6 +41,9 @@ internal class FollowListEventHandler(
             is StateUpdateEvent.FollowUpdated -> {
                 if (event.follow matches filter) {
                     state.onFollowUpserted(event.follow)
+                } else {
+                    // We remove elements that used to match the filter but no longer do
+                    state.onFollowRemoved(event.follow)
                 }
             }
 

@@ -183,7 +183,7 @@ internal class FeedEventHandlerTest(
                 testParams<FeedStateUpdates>(
                     name = "ActivityUpdated non-matching filter",
                     event = ActivityUpdated(fid.rawValue, nonMatchingActivity),
-                    verifyBlock = { state -> state wasNot called },
+                    verifyBlock = { state -> state.onActivityRemoved(nonMatchingActivity.id) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityPinned matching feed",

@@ -38,6 +38,9 @@ internal class ActivityListEventHandler(
             is StateUpdateEvent.ActivityUpdated -> {
                 if (event.activity matches filter) {
                     state.onActivityUpserted(event.activity)
+                } else {
+                    // We remove elements that used to match the filter but no longer do
+                    state.onActivityRemoved(event.activity.id)
                 }
             }
 

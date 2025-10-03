@@ -42,8 +42,13 @@ internal class MemberListEventHandler(
             }
 
             is StateUpdateEvent.FeedMemberUpdated -> {
-                if (event.fid == fid.rawValue && event.member matches filter) {
-                    state.onMemberUpserted(event.member)
+                if (event.fid == fid.rawValue) {
+                    if (event.member matches filter) {
+                        state.onMemberUpserted(event.member)
+                    } else {
+                        // We remove elements that used to match the filter but no longer do
+                        state.onMemberRemoved(event.member.id)
+                    }
                 }
             }
 
