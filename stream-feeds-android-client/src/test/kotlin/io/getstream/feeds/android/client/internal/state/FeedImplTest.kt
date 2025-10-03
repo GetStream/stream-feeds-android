@@ -595,7 +595,9 @@ internal class FeedImplTest {
         val result = feed.acceptFeedMember()
 
         assertEquals(member, result.getOrNull())
-        verify { stateEventListener.onEvent(StateUpdateEvent.FeedMemberAdded("group:id", member)) }
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.FeedMemberUpdated("group:id", member))
+        }
     }
 
     @Test
@@ -609,7 +611,7 @@ internal class FeedImplTest {
 
         assertEquals(member, result.getOrNull())
         verify {
-            stateEventListener.onEvent(StateUpdateEvent.FeedMemberRemoved("group:id", member.id))
+            stateEventListener.onEvent(StateUpdateEvent.FeedMemberUpdated("group:id", member))
         }
     }
 

@@ -360,13 +360,13 @@ internal class FeedImpl(
 
     override suspend fun acceptFeedMember(): Result<FeedMemberData> {
         return feedsRepository.acceptFeedMember(feedGroupId = group, feedId = id).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.FeedMemberAdded(fid.rawValue, it))
+            subscriptionManager.onEvent(StateUpdateEvent.FeedMemberUpdated(fid.rawValue, it))
         }
     }
 
     override suspend fun rejectFeedMember(): Result<FeedMemberData> {
         return feedsRepository.rejectFeedMember(feedGroupId = group, feedId = id).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.FeedMemberRemoved(fid.rawValue, it.id))
+            subscriptionManager.onEvent(StateUpdateEvent.FeedMemberUpdated(fid.rawValue, it))
         }
     }
 
