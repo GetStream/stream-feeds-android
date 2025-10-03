@@ -719,4 +719,13 @@ internal object TestData {
             models = list,
             pagination = PaginationData(next = "next-cursor", previous = null),
         )
+
+    fun activityPinResponse() =
+        PinActivityResponse(
+            activity = activityResponse(),
+            createdAt = Date(1000),
+            duration = "duration",
+            feed = "user:feed-1",
+            userId = "user-1",
+        )
 }
