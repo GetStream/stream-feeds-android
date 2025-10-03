@@ -15,6 +15,7 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
+import io.getstream.android.core.api.sort.CompositeComparator
 import io.getstream.android.core.api.sort.Sort
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
@@ -93,14 +94,19 @@ internal class MemberListStateImpl(override val query: MembersQuery) : MemberLis
         val updatesMap = updates.updated.associateBy(FeedMemberData::id)
 
         _members.update { current ->
-            // Apply updates and filter out removed members in a single pass
-            current.mapNotNull { member ->
-                if (member.id in updates.removedIds) {
-                    null
-                } else {
-                    updatesMap[member.id] ?: member
+            current
+                .mapNotNullTo(mutableListOf()) { member ->
+                    // Apply updates and filter out removed members in a single pass
+                    if (member.id in updates.removedIds) {
+                        null
+                    } else {
+                        updatesMap[member.id] ?: member
+                    }
                 }
-            }
+                .apply {
+                    addAll(updates.added)
+                    sortWith(CompositeComparator(membersSorting))
+                }
         }
     }
 

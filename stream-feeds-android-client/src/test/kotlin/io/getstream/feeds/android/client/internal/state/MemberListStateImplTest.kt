@@ -25,6 +25,7 @@ import io.getstream.feeds.android.client.api.state.query.MembersQueryConfig
 import io.getstream.feeds.android.client.api.state.query.MembersSort
 import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
 import io.getstream.feeds.android.client.internal.test.TestData.feedMemberData
+import java.util.Date
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -61,9 +62,8 @@ internal class MemberListStateImplTest {
         val updatedMember = feedMemberData("user-1", role = "admin")
         memberListState.onMemberUpdated(updatedMember)
 
-        val updatedMembers = memberListState.members.value
-        assertEquals(updatedMember, updatedMembers.find { it.id == updatedMember.id })
-        assertEquals(initialMembers[1], updatedMembers.find { it.id == initialMembers[1].id })
+        val expectedMembers = listOf(updatedMember, initialMembers[1])
+        assertEquals(expectedMembers, memberListState.members.value)
     }
 
     @Test
@@ -79,22 +79,29 @@ internal class MemberListStateImplTest {
     }
 
     @Test
-    fun `on membersUpdated, then apply multiple updates`() = runTest {
-        val initialMembers = listOf(feedMemberData(), feedMemberData("user-2"))
+    fun `on membersUpdated, then apply add update and remove operations`() = runTest {
+        val initialMembers =
+            listOf(
+                feedMemberData("user-3", createdAt = Date(3000)),
+                feedMemberData("user-2", createdAt = Date(2000)),
+                feedMemberData("user-1", createdAt = Date(1000)),
+            )
         val paginationResult = defaultPaginationResult(initialMembers)
         memberListState.onQueryMoreMembers(paginationResult, queryConfig)
 
-        val updatedMember = feedMemberData("user-1", role = "admin")
+        val updatedMember = feedMemberData("user-1", role = "admin", createdAt = Date(5000))
+        val newMember = feedMemberData("user-4", createdAt = Date(4000))
         val updates =
             ModelUpdates(
-                added = emptyList(),
+                added = listOf(newMember),
                 updated = listOf(updatedMember),
-                removedIds = listOf(initialMembers[1].id),
+                removedIds = listOf("user-2"),
             )
         memberListState.onMembersUpdated(updates)
 
-        val finalMembers = memberListState.members.value
-        assertEquals(listOf(updatedMember), finalMembers)
+        // Members should be sorted by createdAt in descending order
+        val expectedMembers = listOf(updatedMember, newMember, initialMembers[0])
+        assertEquals(expectedMembers, memberListState.members.value)
     }
 
     @Test
@@ -119,10 +126,8 @@ internal class MemberListStateImplTest {
         val updatedMember = feedMemberData("user-1", role = "admin")
         memberListState.onMemberAdded(updatedMember)
 
-        val updatedMembers = memberListState.members.value
-        assertEquals(2, updatedMembers.size)
-        assertEquals(updatedMember, updatedMembers.find { it.id == updatedMember.id })
-        assertEquals(initialMembers[1], updatedMembers.find { it.id == initialMembers[1].id })
+        val expectedMembers = listOf(updatedMember, initialMembers[1])
+        assertEquals(expectedMembers, memberListState.members.value)
     }
 
     @Test
