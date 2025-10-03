@@ -73,7 +73,9 @@ internal class FollowListEventHandlerTest(
                 testParams<FollowListStateUpdates>(
                     name = "FollowUpdated non-matching filter",
                     event = FollowUpdated(followData(sourceFid = "user:notifications")),
-                    verifyBlock = { state -> state wasNot called },
+                    verifyBlock = { state ->
+                        state.onFollowRemoved(followData(sourceFid = "user:notifications"))
+                    },
                 ),
             )
     }

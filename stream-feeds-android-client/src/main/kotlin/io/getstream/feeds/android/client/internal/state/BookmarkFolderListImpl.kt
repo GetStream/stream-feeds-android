@@ -45,7 +45,7 @@ internal class BookmarkFolderListImpl(
 
     private val _state: BookmarkFolderListStateImpl = BookmarkFolderListStateImpl(query)
 
-    private val eventHandler = BookmarkFolderListEventHandler(_state)
+    private val eventHandler = BookmarkFolderListEventHandler(query.filter, _state)
 
     init {
         subscriptionManager.subscribe(eventHandler)

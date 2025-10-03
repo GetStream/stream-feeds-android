@@ -42,6 +42,8 @@ internal class MemberListEventHandlerTest(
         private val fid = "user:feed-1"
         private const val differentFeedId = "user:different-feed"
         private val testFilter = MembersFilterField.role.equal("admin")
+        private val matchingMember = feedMemberData(role = "admin")
+        private val nonMatchingMember = feedMemberData(role = "member")
 
         @JvmStatic
         @Parameterized.Parameters(name = "{0}")
@@ -49,19 +51,17 @@ internal class MemberListEventHandlerTest(
             listOf(
                 testParams<MemberListStateUpdates>(
                     name = "FeedMemberAdded matching feed and filter",
-                    event = FeedMemberAdded(fid, feedMemberData(role = "admin")),
-                    verifyBlock = { state ->
-                        state.onMemberUpserted(feedMemberData(role = "admin"))
-                    },
+                    event = FeedMemberAdded(fid, matchingMember),
+                    verifyBlock = { state -> state.onMemberUpserted(matchingMember) },
                 ),
                 testParams<MemberListStateUpdates>(
                     name = "FeedMemberAdded non-matching feed",
-                    event = FeedMemberAdded(differentFeedId, feedMemberData(role = "admin")),
+                    event = FeedMemberAdded(differentFeedId, matchingMember),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<MemberListStateUpdates>(
                     name = "FeedMemberAdded non-matching filter",
-                    event = FeedMemberAdded(fid, feedMemberData(role = "member")),
+                    event = FeedMemberAdded(fid, nonMatchingMember),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<MemberListStateUpdates>(
@@ -76,20 +76,18 @@ internal class MemberListEventHandlerTest(
                 ),
                 testParams<MemberListStateUpdates>(
                     name = "FeedMemberUpdated matching feed and filter",
-                    event = FeedMemberUpdated(fid, feedMemberData(role = "admin")),
-                    verifyBlock = { state ->
-                        state.onMemberUpserted(feedMemberData(role = "admin"))
-                    },
+                    event = FeedMemberUpdated(fid, matchingMember),
+                    verifyBlock = { state -> state.onMemberUpserted(matchingMember) },
                 ),
                 testParams<MemberListStateUpdates>(
                     name = "FeedMemberUpdated non-matching feed",
-                    event = FeedMemberUpdated(differentFeedId, feedMemberData(role = "admin")),
+                    event = FeedMemberUpdated(differentFeedId, matchingMember),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<MemberListStateUpdates>(
                     name = "FeedMemberUpdated non-matching filter",
-                    event = FeedMemberUpdated(fid, feedMemberData(role = "member")),
-                    verifyBlock = { state -> state wasNot called },
+                    event = FeedMemberUpdated(fid, nonMatchingMember),
+                    verifyBlock = { state -> state.onMemberRemoved(nonMatchingMember.id) },
                 ),
             )
     }

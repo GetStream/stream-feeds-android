@@ -15,18 +15,30 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
+import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersFilter
 import io.getstream.feeds.android.client.internal.state.BookmarkFolderListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.query.matches
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
-internal class BookmarkFolderListEventHandler(private val state: BookmarkFolderListStateUpdates) :
-    StateUpdateEventListener {
+internal class BookmarkFolderListEventHandler(
+    private val filter: BookmarkFoldersFilter?,
+    private val state: BookmarkFolderListStateUpdates,
+) : StateUpdateEventListener {
 
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
             is StateUpdateEvent.BookmarkFolderDeleted ->
                 state.onBookmarkFolderRemoved(event.folderId)
-            is StateUpdateEvent.BookmarkFolderUpdated -> state.onBookmarkFolderUpdated(event.folder)
+
+            is StateUpdateEvent.BookmarkFolderUpdated -> {
+                if (event.folder matches filter) {
+                    state.onBookmarkFolderUpdated(event.folder)
+                } else {
+                    // We remove elements that used to match the filter but no longer do
+                    state.onBookmarkFolderRemoved(event.folder.id)
+                }
+            }
             else -> {}
         }
     }
