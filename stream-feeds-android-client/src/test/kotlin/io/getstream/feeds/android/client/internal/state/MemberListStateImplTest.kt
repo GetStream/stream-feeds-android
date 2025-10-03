@@ -18,8 +18,6 @@ package io.getstream.feeds.android.client.internal.state
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
-import io.getstream.feeds.android.client.api.model.PaginationData
-import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.state.query.MembersQuery
 import io.getstream.feeds.android.client.api.state.query.MembersQueryConfig
 import io.getstream.feeds.android.client.api.state.query.MembersSort
@@ -54,23 +52,27 @@ internal class MemberListStateImplTest {
     }
 
     @Test
-    fun `on memberUpdated, then update specific member`() = runTest {
-        val initialMembers = listOf(feedMemberData(), feedMemberData("user-2"))
-        val paginationResult = defaultPaginationResult(initialMembers)
-        memberListState.onQueryMoreMembers(paginationResult, queryConfig)
+    fun `on memberUpdated, then update and reposition member`() = runTest {
+        // Initial members already sorted by createdAt desc
+        val initialMembers =
+            listOf(
+                feedMemberData("user-2", createdAt = Date(2000)),
+                feedMemberData("user-1", createdAt = Date(1000)),
+            )
+        setupInitialState(initialMembers)
 
-        val updatedMember = feedMemberData("user-1", role = "admin")
+        val updatedMember = feedMemberData("user-1", role = "admin", createdAt = Date(3000))
         memberListState.onMemberUpdated(updatedMember)
 
-        val expectedMembers = listOf(updatedMember, initialMembers[1])
+        // Member should be repositioned according to new sort criteria
+        val expectedMembers = listOf(updatedMember, initialMembers[0])
         assertEquals(expectedMembers, memberListState.members.value)
     }
 
     @Test
     fun `on memberRemoved, then remove specific member`() = runTest {
         val initialMembers = listOf(feedMemberData(), feedMemberData("user-2"))
-        val paginationResult = defaultPaginationResult(initialMembers)
-        memberListState.onQueryMoreMembers(paginationResult, queryConfig)
+        setupInitialState(initialMembers)
 
         memberListState.onMemberRemoved(initialMembers[0].id)
 
@@ -79,15 +81,14 @@ internal class MemberListStateImplTest {
     }
 
     @Test
-    fun `on membersUpdated, then apply add update and remove operations`() = runTest {
+    fun `on membersUpdated, then apply add, update, and remove operations`() = runTest {
         val initialMembers =
             listOf(
                 feedMemberData("user-3", createdAt = Date(3000)),
                 feedMemberData("user-2", createdAt = Date(2000)),
                 feedMemberData("user-1", createdAt = Date(1000)),
             )
-        val paginationResult = defaultPaginationResult(initialMembers)
-        memberListState.onQueryMoreMembers(paginationResult, queryConfig)
+        setupInitialState(initialMembers)
 
         val updatedMember = feedMemberData("user-1", role = "admin", createdAt = Date(5000))
         val newMember = feedMemberData("user-4", createdAt = Date(4000))
@@ -105,40 +106,53 @@ internal class MemberListStateImplTest {
     }
 
     @Test
-    fun `on memberAdded, then add member`() = runTest {
-        val initialMembers = listOf(feedMemberData(), feedMemberData("user-2"))
-        val paginationResult =
-            PaginationResult(models = initialMembers, pagination = PaginationData())
-        memberListState.onQueryMoreMembers(paginationResult, queryConfig)
+    fun `on memberAdded, then add member in sorted position`() = runTest {
+        // Initial members already sorted by createdAt desc
+        val initialMembers =
+            listOf(
+                feedMemberData("user-3", createdAt = Date(3000)),
+                feedMemberData("user-1", createdAt = Date(1000)),
+            )
+        setupInitialState(initialMembers)
 
-        val newMember = feedMemberData("user-3")
+        val newMember = feedMemberData("user-2", createdAt = Date(2000))
         memberListState.onMemberAdded(newMember)
 
-        assertEquals(initialMembers + newMember, memberListState.members.value)
+        // Member should be inserted in correct sorted position
+        val expectedMembers = listOf(initialMembers[0], newMember, initialMembers[1])
+        assertEquals(expectedMembers, memberListState.members.value)
     }
 
     @Test
-    fun `on memberAdded with existing id, then update member`() = runTest {
-        val initialMembers = listOf(feedMemberData(), feedMemberData("user-2"))
-        val paginationResult = defaultPaginationResult(initialMembers)
-        memberListState.onQueryMoreMembers(paginationResult, queryConfig)
+    fun `on memberAdded with existing id, then update and reposition member`() = runTest {
+        // Initial members already sorted by createdAt desc
+        val initialMembers =
+            listOf(
+                feedMemberData("user-2", createdAt = Date(2000)),
+                feedMemberData("user-1", createdAt = Date(1000)),
+            )
+        setupInitialState(initialMembers)
 
-        val updatedMember = feedMemberData("user-1", role = "admin")
+        // Add existing user-1 with newer createdAt that should move it to the front
+        val updatedMember = feedMemberData("user-1", role = "admin", createdAt = Date(3000))
         memberListState.onMemberAdded(updatedMember)
 
-        val expectedMembers = listOf(updatedMember, initialMembers[1])
+        // Member should be updated and repositioned according to new sort criteria (3000, 2000)
+        val expectedMembers = listOf(updatedMember, initialMembers[0])
         assertEquals(expectedMembers, memberListState.members.value)
     }
 
     @Test
     fun `on clear, then remove all members`() = runTest {
-        val initialMembers = listOf(feedMemberData(), feedMemberData("user-2"))
-        val paginationResult = defaultPaginationResult(initialMembers)
-        memberListState.onQueryMoreMembers(paginationResult, queryConfig)
+        setupInitialState(listOf(feedMemberData(), feedMemberData("user-2")))
 
         memberListState.clear()
 
         assertEquals(emptyList<FeedMemberData>(), memberListState.members.value)
+    }
+
+    private fun setupInitialState(members: List<FeedMemberData>) {
+        memberListState.onQueryMoreMembers(defaultPaginationResult(members), queryConfig)
     }
 
     companion object {

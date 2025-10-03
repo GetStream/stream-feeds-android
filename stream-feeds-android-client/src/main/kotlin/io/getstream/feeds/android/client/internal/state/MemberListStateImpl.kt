@@ -26,7 +26,7 @@ import io.getstream.feeds.android.client.api.state.query.MembersQuery
 import io.getstream.feeds.android.client.api.state.query.MembersQueryConfig
 import io.getstream.feeds.android.client.api.state.query.MembersSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
-import io.getstream.feeds.android.client.internal.utils.upsert
+import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -70,7 +70,9 @@ internal class MemberListStateImpl(override val query: MembersQuery) : MemberLis
     }
 
     override fun onMemberAdded(member: FeedMemberData) {
-        _members.update { current -> current.upsert(member, FeedMemberData::id) }
+        _members.update { current ->
+            current.upsertSorted(member, FeedMemberData::id, membersSorting)
+        }
     }
 
     override fun onMemberRemoved(memberId: String) {
@@ -79,13 +81,7 @@ internal class MemberListStateImpl(override val query: MembersQuery) : MemberLis
 
     override fun onMemberUpdated(member: FeedMemberData) {
         _members.update { current ->
-            current.map {
-                if (it.id == member.id) {
-                    member
-                } else {
-                    it
-                }
-            }
+            current.upsertSorted(member, FeedMemberData::id, membersSorting)
         }
     }
 
