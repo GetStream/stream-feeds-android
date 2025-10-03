@@ -20,6 +20,7 @@ import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.FeedAddActivityRequest
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationData
@@ -147,9 +148,7 @@ internal class FeedImplTest {
         val request = ActivityAddCommentRequest(activityId = activityId, comment = "Comment")
         val progress = { _: FeedUploadPayload, _: Double -> }
         val initialActivity = activityData(activityId)
-        val feedInfo = getOrCreateInfo(feedData(), listOf(initialActivity))
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, activities = listOf(initialActivity))
 
         val addedComment = commentData(id = "comment-1", objectId = activityId)
         coEvery { commentsRepository.addComment(any(), any()) } returns Result.success(addedComment)
@@ -187,9 +186,7 @@ internal class FeedImplTest {
         // Set up initial state with some data
         val initialFeedData = feedData()
         val initialActivity = activityData("activity-1")
-        val feedInfo = getOrCreateInfo(initialFeedData, listOf(initialActivity))
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, initialFeedData, listOf(initialActivity))
 
         coEvery { feedsRepository.deleteFeed("group", "id", hardDelete) } returns
             Result.success(Unit)
@@ -211,9 +208,7 @@ internal class FeedImplTest {
         val updatedActivity = activityData(activityId, "Updated activity")
 
         // Set up initial state with activity
-        val feedInfo = getOrCreateInfo(feedData(), listOf(originalActivity))
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, activities = listOf(originalActivity))
 
         coEvery { activitiesRepository.updateActivity(activityId, request) } returns
             Result.success(updatedActivity)
@@ -238,9 +233,7 @@ internal class FeedImplTest {
         val activity = activityData(activityId)
 
         // Set up initial state with activity
-        val feedInfo = getOrCreateInfo(feedData(), listOf(activity))
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, activities = listOf(activity))
 
         coEvery { activitiesRepository.deleteActivity(activityId, hardDelete) } returns
             Result.success(Unit)
@@ -282,9 +275,7 @@ internal class FeedImplTest {
         val bookmark = bookmarkData(activityId, userId = "user").copy(activity = activity)
 
         // Set up initial state with activity
-        val feedInfo = getOrCreateInfo(feedData(), listOf(activity))
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, activities = listOf(activity))
 
         coEvery { bookmarksRepository.addBookmark(activityId, request) } returns
             Result.success(bookmark)
@@ -310,9 +301,7 @@ internal class FeedImplTest {
         val bookmark = bookmarkData(activityId)
 
         // Set up initial state with activity
-        val feedInfo = getOrCreateInfo(feedData(), listOf(activity))
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, activities = listOf(activity))
 
         coEvery { bookmarksRepository.deleteBookmark(activityId, folderId) } returns
             Result.success(bookmark)
@@ -339,9 +328,7 @@ internal class FeedImplTest {
         val follow = followData(sourceFid = "group:id", targetFid = "user:target")
 
         // Set up initial feed state
-        val feedInfo = getOrCreateInfo(feedData())
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed)
 
         coEvery { feedsRepository.follow(any()) } returns Result.success(follow)
 
@@ -358,9 +345,7 @@ internal class FeedImplTest {
         val follow = followData("group:id", "user:target")
 
         // Set up initial state with follow
-        val feedInfo = getOrCreateInfo(feedData()).copy(following = listOf(follow))
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, following = listOf(follow))
 
         coEvery { feedsRepository.unfollow(any(), any()) } returns Result.success(follow)
 
@@ -379,9 +364,7 @@ internal class FeedImplTest {
         val follow = followData(sourceFid = "user:source", targetFid = "group:id")
 
         // Set up initial feed state
-        val feedInfo = getOrCreateInfo(feedData())
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed)
 
         coEvery { feedsRepository.acceptFollow(any()) } returns Result.success(follow)
 
@@ -398,9 +381,7 @@ internal class FeedImplTest {
         val follow = followData(sourceFid = "user:source", targetFid = "group:id")
 
         // Set up initial feed state with follower present
-        val feedInfo = getOrCreateInfo(feedData()).copy(followers = listOf(follow))
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, followers = listOf(follow))
 
         coEvery { feedsRepository.rejectFollow(any()) } returns Result.success(follow)
 
@@ -415,23 +396,18 @@ internal class FeedImplTest {
         val feed = createFeed()
         val limit = 10
         val newActivity = activityData("activity-2")
+        val initialActivities = listOf(activityData("activity-1"))
 
-        // Set up initial state with pagination
-        val activities =
-            PaginationResult(listOf(activityData("activity-1")), PaginationData(next = "cursor"))
-        val feedInfo = getOrCreateInfo(feedData()).copy(activities = activities)
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, activities = initialActivities)
 
         // Mock the next query
-        val nextFeedInfo =
-            feedInfo.copy(activities = PaginationResult(listOf(newActivity), PaginationData.EMPTY))
+        val nextFeedInfo = getOrCreateInfo(feedData(), activities = listOf(newActivity))
         coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(nextFeedInfo)
 
         val result = feed.queryMoreActivities(limit)
 
         assertEquals(listOf(newActivity), result.getOrNull())
-        assertEquals(activities.models + newActivity, feed.state.activities.value)
+        assertEquals(initialActivities + newActivity, feed.state.activities.value)
     }
 
     @Test
@@ -517,9 +493,7 @@ internal class FeedImplTest {
         val deleteData = comment to updatedActivity
 
         // Set up initial state with the original activity
-        val feedInfo = getOrCreateInfo(feedData(), listOf(originalActivity))
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, activities = listOf(originalActivity))
 
         coEvery { commentsRepository.deleteComment(commentId, hardDelete) } returns
             Result.success(deleteData)
@@ -594,10 +568,13 @@ internal class FeedImplTest {
             )
         val memberUpdates =
             ModelUpdates(
-                added = listOf(feedMemberData("user1")),
+                added = emptyList(),
                 removedIds = emptyList(),
-                updated = emptyList(),
+                updated = listOf(feedMemberData("user1", role = "member")),
             )
+
+        // Set up initial state so members can be updated
+        setupInitialState(feed, members = listOf(feedMemberData("user1", role = "admin")))
 
         coEvery { feedsRepository.updateFeedMembers("group", "id", request) } returns
             Result.success(memberUpdates)
@@ -645,9 +622,7 @@ internal class FeedImplTest {
         val activity = activityData(activityId)
 
         // Set up initial state with activity
-        val feedInfo = getOrCreateInfo(feedData(), listOf(activity))
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, activities = listOf(activity))
 
         coEvery { activitiesRepository.addReaction(activityId, request) } returns
             Result.success(reaction)
@@ -685,9 +660,7 @@ internal class FeedImplTest {
                     reactionCount = 1,
                     reactionGroups = mapOf("like" to reactionGroupData(count = 1)),
                 )
-        val feedInfo = getOrCreateInfo(feedData(), listOf(activityWithReaction))
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, activities = listOf(activityWithReaction))
 
         val result = feed.deleteReaction(activityId, type)
 
@@ -789,18 +762,40 @@ internal class FeedImplTest {
     private fun getOrCreateInfo(
         testFeedData: FeedData,
         activities: List<ActivityData> = emptyList(),
-    ): GetOrCreateInfo =
-        GetOrCreateInfo(
-            activities = PaginationResult(models = activities, pagination = PaginationData.EMPTY),
+        followers: List<FollowData> = emptyList(),
+        following: List<FollowData> = emptyList(),
+        followRequests: List<FollowData> = emptyList(),
+        members: List<FeedMemberData> = emptyList(),
+    ): GetOrCreateInfo {
+        val paginationData = PaginationData(next = "cursor")
+
+        return GetOrCreateInfo(
+            activities = PaginationResult(models = activities, pagination = paginationData),
             activitiesQueryConfig =
                 QueryConfiguration(filter = null, sort = ActivitiesSort.Default),
             feed = testFeedData,
-            followers = emptyList(),
-            following = emptyList(),
-            followRequests = emptyList(),
-            members = PaginationResult(models = emptyList(), pagination = PaginationData.EMPTY),
+            followers = followers,
+            following = following,
+            followRequests = followRequests,
+            members = PaginationResult(models = members, pagination = paginationData),
             pinnedActivities = emptyList(),
             aggregatedActivities = emptyList(),
             notificationStatus = null,
         )
+    }
+
+    private suspend fun setupInitialState(
+        feed: FeedImpl,
+        feedData: FeedData = feedData(),
+        activities: List<ActivityData> = emptyList(),
+        members: List<FeedMemberData> = emptyList(),
+        followers: List<FollowData> = emptyList(),
+        following: List<FollowData> = emptyList(),
+        followRequests: List<FollowData> = emptyList(),
+    ) {
+        val feedInfo =
+            getOrCreateInfo(feedData, activities, followers, following, followRequests, members)
+        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
+        feed.getOrCreate()
+    }
 }
