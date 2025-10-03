@@ -52,17 +52,33 @@ internal class BookmarkListStateImplTest {
     }
 
     @Test
+    fun `on onBookmarkUpserted, then add specific bookmark`() = runTest {
+        val initialBookmark = bookmarkData("activity-2", "user-2", createdAt = 2000)
+        val paginationResult = defaultPaginationResult(listOf(initialBookmark))
+        bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
+
+        val updatedBookmark = bookmarkData("activity-1", "user-1", createdAt = 3000)
+        bookmarkListState.onBookmarkUpserted(updatedBookmark)
+
+        val expected = listOf(updatedBookmark, initialBookmark)
+        assertEquals(expected, bookmarkListState.bookmarks.value)
+    }
+
+    @Test
     fun `on onBookmarkUpserted, then update specific bookmark`() = runTest {
-        val initialBookmarks = listOf(bookmarkData(), bookmarkData("bookmark-2", "user-2"))
+        val initialBookmarks =
+            listOf(
+                bookmarkData("activity-2", "user-2", createdAt = 2000),
+                bookmarkData("activity-1", "user-1", createdAt = 1000),
+            )
         val paginationResult = defaultPaginationResult(initialBookmarks)
         bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
 
-        val updatedBookmark = bookmarkData("activity-1", "user-1")
+        val updatedBookmark = bookmarkData("activity-1", "user-1", createdAt = 3000)
         bookmarkListState.onBookmarkUpserted(updatedBookmark)
 
-        val updatedBookmarks = bookmarkListState.bookmarks.value
-        assertEquals(updatedBookmark, updatedBookmarks.find { it.id == updatedBookmark.id })
-        assertEquals(initialBookmarks[1], updatedBookmarks.find { it.id == initialBookmarks[1].id })
+        val expected = listOf(updatedBookmark, initialBookmarks.first())
+        assertEquals(expected, bookmarkListState.bookmarks.value)
     }
 
     @Test

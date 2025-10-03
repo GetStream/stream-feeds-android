@@ -260,10 +260,11 @@ internal object TestData {
         activityId: String = "activity-1",
         userId: String = "user-1",
         folder: BookmarkFolderData? = null,
+        createdAt: Long = 1000,
     ): BookmarkData =
         BookmarkData(
             activity = activityData(activityId),
-            createdAt = Date(1000),
+            createdAt = Date(createdAt),
             custom = emptyMap(),
             folder = folder,
             updatedAt = Date(1000),
