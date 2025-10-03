@@ -359,8 +359,10 @@ internal object TestData {
         targetFid: String = "user:user-2",
         createdAt: Date = Date(1000),
         updatedAt: Date = Date(1000),
-    ): FollowData =
-        FollowData(
+    ): FollowData {
+        val source = FeedId(sourceFid)
+        val target = FeedId(targetFid)
+        return FollowData(
             createdAt = createdAt,
             custom = emptyMap(),
             followerRole = "user",
@@ -370,16 +372,16 @@ internal object TestData {
             sourceFeed =
                 FeedData(
                     createdAt = createdAt,
-                    createdBy = userData(sourceFid),
+                    createdBy = userData(source.id),
                     custom = emptyMap(),
                     deletedAt = null,
                     description = "Test feed",
-                    fid = FeedId(sourceFid),
+                    fid = source,
                     filterTags = emptyList(),
                     followerCount = 0,
                     followingCount = 0,
                     groupId = "user",
-                    id = sourceFid,
+                    id = source.id,
                     memberCount = 0,
                     ownCapabilities = emptyList(),
                     ownMembership = null,
@@ -392,16 +394,16 @@ internal object TestData {
             targetFeed =
                 FeedData(
                     createdAt = createdAt,
-                    createdBy = userData(targetFid),
+                    createdBy = userData(target.id),
                     custom = emptyMap(),
                     deletedAt = null,
                     description = "Target feed",
-                    fid = FeedId(targetFid),
+                    fid = target,
                     filterTags = emptyList(),
                     followerCount = 0,
                     followingCount = 0,
                     groupId = "user",
-                    id = targetFid,
+                    id = target.id,
                     memberCount = 0,
                     ownCapabilities = emptyList(),
                     ownMembership = null,
@@ -412,6 +414,7 @@ internal object TestData {
                 ),
             updatedAt = updatedAt,
         )
+    }
 
     fun feedMemberData(
         userId: String = "user-1",
