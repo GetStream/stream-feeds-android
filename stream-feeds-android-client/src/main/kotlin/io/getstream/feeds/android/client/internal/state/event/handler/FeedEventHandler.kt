@@ -58,8 +58,13 @@ internal class FeedEventHandler(
             }
 
             is StateUpdateEvent.ActivityUpdated -> {
-                if (event.fid == fid.rawValue && event.activity matches activityFilter) {
-                    state.onActivityUpserted(event.activity)
+                if (event.fid == fid.rawValue) {
+                    if (event.activity matches activityFilter) {
+                        state.onActivityUpserted(event.activity)
+                    } else {
+                        // We remove elements that used to match the filter but no longer do
+                        state.onActivityRemoved(event.activity.id)
+                    }
                 }
             }
 

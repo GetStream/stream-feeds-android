@@ -27,7 +27,6 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.P
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
 import io.mockk.MockKVerificationScope
-import io.mockk.called
 import io.mockk.mockk
 import org.junit.runners.Parameterized
 
@@ -63,7 +62,7 @@ internal class PollListEventHandlerTest(
                 testParams<PollListStateUpdates>(
                     name = "PollUpdated non-matching filter",
                     event = PollUpdated("feed-1", nonMatchingPoll),
-                    verifyBlock = { state -> state wasNot called },
+                    verifyBlock = { state -> state.onPollDeleted(nonMatchingPoll.id) },
                 ),
                 testParams<PollListStateUpdates>(
                     name = "PollVoteCasted",

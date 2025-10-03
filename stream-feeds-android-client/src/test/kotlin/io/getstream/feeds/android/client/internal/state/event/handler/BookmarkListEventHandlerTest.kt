@@ -15,6 +15,8 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
+import io.getstream.android.core.api.filter.equal
+import io.getstream.feeds.android.client.api.state.query.BookmarksFilterField
 import io.getstream.feeds.android.client.internal.state.BookmarkListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkAdded
@@ -23,6 +25,7 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.B
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkFolderUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkUpdated
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
+import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkFolderData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
@@ -38,10 +41,12 @@ internal class BookmarkListEventHandlerTest(
 ) : BaseEventHandlerTest<BookmarkListStateUpdates>(testName, event, verifyBlock) {
 
     override val state: BookmarkListStateUpdates = mockk(relaxed = true)
-    override val handler: StateUpdateEventListener = BookmarkListEventHandler(state)
+    override val handler: StateUpdateEventListener = BookmarkListEventHandler(filter, state)
 
     companion object {
-        private val bookmark = bookmarkData()
+        private val filter = BookmarksFilterField.activityId.equal("activity-1")
+        private val matchingBookmark = bookmarkData(activity = activityData("activity-1"))
+        private val nonMatchingBookmark = bookmarkData(activity = activityData("other-activity"))
         private val folder = bookmarkFolderData()
 
         @JvmStatic
@@ -59,19 +64,29 @@ internal class BookmarkListEventHandlerTest(
                     verifyBlock = { state -> state.onBookmarkFolderUpdated(folder) },
                 ),
                 testParams<BookmarkListStateUpdates>(
-                    name = "BookmarkAdded",
-                    event = BookmarkAdded(bookmark),
-                    verifyBlock = { state -> state.onBookmarkUpserted(bookmark) },
+                    name = "BookmarkAdded matching filter",
+                    event = BookmarkAdded(matchingBookmark),
+                    verifyBlock = { state -> state.onBookmarkUpserted(matchingBookmark) },
+                ),
+                testParams<BookmarkListStateUpdates>(
+                    name = "BookmarkAdded non-matching filter",
+                    event = BookmarkAdded(nonMatchingBookmark),
+                    verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<BookmarkListStateUpdates>(
                     name = "BookmarkDeleted",
-                    event = BookmarkDeleted(bookmark),
-                    verifyBlock = { state -> state.onBookmarkRemoved(bookmark) },
+                    event = BookmarkDeleted(matchingBookmark),
+                    verifyBlock = { state -> state.onBookmarkRemoved(matchingBookmark) },
                 ),
                 testParams<BookmarkListStateUpdates>(
-                    name = "BookmarkUpdated",
-                    event = BookmarkUpdated(bookmark),
-                    verifyBlock = { state -> state.onBookmarkUpserted(bookmark) },
+                    name = "BookmarkUpdated matching filter",
+                    event = BookmarkUpdated(matchingBookmark),
+                    verifyBlock = { state -> state.onBookmarkUpserted(matchingBookmark) },
+                ),
+                testParams<BookmarkListStateUpdates>(
+                    name = "BookmarkUpdated non-matching filter",
+                    event = BookmarkUpdated(nonMatchingBookmark),
+                    verifyBlock = { state -> state.onBookmarkRemoved(nonMatchingBookmark) },
                 ),
                 testParams<BookmarkListStateUpdates>(
                     name = "unknown event",

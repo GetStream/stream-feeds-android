@@ -62,9 +62,14 @@ internal class CommentListEventHandlerTest(
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<CommentListStateUpdates>(
-                    name = "CommentUpdated",
+                    name = "CommentUpdated matching filter",
                     event = CommentUpdated("feed-1", comment),
                     verifyBlock = { state -> state.onCommentUpserted(comment) },
+                ),
+                testParams<CommentListStateUpdates>(
+                    name = "CommentUpdated non-matching filter",
+                    event = CommentUpdated("feed-1", nonMatchingComment),
+                    verifyBlock = { state -> state.onCommentRemoved(nonMatchingComment.id) },
                 ),
                 testParams<CommentListStateUpdates>(
                     name = "CommentDeleted",

@@ -91,7 +91,7 @@ internal class ActivityListEventHandlerTest(
                 testParams<ActivityListStateUpdates>(
                     name = "ActivityUpdated with non-matching filter",
                     event = ActivityUpdated("feed-1", activityData("activity-1", type = "story")),
-                    verifyBlock = { state -> state wasNot called },
+                    verifyBlock = { state -> state.onActivityRemoved("activity-1") },
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "ActivityReactionDeleted",

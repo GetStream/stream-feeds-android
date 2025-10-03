@@ -71,7 +71,7 @@ internal class FeedListEventHandlerTest(
                 testParams<FeedListStateUpdates>(
                     name = "FeedUpdated with non-matching filter",
                     event = FeedUpdated(feedData(id = "feed-1", groupId = "notifications")),
-                    verifyBlock = { state -> state wasNot called },
+                    verifyBlock = { state -> state.onFeedRemoved("notifications:feed-1") },
                 ),
             )
     }
