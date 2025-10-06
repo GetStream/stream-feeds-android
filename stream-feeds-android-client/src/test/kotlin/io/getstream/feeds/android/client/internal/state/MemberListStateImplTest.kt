@@ -96,7 +96,7 @@ internal class MemberListStateImplTest {
             ModelUpdates(
                 added = listOf(newMember),
                 updated = listOf(updatedMember),
-                removedIds = listOf("user-2"),
+                removedIds = setOf("user-2"),
             )
         memberListState.onMembersUpdated(updates)
 

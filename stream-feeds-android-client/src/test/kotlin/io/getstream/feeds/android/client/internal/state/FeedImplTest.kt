@@ -570,7 +570,7 @@ internal class FeedImplTest {
         val memberUpdates =
             ModelUpdates(
                 added = emptyList(),
-                removedIds = emptyList(),
+                removedIds = emptySet(),
                 updated = listOf(feedMemberData("user1", role = "member")),
             )
 
