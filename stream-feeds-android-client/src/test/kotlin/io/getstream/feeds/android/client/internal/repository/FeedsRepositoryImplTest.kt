@@ -16,7 +16,6 @@
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.feeds.android.client.api.model.FeedId
-import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.toModel
@@ -239,11 +238,7 @@ internal class FeedsRepositoryImplTest {
             repositoryCall = { repository.updateFeedMembers("user", "user-1", request) },
             apiResult = apiResult,
             repositoryResult =
-                ModelUpdates<FeedMemberData>(
-                    added = emptyList(),
-                    removedIds = emptyList(),
-                    updated = emptyList(),
-                ),
+                ModelUpdates(added = emptyList(), removedIds = emptySet(), updated = emptyList()),
         )
     }
 
