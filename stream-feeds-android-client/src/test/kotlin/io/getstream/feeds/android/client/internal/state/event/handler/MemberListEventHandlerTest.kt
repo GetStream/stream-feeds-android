@@ -17,10 +17,12 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.android.core.api.filter.equal
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.state.query.MembersFilterField
 import io.getstream.feeds.android.client.internal.state.MemberListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedMemberAdded
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedMemberBatchUpdate
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedMemberRemoved
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedMemberUpdated
 import io.getstream.feeds.android.client.internal.test.TestData.feedMemberData
@@ -39,7 +41,7 @@ internal class MemberListEventHandlerTest(
     override val handler = MemberListEventHandler(FeedId(fid), testFilter, state)
 
     companion object {
-        private val fid = "user:feed-1"
+        private const val fid = "user:feed-1"
         private const val differentFeedId = "user:different-feed"
         private val testFilter = MembersFilterField.role.equal("admin")
         private val matchingMember = feedMemberData(role = "admin")
@@ -88,6 +90,48 @@ internal class MemberListEventHandlerTest(
                     name = "FeedMemberUpdated non-matching filter",
                     event = FeedMemberUpdated(fid, nonMatchingMember),
                     verifyBlock = { state -> state.onMemberRemoved(nonMatchingMember.id) },
+                ),
+                run {
+                    val anotherMatching = feedMemberData(userId = "user-2", role = "admin")
+                    val anotherNonMatching = feedMemberData(userId = "user-3", role = "member")
+
+                    testParams<MemberListStateUpdates>(
+                        name = "FeedMemberBatchUpdate matching feed with mixed updates",
+                        event =
+                            FeedMemberBatchUpdate(
+                                fid = fid,
+                                updates =
+                                    ModelUpdates(
+                                        added = listOf(matchingMember, nonMatchingMember),
+                                        updated = listOf(anotherMatching, anotherNonMatching),
+                                        removedIds = listOf("removed-1", "removed-2"),
+                                    ),
+                            ),
+                        verifyBlock = { state ->
+                            state.onMembersUpdated(
+                                ModelUpdates(
+                                    added = listOf(matchingMember),
+                                    updated = listOf(anotherMatching),
+                                    removedIds =
+                                        listOf("removed-1", "removed-2", anotherNonMatching.id),
+                                )
+                            )
+                        },
+                    )
+                },
+                testParams<MemberListStateUpdates>(
+                    name = "FeedMemberBatchUpdate non-matching feed",
+                    event =
+                        FeedMemberBatchUpdate(
+                            fid = differentFeedId,
+                            updates =
+                                ModelUpdates(
+                                    added = listOf(matchingMember),
+                                    updated = emptyList(),
+                                    removedIds = listOf("removed-1"),
+                                ),
+                        ),
+                    verifyBlock = { state -> state wasNot called },
                 ),
             )
     }
