@@ -16,6 +16,8 @@
 package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.model.FeedMemberData
+import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.state.query.MembersFilter
 import io.getstream.feeds.android.client.internal.state.MemberListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
@@ -50,6 +52,20 @@ internal class MemberListEventHandler(
                         state.onMemberRemoved(event.member.id)
                     }
                 }
+            }
+
+            is StateUpdateEvent.FeedMemberBatchUpdate -> {
+                if (event.fid != fid.rawValue) return
+
+                val added = event.updates.added.filter { it matches filter }
+                // We remove elements that used to match the filter but no longer do
+                val (updated, removed) = event.updates.updated.partition { it matches filter }
+                val removedIds = event.updates.removedIds.toMutableList()
+                removed.mapTo(removedIds, FeedMemberData::id)
+
+                state.onMembersUpdated(
+                    ModelUpdates(added = added, updated = updated, removedIds = removedIds)
+                )
             }
 
             else -> {}
