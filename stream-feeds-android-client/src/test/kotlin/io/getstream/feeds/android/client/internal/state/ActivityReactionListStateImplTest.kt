@@ -21,6 +21,7 @@ import io.getstream.feeds.android.client.api.state.query.ActivityReactionsSort
 import io.getstream.feeds.android.client.internal.state.query.ActivityReactionsQueryConfig
 import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
+import java.util.Date
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -39,7 +40,10 @@ internal class ActivityReactionListStateImplTest {
     @Test
     fun `on queryMoreActivityReactions, then update reactions and pagination`() = runTest {
         val reactions =
-            listOf(feedsReactionData(), feedsReactionData("reaction-2", "activity-1", "user-2"))
+            listOf(
+                feedsReactionData(activityId = "activity-1", userId = "user-1"),
+                feedsReactionData(activityId = "activity-1", userId = "user-2"),
+            )
         val paginationResult = defaultPaginationResult(reactions)
 
         activityReactionListState.onQueryMoreActivityReactions(paginationResult, queryConfig)
@@ -52,7 +56,10 @@ internal class ActivityReactionListStateImplTest {
     @Test
     fun `on reactionRemoved, then remove specific reaction`() = runTest {
         val initialReactions =
-            listOf(feedsReactionData(), feedsReactionData("reaction-2", "activity-1", "user-2"))
+            listOf(
+                feedsReactionData(activityId = "activity-1", userId = "user-1"),
+                feedsReactionData(activityId = "activity-1", userId = "user-2"),
+            )
         val paginationResult = defaultPaginationResult(initialReactions)
         activityReactionListState.onQueryMoreActivityReactions(paginationResult, queryConfig)
 
@@ -63,9 +70,31 @@ internal class ActivityReactionListStateImplTest {
     }
 
     @Test
+    fun `on reactionUpserted with new reaction, then insert in sorted order`() = runTest {
+        val olderReaction =
+            feedsReactionData(activityId = "activity-1", userId = "user-1", createdAt = Date(1000))
+        val newerReaction =
+            feedsReactionData(activityId = "activity-1", userId = "user-3", createdAt = Date(3000))
+        val initialReactions = listOf(newerReaction, olderReaction) // newest first
+        val paginationResult = defaultPaginationResult(initialReactions)
+        activityReactionListState.onQueryMoreActivityReactions(paginationResult, queryConfig)
+
+        val middleReaction =
+            feedsReactionData(activityId = "activity-1", userId = "user-2", createdAt = Date(2000))
+        activityReactionListState.onReactionUpserted(middleReaction)
+
+        // The reaction is inserted in sorted position (newest first)
+        val expectedOrder = listOf(newerReaction, middleReaction, olderReaction)
+        assertEquals(expectedOrder, activityReactionListState.reactions.value)
+    }
+
+    @Test
     fun `on onActivityRemoved, clear all reactions`() = runTest {
         val reactions =
-            listOf(feedsReactionData(), feedsReactionData("reaction-2", "activity-1", "user-2"))
+            listOf(
+                feedsReactionData(activityId = "activity-1", userId = "user-1"),
+                feedsReactionData(activityId = "activity-1", userId = "user-2"),
+            )
         val paginationResult = defaultPaginationResult(reactions)
 
         activityReactionListState.onQueryMoreActivityReactions(paginationResult, queryConfig)
