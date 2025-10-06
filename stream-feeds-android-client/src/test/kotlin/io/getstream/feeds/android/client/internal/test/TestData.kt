@@ -355,12 +355,14 @@ internal object TestData {
         )
 
     fun followData(
-        sourceUserId: String = "user-1",
-        targetUserId: String = "user-2",
+        sourceFid: String = "user:user-1",
+        targetFid: String = "user:user-2",
         createdAt: Date = Date(1000),
         updatedAt: Date = Date(1000),
-    ): FollowData =
-        FollowData(
+    ): FollowData {
+        val source = FeedId(sourceFid)
+        val target = FeedId(targetFid)
+        return FollowData(
             createdAt = createdAt,
             custom = emptyMap(),
             followerRole = "user",
@@ -370,16 +372,16 @@ internal object TestData {
             sourceFeed =
                 FeedData(
                     createdAt = createdAt,
-                    createdBy = userData(sourceUserId),
+                    createdBy = userData(source.id),
                     custom = emptyMap(),
                     deletedAt = null,
                     description = "Test feed",
-                    fid = FeedId("user:$sourceUserId"),
+                    fid = source,
                     filterTags = emptyList(),
                     followerCount = 0,
                     followingCount = 0,
                     groupId = "user",
-                    id = sourceUserId,
+                    id = source.id,
                     memberCount = 0,
                     ownCapabilities = emptyList(),
                     ownMembership = null,
@@ -392,16 +394,16 @@ internal object TestData {
             targetFeed =
                 FeedData(
                     createdAt = createdAt,
-                    createdBy = userData(targetUserId),
+                    createdBy = userData(target.id),
                     custom = emptyMap(),
                     deletedAt = null,
                     description = "Target feed",
-                    fid = FeedId("user:$targetUserId"),
+                    fid = target,
                     filterTags = emptyList(),
                     followerCount = 0,
                     followingCount = 0,
                     groupId = "user",
-                    id = targetUserId,
+                    id = target.id,
                     memberCount = 0,
                     ownCapabilities = emptyList(),
                     ownMembership = null,
@@ -412,6 +414,7 @@ internal object TestData {
                 ),
             updatedAt = updatedAt,
         )
+    }
 
     fun feedMemberData(
         userId: String = "user-1",
@@ -715,5 +718,14 @@ internal object TestData {
         PaginationResult(
             models = list,
             pagination = PaginationData(next = "next-cursor", previous = null),
+        )
+
+    fun activityPinResponse() =
+        PinActivityResponse(
+            activity = activityResponse(),
+            createdAt = Date(1000),
+            duration = "duration",
+            feed = "user:feed-1",
+            userId = "user-1",
         )
 }

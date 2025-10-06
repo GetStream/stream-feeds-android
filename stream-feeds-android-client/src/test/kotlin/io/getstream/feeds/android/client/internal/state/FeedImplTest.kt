@@ -20,6 +20,8 @@ import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.FeedAddActivityRequest
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.model.FeedMemberData
+import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
@@ -34,6 +36,8 @@ import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
@@ -43,6 +47,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionDat
 import io.getstream.feeds.android.client.internal.test.TestData.followData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import io.getstream.feeds.android.client.internal.test.TestData.reactionGroupData
+import io.getstream.feeds.android.client.internal.test.TestSubscriptionManager
 import io.getstream.feeds.android.network.models.AddBookmarkRequest
 import io.getstream.feeds.android.network.models.AddCommentReactionRequest
 import io.getstream.feeds.android.network.models.AddReactionRequest
@@ -62,7 +67,6 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -74,6 +78,7 @@ internal class FeedImplTest {
     private val feedsRepository: FeedsRepository = mockk(relaxed = true)
     private val pollsRepository: PollsRepository = mockk(relaxed = true)
     private val feedWatchHandler: FeedWatchHandler = mockk(relaxed = true)
+    private val stateEventListener: StateUpdateEventListener = mockk(relaxed = true)
 
     @Test
     fun `on getOrCreate with watch enabled, then call feedWatchHandler`() = runTest {
@@ -86,6 +91,7 @@ internal class FeedImplTest {
         val result = feed.getOrCreate()
 
         assertEquals(feedInfo.feed, result.getOrNull())
+        assertEquals(feedInfo.feed, feed.state.feed.value)
         verify { feedWatchHandler.onStartWatching(feedId) }
     }
 
@@ -99,6 +105,7 @@ internal class FeedImplTest {
         val result = feed.getOrCreate()
 
         assertEquals(feedInfo.feed, result.getOrNull())
+        assertEquals(feedInfo.feed, feed.state.feed.value)
         verify { feedWatchHandler wasNot called }
     }
 
@@ -117,7 +124,7 @@ internal class FeedImplTest {
     }
 
     @Test
-    fun `on addActivity, delegate to repository and notify state on success`() = runTest {
+    fun `on addActivity, delegate to repository and fire event on success`() = runTest {
         val feed = createFeed()
         val request = FeedAddActivityRequest(type = "post", text = "Nice post")
         val attachmentUploadProgress: (FeedUploadPayload, Double) -> Unit = { _, _ -> }
@@ -127,28 +134,41 @@ internal class FeedImplTest {
 
         feed.addActivity(request, attachmentUploadProgress)
 
-        coVerify { activitiesRepository.addActivity(request, attachmentUploadProgress) }
+        coVerify {
+            activitiesRepository.addActivity(request, attachmentUploadProgress)
+            stateEventListener.onEvent(StateUpdateEvent.ActivityAdded("group:id", activityData))
+        }
         assertEquals(listOf(activityData), feed.state.activities.value)
     }
 
     @Test
-    fun `on addComment, delegate to repository`() = runTest {
+    fun `on addComment, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
-        val request = ActivityAddCommentRequest(activityId = "activityId", comment = "Comment")
+        val activityId = "activityId"
+        val request = ActivityAddCommentRequest(activityId = activityId, comment = "Comment")
         val progress = { _: FeedUploadPayload, _: Double -> }
-        val commentData = commentData("id")
-        coEvery { commentsRepository.addComment(any(), any()) } returns Result.success(commentData)
+        val initialActivity = activityData(activityId)
+        setupInitialState(feed, activities = listOf(initialActivity))
 
-        feed.addComment(request, progress)
+        val addedComment = commentData(id = "comment-1", objectId = activityId)
+        coEvery { commentsRepository.addComment(any(), any()) } returns Result.success(addedComment)
 
-        coVerify { commentsRepository.addComment(request, progress) }
+        val result = feed.addComment(request, progress)
+
+        val updated = initialActivity.copy(comments = listOf(addedComment), commentCount = 1)
+        assertEquals(addedComment, result.getOrNull())
+        assertEquals(listOf(updated), feed.state.activities.value)
+        coVerify {
+            commentsRepository.addComment(request, progress)
+            stateEventListener.onEvent(StateUpdateEvent.CommentAdded("group:id", addedComment))
+        }
     }
 
     @Test
-    fun `on updateFeed, delegate to repository and update state`() = runTest {
+    fun `on updateFeed, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val request = UpdateFeedRequest(custom = mapOf("key" to "value"))
-        val updatedFeedData = feedData("user-feed", "user", "Updated Feed")
+        val updatedFeedData = feedData("id", "group", "Updated Feed")
         coEvery { feedsRepository.updateFeed("group", "id", request) } returns
             Result.success(updatedFeedData)
 
@@ -156,18 +176,17 @@ internal class FeedImplTest {
 
         assertEquals(updatedFeedData, result.getOrNull())
         assertEquals(updatedFeedData, feed.state.feed.value)
+        verify { stateEventListener.onEvent(StateUpdateEvent.FeedUpdated(updatedFeedData)) }
     }
 
     @Test
-    fun `on deleteFeed, delegate to repository and clear state`() = runTest {
+    fun `on deleteFeed, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val hardDelete = true
         // Set up initial state with some data
         val initialFeedData = feedData()
         val initialActivity = activityData("activity-1")
-        val feedInfo = getOrCreateInfo(initialFeedData, listOf(initialActivity))
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, initialFeedData, listOf(initialActivity))
 
         coEvery { feedsRepository.deleteFeed("group", "id", hardDelete) } returns
             Result.success(Unit)
@@ -176,11 +195,12 @@ internal class FeedImplTest {
 
         assertEquals(Unit, result.getOrNull())
         assertNull(feed.state.feed.value)
-        assertTrue("Activities should be cleared", feed.state.activities.value.isEmpty())
+        assertEquals(emptyList<ActivityData>(), feed.state.activities.value)
+        verify { stateEventListener.onEvent(StateUpdateEvent.FeedDeleted("group:id")) }
     }
 
     @Test
-    fun `on updateActivity, delegate to repository and update state`() = runTest {
+    fun `on updateActivity, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val activityId = "activity-1"
         val request = UpdateActivityRequest(text = "Updated activity")
@@ -188,32 +208,32 @@ internal class FeedImplTest {
         val updatedActivity = activityData(activityId, "Updated activity")
 
         // Set up initial state with activity
-        val feedInfo = getOrCreateInfo(feedData(), listOf(originalActivity))
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, activities = listOf(originalActivity))
 
         coEvery { activitiesRepository.updateActivity(activityId, request) } returns
             Result.success(updatedActivity)
 
         val result = feed.updateActivity(activityId, request)
 
+        val updated = originalActivity.copy(text = updatedActivity.text)
         assertEquals(updatedActivity, result.getOrNull())
-        val stateActivities = feed.state.activities.value
-        assertEquals(1, stateActivities.size)
-        assertEquals("Updated activity", stateActivities.first().text)
+        assertEquals(listOf(updated), feed.state.activities.value)
+        verify {
+            stateEventListener.onEvent(
+                StateUpdateEvent.ActivityUpdated("group:id", updatedActivity)
+            )
+        }
     }
 
     @Test
-    fun `on deleteActivity, delegate to repository and remove from state`() = runTest {
+    fun `on deleteActivity, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val activityId = "activity-1"
         val hardDelete = false
         val activity = activityData(activityId)
 
         // Set up initial state with activity
-        val feedInfo = getOrCreateInfo(feedData(), listOf(activity))
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, activities = listOf(activity))
 
         coEvery { activitiesRepository.deleteActivity(activityId, hardDelete) } returns
             Result.success(Unit)
@@ -221,11 +241,14 @@ internal class FeedImplTest {
         val result = feed.deleteActivity(activityId, hardDelete)
 
         assertEquals(Unit, result.getOrNull())
-        assertTrue("Activity should be removed from state", feed.state.activities.value.isEmpty())
+        assertEquals(emptyList<ActivityData>(), feed.state.activities.value)
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.ActivityDeleted("group:id", activityId))
+        }
     }
 
     @Test
-    fun `on repost, delegate to repository and add to state`() = runTest {
+    fun `on repost, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val parentActivityId = "parent-activity"
         val text = "Repost text"
@@ -237,38 +260,40 @@ internal class FeedImplTest {
         val result = feed.repost(parentActivityId, text)
 
         assertEquals(repostActivity, result.getOrNull())
-        val stateActivities = feed.state.activities.value
-        assertEquals(1, stateActivities.size)
-        assertEquals(text, stateActivities.first().text)
+        assertEquals(listOf(repostActivity), feed.state.activities.value)
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.ActivityAdded("group:id", repostActivity))
+        }
     }
 
     @Test
-    fun `on addBookmark, delegate to repository and update activity state`() = runTest {
+    fun `on addBookmark, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val activityId = "activity-1"
         val request = AddBookmarkRequest(folderId = "folder-1")
-        val activity = activityData(activityId)
-        val bookmark = bookmarkData(activityId)
+        val activity = activityData(activityId).copy(feeds = listOf("group:id"))
+        val bookmark = bookmarkData(activityId, userId = "user").copy(activity = activity)
 
         // Set up initial state with activity
-        val feedInfo = getOrCreateInfo(feedData(), listOf(activity))
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, activities = listOf(activity))
 
         coEvery { bookmarksRepository.addBookmark(activityId, request) } returns
             Result.success(bookmark)
 
         val result = feed.addBookmark(activityId, request)
 
+        val updated =
+            activity.copy(
+                ownBookmarks = listOf(bookmark),
+                bookmarkCount = activity.bookmarkCount + 1,
+            )
         assertEquals(bookmark, result.getOrNull())
-        val stateActivities = feed.state.activities.value
-        assertEquals(1, stateActivities.size)
-        // The activity should be updated with bookmark info
-        assertNotNull("Activity should be updated with bookmark", stateActivities.first())
+        assertEquals(listOf(updated), feed.state.activities.value)
+        verify { stateEventListener.onEvent(StateUpdateEvent.BookmarkAdded(bookmark)) }
     }
 
     @Test
-    fun `on deleteBookmark, delegate to repository and update activity state`() = runTest {
+    fun `on deleteBookmark, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val activityId = "activity-1"
         val folderId = "folder-1"
@@ -276,20 +301,21 @@ internal class FeedImplTest {
         val bookmark = bookmarkData(activityId)
 
         // Set up initial state with activity
-        val feedInfo = getOrCreateInfo(feedData(), listOf(activity))
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, activities = listOf(activity))
 
         coEvery { bookmarksRepository.deleteBookmark(activityId, folderId) } returns
             Result.success(bookmark)
 
         val result = feed.deleteBookmark(activityId, folderId)
 
+        val updated =
+            activity.copy(
+                ownBookmarks = activity.ownBookmarks.filter { it.id != bookmark.id },
+                bookmarkCount = 0,
+            )
         assertEquals(bookmark, result.getOrNull())
-        val stateActivities = feed.state.activities.value
-        assertEquals(1, stateActivities.size)
-        // The activity should be updated to remove bookmark
-        assertNotNull("Activity should be updated after bookmark removal", stateActivities.first())
+        assertEquals(listOf(updated), feed.state.activities.value)
+        verify { stateEventListener.onEvent(StateUpdateEvent.BookmarkDeleted(bookmark)) }
     }
 
     @Test
@@ -299,39 +325,35 @@ internal class FeedImplTest {
         val createNotificationActivity = true
         val custom = mapOf("key" to "value")
         val pushPreference = FollowRequest.PushPreference.All
-        val follow = followData("user", "target")
+        val follow = followData(sourceFid = "group:id", targetFid = "user:target")
 
         // Set up initial feed state
-        val feedInfo = getOrCreateInfo(feedData())
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed)
 
         coEvery { feedsRepository.follow(any()) } returns Result.success(follow)
 
         val result = feed.follow(targetFid, createNotificationActivity, custom, pushPreference)
 
         assertEquals(follow, result.getOrNull())
-        // State verification: the follow operation should succeed, indicating state was updated
-        assertTrue("Follow operation should succeed", result.isSuccess)
+        assertEquals(listOf(follow), feed.state.following.value)
     }
 
     @Test
-    fun `on unfollow, delegate to repository and update following state`() = runTest {
+    fun `on unfollow, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val targetFid = FeedId("user:target")
-        val follow = followData("id", "target")
+        val follow = followData("group:id", "user:target")
 
         // Set up initial state with follow
-        val feedInfo = getOrCreateInfo(feedData()).copy(following = listOf(follow))
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, following = listOf(follow))
 
-        coEvery { feedsRepository.unfollow(any(), any()) } returns Result.success(Unit)
+        coEvery { feedsRepository.unfollow(any(), any()) } returns Result.success(follow)
 
         val result = feed.unfollow(targetFid)
 
         assertEquals(Unit, result.getOrNull())
         assertTrue("Following should be removed from state", feed.state.following.value.isEmpty())
+        verify { stateEventListener.onEvent(StateUpdateEvent.FollowDeleted(follow)) }
     }
 
     @Test
@@ -339,65 +361,53 @@ internal class FeedImplTest {
         val feed = createFeed()
         val sourceFid = FeedId("user:source")
         val role = "member"
-        val follow = followData("source", "id")
+        val follow = followData(sourceFid = "user:source", targetFid = "group:id")
 
         // Set up initial feed state
-        val feedInfo = getOrCreateInfo(feedData())
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed)
 
         coEvery { feedsRepository.acceptFollow(any()) } returns Result.success(follow)
 
         val result = feed.acceptFollow(sourceFid, role)
 
         assertEquals(follow, result.getOrNull())
-        // State verification: the accept operation should succeed, indicating state was updated
-        assertTrue("Accept follow operation should succeed", result.isSuccess)
+        assertEquals(listOf(follow), feed.state.followers.value)
     }
 
     @Test
     fun `on rejectFollow, delegate to repository and update state`() = runTest {
         val feed = createFeed()
         val sourceFid = FeedId("user:source")
-        val follow = followData("source", "id")
+        val follow = followData(sourceFid = "user:source", targetFid = "group:id")
 
-        // Set up initial feed state
-        val feedInfo = getOrCreateInfo(feedData())
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        // Set up initial feed state with follower present
+        setupInitialState(feed, followers = listOf(follow))
 
         coEvery { feedsRepository.rejectFollow(any()) } returns Result.success(follow)
 
         val result = feed.rejectFollow(sourceFid)
 
         assertEquals(follow, result.getOrNull())
-        // State verification: the reject operation should succeed, indicating state was updated
-        assertTrue("Reject follow operation should succeed", result.isSuccess)
+        assertEquals(emptyList<FollowData>(), feed.state.followRequests.value)
     }
 
     @Test
-    fun `on queryMoreActivities, delegate to repository and update state`() = runTest {
+    fun `on queryMoreActivities, delegate to repository`() = runTest {
         val feed = createFeed()
         val limit = 10
         val newActivity = activityData("activity-2")
+        val initialActivities = listOf(activityData("activity-1"))
 
-        // Set up initial state with pagination
-        val activities =
-            PaginationResult(listOf(activityData("activity-1")), PaginationData(next = "cursor"))
-        val feedInfo = getOrCreateInfo(feedData()).copy(activities = activities)
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, activities = initialActivities)
 
         // Mock the next query
-        val nextFeedInfo =
-            feedInfo.copy(activities = PaginationResult(listOf(newActivity), PaginationData.EMPTY))
+        val nextFeedInfo = getOrCreateInfo(feedData(), activities = listOf(newActivity))
         coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(nextFeedInfo)
 
         val result = feed.queryMoreActivities(limit)
 
         assertEquals(listOf(newActivity), result.getOrNull())
-        val stateActivities = feed.state.activities.value
-        assertTrue("Should have activities", stateActivities.isNotEmpty())
+        assertEquals(initialActivities + newActivity, feed.state.activities.value)
     }
 
     @Test
@@ -426,7 +436,7 @@ internal class FeedImplTest {
     }
 
     @Test
-    fun `on updateBookmark, delegate to repository`() = runTest {
+    fun `on updateBookmark, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val activityId = "activity-1"
         val request = UpdateBookmarkRequest(folderId = "new-folder")
@@ -438,10 +448,11 @@ internal class FeedImplTest {
         val result = feed.updateBookmark(activityId, request)
 
         assertEquals(bookmark, result.getOrNull())
+        verify { stateEventListener.onEvent(StateUpdateEvent.BookmarkUpdated(bookmark)) }
     }
 
     @Test
-    fun `on getComment, delegate to repository`() = runTest {
+    fun `on getComment, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val commentId = "comment-1"
         val comment = commentData(commentId)
@@ -451,10 +462,11 @@ internal class FeedImplTest {
         val result = feed.getComment(commentId)
 
         assertEquals(comment, result.getOrNull())
+        verify { stateEventListener.onEvent(StateUpdateEvent.CommentUpdated(comment)) }
     }
 
     @Test
-    fun `on updateComment, delegate to repository`() = runTest {
+    fun `on updateComment, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val commentId = "comment-1"
         val request = UpdateCommentRequest(comment = "Updated comment")
@@ -466,30 +478,37 @@ internal class FeedImplTest {
         val result = feed.updateComment(commentId, request)
 
         assertEquals(comment, result.getOrNull())
+        verify { stateEventListener.onEvent(StateUpdateEvent.CommentUpdated(comment)) }
     }
 
     @Test
-    fun `on deleteComment, delegate to repository and update activity state`() = runTest {
+    fun `on deleteComment, delegate to repository and fire events`() = runTest {
         val feed = createFeed()
         val commentId = "comment-1"
         val hardDelete = true
         val activityId = "activity-1"
         val originalActivity = activityData(activityId, "Original activity")
         val updatedActivity = activityData(activityId, "Updated activity after comment deletion")
-        val deleteData = commentData() to updatedActivity
+        val comment = commentData(commentId)
+        val deleteData = comment to updatedActivity
 
         // Set up initial state with the original activity
-        val feedInfo = getOrCreateInfo(feedData(), listOf(originalActivity))
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, activities = listOf(originalActivity))
 
         coEvery { commentsRepository.deleteComment(commentId, hardDelete) } returns
             Result.success(deleteData)
 
         val result = feed.deleteComment(commentId, hardDelete)
 
+        val updated = originalActivity.copy(text = updatedActivity.text)
         assertEquals(Unit, result.getOrNull())
-        assertEquals(listOf(updatedActivity), feed.state.activities.value)
+        assertEquals(listOf(updated), feed.state.activities.value)
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.CommentDeleted("group:id", comment))
+            stateEventListener.onEvent(
+                StateUpdateEvent.ActivityUpdated("group:id", updatedActivity)
+            )
+        }
     }
 
     @Test
@@ -517,6 +536,7 @@ internal class FeedImplTest {
         val result = feed.queryFeedMembers()
 
         assertEquals(members, result.getOrNull())
+        assertEquals(members, feed.state.members.value)
     }
 
     @Test
@@ -535,6 +555,7 @@ internal class FeedImplTest {
         val result = feed.queryMoreFeedMembers(limit)
 
         assertEquals(moreMembers, result.getOrNull())
+        assertEquals(moreMembers, feed.state.members.value)
     }
 
     @Test
@@ -549,8 +570,11 @@ internal class FeedImplTest {
             ModelUpdates(
                 added = emptyList(),
                 removedIds = emptyList(),
-                updated = listOf(feedMemberData("user1")),
+                updated = listOf(feedMemberData("user1", role = "member")),
             )
+
+        // Set up initial state so members can be updated
+        setupInitialState(feed, members = listOf(feedMemberData("user1", role = "admin")))
 
         coEvery { feedsRepository.updateFeedMembers("group", "id", request) } returns
             Result.success(memberUpdates)
@@ -558,10 +582,11 @@ internal class FeedImplTest {
         val result = feed.updateFeedMembers(request)
 
         assertEquals(memberUpdates, result.getOrNull())
+        assertEquals(memberUpdates.updated, feed.state.members.value)
     }
 
     @Test
-    fun `on acceptFeedMember, delegate to repository`() = runTest {
+    fun `on acceptFeedMember, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val member = feedMemberData()
 
@@ -570,10 +595,13 @@ internal class FeedImplTest {
         val result = feed.acceptFeedMember()
 
         assertEquals(member, result.getOrNull())
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.FeedMemberUpdated("group:id", member))
+        }
     }
 
     @Test
-    fun `on rejectFeedMember, delegate to repository`() = runTest {
+    fun `on rejectFeedMember, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val member = feedMemberData()
 
@@ -582,10 +610,13 @@ internal class FeedImplTest {
         val result = feed.rejectFeedMember()
 
         assertEquals(member, result.getOrNull())
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.FeedMemberUpdated("group:id", member))
+        }
     }
 
     @Test
-    fun `on addReaction, delegate to repository and update state`() = runTest {
+    fun `on addReaction, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val activityId = "activity-1"
         val request = AddReactionRequest(type = "like")
@@ -593,23 +624,29 @@ internal class FeedImplTest {
         val activity = activityData(activityId)
 
         // Set up initial state with activity
-        val feedInfo = getOrCreateInfo(feedData(), listOf(activity))
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, activities = listOf(activity))
 
         coEvery { activitiesRepository.addReaction(activityId, request) } returns
             Result.success(reaction)
 
         val result = feed.addReaction(activityId, request)
 
+        val updated =
+            activity.copy(
+                ownReactions = activity.ownReactions + reaction,
+                latestReactions = activity.latestReactions + reaction,
+                reactionGroups = mapOf("like" to reactionGroupData(count = 1)),
+                reactionCount = 1,
+            )
         assertEquals(reaction, result.getOrNull())
-        val updatedActivity = feed.state.activities.value.first()
-        assertEquals(listOf(reaction), updatedActivity.ownReactions)
-        assertEquals(1, updatedActivity.reactionCount)
+        assertEquals(listOf(updated), feed.state.activities.value)
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.ActivityReactionAdded("group:id", reaction))
+        }
     }
 
     @Test
-    fun `on deleteReaction, delegate to repository and update state`() = runTest {
+    fun `on deleteReaction, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val activityId = "activity-1"
         val type = "like"
@@ -625,46 +662,62 @@ internal class FeedImplTest {
                     reactionCount = 1,
                     reactionGroups = mapOf("like" to reactionGroupData(count = 1)),
                 )
-        val feedInfo = getOrCreateInfo(feedData(), listOf(activityWithReaction))
-        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
-        feed.getOrCreate()
+        setupInitialState(feed, activities = listOf(activityWithReaction))
 
         val result = feed.deleteReaction(activityId, type)
 
+        val updated =
+            activityWithReaction.copy(
+                ownReactions = emptyList(),
+                latestReactions = emptyList(),
+                reactionGroups = emptyMap(),
+                reactionCount = 0,
+            )
         assertEquals(reaction, result.getOrNull())
-        val updatedActivity = feed.state.activities.value.first()
-        assertTrue("There should be no reaction", updatedActivity.ownReactions.isEmpty())
-        assertEquals(0, updatedActivity.reactionCount)
+        assertEquals(listOf(updated), feed.state.activities.value)
+        verify {
+            stateEventListener.onEvent(
+                StateUpdateEvent.ActivityReactionDeleted("group:id", reaction)
+            )
+        }
     }
 
     @Test
-    fun `on addCommentReaction, delegate to repository`() = runTest {
+    fun `on addCommentReaction, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val commentId = "comment-1"
         val request = AddCommentReactionRequest(type = "like")
         val reaction = feedsReactionData()
+        val comment = commentData(commentId)
 
         coEvery { commentsRepository.addCommentReaction(commentId, request) } returns
-            Result.success(Pair(reaction, commentData(commentId)))
+            Result.success(Pair(reaction, comment))
 
         val result = feed.addCommentReaction(commentId, request)
 
         assertEquals(reaction, result.getOrNull())
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.CommentReactionAdded(comment, reaction))
+        }
     }
 
     @Test
-    fun `on deleteCommentReaction, delegate to repository`() = runTest {
+    fun `on deleteCommentReaction, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val commentId = "comment-1"
         val type = "like"
         val reaction = feedsReactionData()
+        val comment = commentData(commentId)
 
         coEvery { commentsRepository.deleteCommentReaction(commentId, type) } returns
-            Result.success(Pair(reaction, commentData(commentId)))
+            Result.success(Pair(reaction, comment))
 
         val result = feed.deleteCommentReaction(commentId, type)
 
         assertEquals(reaction, result.getOrNull())
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.CommentReactionDeleted(comment, reaction))
+        }
     }
 
     @Test
@@ -692,6 +745,7 @@ internal class FeedImplTest {
                 }
             )
         }
+        verify { stateEventListener.onEvent(StateUpdateEvent.ActivityAdded("group:id", activity)) }
     }
 
     private fun createFeed(watch: Boolean = false) =
@@ -703,26 +757,47 @@ internal class FeedImplTest {
             commentsRepository = commentsRepository,
             feedsRepository = feedsRepository,
             pollsRepository = pollsRepository,
-            socketSubscriptionManager = mockk(relaxed = true),
-            subscriptionManager = mockk(relaxed = true),
+            subscriptionManager = TestSubscriptionManager(stateEventListener),
             feedWatchHandler = feedWatchHandler,
         )
 
     private fun getOrCreateInfo(
         testFeedData: FeedData,
         activities: List<ActivityData> = emptyList(),
-    ): GetOrCreateInfo =
-        GetOrCreateInfo(
-            activities = PaginationResult(models = activities, pagination = PaginationData.EMPTY),
+        followers: List<FollowData> = emptyList(),
+        following: List<FollowData> = emptyList(),
+        followRequests: List<FollowData> = emptyList(),
+        members: List<FeedMemberData> = emptyList(),
+    ): GetOrCreateInfo {
+        val paginationData = PaginationData(next = "cursor")
+
+        return GetOrCreateInfo(
+            activities = PaginationResult(models = activities, pagination = paginationData),
             activitiesQueryConfig =
                 QueryConfiguration(filter = null, sort = ActivitiesSort.Default),
             feed = testFeedData,
-            followers = emptyList(),
-            following = emptyList(),
-            followRequests = emptyList(),
-            members = PaginationResult(models = emptyList(), pagination = PaginationData.EMPTY),
+            followers = followers,
+            following = following,
+            followRequests = followRequests,
+            members = PaginationResult(models = members, pagination = paginationData),
             pinnedActivities = emptyList(),
             aggregatedActivities = emptyList(),
             notificationStatus = null,
         )
+    }
+
+    private suspend fun setupInitialState(
+        feed: FeedImpl,
+        feedData: FeedData = feedData(),
+        activities: List<ActivityData> = emptyList(),
+        members: List<FeedMemberData> = emptyList(),
+        followers: List<FollowData> = emptyList(),
+        following: List<FollowData> = emptyList(),
+        followRequests: List<FollowData> = emptyList(),
+    ) {
+        val feedInfo =
+            getOrCreateInfo(feedData, activities, followers, following, followRequests, members)
+        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
+        feed.getOrCreate()
+    }
 }
