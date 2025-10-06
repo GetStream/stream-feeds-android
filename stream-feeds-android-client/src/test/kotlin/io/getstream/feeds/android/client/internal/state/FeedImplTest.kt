@@ -567,12 +567,17 @@ internal class FeedImplTest {
         val request =
             UpdateFeedMembersRequest(
                 operation = UpdateFeedMembersRequest.Operation.Upsert,
-                members = listOf(FeedMemberRequest(userId = "user1", role = "member")),
+                members =
+                    listOf(
+                        FeedMemberRequest(userId = "user1", role = "member"),
+                        FeedMemberRequest(userId = "user2", role = "admin"),
+                        FeedMemberRequest(userId = "user3"),
+                    ),
             )
         val memberUpdates =
             ModelUpdates(
-                added = emptyList(),
-                removedIds = emptyList(),
+                added = listOf(feedMemberData("user2", role = "admin")),
+                removedIds = listOf("user3"),
                 updated = listOf(feedMemberData("user1", role = "member")),
             )
 
@@ -584,8 +589,13 @@ internal class FeedImplTest {
 
         val result = feed.updateFeedMembers(request)
 
+        val expected =
+            listOf(
+                feedMemberData(userId = "user1", role = "member"),
+                feedMemberData(userId = "user2", role = "admin"),
+            )
         assertEquals(memberUpdates, result.getOrNull())
-        assertEquals(memberUpdates.updated, feed.state.members.value)
+        assertEquals(expected, feed.state.members.value)
     }
 
     @Test
