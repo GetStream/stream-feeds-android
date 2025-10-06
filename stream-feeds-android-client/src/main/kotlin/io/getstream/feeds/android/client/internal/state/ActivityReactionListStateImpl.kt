@@ -23,7 +23,7 @@ import io.getstream.feeds.android.client.api.state.query.ActivityReactionsSort
 import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.state.query.ActivityReactionsQueryConfig
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
-import io.getstream.feeds.android.client.internal.utils.upsert
+import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -76,7 +76,9 @@ internal class ActivityReactionListStateImpl(override val query: ActivityReactio
     }
 
     override fun onReactionUpserted(reaction: FeedsReactionData) {
-        _reactions.update { current -> current.upsert(reaction, FeedsReactionData::id) }
+        _reactions.update { current ->
+            current.upsertSorted(reaction, FeedsReactionData::id, reactionsSorting)
+        }
     }
 
     override fun onReactionRemoved(reaction: FeedsReactionData) {
