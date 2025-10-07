@@ -264,6 +264,7 @@ constructor(private val application: Application, loginManager: LoginManager) : 
 
         return ViewState(
             userId = userId,
+            userImage = userState.user.imageURL,
             ownFeed = userState.client.feed(Feeds.user(userId)),
             timeline = userState.client.feed(timelineQuery),
             stories = userState.client.feed(storiesQuery),
@@ -289,6 +290,7 @@ constructor(private val application: Application, loginManager: LoginManager) : 
 
     data class ViewState(
         val userId: String,
+        val userImage: String?,
         val ownFeed: Feed,
         val timeline: Feed,
         val stories: Feed,

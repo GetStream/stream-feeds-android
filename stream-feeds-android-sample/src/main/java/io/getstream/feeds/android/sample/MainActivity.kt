@@ -39,7 +39,6 @@ import com.ramcosta.composedestinations.generated.destinations.FeedsScreenDestin
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import io.getstream.feeds.android.sample.components.LoadingScreen
-import io.getstream.feeds.android.sample.feed.FeedsScreenArgs
 import io.getstream.feeds.android.sample.login.LoginScreen
 import io.getstream.feeds.android.sample.ui.theme.AppTheme
 
@@ -84,8 +83,7 @@ fun MainScreen(navigator: DestinationsNavigator) {
 
             is ViewState.LoggedIn -> {
                 LaunchedEffect(Unit) {
-                    val args = FeedsScreenArgs(avatarUrl = viewState.user.imageURL)
-                    navigator.navigate(FeedsScreenDestination(args)) {
+                    navigator.navigate(FeedsScreenDestination) {
                         popUpTo(NavGraphs.root) { inclusive = true }
                     }
                 }

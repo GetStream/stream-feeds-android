@@ -93,26 +93,24 @@ import io.getstream.feeds.android.sample.ui.util.conditional
 import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.util.getOrNull
 
-data class FeedsScreenArgs(val avatarUrl: String?)
-
-@Destination<RootGraph>(navArgs = FeedsScreenArgs::class)
+@Destination<RootGraph>
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FeedsScreen(args: FeedsScreenArgs, navigator: DestinationsNavigator) {
+fun FeedsScreen(navigator: DestinationsNavigator) {
     val viewModel = hiltViewModel<FeedViewModel>()
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
+            val state = viewState.getOrNull()
             val notificationStatus =
-                viewState
-                    .getOrNull()
+                state
                     ?.notifications
                     ?.state
                     ?.notificationStatus
                     ?.collectAsStateWithLifecycle()
                     ?.value
-            TopBarSection(notificationStatus, navigator, args)
+            TopBarSection(notificationStatus, navigator, state?.userImage)
         },
         snackbarHost = {
             val snackbarHostState = remember(::SnackbarHostState)
@@ -288,12 +286,12 @@ private fun CreateContentButton(
 private fun TopBarSection(
     notificationStatus: NotificationStatusResponse?,
     navigator: DestinationsNavigator,
-    args: FeedsScreenArgs,
+    userImage: String?,
 ) {
     var showLogoutConfirmation by remember { mutableStateOf(false) }
 
     FeedsScreenToolbar(
-        avatarUrl = args.avatarUrl,
+        avatarUrl = userImage,
         hasUnseenNotifications = (notificationStatus?.unseen ?: 0) > 0,
         onUserAvatarClick = { showLogoutConfirmation = true },
         onNotificationsClick = {

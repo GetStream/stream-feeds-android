@@ -105,6 +105,7 @@ constructor(
         return client.connect().map { UserState(user = credentials.user, client = client) }
     }
 
+    // TODO [G.] remove user, it's already accessible through client.user
     data class UserState(val user: User, val client: FeedsClient)
 
     companion object {
