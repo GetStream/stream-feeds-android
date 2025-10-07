@@ -26,14 +26,12 @@ import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.util.Feeds
 import io.getstream.feeds.android.sample.util.map
 import io.getstream.feeds.android.sample.util.notNull
+import io.getstream.feeds.android.sample.util.withFirstContent
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 @HiltViewModel
 class NotificationsViewModel @Inject constructor(loginManager: LoginManager) : ViewModel() {
@@ -48,15 +46,15 @@ class NotificationsViewModel @Inject constructor(loginManager: LoginManager) : V
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
     init {
-        onFeedLoaded { getOrCreate() }
+        feed.withFirstContent(viewModelScope) { getOrCreate() }
     }
 
     fun onMarkAllSeen() {
-        onFeedLoaded {
+        feed.withFirstContent(viewModelScope) {
             // Check if the notification status is already set to seen
             val notificationStatus = state.notificationStatus.value
             if ((notificationStatus?.unseen ?: 0) == 0) {
-                return@onFeedLoaded
+                return@withFirstContent
             }
             // Mark all notifications as seen
             val request = MarkActivityRequest(markAllSeen = true)
@@ -65,11 +63,11 @@ class NotificationsViewModel @Inject constructor(loginManager: LoginManager) : V
     }
 
     fun onMarkAggregatedActivityRead(activity: AggregatedActivityData) {
-        onFeedLoaded {
+        feed.withFirstContent(viewModelScope) {
             // Check that the activity is not already read
             val notificationStatus = state.notificationStatus.value
             if (notificationStatus?.readActivities?.contains(activity.group) == true) {
-                return@onFeedLoaded
+                return@withFirstContent
             }
             // Mark the aggregated activity as read
             val request = MarkActivityRequest(markRead = listOf(activity.group))
@@ -78,15 +76,9 @@ class NotificationsViewModel @Inject constructor(loginManager: LoginManager) : V
     }
 
     fun onMarkAllRead() {
-        onFeedLoaded {
+        feed.withFirstContent(viewModelScope) {
             val request = MarkActivityRequest(markAllRead = true)
             markActivity(request)
-        }
-    }
-
-    private fun onFeedLoaded(block: suspend Feed.() -> Unit) {
-        viewModelScope.launch {
-            feed.filterIsInstance<AsyncResource.Content<Feed>>().first().data.block()
         }
     }
 
