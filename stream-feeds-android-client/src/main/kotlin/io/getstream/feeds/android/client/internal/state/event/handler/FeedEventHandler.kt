@@ -195,35 +195,16 @@ internal class FeedEventHandler(
                 }
             }
 
-            is StateUpdateEvent.PollDeleted -> {
-                if (event.fid == fid.rawValue) {
-                    state.onPollDeleted(event.pollId)
-                }
-            }
+            is StateUpdateEvent.PollDeleted -> state.onPollDeleted(event.pollId)
 
-            is StateUpdateEvent.PollUpdated -> {
-                if (event.fid == fid.rawValue) {
-                    state.onPollUpdated(event.poll)
-                }
-            }
+            is StateUpdateEvent.PollUpdated -> state.onPollUpdated(event.poll)
 
-            is StateUpdateEvent.PollVoteCasted -> {
-                if (event.fid == fid.rawValue) {
-                    state.onPollVoteUpserted(event.vote, event.pollId)
-                }
-            }
+            is StateUpdateEvent.PollVoteCasted -> state.onPollVoteUpserted(event.vote, event.pollId)
 
-            is StateUpdateEvent.PollVoteChanged -> {
-                if (event.fid == fid.rawValue) {
-                    state.onPollVoteUpserted(event.vote, event.pollId)
-                }
-            }
+            is StateUpdateEvent.PollVoteChanged ->
+                state.onPollVoteUpserted(event.vote, event.pollId)
 
-            is StateUpdateEvent.PollVoteRemoved -> {
-                if (event.fid == fid.rawValue) {
-                    state.onPollVoteRemoved(event.vote, event.pollId)
-                }
-            }
+            is StateUpdateEvent.PollVoteRemoved -> state.onPollVoteRemoved(event.vote, event.pollId)
 
             else -> {
                 // Handle other events if necessary
