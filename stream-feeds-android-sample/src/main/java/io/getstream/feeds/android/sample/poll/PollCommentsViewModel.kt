@@ -21,6 +21,7 @@ import androidx.lifecycle.viewModelScope
 import com.ramcosta.composedestinations.generated.destinations.PollCommentsScreenDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.getstream.android.core.api.filter.equal
+import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.state.PollVoteList
 import io.getstream.feeds.android.client.api.state.query.PollVotesFilterField
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
@@ -44,7 +45,7 @@ constructor(loginManager: LoginManager, savedStateHandle: SavedStateHandle) : Vi
 
     private val pollVoteList =
         flow {
-                AsyncResource.notNull(loginManager.currentState()).map(::getPollVoteList).let {
+                AsyncResource.notNull(loginManager.currentClient()).map(::getPollVoteList).let {
                     emit(it)
                 }
             }
@@ -68,14 +69,14 @@ constructor(loginManager: LoginManager, savedStateHandle: SavedStateHandle) : Vi
         }
     }
 
-    private fun getPollVoteList(userState: LoginManager.UserState): PollVoteList {
+    private fun getPollVoteList(client: FeedsClient): PollVoteList {
         val query =
             PollVotesQuery(
                 pollId = pollId,
-                userId = userState.user.id,
+                userId = client.user.id,
                 filter = PollVotesFilterField.isAnswer.equal(true),
             )
-        return userState.client.pollVoteList(query)
+        return client.pollVoteList(query)
     }
 
     companion object {

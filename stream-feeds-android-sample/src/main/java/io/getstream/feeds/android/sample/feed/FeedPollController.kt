@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 
 class FeedPollController(private val scope: CoroutineScope, loginManager: LoginManager) {
     private val client =
-        flow { emit(AsyncResource.notNull(loginManager.currentState()?.client)) }
+        flow { emit(AsyncResource.notNull(loginManager.currentClient())) }
             .stateIn(scope, SharingStarted.Eagerly, AsyncResource.Loading)
 
     private val activities: MutableMap<String, Activity> = mutableMapOf()

@@ -24,7 +24,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
-import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.login.UserCredentials
 import io.getstream.feeds.android.sample.utils.logResult
@@ -54,16 +53,16 @@ constructor(
         viewModelScope.launch {
             // Unregister the device for push notifications if logging out
             if (args.logout) {
-                loginManager.currentState()?.let { state -> deleteDevice(state.client) }
+                loginManager.currentClient()?.let(::deleteDevice)
             }
             if (args.logout) {
                 loginManager.logout()
             }
 
             _viewState.value =
-                when (val current = loginManager.currentState()) {
+                when (val current = loginManager.currentClient()) {
                     null -> ViewState.LoggedOut
-                    else -> ViewState.LoggedIn(current.client, current.user)
+                    else -> ViewState.LoggedIn(current)
                 }
         }
     }
@@ -74,10 +73,7 @@ constructor(
             val viewState =
                 loginManager
                     .login(credentials)
-                    .fold(
-                        onSuccess = { ViewState.LoggedIn(it.client, it.user) },
-                        onFailure = { ViewState.LoggedOut },
-                    )
+                    .fold(onSuccess = ViewState::LoggedIn, onFailure = { ViewState.LoggedOut })
             // If the user is logged in, register the device for push notifications
             if (viewState is ViewState.LoggedIn) {
                 registerDevice(viewState.client)
@@ -119,7 +115,7 @@ constructor(
 sealed interface ViewState {
     data object Loading : ViewState
 
-    data class LoggedIn(val client: FeedsClient, val user: User) : ViewState
+    data class LoggedIn(val client: FeedsClient) : ViewState
 
     data object LoggedOut : ViewState
 }

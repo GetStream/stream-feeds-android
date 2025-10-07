@@ -23,6 +23,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.getstream.android.core.api.filter.doesNotExist
 import io.getstream.android.core.api.filter.exists
+import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.file.FileType
 import io.getstream.feeds.android.client.api.model.ActivityData
@@ -42,7 +43,6 @@ import io.getstream.feeds.android.network.models.CreatePollRequest.VotingVisibil
 import io.getstream.feeds.android.network.models.PollOptionInput
 import io.getstream.feeds.android.network.models.UpdateActivityRequest
 import io.getstream.feeds.android.sample.login.LoginManager
-import io.getstream.feeds.android.sample.login.LoginManager.UserState
 import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.util.Feeds
 import io.getstream.feeds.android.sample.util.copyToCache
@@ -71,12 +71,12 @@ import kotlinx.coroutines.flow.stateIn
 class FeedViewModel
 @Inject
 constructor(private val application: Application, loginManager: LoginManager) : ViewModel() {
-    private val userState =
-        flow { emit(AsyncResource.notNull(loginManager.currentState())) }
+    private val client =
+        flow { emit(AsyncResource.notNull(loginManager.currentClient())) }
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
     val viewState =
-        userState
+        client
             .map { it.map(::toState) }
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
@@ -257,18 +257,18 @@ constructor(private val application: Application, loginManager: LoginManager) : 
         }
     }
 
-    private fun toState(userState: UserState): ViewState {
-        val userId = userState.user.id
+    private fun toState(client: FeedsClient): ViewState {
+        val userId = client.user.id
         val timelineQuery = feedQuery(userId, ActivitiesFilterField.expiresAt.doesNotExist())
         val storiesQuery = feedQuery(userId, ActivitiesFilterField.expiresAt.exists())
 
         return ViewState(
             userId = userId,
-            userImage = userState.user.imageURL,
-            ownFeed = userState.client.feed(Feeds.user(userId)),
-            timeline = userState.client.feed(timelineQuery),
-            stories = userState.client.feed(storiesQuery),
-            notifications = userState.client.feed(Feeds.notifications(userId)),
+            userImage = client.user.imageURL,
+            ownFeed = client.feed(Feeds.user(userId)),
+            timeline = client.feed(timelineQuery),
+            stories = client.feed(storiesQuery),
+            notifications = client.feed(Feeds.notifications(userId)),
         )
     }
 
