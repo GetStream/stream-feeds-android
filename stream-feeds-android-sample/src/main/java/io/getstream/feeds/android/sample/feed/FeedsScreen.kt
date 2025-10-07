@@ -93,8 +93,7 @@ import io.getstream.feeds.android.sample.ui.util.conditional
 import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.util.getOrNull
 
-// TODO [G.] remove userId from args
-data class FeedsScreenArgs(val avatarUrl: String?, val userId: String)
+data class FeedsScreenArgs(val avatarUrl: String?)
 
 @Destination<RootGraph>(navArgs = FeedsScreenArgs::class)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -132,20 +131,13 @@ fun FeedsScreen(args: FeedsScreenArgs, navigator: DestinationsNavigator) {
             }
 
             is AsyncResource.Content ->
-                FeedsScreenContent(
-                    args,
-                    navigator,
-                    state.data,
-                    viewModel,
-                    Modifier.padding(padding),
-                )
+                FeedsScreenContent(navigator, state.data, viewModel, Modifier.padding(padding))
         }
     }
 }
 
 @Composable
 private fun FeedsScreenContent(
-    args: FeedsScreenArgs,
     navigator: DestinationsNavigator,
     viewState: ViewState,
     viewModel: FeedViewModel,
@@ -191,7 +183,7 @@ private fun FeedsScreenContent(
                             text = baseActivity.text.orEmpty(),
                             attachments = baseActivity.attachments,
                             data = activity,
-                            currentUserId = args.userId,
+                            currentUserId = viewState.userId,
                             onCommentClick = {
                                 navigator.navigate(
                                     CommentsBottomSheetDestination(
@@ -210,7 +202,7 @@ private fun FeedsScreenContent(
                             pollSection = { poll ->
                                 PollSection(
                                     activityId = activity.id,
-                                    currentUserId = args.userId,
+                                    currentUserId = viewState.userId,
                                     poll = poll,
                                     controller = viewModel.pollController,
                                     navigator = navigator,
