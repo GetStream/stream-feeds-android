@@ -95,9 +95,8 @@ import io.getstream.feeds.android.sample.ui.util.conditional
 import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.util.getOrNull
 
-data class FeedsScreenArgs(val feedId: String, val avatarUrl: String?, val userId: String) {
-    val fid = FeedId(feedId)
-}
+// TODO [G.] remove userId from args
+data class FeedsScreenArgs(val avatarUrl: String?, val userId: String)
 
 @Destination<RootGraph>(navArgs = FeedsScreenArgs::class)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -198,7 +197,7 @@ private fun FeedsScreenContent(
                             onCommentClick = {
                                 navigator.navigate(
                                     CommentsBottomSheetDestination(
-                                        feedId = args.fid.rawValue,
+                                        feedId = viewState.timeline.fid.rawValue,
                                         activityId = activity.id,
                                     )
                                 )
@@ -314,7 +313,7 @@ private fun TopBarSection(
                 NotificationsScreenDestination(NotificationsScreenArgs(fid.rawValue))
             )
         },
-        onProfileClick = { navigator.navigate(ProfileScreenDestination(feedId = args.feedId)) },
+        onProfileClick = { navigator.navigate(ProfileScreenDestination) },
     )
 
     if (showLogoutConfirmation) {

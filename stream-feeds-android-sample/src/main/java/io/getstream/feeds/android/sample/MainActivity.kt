@@ -38,7 +38,6 @@ import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.FeedsScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import dagger.hilt.android.AndroidEntryPoint
-import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.sample.components.LoadingScreen
 import io.getstream.feeds.android.sample.feed.FeedsScreenArgs
 import io.getstream.feeds.android.sample.login.LoginScreen
@@ -87,7 +86,6 @@ fun MainScreen(navigator: DestinationsNavigator) {
                 LaunchedEffect(Unit) {
                     val args =
                         FeedsScreenArgs(
-                            feedId = FeedId("user", viewState.user.id).rawValue,
                             avatarUrl = viewState.user.imageURL,
                             userId = viewState.user.id,
                         )

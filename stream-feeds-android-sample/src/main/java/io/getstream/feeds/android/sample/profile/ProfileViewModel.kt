@@ -16,20 +16,21 @@
 package io.getstream.feeds.android.sample.profile
 
 import android.util.Log
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.Feed
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.sample.login.LoginManager
+import io.getstream.feeds.android.sample.login.LoginManager.UserState
 import io.getstream.feeds.android.sample.util.AsyncResource
+import io.getstream.feeds.android.sample.util.Feeds
 import io.getstream.feeds.android.sample.util.map
 import io.getstream.feeds.android.sample.util.notNull
 import io.getstream.feeds.android.sample.util.withFirstContent
+import io.getstream.feeds.android.sample.utils.logResult
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -41,33 +42,15 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 @HiltViewModel
-class ProfileViewModel
-@Inject
-constructor(loginManager: LoginManager, savedStateHandle: SavedStateHandle) : ViewModel() {
+class ProfileViewModel @Inject constructor(loginManager: LoginManager) : ViewModel() {
 
-    private val fid = ProfileScreenDestination.argsFrom(savedStateHandle).fid
-
-    private val profileFeedQuery =
-        FeedQuery(
-            fid = fid,
-            activityLimit = 0, // We don't need activities for the profile feed
-            followerLimit = 10, // Load first 10 followers
-            followingLimit = 10, // Load first 10 followings
-        )
-
-    private val feed =
-        flow {
-                emit(
-                    AsyncResource.notNull(
-                        loginManager.currentState()?.client?.feed(profileFeedQuery)
-                    )
-                )
-            }
+    private val userState =
+        flow { emit(AsyncResource.notNull(loginManager.currentState())) }
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
-    val state =
-        feed
-            .map { loadingState -> loadingState.map(Feed::state) }
+    val feed =
+        userState
+            .map { loadingState -> loadingState.map(::getFeed) }
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
     private val _followSuggestions: MutableStateFlow<List<FeedData>> = MutableStateFlow(emptyList())
@@ -75,11 +58,17 @@ constructor(loginManager: LoginManager, savedStateHandle: SavedStateHandle) : Vi
 
     init {
         feed.withFirstContent(viewModelScope) {
-            getOrCreate()
-                .onSuccess {
-                    queryFollowSuggestions(limit = 10).onSuccess { _followSuggestions.value = it }
-                }
-                .onFailure { Log.e(TAG, "Failed to get or create feed: $fid", it) }
+            getOrCreate().logResult(TAG, "Error getting the profile feed")
+        }
+        userState.withFirstContent(viewModelScope) {
+            _followSuggestions.value =
+                // We query suggestions from a user feed because we want to follow those, not other
+                // timelines.
+                client
+                    .feed(Feeds.user(user.id))
+                    .queryFollowSuggestions(10)
+                    .logResult(TAG, "Error getting follow suggestions")
+                    .getOrDefault(emptyList())
         }
     }
 
@@ -102,6 +91,17 @@ constructor(loginManager: LoginManager, savedStateHandle: SavedStateHandle) : Vi
                 .onSuccess { Log.d(TAG, "Successfully unfollowed feed: $it") }
                 .onFailure { Log.e(TAG, "Failed to unfollow feed: $feedId", it) }
         }
+    }
+
+    private fun getFeed(userState: UserState): Feed {
+        val profileFeedQuery =
+            FeedQuery(
+                fid = Feeds.timeline(userState.user.id),
+                activityLimit = 0, // We don't need activities for the profile feed
+                followerLimit = 10, // Load first 10 followers
+                followingLimit = 10, // Load first 10 followings
+            )
+        return userState.client.feed(profileFeedQuery)
     }
 
     companion object {
