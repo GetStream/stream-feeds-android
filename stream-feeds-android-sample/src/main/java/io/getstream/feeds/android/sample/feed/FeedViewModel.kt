@@ -281,7 +281,7 @@ constructor(
             ownFeed = userState.client.feed(userFeedId),
             timeline = userState.client.feed(timelineQuery),
             stories = userState.client.feed(storiesQuery),
-            notifications = userState.client.feed(FeedId("notification", args.userId)),
+            notifications = userState.client.feed(Feeds.notifications(args.userId)),
         )
     }
 

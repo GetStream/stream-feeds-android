@@ -15,16 +15,15 @@
  */
 package io.getstream.feeds.android.sample.notification
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ramcosta.composedestinations.generated.destinations.NotificationsScreenDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.state.Feed
 import io.getstream.feeds.android.network.models.MarkActivityRequest
 import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.util.AsyncResource
+import io.getstream.feeds.android.sample.util.Feeds
 import io.getstream.feeds.android.sample.util.map
 import io.getstream.feeds.android.sample.util.notNull
 import javax.inject.Inject
@@ -37,14 +36,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class NotificationsViewModel
-@Inject
-constructor(loginManager: LoginManager, savedStateHandle: SavedStateHandle) : ViewModel() {
-
-    private val fid = NotificationsScreenDestination.argsFrom(savedStateHandle).fid
+class NotificationsViewModel @Inject constructor(loginManager: LoginManager) : ViewModel() {
 
     private val feed =
-        flow { emit(AsyncResource.notNull(loginManager.currentState()?.client?.feed(fid))) }
+        flow { emit(AsyncResource.notNull(loginManager.currentState()?.let(::getFeed))) }
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
     val state =
@@ -94,4 +89,7 @@ constructor(loginManager: LoginManager, savedStateHandle: SavedStateHandle) : Vi
             feed.filterIsInstance<AsyncResource.Content<Feed>>().first().data.block()
         }
     }
+
+    private fun getFeed(userState: LoginManager.UserState): Feed =
+        userState.client.feed(Feeds.notifications(userState.user.id))
 }

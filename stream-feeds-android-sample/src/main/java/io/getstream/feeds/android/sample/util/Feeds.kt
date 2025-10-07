@@ -20,5 +20,7 @@ import io.getstream.feeds.android.client.api.model.FeedId
 object Feeds {
     fun timeline(id: String) = FeedId("timeline", id)
 
+    fun notifications(id: String) = FeedId("notification", id)
+
     fun user(id: String) = FeedId("user", id)
 }
