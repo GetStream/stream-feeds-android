@@ -192,19 +192,11 @@ internal class FeedStateImpl(
     }
 
     override fun onBookmarkRemoved(bookmark: BookmarkData) {
-        _activities.update { current ->
-            current.updateIf({ it.id == bookmark.activity.id }) { activity ->
-                activity.deleteBookmark(bookmark, currentUserId)
-            }
-        }
+        _activities.update { current -> current.deleteBookmark(bookmark, currentUserId) }
     }
 
     override fun onBookmarkUpserted(bookmark: BookmarkData) {
-        _activities.update { current ->
-            current.updateIf({ it.id == bookmark.activity.id }) { activity ->
-                activity.upsertBookmark(bookmark, currentUserId)
-            }
-        }
+        _activities.update { current -> current.upsertBookmark(bookmark, currentUserId) }
     }
 
     override fun onCommentAdded(comment: CommentData) {

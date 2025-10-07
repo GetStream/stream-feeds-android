@@ -17,6 +17,7 @@ package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.client.internal.model.addReaction
 import io.getstream.feeds.android.client.internal.model.removeReaction
+import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.network.models.ActivityLocation
 import io.getstream.feeds.android.network.models.ActivityResponse
@@ -240,6 +241,22 @@ internal fun ActivityData.removeComment(comment: CommentData): ActivityData {
     val updatedComments = this.comments.filter { it.id != comment.id }
     return this.copy(comments = updatedComments, commentCount = max(0, this.commentCount - 1))
 }
+
+internal fun List<ActivityData>.deleteBookmark(
+    bookmark: BookmarkData,
+    currentUserId: String,
+): List<ActivityData> =
+    updateIf({ it.id == bookmark.activity.id }) { activity ->
+        activity.deleteBookmark(bookmark, currentUserId)
+    }
+
+internal fun List<ActivityData>.upsertBookmark(
+    bookmark: BookmarkData,
+    currentUserId: String,
+): List<ActivityData> =
+    updateIf({ it.id == bookmark.activity.id }) { activity ->
+        activity.upsertBookmark(bookmark, currentUserId)
+    }
 
 /**
  * Calls [changeBookmarks] with a [filter] operation to remove the bookmark.

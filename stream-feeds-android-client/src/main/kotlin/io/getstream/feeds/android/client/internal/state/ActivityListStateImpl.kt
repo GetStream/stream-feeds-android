@@ -32,7 +32,6 @@ import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQueryConfig
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
-import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -94,19 +93,11 @@ internal class ActivityListStateImpl(
     }
 
     override fun onBookmarkRemoved(bookmark: BookmarkData) {
-        _activities.update { current ->
-            current.updateIf({ it.id == bookmark.activity.id }) { activity ->
-                activity.deleteBookmark(bookmark, currentUserId)
-            }
-        }
+        _activities.update { current -> current.deleteBookmark(bookmark, currentUserId) }
     }
 
     override fun onBookmarkUpserted(bookmark: BookmarkData) {
-        _activities.update { current ->
-            current.updateIf({ it.id == bookmark.activity.id }) { activity ->
-                activity.upsertBookmark(bookmark, currentUserId)
-            }
-        }
+        _activities.update { current -> current.upsertBookmark(bookmark, currentUserId) }
     }
 
     override fun onCommentAdded(comment: CommentData) {
