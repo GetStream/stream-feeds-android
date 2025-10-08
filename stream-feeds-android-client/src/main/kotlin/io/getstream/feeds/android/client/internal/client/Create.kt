@@ -52,8 +52,9 @@ import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHand
 import io.getstream.feeds.android.client.internal.client.reconnect.lifecycle.StreamLifecycleObserver
 import io.getstream.feeds.android.client.internal.file.StreamFeedUploader
 import io.getstream.feeds.android.client.internal.http.FeedsSingleFlightApi
+import io.getstream.feeds.android.client.internal.http.createHttpConfig
+import io.getstream.feeds.android.client.internal.http.createRetrofit
 import io.getstream.feeds.android.client.internal.logging.createLoggerProvider
-import io.getstream.feeds.android.client.internal.logging.createLoggingInterceptor
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.AppRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepositoryImpl
@@ -74,9 +75,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.plus
 import okhttp3.OkHttpClient
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.create
 
 /** Creates a [StreamClient] instance with the given configuration and dependencies. */
@@ -190,13 +188,7 @@ internal fun createFeedsClient(
         )
     // HTTP Configuration
     val okHttpBuilder = OkHttpClient.Builder()
-    val httpConfig =
-        StreamHttpConfig(
-            httpBuilder = okHttpBuilder,
-            automaticInterceptors = true,
-            configuredInterceptors =
-                setOf(createLoggingInterceptor(logProvider, config.loggingConfig.httpLoggingLevel)),
-        )
+    val httpConfig = createHttpConfig(okHttpBuilder, logProvider, config)
 
     val client =
         createStreamCoreClient(
@@ -231,13 +223,7 @@ internal fun createFeedsClient(
             logger = logProvider.taggedLogger("ConnectionRecoveryHandler"),
         )
     val okHttpClient = okHttpBuilder.build()
-    val retrofit =
-        Retrofit.Builder()
-            .baseUrl(endpointConfig.httpUrl)
-            .client(okHttpClient)
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .addConverterFactory(MoshiConverterFactory.create(Serializer.moshi))
-            .build()
+    val retrofit = createRetrofit(endpointConfig, okHttpClient)
     val feedsApi: FeedsApi = FeedsSingleFlightApi(retrofit.create(), singleFlight)
     val uploader: FeedUploader = config.customUploader ?: StreamFeedUploader(retrofit.create())
     val activitiesRepository = ActivitiesRepositoryImpl(feedsApi, uploader)
