@@ -59,22 +59,15 @@ import io.getstream.feeds.android.sample.components.UserAvatar
 import io.getstream.feeds.android.sample.util.AsyncResource
 import kotlinx.coroutines.flow.StateFlow
 
-data class ProfileScreenArgs(val feedId: String) {
-    val fid = FeedId(feedId)
-}
-
-@Destination<RootGraph>(
-    style = DestinationStyleBottomSheet::class,
-    navArgs = ProfileScreenArgs::class,
-)
+@Destination<RootGraph>(style = DestinationStyleBottomSheet::class)
 @Composable
 fun ProfileScreen(navigator: DestinationsNavigator) {
     val viewModel = hiltViewModel<ProfileViewModel>()
 
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val feed by viewModel.feed.collectAsStateWithLifecycle()
 
     Surface {
-        when (val state = state) {
+        when (val feed = feed) {
             AsyncResource.Loading -> LoadingScreen()
 
             AsyncResource.Error -> {
@@ -84,7 +77,7 @@ fun ProfileScreen(navigator: DestinationsNavigator) {
 
             is AsyncResource.Content ->
                 ProfileScreen(
-                    state = state.data,
+                    state = feed.data.state,
                     followSuggestions = viewModel.followSuggestions,
                     onFollowClick = viewModel::follow,
                     onUnfollowClick = viewModel::unfollow,

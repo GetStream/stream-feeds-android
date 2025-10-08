@@ -18,10 +18,8 @@ package io.getstream.feeds.android.sample.feed
 import android.app.Application
 import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ramcosta.composedestinations.generated.destinations.FeedsScreenDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.getstream.android.core.api.filter.doesNotExist
 import io.getstream.android.core.api.filter.exists
@@ -46,9 +44,9 @@ import io.getstream.feeds.android.network.models.UpdateActivityRequest
 import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.login.LoginManager.UserState
 import io.getstream.feeds.android.sample.util.AsyncResource
+import io.getstream.feeds.android.sample.util.Feeds
 import io.getstream.feeds.android.sample.util.copyToCache
 import io.getstream.feeds.android.sample.util.deleteFiles
-import io.getstream.feeds.android.sample.util.getOrNull
 import io.getstream.feeds.android.sample.util.map
 import io.getstream.feeds.android.sample.util.notNull
 import io.getstream.feeds.android.sample.util.withFirstContent
@@ -63,6 +61,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -71,13 +70,7 @@ import kotlinx.coroutines.flow.stateIn
 @HiltViewModel
 class FeedViewModel
 @Inject
-constructor(
-    private val application: Application,
-    loginManager: LoginManager,
-    savedStateHandle: SavedStateHandle,
-) : ViewModel() {
-    private val args = FeedsScreenDestination.argsFrom(savedStateHandle)
-
+constructor(private val application: Application, loginManager: LoginManager) : ViewModel() {
     private val userState =
         flow { emit(AsyncResource.notNull(loginManager.currentState())) }
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
@@ -90,12 +83,7 @@ constructor(
     private val _createContentState = MutableStateFlow(CreateContentState.Hidden)
     val createContentState: StateFlow<CreateContentState> = _createContentState.asStateFlow()
 
-    val pollController =
-        FeedPollController(
-            scope = viewModelScope,
-            feedsClient = { userState.value.getOrNull()?.client },
-            fid = args.fid,
-        )
+    val pollController = FeedPollController(viewModelScope, loginManager)
 
     private val errorChannel = Channel<String>()
     val error = errorChannel.receiveAsFlow()
@@ -103,11 +91,22 @@ constructor(
     init {
         viewState.withFirstContent(viewModelScope) {
             timeline.getOrCreate().notifyOnFailure { "Error getting the timeline" }
+            timeline.followSelfIfNeeded(ownFeed.fid)
         }
         viewState.withFirstContent(viewModelScope) {
             stories.getOrCreate().notifyOnFailure { "Error getting the stories" }
         }
         viewState.withFirstContent(viewModelScope) { notifications.getOrCreate() }
+    }
+
+    // By default, `timeline:user_id` does not follow `user:user_id`, i.e. the timeline wouldn't
+    // show the user's own posts. So we add the follow ourselves. Awkward in clients, this is
+    // usually done in the backend.
+    private suspend fun Feed.followSelfIfNeeded(userFeedId: FeedId) {
+        // Check if we are already following our own user feed
+        if (state.following.first().none { it.targetFeed.fid == userFeedId }) {
+            follow(userFeedId, createNotificationActivity = false).logResult(TAG, "Following self")
+        }
     }
 
     fun onLoadMore() {
@@ -141,9 +140,7 @@ constructor(
 
     fun onRepostClick(activity: ActivityData, text: String?) {
         viewState.withFirstContent(viewModelScope) {
-            timeline.repost(activity.id, text = text).notifyOnFailure {
-                "Failed to repost activity"
-            }
+            ownFeed.repost(activity.id, text = text).notifyOnFailure { "Failed to repost activity" }
         }
     }
 
@@ -202,9 +199,9 @@ constructor(
                     }
 
             val result =
-                timeline
+                ownFeed
                     .addActivity(
-                        request = addActivityRequest(timeline.fid, text, isStory, attachmentFiles),
+                        request = addActivityRequest(ownFeed.fid, text, isStory, attachmentFiles),
                         attachmentUploadProgress = { file, progress ->
                             Log.d(TAG, "Uploading attachment: ${file.type}, progress: $progress")
                         },
@@ -253,7 +250,7 @@ constructor(
                     votingVisibility = if (poll.anonymousPoll) Anonymous else Public,
                 )
 
-            timeline
+            ownFeed
                 .createPoll(request = request, activityType = "activity")
                 .logResult(TAG, "Creating poll with question: ${poll.question}")
                 .notifyOnFailure { "Failed to create poll" }
@@ -261,23 +258,27 @@ constructor(
     }
 
     private fun toState(userState: UserState): ViewState {
-        val timelineQuery = feedQuery(userState, ActivitiesFilterField.expiresAt.doesNotExist())
-        val storiesQuery = feedQuery(userState, ActivitiesFilterField.expiresAt.exists())
+        val userId = userState.user.id
+        val timelineQuery = feedQuery(userId, ActivitiesFilterField.expiresAt.doesNotExist())
+        val storiesQuery = feedQuery(userId, ActivitiesFilterField.expiresAt.exists())
 
         return ViewState(
+            userId = userId,
+            ownFeed = userState.client.feed(Feeds.user(userId)),
             timeline = userState.client.feed(timelineQuery),
             stories = userState.client.feed(storiesQuery),
-            notifications = userState.client.feed(FeedId("notification", args.userId)),
+            notifications = userState.client.feed(Feeds.notifications(userId)),
         )
     }
 
-    private fun feedQuery(userState: UserState, filter: ActivitiesFilter) =
+    private fun feedQuery(userId: String, filter: ActivitiesFilter) =
         FeedQuery(
-            fid = args.fid,
+            fid = Feeds.timeline(userId),
             activityFilter = filter,
+            followingLimit = 10,
             data =
                 FeedInputData(
-                    members = listOf(FeedMemberRequestData(userState.user.id)),
+                    members = listOf(FeedMemberRequestData(userId)),
                     visibility = FeedVisibility.Public,
                 ),
         )
@@ -286,7 +287,13 @@ constructor(
         errorChannel.send("${message()}: ${it.message}")
     }
 
-    data class ViewState(val timeline: Feed, val stories: Feed, val notifications: Feed)
+    data class ViewState(
+        val userId: String,
+        val ownFeed: Feed,
+        val timeline: Feed,
+        val stories: Feed,
+        val notifications: Feed,
+    )
 
     companion object {
         private const val TAG = "FeedViewModel"

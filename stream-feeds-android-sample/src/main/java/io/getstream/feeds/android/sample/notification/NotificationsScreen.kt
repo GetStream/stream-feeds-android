@@ -49,20 +49,12 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.bottomsheet.spec.DestinationStyleBottomSheet
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.getstream.feeds.android.client.api.model.AggregatedActivityData
-import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.sample.components.LoadingScreen
 import io.getstream.feeds.android.sample.components.UserAvatar
 import io.getstream.feeds.android.sample.util.AsyncResource
 
-data class NotificationsScreenArgs(val feedId: String) {
-    val fid = FeedId(feedId)
-}
-
-@Destination<RootGraph>(
-    style = DestinationStyleBottomSheet::class,
-    navArgs = NotificationsScreenArgs::class,
-)
+@Destination<RootGraph>(style = DestinationStyleBottomSheet::class)
 @Composable
 fun NotificationsScreen(navigator: DestinationsNavigator) {
     val viewModel = hiltViewModel<NotificationsViewModel>()

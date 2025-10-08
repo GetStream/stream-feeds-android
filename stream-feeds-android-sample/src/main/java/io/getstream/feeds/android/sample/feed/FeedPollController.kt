@@ -15,21 +15,27 @@
  */
 package io.getstream.feeds.android.sample.feed
 
-import io.getstream.feeds.android.client.api.FeedsClient
-import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.Activity
 import io.getstream.feeds.android.network.models.CastPollVoteRequest
 import io.getstream.feeds.android.network.models.CreatePollOptionRequest
 import io.getstream.feeds.android.network.models.VoteData
+import io.getstream.feeds.android.sample.login.LoginManager
+import io.getstream.feeds.android.sample.util.AsyncResource
+import io.getstream.feeds.android.sample.util.Feeds
+import io.getstream.feeds.android.sample.util.notNull
+import io.getstream.feeds.android.sample.util.withFirstContent
 import io.getstream.feeds.android.sample.utils.logResult
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class FeedPollController(
-    private val scope: CoroutineScope,
-    private val feedsClient: () -> FeedsClient?,
-    private val fid: FeedId,
-) {
+class FeedPollController(private val scope: CoroutineScope, loginManager: LoginManager) {
+    private val client =
+        flow { emit(AsyncResource.notNull(loginManager.currentState()?.client)) }
+            .stateIn(scope, SharingStarted.Eagerly, AsyncResource.Loading)
+
     private val activities: MutableMap<String, Activity> = mutableMapOf()
 
     fun onOptionSelected(activityId: String, optionId: String) {
@@ -43,10 +49,10 @@ class FeedPollController(
     private fun castVote(activityId: String, answerText: String?, optionId: String?) {
         scope.launch {
             activity(activityId)
-                ?.castPollVote(
+                .castPollVote(
                     CastPollVoteRequest(VoteData(answerText = answerText, optionId = optionId))
                 )
-                ?.logResult(
+                .logResult(
                     TAG,
                     "Casting vote for $activityId with answer $answerText and optionId $optionId",
                 )
@@ -56,25 +62,26 @@ class FeedPollController(
     fun onClose(activityId: String) {
         scope.launch {
             activity(activityId)
-                ?.closePoll()
-                ?.logResult(TAG, "Closing poll for activity: $activityId")
+                .closePoll()
+                .logResult(TAG, "Closing poll for activity: $activityId")
         }
     }
 
     fun onSuggestOption(activityId: String, optionText: String) {
         scope.launch {
             activity(activityId)
-                ?.createPollOption(CreatePollOptionRequest(text = optionText))
-                ?.logResult(TAG, "Suggesting option '$optionText' for activity: $activityId")
+                .createPollOption(CreatePollOptionRequest(text = optionText))
+                .logResult(TAG, "Suggesting option '$optionText' for activity: $activityId")
         }
     }
 
-    private fun activity(id: String): Activity? {
+    private suspend fun activity(id: String): Activity {
         activities[id]?.let {
             return it
         }
-
-        return feedsClient()?.activity(activityId = id, fid = fid)?.also { activities[id] = it }
+        return client.withFirstContent {
+            activity(activityId = id, fid = Feeds.timeline(user.id)).also { activities[id] = it }
+        }
     }
 
     companion object {

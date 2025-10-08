@@ -75,7 +75,6 @@ import com.ramcosta.composedestinations.generated.destinations.NotificationsScre
 import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.getstream.feeds.android.client.api.model.ActivityData
-import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.UserData
 import io.getstream.feeds.android.client.api.state.FeedState
@@ -88,16 +87,13 @@ import io.getstream.feeds.android.sample.components.LinkText
 import io.getstream.feeds.android.sample.components.LoadingScreen
 import io.getstream.feeds.android.sample.components.UserAvatar
 import io.getstream.feeds.android.sample.feed.FeedViewModel.ViewState
-import io.getstream.feeds.android.sample.notification.NotificationsScreenArgs
 import io.getstream.feeds.android.sample.story.StoryScreen
 import io.getstream.feeds.android.sample.ui.util.ScrolledToBottomEffect
 import io.getstream.feeds.android.sample.ui.util.conditional
 import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.util.getOrNull
 
-data class FeedsScreenArgs(val feedId: String, val avatarUrl: String?, val userId: String) {
-    val fid = FeedId(feedId)
-}
+data class FeedsScreenArgs(val avatarUrl: String?)
 
 @Destination<RootGraph>(navArgs = FeedsScreenArgs::class)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -135,20 +131,13 @@ fun FeedsScreen(args: FeedsScreenArgs, navigator: DestinationsNavigator) {
             }
 
             is AsyncResource.Content ->
-                FeedsScreenContent(
-                    args,
-                    navigator,
-                    state.data,
-                    viewModel,
-                    Modifier.padding(padding),
-                )
+                FeedsScreenContent(navigator, state.data, viewModel, Modifier.padding(padding))
         }
     }
 }
 
 @Composable
 private fun FeedsScreenContent(
-    args: FeedsScreenArgs,
     navigator: DestinationsNavigator,
     viewState: ViewState,
     viewModel: FeedViewModel,
@@ -194,11 +183,11 @@ private fun FeedsScreenContent(
                             text = baseActivity.text.orEmpty(),
                             attachments = baseActivity.attachments,
                             data = activity,
-                            currentUserId = args.userId,
+                            currentUserId = viewState.userId,
                             onCommentClick = {
                                 navigator.navigate(
                                     CommentsBottomSheetDestination(
-                                        feedId = args.fid.rawValue,
+                                        feedId = viewState.timeline.fid.rawValue,
                                         activityId = activity.id,
                                     )
                                 )
@@ -213,7 +202,7 @@ private fun FeedsScreenContent(
                             pollSection = { poll ->
                                 PollSection(
                                     activityId = activity.id,
-                                    currentUserId = args.userId,
+                                    currentUserId = viewState.userId,
                                     poll = poll,
                                     controller = viewModel.pollController,
                                     navigator = navigator,
@@ -309,12 +298,9 @@ private fun TopBarSection(
         onUserAvatarClick = { showLogoutConfirmation = true },
         onNotificationsClick = {
             // Open notifications screen
-            val fid = FeedId("notification", args.userId)
-            navigator.navigate(
-                NotificationsScreenDestination(NotificationsScreenArgs(fid.rawValue))
-            )
+            navigator.navigate(NotificationsScreenDestination)
         },
-        onProfileClick = { navigator.navigate(ProfileScreenDestination(feedId = args.feedId)) },
+        onProfileClick = { navigator.navigate(ProfileScreenDestination) },
     )
 
     if (showLogoutConfirmation) {
