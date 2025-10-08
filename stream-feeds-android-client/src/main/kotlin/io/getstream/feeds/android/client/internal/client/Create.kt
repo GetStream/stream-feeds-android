@@ -87,7 +87,7 @@ internal fun createStreamCoreClient(
     wsUrl: StreamWsUrl,
     clientInfoHeader: StreamHttpClientInfoHeader,
     tokenProvider: StreamTokenProvider,
-    okHttpClient: OkHttpClient.Builder,
+    httpConfig: StreamHttpConfig,
     feedsMoshiJsonParser: FeedsMoshiJsonParser,
     logProvider: StreamLoggerProvider,
 ): StreamClient {
@@ -135,7 +135,7 @@ internal fun createStreamCoreClient(
         connectionIdHolder = connectionIdHolder,
         socketFactory = socketFactory,
         healthMonitor = healthMonitor,
-        httpConfig = StreamHttpConfig(httpBuilder = okHttpClient, automaticInterceptors = true),
+        httpConfig = httpConfig,
         serializationConfig =
             StreamClientSerializationConfig.default(
                 object : StreamEventSerialization<WSEvent> {
@@ -189,11 +189,14 @@ internal fun createFeedsClient(
             deviceModel = Build.MODEL,
         )
     // HTTP Configuration
-    val okHttpBuilder =
-        OkHttpClient.Builder()
-            .addInterceptor(
-                createLoggingInterceptor(logProvider, config.loggingConfig.httpLoggingLevel)
-            )
+    val okHttpBuilder = OkHttpClient.Builder()
+    val httpConfig =
+        StreamHttpConfig(
+            httpBuilder = okHttpBuilder,
+            automaticInterceptors = true,
+            configuredInterceptors =
+                setOf(createLoggingInterceptor(logProvider, config.loggingConfig.httpLoggingLevel)),
+        )
 
     val client =
         createStreamCoreClient(
@@ -203,7 +206,7 @@ internal fun createFeedsClient(
             StreamWsUrl.fromString(endpointConfig.wsUrl),
             clientInfoHeader,
             tokenProvider,
-            okHttpBuilder,
+            httpConfig,
             FeedsMoshiJsonParser(Serializer.moshi),
             logProvider,
         )
