@@ -28,13 +28,19 @@ internal class ActivityReactionListEventHandler(
         when (event) {
             is StateUpdateEvent.ActivityReactionAdded -> {
                 if (event.reaction.activityId == activityId) {
-                    state.onReactionAdded(event.reaction)
+                    state.onReactionUpserted(event.reaction)
                 }
             }
 
             is StateUpdateEvent.ActivityReactionDeleted -> {
                 if (event.reaction.activityId == activityId) {
                     state.onReactionRemoved(event.reaction)
+                }
+            }
+
+            is StateUpdateEvent.ActivityReactionUpdated -> {
+                if (event.reaction.activityId == activityId) {
+                    state.onReactionUpserted(event.reaction)
                 }
             }
 

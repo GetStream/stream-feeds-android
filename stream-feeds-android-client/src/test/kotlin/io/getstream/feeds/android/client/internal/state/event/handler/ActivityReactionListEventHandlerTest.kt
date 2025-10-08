@@ -17,64 +17,99 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.internal.state.ActivityReactionListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionAdded
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpdated
+import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
+import io.mockk.MockKVerificationScope
 import io.mockk.called
 import io.mockk.mockk
-import io.mockk.verify
-import org.junit.Test
+import org.junit.runners.Parameterized
 
-internal class ActivityReactionListEventHandlerTest {
-    private val activityId = "activity-1"
-    private val state: ActivityReactionListStateUpdates = mockk(relaxed = true)
+internal class ActivityReactionListEventHandlerTest(
+    testName: String,
+    event: StateUpdateEvent,
+    verifyBlock: MockKVerificationScope.(ActivityReactionListStateUpdates) -> Unit,
+) : BaseEventHandlerTest<ActivityReactionListStateUpdates>(testName, event, verifyBlock) {
 
-    private val handler = ActivityReactionListEventHandler(activityId, state)
+    override val state: ActivityReactionListStateUpdates = mockk(relaxed = true)
+    override val handler = ActivityReactionListEventHandler(activityId, state)
 
-    @Test
-    fun `on ActivityReactionAdded for matching activity, then call onReactionAdded`() {
-        val reaction = feedsReactionData(activityId)
-        val event = StateUpdateEvent.ActivityReactionAdded("feed-1", reaction)
+    companion object {
+        private const val activityId = "activity-1"
+        private const val differentActivityId = "different-activity"
 
-        handler.onEvent(event)
-
-        verify { state.onReactionAdded(reaction) }
-    }
-
-    @Test
-    fun `on ActivityReactionAdded for different activity, then do not call onReactionAdded`() {
-        val reaction = feedsReactionData("different-activity")
-        val event = StateUpdateEvent.ActivityReactionAdded("feed-1", reaction)
-
-        handler.onEvent(event)
-
-        verify(exactly = 0) { state.onReactionAdded(any()) }
-    }
-
-    @Test
-    fun `on ActivityReactionDeleted for matching activity, then call onReactionRemoved`() {
-        val reaction = feedsReactionData(activityId)
-        val event = StateUpdateEvent.ActivityReactionDeleted("feed-1", reaction)
-
-        handler.onEvent(event)
-
-        verify { state.onReactionRemoved(reaction) }
-    }
-
-    @Test
-    fun `on ActivityReactionDeleted for different activity, then do not call onReactionRemoved`() {
-        val reaction = feedsReactionData("different-activity")
-        val event = StateUpdateEvent.ActivityReactionDeleted("feed-1", reaction)
-
-        handler.onEvent(event)
-
-        verify(exactly = 0) { state.onReactionRemoved(any()) }
-    }
-
-    @Test
-    fun `on unknown event, then do nothing`() {
-        val unknownEvent = StateUpdateEvent.BookmarkFolderDeleted("folder-id")
-
-        handler.onEvent(unknownEvent)
-
-        verify { state wasNot called }
+        @JvmStatic
+        @Parameterized.Parameters(name = "{0}")
+        fun data(): List<Array<Any>> =
+            listOf(
+                testParams<ActivityReactionListStateUpdates>(
+                    name = "ActivityReactionAdded for matching activity",
+                    event =
+                        ActivityReactionAdded(
+                            "feed-1",
+                            activityData(activityId),
+                            feedsReactionData(activityId),
+                        ),
+                    verifyBlock = { state ->
+                        state.onReactionUpserted(feedsReactionData(activityId))
+                    },
+                ),
+                testParams<ActivityReactionListStateUpdates>(
+                    name = "ActivityReactionAdded for different activity",
+                    event =
+                        ActivityReactionAdded(
+                            "feed-1",
+                            activityData(differentActivityId),
+                            feedsReactionData(differentActivityId),
+                        ),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<ActivityReactionListStateUpdates>(
+                    name = "ActivityReactionDeleted for matching activity",
+                    event =
+                        ActivityReactionDeleted(
+                            "feed-1",
+                            activityData(activityId),
+                            feedsReactionData(activityId),
+                        ),
+                    verifyBlock = { state ->
+                        state.onReactionRemoved(feedsReactionData(activityId))
+                    },
+                ),
+                testParams<ActivityReactionListStateUpdates>(
+                    name = "ActivityReactionDeleted for different activity",
+                    event =
+                        ActivityReactionDeleted(
+                            "feed-1",
+                            activityData(differentActivityId),
+                            feedsReactionData(differentActivityId),
+                        ),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<ActivityReactionListStateUpdates>(
+                    name = "ActivityReactionUpdated for matching activity",
+                    event =
+                        ActivityReactionUpdated(
+                            "feed-1",
+                            activityData(activityId),
+                            feedsReactionData(activityId),
+                        ),
+                    verifyBlock = { state ->
+                        state.onReactionUpserted(feedsReactionData(activityId))
+                    },
+                ),
+                testParams<ActivityReactionListStateUpdates>(
+                    name = "ActivityReactionUpdated for different activity",
+                    event =
+                        ActivityReactionUpdated(
+                            "feed-1",
+                            activityData(differentActivityId),
+                            feedsReactionData(differentActivityId),
+                        ),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+            )
     }
 }

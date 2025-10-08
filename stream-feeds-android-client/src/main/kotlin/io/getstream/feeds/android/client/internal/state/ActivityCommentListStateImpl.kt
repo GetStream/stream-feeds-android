@@ -20,10 +20,10 @@ import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
-import io.getstream.feeds.android.client.api.model.addReaction
 import io.getstream.feeds.android.client.api.model.addReply
 import io.getstream.feeds.android.client.api.model.removeReaction
 import io.getstream.feeds.android.client.api.model.update
+import io.getstream.feeds.android.client.api.model.upsertReaction
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.query.toComparator
@@ -107,16 +107,12 @@ internal class ActivityCommentListStateImpl(
         }
     }
 
-    override fun onCommentReactionAdded(commentId: String, reaction: FeedsReactionData) {
-        _comments.update { current ->
-            current.map { comment -> addCommentReaction(comment, commentId, reaction) }
-        }
+    override fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData) {
+        _comments.update { current -> current.map { upsertCommentReaction(it, comment, reaction) } }
     }
 
-    override fun onCommentReactionRemoved(commentId: String, reaction: FeedsReactionData) {
-        _comments.update { current ->
-            current.map { comment -> removeCommentReaction(comment, commentId, reaction) }
-        }
+    override fun onCommentReactionRemoved(comment: CommentData, reaction: FeedsReactionData) {
+        _comments.update { current -> current.map { removeCommentReaction(it, comment, reaction) } }
     }
 
     private fun addNestedReply(
@@ -137,14 +133,14 @@ internal class ActivityCommentListStateImpl(
         return parent
     }
 
-    private fun addCommentReaction(
+    private fun upsertCommentReaction(
         comment: ThreadedCommentData,
-        targetId: String,
+        update: CommentData,
         reaction: FeedsReactionData,
     ): ThreadedCommentData {
-        if (comment.id == targetId) {
-            // If this comment matches the target, add the reaction
-            return comment.addReaction(reaction, currentUserId)
+        if (comment.id == update.id) {
+            // If this comment matches the target, upsert the reaction
+            return comment.upsertReaction(update, reaction, currentUserId)
         }
         if (comment.replies.isNullOrEmpty()) {
             // If there are no replies, return unchanged
@@ -152,18 +148,18 @@ internal class ActivityCommentListStateImpl(
         }
         // Recursively search through replies
         val updatedReplies =
-            comment.replies.map { reply -> addCommentReaction(reply, targetId, reaction) }
+            comment.replies.map { reply -> upsertCommentReaction(reply, update, reaction) }
         return comment.copy(replies = updatedReplies)
     }
 
     private fun removeCommentReaction(
         comment: ThreadedCommentData,
-        targetId: String,
+        target: CommentData,
         reaction: FeedsReactionData,
     ): ThreadedCommentData {
-        if (comment.id == targetId) {
+        if (comment.id == target.id) {
             // If this comment matches the target, remove the reaction
-            return comment.removeReaction(reaction, currentUserId)
+            return comment.removeReaction(target, reaction, currentUserId)
         }
         if (comment.replies.isNullOrEmpty()) {
             // If there are no replies, return unchanged
@@ -171,7 +167,7 @@ internal class ActivityCommentListStateImpl(
         }
         // Recursively search through replies
         val updatedReplies =
-            comment.replies.map { reply -> removeCommentReaction(reply, targetId, reaction) }
+            comment.replies.map { reply -> removeCommentReaction(reply, target, reaction) }
         return comment.copy(replies = updatedReplies)
     }
 }
@@ -212,18 +208,18 @@ internal interface ActivityCommentListStateUpdates {
     fun onCommentRemoved(commentId: String)
 
     /**
-     * Handles the addition of a reaction to a comment.
+     * Handles the addition or update of a reaction to a comment.
      *
-     * @param commentId The ID of the comment to which the reaction was added.
+     * @param comment The comment the reaction belongs to.
      * @param reaction The reaction data that was added.
      */
-    fun onCommentReactionAdded(commentId: String, reaction: FeedsReactionData)
+    fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData)
 
     /**
      * Handles the removal of a reaction from a comment.
      *
-     * @param commentId The ID of the comment from which the reaction was removed.
+     * @param comment The comment from which the reaction was removed.
      * @param reaction The reaction data that was removed.
      */
-    fun onCommentReactionRemoved(commentId: String, reaction: FeedsReactionData)
+    fun onCommentReactionRemoved(comment: CommentData, reaction: FeedsReactionData)
 }

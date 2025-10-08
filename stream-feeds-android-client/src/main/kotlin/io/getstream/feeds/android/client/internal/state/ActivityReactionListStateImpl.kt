@@ -71,7 +71,7 @@ internal class ActivityReactionListStateImpl(override val query: ActivityReactio
         }
     }
 
-    override fun onReactionAdded(reaction: FeedsReactionData) {
+    override fun onReactionUpserted(reaction: FeedsReactionData) {
         _reactions.update { current -> current.upsert(reaction, FeedsReactionData::id) }
     }
 
@@ -106,14 +106,14 @@ internal interface ActivityReactionListStateUpdates {
     )
 
     /**
-     * Handles the addition of a new reaction to the activity.
+     * Handles the addition or update of a reaction to the activity.
      *
      * @param reaction The reaction that was added.
      */
-    fun onReactionAdded(reaction: FeedsReactionData)
+    fun onReactionUpserted(reaction: FeedsReactionData)
 
     /**
-     * Handles the addition of a new reaction to the activity.
+     * Handles the removal of a reaction from the activity.
      *
      * @param reaction The reaction that was added.
      */

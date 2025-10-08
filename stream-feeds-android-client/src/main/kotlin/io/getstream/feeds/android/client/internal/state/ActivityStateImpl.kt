@@ -21,7 +21,6 @@ import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
-import io.getstream.feeds.android.client.api.model.addReaction
 import io.getstream.feeds.android.client.api.model.castVote
 import io.getstream.feeds.android.client.api.model.deleteBookmark
 import io.getstream.feeds.android.client.api.model.removeReaction
@@ -29,6 +28,7 @@ import io.getstream.feeds.android.client.api.model.removeVote
 import io.getstream.feeds.android.client.api.model.setClosed
 import io.getstream.feeds.android.client.api.model.update
 import io.getstream.feeds.android.client.api.model.upsertBookmark
+import io.getstream.feeds.android.client.api.model.upsertReaction
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.api.state.ActivityState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -74,12 +74,12 @@ internal class ActivityStateImpl(
         }
     }
 
-    override fun onReactionAdded(reaction: FeedsReactionData) {
-        _activity.update { current -> current?.addReaction(reaction, currentUserId) }
+    override fun onReactionUpserted(reaction: FeedsReactionData, activity: ActivityData) {
+        _activity.update { current -> current?.upsertReaction(activity, reaction, currentUserId) }
     }
 
-    override fun onReactionRemoved(reaction: FeedsReactionData) {
-        _activity.update { current -> current?.removeReaction(reaction, currentUserId) }
+    override fun onReactionRemoved(reaction: FeedsReactionData, activity: ActivityData) {
+        _activity.update { current -> current?.removeReaction(activity, reaction, currentUserId) }
     }
 
     override fun onBookmarkRemoved(bookmark: BookmarkData) {
@@ -148,18 +148,20 @@ internal interface ActivityStateUpdates {
     fun onActivityUpdated(activity: ActivityData)
 
     /**
-     * Called when a reaction is added to the activity.
+     * Called when a reaction is added to or updated in the activity.
      *
-     * @param reaction The reaction that was added.
+     * @param reaction The reaction that was added or updated.
+     * @param activity The activity the reaction belongs to.
      */
-    fun onReactionAdded(reaction: FeedsReactionData)
+    fun onReactionUpserted(reaction: FeedsReactionData, activity: ActivityData)
 
     /**
      * Called when a reaction is removed from the activity.
      *
      * @param reaction The reaction that was removed.
+     * @param activity The activity from which the reaction was removed.
      */
-    fun onReactionRemoved(reaction: FeedsReactionData)
+    fun onReactionRemoved(reaction: FeedsReactionData, activity: ActivityData)
 
     /**
      * Called when a bookmark is removed from the activity.
