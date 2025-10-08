@@ -2,12 +2,16 @@ name: PR checklist
 
 on:
   pull_request:
-    types: [opened, edited, synchronize, labeled, unlabeled, reopened]
+    types: [ opened, edited, synchronize, labeled, unlabeled, reopened ]
 
 permissions:
   contents: read
   pull-requests: write
   issues: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   pr-checklist:
