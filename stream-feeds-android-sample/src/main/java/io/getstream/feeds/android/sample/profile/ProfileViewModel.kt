@@ -19,12 +19,12 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.Feed
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.sample.login.LoginManager
-import io.getstream.feeds.android.sample.login.LoginManager.UserState
 import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.util.Feeds
 import io.getstream.feeds.android.sample.util.map
@@ -44,12 +44,12 @@ import kotlinx.coroutines.flow.update
 @HiltViewModel
 class ProfileViewModel @Inject constructor(loginManager: LoginManager) : ViewModel() {
 
-    private val userState =
-        flow { emit(AsyncResource.notNull(loginManager.currentState())) }
+    private val client =
+        flow { emit(AsyncResource.notNull(loginManager.currentClient())) }
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
     val feed =
-        userState
+        client
             .map { loadingState -> loadingState.map(::getFeed) }
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
@@ -60,12 +60,11 @@ class ProfileViewModel @Inject constructor(loginManager: LoginManager) : ViewMod
         feed.withFirstContent(viewModelScope) {
             getOrCreate().logResult(TAG, "Error getting the profile feed")
         }
-        userState.withFirstContent(viewModelScope) {
+        client.withFirstContent(viewModelScope) {
             _followSuggestions.value =
                 // We query suggestions from a user feed because we want to follow those, not other
                 // timelines.
-                client
-                    .feed(Feeds.user(user.id))
+                feed(Feeds.user(user.id))
                     .queryFollowSuggestions(10)
                     .logResult(TAG, "Error getting follow suggestions")
                     .getOrDefault(emptyList())
@@ -93,15 +92,15 @@ class ProfileViewModel @Inject constructor(loginManager: LoginManager) : ViewMod
         }
     }
 
-    private fun getFeed(userState: UserState): Feed {
+    private fun getFeed(client: FeedsClient): Feed {
         val profileFeedQuery =
             FeedQuery(
-                fid = Feeds.timeline(userState.user.id),
+                fid = Feeds.timeline(client.user.id),
                 activityLimit = 0, // We don't need activities for the profile feed
                 followerLimit = 10, // Load first 10 followers
                 followingLimit = 10, // Load first 10 followings
             )
-        return userState.client.feed(profileFeedQuery)
+        return client.feed(profileFeedQuery)
     }
 
     companion object {

@@ -94,14 +94,13 @@ fun CommentsBottomSheet(navigator: DestinationsNavigator) {
             }
 
             is AsyncResource.Content -> {
-                val comments by state.data.second.comments.collectAsStateWithLifecycle()
-                val currentUserId = state.data.first.id
+                val comments by state.data.activity.state.comments.collectAsStateWithLifecycle()
                 val createContentState by viewModel.createContentState.collectAsStateWithLifecycle()
 
                 Column {
                     CommentsBottomSheetContent(
                         comments = comments,
-                        currentUserId = currentUserId,
+                        currentUserId = state.data.userId,
                         createContentState = createContentState,
                         onEvent = viewModel::onEvent,
                     )
