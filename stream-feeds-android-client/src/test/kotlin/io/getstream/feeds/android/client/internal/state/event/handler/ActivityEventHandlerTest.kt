@@ -89,7 +89,24 @@ internal class ActivityEventHandlerTest {
         testEventHandling(
             matchingEvent = matchingEvent,
             nonMatchingEvent = nonMatchingEvent,
-            verifyBlock = { state.onBookmarkAdded(matchingBookmark) },
+            verifyBlock = { state.onBookmarkUpserted(matchingBookmark) },
+        )
+    }
+
+    @Test
+    fun `on BookmarkUpdated, then handle based on feed and activity match`() {
+        val matchingActivity = activityData(activityId).copy(feeds = listOf(fid.rawValue))
+        val matchingBookmark = bookmarkData().copy(activity = matchingActivity)
+        val matchingEvent = StateUpdateEvent.BookmarkUpdated(matchingBookmark)
+
+        val nonMatchingActivity = matchingActivity.copy(feeds = listOf(differentFid))
+        val nonMatchingBookmark = matchingBookmark.copy(activity = nonMatchingActivity)
+        val nonMatchingEvent = StateUpdateEvent.BookmarkUpdated(nonMatchingBookmark)
+
+        testEventHandling(
+            matchingEvent = matchingEvent,
+            nonMatchingEvent = nonMatchingEvent,
+            verifyBlock = { state.onBookmarkUpserted(matchingBookmark) },
         )
     }
 

@@ -188,15 +188,14 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on onBookmarkAdded, then add bookmark to activity`() = runTest {
+    fun `on onBookmarkUpserted, then add bookmark to activity`() = runTest {
         val initialActivity = activityData("activity-1")
         setupInitialActivity(initialActivity)
 
         val bookmark = bookmarkData("activity-1", currentUserId)
-        activityState.onBookmarkAdded(bookmark)
+        activityState.onBookmarkUpserted(bookmark)
 
-        val expectedActivity =
-            initialActivity.copy(bookmarkCount = 1, ownBookmarks = listOf(bookmark))
+        val expectedActivity = bookmark.activity.copy(ownBookmarks = listOf(bookmark))
         assertEquals(expectedActivity, activityState.activity.value)
     }
 
@@ -206,7 +205,7 @@ internal class ActivityStateImplTest {
         setupInitialActivity(initialActivity)
 
         val bookmark = bookmarkData("activity-1", currentUserId)
-        activityState.onBookmarkAdded(bookmark)
+        activityState.onBookmarkUpserted(bookmark)
         activityState.onBookmarkRemoved(bookmark)
 
         val expectedActivity = initialActivity.copy(bookmarkCount = 0, ownBookmarks = emptyList())
@@ -233,16 +232,17 @@ internal class ActivityStateImplTest {
         }
 
     @Test
-    fun `on onBookmarkAdded from other user, then update count but not ownBookmarks`() = runTest {
-        val initialActivity = activityData("activity-1")
-        setupInitialActivity(initialActivity)
+    fun `on onBookmarkUpserted from other user, then update count but not ownBookmarks`() =
+        runTest {
+            val initialActivity = activityData("activity-1")
+            setupInitialActivity(initialActivity)
 
-        val bookmark = bookmarkData("activity-1", "other-user")
-        activityState.onBookmarkAdded(bookmark)
+            val bookmark = bookmarkData("activity-1", "other-user")
+            activityState.onBookmarkUpserted(bookmark)
 
-        val expectedActivity = initialActivity.copy(bookmarkCount = 1, ownBookmarks = emptyList())
-        assertEquals(expectedActivity, activityState.activity.value)
-    }
+            val expectedActivity = bookmark.activity.copy(ownBookmarks = emptyList())
+            assertEquals(expectedActivity, activityState.activity.value)
+        }
 
     @Test
     fun `on onPollClosed, then update poll`() = runTest {

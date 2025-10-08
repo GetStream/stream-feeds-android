@@ -282,11 +282,7 @@ internal class FeedImplTest {
 
         val result = feed.addBookmark(activityId, request)
 
-        val updated =
-            activity.copy(
-                ownBookmarks = listOf(bookmark),
-                bookmarkCount = activity.bookmarkCount + 1,
-            )
+        val updated = bookmark.activity.copy(ownBookmarks = listOf(bookmark))
         assertEquals(bookmark, result.getOrNull())
         assertEquals(listOf(updated), feed.state.activities.value)
         verify { stateEventListener.onEvent(StateUpdateEvent.BookmarkAdded(bookmark)) }
