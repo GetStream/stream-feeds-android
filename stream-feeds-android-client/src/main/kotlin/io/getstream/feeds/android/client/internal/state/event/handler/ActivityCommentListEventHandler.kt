@@ -48,13 +48,19 @@ internal class ActivityCommentListEventHandler(
 
             is StateUpdateEvent.CommentReactionAdded -> {
                 if (event.comment.objectId == objectId && event.comment.objectType == objectType) {
-                    state.onCommentReactionAdded(event.comment.id, event.reaction)
+                    state.onCommentReactionUpserted(event.comment, event.reaction)
                 }
             }
 
             is StateUpdateEvent.CommentReactionDeleted -> {
                 if (event.comment.objectId == objectId && event.comment.objectType == objectType) {
-                    state.onCommentReactionRemoved(event.comment.id, event.reaction)
+                    state.onCommentReactionRemoved(event.comment, event.reaction)
+                }
+            }
+
+            is StateUpdateEvent.CommentReactionUpdated -> {
+                if (event.comment.objectId == objectId && event.comment.objectType == objectType) {
+                    state.onCommentReactionUpserted(event.comment, event.reaction)
                 }
             }
 

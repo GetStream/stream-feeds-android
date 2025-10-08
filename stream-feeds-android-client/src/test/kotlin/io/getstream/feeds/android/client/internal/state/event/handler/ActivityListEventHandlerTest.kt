@@ -17,6 +17,7 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.internal.state.ActivityListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
@@ -40,23 +41,36 @@ internal class ActivityListEventHandlerTest {
     }
 
     @Test
-    fun `on ActivityReactionAdded, then call onReactionAdded`() {
+    fun `on ActivityReactionAdded, then call onReactionUpserted`() {
+        val activity = activityData("activity-1")
         val reaction = feedsReactionData("activity-1")
-        val event = StateUpdateEvent.ActivityReactionAdded("feed-1", reaction)
+        val event = StateUpdateEvent.ActivityReactionAdded("feed-1", activity, reaction)
 
         handler.onEvent(event)
 
-        verify { state.onReactionAdded(reaction) }
+        verify { state.onReactionUpserted(reaction, activity) }
+    }
+
+    @Test
+    fun `on ActivityReactionUpdated, then call onReactionUpserted`() {
+        val activity = activityData("activity-1")
+        val reaction = feedsReactionData("activity-1")
+        val event = StateUpdateEvent.ActivityReactionUpdated("feed-1", activity, reaction)
+
+        handler.onEvent(event)
+
+        verify { state.onReactionUpserted(reaction, activity) }
     }
 
     @Test
     fun `on ActivityReactionDeleted, then call onReactionRemoved`() {
+        val activity = activityData("activity-1")
         val reaction = feedsReactionData("activity-1")
-        val event = StateUpdateEvent.ActivityReactionDeleted("feed-1", reaction)
+        val event = StateUpdateEvent.ActivityReactionDeleted("feed-1", activity, reaction)
 
         handler.onEvent(event)
 
-        verify { state.onReactionRemoved(reaction) }
+        verify { state.onReactionRemoved(reaction, activity) }
     }
 
     @Test

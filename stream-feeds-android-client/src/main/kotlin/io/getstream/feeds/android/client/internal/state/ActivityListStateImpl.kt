@@ -22,16 +22,17 @@ import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.addComment
-import io.getstream.feeds.android.client.api.model.addReaction
 import io.getstream.feeds.android.client.api.model.deleteBookmark
 import io.getstream.feeds.android.client.api.model.removeComment
 import io.getstream.feeds.android.client.api.model.removeReaction
 import io.getstream.feeds.android.client.api.model.upsertBookmark
+import io.getstream.feeds.android.client.api.model.upsertReaction
 import io.getstream.feeds.android.client.api.state.ActivityListState
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQueryConfig
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
+import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -124,28 +125,18 @@ internal class ActivityListStateImpl(
         }
     }
 
-    override fun onReactionAdded(reaction: FeedsReactionData) {
+    override fun onReactionUpserted(reaction: FeedsReactionData, activity: ActivityData) {
         _activities.update { current ->
-            current.map { activity ->
-                if (activity.id == reaction.activityId) {
-                    // Add the reaction to the activity
-                    activity.addReaction(reaction, currentUserId)
-                } else {
-                    activity
-                }
+            current.updateIf({ it.id == reaction.activityId }) {
+                it.upsertReaction(activity, reaction, currentUserId)
             }
         }
     }
 
-    override fun onReactionRemoved(reaction: FeedsReactionData) {
+    override fun onReactionRemoved(reaction: FeedsReactionData, activity: ActivityData) {
         _activities.update { current ->
-            current.map { activity ->
-                if (activity.id == reaction.activityId) {
-                    // Remove the reaction from the activity
-                    activity.removeReaction(reaction, currentUserId)
-                } else {
-                    activity
-                }
+            current.updateIf({ it.id == reaction.activityId }) {
+                it.removeReaction(activity, reaction, currentUserId)
             }
         }
     }
@@ -216,16 +207,18 @@ internal interface ActivityListStateUpdates {
     fun onCommentRemoved(comment: CommentData)
 
     /**
-     * Called when a reaction is added to an activity.
+     * Called when a reaction is added to or updated in an activity.
      *
      * @param reaction The reaction that was added.
+     * @param activity The activity the reaction belongs to.
      */
-    fun onReactionAdded(reaction: FeedsReactionData)
+    fun onReactionUpserted(reaction: FeedsReactionData, activity: ActivityData)
 
     /**
      * Called when a reaction is removed from an activity.
      *
      * @param reaction The reaction that was removed.
+     * @param activity The activity from which the reaction was removed.
      */
-    fun onReactionRemoved(reaction: FeedsReactionData)
+    fun onReactionRemoved(reaction: FeedsReactionData, activity: ActivityData)
 }
