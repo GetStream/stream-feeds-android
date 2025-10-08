@@ -16,34 +16,10 @@
 package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.api.model.FeedId
-import io.getstream.feeds.android.client.api.model.toModel
+import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.internal.state.FeedStateUpdates
-import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
-import io.getstream.feeds.android.network.models.ActivityAddedEvent
-import io.getstream.feeds.android.network.models.ActivityDeletedEvent
-import io.getstream.feeds.android.network.models.ActivityPinnedEvent
-import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
-import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
-import io.getstream.feeds.android.network.models.ActivityRemovedFromFeedEvent
-import io.getstream.feeds.android.network.models.ActivityUnpinnedEvent
-import io.getstream.feeds.android.network.models.ActivityUpdatedEvent
-import io.getstream.feeds.android.network.models.BookmarkAddedEvent
-import io.getstream.feeds.android.network.models.BookmarkDeletedEvent
-import io.getstream.feeds.android.network.models.CommentAddedEvent
-import io.getstream.feeds.android.network.models.CommentDeletedEvent
-import io.getstream.feeds.android.network.models.FeedDeletedEvent
-import io.getstream.feeds.android.network.models.FeedUpdatedEvent
-import io.getstream.feeds.android.network.models.FollowCreatedEvent
-import io.getstream.feeds.android.network.models.FollowDeletedEvent
-import io.getstream.feeds.android.network.models.FollowUpdatedEvent
-import io.getstream.feeds.android.network.models.NotificationFeedUpdatedEvent
-import io.getstream.feeds.android.network.models.PollClosedFeedEvent
-import io.getstream.feeds.android.network.models.PollDeletedFeedEvent
-import io.getstream.feeds.android.network.models.PollUpdatedFeedEvent
-import io.getstream.feeds.android.network.models.PollVoteCastedFeedEvent
-import io.getstream.feeds.android.network.models.PollVoteChangedFeedEvent
-import io.getstream.feeds.android.network.models.PollVoteRemovedFeedEvent
-import io.getstream.feeds.android.network.models.WSEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
 /**
  * This class handles feed events and updates the feed state accordingly. It is responsible for
@@ -54,160 +30,165 @@ import io.getstream.feeds.android.network.models.WSEvent
  * @property state The instance that manages updates to the feed state.
  */
 internal class FeedEventHandler(private val fid: FeedId, private val state: FeedStateUpdates) :
-    FeedsEventListener {
+    StateUpdateEventListener {
 
     /**
-     * Processes a WebSocket event and updates the feed state.
+     * Processes a state update event and updates the feed state.
      *
-     * @param event The WebSocket event to process.
+     * @param event The state update event to process.
      */
-    override fun onEvent(event: WSEvent) {
+    override fun onEvent(event: StateUpdateEvent) {
         when (event) {
-            is ActivityAddedEvent -> {
+            is StateUpdateEvent.ActivityAdded -> {
                 if (event.fid == fid.rawValue) {
-                    state.onActivityAdded(event.activity.toModel())
+                    state.onActivityAdded(event.activity)
                 }
             }
 
-            is ActivityDeletedEvent -> {
+            is StateUpdateEvent.ActivityDeleted -> {
                 if (event.fid == fid.rawValue) {
-                    state.onActivityRemoved(event.activity.id)
+                    state.onActivityRemoved(event.activityId)
                 }
             }
 
-            is ActivityRemovedFromFeedEvent -> {
+            is StateUpdateEvent.ActivityRemovedFromFeed -> {
                 if (event.fid == fid.rawValue) {
-                    state.onActivityRemoved(event.activity.id)
+                    state.onActivityRemoved(event.activityId)
                 }
             }
 
-            is ActivityReactionAddedEvent -> {
+            is StateUpdateEvent.ActivityReactionAdded -> {
                 if (event.fid == fid.rawValue) {
-                    state.onReactionAdded(event.reaction.toModel())
+                    state.onReactionAdded(event.reaction)
                 }
             }
 
-            is ActivityReactionDeletedEvent -> {
+            is StateUpdateEvent.ActivityReactionDeleted -> {
                 if (event.fid == fid.rawValue) {
-                    state.onReactionRemoved(event.reaction.toModel())
+                    state.onReactionRemoved(event.reaction)
                 }
             }
 
-            is ActivityUpdatedEvent -> {
+            is StateUpdateEvent.ActivityUpdated -> {
                 if (event.fid == fid.rawValue) {
-                    state.onActivityUpdated(event.activity.toModel())
+                    state.onActivityUpdated(event.activity)
                 }
             }
 
-            is ActivityPinnedEvent -> {
+            is StateUpdateEvent.ActivityPinned -> {
                 if (event.fid == fid.rawValue) {
-                    state.onActivityPinned(event.pinnedActivity.toModel())
+                    state.onActivityPinned(event.pinnedActivity)
                 }
             }
 
-            is ActivityUnpinnedEvent -> {
+            is StateUpdateEvent.ActivityUnpinned -> {
                 if (event.fid == fid.rawValue) {
-                    state.onActivityUnpinned(event.pinnedActivity.activity.id)
+                    state.onActivityUnpinned(event.activityId)
                 }
             }
 
-            is BookmarkAddedEvent -> {
+            is StateUpdateEvent.BookmarkAdded -> {
                 if (event.bookmark.activity.feeds.contains(fid.rawValue)) {
-                    state.onBookmarkAdded(event.bookmark.toModel())
+                    state.onBookmarkUpserted(event.bookmark)
                 }
             }
 
-            is BookmarkDeletedEvent -> {
+            is StateUpdateEvent.BookmarkDeleted -> {
                 if (event.bookmark.activity.feeds.contains(fid.rawValue)) {
-                    state.onBookmarkRemoved(event.bookmark.toModel())
+                    state.onBookmarkRemoved(event.bookmark)
                 }
             }
 
-            is CommentAddedEvent -> {
+            is StateUpdateEvent.BookmarkUpdated -> {
+                if (event.bookmark.activity.feeds.contains(fid.rawValue)) {
+                    state.onBookmarkUpserted(event.bookmark)
+                }
+            }
+
+            is StateUpdateEvent.CommentAdded -> {
                 if (event.fid == fid.rawValue) {
-                    state.onCommentAdded(event.comment.toModel())
+                    state.onCommentAdded(event.comment)
                 }
             }
 
-            is CommentDeletedEvent -> {
+            is StateUpdateEvent.CommentDeleted -> {
                 if (event.fid == fid.rawValue) {
-                    state.onCommentRemoved(event.comment.toModel())
+                    state.onCommentRemoved(event.comment)
                 }
             }
 
-            is FeedDeletedEvent -> {
+            is StateUpdateEvent.FeedDeleted -> {
                 if (event.fid == fid.rawValue) {
                     state.onFeedDeleted()
                 }
             }
 
-            is FeedUpdatedEvent -> {
-                if (event.fid == fid.rawValue) {
-                    state.onFeedUpdated(event.feed.toModel())
+            is StateUpdateEvent.FeedUpdated -> {
+                if (event.feed.fid == fid) {
+                    state.onFeedUpdated(event.feed)
                 }
             }
 
-            is FollowCreatedEvent -> {
-                if (event.fid == fid.rawValue) {
-                    state.onFollowAdded(event.follow.toModel())
+            is StateUpdateEvent.FollowAdded -> {
+                if (event.follow.matchesFeed()) {
+                    state.onFollowAdded(event.follow)
                 }
             }
 
-            is FollowDeletedEvent -> {
-                if (event.fid == fid.rawValue) {
-                    state.onFollowRemoved(event.follow.toModel())
+            is StateUpdateEvent.FollowDeleted -> {
+                if (event.follow.matchesFeed()) {
+                    state.onFollowRemoved(event.follow)
                 }
             }
 
-            is FollowUpdatedEvent -> {
-                if (event.fid == fid.rawValue) {
-                    state.onFollowUpdated(event.follow.toModel())
+            is StateUpdateEvent.FollowUpdated -> {
+                if (event.follow.matchesFeed()) {
+                    state.onFollowUpdated(event.follow)
                 }
             }
 
-            is NotificationFeedUpdatedEvent -> {
+            is StateUpdateEvent.NotificationFeedUpdated -> {
                 if (event.fid == fid.rawValue) {
                     state.onNotificationFeedUpdated(
-                        aggregatedActivities =
-                            event.aggregatedActivities?.map { it.toModel() }.orEmpty(),
+                        aggregatedActivities = event.aggregatedActivities,
                         notificationStatus = event.notificationStatus,
                     )
                 }
             }
 
-            is PollClosedFeedEvent -> {
+            is StateUpdateEvent.PollClosed -> {
                 if (event.fid == fid.rawValue) {
                     state.onPollClosed(event.poll.id)
                 }
             }
 
-            is PollDeletedFeedEvent -> {
+            is StateUpdateEvent.PollDeleted -> {
                 if (event.fid == fid.rawValue) {
-                    state.onPollDeleted(event.poll.id)
+                    state.onPollDeleted(event.pollId)
                 }
             }
 
-            is PollUpdatedFeedEvent -> {
+            is StateUpdateEvent.PollUpdated -> {
                 if (event.fid == fid.rawValue) {
-                    state.onPollUpdated(event.poll.toModel())
+                    state.onPollUpdated(event.poll)
                 }
             }
 
-            is PollVoteCastedFeedEvent -> {
+            is StateUpdateEvent.PollVoteCasted -> {
                 if (event.fid == fid.rawValue) {
-                    state.onPollVoteCasted(event.pollVote.toModel(), event.poll.id)
+                    state.onPollVoteCasted(event.vote, event.pollId)
                 }
             }
 
-            is PollVoteChangedFeedEvent -> {
+            is StateUpdateEvent.PollVoteChanged -> {
                 if (event.fid == fid.rawValue) {
-                    state.onPollVoteChanged(event.pollVote.toModel(), event.poll.id)
+                    state.onPollVoteChanged(event.vote, event.pollId)
                 }
             }
 
-            is PollVoteRemovedFeedEvent -> {
+            is StateUpdateEvent.PollVoteRemoved -> {
                 if (event.fid == fid.rawValue) {
-                    state.onPollVoteRemoved(event.pollVote.toModel(), event.poll.id)
+                    state.onPollVoteRemoved(event.vote, event.pollId)
                 }
             }
 
@@ -216,4 +197,6 @@ internal class FeedEventHandler(private val fid: FeedId, private val state: Feed
             }
         }
     }
+
+    private fun FollowData.matchesFeed() = sourceFeed.fid == fid || targetFeed.fid == fid
 }

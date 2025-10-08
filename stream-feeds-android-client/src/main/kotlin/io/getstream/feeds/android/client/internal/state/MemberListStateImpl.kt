@@ -15,6 +15,7 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
+import io.getstream.android.core.api.sort.CompositeComparator
 import io.getstream.android.core.api.sort.Sort
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
@@ -25,7 +26,7 @@ import io.getstream.feeds.android.client.api.state.query.MembersQuery
 import io.getstream.feeds.android.client.api.state.query.MembersQueryConfig
 import io.getstream.feeds.android.client.api.state.query.MembersSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
-import io.getstream.feeds.android.client.internal.utils.upsert
+import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -69,7 +70,9 @@ internal class MemberListStateImpl(override val query: MembersQuery) : MemberLis
     }
 
     override fun onMemberAdded(member: FeedMemberData) {
-        _members.update { current -> current.upsert(member, FeedMemberData::id) }
+        _members.update { current ->
+            current.upsertSorted(member, FeedMemberData::id, membersSorting)
+        }
     }
 
     override fun onMemberRemoved(memberId: String) {
@@ -78,13 +81,7 @@ internal class MemberListStateImpl(override val query: MembersQuery) : MemberLis
 
     override fun onMemberUpdated(member: FeedMemberData) {
         _members.update { current ->
-            current.map {
-                if (it.id == member.id) {
-                    member
-                } else {
-                    it
-                }
-            }
+            current.upsertSorted(member, FeedMemberData::id, membersSorting)
         }
     }
 
@@ -93,14 +90,19 @@ internal class MemberListStateImpl(override val query: MembersQuery) : MemberLis
         val updatesMap = updates.updated.associateBy(FeedMemberData::id)
 
         _members.update { current ->
-            // Apply updates and filter out removed members in a single pass
-            current.mapNotNull { member ->
-                if (member.id in updates.removedIds) {
-                    null
-                } else {
-                    updatesMap[member.id] ?: member
+            current
+                .mapNotNullTo(mutableListOf()) { member ->
+                    // Apply updates and filter out removed members in a single pass
+                    if (member.id in updates.removedIds) {
+                        null
+                    } else {
+                        updatesMap[member.id] ?: member
+                    }
                 }
-            }
+                .apply {
+                    addAll(updates.added)
+                    sortWith(CompositeComparator(membersSorting))
+                }
         }
     }
 

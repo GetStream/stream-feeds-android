@@ -83,7 +83,9 @@ internal class ActivityImplTest {
 
         activity.addComment(request, progress)
 
-        verify { stateEventListener.onEvent(StateUpdateEvent.CommentAdded(commentData)) }
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.CommentAdded("group:feed", commentData))
+        }
     }
 
     @Test
@@ -100,7 +102,7 @@ internal class ActivityImplTest {
         activity.addCommentsBatch(requests)
 
         commentData.forEach { data ->
-            verify { stateEventListener.onEvent(StateUpdateEvent.CommentAdded(data)) }
+            verify { stateEventListener.onEvent(StateUpdateEvent.CommentAdded("group:feed", data)) }
         }
     }
 
@@ -173,7 +175,9 @@ internal class ActivityImplTest {
         assertEquals(Unit, result.getOrNull())
         assertEquals(expectedActivity, activity.state.activity.value)
         verify {
-            stateEventListener.onEvent(StateUpdateEvent.CommentDeleted(deleteData.first))
+            stateEventListener.onEvent(
+                StateUpdateEvent.CommentDeleted("group:feed", deleteData.first)
+            )
             stateEventListener.onEvent(
                 StateUpdateEvent.ActivityUpdated("group:feed", expectedActivity)
             )

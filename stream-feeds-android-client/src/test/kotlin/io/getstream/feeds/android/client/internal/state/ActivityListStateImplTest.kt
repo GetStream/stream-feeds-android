@@ -71,23 +71,23 @@ internal class ActivityListStateImplTest {
         val paginationResult = defaultPaginationResult(initialActivities)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
-        activityListState.onActivityRemoved(initialActivities[0])
+        activityListState.onActivityRemoved(initialActivities[0].id)
 
         val remainingActivities = activityListState.activities.value
         assertEquals(listOf(initialActivities[1]), remainingActivities)
     }
 
     @Test
-    fun `on bookmarkAdded, then add bookmark to activity`() = runTest {
+    fun `on onBookmarkUpserted, then add bookmark to activity`() = runTest {
         val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
         val paginationResult = defaultPaginationResult(initialActivities)
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
-
         val bookmark = bookmarkData("activity-1", currentUserId)
-        activityListState.onBookmarkAdded(bookmark)
+        val expected = bookmark.activity.copy(ownBookmarks = listOf(bookmark))
 
-        val activityWithBookmark = activityListState.activities.value.first()
-        assertEquals(1, activityWithBookmark.bookmarkCount)
+        activityListState.onBookmarkUpserted(bookmark)
+
+        assertEquals(listOf(expected, initialActivities[1]), activityListState.activities.value)
     }
 
     @Test
@@ -97,7 +97,7 @@ internal class ActivityListStateImplTest {
         activityListState.onQueryMoreActivities(paginationResult, queryConfig)
 
         val bookmark = bookmarkData("activity-1", currentUserId)
-        activityListState.onBookmarkAdded(bookmark)
+        activityListState.onBookmarkUpserted(bookmark)
         activityListState.onBookmarkRemoved(bookmark)
 
         val activityWithoutBookmark = activityListState.activities.value.first()

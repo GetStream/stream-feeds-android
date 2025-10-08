@@ -17,7 +17,6 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.internal.state.ActivityListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
-import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
@@ -33,12 +32,11 @@ internal class ActivityListEventHandlerTest {
 
     @Test
     fun `on ActivityDeleted, then call onActivityRemoved`() {
-        val activity = activityData()
-        val event = StateUpdateEvent.ActivityDeleted(activity)
+        val event = StateUpdateEvent.ActivityDeleted("feed-1", "activity-1")
 
         handler.onEvent(event)
 
-        verify { state.onActivityRemoved(activity) }
+        verify { state.onActivityRemoved("activity-1") }
     }
 
     @Test
@@ -62,13 +60,23 @@ internal class ActivityListEventHandlerTest {
     }
 
     @Test
-    fun `on BookmarkAdded, then call onBookmarkAdded`() {
+    fun `on BookmarkAdded, then call onBookmarkUpserted`() {
         val bookmark = bookmarkData()
         val event = StateUpdateEvent.BookmarkAdded(bookmark)
 
         handler.onEvent(event)
 
-        verify { state.onBookmarkAdded(bookmark) }
+        verify { state.onBookmarkUpserted(bookmark) }
+    }
+
+    @Test
+    fun `on BookmarkUpdated, then call onBookmarkUpserted`() {
+        val bookmark = bookmarkData()
+        val event = StateUpdateEvent.BookmarkUpdated(bookmark)
+
+        handler.onEvent(event)
+
+        verify { state.onBookmarkUpserted(bookmark) }
     }
 
     @Test
@@ -84,7 +92,7 @@ internal class ActivityListEventHandlerTest {
     @Test
     fun `on CommentAdded, then call onCommentAdded`() {
         val comment = commentData()
-        val event = StateUpdateEvent.CommentAdded(comment)
+        val event = StateUpdateEvent.CommentAdded("feed-1", comment)
 
         handler.onEvent(event)
 
@@ -94,7 +102,7 @@ internal class ActivityListEventHandlerTest {
     @Test
     fun `on CommentDeleted, then call onCommentRemoved`() {
         val comment = commentData()
-        val event = StateUpdateEvent.CommentDeleted(comment)
+        val event = StateUpdateEvent.CommentDeleted("feed-1", comment)
 
         handler.onEvent(event)
 

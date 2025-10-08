@@ -16,8 +16,6 @@
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.BookmarkData
-import io.getstream.feeds.android.client.api.model.PaginationData
-import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.state.query.BookmarksQuery
 import io.getstream.feeds.android.client.api.state.query.BookmarksQueryConfig
 import io.getstream.feeds.android.client.api.state.query.BookmarksSort
@@ -52,97 +50,88 @@ internal class BookmarkListStateImplTest {
     }
 
     @Test
-    fun `on bookmarkUpdated, then update specific bookmark`() = runTest {
-        val initialBookmarks = listOf(bookmarkData(), bookmarkData("bookmark-2", "user-2"))
-        val paginationResult = defaultPaginationResult(initialBookmarks)
-        bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
+    fun `on onBookmarkUpserted, then add specific bookmark`() = runTest {
+        val initialBookmark = bookmarkData("activity-2", "user-2", createdAt = 2000)
+        setupInitialBookmarks(listOf(initialBookmark))
 
-        val updatedBookmark = bookmarkData("activity-1", "user-1")
-        bookmarkListState.onBookmarkUpdated(updatedBookmark)
+        val updatedBookmark = bookmarkData("activity-1", "user-1", createdAt = 3000)
+        bookmarkListState.onBookmarkUpserted(updatedBookmark)
 
-        val updatedBookmarks = bookmarkListState.bookmarks.value
-        assertEquals(updatedBookmark, updatedBookmarks.find { it.id == updatedBookmark.id })
-        assertEquals(initialBookmarks[1], updatedBookmarks.find { it.id == initialBookmarks[1].id })
+        val expected = listOf(updatedBookmark, initialBookmark)
+        assertEquals(expected, bookmarkListState.bookmarks.value)
+    }
+
+    @Test
+    fun `on onBookmarkUpserted, then update specific bookmark`() = runTest {
+        val bookmark1 = bookmarkData("activity-2", "user-2", createdAt = 2000)
+        val bookmark2 = bookmarkData("activity-1", "user-1", createdAt = 1000)
+        setupInitialBookmarks(listOf(bookmark1, bookmark2))
+
+        val updatedBookmark = bookmarkData("activity-1", "user-1", createdAt = 3000)
+        bookmarkListState.onBookmarkUpserted(updatedBookmark)
+
+        val expected = listOf(updatedBookmark, bookmark1)
+        assertEquals(expected, bookmarkListState.bookmarks.value)
     }
 
     @Test
     fun `on bookmarkFolderUpdated, then update bookmarks with folder reference`() = runTest {
-        val folder = bookmarkFolderData()
-        val initialBookmarks =
-            listOf(
-                bookmarkData(folder = folder),
-                bookmarkData(
-                    "activity-2",
-                    "user-2",
-                    folder = bookmarkFolderData("folder-2", "Folder 2"),
-                ),
-            )
-        val paginationResult = defaultPaginationResult(initialBookmarks)
-        bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
+        val folder = bookmarkFolderData("folder-1", "Folder 1")
+        val bookmark1 = bookmarkData(folder = folder)
+        val bookmark2 =
+            bookmarkData("activity-2", "user-2", bookmarkFolderData("folder-2", "Folder 2"))
+        setupInitialBookmarks(listOf(bookmark1, bookmark2))
 
         val updatedFolder = bookmarkFolderData("folder-1", "Updated Folder")
         bookmarkListState.onBookmarkFolderUpdated(updatedFolder)
 
-        val updatedBookmarks = bookmarkListState.bookmarks.value
-        val bookmarkWithUpdatedFolder = updatedBookmarks.find { it.folder?.id == updatedFolder.id }
-        assertEquals(updatedFolder, bookmarkWithUpdatedFolder?.folder)
+        val expected = listOf(bookmark1.copy(folder = updatedFolder), bookmark2)
+        assertEquals(expected, bookmarkListState.bookmarks.value)
     }
 
     @Test
     fun `on bookmarkFolderRemoved, then remove folder reference from bookmarks`() = runTest {
-        val folder = bookmarkFolderData()
-        val initialBookmarks =
-            listOf(
-                bookmarkData(folder = folder),
-                bookmarkData(
-                    "activity-2",
-                    "user-2",
-                    folder = bookmarkFolderData("folder-2", "Folder 2"),
-                ),
-            )
-        val paginationResult = defaultPaginationResult(initialBookmarks)
-        bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
+        val folder = bookmarkFolderData("folder-1", "Folder 1")
+        val bookmark1 = bookmarkData(folder = folder)
+        val bookmark2 =
+            bookmarkData("activity-2", "user-2", bookmarkFolderData("folder-2", "Folder 2"))
+        setupInitialBookmarks(listOf(bookmark1, bookmark2))
 
         bookmarkListState.onBookmarkFolderRemoved(folder.id)
 
-        val updatedBookmarks = bookmarkListState.bookmarks.value
-        val bookmarkWithoutFolder = updatedBookmarks.find { it.id == initialBookmarks[0].id }
-        assertNull(bookmarkWithoutFolder?.folder)
-        assertEquals(initialBookmarks[1], updatedBookmarks.find { it.id == initialBookmarks[1].id })
+        val expected = listOf(bookmark1.copy(folder = null), bookmark2)
+        assertEquals(expected, bookmarkListState.bookmarks.value)
     }
 
     @Test
     fun `on bookmarkRemoved, then remove specific bookmark`() = runTest {
-        val initialBookmarks =
-            listOf(
-                bookmarkData("activity-1", "user-1"),
-                bookmarkData("activity-2", "user-2"),
-                bookmarkData("activity-3", "user-3"),
-            )
-        val paginationResult =
-            PaginationResult(models = initialBookmarks, pagination = PaginationData())
-        bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
+        val bookmark1 = bookmarkData("activity-1", "user-1")
+        val bookmark2 = bookmarkData("activity-2", "user-2")
+        val bookmark3 = bookmarkData("activity-3", "user-3")
+        setupInitialBookmarks(listOf(bookmark1, bookmark2, bookmark3))
 
-        val bookmarkToRemove = initialBookmarks[1]
-        bookmarkListState.onBookmarkRemoved(bookmarkToRemove)
+        bookmarkListState.onBookmarkRemoved(bookmark2)
 
-        val remainingBookmarks = bookmarkListState.bookmarks.value
-        assertEquals(2, remainingBookmarks.size)
-        assertEquals(listOf(initialBookmarks[0], initialBookmarks[2]), remainingBookmarks)
+        val expected = listOf(bookmark1, bookmark3)
+        assertEquals(expected, bookmarkListState.bookmarks.value)
     }
 
     @Test
     fun `on bookmarkRemoved with nonexistent bookmark, then keep all bookmarks`() = runTest {
-        val initialBookmarks =
-            listOf(bookmarkData("activity-1", "user-1"), bookmarkData("activity-2", "user-2"))
-        val paginationResult =
-            PaginationResult(models = initialBookmarks, pagination = PaginationData())
-        bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
+        val bookmark1 = bookmarkData("activity-1", "user-1")
+        val bookmark2 = bookmarkData("activity-2", "user-2")
+        setupInitialBookmarks(listOf(bookmark1, bookmark2))
 
         val nonexistentBookmark = bookmarkData("activity-999", "user-999")
         bookmarkListState.onBookmarkRemoved(nonexistentBookmark)
 
-        assertEquals(initialBookmarks, bookmarkListState.bookmarks.value)
+        val expected = listOf(bookmark1, bookmark2)
+        assertEquals(expected, bookmarkListState.bookmarks.value)
+    }
+
+    private fun setupInitialBookmarks(bookmarks: List<BookmarkData>) {
+        val paginationResult = defaultPaginationResult(bookmarks)
+        bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
     }
 
     companion object {

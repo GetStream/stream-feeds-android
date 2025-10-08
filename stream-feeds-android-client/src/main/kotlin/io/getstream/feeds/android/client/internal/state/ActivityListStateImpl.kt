@@ -21,12 +21,12 @@ import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
-import io.getstream.feeds.android.client.api.model.addBookmark
 import io.getstream.feeds.android.client.api.model.addComment
 import io.getstream.feeds.android.client.api.model.addReaction
 import io.getstream.feeds.android.client.api.model.deleteBookmark
 import io.getstream.feeds.android.client.api.model.removeComment
 import io.getstream.feeds.android.client.api.model.removeReaction
+import io.getstream.feeds.android.client.api.model.upsertBookmark
 import io.getstream.feeds.android.client.api.state.ActivityListState
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQueryConfig
@@ -82,8 +82,8 @@ internal class ActivityListStateImpl(
         }
     }
 
-    override fun onActivityRemoved(activity: ActivityData) {
-        _activities.update { current -> current.filter { it.id != activity.id } }
+    override fun onActivityRemoved(activityId: String) {
+        _activities.update { current -> current.filter { it.id != activityId } }
     }
 
     override fun onActivityUpdated(activity: ActivityData) {
@@ -92,30 +92,12 @@ internal class ActivityListStateImpl(
         }
     }
 
-    override fun onBookmarkAdded(bookmark: BookmarkData) {
-        _activities.update { current ->
-            current.map { activity ->
-                if (activity.id == bookmark.activity.id) {
-                    // If the activity matches the bookmark, add the bookmark to it
-                    activity.addBookmark(bookmark, currentUserId)
-                } else {
-                    activity
-                }
-            }
-        }
+    override fun onBookmarkRemoved(bookmark: BookmarkData) {
+        _activities.update { current -> current.deleteBookmark(bookmark, currentUserId) }
     }
 
-    override fun onBookmarkRemoved(bookmark: BookmarkData) {
-        _activities.update { current ->
-            current.map { activity ->
-                if (activity.id == bookmark.activity.id) {
-                    // If the activity matches the bookmark, remove the bookmark from it
-                    activity.deleteBookmark(bookmark, currentUserId)
-                } else {
-                    activity
-                }
-            }
-        }
+    override fun onBookmarkUpserted(bookmark: BookmarkData) {
+        _activities.update { current -> current.upsertBookmark(bookmark, currentUserId) }
     }
 
     override fun onCommentAdded(comment: CommentData) {
@@ -194,9 +176,9 @@ internal interface ActivityListStateUpdates {
     /**
      * Called when an activity is removed from the list.
      *
-     * @param activity The activity that was removed.
+     * @param activityId The ID of the activity that was removed.
      */
-    fun onActivityRemoved(activity: ActivityData)
+    fun onActivityRemoved(activityId: String)
 
     /**
      * Called when an activity is updated in the list.
@@ -206,18 +188,18 @@ internal interface ActivityListStateUpdates {
     fun onActivityUpdated(activity: ActivityData)
 
     /**
-     * Called when a bookmark was added.
-     *
-     * @param bookmark The bookmark that was added.
-     */
-    fun onBookmarkAdded(bookmark: BookmarkData)
-
-    /**
      * Called when a bookmark was removed.
      *
      * @param bookmark The bookmark that was removed.
      */
     fun onBookmarkRemoved(bookmark: BookmarkData)
+
+    /**
+     * Called when a bookmark was added or updated.
+     *
+     * @param bookmark The bookmark that was added or updated.
+     */
+    fun onBookmarkUpserted(bookmark: BookmarkData)
 
     /**
      * Called when a comment is added to an activity.
