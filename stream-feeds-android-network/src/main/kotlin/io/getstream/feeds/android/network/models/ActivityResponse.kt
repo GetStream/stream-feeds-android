@@ -86,6 +86,7 @@ public data class ActivityResponse(
     @Json(name = "edited_at") public val editedAt: java.util.Date? = null,
     @Json(name = "expires_at") public val expiresAt: java.util.Date? = null,
     @Json(name = "hidden") public val hidden: kotlin.Boolean? = null,
+    @Json(name = "is_watched") public val isWatched: kotlin.Boolean? = null,
     @Json(name = "text") public val text: kotlin.String? = null,
     @Json(name = "visibility_tag") public val visibilityTag: kotlin.String? = null,
     @Json(name = "current_feed")

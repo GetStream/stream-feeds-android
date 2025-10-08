@@ -22,10 +22,8 @@ import kotlin.collections.*
 import kotlin.io.*
 
 /**  */
-public data class BroadcastSettings(
-    @Json(name = "enabled") public val enabled: kotlin.Boolean,
-    @Json(name = "hls")
-    public val hls: io.getstream.feeds.android.network.models.HLSSettings? = null,
-    @Json(name = "rtmp")
-    public val rtmp: io.getstream.feeds.android.network.models.RTMPSettings? = null,
+public data class IngressSourceResponse(
+    @Json(name = "fps") public val fps: kotlin.Int,
+    @Json(name = "height") public val height: kotlin.Int,
+    @Json(name = "width") public val width: kotlin.Int,
 )

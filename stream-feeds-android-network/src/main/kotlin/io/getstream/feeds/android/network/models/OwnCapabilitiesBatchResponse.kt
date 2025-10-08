@@ -20,18 +20,17 @@ package io.getstream.feeds.android.network.models
 import com.squareup.moshi.Json
 import kotlin.collections.*
 import kotlin.collections.List
+import kotlin.collections.Map
 import kotlin.io.*
 
 /**  */
-public data class HLSEgressConfig(
-    @Json(name = "playlist_url") public val playlistUrl: kotlin.String? = null,
-    @Json(name = "start_unix_nano") public val startUnixNano: kotlin.Int? = null,
-    @Json(name = "qualities")
-    public val qualities:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.Quality>? =
-        emptyList(),
-    @Json(name = "composite_app_settings")
-    public val compositeAppSettings:
-        io.getstream.feeds.android.network.models.CompositeAppSettings? =
-        null,
+public data class OwnCapabilitiesBatchResponse(
+    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "capabilities")
+    public val capabilities:
+        kotlin.collections.Map<
+            kotlin.String,
+            kotlin.collections.List<io.getstream.feeds.android.network.models.FeedOwnCapability>,
+        > =
+        emptyMap(),
 )

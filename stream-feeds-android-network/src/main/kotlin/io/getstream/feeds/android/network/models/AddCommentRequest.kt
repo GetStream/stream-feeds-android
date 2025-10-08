@@ -25,9 +25,9 @@ import kotlin.io.*
 
 /**  */
 public data class AddCommentRequest(
-    @Json(name = "comment") public val comment: kotlin.String,
     @Json(name = "object_id") public val objectId: kotlin.String,
     @Json(name = "object_type") public val objectType: kotlin.String,
+    @Json(name = "comment") public val comment: kotlin.String? = null,
     @Json(name = "create_notification_activity")
     public val createNotificationActivity: kotlin.Boolean? = null,
     @Json(name = "parent_id") public val parentId: kotlin.String? = null,

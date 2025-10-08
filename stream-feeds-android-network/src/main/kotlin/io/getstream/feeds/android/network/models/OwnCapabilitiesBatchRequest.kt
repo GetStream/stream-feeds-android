@@ -19,11 +19,10 @@ package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
 import kotlin.collections.*
+import kotlin.collections.List
 import kotlin.io.*
 
 /**  */
-public data class RingSettings(
-    @Json(name = "auto_cancel_timeout_ms") public val autoCancelTimeoutMs: kotlin.Int,
-    @Json(name = "incoming_call_timeout_ms") public val incomingCallTimeoutMs: kotlin.Int,
-    @Json(name = "missed_call_timeout_ms") public val missedCallTimeoutMs: kotlin.Int,
+public data class OwnCapabilitiesBatchRequest(
+    @Json(name = "feeds") public val feeds: kotlin.collections.List<kotlin.String> = emptyList()
 )

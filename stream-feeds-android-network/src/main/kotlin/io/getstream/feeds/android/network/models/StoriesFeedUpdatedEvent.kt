@@ -19,20 +19,27 @@ package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
 import kotlin.collections.*
+import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.io.*
 
-/** This event is sent when a moderation item is marked as reviewed */
-public data class ModerationMarkReviewedEvent(
+/** Emitted when stories feed is updated. */
+public data class StoriesFeedUpdatedEvent(
     @Json(name = "created_at") public val createdAt: java.util.Date,
+    @Json(name = "fid") public val fid: kotlin.String,
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-    @Json(name = "item")
-    public val item: io.getstream.feeds.android.network.models.ReviewQueueItemResponse,
     @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "feed_visibility") public val feedVisibility: kotlin.String? = null,
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
-    @Json(name = "message")
-    public val message: io.getstream.feeds.android.network.models.MessageResponse? = null,
+    @Json(name = "aggregated_activities")
+    public val aggregatedActivities:
+        kotlin.collections.List<
+            io.getstream.feeds.android.network.models.AggregatedActivityResponse
+        >? =
+        emptyList(),
+    @Json(name = "user")
+    public val user: io.getstream.feeds.android.network.models.UserResponseCommonFields? = null,
 ) :
     io.getstream.feeds.android.network.models.WSEvent,
     io.getstream.feeds.android.network.models.WSClientEvent,

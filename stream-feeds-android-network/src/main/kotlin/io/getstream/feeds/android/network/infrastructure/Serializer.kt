@@ -40,10 +40,6 @@ public object Serializer {
                     .VisibilityAdapter()
             )
             .add(
-                io.getstream.feeds.android.network.models.AudioSettings.DefaultDevice
-                    .DefaultDeviceAdapter()
-            )
-            .add(
                 io.getstream.feeds.android.network.models.AudioSettingsResponse.DefaultDevice
                     .DefaultDeviceAdapter()
             )
@@ -157,20 +153,13 @@ public object Serializer {
                     .PushPreferenceAdapter()
             )
             .add(io.getstream.feeds.android.network.models.FollowResponse.Status.StatusAdapter())
-            .add(io.getstream.feeds.android.network.models.FrameRecordSettings.Mode.ModeAdapter())
             .add(
                 io.getstream.feeds.android.network.models.FrameRecordingSettingsResponse.Mode
                     .ModeAdapter()
             )
             .add(io.getstream.feeds.android.network.models.ImageSize.Crop.CropAdapter())
             .add(io.getstream.feeds.android.network.models.ImageSize.Resize.ResizeAdapter())
-            .add(
-                io.getstream.feeds.android.network.models.IngressAudioEncodingOptions.Channels
-                    .ChannelsAdapter()
-            )
-            .add(io.getstream.feeds.android.network.models.IngressVideoLayer.Codec.CodecAdapter())
             .add(io.getstream.feeds.android.network.models.LLMRule.Action.ActionAdapter())
-            .add(io.getstream.feeds.android.network.models.LayoutSettings.Name.NameAdapter())
             .add(io.getstream.feeds.android.network.models.MessageResponse.Type.TypeAdapter())
             .add(
                 io.getstream.feeds.android.network.models.NoiseCancellationSettings.Mode
@@ -190,23 +179,11 @@ public object Serializer {
                     .FeedsLevelAdapter()
             )
             .add(io.getstream.feeds.android.network.models.QueryCommentsRequest.Sort.SortAdapter())
-            .add(
-                io.getstream.feeds.android.network.models.StoriesConfig.ExpirationBehaviour
-                    .ExpirationBehaviourAdapter()
-            )
+            .add(io.getstream.feeds.android.network.models.RuleBuilderAction.Type.TypeAdapter())
             .add(
                 io.getstream.feeds.android.network.models.SubmitActionRequest.ActionType
                     .ActionTypeAdapter()
             )
-            .add(
-                io.getstream.feeds.android.network.models.TranscriptionSettings.ClosedCaptionMode
-                    .ClosedCaptionModeAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.TranscriptionSettings.Language
-                    .LanguageAdapter()
-            )
-            .add(io.getstream.feeds.android.network.models.TranscriptionSettings.Mode.ModeAdapter())
             .add(
                 io.getstream.feeds.android.network.models.TranscriptionSettingsResponse
                     .ClosedCaptionMode
@@ -239,10 +216,6 @@ public object Serializer {
             .add(
                 io.getstream.feeds.android.network.models.VelocityFilterConfigRule.CascadingAction
                     .CascadingActionAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.VideoSettings.CameraFacing
-                    .CameraFacingAdapter()
             )
             .add(
                 io.getstream.feeds.android.network.models.VideoSettingsResponse.CameraFacing

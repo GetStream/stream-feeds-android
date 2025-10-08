@@ -226,26 +226,26 @@ internal class ActivitiesRepositoryImplTest {
     }
 
     @Test
-    fun `on addReaction, delegate to api`() {
+    fun `on addActivityReaction, delegate to api`() {
         val request = AddReactionRequest("type")
         val apiResult = AddReactionResponse("duration", activityResponse(), feedsReactionResponse())
 
         testDelegation(
-            apiFunction = { feedsApi.addReaction("activityId", request) },
-            repositoryCall = { repository.addReaction("activityId", request) },
+            apiFunction = { feedsApi.addActivityReaction("activityId", request) },
+            repositoryCall = { repository.addActivityReaction("activityId", request) },
             apiResult = apiResult,
             repositoryResult = apiResult.reaction.toModel() to apiResult.activity.toModel(),
         )
     }
 
     @Test
-    fun `on deleteReaction, delegate to api`() {
+    fun `on deleteActivityReaction, delegate to api`() {
         val apiResult =
             DeleteActivityReactionResponse("duration", activityResponse(), feedsReactionResponse())
 
         testDelegation(
             apiFunction = { feedsApi.deleteActivityReaction("activityId", "type") },
-            repositoryCall = { repository.deleteReaction("activityId", "type") },
+            repositoryCall = { repository.deleteActivityReaction("activityId", "type") },
             apiResult = apiResult,
             repositoryResult = apiResult.reaction.toModel() to apiResult.activity.toModel(),
         )

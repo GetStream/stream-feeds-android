@@ -35,4 +35,5 @@ public data class AggregatedActivityResponse(
     public val activities:
         kotlin.collections.List<io.getstream.feeds.android.network.models.ActivityResponse> =
         emptyList(),
+    @Json(name = "is_watched") public val isWatched: kotlin.Boolean? = null,
 )

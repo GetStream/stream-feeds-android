@@ -24,6 +24,8 @@ import kotlin.io.*
 
 /** Block list contains restricted words */
 public data class BlockListResponse(
+    @Json(name = "is_leet_check_enabled") public val isLeetCheckEnabled: kotlin.Boolean,
+    @Json(name = "is_plural_check_enabled") public val isPluralCheckEnabled: kotlin.Boolean,
     @Json(name = "name") public val name: kotlin.String,
     @Json(name = "type") public val type: kotlin.String,
     @Json(name = "words") public val words: kotlin.collections.List<kotlin.String> = emptyList(),

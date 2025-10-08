@@ -19,6 +19,7 @@ package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
 import kotlin.collections.*
+import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.io.*
 
@@ -30,6 +31,8 @@ public data class ActionLogResponse(
     @Json(name = "target_user_id") public val targetUserId: kotlin.String,
     @Json(name = "type") public val type: kotlin.String,
     @Json(name = "user_id") public val userId: kotlin.String,
+    @Json(name = "ai_providers")
+    public val aiProviders: kotlin.collections.List<kotlin.String> = emptyList(),
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
     @Json(name = "review_queue_item")

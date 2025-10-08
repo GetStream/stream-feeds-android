@@ -29,5 +29,7 @@ public data class IngressVideoEncodingResponse(
         kotlin.collections.List<
             io.getstream.feeds.android.network.models.IngressVideoLayerResponse
         > =
-        emptyList()
+        emptyList(),
+    @Json(name = "source")
+    public val source: io.getstream.feeds.android.network.models.IngressSourceResponse,
 )
