@@ -129,17 +129,13 @@ internal class ActivityListStateImpl(
 
     override fun onCommentReactionRemoved(comment: CommentData, reaction: FeedsReactionData) {
         _activities.update { current ->
-            current.updateIf({ it.id == comment.objectId }) { activity ->
-                activity.removeCommentReaction(comment, reaction, currentUserId)
-            }
+            current.removeCommentReaction(comment, reaction, currentUserId)
         }
     }
 
     override fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData) {
         _activities.update { current ->
-            current.updateIf({ it.id == comment.objectId }) { activity ->
-                activity.upsertCommentReaction(comment, reaction, currentUserId)
-            }
+            current.upsertCommentReaction(comment, reaction, currentUserId)
         }
     }
 
