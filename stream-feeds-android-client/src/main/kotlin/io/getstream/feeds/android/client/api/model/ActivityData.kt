@@ -351,3 +351,27 @@ internal inline fun ActivityData.changeReactions(
 
     return update(updated, ownReactions = updatedOwnReactions)
 }
+
+internal fun ActivityData.removeCommentReaction(
+    updated: CommentData,
+    reaction: FeedsReactionData,
+    currentUserId: String,
+): ActivityData =
+    copy(
+        comments =
+            comments.updateIf({ it.id == updated.id }) { comment ->
+                comment.removeReaction(updated, reaction, currentUserId)
+            }
+    )
+
+internal fun ActivityData.upsertCommentReaction(
+    updated: CommentData,
+    reaction: FeedsReactionData,
+    currentUserId: String,
+): ActivityData =
+    copy(
+        comments =
+            comments.updateIf({ it.id == updated.id }) { comment ->
+                comment.upsertReaction(updated, reaction, currentUserId)
+            }
+    )

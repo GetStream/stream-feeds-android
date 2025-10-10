@@ -279,6 +279,38 @@ internal class FeedStateImplTest {
     }
 
     @Test
+    fun `on onCommentReactionRemoved, then remove comment reaction from activity`() = runTest {
+        val reaction = feedsReactionData(commentId = "comment-1")
+        val comment =
+            commentData("comment-1", objectId = "activity-1", ownReactions = listOf(reaction))
+        val activity = activityData("activity-1").copy(comments = listOf(comment))
+        setupInitialState(listOf(activity))
+
+        val updatedComment = commentData("comment-1", objectId = "activity-1", text = "Updated")
+        feedState.onCommentReactionUpserted(updatedComment, reaction)
+        feedState.onCommentReactionRemoved(updatedComment, reaction)
+
+        val expectedActivity =
+            activity.copy(comments = listOf(updatedComment.copy(ownReactions = emptyList())))
+        assertEquals(listOf(expectedActivity), feedState.activities.value)
+    }
+
+    @Test
+    fun `on onCommentReactionUpserted, then upsert comment reaction in activity`() = runTest {
+        val comment = commentData("comment-1", objectId = "activity-1")
+        val activity = activityData("activity-1").copy(comments = listOf(comment))
+        setupInitialState(listOf(activity))
+
+        val reaction = feedsReactionData(commentId = "comment-1")
+        val updatedComment = commentData("comment-1", objectId = "activity-1", text = "Updated")
+        feedState.onCommentReactionUpserted(updatedComment, reaction)
+
+        val expectedActivity =
+            activity.copy(comments = listOf(updatedComment.copy(ownReactions = listOf(reaction))))
+        assertEquals(listOf(expectedActivity), feedState.activities.value)
+    }
+
+    @Test
     fun `on onReactionUpserted, then add reaction to activity`() = runTest {
         val activity = activityData("activity-1")
         setupInitialState(listOf(activity))
