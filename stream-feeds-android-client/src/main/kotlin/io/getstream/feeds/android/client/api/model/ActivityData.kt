@@ -352,6 +352,24 @@ internal inline fun ActivityData.changeReactions(
     return update(updated, ownReactions = updatedOwnReactions)
 }
 
+internal fun List<ActivityData>.removeCommentReaction(
+    comment: CommentData,
+    reaction: FeedsReactionData,
+    currentUserId: String,
+): List<ActivityData> =
+    updateIf({ it.id == comment.objectId }) { activity ->
+        activity.removeCommentReaction(comment, reaction, currentUserId)
+    }
+
+internal fun List<ActivityData>.upsertCommentReaction(
+    comment: CommentData,
+    reaction: FeedsReactionData,
+    currentUserId: String,
+): List<ActivityData> =
+    updateIf({ it.id == comment.objectId }) { activity ->
+        activity.upsertCommentReaction(comment, reaction, currentUserId)
+    }
+
 internal fun ActivityData.removeCommentReaction(
     updated: CommentData,
     reaction: FeedsReactionData,

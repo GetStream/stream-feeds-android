@@ -202,13 +202,14 @@ internal object TestData {
         poll: PollData? = null,
         ownBookmarks: List<BookmarkData> = emptyList(),
         ownReactions: List<FeedsReactionData> = emptyList(),
+        comments: List<CommentData> = emptyList(),
         feeds: List<String> = emptyList(),
     ): ActivityData =
         ActivityData(
             attachments = emptyList(),
             bookmarkCount = 0,
-            commentCount = 0,
-            comments = emptyList(),
+            commentCount = comments.size,
+            comments = comments,
             createdAt = Date(1000),
             currentFeed = null,
             custom = emptyMap(),

@@ -39,6 +39,14 @@ internal class ActivityListEventHandler(private val state: ActivityListStateUpda
             is StateUpdateEvent.BookmarkUpdated -> state.onBookmarkUpserted(event.bookmark)
             is StateUpdateEvent.CommentAdded -> state.onCommentAdded(event.comment)
             is StateUpdateEvent.CommentDeleted -> state.onCommentRemoved(event.comment)
+            is StateUpdateEvent.CommentReactionAdded ->
+                state.onCommentReactionUpserted(event.comment, event.reaction)
+
+            is StateUpdateEvent.CommentReactionDeleted ->
+                state.onCommentReactionRemoved(event.comment, event.reaction)
+
+            is StateUpdateEvent.CommentReactionUpdated ->
+                state.onCommentReactionUpserted(event.comment, event.reaction)
             else -> {
                 // No action needed for other event types
             }

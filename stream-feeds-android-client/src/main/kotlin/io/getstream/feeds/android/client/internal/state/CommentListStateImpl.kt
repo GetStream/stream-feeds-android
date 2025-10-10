@@ -16,13 +16,17 @@
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.CommentData
+import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PaginationResult
+import io.getstream.feeds.android.client.api.model.removeReaction
 import io.getstream.feeds.android.client.api.model.update
+import io.getstream.feeds.android.client.api.model.upsertReaction
 import io.getstream.feeds.android.client.api.state.CommentListState
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
 import io.getstream.feeds.android.client.api.state.query.toComparator
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
+import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -44,7 +48,10 @@ import kotlinx.coroutines.flow.update
  *
  * @property query The query used to fetch the comments.
  */
-internal class CommentListStateImpl(override val query: CommentsQuery) : CommentListMutableState {
+internal class CommentListStateImpl(
+    override val query: CommentsQuery,
+    private val currentUserId: String,
+) : CommentListMutableState {
 
     private val _comments: MutableStateFlow<List<CommentData>> = MutableStateFlow(emptyList())
 
@@ -80,6 +87,22 @@ internal class CommentListStateImpl(override val query: CommentsQuery) : Comment
     override fun onCommentRemoved(commentId: String) {
         _comments.update { current -> current.filter { it.id != commentId } }
     }
+
+    override fun onCommentReactionRemoved(comment: CommentData, reaction: FeedsReactionData) {
+        _comments.update { current ->
+            current.updateIf({ it.id == comment.id }) {
+                it.removeReaction(comment, reaction, currentUserId)
+            }
+        }
+    }
+
+    override fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData) {
+        _comments.update { current ->
+            current.updateIf({ it.id == comment.id }) {
+                it.upsertReaction(comment, reaction, currentUserId)
+            }
+        }
+    }
 }
 
 internal interface CommentListMutableState : CommentListState, CommentListStateUpdates
@@ -109,4 +132,20 @@ internal interface CommentListStateUpdates {
      * @param commentId The ID of the removed comment.
      */
     fun onCommentRemoved(commentId: String)
+
+    /**
+     * Handles the removal of a reaction from a comment.
+     *
+     * @param comment The comment from which the reaction was removed.
+     * @param reaction The reaction that was removed.
+     */
+    fun onCommentReactionRemoved(comment: CommentData, reaction: FeedsReactionData)
+
+    /**
+     * Handles the addition or update of a reaction in a comment.
+     *
+     * @param comment The comment to which the reaction was added or updated.
+     * @param reaction The reaction that was added or updated.
+     */
+    fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData)
 }

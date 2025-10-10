@@ -23,6 +23,7 @@ import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsQueryConfig
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsSort
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
+import io.getstream.feeds.android.client.internal.utils.upsert
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -71,6 +72,10 @@ internal class CommentReactionListStateImpl(override val query: CommentReactions
     override fun onReactionRemoved(reaction: FeedsReactionData) {
         _reactions.update { current -> current.filter { it.id != reaction.id } }
     }
+
+    override fun onReactionUpserted(reaction: FeedsReactionData) {
+        _reactions.update { current -> current.upsert(reaction, FeedsReactionData::id) }
+    }
 }
 
 internal interface CommentReactionListMutableState :
@@ -95,4 +100,11 @@ internal interface CommentReactionListStateUpdates {
      * @param reaction The reaction that was removed.
      */
     fun onReactionRemoved(reaction: FeedsReactionData)
+
+    /**
+     * Handles the addition or update of a reaction to the comment.
+     *
+     * @param reaction The reaction that was added or updated.
+     */
+    fun onReactionUpserted(reaction: FeedsReactionData)
 }

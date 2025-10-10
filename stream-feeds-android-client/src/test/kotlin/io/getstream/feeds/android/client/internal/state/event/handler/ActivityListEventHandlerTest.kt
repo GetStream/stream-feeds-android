@@ -17,118 +17,136 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.internal.state.ActivityListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionAdded
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkAdded
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentAdded
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionAdded
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpdated
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
-import io.mockk.called
+import io.mockk.MockKVerificationScope
 import io.mockk.mockk
-import io.mockk.verify
-import org.junit.Test
+import org.junit.runners.Parameterized
 
-internal class ActivityListEventHandlerTest {
-    private val state: ActivityListStateUpdates = mockk(relaxed = true)
+internal class ActivityListEventHandlerTest(
+    testName: String,
+    event: StateUpdateEvent,
+    verifyBlock: MockKVerificationScope.(ActivityListStateUpdates) -> Unit,
+) : BaseEventHandlerTest<ActivityListStateUpdates>(testName, event, verifyBlock) {
 
-    private val handler = ActivityListEventHandler(state)
+    override val state: ActivityListStateUpdates = mockk(relaxed = true)
+    override val handler = ActivityListEventHandler(state)
 
-    @Test
-    fun `on ActivityDeleted, then call onActivityRemoved`() {
-        val event = StateUpdateEvent.ActivityDeleted("feed-1", "activity-1")
-
-        handler.onEvent(event)
-
-        verify { state.onActivityRemoved("activity-1") }
-    }
-
-    @Test
-    fun `on ActivityReactionAdded, then call onReactionUpserted`() {
-        val activity = activityData("activity-1")
-        val reaction = feedsReactionData("activity-1")
-        val event = StateUpdateEvent.ActivityReactionAdded("feed-1", activity, reaction)
-
-        handler.onEvent(event)
-
-        verify { state.onReactionUpserted(reaction, activity) }
-    }
-
-    @Test
-    fun `on ActivityReactionUpdated, then call onReactionUpserted`() {
-        val activity = activityData("activity-1")
-        val reaction = feedsReactionData("activity-1")
-        val event = StateUpdateEvent.ActivityReactionUpdated("feed-1", activity, reaction)
-
-        handler.onEvent(event)
-
-        verify { state.onReactionUpserted(reaction, activity) }
-    }
-
-    @Test
-    fun `on ActivityReactionDeleted, then call onReactionRemoved`() {
-        val activity = activityData("activity-1")
-        val reaction = feedsReactionData("activity-1")
-        val event = StateUpdateEvent.ActivityReactionDeleted("feed-1", activity, reaction)
-
-        handler.onEvent(event)
-
-        verify { state.onReactionRemoved(reaction, activity) }
-    }
-
-    @Test
-    fun `on BookmarkAdded, then call onBookmarkUpserted`() {
-        val bookmark = bookmarkData()
-        val event = StateUpdateEvent.BookmarkAdded(bookmark)
-
-        handler.onEvent(event)
-
-        verify { state.onBookmarkUpserted(bookmark) }
-    }
-
-    @Test
-    fun `on BookmarkUpdated, then call onBookmarkUpserted`() {
-        val bookmark = bookmarkData()
-        val event = StateUpdateEvent.BookmarkUpdated(bookmark)
-
-        handler.onEvent(event)
-
-        verify { state.onBookmarkUpserted(bookmark) }
-    }
-
-    @Test
-    fun `on BookmarkDeleted, then call onBookmarkRemoved`() {
-        val bookmark = bookmarkData()
-        val event = StateUpdateEvent.BookmarkDeleted(bookmark)
-
-        handler.onEvent(event)
-
-        verify { state.onBookmarkRemoved(bookmark) }
-    }
-
-    @Test
-    fun `on CommentAdded, then call onCommentAdded`() {
-        val comment = commentData()
-        val event = StateUpdateEvent.CommentAdded("feed-1", comment)
-
-        handler.onEvent(event)
-
-        verify { state.onCommentAdded(comment) }
-    }
-
-    @Test
-    fun `on CommentDeleted, then call onCommentRemoved`() {
-        val comment = commentData()
-        val event = StateUpdateEvent.CommentDeleted("feed-1", comment)
-
-        handler.onEvent(event)
-
-        verify { state.onCommentRemoved(comment) }
-    }
-
-    @Test
-    fun `on unknown event, then do nothing`() {
-        val unknownEvent = StateUpdateEvent.FeedDeleted("feed-id")
-
-        handler.onEvent(unknownEvent)
-
-        verify { state wasNot called }
+    companion object {
+        @JvmStatic
+        @Parameterized.Parameters(name = "{0}")
+        fun data(): List<Array<Any>> =
+            listOf(
+                testParams<ActivityListStateUpdates>(
+                    name = "ActivityDeleted",
+                    event = ActivityDeleted("feed-1", "activity-1"),
+                    verifyBlock = { state -> state.onActivityRemoved("activity-1") },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "ActivityReactionAdded",
+                    event =
+                        ActivityReactionAdded(
+                            "feed-1",
+                            activityData("activity-1"),
+                            feedsReactionData("activity-1"),
+                        ),
+                    verifyBlock = { state ->
+                        state.onReactionUpserted(
+                            feedsReactionData("activity-1"),
+                            activityData("activity-1"),
+                        )
+                    },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "ActivityReactionDeleted",
+                    event =
+                        ActivityReactionDeleted(
+                            "feed-1",
+                            activityData("activity-1"),
+                            feedsReactionData("activity-1"),
+                        ),
+                    verifyBlock = { state ->
+                        state.onReactionRemoved(
+                            feedsReactionData("activity-1"),
+                            activityData("activity-1"),
+                        )
+                    },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "ActivityReactionUpdated",
+                    event =
+                        ActivityReactionUpdated(
+                            "feed-1",
+                            activityData("activity-1"),
+                            feedsReactionData("activity-1"),
+                        ),
+                    verifyBlock = { state ->
+                        state.onReactionUpserted(
+                            feedsReactionData("activity-1"),
+                            activityData("activity-1"),
+                        )
+                    },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "BookmarkAdded",
+                    event = BookmarkAdded(bookmarkData()),
+                    verifyBlock = { state -> state.onBookmarkUpserted(bookmarkData()) },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "BookmarkDeleted",
+                    event = BookmarkDeleted(bookmarkData()),
+                    verifyBlock = { state -> state.onBookmarkRemoved(bookmarkData()) },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "BookmarkUpdated",
+                    event = BookmarkUpdated(bookmarkData()),
+                    verifyBlock = { state -> state.onBookmarkUpserted(bookmarkData()) },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "CommentAdded",
+                    event = CommentAdded("feed-1", commentData()),
+                    verifyBlock = { state -> state.onCommentAdded(commentData()) },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "CommentDeleted",
+                    event = CommentDeleted("feed-1", commentData()),
+                    verifyBlock = { state -> state.onCommentRemoved(commentData()) },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "CommentReactionAdded",
+                    event = CommentReactionAdded("feed-1", commentData(), feedsReactionData()),
+                    verifyBlock = { state ->
+                        state.onCommentReactionUpserted(commentData(), feedsReactionData())
+                    },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "CommentReactionDeleted",
+                    event = CommentReactionDeleted("feed-1", commentData(), feedsReactionData()),
+                    verifyBlock = { state ->
+                        state.onCommentReactionRemoved(commentData(), feedsReactionData())
+                    },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "CommentReactionUpdated",
+                    event = CommentReactionUpdated("feed-1", commentData(), feedsReactionData()),
+                    verifyBlock = { state ->
+                        state.onCommentReactionUpserted(commentData(), feedsReactionData())
+                    },
+                ),
+            )
     }
 }

@@ -62,6 +62,18 @@ internal class CommentReactionListStateImplTest {
         assertEquals(initialReactions.drop(1), remainingReactions)
     }
 
+    @Test
+    fun `on onReactionUpserted for new reaction, then add reaction`() = runTest {
+        val initialReaction = feedsReactionData(commentId = "comment-1", userId = "user-1")
+        val paginationResult = defaultPaginationResult(listOf(initialReaction))
+        commentReactionListState.onQueryMoreReactions(paginationResult, queryConfig)
+
+        val newReaction = feedsReactionData(commentId = "comment-1", userId = "user-2")
+        commentReactionListState.onReactionUpserted(newReaction)
+
+        assertEquals(listOf(initialReaction, newReaction), commentReactionListState.reactions.value)
+    }
+
     companion object {
         private val queryConfig =
             CommentReactionsQueryConfig(filter = null, sort = CommentReactionsSort.Default)
