@@ -28,4 +28,5 @@ public data class ActivityFeedbackRequest(
     @Json(name = "reason") public val reason: kotlin.String? = null,
     @Json(name = "report") public val report: kotlin.Boolean? = null,
     @Json(name = "show_less") public val showLess: kotlin.Boolean? = null,
+    @Json(name = "show_more") public val showMore: kotlin.Boolean? = null,
 )

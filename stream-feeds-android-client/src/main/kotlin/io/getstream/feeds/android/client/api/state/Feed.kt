@@ -386,7 +386,7 @@ public interface Feed {
      * @return A [Result] containing the added [FeedsReactionData] if successful, or an error if the
      *   operation fails.
      */
-    public suspend fun addReaction(
+    public suspend fun addActivityReaction(
         activityId: String,
         request: AddReactionRequest,
     ): Result<FeedsReactionData>
@@ -399,7 +399,10 @@ public interface Feed {
      * @return A [Result] containing the deleted [FeedsReactionData] if successful, or an error if
      *   the operation fails.
      */
-    public suspend fun deleteReaction(activityId: String, type: String): Result<FeedsReactionData>
+    public suspend fun deleteActivityReaction(
+        activityId: String,
+        type: String,
+    ): Result<FeedsReactionData>
 
     /**
      * Adds a reaction to a comment.

@@ -85,6 +85,8 @@ import io.getstream.feeds.android.network.models.ListDevicesResponse
 import io.getstream.feeds.android.network.models.MarkActivityRequest
 import io.getstream.feeds.android.network.models.MuteRequest
 import io.getstream.feeds.android.network.models.MuteResponse
+import io.getstream.feeds.android.network.models.OwnCapabilitiesBatchRequest
+import io.getstream.feeds.android.network.models.OwnCapabilitiesBatchResponse
 import io.getstream.feeds.android.network.models.PinActivityRequest
 import io.getstream.feeds.android.network.models.PinActivityResponse
 import io.getstream.feeds.android.network.models.PollOptionResponse
@@ -300,12 +302,12 @@ internal class FeedsSingleFlightApi(
             delegate.deletePollVote(activityId, pollId, voteId, userId)
         }
 
-    override suspend fun addReaction(
+    override suspend fun addActivityReaction(
         activityId: String,
         addReactionRequest: AddReactionRequest,
     ): AddReactionResponse =
-        singleFlight("addReaction", activityId, addReactionRequest) {
-            delegate.addReaction(activityId, addReactionRequest)
+        singleFlight("addActivityReaction", activityId, addReactionRequest) {
+            delegate.addActivityReaction(activityId, addReactionRequest)
         }
 
     override suspend fun queryActivityReactions(
@@ -653,6 +655,14 @@ internal class FeedsSingleFlightApi(
     ): CreateFeedsBatchResponse =
         singleFlight("createFeedsBatch", createFeedsBatchRequest) {
             delegate.createFeedsBatch(createFeedsBatchRequest)
+        }
+
+    override suspend fun ownCapabilitiesBatch(
+        connectionId: String?,
+        ownCapabilitiesBatchRequest: OwnCapabilitiesBatchRequest,
+    ): OwnCapabilitiesBatchResponse =
+        singleFlight("ownCapabilitiesBatch", connectionId, ownCapabilitiesBatchRequest) {
+            delegate.ownCapabilitiesBatch(connectionId, ownCapabilitiesBatchRequest)
         }
 
     override suspend fun queryFeeds(

@@ -201,7 +201,7 @@ public interface FeedsApi {
 
     /** Add reaction Adds a reaction to an activity */
     @POST("/api/v2/feeds/activities/{activity_id}/reactions")
-    public suspend fun addReaction(
+    public suspend fun addActivityReaction(
         @Path("activity_id") activityId: kotlin.String,
         @Body addReactionRequest: io.getstream.feeds.android.network.models.AddReactionRequest,
     ): io.getstream.feeds.android.network.models.AddReactionResponse
@@ -620,6 +620,18 @@ public interface FeedsApi {
         @Body
         createFeedsBatchRequest: io.getstream.feeds.android.network.models.CreateFeedsBatchRequest
     ): io.getstream.feeds.android.network.models.CreateFeedsBatchResponse
+
+    /**
+     * Get capabilities for multiple feeds Retrieves capabilities for multiple feeds in a single
+     * request. Useful for batch processing when activities are added to feeds.
+     */
+    @POST("/api/v2/feeds/feeds/own_capabilities/batch")
+    public suspend fun ownCapabilitiesBatch(
+        @Query("connection_id") connectionId: kotlin.String? = null,
+        @Body
+        ownCapabilitiesBatchRequest:
+            io.getstream.feeds.android.network.models.OwnCapabilitiesBatchRequest,
+    ): io.getstream.feeds.android.network.models.OwnCapabilitiesBatchResponse
 
     /** Query feeds Query feeds with filter query */
     @POST("/api/v2/feeds/feeds/query")

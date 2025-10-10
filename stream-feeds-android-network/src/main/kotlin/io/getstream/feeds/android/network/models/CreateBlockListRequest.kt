@@ -31,6 +31,8 @@ import kotlin.io.*
 public data class CreateBlockListRequest(
     @Json(name = "name") public val name: kotlin.String,
     @Json(name = "words") public val words: kotlin.collections.List<kotlin.String> = emptyList(),
+    @Json(name = "is_leet_check_enabled") public val isLeetCheckEnabled: kotlin.Boolean? = null,
+    @Json(name = "is_plural_check_enabled") public val isPluralCheckEnabled: kotlin.Boolean? = null,
     @Json(name = "team") public val team: kotlin.String? = null,
     @Json(name = "type") public val type: Type? = null,
 ) {

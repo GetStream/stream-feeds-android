@@ -22,12 +22,6 @@ import kotlin.collections.*
 import kotlin.io.*
 
 /**  */
-public data class RTMPEgressConfig(
-    @Json(name = "rtmp_location") public val rtmpLocation: kotlin.String? = null,
-    @Json(name = "composite_app_settings")
-    public val compositeAppSettings:
-        io.getstream.feeds.android.network.models.CompositeAppSettings? =
-        null,
-    @Json(name = "quality")
-    public val quality: io.getstream.feeds.android.network.models.Quality? = null,
+public data class DeliveryReceiptsResponse(
+    @Json(name = "enabled") public val enabled: kotlin.Boolean
 )

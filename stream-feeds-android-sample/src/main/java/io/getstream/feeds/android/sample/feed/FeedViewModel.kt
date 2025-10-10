@@ -124,14 +124,14 @@ constructor(private val application: Application, loginManager: LoginManager) : 
             // Add reaction
             viewState.withFirstContent(viewModelScope) {
                 val request = AddReactionRequest(reaction.value, createNotificationActivity = true)
-                timeline.addReaction(activity.id, request).notifyOnFailure {
+                timeline.addActivityReaction(activity.id, request).notifyOnFailure {
                     "Failed to add reaction"
                 }
             }
         } else {
             // Remove reaction
             viewState.withFirstContent(viewModelScope) {
-                timeline.deleteReaction(activity.id, reaction.value).notifyOnFailure {
+                timeline.deleteActivityReaction(activity.id, reaction.value).notifyOnFailure {
                     "Failed to delete reaction"
                 }
             }

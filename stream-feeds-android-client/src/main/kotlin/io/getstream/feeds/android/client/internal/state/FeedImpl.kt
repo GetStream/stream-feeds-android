@@ -370,12 +370,12 @@ internal class FeedImpl(
         }
     }
 
-    override suspend fun addReaction(
+    override suspend fun addActivityReaction(
         activityId: String,
         request: AddReactionRequest,
     ): Result<FeedsReactionData> {
         return activitiesRepository
-            .addReaction(activityId, request)
+            .addActivityReaction(activityId, request)
             .onSuccess { (reaction, activity) ->
                 subscriptionManager.onEvent(
                     StateUpdateEvent.ActivityReactionAdded(fid.rawValue, activity, reaction)
@@ -384,12 +384,12 @@ internal class FeedImpl(
             .map { it.first }
     }
 
-    override suspend fun deleteReaction(
+    override suspend fun deleteActivityReaction(
         activityId: String,
         type: String,
     ): Result<FeedsReactionData> {
         return activitiesRepository
-            .deleteReaction(activityId = activityId, type = type)
+            .deleteActivityReaction(activityId = activityId, type = type)
             .onSuccess { (reaction, activity) ->
                 subscriptionManager.onEvent(
                     StateUpdateEvent.ActivityReactionDeleted(fid.rawValue, activity, reaction)

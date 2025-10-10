@@ -138,6 +138,8 @@ public class WSEventAdapter : JsonAdapter<WSEvent>() {
                 io.getstream.feeds.android.network.models.PollVoteChangedFeedEvent::class.java
             "feeds.poll.vote_removed" ->
                 io.getstream.feeds.android.network.models.PollVoteRemovedFeedEvent::class.java
+            "feeds.stories_feed.updated" ->
+                io.getstream.feeds.android.network.models.StoriesFeedUpdatedEvent::class.java
             "health.check" -> io.getstream.feeds.android.network.models.HealthCheckEvent::class.java
             "moderation.custom_action" ->
                 io.getstream.feeds.android.network.models.ModerationCustomActionEvent::class.java

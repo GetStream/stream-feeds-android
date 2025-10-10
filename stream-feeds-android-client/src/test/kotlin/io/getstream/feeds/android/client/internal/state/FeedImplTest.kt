@@ -612,7 +612,7 @@ internal class FeedImplTest {
     }
 
     @Test
-    fun `on addReaction, delegate to repository and fire event`() = runTest {
+    fun `on addActivityReaction, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val activityId = "activity-1"
         val request = AddReactionRequest(type = "like")
@@ -623,10 +623,10 @@ internal class FeedImplTest {
         setupInitialState(feed, activities = listOf(activity))
 
         val updatedActivity = activity.copy(text = "Updated activity")
-        coEvery { activitiesRepository.addReaction(activityId, request) } returns
+        coEvery { activitiesRepository.addActivityReaction(activityId, request) } returns
             Result.success(reaction to updatedActivity)
 
-        val result = feed.addReaction(activityId, request)
+        val result = feed.addActivityReaction(activityId, request)
 
         val expected = updatedActivity.copy(ownReactions = listOf(reaction))
         assertEquals(reaction, result.getOrNull())
@@ -639,7 +639,7 @@ internal class FeedImplTest {
     }
 
     @Test
-    fun `on deleteReaction, delegate to repository and fire event`() = runTest {
+    fun `on deleteActivityReaction, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val activityId = "activity-1"
         val type = "like"
@@ -656,10 +656,10 @@ internal class FeedImplTest {
         setupInitialState(feed, activities = listOf(activityWithReaction))
 
         val updatedActivity = activityData(activityId, text = "Updated activity")
-        coEvery { activitiesRepository.deleteReaction(activityId, type) } returns
+        coEvery { activitiesRepository.deleteActivityReaction(activityId, type) } returns
             Result.success(reaction to updatedActivity)
 
-        val result = feed.deleteReaction(activityId, type)
+        val result = feed.deleteActivityReaction(activityId, type)
 
         val expected = updatedActivity.copy(ownReactions = emptyList())
         assertEquals(reaction, result.getOrNull())

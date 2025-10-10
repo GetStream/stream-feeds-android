@@ -30,6 +30,7 @@ import kotlin.io.*
 public data class AudioSettingsResponse(
     @Json(name = "access_request_enabled") public val accessRequestEnabled: kotlin.Boolean,
     @Json(name = "default_device") public val defaultDevice: DefaultDevice,
+    @Json(name = "hifi_audio_enabled") public val hifiAudioEnabled: kotlin.Boolean,
     @Json(name = "mic_default_on") public val micDefaultOn: kotlin.Boolean,
     @Json(name = "opus_dtx_enabled") public val opusDtxEnabled: kotlin.Boolean,
     @Json(name = "redundant_coding_enabled") public val redundantCodingEnabled: kotlin.Boolean,

@@ -25,6 +25,8 @@ import io.getstream.feeds.android.network.models.AddBookmarkRequest
 import io.getstream.feeds.android.network.models.AddBookmarkResponse
 import io.getstream.feeds.android.network.models.AddCommentRequest
 import io.getstream.feeds.android.network.models.AddCommentResponse
+import io.getstream.feeds.android.network.models.AddReactionRequest
+import io.getstream.feeds.android.network.models.AddReactionResponse
 import io.getstream.feeds.android.network.models.AppResponseFields
 import io.getstream.feeds.android.network.models.CreateDeviceRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
@@ -33,6 +35,8 @@ import io.getstream.feeds.android.network.models.FileUploadConfig
 import io.getstream.feeds.android.network.models.GetApplicationResponse
 import io.getstream.feeds.android.network.models.GetOGResponse
 import io.getstream.feeds.android.network.models.ListDevicesResponse
+import io.getstream.feeds.android.network.models.OwnCapabilitiesBatchRequest
+import io.getstream.feeds.android.network.models.OwnCapabilitiesBatchResponse
 import io.getstream.feeds.android.network.models.QueryActivitiesRequest
 import io.getstream.feeds.android.network.models.QueryActivitiesResponse
 import io.getstream.feeds.android.network.models.Response
@@ -71,6 +75,8 @@ internal class FeedsSingleFlightApiTest(private val testCase: SingleFlightTestCa
                         name = "Test App",
                         fileUploadConfig = FileUploadConfig(sizeLimit = 0),
                         imageUploadConfig = FileUploadConfig(sizeLimit = 0),
+                        region = "region",
+                        shard = "shard",
                     ),
             )
 
@@ -86,6 +92,13 @@ internal class FeedsSingleFlightApiTest(private val testCase: SingleFlightTestCa
             AddBookmarkResponse(duration = "100ms", bookmark = TestData.bookmarkResponse())
         private val testAddCommentResponse =
             AddCommentResponse(duration = "100ms", comment = TestData.commentResponse())
+        private val testAddReactionResponse =
+            AddReactionResponse(
+                duration = "100ms",
+                activity = TestData.activityResponse(),
+                reaction = TestData.feedsReactionResponse(),
+            )
+        private val testOwnCapabilitiesBatchResponse = OwnCapabilitiesBatchResponse("100ms")
 
         @JvmStatic
         @Parameterized.Parameters(name = "{0}")
@@ -174,6 +187,16 @@ internal class FeedsSingleFlightApiTest(private val testCase: SingleFlightTestCa
                 ),
                 arrayOf(
                     SingleFlightTestCase(
+                        testName = "addActivityReaction",
+                        expectedKeyPrefix = "addActivityReaction-activity123-",
+                        call = {
+                            it.addActivityReaction("activity123", AddReactionRequest(type = "like"))
+                        },
+                        apiResult = testAddReactionResponse,
+                    )
+                ),
+                arrayOf(
+                    SingleFlightTestCase(
                         testName = "addComment",
                         expectedKeyPrefix = "addComment-",
                         call = {
@@ -186,6 +209,16 @@ internal class FeedsSingleFlightApiTest(private val testCase: SingleFlightTestCa
                             )
                         },
                         apiResult = testAddCommentResponse,
+                    )
+                ),
+                arrayOf(
+                    SingleFlightTestCase(
+                        testName = "ownCapabilitiesBatch",
+                        expectedKeyPrefix = "ownCapabilitiesBatch-connection123-",
+                        call = {
+                            it.ownCapabilitiesBatch("connection123", OwnCapabilitiesBatchRequest())
+                        },
+                        apiResult = testOwnCapabilitiesBatchResponse,
                     )
                 ),
             )

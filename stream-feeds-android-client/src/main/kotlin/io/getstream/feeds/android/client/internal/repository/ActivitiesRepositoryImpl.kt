@@ -131,15 +131,15 @@ internal class ActivitiesRepositoryImpl(
         )
     }
 
-    override suspend fun addReaction(
+    override suspend fun addActivityReaction(
         activityId: String,
         request: AddReactionRequest,
     ): Result<Pair<FeedsReactionData, ActivityData>> = runSafely {
-        val response = api.addReaction(activityId, request)
+        val response = api.addActivityReaction(activityId, request)
         response.reaction.toModel() to response.activity.toModel()
     }
 
-    override suspend fun deleteReaction(
+    override suspend fun deleteActivityReaction(
         activityId: String,
         type: String,
     ): Result<Pair<FeedsReactionData, ActivityData>> = runSafely {

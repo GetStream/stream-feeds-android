@@ -149,7 +149,7 @@ internal interface ActivitiesRepository {
      * @param request The request containing the reaction data.
      * @return A [Result] containing the [FeedsReactionData] or an error.
      */
-    suspend fun addReaction(
+    suspend fun addActivityReaction(
         activityId: String,
         request: AddReactionRequest,
     ): Result<Pair<FeedsReactionData, ActivityData>>
@@ -161,7 +161,7 @@ internal interface ActivitiesRepository {
      * @param type The type of the reaction to delete.
      * @return A [Result] containing the deleted [FeedsReactionData] or an error.
      */
-    suspend fun deleteReaction(
+    suspend fun deleteActivityReaction(
         activityId: String,
         type: String,
     ): Result<Pair<FeedsReactionData, ActivityData>>

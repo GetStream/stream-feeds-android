@@ -22,8 +22,4 @@ import kotlin.collections.*
 import kotlin.io.*
 
 /**  */
-public data class RTMPLocation(
-    @Json(name = "name") public val name: kotlin.String,
-    @Json(name = "stream_key") public val streamKey: kotlin.String,
-    @Json(name = "stream_url") public val streamUrl: kotlin.String,
-)
+public data class DeliveryReceipts(@Json(name = "enabled") public val enabled: kotlin.Boolean)
