@@ -79,11 +79,11 @@ internal class FeedImplTest {
     private val pollsRepository: PollsRepository = mockk(relaxed = true)
     private val feedWatchHandler: FeedWatchHandler = mockk(relaxed = true)
     private val stateEventListener: StateUpdateEventListener = mockk(relaxed = true)
+    private val fid = FeedId("group:id")
 
     @Test
     fun `on getOrCreate with watch enabled, then call feedWatchHandler`() = runTest {
         val feed = createFeed(watch = true)
-        val feedId = FeedId("group:id")
         val testFeedData = feedData()
         val feedInfo = getOrCreateInfo(testFeedData)
         coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
@@ -92,7 +92,7 @@ internal class FeedImplTest {
 
         assertEquals(feedInfo.feed, result.getOrNull())
         assertEquals(feedInfo.feed, feed.state.feed.value)
-        verify { feedWatchHandler.onStartWatching(feedId) }
+        verify { feedWatchHandler.onStartWatching(fid) }
     }
 
     @Test
@@ -622,22 +622,19 @@ internal class FeedImplTest {
         // Set up initial state with activity
         setupInitialState(feed, activities = listOf(activity))
 
+        val updatedActivity = activity.copy(text = "Updated activity")
         coEvery { activitiesRepository.addReaction(activityId, request) } returns
-            Result.success(reaction)
+            Result.success(reaction to updatedActivity)
 
         val result = feed.addReaction(activityId, request)
 
-        val updated =
-            activity.copy(
-                ownReactions = activity.ownReactions + reaction,
-                latestReactions = activity.latestReactions + reaction,
-                reactionGroups = mapOf("like" to reactionGroupData(count = 1)),
-                reactionCount = 1,
-            )
+        val expected = updatedActivity.copy(ownReactions = listOf(reaction))
         assertEquals(reaction, result.getOrNull())
-        assertEquals(listOf(updated), feed.state.activities.value)
+        assertEquals(listOf(expected), feed.state.activities.value)
         verify {
-            stateEventListener.onEvent(StateUpdateEvent.ActivityReactionAdded("group:id", reaction))
+            stateEventListener.onEvent(
+                StateUpdateEvent.ActivityReactionAdded("group:id", updatedActivity, reaction)
+            )
         }
     }
 
@@ -647,8 +644,6 @@ internal class FeedImplTest {
         val activityId = "activity-1"
         val type = "like"
         val reaction = feedsReactionData(activityId = activityId, type = type, userId = "user")
-        coEvery { activitiesRepository.deleteReaction(activityId, type) } returns
-            Result.success(reaction)
 
         // Set up initial state with activity that has a reaction
         val activityWithReaction =
@@ -660,20 +655,18 @@ internal class FeedImplTest {
                 )
         setupInitialState(feed, activities = listOf(activityWithReaction))
 
+        val updatedActivity = activityData(activityId, text = "Updated activity")
+        coEvery { activitiesRepository.deleteReaction(activityId, type) } returns
+            Result.success(reaction to updatedActivity)
+
         val result = feed.deleteReaction(activityId, type)
 
-        val updated =
-            activityWithReaction.copy(
-                ownReactions = emptyList(),
-                latestReactions = emptyList(),
-                reactionGroups = emptyMap(),
-                reactionCount = 0,
-            )
+        val expected = updatedActivity.copy(ownReactions = emptyList())
         assertEquals(reaction, result.getOrNull())
-        assertEquals(listOf(updated), feed.state.activities.value)
+        assertEquals(listOf(expected), feed.state.activities.value)
         verify {
             stateEventListener.onEvent(
-                StateUpdateEvent.ActivityReactionDeleted("group:id", reaction)
+                StateUpdateEvent.ActivityReactionDeleted("group:id", updatedActivity, reaction)
             )
         }
     }
@@ -693,7 +686,9 @@ internal class FeedImplTest {
 
         assertEquals(reaction, result.getOrNull())
         verify {
-            stateEventListener.onEvent(StateUpdateEvent.CommentReactionAdded(comment, reaction))
+            stateEventListener.onEvent(
+                StateUpdateEvent.CommentReactionAdded(fid.rawValue, comment, reaction)
+            )
         }
     }
 
@@ -712,7 +707,9 @@ internal class FeedImplTest {
 
         assertEquals(reaction, result.getOrNull())
         verify {
-            stateEventListener.onEvent(StateUpdateEvent.CommentReactionDeleted(comment, reaction))
+            stateEventListener.onEvent(
+                StateUpdateEvent.CommentReactionDeleted(fid.rawValue, comment, reaction)
+            )
         }
     }
 
@@ -746,7 +743,7 @@ internal class FeedImplTest {
 
     private fun createFeed(watch: Boolean = false) =
         FeedImpl(
-            query = FeedQuery(group = "group", id = "id", watch = watch),
+            query = FeedQuery(fid, watch = watch),
             currentUserId = "user",
             activitiesRepository = activitiesRepository,
             bookmarksRepository = bookmarksRepository,

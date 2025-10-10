@@ -25,8 +25,15 @@ internal class ActivityListEventHandler(private val state: ActivityListStateUpda
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
             is StateUpdateEvent.ActivityDeleted -> state.onActivityRemoved(event.activityId)
-            is StateUpdateEvent.ActivityReactionAdded -> state.onReactionAdded(event.reaction)
-            is StateUpdateEvent.ActivityReactionDeleted -> state.onReactionRemoved(event.reaction)
+            is StateUpdateEvent.ActivityReactionAdded ->
+                state.onReactionUpserted(event.reaction, event.activity)
+
+            is StateUpdateEvent.ActivityReactionDeleted ->
+                state.onReactionRemoved(event.reaction, event.activity)
+
+            is StateUpdateEvent.ActivityReactionUpdated ->
+                state.onReactionUpserted(event.reaction, event.activity)
+
             is StateUpdateEvent.BookmarkAdded -> state.onBookmarkUpserted(event.bookmark)
             is StateUpdateEvent.BookmarkDeleted -> state.onBookmarkRemoved(event.bookmark)
             is StateUpdateEvent.BookmarkUpdated -> state.onBookmarkUpserted(event.bookmark)

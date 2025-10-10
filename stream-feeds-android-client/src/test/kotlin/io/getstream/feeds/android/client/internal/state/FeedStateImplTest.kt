@@ -103,7 +103,7 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on activityAdded, then add activity`() = runTest {
+    fun `on onActivityAdded, then add activity`() = runTest {
         val initialActivity = activityData()
         setupInitialState(listOf(initialActivity))
 
@@ -115,7 +115,7 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on activityUpdated, then update activity`() = runTest {
+    fun `on onActivityUpdated, then update activity`() = runTest {
         setupInitialState(listOf(activityData("activity-1")))
 
         val updatedActivity = activityData("activity-1", text = "Updated activity")
@@ -222,7 +222,7 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on activityRemoved, then remove activity`() = runTest {
+    fun `on onActivityRemoved, then remove activity`() = runTest {
         val initialActivities = listOf(activityData("activity-1"), activityData("activity-2"))
         setupInitialState(initialActivities)
 
@@ -244,7 +244,7 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on bookmarkRemoved, then remove bookmark from activity`() = runTest {
+    fun `on onBookmarkRemoved, then remove bookmark from activity`() = runTest {
         setupInitialState(listOf(activityData("activity-1")))
 
         val bookmark = bookmarkData("activity-1", currentUserId)
@@ -256,7 +256,7 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on commentAdded, then add comment to activity`() = runTest {
+    fun `on onCommentAdded, then add comment to activity`() = runTest {
         setupInitialState(listOf(activityData("activity-1")))
 
         val comment = commentData("comment-1", objectId = "activity-1")
@@ -267,7 +267,7 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on commentRemoved, then remove comment from activity`() = runTest {
+    fun `on onCommentRemoved, then remove comment from activity`() = runTest {
         setupInitialState(listOf(activityData("activity-1")))
 
         val comment = commentData("comment-1", objectId = "activity-1")
@@ -279,30 +279,65 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on reactionAdded, then add reaction to activity`() = runTest {
-        setupInitialState(listOf(activityData("activity-1")))
+    fun `on onCommentReactionRemoved, then remove comment reaction from activity`() = runTest {
+        val reaction = feedsReactionData(commentId = "comment-1")
+        val comment =
+            commentData("comment-1", objectId = "activity-1", ownReactions = listOf(reaction))
+        val activity = activityData("activity-1").copy(comments = listOf(comment))
+        setupInitialState(listOf(activity))
 
-        val reaction = feedsReactionData("activity-1", currentUserId)
-        feedState.onReactionAdded(reaction)
+        val updatedComment = commentData("comment-1", objectId = "activity-1", text = "Updated")
+        feedState.onCommentReactionUpserted(updatedComment, reaction)
+        feedState.onCommentReactionRemoved(updatedComment, reaction)
 
-        val activityWithReaction = feedState.activities.value.find { it.id == "activity-1" }
-        assertEquals(1, activityWithReaction?.reactionCount)
+        val expectedActivity =
+            activity.copy(comments = listOf(updatedComment.copy(ownReactions = emptyList())))
+        assertEquals(listOf(expectedActivity), feedState.activities.value)
     }
 
     @Test
-    fun `on reactionRemoved, then remove reaction from activity`() = runTest {
-        setupInitialState(listOf(activityData("activity-1")))
+    fun `on onCommentReactionUpserted, then upsert comment reaction in activity`() = runTest {
+        val comment = commentData("comment-1", objectId = "activity-1")
+        val activity = activityData("activity-1").copy(comments = listOf(comment))
+        setupInitialState(listOf(activity))
 
-        val reaction = feedsReactionData("activity-1", currentUserId)
-        feedState.onReactionAdded(reaction)
-        feedState.onReactionRemoved(reaction)
+        val reaction = feedsReactionData(commentId = "comment-1")
+        val updatedComment = commentData("comment-1", objectId = "activity-1", text = "Updated")
+        feedState.onCommentReactionUpserted(updatedComment, reaction)
 
-        val activityWithoutReaction = feedState.activities.value.find { it.id == "activity-1" }
-        assertEquals(0, activityWithoutReaction?.reactionCount)
+        val expectedActivity =
+            activity.copy(comments = listOf(updatedComment.copy(ownReactions = listOf(reaction))))
+        assertEquals(listOf(expectedActivity), feedState.activities.value)
     }
 
     @Test
-    fun `on feedUpdated, then update feed`() = runTest {
+    fun `on onReactionUpserted, then add reaction to activity`() = runTest {
+        val activity = activityData("activity-1")
+        setupInitialState(listOf(activity))
+
+        val reaction = feedsReactionData("activity-1", currentUserId)
+        val updatedActivity = activityData("activity-1", text = "Updated activity")
+        feedState.onReactionUpserted(reaction, updatedActivity)
+
+        val expected = updatedActivity.copy(ownReactions = listOf(reaction))
+        assertEquals(listOf(expected), feedState.activities.value)
+    }
+
+    @Test
+    fun `on onReactionRemoved, then remove reaction from activity`() = runTest {
+        val reaction = feedsReactionData("activity-1", currentUserId)
+        val activity = activityData("activity-1", ownReactions = listOf(reaction))
+        setupInitialState(listOf(activity))
+
+        val updatedActivity = activityData("activity-1", text = "Updated activity")
+        feedState.onReactionRemoved(reaction, updatedActivity)
+
+        val expected = updatedActivity.copy(ownReactions = emptyList())
+        assertEquals(listOf(expected), feedState.activities.value)
+    }
+
+    @Test
+    fun `on onFeedUpdated, then update feed`() = runTest {
         val initialFeed = feedData()
         setupInitialState(emptyList(), feed = initialFeed)
 
@@ -313,7 +348,7 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on feedDeleted, then clear all state`() = runTest {
+    fun `on onFeedDeleted, then clear all state`() = runTest {
         setupInitialState(
             activities = listOf(activityData()),
             followers = listOf(followData()),

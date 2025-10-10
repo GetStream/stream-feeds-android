@@ -24,10 +24,10 @@ import androidx.lifecycle.viewModelScope
 import com.ramcosta.composedestinations.generated.destinations.CommentsBottomSheetDestination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.file.FileType
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
-import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
 import io.getstream.feeds.android.client.api.state.Activity
 import io.getstream.feeds.android.network.models.AddCommentReactionRequest
@@ -36,7 +36,6 @@ import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.util.copyToCache
 import io.getstream.feeds.android.sample.util.deleteFiles
-import io.getstream.feeds.android.sample.util.map
 import io.getstream.feeds.android.sample.util.notNull
 import io.getstream.feeds.android.sample.util.withFirstContent
 import io.getstream.feeds.android.sample.utils.logResult
@@ -46,7 +45,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 @HiltViewModel
@@ -61,25 +59,8 @@ constructor(
     private val args = CommentsBottomSheetDestination.argsFrom(savedStateHandle)
     private var canLoadMoreComments = true
 
-    private val internalState =
-        flow {
-                val pair =
-                    loginManager.currentState()?.let { (user, client) ->
-                        user to client.activity(activityId = args.activityId, fid = args.fid)
-                    }
-
-                emit(AsyncResource.notNull(pair))
-            }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
-
-    val activity =
-        internalState
-            .map { resource -> resource.map(Pair<User, Activity>::second) }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
-
     val state =
-        internalState
-            .map { loadingState -> loadingState.map { it.first to it.second.state } }
+        flow { emit(AsyncResource.notNull(loginManager.currentClient()?.let(::getState))) }
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
     private var replyParentId: String? = null
@@ -87,8 +68,8 @@ constructor(
     val createContentState: StateFlow<CreateContentState> = _createContentState.asStateFlow()
 
     init {
-        activity.withFirstContent(viewModelScope) {
-            get().logResult(TAG, "Loading activity: $activityId")
+        state.withFirstContent(viewModelScope) {
+            activity.get().logResult(TAG, "Loading activity: ${activity.activityId}")
         }
     }
 
@@ -107,35 +88,37 @@ constructor(
 
     private fun loadMore() {
         if (!canLoadMoreComments) return
-        activity.withFirstContent(viewModelScope) {
-            queryMoreComments()
+        state.withFirstContent(viewModelScope) {
+            activity
+                .queryMoreComments()
                 .onSuccess { comments -> canLoadMoreComments = comments.isNotEmpty() }
-                .logResult(TAG, "Loading more comments for activity: $activityId")
+                .logResult(TAG, "Loading more comments for activity: ${activity.activityId}")
         }
     }
 
     private fun toggleLike(comment: ThreadedCommentData) {
-        activity.withFirstContent(viewModelScope) {
+        state.withFirstContent(viewModelScope) {
             if (comment.ownReactions.any { it.type == "heart" }) {
-                    deleteCommentReaction(comment.id, "heart")
+                    activity.deleteCommentReaction(comment.id, "heart")
                 } else {
                     val request =
                         AddCommentReactionRequest("heart", createNotificationActivity = true)
-                    addCommentReaction(comment.id, request)
+                    activity.addCommentReaction(comment.id, request)
                 }
                 .logResult(TAG, "Toggling heart reaction for comment: ${comment.id}")
         }
     }
 
     private fun delete(commentId: String) {
-        activity.withFirstContent(viewModelScope) {
-            deleteComment(commentId).logResult(TAG, "Deleting comment: $commentId")
+        state.withFirstContent(viewModelScope) {
+            activity.deleteComment(commentId).logResult(TAG, "Deleting comment: $commentId")
         }
     }
 
     private fun edit(id: String, text: String) {
-        activity.withFirstContent(viewModelScope) {
-            updateComment(id, UpdateCommentRequest(text))
+        state.withFirstContent(viewModelScope) {
+            activity
+                .updateComment(id, UpdateCommentRequest(text))
                 .logResult(TAG, "Editing comment $id with text: $text")
         }
     }
@@ -149,7 +132,7 @@ constructor(
     private fun post(text: String, replyParentId: String?, attachments: List<Uri>) {
         _createContentState.value = CreateContentState.Posting
 
-        activity.withFirstContent(viewModelScope) {
+        state.withFirstContent(viewModelScope) {
             val attachmentFiles =
                 context.copyToCache(attachments).getOrElse { error ->
                     Log.e(TAG, "Failed to copy attachments", error)
@@ -158,10 +141,11 @@ constructor(
                 }
 
             val result =
-                addComment(
+                activity
+                    .addComment(
                         ActivityAddCommentRequest(
                             comment = text,
-                            activityId = activityId,
+                            activityId = activity.activityId,
                             parentId = replyParentId,
                             createNotificationActivity = true,
                             attachmentUploads =
@@ -173,7 +157,7 @@ constructor(
                             Log.d(TAG, "Uploading attachment: ${file.type}, progress: $progress")
                         },
                     )
-                    .logResult(TAG, "Adding comment to activity: $activityId")
+                    .logResult(TAG, "Adding comment to activity: ${activity.activityId}")
 
             deleteFiles(attachmentFiles)
 
@@ -184,6 +168,14 @@ constructor(
                 )
         }
     }
+
+    private fun getState(client: FeedsClient): ViewState =
+        ViewState(
+            userId = client.user.id,
+            activity = client.activity(activityId = args.activityId, fid = args.fid),
+        )
+
+    data class ViewState(val userId: String, val activity: Activity)
 
     sealed interface Event {
         data object OnScrollToBottom : Event

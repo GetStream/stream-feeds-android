@@ -72,24 +72,35 @@ internal class ActivityCommentListEventHandlerTest {
     }
 
     @Test
-    fun `on CommentReactionAdded for matching object, then call onCommentReactionAdded`() {
+    fun `on CommentReactionAdded for matching object, then call onCommentReactionUpserted`() {
         val comment = commentData(objectId = objectId, objectType = objectType)
         val reaction = feedsReactionData()
-        val event = StateUpdateEvent.CommentReactionAdded(comment, reaction)
+        val event = StateUpdateEvent.CommentReactionAdded("feed-1", comment, reaction)
 
         handler.onEvent(event)
 
-        verify { state.onCommentReactionAdded(comment.id, reaction) }
+        verify { state.onCommentReactionUpserted(comment, reaction) }
+    }
+
+    @Test
+    fun `on CommentReactionUpdated for matching object, then call onCommentReactionUpserted`() {
+        val comment = commentData(objectId = objectId, objectType = objectType)
+        val reaction = feedsReactionData()
+        val event = StateUpdateEvent.CommentReactionUpdated("feed-1", comment, reaction)
+
+        handler.onEvent(event)
+
+        verify { state.onCommentReactionUpserted(comment, reaction) }
     }
 
     @Test
     fun `on CommentReactionDeleted for matching object, then call onCommentReactionRemoved`() {
         val comment = commentData(objectId = objectId, objectType = objectType)
         val reaction = feedsReactionData()
-        val event = StateUpdateEvent.CommentReactionDeleted(comment, reaction)
+        val event = StateUpdateEvent.CommentReactionDeleted("feed-1", comment, reaction)
 
         handler.onEvent(event)
 
-        verify { state.onCommentReactionRemoved(comment.id, reaction) }
+        verify { state.onCommentReactionRemoved(comment, reaction) }
     }
 }

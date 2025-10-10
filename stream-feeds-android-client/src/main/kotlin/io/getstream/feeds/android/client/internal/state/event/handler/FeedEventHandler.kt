@@ -59,13 +59,19 @@ internal class FeedEventHandler(private val fid: FeedId, private val state: Feed
 
             is StateUpdateEvent.ActivityReactionAdded -> {
                 if (event.fid == fid.rawValue) {
-                    state.onReactionAdded(event.reaction)
+                    state.onReactionUpserted(event.reaction, event.activity)
                 }
             }
 
             is StateUpdateEvent.ActivityReactionDeleted -> {
                 if (event.fid == fid.rawValue) {
-                    state.onReactionRemoved(event.reaction)
+                    state.onReactionRemoved(event.reaction, event.activity)
+                }
+            }
+
+            is StateUpdateEvent.ActivityReactionUpdated -> {
+                if (event.fid == fid.rawValue) {
+                    state.onReactionUpserted(event.reaction, event.activity)
                 }
             }
 
@@ -114,6 +120,24 @@ internal class FeedEventHandler(private val fid: FeedId, private val state: Feed
             is StateUpdateEvent.CommentDeleted -> {
                 if (event.fid == fid.rawValue) {
                     state.onCommentRemoved(event.comment)
+                }
+            }
+
+            is StateUpdateEvent.CommentReactionAdded -> {
+                if (event.fid == fid.rawValue) {
+                    state.onCommentReactionUpserted(event.comment, event.reaction)
+                }
+            }
+
+            is StateUpdateEvent.CommentReactionDeleted -> {
+                if (event.fid == fid.rawValue) {
+                    state.onCommentReactionRemoved(event.comment, event.reaction)
+                }
+            }
+
+            is StateUpdateEvent.CommentReactionUpdated -> {
+                if (event.fid == fid.rawValue) {
+                    state.onCommentReactionUpserted(event.comment, event.reaction)
                 }
             }
 

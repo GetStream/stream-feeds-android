@@ -17,6 +17,7 @@ package io.getstream.feeds.android.client.internal.test
 
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.ActivityDataVisibility
+import io.getstream.feeds.android.client.api.model.ActivityPinData
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.BookmarkFolderData
@@ -74,10 +75,11 @@ internal object TestData {
         objectType: String = "comment",
         createdAt: Date = Date(1),
         ownReactions: List<FeedsReactionData> = emptyList(),
+        parentId: String? = null,
     ) =
         CommentData(
             id = id,
-            parentId = null,
+            parentId = parentId,
             attachments = null,
             confidenceScore = 0f,
             controversyScore = null,
@@ -148,12 +150,13 @@ internal object TestData {
         activityId: String = "activity-1",
         type: String = "like",
         userId: String = "user-1",
+        commentId: String? = null,
         createdAt: Date = Date(1000),
         updatedAt: Date = Date(1000),
     ): FeedsReactionData =
         FeedsReactionData(
             activityId = activityId,
-            commentId = null,
+            commentId = commentId,
             createdAt = createdAt,
             custom = null,
             type = type,
@@ -199,6 +202,7 @@ internal object TestData {
         poll: PollData? = null,
         ownBookmarks: List<BookmarkData> = emptyList(),
         ownReactions: List<FeedsReactionData> = emptyList(),
+        feeds: List<String> = emptyList(),
     ): ActivityData =
         ActivityData(
             attachments = emptyList(),
@@ -211,7 +215,7 @@ internal object TestData {
             deletedAt = null,
             editedAt = null,
             expiresAt = null,
-            feeds = emptyList(),
+            feeds = feeds,
             filterTags = emptyList(),
             id = id,
             interestTags = emptyList(),
@@ -254,6 +258,16 @@ internal object TestData {
             blockedFileExtensions = emptyList(),
             blockedMimeTypes = emptyList(),
             sizeLimit = 0,
+        )
+
+    fun bookmarkData(activity: ActivityData): BookmarkData =
+        BookmarkData(
+            activity = activity,
+            createdAt = Date(1000),
+            custom = emptyMap(),
+            folder = null,
+            updatedAt = Date(1000),
+            user = userData("user-1"),
         )
 
     fun bookmarkData(
@@ -323,6 +337,15 @@ internal object TestData {
             duration = "duration",
             feed = "feed",
             userId = "user",
+        )
+
+    fun activityPin(activity: ActivityData) =
+        ActivityPinData(
+            activity = activity,
+            fid = FeedId("group:id"),
+            userId = "user-1",
+            createdAt = Date(1000),
+            updatedAt = Date(1000),
         )
 
     fun userResponse() =

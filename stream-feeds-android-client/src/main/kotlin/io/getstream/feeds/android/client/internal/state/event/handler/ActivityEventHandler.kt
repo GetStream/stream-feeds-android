@@ -43,12 +43,17 @@ internal class ActivityEventHandler(
         when (event) {
             is StateUpdateEvent.ActivityReactionAdded -> {
                 if (event.fid != fid.rawValue || event.reaction.activityId != activityId) return
-                state.onReactionAdded(event.reaction)
+                state.onReactionUpserted(event.reaction, event.activity)
             }
 
             is StateUpdateEvent.ActivityReactionDeleted -> {
                 if (event.fid != fid.rawValue || event.reaction.activityId != activityId) return
-                state.onReactionRemoved(event.reaction)
+                state.onReactionRemoved(event.reaction, event.activity)
+            }
+
+            is StateUpdateEvent.ActivityReactionUpdated -> {
+                if (event.fid != fid.rawValue || event.reaction.activityId != activityId) return
+                state.onReactionUpserted(event.reaction, event.activity)
             }
 
             is StateUpdateEvent.ActivityUpdated -> {

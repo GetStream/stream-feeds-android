@@ -197,7 +197,7 @@ internal class ActivityCommentListStateImplTest {
     }
 
     @Test
-    fun `onCommentReactionAdded when it's a top-level comment, then add reaction to it`() {
+    fun `onCommentReactionUpserted when it's a top-level comment, then add reaction to it`() {
         val comment = threadedCommentData(id = "c1", createdAt = Date(1))
         val reaction =
             feedsReactionData(
@@ -206,32 +206,18 @@ internal class ActivityCommentListStateImplTest {
                 userId = "user-2",
                 createdAt = Date(2),
             )
-        val expected =
-            threadedCommentData(
-                id = "c1",
-                createdAt = Date(1),
-                latestReactions = listOf(reaction),
-                reactionCount = 1,
-                reactionGroups =
-                    mapOf(
-                        "like" to
-                            reactionGroupData(
-                                count = 1,
-                                firstReactionAt = Date(2),
-                                lastReactionAt = Date(2),
-                            )
-                    ),
-            )
+        val update = commentData(id = "c1", text = "Updated comment")
+        val expected = comment.copy(text = "Updated comment")
 
         state.onCommentAdded(comment)
-        state.onCommentReactionAdded("c1", reaction)
+        state.onCommentReactionUpserted(update, reaction)
 
         assertEquals(listOf(expected), state.comments.value)
     }
 
     @Test
-    fun `onCommentReactionAdded when it's a nested reply, then add reaction to the reply`() {
-        val child = threadedCommentData("c2", parentId = "c1", createdAt = Date(2))
+    fun `onCommentReactionUpserted when it's a nested reply, then add reaction to the reply`() {
+        val child = threadedCommentData("c2", parentId = "c1", text = "Original text")
         val parent = threadedCommentData(id = "c1", replies = listOf(child))
         val reaction =
             feedsReactionData(
@@ -240,29 +226,11 @@ internal class ActivityCommentListStateImplTest {
                 userId = "user-2",
                 createdAt = Date(2),
             )
-        val expected =
-            threadedCommentData(
-                id = "c1",
-                replies =
-                    listOf(
-                        child.copy(
-                            latestReactions = listOf(reaction),
-                            reactionCount = 1,
-                            reactionGroups =
-                                mapOf(
-                                    "like" to
-                                        reactionGroupData(
-                                            count = 1,
-                                            firstReactionAt = Date(2),
-                                            lastReactionAt = Date(2),
-                                        )
-                                ),
-                        )
-                    ),
-            )
+        val update = commentData(id = "c2", parentId = "c1", text = "Updated text")
+        val expected = parent.copy(replies = listOf(child.copy(text = "Updated text")))
 
         state.onCommentAdded(parent)
-        state.onCommentReactionAdded("c2", reaction)
+        state.onCommentReactionUpserted(update, reaction)
 
         assertEquals(listOf(expected), state.comments.value)
     }
@@ -278,10 +246,17 @@ internal class ActivityCommentListStateImplTest {
                 reactionCount = 1,
                 reactionGroups = mapOf("like" to reactionGroupData()),
             )
-        val expected = threadedCommentData(id = "c1", createdAt = Date(1))
+        val update = commentData(id = "c1", text = "Updated comment")
+        val expected =
+            comment.copy(
+                text = "Updated comment",
+                latestReactions = emptyList(),
+                reactionCount = 0,
+                reactionGroups = emptyMap(),
+            )
 
         state.onCommentAdded(comment)
-        state.onCommentReactionRemoved("c1", reaction)
+        state.onCommentReactionRemoved(update, reaction)
 
         assertEquals(listOf(expected), state.comments.value)
     }
@@ -299,14 +274,23 @@ internal class ActivityCommentListStateImplTest {
                 reactionGroups = mapOf("like" to reactionGroupData()),
             )
         val parent = threadedCommentData(id = "c1", replies = listOf(reply))
+        val update =
+            commentData(id = "c2", parentId = "c1", text = "Updated reply", createdAt = Date(2))
         val expected =
-            threadedCommentData(
-                id = "c1",
-                replies = listOf(threadedCommentData("c2", parentId = "c1", createdAt = Date(2))),
+            parent.copy(
+                replies =
+                    listOf(
+                        reply.copy(
+                            text = "Updated reply",
+                            latestReactions = emptyList(),
+                            reactionCount = 0,
+                            reactionGroups = emptyMap(),
+                        )
+                    )
             )
 
         state.onCommentAdded(parent)
-        state.onCommentReactionRemoved("c2", reaction)
+        state.onCommentReactionRemoved(update, reaction)
 
         assertEquals(listOf(expected), state.comments.value)
     }

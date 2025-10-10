@@ -29,7 +29,6 @@ import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.logging.HttpLoggingLevel
 import io.getstream.feeds.android.client.api.logging.LoggingConfig
 import io.getstream.feeds.android.client.api.model.FeedsConfig
-import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.sample.DemoAppConfig
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -41,32 +40,32 @@ import kotlinx.coroutines.sync.withLock
 class LoginManager
 @Inject
 constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val dataStore: DataStore<Preferences>,
 ) {
     private val mutex = Mutex()
-    private var state: UserState? = null
+    private var client: FeedsClient? = null
 
-    suspend fun currentState(): UserState? =
+    suspend fun currentClient(): FeedsClient? =
         mutex.withLock {
-            if (state != null) state
+            if (client != null) client
             else {
-                loadCredentials()?.let { connect(it) }?.getOrNull()?.also { state = it }
+                loadCredentials()?.let { connect(it) }?.getOrNull()?.also { client = it }
             }
         }
 
-    suspend fun login(credentials: UserCredentials): Result<UserState> =
+    suspend fun login(credentials: UserCredentials): Result<FeedsClient> =
         mutex.withLock {
             connect(credentials).onSuccess {
-                state = it
+                client = it
                 storeCredentials(credentials)
             }
         }
 
     suspend fun logout() {
         mutex.withLock {
-            state?.client?.disconnect()
-            state = null
+            client?.disconnect()
+            client = null
             clearStoredCredentials()
         }
     }
@@ -84,7 +83,7 @@ constructor(
         dataStore.edit { it.remove(loggedUserIdKey) }
     }
 
-    private suspend fun connect(credentials: UserCredentials): Result<UserState> {
+    private suspend fun connect(credentials: UserCredentials): Result<FeedsClient> {
         val client =
             FeedsClient(
                 context = context,
@@ -102,10 +101,8 @@ constructor(
                     ),
             )
 
-        return client.connect().map { UserState(user = credentials.user, client = client) }
+        return client.connect().map { client }
     }
-
-    data class UserState(val user: User, val client: FeedsClient)
 
     companion object {
         private val loggedUserIdKey = stringPreferencesKey("logged_user_id")

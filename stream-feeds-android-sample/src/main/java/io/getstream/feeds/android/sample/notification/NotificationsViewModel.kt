@@ -18,6 +18,7 @@ package io.getstream.feeds.android.sample.notification
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.state.Feed
 import io.getstream.feeds.android.network.models.MarkActivityRequest
@@ -37,7 +38,7 @@ import kotlinx.coroutines.flow.stateIn
 class NotificationsViewModel @Inject constructor(loginManager: LoginManager) : ViewModel() {
 
     private val feed =
-        flow { emit(AsyncResource.notNull(loginManager.currentState()?.let(::getFeed))) }
+        flow { emit(AsyncResource.notNull(loginManager.currentClient()?.let(::getFeed))) }
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
     val state =
@@ -82,6 +83,6 @@ class NotificationsViewModel @Inject constructor(loginManager: LoginManager) : V
         }
     }
 
-    private fun getFeed(userState: LoginManager.UserState): Feed =
-        userState.client.feed(Feeds.notifications(userState.user.id))
+    private fun getFeed(client: FeedsClient): Feed =
+        client.feed(Feeds.notifications(client.user.id))
 }

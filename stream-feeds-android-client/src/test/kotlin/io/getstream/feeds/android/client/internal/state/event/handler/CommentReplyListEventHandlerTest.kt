@@ -18,76 +18,70 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.internal.state.CommentReplyListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentAdded
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionAdded
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentUpdated
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
-import io.mockk.called
+import io.mockk.MockKVerificationScope
 import io.mockk.mockk
-import io.mockk.verify
-import org.junit.Test
+import org.junit.runners.Parameterized
 
-internal class CommentReplyListEventHandlerTest {
-    private val state: CommentReplyListStateUpdates = mockk(relaxed = true)
+internal class CommentReplyListEventHandlerTest(
+    testName: String,
+    event: StateUpdateEvent,
+    verifyBlock: MockKVerificationScope.(CommentReplyListStateUpdates) -> Unit,
+) : BaseEventHandlerTest<CommentReplyListStateUpdates>(testName, event, verifyBlock) {
 
-    private val handler = CommentReplyListEventHandler(state)
+    override val state: CommentReplyListStateUpdates = mockk(relaxed = true)
+    override val handler = CommentReplyListEventHandler(state)
 
-    @Test
-    fun `on CommentAdded, then call onCommentAdded`() {
-        val comment = commentData()
-        val event = StateUpdateEvent.CommentAdded("feed-1", comment)
-
-        handler.onEvent(event)
-
-        verify { state.onCommentAdded(ThreadedCommentData(comment)) }
-    }
-
-    @Test
-    fun `on CommentDeleted, then call onCommentRemoved`() {
-        val comment = commentData()
-        val event = StateUpdateEvent.CommentDeleted("feed-1", comment)
-
-        handler.onEvent(event)
-
-        verify { state.onCommentRemoved(comment.id) }
-    }
-
-    @Test
-    fun `on CommentUpdated, then call onCommentUpdated`() {
-        val comment = commentData()
-        val event = StateUpdateEvent.CommentUpdated(comment)
-
-        handler.onEvent(event)
-
-        verify { state.onCommentUpdated(comment) }
-    }
-
-    @Test
-    fun `on CommentReactionAdded, then call onCommentReactionAdded`() {
-        val comment = commentData()
-        val reaction = feedsReactionData()
-        val event = StateUpdateEvent.CommentReactionAdded(comment, reaction)
-
-        handler.onEvent(event)
-
-        verify { state.onCommentReactionAdded(comment.id, reaction) }
-    }
-
-    @Test
-    fun `on CommentReactionDeleted, then call onCommentReactionRemoved`() {
-        val comment = commentData()
-        val reaction = feedsReactionData()
-        val event = StateUpdateEvent.CommentReactionDeleted(comment, reaction)
-
-        handler.onEvent(event)
-
-        verify { state.onCommentReactionRemoved(comment.id, reaction) }
-    }
-
-    @Test
-    fun `on unknown event, then do nothing`() {
-        val unknownEvent = StateUpdateEvent.FeedDeleted("feed-id")
-
-        handler.onEvent(unknownEvent)
-
-        verify { state wasNot called }
+    companion object {
+        @JvmStatic
+        @Parameterized.Parameters(name = "{0}")
+        fun data(): List<Array<Any>> =
+            listOf(
+                testParams<CommentReplyListStateUpdates>(
+                    name = "CommentAdded",
+                    event = CommentAdded("feed-1", commentData()),
+                    verifyBlock = { state ->
+                        state.onCommentAdded(ThreadedCommentData(commentData()))
+                    },
+                ),
+                testParams<CommentReplyListStateUpdates>(
+                    name = "CommentDeleted",
+                    event = CommentDeleted("feed-1", commentData()),
+                    verifyBlock = { state -> state.onCommentRemoved(commentData().id) },
+                ),
+                testParams<CommentReplyListStateUpdates>(
+                    name = "CommentUpdated",
+                    event = CommentUpdated(commentData()),
+                    verifyBlock = { state -> state.onCommentUpdated(commentData()) },
+                ),
+                testParams<CommentReplyListStateUpdates>(
+                    name = "CommentReactionAdded",
+                    event = CommentReactionAdded("feed-1", commentData(), feedsReactionData()),
+                    verifyBlock = { state ->
+                        state.onCommentReactionUpserted(commentData(), feedsReactionData())
+                    },
+                ),
+                testParams<CommentReplyListStateUpdates>(
+                    name = "CommentReactionDeleted",
+                    event = CommentReactionDeleted("feed-1", commentData(), feedsReactionData()),
+                    verifyBlock = { state ->
+                        state.onCommentReactionRemoved(commentData(), feedsReactionData())
+                    },
+                ),
+                testParams<CommentReplyListStateUpdates>(
+                    name = "CommentReactionUpdated",
+                    event = CommentReactionUpdated("feed-1", commentData(), feedsReactionData()),
+                    verifyBlock = { state ->
+                        state.onCommentReactionUpserted(commentData(), feedsReactionData())
+                    },
+                ),
+            )
     }
 }

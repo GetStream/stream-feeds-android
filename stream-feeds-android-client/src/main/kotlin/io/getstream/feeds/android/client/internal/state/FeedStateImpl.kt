@@ -33,15 +33,17 @@ import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.model.QueryConfiguration
 import io.getstream.feeds.android.client.api.model.addComment
-import io.getstream.feeds.android.client.api.model.addReaction
 import io.getstream.feeds.android.client.api.model.castVote
 import io.getstream.feeds.android.client.api.model.deleteBookmark
 import io.getstream.feeds.android.client.api.model.removeComment
+import io.getstream.feeds.android.client.api.model.removeCommentReaction
 import io.getstream.feeds.android.client.api.model.removeReaction
 import io.getstream.feeds.android.client.api.model.removeVote
 import io.getstream.feeds.android.client.api.model.setClosed
 import io.getstream.feeds.android.client.api.model.update
 import io.getstream.feeds.android.client.api.model.upsertBookmark
+import io.getstream.feeds.android.client.api.model.upsertCommentReaction
+import io.getstream.feeds.android.client.api.model.upsertReaction
 import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQueryConfig
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
@@ -223,6 +225,22 @@ internal class FeedStateImpl(
         }
     }
 
+    override fun onCommentReactionRemoved(comment: CommentData, reaction: FeedsReactionData) {
+        _activities.update { current ->
+            current.updateIf({ it.id == comment.objectId }) { activity ->
+                activity.removeCommentReaction(comment, reaction, currentUserId)
+            }
+        }
+    }
+
+    override fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData) {
+        _activities.update { current ->
+            current.updateIf({ it.id == comment.objectId }) { activity ->
+                activity.upsertCommentReaction(comment, reaction, currentUserId)
+            }
+        }
+    }
+
     override fun onFeedDeleted() {
         _activities.update { emptyList() }
         _feed.update { null }
@@ -261,26 +279,18 @@ internal class FeedStateImpl(
         _followRequests.update { current -> current.filter { it.id != id } }
     }
 
-    override fun onReactionAdded(reaction: FeedsReactionData) {
+    override fun onReactionUpserted(reaction: FeedsReactionData, activity: ActivityData) {
         _activities.update { current ->
-            current.map { activity ->
-                if (activity.id == reaction.activityId) {
-                    activity.addReaction(reaction, currentUserId)
-                } else {
-                    activity
-                }
+            current.updateIf({ it.id == reaction.activityId }) { currentActivity ->
+                currentActivity.upsertReaction(activity, reaction, currentUserId)
             }
         }
     }
 
-    override fun onReactionRemoved(reaction: FeedsReactionData) {
+    override fun onReactionRemoved(reaction: FeedsReactionData, activity: ActivityData) {
         _activities.update { current ->
-            current.map { activity ->
-                if (activity.id == reaction.activityId) {
-                    activity.removeReaction(reaction, currentUserId)
-                } else {
-                    activity
-                }
+            current.updateIf({ it.id == reaction.activityId }) { currentActivity ->
+                currentActivity.removeReaction(activity, reaction, currentUserId)
             }
         }
     }
@@ -434,6 +444,12 @@ internal interface FeedStateUpdates {
     /** Handles updates to the feed state when a comment is removed. */
     fun onCommentRemoved(comment: CommentData)
 
+    /** Handles updates to the feed state when a comment reaction is removed. */
+    fun onCommentReactionRemoved(comment: CommentData, reaction: FeedsReactionData)
+
+    /** Handles updates to the feed state when a comment reaction is added or updated. */
+    fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData)
+
     /** Handles updates to the feed state when the feed is deleted. */
     fun onFeedDeleted()
 
@@ -456,10 +472,10 @@ internal interface FeedStateUpdates {
     fun onFollowRequestRemoved(id: String)
 
     /** Handles updates to the feed state when a reaction is added. */
-    fun onReactionAdded(reaction: FeedsReactionData)
+    fun onReactionUpserted(reaction: FeedsReactionData, activity: ActivityData)
 
     /** Handles updates to the feed state when a reaction is removed. */
-    fun onReactionRemoved(reaction: FeedsReactionData)
+    fun onReactionRemoved(reaction: FeedsReactionData, activity: ActivityData)
 
     /** Handles updates to the feed state when a poll is closed. */
     fun onPollClosed(id: String)

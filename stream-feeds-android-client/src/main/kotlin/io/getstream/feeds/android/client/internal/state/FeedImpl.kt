@@ -374,18 +374,28 @@ internal class FeedImpl(
         activityId: String,
         request: AddReactionRequest,
     ): Result<FeedsReactionData> {
-        return activitiesRepository.addReaction(activityId, request).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.ActivityReactionAdded(fid.rawValue, it))
-        }
+        return activitiesRepository
+            .addReaction(activityId, request)
+            .onSuccess { (reaction, activity) ->
+                subscriptionManager.onEvent(
+                    StateUpdateEvent.ActivityReactionAdded(fid.rawValue, activity, reaction)
+                )
+            }
+            .map { it.first }
     }
 
     override suspend fun deleteReaction(
         activityId: String,
         type: String,
     ): Result<FeedsReactionData> {
-        return activitiesRepository.deleteReaction(activityId = activityId, type = type).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.ActivityReactionDeleted(fid.rawValue, it))
-        }
+        return activitiesRepository
+            .deleteReaction(activityId = activityId, type = type)
+            .onSuccess { (reaction, activity) ->
+                subscriptionManager.onEvent(
+                    StateUpdateEvent.ActivityReactionDeleted(fid.rawValue, activity, reaction)
+                )
+            }
+            .map { it.first }
     }
 
     override suspend fun addCommentReaction(
@@ -396,7 +406,7 @@ internal class FeedImpl(
             .addCommentReaction(commentId, request)
             .onSuccess { (reaction, comment) ->
                 subscriptionManager.onEvent(
-                    StateUpdateEvent.CommentReactionAdded(comment, reaction)
+                    StateUpdateEvent.CommentReactionAdded(fid.rawValue, comment, reaction)
                 )
             }
             .map { it.first }
@@ -410,7 +420,7 @@ internal class FeedImpl(
             .deleteCommentReaction(commentId = commentId, type = type)
             .onSuccess { (reaction, comment) ->
                 subscriptionManager.onEvent(
-                    StateUpdateEvent.CommentReactionDeleted(comment, reaction)
+                    StateUpdateEvent.CommentReactionDeleted(fid.rawValue, comment, reaction)
                 )
             }
             .map { it.first }
