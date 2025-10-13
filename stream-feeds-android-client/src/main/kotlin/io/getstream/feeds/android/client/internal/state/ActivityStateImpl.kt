@@ -31,6 +31,7 @@ import io.getstream.feeds.android.client.api.model.upsertBookmark
 import io.getstream.feeds.android.client.api.model.upsertReaction
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.api.state.ActivityState
+import io.getstream.feeds.android.client.internal.model.removeReaction
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
