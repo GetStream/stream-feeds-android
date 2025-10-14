@@ -30,6 +30,7 @@ import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
+import io.getstream.feeds.android.client.internal.test.TestData.aggregatedActivityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedData
@@ -37,6 +38,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionDat
 import io.getstream.feeds.android.client.internal.test.TestData.followData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
+import io.getstream.feeds.android.network.models.NotificationStatusResponse
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -536,6 +538,26 @@ internal class FeedStateImplTest {
 
         expectActivityWithPoll(activity, poll)
     }
+
+    @Test
+    fun `on onNotificationFeedUpdated, update aggregated activities and notification status`() =
+        runTest {
+            val aggregatedActivities =
+                listOf(
+                    aggregatedActivityData(
+                        activities = listOf(activityData("activity-1")),
+                        activityCount = 2,
+                        group = "group-1",
+                        userCount = 2,
+                    )
+                )
+            val notificationStatus = NotificationStatusResponse(unread = 5, unseen = 3)
+
+            feedState.onNotificationFeedUpdated(aggregatedActivities, notificationStatus)
+
+            assertEquals(aggregatedActivities, feedState.aggregatedActivities.value)
+            assertEquals(notificationStatus, feedState.notificationStatus.value)
+        }
 
     // Helper functions
     private fun setupInitialState(
