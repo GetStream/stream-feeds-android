@@ -45,6 +45,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -103,7 +104,7 @@ private fun ColumnScope.CreatePollBottomSheetContent(
     var anonymousPoll by rememberSaveable { mutableStateOf(false) }
     var allowSuggestingOptions by rememberSaveable { mutableStateOf(false) }
     var allowComments by rememberSaveable { mutableStateOf(false) }
-    var errorText by rememberSaveable { mutableStateOf("") }
+    var errorText by remember { mutableStateOf("") }
 
     Row(
         modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
