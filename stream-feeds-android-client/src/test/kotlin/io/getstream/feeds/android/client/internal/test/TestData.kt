@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.test
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.ActivityDataVisibility
 import io.getstream.feeds.android.client.api.model.ActivityPinData
+import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.BookmarkFolderData
@@ -241,6 +242,27 @@ internal object TestData {
             user = userData("user-1"),
             visibility = ActivityDataVisibility.Public,
             visibilityTag = null,
+        )
+
+    fun aggregatedActivityData(
+        activities: List<ActivityData> = listOf(activityData()),
+        activityCount: Int = activities.size,
+        createdAt: Date = Date(1000),
+        group: String = "test-group",
+        score: Float = 1.0f,
+        updatedAt: Date = Date(1000),
+        userCount: Int = 1,
+        userCountTruncated: Boolean = false,
+    ): AggregatedActivityData =
+        AggregatedActivityData(
+            activities = activities,
+            activityCount = activityCount,
+            createdAt = createdAt,
+            group = group,
+            score = score,
+            updatedAt = updatedAt,
+            userCount = userCount,
+            userCountTruncated = userCountTruncated,
         )
 
     fun appData(name: String = "Test App"): AppData =
