@@ -27,6 +27,7 @@ import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.api.state.query.toRequest
+import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.client.internal.repository.RepositoryTestUtils.testDelegation
 import io.getstream.feeds.android.client.internal.test.TestData.activityResponse
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionResponse
