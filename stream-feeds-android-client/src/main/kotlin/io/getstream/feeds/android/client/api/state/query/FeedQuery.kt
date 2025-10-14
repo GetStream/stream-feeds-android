@@ -15,12 +15,8 @@
  */
 package io.getstream.feeds.android.client.api.state.query
 
-import io.getstream.android.core.api.filter.toRequest
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedInputData
-import io.getstream.feeds.android.client.api.model.toRequest
-import io.getstream.feeds.android.network.models.GetOrCreateFeedRequest
-import io.getstream.feeds.android.network.models.PagerRequest
 
 /**
  * A query configuration for retrieving and managing feed data from Stream feeds.
@@ -112,25 +108,3 @@ public data class FeedQuery(
         watch = watch,
     )
 }
-
-/**
- * Converts this [FeedQuery] to a [GetOrCreateFeedRequest].
- *
- * @return A [GetOrCreateFeedRequest] representing the feed query.
- */
-internal fun FeedQuery.toRequest(): GetOrCreateFeedRequest =
-    GetOrCreateFeedRequest(
-        limit = activityLimit,
-        next = activityNext,
-        prev = activityPrevious,
-        view = view,
-        watch = watch,
-        activitySelectorOptions = activitySelectorOptions,
-        data = data?.toRequest(),
-        externalRanking = externalRanking,
-        filter = activityFilter?.toRequest(),
-        followersPagination = followerLimit?.let { PagerRequest(it) },
-        followingPagination = followingLimit?.let { PagerRequest(it) },
-        interestWeights = interestWeights,
-        memberPagination = memberLimit?.let { PagerRequest(it) },
-    )

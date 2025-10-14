@@ -17,15 +17,11 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.filter.toRequest
 import io.getstream.android.core.api.sort.Sort
 import io.getstream.android.core.api.sort.SortDirection
 import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
-import io.getstream.feeds.android.client.internal.model.mapping.toRequest
-import io.getstream.feeds.android.network.models.QueryFeedMembersRequest
 
 /**
  * A query for retrieving feed members with filtering, sorting, and pagination options.
@@ -59,9 +55,6 @@ public data class MembersQuery(
  * A type alias representing a filter specifically for [FeedMemberData] using [MembersFilterField].
  */
 public typealias MembersFilter = Filter<FeedMemberData, MembersFilterField>
-
-internal typealias MembersQueryConfig =
-    QueryConfiguration<FeedMemberData, MembersFilterField, MembersSort>
 
 /** Represents a field that can be used to filter feed members. */
 public data class MembersFilterField(
@@ -163,11 +156,3 @@ public sealed interface MembersSortField : SortField<FeedMemberData> {
 }
 
 /** Converts a [MembersQuery] to a [QueryFeedMembersRequest]. */
-internal fun MembersQuery.toRequest(): QueryFeedMembersRequest =
-    QueryFeedMembersRequest(
-        limit = limit,
-        next = next,
-        prev = previous,
-        sort = sort?.map { it.toRequest() },
-        filter = filter?.toRequest(),
-    )

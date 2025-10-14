@@ -17,8 +17,8 @@ package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.BookmarkFolderData
 import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersQuery
-import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersQueryConfig
 import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersSort
+import io.getstream.feeds.android.client.internal.state.query.BookmarkFoldersQueryConfig
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkFolderData
 import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
 import kotlinx.coroutines.test.runTest

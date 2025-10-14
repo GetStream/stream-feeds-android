@@ -17,14 +17,10 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.filter.toRequest
 import io.getstream.android.core.api.sort.Sort
 import io.getstream.android.core.api.sort.SortDirection
 import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.BookmarkData
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
-import io.getstream.feeds.android.client.internal.model.mapping.toRequest
-import io.getstream.feeds.android.network.models.QueryBookmarksRequest
 
 /**
  * A query for retrieving bookmarks with filtering, sorting, and pagination options.
@@ -56,9 +52,6 @@ public data class BookmarksQuery(
  * A type alias representing a filter specifically for [BookmarkData] using [BookmarksFilterField].
  */
 public typealias BookmarksFilter = Filter<BookmarkData, BookmarksFilterField>
-
-internal typealias BookmarksQueryConfig =
-    QueryConfiguration<BookmarkData, BookmarksFilterField, BookmarksSort>
 
 /** Represents a field that can be used to filter bookmarks. */
 public data class BookmarksFilterField(
@@ -152,15 +145,4 @@ public sealed interface BookmarksSortField : SortField<BookmarkData> {
     public data object UpdatedAt :
         BookmarksSortField,
         SortField<BookmarkData> by SortField.create("updated_at", BookmarkData::updatedAt)
-}
-
-/** Converts the [BookmarksQuery] to a [QueryBookmarksRequest]. */
-internal fun BookmarksQuery.toRequest(): QueryBookmarksRequest {
-    return QueryBookmarksRequest(
-        filter = filter?.toRequest(),
-        sort = sort?.map { it.toRequest() },
-        limit = limit,
-        next = next,
-        prev = previous,
-    )
 }

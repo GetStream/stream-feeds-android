@@ -17,8 +17,8 @@ package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQuery
-import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQueryConfig
 import io.getstream.feeds.android.client.api.state.query.ActivityReactionsSort
+import io.getstream.feeds.android.client.internal.state.query.ActivityReactionsQueryConfig
 import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import kotlinx.coroutines.test.runTest

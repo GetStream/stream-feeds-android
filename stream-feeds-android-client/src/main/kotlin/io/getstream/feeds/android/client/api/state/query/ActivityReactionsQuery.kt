@@ -17,14 +17,10 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.filter.toRequest
 import io.getstream.android.core.api.sort.Sort
 import io.getstream.android.core.api.sort.SortDirection
 import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
-import io.getstream.feeds.android.client.internal.model.mapping.toRequest
-import io.getstream.feeds.android.network.models.QueryActivityReactionsRequest
 
 /**
  * A query for retrieving activity reactions with filtering, sorting, and pagination options.
@@ -59,9 +55,6 @@ public data class ActivityReactionsQuery(
  * [ActivityReactionsFilterField].
  */
 public typealias ActivityReactionsFilter = Filter<FeedsReactionData, ActivityReactionsFilterField>
-
-internal typealias ActivityReactionsQueryConfig =
-    QueryConfiguration<FeedsReactionData, ActivityReactionsFilterField, ActivityReactionsSort>
 
 /** Represents a field that can be used to filter activity reactions. */
 public data class ActivityReactionsFilterField(
@@ -147,11 +140,3 @@ public sealed interface ActivityReactionsSortField : SortField<FeedsReactionData
  *
  * @return A [QueryActivityReactionsRequest] containing the same parameters as this query.
  */
-internal fun ActivityReactionsQuery.toRequest(): QueryActivityReactionsRequest =
-    QueryActivityReactionsRequest(
-        filter = filter?.toRequest(),
-        limit = limit,
-        next = next,
-        prev = previous,
-        sort = sort?.map { it.toRequest() },
-    )

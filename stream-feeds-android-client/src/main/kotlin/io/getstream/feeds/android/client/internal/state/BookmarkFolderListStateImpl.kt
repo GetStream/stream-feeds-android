@@ -17,11 +17,11 @@ package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.BookmarkFolderData
 import io.getstream.feeds.android.client.api.model.PaginationData
-import io.getstream.feeds.android.client.api.model.PaginationResult
 import io.getstream.feeds.android.client.api.state.BookmarkFolderListState
 import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersQuery
-import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersQueryConfig
 import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersSort
+import io.getstream.feeds.android.client.internal.model.PaginationResult
+import io.getstream.feeds.android.client.internal.state.query.BookmarkFoldersQueryConfig
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

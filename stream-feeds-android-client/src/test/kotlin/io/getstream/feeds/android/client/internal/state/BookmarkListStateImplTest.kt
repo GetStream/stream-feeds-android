@@ -17,8 +17,8 @@ package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.state.query.BookmarksQuery
-import io.getstream.feeds.android.client.api.state.query.BookmarksQueryConfig
 import io.getstream.feeds.android.client.api.state.query.BookmarksSort
+import io.getstream.feeds.android.client.internal.state.query.BookmarksQueryConfig
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkFolderData
 import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult

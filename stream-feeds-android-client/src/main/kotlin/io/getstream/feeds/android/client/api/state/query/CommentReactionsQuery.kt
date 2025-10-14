@@ -17,14 +17,10 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
-import io.getstream.android.core.api.filter.toRequest
 import io.getstream.android.core.api.sort.Sort
 import io.getstream.android.core.api.sort.SortDirection
 import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
-import io.getstream.feeds.android.client.api.model.QueryConfiguration
-import io.getstream.feeds.android.client.internal.model.mapping.toRequest
-import io.getstream.feeds.android.network.models.QueryCommentReactionsRequest
 
 /**
  * A query configuration for fetching reactions for a specific comment.
@@ -64,9 +60,6 @@ public data class CommentReactionsQuery(
  * [CommentReactionsFilterField].
  */
 public typealias CommentReactionsFilter = Filter<FeedsReactionData, CommentReactionsFilterField>
-
-internal typealias CommentReactionsQueryConfig =
-    QueryConfiguration<FeedsReactionData, CommentReactionsFilterField, CommentReactionsSort>
 
 /** Represents a field that can be used to filter comment reactions. */
 public data class CommentReactionsFilterField(
@@ -136,11 +129,3 @@ public sealed interface CommentReactionSortField : SortField<FeedsReactionData> 
 }
 
 /** Converts a [CommentReactionsQuery] to the corresponding [QueryCommentReactionsRequest]. */
-internal fun CommentReactionsQuery.toRequest(): QueryCommentReactionsRequest =
-    QueryCommentReactionsRequest(
-        filter = filter?.toRequest(),
-        limit = limit,
-        next = next,
-        prev = previous,
-        sort = sort?.map { it.toRequest() },
-    )
