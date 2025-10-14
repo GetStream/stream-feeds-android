@@ -46,8 +46,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -85,15 +88,23 @@ private fun ColumnScope.CreatePollBottomSheetContent(
     onCreateClicked: (PollFormData) -> Unit,
     onCancelClick: () -> Unit,
 ) {
-    var question by remember { mutableStateOf("") }
-    val options = remember { mutableStateListOf("", "") }
-    var allowMultipleAnswers by remember { mutableStateOf(false) }
-    var constrainMaxVotesPerPerson by remember { mutableStateOf(false) }
-    var maxVotesPerPerson by remember { mutableStateOf("") }
-    var anonymousPoll by remember { mutableStateOf(false) }
-    var allowSuggestingOptions by remember { mutableStateOf(false) }
-    var allowComments by remember { mutableStateOf(false) }
-    var errorText by remember { mutableStateOf("") }
+    var question by rememberSaveable { mutableStateOf("") }
+    // Save options list using a custom saver for SnapshotStateList
+    val options = rememberSaveable(
+        saver = listSaver(
+            save = { it.toList() },
+            restore = { it.toMutableStateList() }
+        )
+    ) {
+        mutableStateListOf("", "")
+    }
+    var allowMultipleAnswers by rememberSaveable { mutableStateOf(false) }
+    var constrainMaxVotesPerPerson by rememberSaveable { mutableStateOf(false) }
+    var maxVotesPerPerson by rememberSaveable { mutableStateOf("") }
+    var anonymousPoll by rememberSaveable { mutableStateOf(false) }
+    var allowSuggestingOptions by rememberSaveable { mutableStateOf(false) }
+    var allowComments by rememberSaveable { mutableStateOf(false) }
+    var errorText by rememberSaveable { mutableStateOf("") }
 
     Row(
         modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),

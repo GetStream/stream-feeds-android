@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -32,7 +33,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun EditContentDialog(initialText: String, onDismiss: () -> Unit, onSave: (String) -> Unit) {
-    var editText by remember { mutableStateOf(initialText) }
+    var editText by rememberSaveable { mutableStateOf(initialText) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
