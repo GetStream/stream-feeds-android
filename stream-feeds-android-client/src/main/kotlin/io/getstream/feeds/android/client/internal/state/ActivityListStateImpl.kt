@@ -96,11 +96,19 @@ internal class ActivityListStateImpl(
     }
 
     override fun onBookmarkRemoved(bookmark: BookmarkData) {
-        _activities.update { current -> current.deleteBookmark(bookmark, currentUserId) }
+        _activities.update { current ->
+            current.updateIf({ it.id == bookmark.activity.id }) { activity ->
+                activity.deleteBookmark(bookmark, currentUserId)
+            }
+        }
     }
 
     override fun onBookmarkUpserted(bookmark: BookmarkData) {
-        _activities.update { current -> current.upsertBookmark(bookmark, currentUserId) }
+        _activities.update { current ->
+            current.updateIf({ it.id == bookmark.activity.id }) { activity ->
+                activity.upsertBookmark(bookmark, currentUserId)
+            }
+        }
     }
 
     override fun onCommentAdded(comment: CommentData) {
@@ -129,13 +137,17 @@ internal class ActivityListStateImpl(
 
     override fun onCommentReactionRemoved(comment: CommentData, reaction: FeedsReactionData) {
         _activities.update { current ->
-            current.removeCommentReaction(comment, reaction, currentUserId)
+            current.updateIf({ it.id == comment.objectId }) { activity ->
+                activity.removeCommentReaction(comment, reaction, currentUserId)
+            }
         }
     }
 
     override fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData) {
         _activities.update { current ->
-            current.upsertCommentReaction(comment, reaction, currentUserId)
+            current.updateIf({ it.id == comment.objectId }) { activity ->
+                activity.upsertCommentReaction(comment, reaction, currentUserId)
+            }
         }
     }
 

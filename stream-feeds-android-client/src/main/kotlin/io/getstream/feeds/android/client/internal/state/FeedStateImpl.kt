@@ -170,16 +170,7 @@ internal class FeedStateImpl(
     override fun onActivityUpdated(activity: ActivityData) {
         if (feedQuery.activityFilter?.matches(activity) == false) return
 
-        // Update the activities list
-        _activities.update { current ->
-            current.updateIf({ it.id == activity.id }) { it.update(activity) }
-        }
-        // Update the pinned activities if the activity is pinned
-        _pinnedActivities.update { current ->
-            current.updateIf({ it.activity.id == activity.id }) { pin ->
-                pin.copy(activity = pin.activity.update(activity))
-            }
-        }
+        updateActivitiesWhere({ it.id == activity.id }) { it.update(activity) }
     }
 
     override fun onActivityRemoved(activityId: String) {
@@ -197,46 +188,38 @@ internal class FeedStateImpl(
     }
 
     override fun onBookmarkRemoved(bookmark: BookmarkData) {
-        _activities.update { current -> current.deleteBookmark(bookmark, currentUserId) }
+        updateActivitiesWhere({ it.id == bookmark.activity.id }) { activity ->
+            activity.deleteBookmark(bookmark, currentUserId)
+        }
     }
 
     override fun onBookmarkUpserted(bookmark: BookmarkData) {
-        _activities.update { current -> current.upsertBookmark(bookmark, currentUserId) }
+        updateActivitiesWhere({ it.id == bookmark.activity.id }) { activity ->
+            activity.upsertBookmark(bookmark, currentUserId)
+        }
     }
 
     override fun onCommentAdded(comment: CommentData) {
-        _activities.update { current ->
-            current.map {
-                if (it.id == comment.objectId) {
-                    it.addComment(comment)
-                } else {
-                    it
-                }
-            }
+        updateActivitiesWhere({ it.id == comment.objectId }) { activity ->
+            activity.addComment(comment)
         }
     }
 
     override fun onCommentRemoved(comment: CommentData) {
-        _activities.update { current ->
-            current.map {
-                if (it.id == comment.objectId) {
-                    it.removeComment(comment)
-                } else {
-                    it
-                }
-            }
+        updateActivitiesWhere({ it.id == comment.objectId }) { activity ->
+            activity.removeComment(comment)
         }
     }
 
     override fun onCommentReactionRemoved(comment: CommentData, reaction: FeedsReactionData) {
-        _activities.update { current ->
-            current.removeCommentReaction(comment, reaction, currentUserId)
+        updateActivitiesWhere({ it.id == comment.objectId }) { activity ->
+            activity.removeCommentReaction(comment, reaction, currentUserId)
         }
     }
 
     override fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData) {
-        _activities.update { current ->
-            current.upsertCommentReaction(comment, reaction, currentUserId)
+        updateActivitiesWhere({ it.id == comment.objectId }) { activity ->
+            activity.upsertCommentReaction(comment, reaction, currentUserId)
         }
     }
 
@@ -279,64 +262,48 @@ internal class FeedStateImpl(
     }
 
     override fun onReactionUpserted(reaction: FeedsReactionData, activity: ActivityData) {
-        _activities.update { current ->
-            current.updateIf({ it.id == reaction.activityId }) { currentActivity ->
-                currentActivity.upsertReaction(activity, reaction, currentUserId)
-            }
+        updateActivitiesWhere({ it.id == reaction.activityId }) { currentActivity ->
+            currentActivity.upsertReaction(activity, reaction, currentUserId)
         }
     }
 
     override fun onReactionRemoved(reaction: FeedsReactionData, activity: ActivityData) {
-        _activities.update { current ->
-            current.updateIf({ it.id == reaction.activityId }) { currentActivity ->
-                currentActivity.removeReaction(activity, reaction, currentUserId)
-            }
+        updateActivitiesWhere({ it.id == reaction.activityId }) { currentActivity ->
+            currentActivity.removeReaction(activity, reaction, currentUserId)
         }
     }
 
     override fun onPollClosed(id: String) {
-        _activities.update { current ->
-            current.updateIf({ it.poll?.id == id }) { activity ->
-                activity.copy(poll = activity.poll?.setClosed())
-            }
+        updateActivitiesWhere({ it.poll?.id == id }) { activity ->
+            activity.copy(poll = activity.poll?.setClosed())
         }
     }
 
     override fun onPollDeleted(id: String) {
-        _activities.update { current ->
-            current.updateIf({ it.poll?.id == id }) { activity -> activity.copy(poll = null) }
-        }
+        updateActivitiesWhere({ it.poll?.id == id }) { activity -> activity.copy(poll = null) }
     }
 
     override fun onPollUpdated(poll: PollData) {
-        _activities.update { current ->
-            current.updateIf({ it.poll?.id == poll.id }) { activity ->
-                activity.copy(poll = activity.poll?.update(poll))
-            }
+        updateActivitiesWhere({ it.poll?.id == poll.id }) { activity ->
+            activity.copy(poll = activity.poll?.update(poll))
         }
     }
 
     override fun onPollVoteCasted(vote: PollVoteData, pollId: String) {
-        _activities.update { current ->
-            current.updateIf({ it.poll?.id == pollId }) { activity ->
-                activity.copy(poll = activity.poll?.castVote(vote, currentUserId))
-            }
+        updateActivitiesWhere({ it.poll?.id == pollId }) { activity ->
+            activity.copy(poll = activity.poll?.castVote(vote, currentUserId))
         }
     }
 
     override fun onPollVoteChanged(vote: PollVoteData, pollId: String) {
-        _activities.update { current ->
-            current.updateIf({ it.poll?.id == pollId }) { activity ->
-                activity.copy(poll = activity.poll?.castVote(vote, currentUserId))
-            }
+        updateActivitiesWhere({ it.poll?.id == pollId }) { activity ->
+            activity.copy(poll = activity.poll?.castVote(vote, currentUserId))
         }
     }
 
     override fun onPollVoteRemoved(vote: PollVoteData, pollId: String) {
-        _activities.update { current ->
-            current.updateIf({ it.poll?.id == pollId }) { activity ->
-                activity.copy(poll = activity.poll?.removeVote(vote, currentUserId))
-            }
+        updateActivitiesWhere({ it.poll?.id == pollId }) { activity ->
+            activity.copy(poll = activity.poll?.removeVote(vote, currentUserId))
         }
     }
 
@@ -368,6 +335,19 @@ internal class FeedStateImpl(
     private fun updateFollow(follow: FollowData) {
         removeFollow(follow)
         addFollow(follow)
+    }
+
+    private fun updateActivitiesWhere(
+        filter: (ActivityData) -> Boolean,
+        update: (ActivityData) -> ActivityData,
+    ) {
+        _activities.update { current -> current.updateIf(filter = filter, update = update) }
+        _pinnedActivities.update { current ->
+            current.updateIf(
+                filter = { filter(it.activity) },
+                update = { pin -> pin.copy(activity = update(pin.activity)) },
+            )
+        }
     }
 }
 
