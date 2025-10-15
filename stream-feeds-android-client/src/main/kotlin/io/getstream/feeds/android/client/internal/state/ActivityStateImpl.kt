@@ -23,14 +23,13 @@ import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.api.state.ActivityState
-import io.getstream.feeds.android.client.internal.model.castVote
 import io.getstream.feeds.android.client.internal.model.deleteBookmark
 import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.model.removeVote
-import io.getstream.feeds.android.client.internal.model.setClosed
 import io.getstream.feeds.android.client.internal.model.update
 import io.getstream.feeds.android.client.internal.model.upsertBookmark
 import io.getstream.feeds.android.client.internal.model.upsertReaction
+import io.getstream.feeds.android.client.internal.model.upsertVote
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -90,10 +89,6 @@ internal class ActivityStateImpl(
         _activity.update { current -> current?.upsertBookmark(bookmark, currentUserId) }
     }
 
-    override fun onPollClosed(poll: PollData) {
-        updatePoll(poll.id, PollData::setClosed)
-    }
-
     override fun onPollDeleted(pollId: String) {
         updatePoll(pollId) { null }
     }
@@ -102,16 +97,12 @@ internal class ActivityStateImpl(
         updatePoll(poll.id) { update(poll) }
     }
 
-    override fun onPollVoteCasted(vote: PollVoteData, pollId: String) {
-        updatePoll(pollId) { castVote(vote, currentUserId) }
-    }
-
-    override fun onPollVoteChanged(vote: PollVoteData, pollId: String) {
-        updatePoll(pollId) { castVote(vote, currentUserId) }
-    }
-
     override fun onPollVoteRemoved(vote: PollVoteData, pollId: String) {
         updatePoll(pollId) { removeVote(vote, currentUserId) }
+    }
+
+    override fun onPollVoteUpserted(vote: PollVoteData, pollId: String) {
+        updatePoll(pollId) { upsertVote(vote, currentUserId) }
     }
 
     private fun updatePoll(pollId: String, update: PollData.() -> PollData?) {
@@ -178,13 +169,6 @@ internal interface ActivityStateUpdates {
     fun onBookmarkUpserted(bookmark: BookmarkData)
 
     /**
-     * Called when the associated poll is closed.
-     *
-     * @param poll The updated poll data.
-     */
-    fun onPollClosed(poll: PollData)
-
-    /**
      * Called when the associated poll is deleted.
      *
      * @param pollId The ID of the deleted poll.
@@ -199,26 +183,18 @@ internal interface ActivityStateUpdates {
     fun onPollUpdated(poll: PollData)
 
     /**
-     * Called when a vote is casted on the poll.
-     *
-     * @param vote The vote that was casted.
-     * @param pollId The ID of the poll associated with the vote.
-     */
-    fun onPollVoteCasted(vote: PollVoteData, pollId: String)
-
-    /**
-     * Called when a vote is changed on the poll.
-     *
-     * @param vote The updated vote data.
-     * @param pollId The ID of the poll associated with the changed vote.
-     */
-    fun onPollVoteChanged(vote: PollVoteData, pollId: String)
-
-    /**
      * Called when a vote is removed from the poll.
      *
      * @param vote The vote that was removed.
      * @param pollId The ID of the poll associated with the removed vote.
      */
     fun onPollVoteRemoved(vote: PollVoteData, pollId: String)
+
+    /**
+     * Called when a vote is casted or changed in the poll.
+     *
+     * @param vote The vote.
+     * @param pollId The ID of the poll associated with the vote.
+     */
+    fun onPollVoteUpserted(vote: PollVoteData, pollId: String)
 }

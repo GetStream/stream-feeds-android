@@ -106,7 +106,7 @@ internal class StateUpdateEventToModelTest(
                 feedMemberAdded().shouldMapTo<StateUpdateEvent.FeedMemberAdded>(),
                 feedMemberRemoved().shouldMapTo<StateUpdateEvent.FeedMemberRemoved>(),
                 feedMemberUpdated().shouldMapTo<StateUpdateEvent.FeedMemberUpdated>(),
-                pollClosedFeed().shouldMapTo<StateUpdateEvent.PollClosed>(),
+                pollClosedFeed().shouldMapTo<StateUpdateEvent.PollUpdated>(),
                 pollDeletedFeed().shouldMapTo<StateUpdateEvent.PollDeleted>(),
                 pollUpdatedFeed().shouldMapTo<StateUpdateEvent.PollUpdated>(),
                 pollVoteCastedFeed().shouldMapTo<StateUpdateEvent.PollVoteCasted>(),

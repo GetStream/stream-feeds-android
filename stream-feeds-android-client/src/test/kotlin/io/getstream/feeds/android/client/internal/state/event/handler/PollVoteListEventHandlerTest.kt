@@ -44,9 +44,19 @@ internal class PollVoteListEventHandlerTest(
         fun data(): List<Array<Any>> =
             listOf(
                 testParams<PollVoteListStateUpdates>(
+                    name = "PollVoteCasted matching poll",
+                    event = PollVoteCasted("feed-1", pollId, pollVoteData()),
+                    verifyBlock = { state -> state.pollVoteUpserted(pollVoteData()) },
+                ),
+                testParams<PollVoteListStateUpdates>(
+                    name = "PollVoteCasted non-matching poll",
+                    event = PollVoteCasted("feed-1", otherPollId, pollVoteData()),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<PollVoteListStateUpdates>(
                     name = "PollVoteChanged matching poll",
                     event = PollVoteChanged("feed-1", pollId, pollVoteData()),
-                    verifyBlock = { state -> state.pollVoteUpdated(pollVoteData()) },
+                    verifyBlock = { state -> state.pollVoteUpserted(pollVoteData()) },
                 ),
                 testParams<PollVoteListStateUpdates>(
                     name = "PollVoteChanged non-matching poll",
@@ -61,16 +71,6 @@ internal class PollVoteListEventHandlerTest(
                 testParams<PollVoteListStateUpdates>(
                     name = "PollVoteRemoved non-matching poll",
                     event = PollVoteRemoved("feed-1", otherPollId, pollVoteData("poll-vote-1")),
-                    verifyBlock = { state -> state wasNot called },
-                ),
-                testParams<PollVoteListStateUpdates>(
-                    name = "PollVoteCasted matching poll",
-                    event = PollVoteCasted("feed-1", pollId, pollVoteData()),
-                    verifyBlock = { state -> state.pollVoteAdded(pollVoteData()) },
-                ),
-                testParams<PollVoteListStateUpdates>(
-                    name = "PollVoteCasted non-matching poll",
-                    event = PollVoteCasted("feed-1", otherPollId, pollVoteData()),
                     verifyBlock = { state -> state wasNot called },
                 ),
             )

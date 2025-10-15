@@ -230,28 +230,6 @@ internal class ActivityStateImplTest {
         }
 
     @Test
-    fun `on onPollClosed, then update poll`() = runTest {
-        val initialPoll = pollData()
-        setupInitialPoll(initialPoll)
-
-        val closedPoll = pollData("poll-1", isClosed = true)
-        activityState.onPollClosed(closedPoll)
-
-        assertEquals(closedPoll, activityState.poll.value)
-    }
-
-    @Test
-    fun `on onPollClosed with different poll id, then keep existing poll`() = runTest {
-        val initialPoll = pollData("poll-1", "Test Poll")
-        setupInitialPoll(initialPoll)
-
-        val differentPoll = pollData("poll-2", isClosed = true)
-        activityState.onPollClosed(differentPoll)
-
-        assertEquals(initialPoll, activityState.poll.value)
-    }
-
-    @Test
     fun `on onPollDeleted, then remove poll`() = runTest {
         val initialPoll = pollData("poll-1", "Test Poll")
         setupInitialPoll(initialPoll)
@@ -294,12 +272,12 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on onPollVoteCasted with matching id, then update poll`() = runTest {
+    fun `on onPollVoteUpserted with matching id, then update poll`() = runTest {
         val initialPoll = pollData("poll-1", "Test Poll")
         setupInitialPoll(initialPoll)
 
         val vote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
-        activityState.onPollVoteCasted(vote, "poll-1")
+        activityState.onPollVoteUpserted(vote, "poll-1")
 
         val expectedPoll =
             initialPoll.copy(
@@ -312,18 +290,18 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on onPollVoteCasted with different poll id, then keep existing poll`() = runTest {
+    fun `on onPollVoteUpserted with different poll id, then keep existing poll`() = runTest {
         val initialPoll = pollData("poll-1", "Test Poll")
         setupInitialPoll(initialPoll)
 
         val vote = pollVoteData("vote-1", "poll-2", "option-1", currentUserId)
-        activityState.onPollVoteCasted(vote, "poll-2")
+        activityState.onPollVoteUpserted(vote, "poll-2")
 
         assertEquals(initialPoll, activityState.poll.value)
     }
 
     @Test
-    fun `on onPollVoteCasted with answer vote, then update answer data`() = runTest {
+    fun `on onPollVoteUpserted with answer vote, then update answer data`() = runTest {
         val initialPoll = pollData("poll-1", "Test Poll", allowAnswers = true)
         setupInitialPoll(initialPoll)
 
@@ -335,7 +313,7 @@ internal class ActivityStateImplTest {
                 userId = currentUserId,
                 answerText = "My answer",
             )
-        activityState.onPollVoteCasted(answerVote, "poll-1")
+        activityState.onPollVoteUpserted(answerVote, "poll-1")
 
         val expectedPoll =
             initialPoll.copy(
@@ -347,15 +325,15 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on onPollVoteCasted with multiple votes, then update vote counts properly`() = runTest {
+    fun `on onPollVoteUpserted with multiple votes, then update vote counts properly`() = runTest {
         val initialPoll = pollData("poll-1", "Test Poll")
         setupInitialPoll(initialPoll)
 
         val vote1 = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
         val vote2 = pollVoteData("vote-2", "poll-1", "option-2", "user-2")
 
-        activityState.onPollVoteCasted(vote1, "poll-1")
-        activityState.onPollVoteCasted(vote2, "poll-1")
+        activityState.onPollVoteUpserted(vote1, "poll-1")
+        activityState.onPollVoteUpserted(vote2, "poll-1")
 
         val expectedPoll =
             initialPoll.copy(
@@ -366,46 +344,6 @@ internal class ActivityStateImplTest {
                 voteCountsByOption = mapOf("option-1" to 1, "option-2" to 1),
             )
         assertEquals(expectedPoll, activityState.poll.value)
-    }
-
-    @Test
-    fun `on onPollVoteChanged, then update vote`() = runTest {
-        val originalVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
-        val initialPoll =
-            pollData(
-                "poll-1",
-                "Test Poll",
-                isClosed = false,
-                voteCount = 1,
-                ownVotes = listOf(originalVote),
-                voteCountsByOption = mapOf("option-1" to 1),
-                latestVotesByOption = mapOf("option-1" to listOf(originalVote)),
-            )
-        setupInitialPoll(initialPoll)
-
-        val changedVote = pollVoteData("vote-1", "poll-1", "option-2", currentUserId)
-        activityState.onPollVoteChanged(changedVote, "poll-1")
-
-        val expectedPoll =
-            initialPoll.copy(
-                voteCount = 1,
-                ownVotes = listOf(changedVote),
-                latestVotesByOption =
-                    mapOf("option-1" to emptyList(), "option-2" to listOf(changedVote)),
-                voteCountsByOption = mapOf("option-1" to 0, "option-2" to 1),
-            )
-        assertEquals(expectedPoll, activityState.poll.value)
-    }
-
-    @Test
-    fun `on onPollVoteChanged with different poll id, then keep existing poll`() = runTest {
-        val initialPoll = pollData("poll-1", "Test Poll")
-        setupInitialPoll(initialPoll)
-
-        val vote = pollVoteData("vote-1", "poll-2", "option-1", currentUserId)
-        activityState.onPollVoteChanged(vote, "poll-2")
-
-        assertEquals(initialPoll, activityState.poll.value)
     }
 
     @Test
@@ -470,17 +408,6 @@ internal class ActivityStateImplTest {
 
         val expectedPoll =
             initialPoll.copy(answersCount = 0, ownVotes = emptyList(), latestAnswers = emptyList())
-        assertEquals(expectedPoll, activityState.poll.value)
-    }
-
-    @Test
-    fun `on onPollClosed, then mark poll as closed`() = runTest {
-        val initialPoll = pollData("poll-1", "Test Poll", isClosed = false)
-        setupInitialPoll(initialPoll)
-
-        activityState.onPollClosed(initialPoll)
-
-        val expectedPoll = initialPoll.copy(isClosed = true)
         assertEquals(expectedPoll, activityState.poll.value)
     }
 
