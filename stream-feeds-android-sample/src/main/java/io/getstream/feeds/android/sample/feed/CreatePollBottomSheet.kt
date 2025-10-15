@@ -90,14 +90,12 @@ private fun ColumnScope.CreatePollBottomSheetContent(
 ) {
     var question by rememberSaveable { mutableStateOf("") }
     // Save options list using a custom saver for SnapshotStateList
-    val options = rememberSaveable(
-        saver = listSaver(
-            save = { it.toList() },
-            restore = { it.toMutableStateList() }
-        )
-    ) {
-        mutableStateListOf("", "")
-    }
+    val options =
+        rememberSaveable(
+            saver = listSaver(save = { it.toList() }, restore = { it.toMutableStateList() })
+        ) {
+            mutableStateListOf("", "")
+        }
     var allowMultipleAnswers by rememberSaveable { mutableStateOf(false) }
     var constrainMaxVotesPerPerson by rememberSaveable { mutableStateOf(false) }
     var maxVotesPerPerson by rememberSaveable { mutableStateOf("") }
