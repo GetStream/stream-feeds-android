@@ -15,8 +15,6 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.network.models.AppResponseFields
-
 /**
  * Data class representing application data configuration.
  *
@@ -33,13 +31,3 @@ public data class AppData(
     val imageUploadConfig: FileUploadConfigData,
     val name: String,
 )
-
-/** Converts [AppResponseFields] to [AppData]. */
-internal fun AppResponseFields.toModel(): AppData =
-    AppData(
-        asyncUrlEnrichEnabled = asyncUrlEnrichEnabled,
-        autoTranslationEnabled = autoTranslationEnabled,
-        fileUploadConfig = fileUploadConfig.toModel(),
-        imageUploadConfig = imageUploadConfig.toModel(),
-        name = name,
-    )

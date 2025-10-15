@@ -15,7 +15,6 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.network.models.PollVoteResponseData
 import java.util.Date
 
 /**
@@ -42,17 +41,3 @@ public data class PollVoteData(
     val user: UserData?,
     val userId: String?,
 )
-
-/** Converts a [PollVoteResponseData] to a [PollVoteData] model. */
-internal fun PollVoteResponseData.toModel(): PollVoteData =
-    PollVoteData(
-        answerText = answerText,
-        createdAt = createdAt,
-        id = id,
-        isAnswer = isAnswer,
-        optionId = optionId,
-        pollId = pollId,
-        updatedAt = updatedAt,
-        user = user?.toModel(),
-        userId = userId,
-    )

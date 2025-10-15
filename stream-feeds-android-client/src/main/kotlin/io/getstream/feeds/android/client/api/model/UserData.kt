@@ -15,7 +15,6 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.network.models.UserResponse
 import java.util.Date
 
 /**
@@ -57,24 +56,3 @@ public data class UserData(
     public val teams: List<String>,
     public val updatedAt: Date,
 )
-
-/** Converts a [UserResponse] to a [UserData] model. */
-internal fun UserResponse.toModel(): UserData =
-    UserData(
-        banned = banned,
-        blockedUserIds = blockedUserIds,
-        createdAt = createdAt,
-        custom = custom,
-        deactivatedAt = deactivatedAt,
-        deletedAt = deletedAt,
-        id = id,
-        image = image,
-        language = language,
-        lastActive = lastActive,
-        name = name,
-        online = online,
-        revokeTokensIssuedBefore = revokeTokensIssuedBefore,
-        role = role,
-        teams = teams,
-        updatedAt = updatedAt,
-    )

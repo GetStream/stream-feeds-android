@@ -15,7 +15,6 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.network.models.FeedMemberResponse
 import java.util.Date
 
 /**
@@ -65,25 +64,3 @@ public sealed class FeedMemberStatus(public val value: String) {
     /** Represents a feed member with an unknown status. */
     public data class Unknown(val unknownValue: String) : FeedMemberStatus(unknownValue)
 }
-
-/** Converts a [FeedMemberResponse] to a [FeedMemberData] model. */
-internal fun FeedMemberResponse.toModel() =
-    FeedMemberData(
-        createdAt = createdAt,
-        custom = custom,
-        inviteAcceptedAt = inviteAcceptedAt,
-        inviteRejectedAt = inviteRejectedAt,
-        role = role,
-        status = status.toModel(),
-        updatedAt = updatedAt,
-        user = user.toModel(),
-    )
-
-/** Converts a [FeedMemberResponse.Status] to a [FeedMemberStatus] model. */
-internal fun FeedMemberResponse.Status.toModel(): FeedMemberStatus =
-    when (this) {
-        FeedMemberResponse.Status.Member -> FeedMemberStatus.Member
-        FeedMemberResponse.Status.Pending -> FeedMemberStatus.Pending
-        FeedMemberResponse.Status.Rejected -> FeedMemberStatus.Rejected
-        is FeedMemberResponse.Status.Unknown -> FeedMemberStatus.Unknown(unknownValue)
-    }

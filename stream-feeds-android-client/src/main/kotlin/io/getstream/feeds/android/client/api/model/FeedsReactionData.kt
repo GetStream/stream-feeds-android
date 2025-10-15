@@ -15,7 +15,6 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.network.models.FeedsReactionResponse
 import java.util.Date
 
 /**
@@ -42,15 +41,3 @@ public data class FeedsReactionData(
     public val id: String
         get() = "${activityId}${commentId}${user.id}${type}"
 }
-
-/** Converts a [FeedsReactionResponse] to a [FeedsReactionData] model. */
-internal fun FeedsReactionResponse.toModel(): FeedsReactionData =
-    FeedsReactionData(
-        activityId = activityId,
-        commentId = commentId,
-        createdAt = createdAt,
-        custom = custom,
-        type = type,
-        updatedAt = updatedAt,
-        user = user.toModel(),
-    )
