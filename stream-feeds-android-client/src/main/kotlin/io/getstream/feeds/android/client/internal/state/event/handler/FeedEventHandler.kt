@@ -180,12 +180,6 @@ internal class FeedEventHandler(private val fid: FeedId, private val state: Feed
                 }
             }
 
-            is StateUpdateEvent.PollClosed -> {
-                if (event.fid == fid.rawValue) {
-                    state.onPollClosed(event.poll.id)
-                }
-            }
-
             is StateUpdateEvent.PollDeleted -> {
                 if (event.fid == fid.rawValue) {
                     state.onPollDeleted(event.pollId)
@@ -200,13 +194,13 @@ internal class FeedEventHandler(private val fid: FeedId, private val state: Feed
 
             is StateUpdateEvent.PollVoteCasted -> {
                 if (event.fid == fid.rawValue) {
-                    state.onPollVoteCasted(event.vote, event.pollId)
+                    state.onPollVoteUpserted(event.vote, event.pollId)
                 }
             }
 
             is StateUpdateEvent.PollVoteChanged -> {
                 if (event.fid == fid.rawValue) {
-                    state.onPollVoteChanged(event.vote, event.pollId)
+                    state.onPollVoteUpserted(event.vote, event.pollId)
                 }
             }
 

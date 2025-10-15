@@ -24,7 +24,6 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.A
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkUpdated
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollClosed
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteCasted
@@ -194,16 +193,6 @@ internal class ActivityEventHandlerTest(
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
-                    name = "PollClosed matching feed",
-                    event = PollClosed(fid.rawValue, pollData()),
-                    verifyBlock = { it.onPollClosed(pollData()) },
-                ),
-                testParams<ActivityStateUpdates>(
-                    name = "PollClosed non-matching feed",
-                    event = PollClosed(otherFid, pollData()),
-                    verifyBlock = { it wasNot called },
-                ),
-                testParams<ActivityStateUpdates>(
                     name = "PollDeleted matching feed",
                     event = PollDeleted(fid.rawValue, "poll-1"),
                     verifyBlock = { it.onPollDeleted("poll-1") },
@@ -226,7 +215,7 @@ internal class ActivityEventHandlerTest(
                 testParams<ActivityStateUpdates>(
                     name = "PollVoteCasted matching feed",
                     event = PollVoteCasted(fid.rawValue, "poll-1", pollVoteData()),
-                    verifyBlock = { it.onPollVoteCasted(pollVoteData(), "poll-1") },
+                    verifyBlock = { it.onPollVoteUpserted(pollVoteData(), "poll-1") },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "PollVoteCasted non-matching feed",
@@ -236,7 +225,7 @@ internal class ActivityEventHandlerTest(
                 testParams<ActivityStateUpdates>(
                     name = "PollVoteChanged matching feed",
                     event = PollVoteChanged(fid.rawValue, "poll-1", pollVoteData()),
-                    verifyBlock = { it.onPollVoteChanged(pollVoteData(), "poll-1") },
+                    verifyBlock = { it.onPollVoteUpserted(pollVoteData(), "poll-1") },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "PollVoteChanged non-matching feed",

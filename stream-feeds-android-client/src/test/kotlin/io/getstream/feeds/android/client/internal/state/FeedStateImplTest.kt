@@ -478,22 +478,6 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on onPollClosed, then mark poll as closed in activities`() = runTest {
-        val poll = pollData("poll-1", "Test Poll", isClosed = false)
-        val activity = activityData("activity-1", poll = poll)
-        val activityPin = activityPin(activity)
-        setupInitialState(listOf(activity), listOf(activityPin))
-
-        feedState.onPollClosed("poll-1")
-
-        val expectedPoll = poll.copy(isClosed = true)
-        val expectedActivity = activity.copy(poll = expectedPoll)
-        assertEquals(listOf(expectedActivity), feedState.activities.value)
-        val expectedPinnedActivity = activityPin.copy(activity = expectedActivity)
-        assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
-    }
-
-    @Test
     fun `on onPollDeleted, then remove poll from activities`() = runTest {
         val poll = pollData("poll-1", "Test Poll")
         val activity = activityData("activity-1", poll = poll)
@@ -527,30 +511,7 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on onPollVoteCasted, then update poll with new vote in activities`() = runTest {
-        val poll = pollData("poll-1", "Test Poll")
-        val activity = activityData("activity-1", poll = poll)
-        val activityPin = activityPin(activity)
-        setupInitialState(listOf(activity), listOf(activityPin))
-        val vote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
-
-        feedState.onPollVoteCasted(vote, "poll-1")
-
-        val expectedPoll =
-            poll.copy(
-                voteCount = 1,
-                ownVotes = listOf(vote),
-                latestVotesByOption = mapOf("option-1" to listOf(vote)),
-                voteCountsByOption = mapOf("option-1" to 1),
-            )
-        val expectedActivity = activity.copy(poll = expectedPoll)
-        assertEquals(listOf(expectedActivity), feedState.activities.value)
-        val expectedPinnedActivity = activityPin.copy(activity = expectedActivity)
-        assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
-    }
-
-    @Test
-    fun `on onPollVoteChanged, then update poll with changed vote in activities`() = runTest {
+    fun `on onPollVoteUpserted, then update poll with changed vote in activities`() = runTest {
         val originalVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
         val poll = pollWithVote("poll-1", originalVote)
         val activity = activityData("activity-1", poll = poll)
@@ -558,7 +519,7 @@ internal class FeedStateImplTest {
         setupInitialState(listOf(activity), listOf(activityPin))
         val changedVote = pollVoteData("vote-1", "poll-1", "option-2", currentUserId)
 
-        feedState.onPollVoteChanged(changedVote, "poll-1")
+        feedState.onPollVoteUpserted(changedVote, "poll-1")
 
         val expectedPoll =
             poll.copy(
@@ -603,7 +564,7 @@ internal class FeedStateImplTest {
         val activity = setupActivityWithPoll(poll)
         val vote = pollVoteData("vote-1", "poll-2", "option-1", currentUserId)
 
-        feedState.onPollVoteCasted(vote, "poll-2")
+        feedState.onPollVoteUpserted(vote, "poll-2")
 
         expectActivityWithPoll(activity, poll)
     }

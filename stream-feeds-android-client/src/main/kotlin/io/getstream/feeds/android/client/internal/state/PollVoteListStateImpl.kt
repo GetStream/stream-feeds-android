@@ -66,25 +66,12 @@ internal class PollVoteListStateImpl(override val query: PollVotesQuery) :
         }
     }
 
-    override fun pollVoteAdded(vote: PollVoteData) {
+    override fun pollVoteUpserted(vote: PollVoteData) {
         _votes.update { current -> current.upsertSorted(vote, PollVoteData::id, votesSorting) }
     }
 
     override fun pollVoteRemoved(voteId: String) {
         _votes.update { current -> current.filter { it.id != voteId } }
-    }
-
-    override fun pollVoteUpdated(vote: PollVoteData) {
-        _votes.update { current ->
-            current.map {
-                if (it.id == vote.id) {
-                    // Update the existing vote with the new data
-                    vote
-                } else {
-                    it
-                }
-            }
-        }
     }
 }
 
@@ -110,16 +97,9 @@ internal interface PollVoteListStateUpdates {
         queryConfig: PollVotesQueryConfig,
     )
 
-    /** Handles the addition of a new poll vote to the list. */
-    fun pollVoteAdded(vote: PollVoteData)
-
     /** Handles the removal of a poll vote from the list. */
     fun pollVoteRemoved(voteId: String)
 
-    /**
-     * Handles updates to an existing poll vote in the list.
-     *
-     * @param vote The updated poll vote data.
-     */
-    fun pollVoteUpdated(vote: PollVoteData)
+    /** Handles the addition of a new poll vote to the list. */
+    fun pollVoteUpserted(vote: PollVoteData)
 }
