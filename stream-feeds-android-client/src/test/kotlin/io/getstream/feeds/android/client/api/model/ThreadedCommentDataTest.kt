@@ -15,6 +15,8 @@
  */
 package io.getstream.feeds.android.client.api.model
 
+import io.getstream.feeds.android.client.api.state.query.CommentsSortDataFields
+import io.getstream.feeds.android.client.internal.model.addReply
 import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.model.upsertReaction
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
@@ -124,4 +126,50 @@ internal class ThreadedCommentDataTest {
         // Then
         assertEquals(expected, result)
     }
+
+    @Test
+    fun `addReply should append reply and increment replyCount`() {
+        // Given
+        val comparator = Comparator<CommentsSortDataFields> { _, _ -> 0 } // simple comparator
+        val parent = threadedCommentData(
+            id = "comment-1",
+            text = "Original text",
+            replies = emptyList(),
+            replyCount = 0
+        )
+        val newComment = threadedCommentData(
+            id = "reply-comment-1",
+            parentId = "comment-1",
+            text = "Updated text"
+        )
+
+        // When
+        val updated = parent.addReply(newComment, comparator)
+
+        // Then
+        assertEquals(1, updated.replyCount)
+        assertEquals(listOf(newComment), updated.replies)
+    }
+
+    @Test
+    fun `addReply should keep replies sorted based on comparator`() {
+        // Given
+        val comparator = Comparator<CommentsSortDataFields> { a, b ->
+            // Reverse sort  for demonstration
+            b.createdAt.compareTo(a.createdAt)
+        }
+
+        val originalComment = threadedCommentData(id = "comment-1", parentId = "parent-1")
+        val newComment = threadedCommentData(id = "comment-2", parentId = "parent-1")
+        val parent = threadedCommentData(
+            id = "parent-1",
+            replies = listOf(originalComment),
+            replyCount = 1
+        )
+        val updated = parent.addReply(newComment, comparator)
+
+        // Then: since comparator sorts descending, originalComment should come first
+        assertEquals(listOf(originalComment, newComment), updated.replies)
+    }
+
 }
