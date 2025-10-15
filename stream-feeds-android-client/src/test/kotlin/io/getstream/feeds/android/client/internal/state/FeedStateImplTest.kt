@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.state
 import io.getstream.android.core.api.filter.equal
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.ActivityPinData
+import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FollowData
@@ -570,24 +571,67 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on onNotificationFeedUpdated, update aggregated activities and notification status`() =
-        runTest {
-            val aggregatedActivities =
-                listOf(
-                    aggregatedActivityData(
-                        activities = listOf(activityData("activity-1")),
-                        activityCount = 2,
-                        group = "group-1",
-                        userCount = 2,
-                    )
+    fun `on onNotificationFeedUpdated, update matching groups and notification status`() = runTest {
+        val initial =
+            List(3) {
+                aggregatedActivityData(
+                    activities = listOf(activityData("activity-$it")),
+                    activityCount = it,
+                    group = "group-$it",
+                    userCount = it,
                 )
-            val notificationStatus = NotificationStatusResponse(unread = 5, unseen = 3)
+            }
 
-            feedState.onNotificationFeedUpdated(aggregatedActivities, notificationStatus)
+        setupInitialState(aggregatedActivities = initial)
 
-            assertEquals(aggregatedActivities, feedState.aggregatedActivities.value)
-            assertEquals(notificationStatus, feedState.notificationStatus.value)
-        }
+        val updated =
+            aggregatedActivityData(
+                activities = listOf(activityData("activity-1-updated")),
+                activityCount = 5,
+                group = "group-1",
+                userCount = 5,
+            )
+        val notificationStatus = NotificationStatusResponse(unread = 5, unseen = 3)
+
+        feedState.onNotificationFeedUpdated(listOf(updated), notificationStatus)
+
+        assertEquals(listOf(initial[0], updated, initial[2]), feedState.aggregatedActivities.value)
+        assertEquals(notificationStatus, feedState.notificationStatus.value)
+    }
+
+    @Test
+    fun `on onStoriesFeedUpdated, update matching groups`() = runTest {
+        val initial =
+            List(3) {
+                aggregatedActivityData(
+                    activities = listOf(activityData("story-$it")),
+                    activityCount = it,
+                    group = "story-group-$it",
+                    userCount = it,
+                )
+            }
+
+        setupInitialState(aggregatedActivities = initial)
+
+        val updated0 =
+            aggregatedActivityData(
+                activities = listOf(activityData("story-0-updated")),
+                activityCount = 10,
+                group = "story-group-0",
+                userCount = 10,
+            )
+        val updated2 =
+            aggregatedActivityData(
+                activities = listOf(activityData("story-2-updated")),
+                activityCount = 30,
+                group = "story-group-2",
+                userCount = 30,
+            )
+
+        feedState.onStoriesFeedUpdated(listOf(updated0, updated2))
+
+        assertEquals(listOf(updated0, initial[1], updated2), feedState.aggregatedActivities.value)
+    }
 
     // Helper functions
     private fun setupInitialState(
@@ -597,6 +641,7 @@ internal class FeedStateImplTest {
         followers: List<FollowData> = emptyList(),
         following: List<FollowData> = emptyList(),
         followRequests: List<FollowData> = emptyList(),
+        aggregatedActivities: List<AggregatedActivityData> = emptyList(),
     ) {
         val result =
             createGetOrCreateInfo(
@@ -606,6 +651,7 @@ internal class FeedStateImplTest {
                 followers = followers,
                 following = following,
                 followRequests = followRequests,
+                aggregatedActivities = aggregatedActivities,
             )
         feedState.onQueryFeed(result)
     }
@@ -617,6 +663,7 @@ internal class FeedStateImplTest {
         following: List<FollowData> = emptyList(),
         followRequests: List<FollowData> = emptyList(),
         pinnedActivities: List<ActivityPinData> = emptyList(),
+        aggregatedActivities: List<AggregatedActivityData> = emptyList(),
     ): GetOrCreateInfo {
         val paginationResult =
             PaginationResult(
@@ -633,7 +680,7 @@ internal class FeedStateImplTest {
             following = following,
             followRequests = followRequests,
             pinnedActivities = pinnedActivities,
-            aggregatedActivities = emptyList(),
+            aggregatedActivities = aggregatedActivities,
             notificationStatus = null,
             members =
                 PaginationResult(
