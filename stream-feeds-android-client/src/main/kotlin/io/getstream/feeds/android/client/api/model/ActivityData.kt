@@ -106,6 +106,7 @@ public data class ActivityData(
     val filterTags: List<String>,
     val id: String,
     val interestTags: List<String>,
+    val isWatched: Boolean?,
     val latestReactions: List<FeedsReactionData>,
     val location: ActivityLocation?,
     val mentionedUsers: List<UserData>,
