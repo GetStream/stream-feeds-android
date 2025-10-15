@@ -20,6 +20,7 @@ import io.getstream.feeds.android.client.api.model.ActivityDataVisibility
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
+import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsert
@@ -84,11 +85,12 @@ internal fun ActivityData.update(
     updated: ActivityData,
     ownBookmarks: List<BookmarkData> = this.ownBookmarks,
     ownReactions: List<FeedsReactionData> = this.ownReactions,
+    poll: PollData? = this.poll,
 ): ActivityData =
     updated.copy(
         ownBookmarks = ownBookmarks,
         ownReactions = ownReactions,
-        poll = updated.poll?.let { poll?.update(it) ?: it },
+        poll = updated.poll?.let { poll?.update(it) ?: it } ?: poll,
     )
 
 /**
