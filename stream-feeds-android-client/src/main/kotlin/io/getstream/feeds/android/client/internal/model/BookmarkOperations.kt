@@ -13,23 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getstream.feeds.android.client.api.model
+package io.getstream.feeds.android.client.internal.model
 
-import java.util.Date
+import io.getstream.feeds.android.client.api.model.BookmarkData
+import io.getstream.feeds.android.network.models.BookmarkResponse
 
 /**
- * Data class representing a bookmark folder.
- *
- * @property createdAt The date the folder was created.
- * @property custom Optional custom data as a map.
- * @property id Unique identifier for the folder.
- * @property name Name of the folder.
- * @property updatedAt The date the folder was last updated.
+ * Converts a [io.getstream.feeds.android.network.models.BookmarkResponse] to a
+ * [io.getstream.feeds.android.client.api.model.BookmarkData] model.
  */
-public data class BookmarkFolderData(
-    val createdAt: Date,
-    val custom: Map<String, Any?>?,
-    val id: String,
-    val name: String,
-    val updatedAt: Date,
-)
+internal fun BookmarkResponse.toModel(): BookmarkData =
+    BookmarkData(
+        activity = activity.toModel(),
+        createdAt = createdAt,
+        custom = custom,
+        folder = folder?.toModel(),
+        updatedAt = updatedAt,
+        user = user.toModel(),
+    )

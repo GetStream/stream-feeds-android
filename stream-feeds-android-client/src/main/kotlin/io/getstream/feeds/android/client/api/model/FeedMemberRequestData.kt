@@ -15,8 +15,6 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.network.models.FeedMemberRequest
-
 /**
  * A data model representing a request to add or update a member in a feed.
  *
@@ -38,16 +36,3 @@ public data class FeedMemberRequestData(
     public val role: String? = null,
     public val custom: Map<String, Any?> = emptyMap(),
 )
-
-/** Converts a [FeedMemberRequest] to a [FeedMemberRequestData] model. */
-internal fun FeedMemberRequest.toModel(): FeedMemberRequestData =
-    FeedMemberRequestData(userId = userId, invite = invite, role = role, custom = custom.orEmpty())
-
-/** Converts a [FeedMemberRequestData] to a [FeedMemberRequest] model. */
-internal fun FeedMemberRequestData.toRequest(): FeedMemberRequest =
-    FeedMemberRequest(
-        userId = userId,
-        invite = invite,
-        role = role,
-        custom = custom.takeIf { it.isNotEmpty() },
-    )

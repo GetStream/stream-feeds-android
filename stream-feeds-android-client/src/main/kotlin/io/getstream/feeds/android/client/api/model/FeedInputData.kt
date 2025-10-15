@@ -15,8 +15,6 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.network.models.FeedInput
-
 /**
  * A data model representing input for creating or updating a feed in the Stream Feeds system.
  *
@@ -74,47 +72,3 @@ public sealed class FeedVisibility(public val value: String) {
     /** Represents an unknown visibility setting. */
     public data class Unknown(val unknownValue: String) : FeedVisibility(unknownValue)
 }
-
-/** Converts a [FeedInput] to a [FeedInputData] model. */
-internal fun FeedInput.toModel(): FeedInputData =
-    FeedInputData(
-        description = description,
-        name = name,
-        visibility = visibility?.toModel(),
-        filterTags = filterTags.orEmpty(),
-        members = members?.map { it.toModel() }.orEmpty(),
-        custom = custom.orEmpty(),
-    )
-
-/** Converts a [FeedInput.Visibility] to a [FeedVisibility] model. */
-internal fun FeedInput.Visibility.toModel(): FeedVisibility =
-    when (this) {
-        FeedInput.Visibility.Followers -> FeedVisibility.Followers
-        FeedInput.Visibility.Members -> FeedVisibility.Members
-        FeedInput.Visibility.Private -> FeedVisibility.Private
-        FeedInput.Visibility.Public -> FeedVisibility.Public
-        FeedInput.Visibility.Visible -> FeedVisibility.Visible
-        is FeedInput.Visibility.Unknown -> FeedVisibility.Unknown(unknownValue)
-    }
-
-/** Converts a [FeedInputData] to a [FeedInput] model. */
-internal fun FeedInputData.toRequest(): FeedInput =
-    FeedInput(
-        description = description,
-        name = name,
-        visibility = visibility?.toRequest(),
-        filterTags = filterTags.takeIf { it.isNotEmpty() },
-        members = members.takeIf { it.isNotEmpty() }?.map { it.toRequest() },
-        custom = custom.takeIf { it.isNotEmpty() },
-    )
-
-/** Converts a [FeedVisibility] to a [FeedInput.Visibility] model. */
-internal fun FeedVisibility.toRequest(): FeedInput.Visibility =
-    when (this) {
-        FeedVisibility.Followers -> FeedInput.Visibility.Followers
-        FeedVisibility.Members -> FeedInput.Visibility.Members
-        FeedVisibility.Private -> FeedInput.Visibility.Private
-        FeedVisibility.Public -> FeedInput.Visibility.Public
-        FeedVisibility.Visible -> FeedInput.Visibility.Visible
-        is FeedVisibility.Unknown -> FeedInput.Visibility.Unknown(unknownValue)
-    }
