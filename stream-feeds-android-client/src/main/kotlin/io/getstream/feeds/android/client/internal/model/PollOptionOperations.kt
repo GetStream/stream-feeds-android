@@ -13,23 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.getstream.feeds.android.client.api.model
+package io.getstream.feeds.android.client.internal.model
 
-import java.util.Date
+import io.getstream.feeds.android.client.api.model.PollOptionData
+import io.getstream.feeds.android.network.models.PollOptionResponseData
 
 /**
- * Data class representing a bookmark folder.
- *
- * @property createdAt The date the folder was created.
- * @property custom Optional custom data as a map.
- * @property id Unique identifier for the folder.
- * @property name Name of the folder.
- * @property updatedAt The date the folder was last updated.
+ * Converts a [io.getstream.feeds.android.network.models.PollOptionResponseData] to a
+ * [io.getstream.feeds.android.client.api.model.PollOptionData] model.
  */
-public data class BookmarkFolderData(
-    val createdAt: Date,
-    val custom: Map<String, Any?>?,
-    val id: String,
-    val name: String,
-    val updatedAt: Date,
-)
+internal fun PollOptionResponseData.toModel(): PollOptionData =
+    PollOptionData(custom = custom, id = id, text = text)

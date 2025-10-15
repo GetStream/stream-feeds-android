@@ -16,8 +16,8 @@
 package io.getstream.feeds.android.client.internal.state.query
 
 import io.getstream.android.core.api.filter.toRequest
-import io.getstream.feeds.android.client.api.model.toRequest
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
+import io.getstream.feeds.android.client.internal.model.toRequest
 import io.getstream.feeds.android.network.models.GetOrCreateFeedRequest
 import io.getstream.feeds.android.network.models.PagerRequest
 

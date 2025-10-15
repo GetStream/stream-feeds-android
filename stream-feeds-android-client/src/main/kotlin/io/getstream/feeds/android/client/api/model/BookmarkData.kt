@@ -15,8 +15,6 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.client.internal.model.toModel
-import io.getstream.feeds.android.network.models.BookmarkResponse
 import java.util.Date
 
 /**
@@ -63,14 +61,3 @@ public data class BookmarkData(
     public val id: String
         get() = "${activity.id}${user.id}"
 }
-
-/** Converts a [BookmarkResponse] to a [BookmarkData] model. */
-internal fun BookmarkResponse.toModel(): BookmarkData =
-    BookmarkData(
-        activity = activity.toModel(),
-        createdAt = createdAt,
-        custom = custom,
-        folder = folder?.toModel(),
-        updatedAt = updatedAt,
-        user = user.toModel(),
-    )
