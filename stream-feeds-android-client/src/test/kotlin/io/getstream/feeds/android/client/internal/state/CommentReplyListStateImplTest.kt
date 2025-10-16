@@ -19,6 +19,7 @@ import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
+import io.getstream.feeds.android.client.internal.model.addReply
 import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.model.upsertReaction
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
@@ -75,9 +76,10 @@ internal class CommentReplyListStateImplTest {
         val newReply =
             threadedCommentData("reply-1", parentId = "parent-1", text = "Reply to parent")
 
+        val expectedParent = parentComment.addReply(newReply, Comparator { _, _ -> 0 })
+
         state.onCommentAdded(newReply)
 
-        val expectedParent = parentComment.copy(replies = listOf(newReply), replyCount = 1)
         assertEquals(listOf(expectedParent), state.replies.value)
     }
 
