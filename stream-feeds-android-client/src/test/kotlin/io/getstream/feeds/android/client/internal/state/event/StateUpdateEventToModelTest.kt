@@ -50,6 +50,7 @@ import io.getstream.feeds.android.network.models.PollUpdatedFeedEvent
 import io.getstream.feeds.android.network.models.PollVoteCastedFeedEvent
 import io.getstream.feeds.android.network.models.PollVoteChangedFeedEvent
 import io.getstream.feeds.android.network.models.PollVoteRemovedFeedEvent
+import io.getstream.feeds.android.network.models.StoriesFeedUpdatedEvent
 import io.getstream.feeds.android.network.models.WSEvent
 import java.util.Date
 import kotlin.reflect.KClass
@@ -103,6 +104,7 @@ internal class StateUpdateEventToModelTest(
                 followUpdated().shouldMapTo<StateUpdateEvent.FollowUpdated>(),
                 followDeleted().shouldMapTo<StateUpdateEvent.FollowDeleted>(),
                 notificationFeedUpdated().shouldMapTo<StateUpdateEvent.NotificationFeedUpdated>(),
+                storiesFeedUpdated().shouldMapTo<StateUpdateEvent.StoriesFeedUpdated>(),
                 feedMemberAdded().shouldMapTo<StateUpdateEvent.FeedMemberAdded>(),
                 feedMemberRemoved().shouldMapTo<StateUpdateEvent.FeedMemberRemoved>(),
                 feedMemberUpdated().shouldMapTo<StateUpdateEvent.FeedMemberUpdated>(),
@@ -304,6 +306,14 @@ internal class StateUpdateEventToModelTest(
                 aggregatedActivities = emptyList(),
                 notificationStatus = NotificationStatusResponse(unread = 5, unseen = 3),
                 type = "notification_feed.updated",
+            )
+
+        private fun storiesFeedUpdated() =
+            StoriesFeedUpdatedEvent(
+                createdAt = Date(1000),
+                fid = "group:feed",
+                aggregatedActivities = emptyList(),
+                type = "stories_feed.updated",
             )
 
         private fun feedMemberAdded() =

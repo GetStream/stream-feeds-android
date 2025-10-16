@@ -66,6 +66,7 @@ import io.getstream.feeds.android.network.models.PollUpdatedFeedEvent
 import io.getstream.feeds.android.network.models.PollVoteCastedFeedEvent
 import io.getstream.feeds.android.network.models.PollVoteChangedFeedEvent
 import io.getstream.feeds.android.network.models.PollVoteRemovedFeedEvent
+import io.getstream.feeds.android.network.models.StoriesFeedUpdatedEvent
 import io.getstream.feeds.android.network.models.WSEvent
 
 /**
@@ -161,6 +162,11 @@ internal sealed interface StateUpdateEvent {
         val notificationStatus: NotificationStatusResponse?,
     ) : StateUpdateEvent
 
+    data class StoriesFeedUpdated(
+        val fid: String,
+        val aggregatedActivities: List<AggregatedActivityData>,
+    ) : StateUpdateEvent
+
     data class PollDeleted(val fid: String, val pollId: String) : StateUpdateEvent
 
     data class PollUpdated(val fid: String, val poll: PollData) : StateUpdateEvent
@@ -242,6 +248,13 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
                 aggregatedActivities =
                     aggregatedActivities?.map(AggregatedActivityResponse::toModel).orEmpty(),
                 notificationStatus = notificationStatus,
+            )
+
+        is StoriesFeedUpdatedEvent ->
+            StateUpdateEvent.StoriesFeedUpdated(
+                fid = fid,
+                aggregatedActivities =
+                    aggregatedActivities?.map(AggregatedActivityResponse::toModel).orEmpty(),
             )
 
         is FeedMemberAddedEvent -> StateUpdateEvent.FeedMemberAdded(fid, member.toModel())

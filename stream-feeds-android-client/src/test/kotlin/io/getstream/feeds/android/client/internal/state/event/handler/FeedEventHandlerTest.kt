@@ -48,6 +48,7 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.P
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteCasted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteChanged
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteRemoved
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.StoriesFeedUpdated
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.activityPin
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
@@ -357,6 +358,16 @@ internal class FeedEventHandlerTest(
                             aggregatedActivities,
                             notificationStatus,
                         ),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<FeedStateUpdates>(
+                    name = "StoriesFeedUpdated matching feed",
+                    event = StoriesFeedUpdated(fid.rawValue, aggregatedActivities),
+                    verifyBlock = { state -> state.onStoriesFeedUpdated(aggregatedActivities) },
+                ),
+                testParams<FeedStateUpdates>(
+                    name = "StoriesFeedUpdated non-matching feed",
+                    event = StoriesFeedUpdated("group:different", aggregatedActivities),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
