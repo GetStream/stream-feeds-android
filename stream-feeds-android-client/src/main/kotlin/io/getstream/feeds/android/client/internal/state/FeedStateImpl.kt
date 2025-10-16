@@ -32,7 +32,6 @@ import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
-import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.model.deleteBookmark
 import io.getstream.feeds.android.client.internal.model.isFollowRequest
@@ -53,6 +52,7 @@ import io.getstream.feeds.android.client.internal.state.query.ActivitiesQueryCon
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsert
+import io.getstream.feeds.android.client.internal.utils.upsertAll
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import io.getstream.feeds.android.network.models.NotificationStatusResponse
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -130,10 +130,10 @@ internal class FeedStateImpl(
         get() = _activitiesPagination
 
     override fun onQueryFeed(result: GetOrCreateInfo) {
-        _activities.update { result.activities.models }
-        _activitiesPagination = result.activities.pagination
-        activitiesQueryConfig = result.activitiesQueryConfig
+        _activities.update { result.activities }
         _aggregatedActivities.update { result.aggregatedActivities }
+        _activitiesPagination = result.pagination
+        activitiesQueryConfig = result.activitiesQueryConfig
         _feed.update { result.feed }
         _followers.update { result.followers }
         _following.update { result.following }
@@ -146,14 +146,19 @@ internal class FeedStateImpl(
     }
 
     override fun onQueryMoreActivities(
-        result: PaginationResult<ActivityData>,
+        activities: List<ActivityData>,
+        aggregatedActivities: List<AggregatedActivityData>,
+        pagination: PaginationData,
         queryConfig: ActivitiesQueryConfig,
     ) {
-        _activitiesPagination = result.pagination
+        _activitiesPagination = pagination
         activitiesQueryConfig = queryConfig
         // Merge the new activities with the existing ones (keeping the sort order)
         _activities.update { current ->
-            current.mergeSorted(result.models, ActivityData::id, activitiesSorting)
+            current.mergeSorted(activities, ActivityData::id, activitiesSorting)
+        }
+        _aggregatedActivities.update { current ->
+            current.upsertAll(aggregatedActivities, AggregatedActivityData::group)
         }
     }
 
@@ -374,7 +379,9 @@ internal interface FeedStateUpdates {
 
     /** Handles the result of a query for more activities. */
     fun onQueryMoreActivities(
-        result: PaginationResult<ActivityData>,
+        activities: List<ActivityData>,
+        aggregatedActivities: List<AggregatedActivityData>,
+        pagination: PaginationData,
         queryConfig: ActivitiesQueryConfig,
     )
 

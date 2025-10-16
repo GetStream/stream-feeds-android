@@ -63,14 +63,12 @@ internal class FeedsRepositoryImpl(private val api: FeedsApi) : FeedsRepository 
             )
         val rawFollowers = response.followers.map { it.toModel() }
         GetOrCreateInfo(
+            pagination = PaginationData(next = response.next, previous = response.prev),
             activities =
-                PaginationResult(
-                    models =
-                        response.activities.map { it.toModel() }.sortedWith(ActivitiesSort.Default),
-                    pagination = PaginationData(next = response.next, previous = response.prev),
-                ),
+                response.activities.map { it.toModel() }.sortedWith(ActivitiesSort.Default),
             activitiesQueryConfig =
                 QueryConfiguration(filter = query.activityFilter, sort = ActivitiesSort.Default),
+            aggregatedActivities = response.aggregatedActivities.map { it.toModel() },
             feed = response.feed.toModel(),
             followers = rawFollowers.filter { it.isFollowerOf(fid) },
             following = response.following.map { it.toModel() }.filter { it.isFollowing(fid) },
@@ -81,7 +79,6 @@ internal class FeedsRepositoryImpl(private val api: FeedsApi) : FeedsRepository 
                     pagination = response.memberPagination?.toModel() ?: PaginationData.EMPTY,
                 ),
             pinnedActivities = response.pinnedActivities.map { it.toModel() },
-            aggregatedActivities = response.aggregatedActivities.map { it.toModel() },
             notificationStatus = response.notificationStatus,
         )
     }

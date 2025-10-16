@@ -23,6 +23,7 @@ import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
+import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
@@ -120,14 +121,15 @@ internal interface FeedsRepository {
  * @property notificationStatus The notification status for the feed, if available.
  */
 internal data class GetOrCreateInfo(
-    val activities: PaginationResult<ActivityData>,
+    val pagination: PaginationData,
+    val activities: List<ActivityData>,
     val activitiesQueryConfig: ActivitiesQueryConfig,
+    val aggregatedActivities: List<AggregatedActivityData>,
     val feed: FeedData,
     val followers: List<FollowData>,
     val following: List<FollowData>,
     val followRequests: List<FollowData>,
     val members: PaginationResult<FeedMemberData>,
     val pinnedActivities: List<ActivityPinData>,
-    val aggregatedActivities: List<AggregatedActivityData>,
     val notificationStatus: NotificationStatusResponse?,
 )
