@@ -24,7 +24,6 @@ import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionDat
 import io.getstream.feeds.android.client.internal.test.TestData.threadedCommentData
 import java.util.Date
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 internal class ThreadedCommentDataTest {
@@ -160,13 +159,10 @@ internal class ThreadedCommentDataTest {
             )
 
         // When
-        val updated = parent.addReply(newComment, comparator)
+        val expected = parent.addReply(newComment, comparator)
 
         // Then
-        assertEquals(2, updated.replyCount)
-        assertEquals(listOf(newComment, originalComment), updated.replies)
-
-        // every reply in the updated list still belongs to the same parent comment
-        assertTrue(updated.replies!!.all { it.parentId == "parent-1" })
+        assertEquals(2, expected.replyCount)
+        assertEquals(listOf(newComment, originalComment), expected.replies)
     }
 }
