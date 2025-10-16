@@ -196,6 +196,24 @@ internal fun <T> List<T>.upsertSorted(
     update: (old: T, new: T) -> T = { _, new -> new },
 ): List<T> = upsertSorted(element, idSelector, CompositeComparator(sort), update)
 
+internal fun <T, R> List<T>.upsertAll(that: List<T>, keySelector: (T) -> R): List<T> {
+    // Using LinkedHashMap instead of e.g. HashMap to preserve order
+    val toUpsert = that.associateByTo(LinkedHashMap(), keySelector)
+    val result = ArrayList<T>(this.size + that.size)
+
+    // Update what should be updated
+    forEach { item ->
+        val key = keySelector(item)
+        result.add(toUpsert[key] ?: item)
+        toUpsert.remove(key)
+    }
+
+    // Insert the rest
+    result.addAll(toUpsert.values)
+
+    return result
+}
+
 /**
  * Merges two sorted arrays while maintaining the sort order and handling duplicates.
  *

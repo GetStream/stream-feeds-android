@@ -74,16 +74,14 @@ internal class FeedsRepositoryImplTest {
             apiResult = apiResult,
             repositoryResult =
                 GetOrCreateInfo(
-                    activities =
-                        PaginationResult(
-                            models = emptyList(),
-                            pagination = PaginationData(next = "next", previous = "prev"),
-                        ),
+                    pagination = PaginationData(next = "next", previous = "prev"),
+                    activities = emptyList(),
                     activitiesQueryConfig =
                         QueryConfiguration(
                             filter = query.activityFilter,
                             sort = ActivitiesSort.Default,
                         ),
+                    aggregatedActivities = emptyList(),
                     feed = apiResult.feed.toModel(),
                     followers = emptyList(),
                     following = emptyList(),
@@ -91,7 +89,6 @@ internal class FeedsRepositoryImplTest {
                     members =
                         PaginationResult(models = emptyList(), pagination = PaginationData.EMPTY),
                     pinnedActivities = emptyList(),
-                    aggregatedActivities = emptyList(),
                     notificationStatus = null,
                 ),
         )
