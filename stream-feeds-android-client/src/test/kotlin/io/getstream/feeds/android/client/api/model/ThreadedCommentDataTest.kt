@@ -129,7 +129,7 @@ internal class ThreadedCommentDataTest {
     }
 
     @Test
-    fun `addReply should append reply, increment replyCount and keep replies sorted`() {
+    fun `addReply should append reply, increment replyCount and keep replies sorted by createdAt`() {
         // Given
         val comparator =
             Comparator<CommentsSortDataFields> { a, b -> b.createdAt.compareTo(a.createdAt) }
@@ -138,7 +138,7 @@ internal class ThreadedCommentDataTest {
             threadedCommentData(
                 id = "original-comment-1",
                 parentId = "parent-1",
-                createdAt = Date(1000L),
+                createdAt = Date(1L),
                 text = "Original text",
             )
 
@@ -146,7 +146,7 @@ internal class ThreadedCommentDataTest {
             threadedCommentData(
                 id = "updated-comment-1",
                 parentId = "parent-1",
-                createdAt = Date(2000L),
+                createdAt = Date(2L),
                 text = "Updated Text",
             )
 
