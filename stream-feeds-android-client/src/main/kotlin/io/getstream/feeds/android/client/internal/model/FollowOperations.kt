@@ -18,7 +18,6 @@ package io.getstream.feeds.android.client.internal.model
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.FollowStatus
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.network.models.FollowResponse
 
 internal val FollowData.isFollower: Boolean
