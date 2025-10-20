@@ -49,6 +49,7 @@ import io.getstream.feeds.android.network.models.BookmarkResponse
 import io.getstream.feeds.android.network.models.CommentResponse
 import io.getstream.feeds.android.network.models.DeleteCommentResponse
 import io.getstream.feeds.android.network.models.FeedMemberResponse
+import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.getstream.feeds.android.network.models.FeedResponse
 import io.getstream.feeds.android.network.models.FeedSuggestionResponse
 import io.getstream.feeds.android.network.models.FeedsReactionResponse
@@ -590,6 +591,7 @@ internal object TestData {
         name: String = "Test Feed",
         description: String = "Test feed description",
         createdAt: Long = 1000,
+        ownCapabilities: List<FeedOwnCapability> = emptyList(),
     ): FeedData =
         FeedData(
             createdAt = Date(createdAt),
@@ -604,7 +606,7 @@ internal object TestData {
             groupId = groupId,
             id = id,
             memberCount = 0,
-            ownCapabilities = emptyList(),
+            ownCapabilities = ownCapabilities,
             ownMembership = null,
             name = name,
             pinCount = 0,

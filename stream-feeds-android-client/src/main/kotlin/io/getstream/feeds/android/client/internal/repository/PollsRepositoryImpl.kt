@@ -20,7 +20,6 @@ import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollOptionData
 import io.getstream.feeds.android.client.api.model.PollVoteData
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult

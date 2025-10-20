@@ -24,7 +24,6 @@ import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
