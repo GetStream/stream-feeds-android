@@ -39,7 +39,6 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.C
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpdated
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FollowAdded
@@ -301,16 +300,6 @@ internal class FeedEventHandlerTest(
                 testParams<FeedStateUpdates>(
                     name = "CommentReactionUpdated non-matching feed",
                     event = CommentReactionUpdated("group:different", comment, commentReaction),
-                    verifyBlock = { state -> state wasNot called },
-                ),
-                testParams<FeedStateUpdates>(
-                    name = "FeedAdded matching feed",
-                    event = FeedAdded(matchingFeed),
-                    verifyBlock = { state -> state.onFeedUpdated(matchingFeed) },
-                ),
-                testParams<FeedStateUpdates>(
-                    name = "FeedAdded non-matching feed",
-                    event = FeedAdded(nonMatchingFeed),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(

@@ -146,12 +146,6 @@ internal class FeedEventHandler(
                 }
             }
 
-            is StateUpdateEvent.FeedAdded -> {
-                if (event.feed.fid == fid) {
-                    state.onFeedUpdated(event.feed)
-                }
-            }
-
             is StateUpdateEvent.FeedDeleted -> {
                 if (event.fid == fid.rawValue) {
                     state.onFeedDeleted()
