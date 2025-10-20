@@ -17,8 +17,10 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FollowData
+import io.getstream.feeds.android.client.api.state.query.ActivitiesFilter
 import io.getstream.feeds.android.client.internal.state.FeedStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.query.matches
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
 /**
@@ -29,8 +31,11 @@ import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventList
  * @param fid The unique identifier for the feed this handler is associated with.
  * @property state The instance that manages updates to the feed state.
  */
-internal class FeedEventHandler(private val fid: FeedId, private val state: FeedStateUpdates) :
-    StateUpdateEventListener {
+internal class FeedEventHandler(
+    private val fid: FeedId,
+    private val activityFilter: ActivitiesFilter?,
+    private val state: FeedStateUpdates,
+) : StateUpdateEventListener {
 
     /**
      * Processes a state update event and updates the feed state.
@@ -40,7 +45,7 @@ internal class FeedEventHandler(private val fid: FeedId, private val state: Feed
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
             is StateUpdateEvent.ActivityAdded -> {
-                if (event.fid == fid.rawValue) {
+                if (event.fid == fid.rawValue && event.activity matches activityFilter) {
                     state.onActivityAdded(event.activity)
                 }
             }
@@ -48,6 +53,12 @@ internal class FeedEventHandler(private val fid: FeedId, private val state: Feed
             is StateUpdateEvent.ActivityDeleted -> {
                 if (event.fid == fid.rawValue) {
                     state.onActivityRemoved(event.activityId)
+                }
+            }
+
+            is StateUpdateEvent.ActivityUpdated -> {
+                if (event.fid == fid.rawValue && event.activity matches activityFilter) {
+                    state.onActivityUpdated(event.activity)
                 }
             }
 
@@ -72,12 +83,6 @@ internal class FeedEventHandler(private val fid: FeedId, private val state: Feed
             is StateUpdateEvent.ActivityReactionUpdated -> {
                 if (event.fid == fid.rawValue) {
                     state.onReactionUpserted(event.reaction, event.activity)
-                }
-            }
-
-            is StateUpdateEvent.ActivityUpdated -> {
-                if (event.fid == fid.rawValue) {
-                    state.onActivityUpdated(event.activity)
                 }
             }
 
@@ -177,6 +182,12 @@ internal class FeedEventHandler(private val fid: FeedId, private val state: Feed
                         aggregatedActivities = event.aggregatedActivities,
                         notificationStatus = event.notificationStatus,
                     )
+                }
+            }
+
+            is StateUpdateEvent.StoriesFeedUpdated -> {
+                if (event.fid == fid.rawValue) {
+                    state.onStoriesFeedUpdated(event.aggregatedActivities)
                 }
             }
 

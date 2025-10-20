@@ -19,6 +19,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.getstream.android.core.api.utils.flatMap
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
@@ -44,36 +45,32 @@ import kotlinx.coroutines.flow.update
 @HiltViewModel
 class ProfileViewModel @Inject constructor(loginManager: LoginManager) : ViewModel() {
 
-    private val client =
+    val state =
         flow { emit(AsyncResource.notNull(loginManager.currentClient())) }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
-
-    val feed =
-        client
-            .map { loadingState -> loadingState.map(::getFeed) }
+            .map { loadingState -> loadingState.map(::toState) }
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
     private val _followSuggestions: MutableStateFlow<List<FeedData>> = MutableStateFlow(emptyList())
     val followSuggestions: StateFlow<List<FeedData>> = _followSuggestions.asStateFlow()
 
     init {
-        feed.withFirstContent(viewModelScope) {
-            getOrCreate().logResult(TAG, "Error getting the profile feed")
-        }
-        client.withFirstContent(viewModelScope) {
+        state.withFirstContent(viewModelScope) {
+            feed.getOrCreate().logResult(TAG, "Getting the profile feed")
             _followSuggestions.value =
                 // We query suggestions from a user feed because we want to follow those, not other
                 // timelines.
-                feed(Feeds.user(user.id))
+                client
+                    .feed(Feeds.user(client.user.id))
                     .queryFollowSuggestions(10)
-                    .logResult(TAG, "Error getting follow suggestions")
+                    .logResult(TAG, "Getting follow suggestions")
                     .getOrDefault(emptyList())
         }
     }
 
     fun follow(feedId: FeedId) {
-        feed.withFirstContent(viewModelScope) {
-            follow(feedId, createNotificationActivity = true)
+        state.withFirstContent(viewModelScope) {
+            feed
+                .follow(feedId, createNotificationActivity = true)
                 .onSuccess {
                     // Update the follow suggestions after following a feed
                     _followSuggestions.update {
@@ -81,18 +78,27 @@ class ProfileViewModel @Inject constructor(loginManager: LoginManager) : ViewMod
                     }
                 }
                 .onFailure { Log.e(TAG, "Failed to follow feed: $feedId", it) }
+                .flatMap {
+                    // Also make `stories:user_id` follow `story:their_id` to follow stories.
+                    client.feed(Feeds.stories(client.user.id)).follow(Feeds.story(feedId.id))
+                }
+                .onFailure { Log.e(TAG, "Failed to follow stories feed for: ${feedId.id}", it) }
         }
     }
 
     fun unfollow(feedId: FeedId) {
-        feed.withFirstContent(viewModelScope) {
-            unfollow(feedId)
-                .onSuccess { Log.d(TAG, "Successfully unfollowed feed: $it") }
-                .onFailure { Log.e(TAG, "Failed to unfollow feed: $feedId", it) }
+        state.withFirstContent(viewModelScope) {
+            feed
+                .unfollow(feedId)
+                .logResult(TAG, "Unfollowing feed: $feedId")
+                .flatMap {
+                    client.feed(Feeds.stories(client.user.id)).unfollow(Feeds.story(feedId.id))
+                }
+                .logResult(TAG, "Unfollowing stories feed for: ${feedId.id}")
         }
     }
 
-    private fun getFeed(client: FeedsClient): Feed {
+    private fun toState(client: FeedsClient): State {
         val profileFeedQuery =
             FeedQuery(
                 fid = Feeds.timeline(client.user.id),
@@ -100,8 +106,10 @@ class ProfileViewModel @Inject constructor(loginManager: LoginManager) : ViewMod
                 followerLimit = 10, // Load first 10 followers
                 followingLimit = 10, // Load first 10 followings
             )
-        return client.feed(profileFeedQuery)
+        return State(client, client.feed(profileFeedQuery))
     }
+
+    data class State(val client: FeedsClient, val feed: Feed)
 
     companion object {
         private const val TAG = "ProfileViewModel"

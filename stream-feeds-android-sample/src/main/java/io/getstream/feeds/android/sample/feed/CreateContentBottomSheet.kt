@@ -43,8 +43,8 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -92,9 +92,9 @@ fun CreateContentBottomSheet(
         )
     val inputEnabled = state == CreateContentState.Composing
 
-    var text by remember { mutableStateOf("") }
-    var attachments by remember { mutableStateOf(emptyList<Uri>()) }
-    var isStory by remember { mutableStateOf(false) }
+    var text by rememberSaveable { mutableStateOf("") }
+    var attachments by rememberSaveable { mutableStateOf(emptyList<Uri>()) }
+    var isStory by rememberSaveable { mutableStateOf(false) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,

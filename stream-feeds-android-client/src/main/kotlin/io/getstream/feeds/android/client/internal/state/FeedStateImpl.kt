@@ -15,7 +15,6 @@
  */
 package io.getstream.feeds.android.client.internal.state
 
-import io.getstream.android.core.api.filter.matches
 import io.getstream.android.core.api.sort.Sort
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.ActivityPinData
@@ -159,16 +158,12 @@ internal class FeedStateImpl(
     }
 
     override fun onActivityAdded(activity: ActivityData) {
-        if (feedQuery.activityFilter?.matches(activity) == false) return
-
         _activities.update { current ->
             current.upsertSorted(activity, ActivityData::id, activitiesSorting)
         }
     }
 
     override fun onActivityUpdated(activity: ActivityData) {
-        if (feedQuery.activityFilter?.matches(activity) == false) return
-
         updateActivitiesWhere({ it.id == activity.id }) { it.update(activity) }
     }
 
@@ -298,8 +293,18 @@ internal class FeedStateImpl(
         aggregatedActivities: List<AggregatedActivityData>,
         notificationStatus: NotificationStatusResponse?,
     ) {
-        _aggregatedActivities.update { aggregatedActivities }
+        updateAggregatedActivities(aggregatedActivities)
         _notificationStatus.update { notificationStatus }
+    }
+
+    override fun onStoriesFeedUpdated(aggregatedActivities: List<AggregatedActivityData>) {
+        updateAggregatedActivities(aggregatedActivities)
+    }
+
+    private fun updateAggregatedActivities(aggregatedActivities: List<AggregatedActivityData>) {
+        val updatedMap = aggregatedActivities.associateBy(AggregatedActivityData::group)
+
+        _aggregatedActivities.update { current -> current.map { updatedMap[it.group] ?: it } }
     }
 
     private fun addFollow(follow: FollowData) {
@@ -438,11 +443,20 @@ internal interface FeedStateUpdates {
     /**
      * Handles updates to a notification feed.
      *
-     * @param aggregatedActivities The list of aggregated activities in the notification feed.
+     * @param aggregatedActivities The list of aggregated activities that were updated in the
+     *   notification feed.
      * @param notificationStatus The current notification status.
      */
     fun onNotificationFeedUpdated(
         aggregatedActivities: List<AggregatedActivityData>,
         notificationStatus: NotificationStatusResponse?,
     )
+
+    /**
+     * Handles updates to a stories feed.
+     *
+     * @param aggregatedActivities The list of aggregated activities that were updated in the
+     *   stories feed.
+     */
+    fun onStoriesFeedUpdated(aggregatedActivities: List<AggregatedActivityData>)
 }

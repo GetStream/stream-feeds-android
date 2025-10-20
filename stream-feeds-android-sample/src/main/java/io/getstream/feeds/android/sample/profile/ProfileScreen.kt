@@ -64,7 +64,7 @@ import kotlinx.coroutines.flow.StateFlow
 fun ProfileScreen(navigator: DestinationsNavigator) {
     val viewModel = hiltViewModel<ProfileViewModel>()
 
-    val feed by viewModel.feed.collectAsStateWithLifecycle()
+    val feed by viewModel.state.collectAsStateWithLifecycle()
 
     Surface {
         when (val feed = feed) {
@@ -77,7 +77,7 @@ fun ProfileScreen(navigator: DestinationsNavigator) {
 
             is AsyncResource.Content ->
                 ProfileScreen(
-                    state = feed.data.state,
+                    state = feed.data.feed.state,
                     followSuggestions = viewModel.followSuggestions,
                     onFollowClick = viewModel::follow,
                     onUnfollowClick = viewModel::unfollow,

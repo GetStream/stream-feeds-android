@@ -50,6 +50,7 @@ import io.getstream.feeds.android.network.models.CommentReactionAddedEvent
 import io.getstream.feeds.android.network.models.CommentReactionDeletedEvent
 import io.getstream.feeds.android.network.models.CommentReactionUpdatedEvent
 import io.getstream.feeds.android.network.models.CommentUpdatedEvent
+import io.getstream.feeds.android.network.models.FeedCreatedEvent
 import io.getstream.feeds.android.network.models.FeedDeletedEvent
 import io.getstream.feeds.android.network.models.FeedMemberAddedEvent
 import io.getstream.feeds.android.network.models.FeedMemberRemovedEvent
@@ -66,6 +67,7 @@ import io.getstream.feeds.android.network.models.PollUpdatedFeedEvent
 import io.getstream.feeds.android.network.models.PollVoteCastedFeedEvent
 import io.getstream.feeds.android.network.models.PollVoteChangedFeedEvent
 import io.getstream.feeds.android.network.models.PollVoteRemovedFeedEvent
+import io.getstream.feeds.android.network.models.StoriesFeedUpdatedEvent
 import io.getstream.feeds.android.network.models.WSEvent
 
 /**
@@ -139,9 +141,11 @@ internal sealed interface StateUpdateEvent {
         val reaction: FeedsReactionData,
     ) : StateUpdateEvent
 
-    data class FeedUpdated(val feed: FeedData) : StateUpdateEvent
+    data class FeedAdded(val feed: FeedData) : StateUpdateEvent
 
     data class FeedDeleted(val fid: String) : StateUpdateEvent
+
+    data class FeedUpdated(val feed: FeedData) : StateUpdateEvent
 
     data class FeedMemberAdded(val fid: String, val member: FeedMemberData) : StateUpdateEvent
 
@@ -159,6 +163,11 @@ internal sealed interface StateUpdateEvent {
         val fid: String,
         val aggregatedActivities: List<AggregatedActivityData>,
         val notificationStatus: NotificationStatusResponse?,
+    ) : StateUpdateEvent
+
+    data class StoriesFeedUpdated(
+        val fid: String,
+        val aggregatedActivities: List<AggregatedActivityData>,
     ) : StateUpdateEvent
 
     data class PollDeleted(val fid: String, val pollId: String) : StateUpdateEvent
@@ -226,6 +235,8 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
         is CommentReactionUpdatedEvent ->
             StateUpdateEvent.CommentReactionUpdated(fid, comment.toModel(), reaction.toModel())
 
+        is FeedCreatedEvent -> StateUpdateEvent.FeedAdded(feed.toModel())
+
         is FeedUpdatedEvent -> StateUpdateEvent.FeedUpdated(feed.toModel())
 
         is FeedDeletedEvent -> StateUpdateEvent.FeedDeleted(fid)
@@ -242,6 +253,13 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
                 aggregatedActivities =
                     aggregatedActivities?.map(AggregatedActivityResponse::toModel).orEmpty(),
                 notificationStatus = notificationStatus,
+            )
+
+        is StoriesFeedUpdatedEvent ->
+            StateUpdateEvent.StoriesFeedUpdated(
+                fid = fid,
+                aggregatedActivities =
+                    aggregatedActivities?.map(AggregatedActivityResponse::toModel).orEmpty(),
             )
 
         is FeedMemberAddedEvent -> StateUpdateEvent.FeedMemberAdded(fid, member.toModel())
