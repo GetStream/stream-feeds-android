@@ -61,6 +61,7 @@ import java.util.Date
  * @property id The unique identifier of the activity.
  * @property interestTags Tags indicating user interests or content categories for recommendation
  *   purposes.
+ * @property isWatched Whether the activity was watched by the current user. Relevant for stories.
  * @property latestReactions The most recent reactions added to the activity. This property contains
  *   the latest reactions from users, typically limited to the most recent ones.
  * @property location Geographic location data associated with the activity, if any.
@@ -106,6 +107,7 @@ public data class ActivityData(
     val filterTags: List<String>,
     val id: String,
     val interestTags: List<String>,
+    val isWatched: Boolean?,
     val latestReactions: List<FeedsReactionData>,
     val location: ActivityLocation?,
     val mentionedUsers: List<UserData>,

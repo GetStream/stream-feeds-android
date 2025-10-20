@@ -16,7 +16,8 @@
 package io.getstream.feeds.android.sample.story
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -33,10 +34,16 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -49,24 +56,74 @@ import io.getstream.feeds.android.client.api.model.UserData
 import io.getstream.feeds.android.sample.components.UserAvatar
 
 @Composable
-fun StoryScreen(activity: ActivityData, onDismiss: () -> Unit) {
+fun StoryScreen(
+    activities: List<ActivityData>,
+    onWatched: (String) -> Unit,
+    onDismiss: () -> Unit,
+) {
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
+        var currentIndex by remember { mutableIntStateOf(0) }
+        val activity = activities[currentIndex]
         val firstImage = activity.attachments.firstOrNull()?.assetUrl
+
+        LaunchedEffect(currentIndex) { onWatched(activity.id) }
 
         Box(
             modifier =
                 Modifier.background(MaterialTheme.colorScheme.background)
                     .fillMaxSize()
-                    .clickable(onClick = onDismiss)
+                    .systemBarsPadding()
+                    .pointerInput(Unit) {
+                        detectTapGestures { offset ->
+                            val isRightSide = offset.x > size.width / 2
+
+                            if (isRightSide) {
+                                if (currentIndex == activities.lastIndex) {
+                                    onDismiss()
+                                } else {
+                                    currentIndex++
+                                }
+                            } else if (currentIndex > 0) {
+                                currentIndex--
+                            }
+                        }
+                    }
         ) {
             if (firstImage != null) {
                 ImageStoryContent(activity = activity, imageUrl = firstImage)
             } else {
                 TextOnlyStoryContent(activity = activity)
             }
+
+            StoryIndicator(
+                total = activities.size,
+                currentIndex = currentIndex,
+                modifier = Modifier.fillMaxWidth().padding(8.dp).align(Alignment.TopCenter),
+            )
+        }
+    }
+}
+
+@Composable
+private fun StoryIndicator(currentIndex: Int, total: Int, modifier: Modifier = Modifier) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier,
+    ) {
+        repeat(total) { index ->
+            val color =
+                if (index <= currentIndex) MaterialTheme.colorScheme.onBackground
+                else MaterialTheme.colorScheme.onBackground.copy(alpha = .3f)
+            Box(
+                modifier =
+                    Modifier.weight(1f)
+                        .height(4.dp)
+                        .background(color = color, shape = MaterialTheme.shapes.small)
+            )
         }
     }
 }
@@ -106,7 +163,6 @@ private fun BoxScope.ImageStoryContent(activity: ActivityData, imageUrl: String)
             Modifier.fillMaxWidth()
                 .align(Alignment.BottomCenter)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
-                .systemBarsPadding()
     ) {
         StoryUserInfo(user = activity.user, textColor = Color.White)
 
@@ -127,7 +183,7 @@ private fun TextOnlyStoryContent(activity: ActivityData) {
     // Background color
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceVariant))
 
-    Column(modifier = Modifier.fillMaxSize().systemBarsPadding()) {
+    Column(modifier = Modifier.fillMaxSize()) {
 
         // Large centered text
         Text(
