@@ -44,8 +44,6 @@ internal class FeedsCapabilityRepository(
         notifyPending()
     }
 
-    fun getCached(id: FeedId): List<FeedOwnCapability>? = cache[id]
-
     /** Requests to fetch the capabilities for the provided [id] if they are not already cached. */
     suspend fun fetch(id: FeedId): Result<List<FeedOwnCapability>> {
         cache[id]?.let {

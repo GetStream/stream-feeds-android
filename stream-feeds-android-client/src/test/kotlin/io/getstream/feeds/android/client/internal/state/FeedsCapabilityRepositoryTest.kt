@@ -34,7 +34,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -47,21 +46,6 @@ internal class FeedsCapabilityRepositoryTest {
 
     private val repository =
         FeedsCapabilityRepository(batcher = batcher, retryProcessor = retryProcessor, api = api)
-
-    @Test
-    fun `on getCached when ID not in cache, return null`() {
-        assertNull(repository.getCached(FeedId("user:123")))
-    }
-
-    @Test
-    fun `on cache store capabilities and make them retrievable via getCached`() {
-        val feedId = FeedId("user:123")
-        val capabilities = listOf(FeedOwnCapability.ReadFeed, FeedOwnCapability.AddActivity)
-
-        repository.cache(mapOf(feedId to capabilities))
-
-        assertEquals(capabilities, repository.getCached(feedId))
-    }
 
     @Test
     fun `on cache when pending requests exist, complete them with new capabilities`() = runTest {
@@ -171,7 +155,7 @@ internal class FeedsCapabilityRepositoryTest {
     }
 
     @Test
-    fun `on processBatch when successful, cache results and complete pending requests`() = runTest {
+    fun `on processBatch when successful, complete pending requests`() = runTest {
         val feedId1 = FeedId("user:123")
         val feedId2 = FeedId("user:456")
         val capabilities1 = listOf(FeedOwnCapability.ReadFeed)
@@ -186,8 +170,6 @@ internal class FeedsCapabilityRepositoryTest {
 
         assertEquals(Result.success(capabilities1), fetch1.await())
         assertEquals(Result.success(capabilities2), fetch2.await())
-        assertEquals(capabilities1, repository.getCached(feedId1))
-        assertEquals(capabilities2, repository.getCached(feedId2))
     }
 
     @Test
@@ -205,7 +187,6 @@ internal class FeedsCapabilityRepositoryTest {
 
         val result = deferred.await()
         assertEquals("API failed", result.exceptionOrNull()?.message)
-        assertNull(repository.getCached(feedId))
     }
 
     private fun mockSuccessfulBatch(capabilities: Map<FeedId, List<FeedOwnCapability>>) {
