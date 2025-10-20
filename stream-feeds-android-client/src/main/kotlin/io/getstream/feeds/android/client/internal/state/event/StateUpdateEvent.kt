@@ -28,7 +28,6 @@ import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollVoteData
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.network.models.ActivityAddedEvent
 import io.getstream.feeds.android.network.models.ActivityDeletedEvent
