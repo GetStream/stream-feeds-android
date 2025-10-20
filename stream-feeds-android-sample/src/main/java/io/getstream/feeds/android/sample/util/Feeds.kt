@@ -18,9 +18,18 @@ package io.getstream.feeds.android.sample.util
 import io.getstream.feeds.android.client.api.model.FeedId
 
 object Feeds {
+    /** The user's timeline feed containing posts from followed users */
     fun timeline(id: String) = FeedId("timeline", id)
 
+    /** Notifications feed */
     fun notifications(id: String) = FeedId("notification", id)
 
+    /** The user's feed containing stories from followed users */
+    fun stories(id: String) = FeedId("stories", id)
+
+    /** The user's own stories */
+    fun story(id: String) = FeedId("story", id)
+
+    /** The user's own posts */
     fun user(id: String) = FeedId("user", id)
 }

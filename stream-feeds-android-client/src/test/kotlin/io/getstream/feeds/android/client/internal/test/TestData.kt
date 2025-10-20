@@ -222,6 +222,7 @@ internal object TestData {
             filterTags = emptyList(),
             id = id,
             interestTags = emptyList(),
+            isWatched = null,
             latestReactions = emptyList(),
             location = null,
             mentionedUsers = emptyList(),

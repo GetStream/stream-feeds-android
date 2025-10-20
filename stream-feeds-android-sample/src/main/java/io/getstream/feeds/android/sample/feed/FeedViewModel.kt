@@ -21,8 +21,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.getstream.android.core.api.filter.doesNotExist
-import io.getstream.android.core.api.filter.exists
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.file.FileType
@@ -33,13 +31,12 @@ import io.getstream.feeds.android.client.api.model.FeedInputData
 import io.getstream.feeds.android.client.api.model.FeedMemberRequestData
 import io.getstream.feeds.android.client.api.model.FeedVisibility
 import io.getstream.feeds.android.client.api.state.Feed
-import io.getstream.feeds.android.client.api.state.query.ActivitiesFilter
-import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.network.models.AddReactionRequest
 import io.getstream.feeds.android.network.models.CreatePollRequest
 import io.getstream.feeds.android.network.models.CreatePollRequest.VotingVisibility.Anonymous
 import io.getstream.feeds.android.network.models.CreatePollRequest.VotingVisibility.Public
+import io.getstream.feeds.android.network.models.MarkActivityRequest
 import io.getstream.feeds.android.network.models.PollOptionInput
 import io.getstream.feeds.android.network.models.UpdateActivityRequest
 import io.getstream.feeds.android.sample.login.LoginManager
@@ -71,12 +68,9 @@ import kotlinx.coroutines.flow.stateIn
 class FeedViewModel
 @Inject
 constructor(private val application: Application, loginManager: LoginManager) : ViewModel() {
-    private val client =
-        flow { emit(AsyncResource.notNull(loginManager.currentClient())) }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
     val viewState =
-        client
+        flow { emit(AsyncResource.notNull(loginManager.currentClient())) }
             .map { it.map(::toState) }
             .stateIn(viewModelScope, SharingStarted.Eagerly, AsyncResource.Loading)
 
@@ -91,10 +85,12 @@ constructor(private val application: Application, loginManager: LoginManager) : 
     init {
         viewState.withFirstContent(viewModelScope) {
             timeline.getOrCreate().notifyOnFailure { "Error getting the timeline" }
-            timeline.followSelfIfNeeded(ownFeed.fid)
+            timeline.followSelfIfNeeded(ownTimeline.fid)
         }
         viewState.withFirstContent(viewModelScope) {
             stories.getOrCreate().notifyOnFailure { "Error getting the stories" }
+            ownStories.getOrCreate()
+            stories.followSelfIfNeeded(ownStories.fid)
         }
         viewState.withFirstContent(viewModelScope) { notifications.getOrCreate() }
     }
@@ -140,7 +136,9 @@ constructor(private val application: Application, loginManager: LoginManager) : 
 
     fun onRepostClick(activity: ActivityData, text: String?) {
         viewState.withFirstContent(viewModelScope) {
-            ownFeed.repost(activity.id, text = text).notifyOnFailure { "Failed to repost activity" }
+            ownTimeline.repost(activity.id, text = text).notifyOnFailure {
+                "Failed to repost activity"
+            }
         }
     }
 
@@ -198,16 +196,26 @@ constructor(private val application: Application, loginManager: LoginManager) : 
                         return@withFirstContent
                     }
 
+            val postingFeed = if (isStory) ownStories else ownTimeline
+
             val result =
-                ownFeed
+                postingFeed
                     .addActivity(
-                        request = addActivityRequest(ownFeed.fid, text, isStory, attachmentFiles),
+                        request =
+                            addActivityRequest(postingFeed.fid, text, isStory, attachmentFiles),
                         attachmentUploadProgress = { file, progress ->
                             Log.d(TAG, "Uploading attachment: ${file.type}, progress: $progress")
                         },
                     )
                     .logResult(TAG, "Creating activity with text: $text")
                     .notifyOnFailure { "Failed to create post" }
+                    .onSuccess {
+                        // Creating a story doesn't trigger an update to aggregated activities
+                        // (stories are aggregated by user), so we refetch after posting
+                        if (isStory) {
+                            stories.getOrCreate()
+                        }
+                    }
 
             deleteFiles(attachmentFiles)
 
@@ -216,6 +224,14 @@ constructor(private val application: Application, loginManager: LoginManager) : 
                     onSuccess = { CreateContentState.Hidden },
                     onFailure = { CreateContentState.Composing },
                 )
+        }
+    }
+
+    fun onStoryWatched(storyId: String) {
+        viewState.withFirstContent(viewModelScope) {
+            stories
+                .markActivity(MarkActivityRequest(markWatched = listOf(storyId)))
+                .notifyOnFailure { "Failed to mark story as watched" }
         }
     }
 
@@ -250,7 +266,7 @@ constructor(private val application: Application, loginManager: LoginManager) : 
                     votingVisibility = if (poll.anonymousPoll) Anonymous else Public,
                 )
 
-            ownFeed
+            ownTimeline
                 .createPoll(request = request, activityType = "activity")
                 .logResult(TAG, "Creating poll with question: ${poll.question}")
                 .notifyOnFailure { "Failed to create poll" }
@@ -259,23 +275,24 @@ constructor(private val application: Application, loginManager: LoginManager) : 
 
     private fun toState(client: FeedsClient): ViewState {
         val userId = client.user.id
-        val timelineQuery = feedQuery(userId, ActivitiesFilterField.expiresAt.doesNotExist())
-        val storiesQuery = feedQuery(userId, ActivitiesFilterField.expiresAt.exists())
+        val timelineQuery = feedQuery(Feeds.timeline(userId), userId)
+        val storiesQuery = feedQuery(Feeds.stories(userId), userId)
+        val ownStoriesQuery = feedQuery(Feeds.story(userId), userId)
 
         return ViewState(
             userId = userId,
             userImage = client.user.imageURL,
-            ownFeed = client.feed(Feeds.user(userId)),
             timeline = client.feed(timelineQuery),
+            ownTimeline = client.feed(Feeds.user(userId)),
             stories = client.feed(storiesQuery),
+            ownStories = client.feed(ownStoriesQuery),
             notifications = client.feed(Feeds.notifications(userId)),
         )
     }
 
-    private fun feedQuery(userId: String, filter: ActivitiesFilter) =
+    private fun feedQuery(feedId: FeedId, userId: String) =
         FeedQuery(
-            fid = Feeds.timeline(userId),
-            activityFilter = filter,
+            fid = feedId,
             followingLimit = 10,
             data =
                 FeedInputData(
@@ -291,9 +308,10 @@ constructor(private val application: Application, loginManager: LoginManager) : 
     data class ViewState(
         val userId: String,
         val userImage: String?,
-        val ownFeed: Feed,
         val timeline: Feed,
+        val ownTimeline: Feed,
         val stories: Feed,
+        val ownStories: Feed,
         val notifications: Feed,
     )
 
