@@ -51,7 +51,7 @@ internal class FeedListStateImplTest {
     }
 
     @Test
-    fun `on feedUpdated, then update specific feed`() = runTest {
+    fun `on onFeedUpserted with existing feed, then update specific feed`() = runTest {
         val feed1 = feedData(id = "feed-1", groupId = "user", name = "First Feed")
         val feed2 = feedData(id = "feed-2", groupId = "user", name = "Second Feed")
         val initialFeeds = listOf(feed1, feed2)
@@ -65,25 +65,26 @@ internal class FeedListStateImplTest {
                 name = "Updated Feed",
                 description = "Updated description",
             )
-        feedListState.onFeedUpdated(updatedFeed)
+        feedListState.onFeedUpserted(updatedFeed)
 
         val updatedFeeds = feedListState.feeds.value
         assertEquals(listOf(updatedFeed, feed2), updatedFeeds)
     }
 
     @Test
-    fun `on feedUpdated with non-existent feed, then keep existing feeds unchanged`() = runTest {
-        val feed1 = feedData(id = "feed-1", groupId = "user", name = "First Feed")
-        val feed2 = feedData(id = "feed-2", groupId = "user", name = "Second Feed")
+    fun `on feedUpserted with non-existent feed, then insert feed in sorted position`() = runTest {
+        val feed1 = feedData(id = "feed-1", groupId = "group", name = "F1", createdAt = 1000)
+        val feed2 = feedData(id = "feed-2", groupId = "group", name = "F2", createdAt = 2000)
         val initialFeeds = listOf(feed1, feed2)
         val paginationResult = defaultPaginationResult(initialFeeds)
         feedListState.onQueryMoreFeeds(paginationResult, defaultQueryConfig)
 
-        val nonExistentFeed =
-            feedData(id = "non-existent", groupId = "user", name = "Non-existent Feed")
-        feedListState.onFeedUpdated(nonExistentFeed)
+        val newFeed = feedData(id = "feed-new", groupId = "group", name = "F1.5", createdAt = 1500)
+        feedListState.onFeedUpserted(newFeed)
 
-        assertEquals(initialFeeds, feedListState.feeds.value)
+        // Expect the new feed to be inserted in a sorted position based on createdAt
+        val expectedFeeds = listOf(feed1, newFeed, feed2)
+        assertEquals(expectedFeeds, feedListState.feeds.value)
     }
 
     @Test
