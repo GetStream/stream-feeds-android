@@ -41,7 +41,7 @@ internal class FeedListImpl(
 
     private val _state: FeedListStateImpl = FeedListStateImpl(query)
 
-    private val eventHandler = FeedListEventHandler(_state)
+    private val eventHandler = FeedListEventHandler(query.filter, _state)
 
     init {
         subscriptionManager.subscribe(eventHandler)
