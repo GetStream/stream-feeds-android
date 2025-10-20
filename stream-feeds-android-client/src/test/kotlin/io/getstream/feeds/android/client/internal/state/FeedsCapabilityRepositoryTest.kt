@@ -17,6 +17,7 @@ package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.android.core.api.processing.StreamBatcher
 import io.getstream.android.core.api.processing.StreamRetryProcessor
+import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.FeedOwnCapability
@@ -30,10 +31,10 @@ import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -47,15 +48,13 @@ internal class FeedsCapabilityRepositoryTest {
     private val repository =
         FeedsCapabilityRepository(batcher = batcher, retryProcessor = retryProcessor, api = api)
 
-    // Cache operations
-
     @Test
-    fun `return null from getCached when ID not in cache`() {
+    fun `on getCached when ID not in cache, return null`() {
         assertNull(repository.getCached(FeedId("user:123")))
     }
 
     @Test
-    fun `store and retrieve capabilities via cache and getCached`() {
+    fun `on cache store capabilities and make them retrievable via getCached`() {
         val feedId = FeedId("user:123")
         val capabilities = listOf(FeedOwnCapability.ReadFeed, FeedOwnCapability.AddActivity)
 
@@ -65,90 +64,81 @@ internal class FeedsCapabilityRepositoryTest {
     }
 
     @Test
-    fun `complete pending requests when caching new capabilities`() = runTest {
+    fun `on cache when pending requests exist, complete them with new capabilities`() = runTest {
         val feedId = FeedId("user:123")
         val capabilities = listOf(FeedOwnCapability.ReadFeed)
 
-        // Start a fetch that creates a pending request
         val deferred = async { repository.fetch(feedId) }
+        advanceUntilIdle()
 
-        // Cache the capabilities, which should complete the pending request
         repository.cache(mapOf(feedId to capabilities))
 
         assertEquals(Result.success(capabilities), deferred.await())
     }
 
     @Test
-    fun `return cached capabilities immediately without offering to batcher`() = runTest {
+    fun `on fetch when cached, return capabilities without offering to batcher`() = runTest {
         val feedId = FeedId("user:123")
         val capabilities = listOf(FeedOwnCapability.ReadFeed, FeedOwnCapability.AddActivity)
         repository.cache(mapOf(feedId to capabilities))
 
         val result = repository.fetch(feedId)
 
-        assertTrue(result.isSuccess)
-        assertEquals(capabilities, result.getOrNull())
+        assertEquals(Result.success(capabilities), result)
         verify(exactly = 0) { batcher.offer(any()) }
     }
 
     @Test
-    fun `offer ID to batcher and create pending request on cache miss`() = runTest {
+    fun `on fetch when cache miss, return result after batch completes`() = runTest {
         val feedId = FeedId("user:123")
         val capabilities = listOf(FeedOwnCapability.ReadFeed)
 
-        // Start fetch in background
         val deferred = async { repository.fetch(feedId) }
+        advanceUntilIdle()
 
-        // Complete the batch to finish the test
         mockSuccessfulBatch(mapOf(feedId to capabilities))
         batchCallbackSlot.captured.invoke(listOf(feedId), 0L, 1)
 
-        // Verify the fetch completed successfully
-        val result = deferred.await()
-        assertTrue(result.isSuccess)
-        assertEquals(capabilities, result.getOrNull())
+        assertEquals(Result.success(capabilities), deferred.await())
+        verify(exactly = 1) { batcher.offer(feedId) }
     }
 
     @Test
-    fun `share single deferred across concurrent fetch calls for same ID`() = runTest {
+    fun `on fetch when concurrent calls for same ID, share single deferred`() = runTest {
         val feedId = FeedId("user:123")
         val capabilities = listOf(FeedOwnCapability.ReadFeed)
 
-        // Start multiple concurrent fetches
         val fetch1 = async { repository.fetch(feedId) }
         val fetch2 = async { repository.fetch(feedId) }
         val fetch3 = async { repository.fetch(feedId) }
+        advanceUntilIdle()
 
-        // Complete the batch
         mockSuccessfulBatch(mapOf(feedId to capabilities))
         batchCallbackSlot.captured.invoke(listOf(feedId), 0L, 1)
 
-        // All fetches should succeed with same result
-        assertEquals(capabilities, fetch1.await().getOrNull())
-        assertEquals(capabilities, fetch2.await().getOrNull())
-        assertEquals(capabilities, fetch3.await().getOrNull())
+        val expectedResult = Result.success(capabilities)
+        assertEquals(expectedResult, fetch1.await())
+        assertEquals(expectedResult, fetch2.await())
+        assertEquals(expectedResult, fetch3.await())
+        verify(exactly = 1) { batcher.offer(feedId) }
     }
 
     @Test
-    fun `handle cache populated during fetch (race condition)`() = runTest {
+    fun `on fetch when cache populated during pending request, return cached result`() = runTest {
         val feedId = FeedId("user:123")
         val capabilities = listOf(FeedOwnCapability.ReadFeed)
 
-        // Start fetch
         val deferred = async { repository.fetch(feedId) }
+        advanceUntilIdle()
 
-        // Simulate cache populated by another source during fetch
+        // Simulate race condition: another source caches while fetch is pending
         repository.cache(mapOf(feedId to capabilities))
 
-        val result = deferred.await()
-        assertTrue(result.isSuccess)
-        assertEquals(capabilities, result.getOrNull())
+        assertEquals(Result.success(capabilities), deferred.await())
     }
 
-    // Batch processing
-
     @Test
-    fun `filter cached IDs and only fetch uncached ones in batch`() = runTest {
+    fun `on processBatch when some IDs cached, only fetch uncached ones`() = runTest {
         val cachedId = FeedId("user:cached")
         val uncachedId = FeedId("user:uncached")
         val cachedCapabilities = listOf(FeedOwnCapability.ReadFeed)
@@ -159,7 +149,6 @@ internal class FeedsCapabilityRepositoryTest {
 
         batchCallbackSlot.captured.invoke(listOf(cachedId, uncachedId), 0L, 2)
 
-        // Should only call API for uncached ID
         coVerify(exactly = 1) {
             api.ownCapabilitiesBatch(
                 connectionId = null,
@@ -169,7 +158,7 @@ internal class FeedsCapabilityRepositoryTest {
     }
 
     @Test
-    fun `skip API call when all batch IDs already cached`() = runTest {
+    fun `on processBatch when all IDs already cached, skip API call`() = runTest {
         val feedId1 = FeedId("user:123")
         val feedId2 = FeedId("user:456")
         val capabilities = listOf(FeedOwnCapability.ReadFeed)
@@ -178,12 +167,11 @@ internal class FeedsCapabilityRepositoryTest {
 
         batchCallbackSlot.captured.invoke(listOf(feedId1, feedId2), 0L, 2)
 
-        // Should not call API at all
         coVerify(exactly = 0) { api.ownCapabilitiesBatch(any(), any()) }
     }
 
     @Test
-    fun `cache results and complete pending requests on successful batch`() = runTest {
+    fun `on processBatch when successful, cache results and complete pending requests`() = runTest {
         val feedId1 = FeedId("user:123")
         val feedId2 = FeedId("user:456")
         val capabilities1 = listOf(FeedOwnCapability.ReadFeed)
@@ -191,42 +179,34 @@ internal class FeedsCapabilityRepositoryTest {
 
         val fetch1 = async { repository.fetch(feedId1) }
         val fetch2 = async { repository.fetch(feedId2) }
+        advanceUntilIdle()
 
         mockSuccessfulBatch(mapOf(feedId1 to capabilities1, feedId2 to capabilities2))
         batchCallbackSlot.captured.invoke(listOf(feedId1, feedId2), 0L, 2)
 
-        // Fetches should complete successfully
-        assertEquals(capabilities1, fetch1.await().getOrNull())
-        assertEquals(capabilities2, fetch2.await().getOrNull())
-
-        // Results should be cached
+        assertEquals(Result.success(capabilities1), fetch1.await())
+        assertEquals(Result.success(capabilities2), fetch2.await())
         assertEquals(capabilities1, repository.getCached(feedId1))
         assertEquals(capabilities2, repository.getCached(feedId2))
     }
 
     @Test
-    fun `complete pending requests exceptionally on failed batch`() = runTest {
+    fun `on processBatch when failure, complete pending requests exceptionally`() = runTest {
         val feedId = FeedId("user:123")
         val exception = RuntimeException("API failed")
 
-        // Start fetch in background
         val deferred = async { repository.fetch(feedId) }
+        advanceUntilIdle()
 
-        // Mock failure
         mockFailedBatch(exception)
 
-        // Invoke batch callback in a launch block
+        // Use launch to avoid blocking on batch callback execution
         launch { batchCallbackSlot.captured.invoke(listOf(feedId), 0L, 1) }
 
         val result = deferred.await()
-        assertTrue(result.isFailure)
         assertEquals("API failed", result.exceptionOrNull()?.message)
-
-        // Should not be cached
         assertNull(repository.getCached(feedId))
     }
-
-    // Helper methods
 
     private fun mockSuccessfulBatch(capabilities: Map<FeedId, List<FeedOwnCapability>>) {
         val response =
@@ -234,21 +214,21 @@ internal class FeedsCapabilityRepositoryTest {
                 duration = "10ms",
                 capabilities = capabilities.mapKeys { it.key.rawValue },
             )
-        coEvery {
-            retryProcessor.retry(any(), any<suspend () -> Map<FeedId, List<FeedOwnCapability>>>())
-        } coAnswers
-            {
-                val block = secondArg<suspend () -> Map<FeedId, List<FeedOwnCapability>>>()
-                Result.success(block())
-            }
         coEvery { api.ownCapabilitiesBatch(any(), any()) } returns response
+        mockRetryProcessor()
     }
 
     private fun mockFailedBatch(exception: Throwable) {
-        coEvery {
-            retryProcessor.retry(any(), any<suspend () -> Map<FeedId, List<FeedOwnCapability>>>())
-        } returns Result.failure(exception)
-        // Also mock the API in case it gets called
         coEvery { api.ownCapabilitiesBatch(any(), any()) } throws exception
+        mockRetryProcessor()
+    }
+
+    private fun mockRetryProcessor() {
+        coEvery { retryProcessor.retry(any(), any<RetryBlock>()) } coAnswers
+            {
+                runSafely { secondArg<RetryBlock>()() }
+            }
     }
 }
+
+private typealias RetryBlock = suspend () -> Map<FeedId, List<FeedOwnCapability>>
