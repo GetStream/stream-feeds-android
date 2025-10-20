@@ -159,10 +159,10 @@ internal class ThreadedCommentDataTest {
             )
 
         // When
-        val expected = parent.addReply(newComment, comparator)
+        val result = parent.addReply(newComment, comparator)
 
         // Then
-        assertEquals(2, expected.replyCount)
-        assertEquals(listOf(newComment, originalComment), expected.replies)
+        assertEquals(2, result.replyCount)
+        assertEquals(listOf(newComment, originalComment), result.replies)
     }
 }
