@@ -42,18 +42,18 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on onActivityUpserted, then update activity and poll`() = runTest {
+    fun `on onActivityUpdated, then update activity and poll`() = runTest {
         val poll = pollData()
         val activityWithPoll = activityData(poll = poll)
 
-        activityState.onActivityUpserted(activityWithPoll)
+        activityState.onActivityUpdated(activityWithPoll)
 
         assertEquals(activityWithPoll, activityState.activity.value)
         assertEquals(poll, activityState.poll.value)
     }
 
     @Test
-    fun `on onActivityUpserted, then preserve ownBookmarks when updating activity`() = runTest {
+    fun `on onActivityUpdated, then preserve ownBookmarks when updating activity`() = runTest {
         val initialBookmark = bookmarkData("activity-1", currentUserId)
         val initialActivity =
             activityData("activity-1", text = "Original", ownBookmarks = listOf(initialBookmark))
@@ -66,7 +66,7 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on onActivityUpserted, then preserve ownReactions when updating activity`() = runTest {
+    fun `on onActivityUpdated, then preserve ownReactions when updating activity`() = runTest {
         val initialReaction = feedsReactionData("activity-1", "like", currentUserId)
         val initialActivity =
             activityData("activity-1", text = "Original", ownReactions = listOf(initialReaction))
@@ -79,7 +79,7 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on onActivityUpserted, then preserve poll ownVotes when updating activity`() = runTest {
+    fun `on onActivityUpdated, then preserve poll ownVotes when updating activity`() = runTest {
         val ownVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
         val initialPoll = pollData("poll-1", "Test Poll", ownVotes = listOf(ownVote))
         val initialActivity = activityData("activity-1", text = "Original", poll = initialPoll)
@@ -93,7 +93,7 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on onActivityUpserted with poll removed, then clear poll state`() = runTest {
+    fun `on onActivityUpdated with poll removed, then clear poll state`() = runTest {
         val initialPoll = pollData("poll-1", "Test Poll")
         val initialActivity = activityData("activity-1", text = "Original", poll = initialPoll)
         val updatedActivity = activityData("activity-1", text = "Updated", poll = null)
@@ -114,7 +114,7 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on onActivityUpserted with new poll, then set new poll`() = runTest {
+    fun `on onActivityUpdated with new poll, then set new poll`() = runTest {
         val initialActivity = activityData("activity-1", text = "Original", poll = null)
         val newPoll = pollData("poll-1", "New Poll")
         val updatedActivity = activityData("activity-1", text = "Updated", poll = newPoll)
@@ -124,7 +124,7 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on onActivityUpserted, then preserve all own properties together`() = runTest {
+    fun `on onActivityUpdated, then preserve all own properties together`() = runTest {
         val initialBookmark = bookmarkData("activity-1", currentUserId)
         val initialReaction = feedsReactionData("activity-1", "like", currentUserId)
         val ownVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
@@ -178,7 +178,7 @@ internal class ActivityStateImplTest {
     fun `on onReactionUpserted from other user, then update activity and keep ownReactions`() =
         runTest {
             val initialActivity = activityData("activity-1")
-            activityState.onActivityUpserted(initialActivity)
+            activityState.onActivityUpdated(initialActivity)
 
             val reaction = feedsReactionData("activity-1", "like", "other-user")
             val updatedActivity = activityData("activity-1", text = "Updated activity")
@@ -534,17 +534,17 @@ internal class ActivityStateImplTest {
         }
 
     private fun setupInitialActivity(activity: ActivityData) {
-        activityState.onActivityUpserted(activity)
+        activityState.onActivityUpdated(activity)
     }
 
     private fun setupInitialPoll(poll: PollData) {
         val activity = activityData(poll = poll)
-        activityState.onActivityUpserted(activity)
+        activityState.onActivityUpdated(activity)
     }
 
     private fun setupAndUpdateActivity(initial: ActivityData, updated: ActivityData) {
-        activityState.onActivityUpserted(initial)
-        activityState.onActivityUpserted(updated)
+        activityState.onActivityUpdated(initial)
+        activityState.onActivityUpdated(updated)
     }
 
     private fun expectActivityAndPoll(expectedActivity: ActivityData, expectedPoll: PollData) {

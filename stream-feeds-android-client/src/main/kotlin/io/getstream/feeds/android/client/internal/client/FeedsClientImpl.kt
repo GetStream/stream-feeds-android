@@ -85,6 +85,7 @@ import io.getstream.feeds.android.client.internal.state.CommentReactionListImpl
 import io.getstream.feeds.android.client.internal.state.CommentReplyListImpl
 import io.getstream.feeds.android.client.internal.state.FeedImpl
 import io.getstream.feeds.android.client.internal.state.FeedListImpl
+import io.getstream.feeds.android.client.internal.state.FeedsCapabilityRepository
 import io.getstream.feeds.android.client.internal.state.FollowListImpl
 import io.getstream.feeds.android.client.internal.state.MemberListImpl
 import io.getstream.feeds.android.client.internal.state.ModerationConfigListImpl
@@ -123,6 +124,7 @@ internal class FeedsClientImpl(
     private val filesRepository: FilesRepository,
     private val moderationRepository: ModerationRepository,
     private val pollsRepository: PollsRepository,
+    private val feedsCapabilityRepository: FeedsCapabilityRepository,
     override val uploader: FeedUploader,
     override val moderation: Moderation,
     private val feedWatchHandler: FeedWatchHandler,

@@ -44,6 +44,7 @@ import io.getstream.android.core.network.NetworkStateProvider
 import io.getstream.feeds.android.client.BuildConfig
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.file.FeedUploader
+import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsConfig
 import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.internal.client.reconnect.ConnectionRecoveryHandler
@@ -65,6 +66,7 @@ import io.getstream.feeds.android.client.internal.repository.FilesRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.ModerationRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.PollsRepositoryImpl
 import io.getstream.feeds.android.client.internal.serialization.FeedsMoshiJsonParser
+import io.getstream.feeds.android.client.internal.state.FeedsCapabilityRepository
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.infrastructure.Serializer
 import io.getstream.feeds.android.network.models.WSEvent
@@ -235,6 +237,12 @@ internal fun createFeedsClient(
     val filesRepository = FilesRepositoryImpl(feedsApi)
     val moderationRepository = ModerationRepositoryImpl(feedsApi)
     val pollsRepository = PollsRepositoryImpl(feedsApi)
+    val feedsCapabilityRepository =
+        FeedsCapabilityRepository(
+            batcher = createCapabilityRepositoryBatcher(clientScope),
+            retryProcessor = StreamRetryProcessor(logProvider.taggedLogger("FeedCapability")),
+            api = feedsApi,
+        )
 
     val moderation = ModerationImpl(moderationRepository)
     val errorBus = MutableSharedFlow<StreamClientException>(extraBufferCapacity = 100)
@@ -262,6 +270,7 @@ internal fun createFeedsClient(
         filesRepository = filesRepository,
         moderationRepository = moderationRepository,
         pollsRepository = pollsRepository,
+        feedsCapabilityRepository = feedsCapabilityRepository,
         uploader = uploader,
         moderation = moderation,
         coreClient = client,
@@ -283,3 +292,11 @@ internal fun createFeedsClient(
         logger = logger,
     )
 }
+
+private fun createCapabilityRepositoryBatcher(scope: CoroutineScope) =
+    StreamBatcher<FeedId>(
+        scope = scope,
+        batchSize = 100,
+        initialDelayMs = 2000,
+        maxDelayMs = 10_000,
+    )

@@ -151,7 +151,7 @@ internal class ActivityEventHandlerTest(
                 testParams<ActivityStateUpdates>(
                     name = "ActivityUpdated matching feed and activity",
                     event = ActivityUpdated(fid.rawValue, activity),
-                    verifyBlock = { it.onActivityUpserted(activity) },
+                    verifyBlock = { it.onActivityUpdated(activity) },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "ActivityUpdated non-matching feed",

@@ -54,6 +54,7 @@ import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.FilesRepository
 import io.getstream.feeds.android.client.internal.repository.ModerationRepository
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
+import io.getstream.feeds.android.client.internal.state.FeedsCapabilityRepository
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
@@ -98,6 +99,7 @@ internal class FeedsClientImplTest {
     private val filesRepository: FilesRepository = mockk(relaxed = true)
     private val moderationRepository: ModerationRepository = mockk(relaxed = true)
     private val pollsRepository: PollsRepository = mockk(relaxed = true)
+    private val feedsCapabilityRepository: FeedsCapabilityRepository = mockk(relaxed = true)
     private val uploader: FeedUploader = mockk(relaxed = true)
     private val moderation: Moderation = mockk(relaxed = true)
     private val feedWatchHandler: FeedWatchHandler = mockk(relaxed = true)
@@ -122,6 +124,7 @@ internal class FeedsClientImplTest {
             filesRepository = filesRepository,
             moderationRepository = moderationRepository,
             pollsRepository = pollsRepository,
+            feedsCapabilityRepository = feedsCapabilityRepository,
             uploader = uploader,
             moderation = moderation,
             feedWatchHandler = feedWatchHandler,
@@ -179,6 +182,7 @@ internal class FeedsClientImplTest {
                 filesRepository = filesRepository,
                 moderationRepository = moderationRepository,
                 pollsRepository = pollsRepository,
+                feedsCapabilityRepository = feedsCapabilityRepository,
                 uploader = uploader,
                 moderation = moderation,
                 feedWatchHandler = feedWatchHandler,

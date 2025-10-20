@@ -18,23 +18,20 @@ package io.getstream.feeds.android.client.internal.state
 import io.getstream.android.core.api.model.StreamRetryPolicy
 import io.getstream.android.core.api.processing.StreamBatcher
 import io.getstream.android.core.api.processing.StreamRetryProcessor
-import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.model.FeedId
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedCapabilitiesUpdated
-import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
-import io.getstream.feeds.android.client.internal.subscribe.onEvent
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.getstream.feeds.android.network.models.OwnCapabilitiesBatchRequest
 import java.util.concurrent.ConcurrentHashMap
+import kotlinx.coroutines.CompletableDeferred
 
 internal class FeedsCapabilityRepository(
     private val batcher: StreamBatcher<FeedId>,
     private val retryProcessor: StreamRetryProcessor,
     private val api: FeedsApi,
-    private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
 ) {
     private val cache = ConcurrentHashMap<FeedId, List<FeedOwnCapability>>()
+    private val pending = ConcurrentHashMap<FeedId, CompletableDeferred<List<FeedOwnCapability>>>()
 
     init {
         batcher.onBatch { ids, _, _ -> processBatch(ids) }
@@ -43,14 +40,21 @@ internal class FeedsCapabilityRepository(
     /** Caches the provided [capabilities], replacing existing entries for the same feed IDs. */
     fun cache(capabilities: Map<FeedId, List<FeedOwnCapability>>) {
         cache.putAll(capabilities)
-        subscriptionManager.onEvent(FeedCapabilitiesUpdated(cache.toMap()))
+        notifyPending()
     }
 
     /** Requests to fetch the capabilities for the provided [id] if they are not already cached. */
-    fun request(id: FeedId) {
-        if (!cache.containsKey(id)) {
-            batcher.offer(id)
+    suspend fun fetch(id: FeedId): List<FeedOwnCapability> {
+        cache[id]?.let {
+            return it
         }
+
+        return pending
+            .getOrPut(id) {
+                batcher.offer(id)
+                CompletableDeferred()
+            }
+            .await()
     }
 
     private suspend fun processBatch(ids: List<FeedId>) {
@@ -58,6 +62,7 @@ internal class FeedsCapabilityRepository(
             .takeIf(Set<FeedId>::isNotEmpty)
             ?.let { uniqueIds -> retryProcessor.retry(retryPolicy) { fetch(uniqueIds) } }
             ?.onSuccess(::cache)
+        notifyPending()
     }
 
     private suspend fun fetch(ids: Set<FeedId>) =
@@ -67,6 +72,10 @@ internal class FeedsCapabilityRepository(
             )
             .capabilities
             .mapKeys { FeedId(it.key) }
+
+    private fun notifyPending() {
+        cache.forEach { (id, caps) -> pending.remove(id)?.complete(caps) }
+    }
 
     companion object {
         private val retryPolicy = StreamRetryPolicy.exponential(maxRetries = 3)
