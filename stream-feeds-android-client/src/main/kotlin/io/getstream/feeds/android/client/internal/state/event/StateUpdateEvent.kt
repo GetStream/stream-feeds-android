@@ -50,6 +50,7 @@ import io.getstream.feeds.android.network.models.CommentReactionAddedEvent
 import io.getstream.feeds.android.network.models.CommentReactionDeletedEvent
 import io.getstream.feeds.android.network.models.CommentReactionUpdatedEvent
 import io.getstream.feeds.android.network.models.CommentUpdatedEvent
+import io.getstream.feeds.android.network.models.FeedCreatedEvent
 import io.getstream.feeds.android.network.models.FeedDeletedEvent
 import io.getstream.feeds.android.network.models.FeedMemberAddedEvent
 import io.getstream.feeds.android.network.models.FeedMemberRemovedEvent
@@ -140,9 +141,11 @@ internal sealed interface StateUpdateEvent {
         val reaction: FeedsReactionData,
     ) : StateUpdateEvent
 
-    data class FeedUpdated(val feed: FeedData) : StateUpdateEvent
+    data class FeedAdded(val feed: FeedData) : StateUpdateEvent
 
     data class FeedDeleted(val fid: String) : StateUpdateEvent
+
+    data class FeedUpdated(val feed: FeedData) : StateUpdateEvent
 
     data class FeedMemberAdded(val fid: String, val member: FeedMemberData) : StateUpdateEvent
 
@@ -231,6 +234,8 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
 
         is CommentReactionUpdatedEvent ->
             StateUpdateEvent.CommentReactionUpdated(fid, comment.toModel(), reaction.toModel())
+
+        is FeedCreatedEvent -> StateUpdateEvent.FeedAdded(feed.toModel())
 
         is FeedUpdatedEvent -> StateUpdateEvent.FeedUpdated(feed.toModel())
 

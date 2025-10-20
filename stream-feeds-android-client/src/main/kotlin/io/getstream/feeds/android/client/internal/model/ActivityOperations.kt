@@ -43,6 +43,7 @@ internal fun ActivityResponse.toModel(): ActivityData =
         filterTags = filterTags,
         id = id,
         interestTags = interestTags,
+        isWatched = isWatched,
         latestReactions = latestReactions.map { it.toModel() },
         location = location,
         mentionedUsers = mentionedUsers.map { it.toModel() },

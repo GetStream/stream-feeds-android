@@ -133,9 +133,9 @@ internal fun <T> MutableList<T>.insertSorted(element: T, sort: List<Sort<T>>): L
  *   will be updated and repositioned; otherwise, the new element will be inserted in the correct
  *   sorted position as-is.
  */
-internal fun <T> List<T>.upsertSorted(
+internal fun <T, ID> List<T>.upsertSorted(
     element: T,
-    idSelector: (T) -> String,
+    idSelector: (T) -> ID,
     comparator: Comparator<in T>,
     update: (old: T, new: T) -> T = { _, new -> new },
 ): List<T> {
@@ -189,9 +189,9 @@ internal fun <T> List<T>.upsertSorted(
  *   will be updated and repositioned; otherwise, the new element will be inserted in the correct
  *   sorted position as-is.
  */
-internal fun <T> List<T>.upsertSorted(
+internal fun <T, ID> List<T>.upsertSorted(
     element: T,
-    idSelector: (T) -> String,
+    idSelector: (T) -> ID,
     sort: List<Sort<T>>,
     update: (old: T, new: T) -> T = { _, new -> new },
 ): List<T> = upsertSorted(element, idSelector, CompositeComparator(sort), update)

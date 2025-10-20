@@ -76,9 +76,9 @@ import com.ramcosta.composedestinations.generated.destinations.NotificationsScre
 import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.getstream.feeds.android.client.api.model.ActivityData
+import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.UserData
-import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.network.models.Attachment
 import io.getstream.feeds.android.network.models.NotificationStatusResponse
 import io.getstream.feeds.android.sample.R
@@ -148,15 +148,17 @@ private fun FeedsScreenContent(
         Box(modifier = Modifier.fillMaxSize()) {
             // Feed content
             val activities by viewState.timeline.state.activities.collectAsStateWithLifecycle()
+            val storyGroups by
+                viewState.stories.state.aggregatedActivities.collectAsStateWithLifecycle()
             val listState = rememberLazyListState()
 
-            if (activities.isEmpty()) {
+            if (activities.isEmpty() && storyGroups.isEmpty()) {
                 EmptyContent()
             } else {
                 ScrolledToBottomEffect(listState, action = viewModel::onLoadMore)
 
                 LazyColumn(state = listState) {
-                    item { Stories(viewState.stories.state) }
+                    item { Stories(storyGroups, viewModel::onStoryWatched) }
 
                     items(activities) { activity ->
                         if (activity.parent != null) {
@@ -239,24 +241,35 @@ private fun FeedsScreenContent(
 }
 
 @Composable
-fun Stories(state: FeedState) {
-    val stories by state.activities.collectAsStateWithLifecycle()
-    var selectedStory by remember { mutableStateOf<ActivityData?>(null) }
+fun Stories(storyGroups: List<AggregatedActivityData>, onStoryWatched: (String) -> Unit) {
+    var selectedStories by remember { mutableStateOf<List<ActivityData>>(emptyList()) }
 
     LazyRow {
-        items(stories) { story ->
+        items(storyGroups) { storyGroup ->
+            val highlightColor =
+                if (storyGroup.activities.all { it.isWatched == true }) {
+                    MaterialTheme.colorScheme.surfaceDim
+                } else {
+                    MaterialTheme.colorScheme.secondary
+                }
             UserAvatar(
-                story.user.image,
+                storyGroup.activities.first().user.image,
                 Modifier.padding(8.dp)
                     .size(72.dp)
-                    .border(3.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+                    .border(3.dp, highlightColor, CircleShape)
                     .border(6.dp, MaterialTheme.colorScheme.surface, CircleShape)
-                    .clickable { selectedStory = story },
+                    .clickable { selectedStories = storyGroup.activities },
             )
         }
     }
 
-    selectedStory?.let { StoryScreen(activity = it, onDismiss = { selectedStory = null }) }
+    if (selectedStories.isNotEmpty()) {
+        StoryScreen(
+            activities = selectedStories,
+            onWatched = onStoryWatched,
+            onDismiss = { selectedStories = emptyList() },
+        )
+    }
 }
 
 @Composable
