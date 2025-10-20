@@ -16,6 +16,7 @@
 package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.internal.state.FeedCapabilitiesLoader
 import io.getstream.feeds.android.client.internal.state.ActivityStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
@@ -32,6 +33,7 @@ internal class ActivityEventHandler(
     private val fid: FeedId,
     private val activityId: String,
     private val state: ActivityStateUpdates,
+    private val feedCapabilitiesLoader: FeedCapabilitiesLoader,
 ) : StateUpdateEventListener {
 
     /**
@@ -49,6 +51,8 @@ internal class ActivityEventHandler(
             is StateUpdateEvent.ActivityUpdated -> {
                 if (event.fid != fid.rawValue || event.activity.id != activityId) return
                 state.onActivityUpdated(event.activity)
+
+                feedCapabilitiesLoader.enrichIfNeeded(event.activity, state::onActivityUpdated)
             }
 
             is StateUpdateEvent.ActivityReactionDeleted -> {
