@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.state
 import io.getstream.android.core.api.model.StreamRetryPolicy
 import io.getstream.android.core.api.processing.StreamBatcher
 import io.getstream.android.core.api.processing.StreamRetryProcessor
+import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.FeedOwnCapability
@@ -43,9 +44,13 @@ internal class FeedsCapabilityRepository(
         notifyPending()
     }
 
+    fun getCached(id: FeedId): List<FeedOwnCapability>? = cache[id]
+
     /** Requests to fetch the capabilities for the provided [id] if they are not already cached. */
-    suspend fun fetch(id: FeedId): List<FeedOwnCapability> {
-        cache[id]?.let { return it }
+    suspend fun fetch(id: FeedId): Result<List<FeedOwnCapability>> {
+        cache[id]?.let {
+            return Result.success(it)
+        }
 
         val deferred =
             pending.getOrPut(id) {
@@ -56,21 +61,31 @@ internal class FeedsCapabilityRepository(
         // Re-check cache in case batch completed during getOrPut
         cache[id]?.let {
             pending.remove(id)?.complete(it)
-            return it
+            return Result.success(it)
         }
 
-        return deferred.await()
+        return runSafely { deferred.await() }
     }
 
     private suspend fun processBatch(ids: List<FeedId>) {
-        ids.filterNotTo(mutableSetOf(), cache::containsKey)
-            .takeIf(Set<FeedId>::isNotEmpty)
-            ?.let { uniqueIds -> retryProcessor.retry(retryPolicy) { fetch(uniqueIds) } }
-            ?.onSuccess(::cache)
-        notifyPending()
+        val uncachedIds = ids.filterNotTo(mutableSetOf(), cache::containsKey)
+
+        if (uncachedIds.isEmpty()) {
+            notifyPending()
+            return
+        }
+
+        retryProcessor
+            .retry(retryPolicy) { fetchAll(uncachedIds) }
+            .fold(
+                onSuccess = ::cache,
+                onFailure = { error ->
+                    uncachedIds.forEach { id -> pending.remove(id)?.completeExceptionally(error) }
+                },
+            )
     }
 
-    private suspend fun fetch(ids: Set<FeedId>) =
+    private suspend fun fetchAll(ids: Set<FeedId>) =
         api.ownCapabilitiesBatch(
                 ownCapabilitiesBatchRequest =
                     OwnCapabilitiesBatchRequest(ids.toList().map(FeedId::rawValue))
@@ -79,7 +94,9 @@ internal class FeedsCapabilityRepository(
             .mapKeys { FeedId(it.key) }
 
     private fun notifyPending() {
-        cache.forEach { (id, caps) -> pending.remove(id)?.complete(caps) }
+        pending.keys.toSet().forEach { id ->
+            cache[id]?.let { caps -> pending.remove(id)?.complete(caps) }
+        }
     }
 
     companion object {

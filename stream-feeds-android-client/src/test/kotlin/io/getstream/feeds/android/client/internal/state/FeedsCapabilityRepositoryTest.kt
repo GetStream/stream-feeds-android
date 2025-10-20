@@ -62,8 +62,11 @@ internal class FeedsCapabilityRepositoryTest {
         val result1 = repository.fetch(feedId1)
         val result2 = repository.fetch(feedId2)
 
-        assertEquals(listOf(FeedOwnCapability.ReadFeed, FeedOwnCapability.AddActivity), result1)
-        assertEquals(listOf(FeedOwnCapability.ReadFeed), result2)
+        assertEquals(
+            Result.success(listOf(FeedOwnCapability.ReadFeed, FeedOwnCapability.AddActivity)),
+            result1,
+        )
+        assertEquals(Result.success(listOf(FeedOwnCapability.ReadFeed)), result2)
 
         // Verify no API calls were made since values were cached
         coVerify(exactly = 0) { api.ownCapabilitiesBatch(any(), any()) }
@@ -107,7 +110,7 @@ internal class FeedsCapabilityRepositoryTest {
 
         // Verify fetch completes with correct result
         val result = deferred.await()
-        assertEquals(expectedCapabilities, result)
+        assertEquals(Result.success(expectedCapabilities), result)
     }
 
     @Test
@@ -119,7 +122,7 @@ internal class FeedsCapabilityRepositoryTest {
 
         val result = repository.fetch(feedId)
 
-        assertEquals(listOf(FeedOwnCapability.ReadFeed), result)
+        assertEquals(Result.success(listOf(FeedOwnCapability.ReadFeed)), result)
         verify(exactly = 0) { batcher.offer(any()) }
     }
 
@@ -157,9 +160,9 @@ internal class FeedsCapabilityRepositoryTest {
         batchCallbackSlot.captured(listOf(feedId), 0L, 0)
 
         // All fetches complete with same result
-        assertEquals(expectedCapabilities, deferred1.await())
-        assertEquals(expectedCapabilities, deferred2.await())
-        assertEquals(expectedCapabilities, deferred3.await())
+        assertEquals(Result.success(expectedCapabilities), deferred1.await())
+        assertEquals(Result.success(expectedCapabilities), deferred2.await())
+        assertEquals(Result.success(expectedCapabilities), deferred3.await())
     }
 
     @Test
