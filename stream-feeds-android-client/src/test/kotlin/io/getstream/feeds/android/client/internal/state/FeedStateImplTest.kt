@@ -39,6 +39,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionDat
 import io.getstream.feeds.android.client.internal.test.TestData.followData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
+import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.getstream.feeds.android.network.models.NotificationStatusResponse
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -561,6 +562,82 @@ internal class FeedStateImplTest {
             listOf(updatedAggregated0, initialAggregated[1], updatedAggregated2),
             feedState.aggregatedActivities.value,
         )
+    }
+
+    @Test
+    fun `on onFollowAdded when targetFeed matches, update feed with it`() = runTest {
+        val initialFeed =
+            feedData(
+                id = "test",
+                groupId = "user",
+                ownCapabilities = listOf(FeedOwnCapability.UpdateFeed),
+            )
+        setupInitialState(feed = initialFeed)
+
+        val updatedTargetFeed = feedData(id = "test", groupId = "user").copy(followerCount = 10)
+        val follow = followData().copy(targetFeed = updatedTargetFeed)
+
+        feedState.onFollowAdded(follow)
+
+        val expected = updatedTargetFeed.copy(ownCapabilities = initialFeed.ownCapabilities)
+        assertEquals(expected, feedState.feed.value)
+    }
+
+    @Test
+    fun `on onFollowAdded when sourceFeed matches, update feed with it`() = runTest {
+        val initialFeed =
+            feedData(
+                id = "test",
+                groupId = "user",
+                ownCapabilities = listOf(FeedOwnCapability.UpdateFeed),
+            )
+        setupInitialState(feed = initialFeed)
+
+        val updatedSourceFeed = feedData(id = "test", groupId = "user").copy(followingCount = 15)
+        val follow = followData().copy(sourceFeed = updatedSourceFeed)
+
+        feedState.onFollowAdded(follow)
+
+        val expected = updatedSourceFeed.copy(ownCapabilities = initialFeed.ownCapabilities)
+        assertEquals(expected, feedState.feed.value)
+    }
+
+    @Test
+    fun `on onFollowRemoved when targetFeed matches, update feed with it`() = runTest {
+        val initialFeed =
+            feedData(
+                id = "test",
+                groupId = "user",
+                ownCapabilities = listOf(FeedOwnCapability.UpdateFeed),
+            )
+        setupInitialState(feed = initialFeed)
+
+        val updatedTargetFeed = feedData(id = "test", groupId = "user").copy(followerCount = 5)
+        val follow = followData().copy(targetFeed = updatedTargetFeed)
+
+        feedState.onFollowRemoved(follow)
+
+        val expected = updatedTargetFeed.copy(ownCapabilities = initialFeed.ownCapabilities)
+        assertEquals(expected, feedState.feed.value)
+    }
+
+    @Test
+    fun `on onFollowRemoved when sourceFeed matches, update feed with it`() = runTest {
+        val initialFeed =
+            feedData(
+                id = "test",
+                groupId = "user",
+                ownCapabilities = listOf(FeedOwnCapability.UpdateFeed),
+            )
+        setupInitialState(feed = initialFeed)
+
+        val updatedSourceFeed = feedData(id = "test", groupId = "user").copy(followingCount = 8)
+        val follow = followData().copy(sourceFeed = updatedSourceFeed)
+
+        feedState.onFollowRemoved(follow)
+
+        val expected = updatedSourceFeed.copy(ownCapabilities = initialFeed.ownCapabilities)
+        assertEquals(expected, feedState.feed.value)
     }
 
     // Helper functions
