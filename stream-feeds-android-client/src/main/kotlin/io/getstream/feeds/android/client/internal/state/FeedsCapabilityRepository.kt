@@ -45,16 +45,21 @@ internal class FeedsCapabilityRepository(
 
     /** Requests to fetch the capabilities for the provided [id] if they are not already cached. */
     suspend fun fetch(id: FeedId): List<FeedOwnCapability> {
-        cache[id]?.let {
-            return it
-        }
+        cache[id]?.let { return it }
 
-        return pending
-            .getOrPut(id) {
+        val deferred =
+            pending.getOrPut(id) {
                 batcher.offer(id)
                 CompletableDeferred()
             }
-            .await()
+
+        // Re-check cache in case batch completed during getOrPut
+        cache[id]?.let {
+            pending.remove(id)?.complete(it)
+            return it
+        }
+
+        return deferred.await()
     }
 
     private suspend fun processBatch(ids: List<FeedId>) {
