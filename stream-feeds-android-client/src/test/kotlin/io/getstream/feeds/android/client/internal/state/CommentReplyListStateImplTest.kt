@@ -24,6 +24,7 @@ import io.getstream.feeds.android.client.internal.model.upsertReaction
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.getstream.feeds.android.client.internal.test.TestData.threadedCommentData
+import java.util.Date
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -92,6 +93,38 @@ internal class CommentReplyListStateImplTest {
         state.onCommentAdded(nonReply)
 
         assertEquals(listOf(parentComment), state.replies.value)
+    }
+
+    @Test
+    fun `on onCommentAdded replies are sorted by createdAt`() = runTest {
+        val parentComment = threadedCommentData("parent-1", text = "Parent comment")
+
+        setupInitialReplies(parentComment)
+
+        val oldReply =
+            threadedCommentData(
+                id = "reply-1",
+                parentId = "parent-1",
+                text = "Old reply",
+                createdAt = Date(1),
+            )
+
+        val newReply =
+            threadedCommentData(
+                id = "reply-2",
+                parentId = "parent-1",
+                text = "New reply",
+                createdAt = Date(2),
+            )
+
+        // Add replies in reverse order to test sorting
+        state.onCommentAdded(oldReply)
+        state.onCommentAdded(newReply)
+
+        val expectedParent =
+            parentComment.copy(replies = listOf(newReply, oldReply), replyCount = 2)
+
+        assertEquals(listOf(expectedParent), state.replies.value)
     }
 
     @Test
