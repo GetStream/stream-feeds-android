@@ -88,7 +88,13 @@ class ProfileViewModel @Inject constructor(loginManager: LoginManager) : ViewMod
 
     fun unfollow(feedId: FeedId) {
         state.withFirstContent(viewModelScope) {
-            feed.unfollow(feedId).logResult(TAG, "Unfollowing feed: $feedId")
+            feed
+                .unfollow(feedId)
+                .logResult(TAG, "Unfollowing feed: $feedId")
+                .flatMap {
+                    client.feed(Feeds.stories(client.user.id)).unfollow(Feeds.story(feedId.id))
+                }
+                .logResult(TAG, "Unfollowing stories feed for: ${feedId.id}")
         }
     }
 
