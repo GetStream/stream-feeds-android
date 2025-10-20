@@ -33,7 +33,7 @@ import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventList
  */
 internal class FeedEventHandler(
     private val fid: FeedId,
-    private val filter: ActivitiesFilter?,
+    private val activityFilter: ActivitiesFilter?,
     private val state: FeedStateUpdates,
 ) : StateUpdateEventListener {
 
@@ -45,7 +45,7 @@ internal class FeedEventHandler(
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
             is StateUpdateEvent.ActivityAdded -> {
-                if (event.fid == fid.rawValue && event.activity matches filter) {
+                if (event.fid == fid.rawValue && event.activity matches activityFilter) {
                     state.onActivityAdded(event.activity)
                 }
             }
@@ -57,7 +57,7 @@ internal class FeedEventHandler(
             }
 
             is StateUpdateEvent.ActivityUpdated -> {
-                if (event.fid == fid.rawValue && event.activity matches filter) {
+                if (event.fid == fid.rawValue && event.activity matches activityFilter) {
                     state.onActivityUpdated(event.activity)
                 }
             }

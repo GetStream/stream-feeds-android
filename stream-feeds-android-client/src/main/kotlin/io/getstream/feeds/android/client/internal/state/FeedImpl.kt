@@ -112,7 +112,7 @@ internal class FeedImpl(
         )
 
     private val eventHandler =
-        FeedEventHandler(fid = fid, filter = query.activityFilter, state = _state)
+        FeedEventHandler(fid = fid, activityFilter = query.activityFilter, state = _state)
 
     init {
         subscriptionManager.subscribe(eventHandler)
