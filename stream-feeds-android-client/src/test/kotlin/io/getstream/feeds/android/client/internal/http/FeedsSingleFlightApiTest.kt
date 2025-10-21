@@ -28,6 +28,7 @@ import io.getstream.feeds.android.network.models.AddCommentResponse
 import io.getstream.feeds.android.network.models.AddReactionRequest
 import io.getstream.feeds.android.network.models.AddReactionResponse
 import io.getstream.feeds.android.network.models.AppResponseFields
+import io.getstream.feeds.android.network.models.CastPollVoteRequest
 import io.getstream.feeds.android.network.models.CreateDeviceRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
@@ -37,6 +38,7 @@ import io.getstream.feeds.android.network.models.GetOGResponse
 import io.getstream.feeds.android.network.models.ListDevicesResponse
 import io.getstream.feeds.android.network.models.OwnCapabilitiesBatchRequest
 import io.getstream.feeds.android.network.models.OwnCapabilitiesBatchResponse
+import io.getstream.feeds.android.network.models.PollVotesResponse
 import io.getstream.feeds.android.network.models.QueryActivitiesRequest
 import io.getstream.feeds.android.network.models.QueryActivitiesResponse
 import io.getstream.feeds.android.network.models.Response
@@ -90,6 +92,13 @@ internal class FeedsSingleFlightApiTest(private val testCase: SingleFlightTestCa
         private val testCreateDeviceResponse = Response(duration = "100ms")
         private val testAddBookmarkResponse =
             AddBookmarkResponse(duration = "100ms", bookmark = TestData.bookmarkResponse())
+        private val testPollVoteResponse =
+            PollVotesResponse(
+                duration = "100ms",
+                votes = listOf(TestData.pollVoteResponseData()),
+                next = "next",
+                prev = "prev",
+            )
         private val testAddCommentResponse =
             AddCommentResponse(duration = "100ms", comment = TestData.commentResponse())
         private val testAddReactionResponse =
@@ -183,6 +192,22 @@ internal class FeedsSingleFlightApiTest(private val testCase: SingleFlightTestCa
                         expectedKeyPrefix = "addBookmark-activity123-",
                         call = { it.addBookmark("activity123", AddBookmarkRequest()) },
                         apiResult = testAddBookmarkResponse,
+                    )
+                ),
+                arrayOf(
+                    SingleFlightTestCase(
+                        testName = "castPollVote",
+                        expectedKeyPrefix = "castPollVote-activity123-",
+                        call = { it.castPollVote("activity123", "poll123", CastPollVoteRequest()) },
+                        apiResult = testPollVoteResponse,
+                    )
+                ),
+                arrayOf(
+                    SingleFlightTestCase(
+                        testName = "deletePollVote",
+                        expectedKeyPrefix = "deletePollVote-activity123-",
+                        call = { it.deletePollVote("activity123", "poll123", "vote123") },
+                        apiResult = testPollVoteResponse,
                     )
                 ),
                 arrayOf(
