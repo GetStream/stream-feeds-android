@@ -283,6 +283,18 @@ internal class ModerationImplTest {
     }
 
     @Test
+    fun `deleteConfig when team is null, then delegates to repository`() = runTest {
+        val key = "config-key"
+        val deleteResponse = DeleteModerationConfigResponse("duration")
+        coEvery { moderationRepository.deleteConfig(key, null) } returns
+            Result.success(deleteResponse)
+
+        val result = moderation.deleteConfig(key)
+
+        assertEquals(deleteResponse, result.getOrNull())
+    }
+
+    @Test
     fun `deleteConfig when repository fails, then returns failure`() = runTest {
         val key = "config-key"
         val team = "team-123"
@@ -292,6 +304,17 @@ internal class ModerationImplTest {
         val result = moderation.deleteConfig(key, team)
 
         assertEquals(exception, result.exceptionOrNull())
+    }
+
+    @Test
+    fun `getConfig when team is null, then delegates to repository`() = runTest {
+        val key = "config-key"
+        val getResponse = GetConfigResponse("duration")
+        coEvery { moderationRepository.getConfig(key, null) } returns Result.success(getResponse)
+
+        val result = moderation.getConfig(key)
+
+        assertEquals(getResponse, result.getOrNull())
     }
 
     @Test
