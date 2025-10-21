@@ -15,11 +15,14 @@
  */
 package io.getstream.feeds.android.client.api.model
 
+import io.getstream.feeds.android.client.api.state.query.CommentsSortDataFields
+import io.getstream.feeds.android.client.internal.model.addReply
 import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.model.upsertReaction
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.getstream.feeds.android.client.internal.test.TestData.threadedCommentData
+import java.util.Date
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -123,5 +126,43 @@ internal class ThreadedCommentDataTest {
 
         // Then
         assertEquals(expected, result)
+    }
+
+    @Test
+    fun `addReply should append reply, increment replyCount and keep replies sorted by createdAt`() {
+        // Given
+        val comparator =
+            Comparator<CommentsSortDataFields> { a, b -> b.createdAt.compareTo(a.createdAt) }
+
+        val originalComment =
+            threadedCommentData(
+                id = "original-comment-1",
+                parentId = "parent-1",
+                createdAt = Date(1L),
+                text = "Original text",
+            )
+
+        val newComment =
+            threadedCommentData(
+                id = "updated-comment-1",
+                parentId = "parent-1",
+                createdAt = Date(2L),
+                text = "Updated Text",
+            )
+
+        val parent =
+            threadedCommentData(
+                id = "parent-1",
+                text = "Parent comment",
+                replies = listOf(originalComment),
+                replyCount = 1,
+            )
+
+        // When
+        val result = parent.addReply(newComment, comparator)
+
+        // Then
+        assertEquals(2, result.replyCount)
+        assertEquals(listOf(newComment, originalComment), result.replies)
     }
 }
