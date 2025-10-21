@@ -62,6 +62,11 @@ internal class ActivityStateImpl(
     override val poll: StateFlow<PollData?>
         get() = _poll.asStateFlow()
 
+    override fun onActivityRemoved() {
+        _activity.update { null }
+        _poll.update { null }
+    }
+
     override fun onActivityUpdated(activity: ActivityData) {
         _activity.update { current -> current?.update(activity) ?: activity }
         _poll.update { current ->
@@ -130,6 +135,8 @@ internal interface ActivityMutableState : ActivityState, ActivityStateUpdates
  * updated, closed, deleted, or when votes are casted, changed, or removed.
  */
 internal interface ActivityStateUpdates {
+    /** Called when the activity is removed. */
+    fun onActivityRemoved()
 
     /**
      * Called when the activity is updated.

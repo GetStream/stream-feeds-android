@@ -29,6 +29,7 @@ import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventList
  * other feed-related actions.
  *
  * @param fid The unique identifier for the feed this handler is associated with.
+ * @param activityFilter An optional filter to determine which activities should be processed.
  * @property state The instance that manages updates to the feed state.
  */
 internal class FeedEventHandler(
@@ -46,7 +47,7 @@ internal class FeedEventHandler(
         when (event) {
             is StateUpdateEvent.ActivityAdded -> {
                 if (event.fid == fid.rawValue && event.activity matches activityFilter) {
-                    state.onActivityAdded(event.activity)
+                    state.onActivityUpserted(event.activity)
                 }
             }
 
@@ -58,7 +59,7 @@ internal class FeedEventHandler(
 
             is StateUpdateEvent.ActivityUpdated -> {
                 if (event.fid == fid.rawValue && event.activity matches activityFilter) {
-                    state.onActivityUpdated(event.activity)
+                    state.onActivityUpserted(event.activity)
                 }
             }
 

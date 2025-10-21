@@ -103,6 +103,16 @@ internal class ActivityStateImplTest {
     }
 
     @Test
+    fun `on onActivityRemoved, then clear activity and poll state`() = runTest {
+        setupInitialPoll(pollData())
+
+        activityState.onActivityRemoved()
+
+        assertNull(activityState.activity.value)
+        assertNull(activityState.poll.value)
+    }
+
+    @Test
     fun `on onActivityUpdated with new poll, then set new poll`() = runTest {
         val initialActivity = activityData("activity-1", text = "Original", poll = null)
         val newPoll = pollData("poll-1", "New Poll")

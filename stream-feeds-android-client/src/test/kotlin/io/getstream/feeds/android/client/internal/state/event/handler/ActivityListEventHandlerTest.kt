@@ -15,12 +15,16 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
+import io.getstream.android.core.api.filter.equal
+import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
 import io.getstream.feeds.android.client.internal.state.ActivityListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkUpdated
@@ -34,6 +38,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.mockk.MockKVerificationScope
+import io.mockk.called
 import io.mockk.mockk
 import org.junit.runners.Parameterized
 
@@ -44,17 +49,43 @@ internal class ActivityListEventHandlerTest(
 ) : BaseEventHandlerTest<ActivityListStateUpdates>(testName, event, verifyBlock) {
 
     override val state: ActivityListStateUpdates = mockk(relaxed = true)
-    override val handler = ActivityListEventHandler(state)
+    override val handler = ActivityListEventHandler(testFilter, state)
 
     companion object {
+        private val testFilter = ActivitiesFilterField.type.equal("post")
+
         @JvmStatic
         @Parameterized.Parameters(name = "{0}")
         fun data(): List<Array<Any>> =
             listOf(
                 testParams<ActivityListStateUpdates>(
+                    name = "ActivityAdded with matching filter",
+                    event = ActivityAdded("feed-1", activityData("activity-1", type = "post")),
+                    verifyBlock = { state ->
+                        state.onActivityUpserted(activityData("activity-1", type = "post"))
+                    },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "ActivityAdded with non-matching filter",
+                    event = ActivityAdded("feed-1", activityData("activity-1", type = "story")),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<ActivityListStateUpdates>(
                     name = "ActivityDeleted",
                     event = ActivityDeleted("feed-1", "activity-1"),
                     verifyBlock = { state -> state.onActivityRemoved("activity-1") },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "ActivityUpdated with matching filter",
+                    event = ActivityUpdated("feed-1", activityData("activity-1", type = "post")),
+                    verifyBlock = { state ->
+                        state.onActivityUpserted(activityData("activity-1", type = "post"))
+                    },
+                ),
+                testParams<ActivityListStateUpdates>(
+                    name = "ActivityUpdated with non-matching filter",
+                    event = ActivityUpdated("feed-1", activityData("activity-1", type = "story")),
+                    verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "ActivityReactionAdded",

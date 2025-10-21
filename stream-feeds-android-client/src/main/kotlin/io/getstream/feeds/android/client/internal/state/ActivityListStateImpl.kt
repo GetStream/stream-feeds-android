@@ -89,7 +89,7 @@ internal class ActivityListStateImpl(
         _activities.update { current -> current.filter { it.id != activityId } }
     }
 
-    override fun onActivityUpdated(activity: ActivityData) {
+    override fun onActivityUpserted(activity: ActivityData) {
         _activities.update { current ->
             current.upsertSorted(activity, ActivityData::id, activitiesSorting)
         }
@@ -198,11 +198,11 @@ internal interface ActivityListStateUpdates {
     fun onActivityRemoved(activityId: String)
 
     /**
-     * Called when an activity is updated in the list.
+     * Called when an activity is added to or updated in the list.
      *
-     * @param activity The updated activity data.
+     * @param activity The activity data.
      */
-    fun onActivityUpdated(activity: ActivityData)
+    fun onActivityUpserted(activity: ActivityData)
 
     /**
      * Called when a bookmark was removed.

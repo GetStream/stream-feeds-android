@@ -47,7 +47,7 @@ internal class ActivityListImpl(
 
     private val _state: ActivityListStateImpl = ActivityListStateImpl(query, currentUserId)
 
-    private val eventHandler = ActivityListEventHandler(state = _state)
+    private val eventHandler = ActivityListEventHandler(query.filter, state = _state)
 
     init {
         subscriptionManager.subscribe(eventHandler)

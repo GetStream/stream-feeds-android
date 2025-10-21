@@ -205,13 +205,14 @@ internal object TestData {
         ownReactions: List<FeedsReactionData> = emptyList(),
         comments: List<CommentData> = emptyList(),
         feeds: List<String> = emptyList(),
+        createdAt: Long = 1000,
     ): ActivityData =
         ActivityData(
             attachments = emptyList(),
             bookmarkCount = 0,
             commentCount = comments.size,
             comments = comments,
-            createdAt = Date(1000),
+            createdAt = Date(createdAt),
             currentFeed = null,
             custom = emptyMap(),
             deletedAt = null,

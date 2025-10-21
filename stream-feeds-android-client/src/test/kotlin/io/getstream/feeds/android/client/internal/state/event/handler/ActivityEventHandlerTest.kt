@@ -18,9 +18,11 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.internal.state.ActivityStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkUpdated
@@ -133,18 +135,33 @@ internal class ActivityEventHandlerTest(
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
+                    name = "ActivityDeleted matching feed and activity",
+                    event = ActivityDeleted(fid.rawValue, activityId),
+                    verifyBlock = { it.onActivityRemoved() },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityDeleted non-matching feed",
+                    event = ActivityDeleted(otherFid, activityId),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityDeleted non-matching activity",
+                    event = ActivityDeleted(fid.rawValue, "other-activity"),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
                     name = "ActivityUpdated matching feed and activity",
-                    event = StateUpdateEvent.ActivityUpdated(fid.rawValue, activity),
+                    event = ActivityUpdated(fid.rawValue, activity),
                     verifyBlock = { it.onActivityUpdated(activity) },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "ActivityUpdated non-matching feed",
-                    event = StateUpdateEvent.ActivityUpdated(otherFid, activity),
+                    event = ActivityUpdated(otherFid, activity),
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "ActivityUpdated non-matching activity",
-                    event = StateUpdateEvent.ActivityUpdated(fid.rawValue, activityData(otherId)),
+                    event = ActivityUpdated(fid.rawValue, activityData("other-activity")),
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
