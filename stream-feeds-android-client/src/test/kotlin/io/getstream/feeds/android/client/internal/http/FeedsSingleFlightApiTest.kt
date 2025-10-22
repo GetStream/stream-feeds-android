@@ -103,19 +103,13 @@ internal class FeedsSingleFlightApiTest(private val testCase: SingleFlightTestCa
             AddBookmarkResponse(duration = "100ms", bookmark = TestData.bookmarkResponse())
         private val testPollVoteResponse =
             PollVotesResponse(
-                duration = "100ms",
-                votes = listOf(TestData.pollVoteResponseData()),
-                next = "next",
-                prev = "prev",
+                duration = "100ms"
             )
         private val testPollResponse =
             PollResponse(duration = "100ms", poll = TestData.pollResponseData())
         private val testQueryPollsResponse =
             QueryPollsResponse(
-                duration = "100ms",
-                polls = listOf(TestData.pollResponseData()),
-                next = "next",
-                prev = "prev",
+                duration = "100ms"
             )
         private val testResponse = Response("100ms")
         private val testPollOptionResponse =
