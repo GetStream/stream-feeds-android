@@ -290,7 +290,7 @@ internal class FeedsSingleFlightApiTest(private val testCase: SingleFlightTestCa
                 ),
                 arrayOf(
                     SingleFlightTestCase(
-                        testName = "updatePollPartialWithNoBodyRequest",
+                        testName = "updatePollPartialWithNoBodyRequestNeeded",
                         expectedKeyPrefix = "updatePollPartial-poll123",
                         call = { it.updatePollPartial("poll123") },
                         apiResult = testPollResponse,
