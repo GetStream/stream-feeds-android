@@ -98,7 +98,7 @@ internal fun ActivityData.update(
  * @param comment The comment to be added.
  * @return A new [ActivityData] instance with the updated comments and comment count.
  */
-internal fun ActivityData.addComment(comment: CommentData): ActivityData {
+internal fun ActivityData.upsertComment(comment: CommentData): ActivityData {
     val updatedComments = this.comments.upsert(comment, CommentData::id)
     val updatedCommentCount =
         if (updatedComments.size > this.comments.size) {

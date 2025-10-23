@@ -61,6 +61,10 @@ internal class ActivityCommentListStateImpl(
     override val pagination: PaginationData?
         get() = _pagination
 
+    override fun onActivityRemoved() {
+        _comments.update { emptyList() }
+    }
+
     override fun onQueryMoreComments(result: PaginationResult<ThreadedCommentData>) {
         _pagination = result.pagination
         _comments.update { current ->
@@ -178,6 +182,9 @@ internal interface ActivityCommentListMutableState :
 
 /** An interface that defines the methods for updating the state of an activity comment list. */
 internal interface ActivityCommentListStateUpdates {
+
+    /** Handles the deletion of the parent activity. */
+    fun onActivityRemoved()
 
     /**
      * Handles the result of a query for comments.

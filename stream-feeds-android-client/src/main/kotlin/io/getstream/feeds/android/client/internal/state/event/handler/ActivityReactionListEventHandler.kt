@@ -26,6 +26,12 @@ internal class ActivityReactionListEventHandler(
 
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
+            is StateUpdateEvent.ActivityDeleted -> {
+                if (event.activityId == activityId) {
+                    state.onActivityRemoved()
+                }
+            }
+
             is StateUpdateEvent.ActivityReactionAdded -> {
                 if (event.reaction.activityId == activityId) {
                     state.onReactionUpserted(event.reaction)

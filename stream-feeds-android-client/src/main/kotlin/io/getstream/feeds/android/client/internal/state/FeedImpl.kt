@@ -260,7 +260,7 @@ internal class FeedImpl(
 
     override suspend fun getComment(commentId: String): Result<CommentData> {
         return commentsRepository.getComment(commentId).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(it))
+            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(fid.rawValue, it))
         }
     }
 
@@ -278,7 +278,7 @@ internal class FeedImpl(
         request: UpdateCommentRequest,
     ): Result<CommentData> {
         return commentsRepository.updateComment(commentId, request).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(it))
+            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(fid.rawValue, it))
         }
     }
 

@@ -24,12 +24,12 @@ import io.getstream.feeds.android.client.api.state.ActivityListState
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.internal.model.PaginationResult
-import io.getstream.feeds.android.client.internal.model.addComment
 import io.getstream.feeds.android.client.internal.model.deleteBookmark
 import io.getstream.feeds.android.client.internal.model.removeComment
 import io.getstream.feeds.android.client.internal.model.removeCommentReaction
 import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.model.upsertBookmark
+import io.getstream.feeds.android.client.internal.model.upsertComment
 import io.getstream.feeds.android.client.internal.model.upsertCommentReaction
 import io.getstream.feeds.android.client.internal.model.upsertReaction
 import io.getstream.feeds.android.client.internal.state.query.ActivitiesQueryConfig
@@ -111,14 +111,10 @@ internal class ActivityListStateImpl(
         }
     }
 
-    override fun onCommentAdded(comment: CommentData) {
+    override fun onCommentUpserted(comment: CommentData) {
         _activities.update { current ->
-            current.map { activity ->
-                if (activity.id == comment.objectId) {
-                    activity.addComment(comment)
-                } else {
-                    activity
-                }
+            current.updateIf({ it.id == comment.objectId }) { activity ->
+                activity.upsertComment(comment)
             }
         }
     }
@@ -219,11 +215,11 @@ internal interface ActivityListStateUpdates {
     fun onBookmarkUpserted(bookmark: BookmarkData)
 
     /**
-     * Called when a comment is added to an activity.
+     * Called when a comment is added to or updated in the activity.
      *
-     * @param comment The comment that was added.
+     * @param comment The comment that was added or updated.
      */
-    fun onCommentAdded(comment: CommentData)
+    fun onCommentUpserted(comment: CommentData)
 
     /**
      * Called when a comment is removed from an activity.

@@ -39,6 +39,7 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.C
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FollowAdded
@@ -249,7 +250,7 @@ internal class FeedEventHandlerTest(
                 testParams<FeedStateUpdates>(
                     name = "CommentAdded matching feed",
                     event = CommentAdded(fid.rawValue, comment),
-                    verifyBlock = { state -> state.onCommentAdded(comment) },
+                    verifyBlock = { state -> state.onCommentUpserted(comment) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "CommentAdded non-matching feed",
@@ -264,6 +265,16 @@ internal class FeedEventHandlerTest(
                 testParams<FeedStateUpdates>(
                     name = "CommentDeleted non-matching feed",
                     event = CommentDeleted("group:different", comment),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<FeedStateUpdates>(
+                    name = "CommentUpdated matching feed",
+                    event = CommentUpdated(fid.rawValue, comment),
+                    verifyBlock = { state -> state.onCommentUpserted(comment) },
+                ),
+                testParams<FeedStateUpdates>(
+                    name = "CommentUpdated non-matching feed",
+                    event = CommentUpdated("group:different", comment),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
