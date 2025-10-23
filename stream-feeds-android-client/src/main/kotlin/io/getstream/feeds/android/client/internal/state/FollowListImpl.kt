@@ -45,7 +45,7 @@ internal class FollowListImpl(
 
     private val _state: FollowListStateImpl = FollowListStateImpl(query)
 
-    private val eventHandler = FollowListEventHandler(_state)
+    private val eventHandler = FollowListEventHandler(query.filter, _state)
 
     init {
         subscriptionManager.subscribe(eventHandler)
