@@ -62,7 +62,7 @@ internal class MemberListStateImplTest {
         setupInitialState(initialMembers)
 
         val updatedMember = feedMemberData("user-1", role = "admin", createdAt = Date(3000))
-        memberListState.onMemberUpdated(updatedMember)
+        memberListState.onMemberUpserted(updatedMember)
 
         // Member should be repositioned according to new sort criteria
         val expectedMembers = listOf(updatedMember, initialMembers[0])
@@ -106,7 +106,7 @@ internal class MemberListStateImplTest {
     }
 
     @Test
-    fun `on memberAdded, then add member in sorted position`() = runTest {
+    fun `on onMemberUpserted, then add member in sorted position`() = runTest {
         // Initial members already sorted by createdAt desc
         val initialMembers =
             listOf(
@@ -116,7 +116,7 @@ internal class MemberListStateImplTest {
         setupInitialState(initialMembers)
 
         val newMember = feedMemberData("user-2", createdAt = Date(2000))
-        memberListState.onMemberAdded(newMember)
+        memberListState.onMemberUpserted(newMember)
 
         // Member should be inserted in correct sorted position
         val expectedMembers = listOf(initialMembers[0], newMember, initialMembers[1])
@@ -124,7 +124,7 @@ internal class MemberListStateImplTest {
     }
 
     @Test
-    fun `on memberAdded with existing id, then update and reposition member`() = runTest {
+    fun `on onMemberUpserted with existing id, then update and reposition member`() = runTest {
         // Initial members already sorted by createdAt desc
         val initialMembers =
             listOf(
@@ -135,7 +135,7 @@ internal class MemberListStateImplTest {
 
         // Add existing user-1 with newer createdAt that should move it to the front
         val updatedMember = feedMemberData("user-1", role = "admin", createdAt = Date(3000))
-        memberListState.onMemberAdded(updatedMember)
+        memberListState.onMemberUpserted(updatedMember)
 
         // Member should be updated and repositioned according to new sort criteria (3000, 2000)
         val expectedMembers = listOf(updatedMember, initialMembers[0])

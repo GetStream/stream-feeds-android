@@ -16,19 +16,22 @@
 package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.state.query.MembersFilter
 import io.getstream.feeds.android.client.internal.state.MemberListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.query.matches
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
 internal class MemberListEventHandler(
     private val fid: FeedId,
+    private val filter: MembersFilter?,
     private val state: MemberListStateUpdates,
 ) : StateUpdateEventListener {
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
             is StateUpdateEvent.FeedMemberAdded -> {
-                if (event.fid == fid.rawValue) {
-                    state.onMemberAdded(event.member)
+                if (event.fid == fid.rawValue && event.member matches filter) {
+                    state.onMemberUpserted(event.member)
                 }
             }
 
@@ -39,8 +42,8 @@ internal class MemberListEventHandler(
             }
 
             is StateUpdateEvent.FeedMemberUpdated -> {
-                if (event.fid == fid.rawValue) {
-                    state.onMemberUpdated(event.member)
+                if (event.fid == fid.rawValue && event.member matches filter) {
+                    state.onMemberUpserted(event.member)
                 }
             }
 

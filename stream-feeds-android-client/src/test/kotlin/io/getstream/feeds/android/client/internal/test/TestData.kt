@@ -407,21 +407,21 @@ internal object TestData {
     fun followData(
         sourceFid: String = "user:user-1",
         targetFid: String = "user:user-2",
-        createdAt: Date = Date(1000),
-        updatedAt: Date = Date(1000),
+        createdAt: Long = 1000,
+        updatedAt: Long = 1000,
     ): FollowData {
         val source = FeedId(sourceFid)
         val target = FeedId(targetFid)
         return FollowData(
-            createdAt = createdAt,
+            createdAt = Date(createdAt),
             custom = emptyMap(),
             followerRole = "user",
             pushPreference = "all",
-            requestAcceptedAt = createdAt,
+            requestAcceptedAt = Date(createdAt),
             requestRejectedAt = null,
             sourceFeed =
                 FeedData(
-                    createdAt = createdAt,
+                    createdAt = Date(createdAt),
                     createdBy = userData(source.id),
                     custom = emptyMap(),
                     deletedAt = null,
@@ -437,13 +437,13 @@ internal object TestData {
                     ownMembership = null,
                     name = "Test Feed",
                     pinCount = 0,
-                    updatedAt = updatedAt,
+                    updatedAt = Date(updatedAt),
                     visibility = "public",
                 ),
             status = FollowStatus.Accepted,
             targetFeed =
                 FeedData(
-                    createdAt = createdAt,
+                    createdAt = Date(createdAt),
                     createdBy = userData(target.id),
                     custom = emptyMap(),
                     deletedAt = null,
@@ -459,10 +459,10 @@ internal object TestData {
                     ownMembership = null,
                     name = "Target Feed",
                     pinCount = 0,
-                    updatedAt = updatedAt,
+                    updatedAt = Date(updatedAt),
                     visibility = "public",
                 ),
-            updatedAt = updatedAt,
+            updatedAt = Date(updatedAt),
         )
     }
 
