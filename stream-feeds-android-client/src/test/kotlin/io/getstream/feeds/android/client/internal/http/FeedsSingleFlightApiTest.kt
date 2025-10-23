@@ -28,7 +28,10 @@ import io.getstream.feeds.android.network.models.AddCommentResponse
 import io.getstream.feeds.android.network.models.AddReactionRequest
 import io.getstream.feeds.android.network.models.AddReactionResponse
 import io.getstream.feeds.android.network.models.AppResponseFields
+import io.getstream.feeds.android.network.models.CastPollVoteRequest
 import io.getstream.feeds.android.network.models.CreateDeviceRequest
+import io.getstream.feeds.android.network.models.CreatePollOptionRequest
+import io.getstream.feeds.android.network.models.CreatePollRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.network.models.FileUploadConfig
@@ -37,9 +40,17 @@ import io.getstream.feeds.android.network.models.GetOGResponse
 import io.getstream.feeds.android.network.models.ListDevicesResponse
 import io.getstream.feeds.android.network.models.OwnCapabilitiesBatchRequest
 import io.getstream.feeds.android.network.models.OwnCapabilitiesBatchResponse
+import io.getstream.feeds.android.network.models.PollOptionResponse
+import io.getstream.feeds.android.network.models.PollResponse
+import io.getstream.feeds.android.network.models.PollVotesResponse
 import io.getstream.feeds.android.network.models.QueryActivitiesRequest
 import io.getstream.feeds.android.network.models.QueryActivitiesResponse
+import io.getstream.feeds.android.network.models.QueryPollVotesRequest
+import io.getstream.feeds.android.network.models.QueryPollsResponse
 import io.getstream.feeds.android.network.models.Response
+import io.getstream.feeds.android.network.models.UpdatePollOptionRequest
+import io.getstream.feeds.android.network.models.UpdatePollPartialRequest
+import io.getstream.feeds.android.network.models.UpdatePollRequest
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -90,6 +101,14 @@ internal class FeedsSingleFlightApiTest(private val testCase: SingleFlightTestCa
         private val testCreateDeviceResponse = Response(duration = "100ms")
         private val testAddBookmarkResponse =
             AddBookmarkResponse(duration = "100ms", bookmark = TestData.bookmarkResponse())
+        private val testPollVoteResponse = PollVotesResponse(duration = "100ms")
+        private val testPollResponse =
+            PollResponse(duration = "100ms", poll = TestData.pollResponseData())
+        private val testQueryPollsResponse = QueryPollsResponse(duration = "100ms")
+        private val testResponse = Response("100ms")
+        private val testPollOptionResponse =
+            PollOptionResponse(duration = "100ms", pollOption = TestData.pollOptionResponseData())
+
         private val testAddCommentResponse =
             AddCommentResponse(duration = "100ms", comment = TestData.commentResponse())
         private val testAddReactionResponse =
@@ -183,6 +202,142 @@ internal class FeedsSingleFlightApiTest(private val testCase: SingleFlightTestCa
                         expectedKeyPrefix = "addBookmark-activity123-",
                         call = { it.addBookmark("activity123", AddBookmarkRequest()) },
                         apiResult = testAddBookmarkResponse,
+                    )
+                ),
+                arrayOf(
+                    SingleFlightTestCase(
+                        testName = "castPollVote",
+                        expectedKeyPrefix = "castPollVote-activity123-",
+                        call = { it.castPollVote("activity123", "poll123", CastPollVoteRequest()) },
+                        apiResult = testPollVoteResponse,
+                    )
+                ),
+                arrayOf(
+                    SingleFlightTestCase(
+                        testName = "deletePollVote",
+                        expectedKeyPrefix = "deletePollVote-activity123-",
+                        call = { it.deletePollVote("activity123", "poll123", "vote123") },
+                        apiResult = testPollVoteResponse,
+                    )
+                ),
+                arrayOf(
+                    SingleFlightTestCase(
+                        testName = "createPoll",
+                        expectedKeyPrefix = "createPoll-",
+                        call = { it.createPoll(CreatePollRequest(name = "Test Poll")) },
+                        apiResult = testPollResponse,
+                    )
+                ),
+                arrayOf(
+                    SingleFlightTestCase(
+                        testName = "updatePoll",
+                        expectedKeyPrefix = "updatePoll-",
+                        call = { it.updatePoll(UpdatePollRequest("poll-1", "UpdatedName")) },
+                        apiResult = testPollResponse,
+                    )
+                ),
+                arrayOf(
+                    SingleFlightTestCase(
+                        testName = "queryPolls",
+                        expectedKeyPrefix = "queryPolls-",
+                        call = { it.queryPolls() },
+                        apiResult = testQueryPollsResponse,
+                    )
+                ),
+                arrayOf(
+                    SingleFlightTestCase(
+                        testName = "deletePoll",
+                        expectedKeyPrefix = "deletePoll-poll123",
+                        call = { it.deletePoll("poll123") },
+                        apiResult = testResponse,
+                    )
+                ),
+                arrayOf(
+                    SingleFlightTestCase(
+                        testName = "getPoll",
+                        expectedKeyPrefix = "getPoll-poll123",
+                        call = { it.getPoll("poll123") },
+                        apiResult = testPollResponse,
+                    )
+                ),
+                arrayOf(
+                    SingleFlightTestCase(
+                        testName = "updatePollPartial",
+                        expectedKeyPrefix = "updatePollPartial-poll123",
+                        call = {
+                            it.updatePollPartial(
+                                "poll123",
+                                UpdatePollPartialRequest(
+                                    unset = listOf("description"),
+                                    set = mapOf("name" to "Partially Updated Poll"),
+                                ),
+                            )
+                        },
+                        apiResult = testPollResponse,
+                    )
+                ),
+                arrayOf(
+                    SingleFlightTestCase(
+                        testName = "updatePollPartialWithNoBodyRequestNeeded",
+                        expectedKeyPrefix = "updatePollPartial-poll123",
+                        call = { it.updatePollPartial("poll123") },
+                        apiResult = testPollResponse,
+                    )
+                ),
+                arrayOf(
+                    SingleFlightTestCase(
+                        testName = "createPollOption",
+                        expectedKeyPrefix = "createPollOption-poll123",
+                        call = {
+                            it.createPollOption("poll123", CreatePollOptionRequest("Create Option"))
+                        },
+                        apiResult = testPollOptionResponse,
+                    )
+                ),
+                arrayOf(
+                    SingleFlightTestCase(
+                        testName = "updatePollOption",
+                        expectedKeyPrefix = "updatePollOption-poll123",
+                        call = {
+                            it.updatePollOption(
+                                "poll123",
+                                UpdatePollOptionRequest(
+                                    id = "option456",
+                                    text = "Updated option text",
+                                    custom = mapOf("updatedBy" to "Ezra"),
+                                ),
+                            )
+                        },
+                        apiResult = testPollOptionResponse,
+                    )
+                ),
+                arrayOf(
+                    SingleFlightTestCase(
+                        testName = "deletePollOption",
+                        expectedKeyPrefix = "deletePollOption-poll123-option456",
+                        call = { it.deletePollOption(pollId = "poll123", optionId = "option456") },
+                        apiResult = testResponse,
+                    )
+                ),
+                arrayOf(
+                    SingleFlightTestCase(
+                        testName = "getPollOption",
+                        expectedKeyPrefix = "getPollOption-poll123-option456",
+                        call = { it.getPollOption(pollId = "poll123", optionId = "option456") },
+                        apiResult = testPollOptionResponse,
+                    )
+                ),
+                arrayOf(
+                    SingleFlightTestCase(
+                        testName = "queryPollVotes",
+                        expectedKeyPrefix = "queryPollVotes-poll123",
+                        call = {
+                            it.queryPollVotes(
+                                pollId = "poll123",
+                                queryPollVotesRequest = QueryPollVotesRequest(),
+                            )
+                        },
+                        apiResult = testPollVoteResponse,
                     )
                 ),
                 arrayOf(

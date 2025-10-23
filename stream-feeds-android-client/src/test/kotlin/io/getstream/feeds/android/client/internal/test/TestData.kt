@@ -54,6 +54,7 @@ import io.getstream.feeds.android.network.models.FollowResponse
 import io.getstream.feeds.android.network.models.GetFollowSuggestionsResponse
 import io.getstream.feeds.android.network.models.GetOrCreateFeedResponse
 import io.getstream.feeds.android.network.models.PinActivityResponse
+import io.getstream.feeds.android.network.models.PollOptionResponseData
 import io.getstream.feeds.android.network.models.PollResponseData
 import io.getstream.feeds.android.network.models.PollVoteResponseData
 import io.getstream.feeds.android.network.models.QueryFeedMembersResponse
@@ -570,6 +571,12 @@ internal object TestData {
             maxVotesAllowed = null,
             createdBy = null,
         )
+
+    fun pollOptionResponseData(
+        id: String = "option-1",
+        text: String = "Option 1",
+        custom: Map<String, Any?> = emptyMap(),
+    ): PollOptionResponseData = PollOptionResponseData(id = id, custom = custom, text = text)
 
     fun feedData(
         id: String = "user-1",
