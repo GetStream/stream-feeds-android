@@ -20,6 +20,8 @@ import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
+import io.getstream.feeds.android.client.api.model.PollData
+import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.state.ActivityListState
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
@@ -28,10 +30,13 @@ import io.getstream.feeds.android.client.internal.model.deleteBookmark
 import io.getstream.feeds.android.client.internal.model.removeComment
 import io.getstream.feeds.android.client.internal.model.removeCommentReaction
 import io.getstream.feeds.android.client.internal.model.removeReaction
+import io.getstream.feeds.android.client.internal.model.removeVote
+import io.getstream.feeds.android.client.internal.model.update
 import io.getstream.feeds.android.client.internal.model.upsertBookmark
 import io.getstream.feeds.android.client.internal.model.upsertComment
 import io.getstream.feeds.android.client.internal.model.upsertCommentReaction
 import io.getstream.feeds.android.client.internal.model.upsertReaction
+import io.getstream.feeds.android.client.internal.model.upsertVote
 import io.getstream.feeds.android.client.internal.state.query.ActivitiesQueryConfig
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.updateIf
@@ -147,6 +152,36 @@ internal class ActivityListStateImpl(
         }
     }
 
+    override fun onPollDeleted(pollId: String) {
+        _activities.update { current ->
+            current.updateIf({ it.poll?.id == pollId }) { it.copy(poll = null) }
+        }
+    }
+
+    override fun onPollUpdated(poll: PollData) {
+        _activities.update { current ->
+            current.updateIf({ it.poll?.id == poll.id }) { activity ->
+                activity.copy(poll = activity.poll?.update(poll))
+            }
+        }
+    }
+
+    override fun onPollVoteRemoved(pollId: String, vote: PollVoteData) {
+        _activities.update { current ->
+            current.updateIf({ it.poll?.id == pollId }) { activity ->
+                activity.copy(poll = activity.poll?.removeVote(vote, currentUserId))
+            }
+        }
+    }
+
+    override fun onPollVoteUpserted(pollId: String, vote: PollVoteData) {
+        _activities.update { current ->
+            current.updateIf({ it.poll?.id == pollId }) { activity ->
+                activity.copy(poll = activity.poll?.upsertVote(vote, currentUserId))
+            }
+        }
+    }
+
     override fun onReactionUpserted(reaction: FeedsReactionData, activity: ActivityData) {
         _activities.update { current ->
             current.updateIf({ it.id == reaction.activityId }) {
@@ -243,6 +278,36 @@ internal interface ActivityListStateUpdates {
      * @param reaction The reaction that was added or updated.
      */
     fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData)
+
+    /**
+     * Called when a poll is deleted.
+     *
+     * @param pollId The ID of the deleted poll.
+     */
+    fun onPollDeleted(pollId: String)
+
+    /**
+     * Called when a poll is updated.
+     *
+     * @param poll The updated poll.
+     */
+    fun onPollUpdated(poll: PollData)
+
+    /**
+     * Called when a vote is removed from a poll.
+     *
+     * @param pollId The ID of the poll associated with the vote.
+     * @param vote The vote that was removed.
+     */
+    fun onPollVoteRemoved(pollId: String, vote: PollVoteData)
+
+    /**
+     * Called when a vote is added to or updated in a poll.
+     *
+     * @param pollId The ID of the poll associated with the vote.
+     * @param vote The vote that was added or updated.
+     */
+    fun onPollVoteUpserted(pollId: String, vote: PollVoteData)
 
     /**
      * Called when a reaction is added to or updated in an activity.

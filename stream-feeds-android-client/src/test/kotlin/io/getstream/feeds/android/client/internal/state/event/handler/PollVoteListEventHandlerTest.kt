@@ -17,6 +17,7 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.internal.state.PollVoteListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteCasted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteChanged
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteRemoved
@@ -43,6 +44,16 @@ internal class PollVoteListEventHandlerTest(
         @Parameterized.Parameters(name = "{0}")
         fun data(): List<Array<Any>> =
             listOf(
+                testParams<PollVoteListStateUpdates>(
+                    name = "PollDeleted matching poll",
+                    event = PollDeleted("feed-1", pollId),
+                    verifyBlock = { state -> state.onPollDeleted() },
+                ),
+                testParams<PollVoteListStateUpdates>(
+                    name = "PollDeleted non-matching poll",
+                    event = PollDeleted("feed-1", otherPollId),
+                    verifyBlock = { state -> state wasNot called },
+                ),
                 testParams<PollVoteListStateUpdates>(
                     name = "PollVoteCasted matching poll",
                     event = PollVoteCasted("feed-1", pollId, pollVoteData()),

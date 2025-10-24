@@ -88,6 +88,17 @@ internal class PollVoteListStateImplTest {
         assertEquals(listOf(updated), pollVoteListState.votes.value)
     }
 
+    @Test
+    fun `onPollDeleted when called, then clear all votes`() = runTest {
+        val votes = listOf(pollVoteData(), pollVoteData("vote-2", "poll-1", "option-2", "user-2"))
+        val paginationResult = defaultPaginationResult(votes)
+
+        pollVoteListState.onQueryMorePollVotes(paginationResult, queryConfig)
+        pollVoteListState.onPollDeleted()
+
+        assertEquals(emptyList<PollVoteData>(), pollVoteListState.votes.value)
+    }
+
     companion object {
         private val queryConfig = PollVotesQueryConfig(filter = null, sort = PollVotesSort.Default)
     }
