@@ -74,6 +74,18 @@ internal class CommentReactionListStateImplTest {
         assertEquals(listOf(initialReaction, newReaction), commentReactionListState.reactions.value)
     }
 
+    @Test
+    fun `on onCommentRemoved, clear all reactions`() = runTest {
+        val reactions =
+            listOf(feedsReactionData(), feedsReactionData("reaction-2", "comment-1", "user-2"))
+        val paginationResult = defaultPaginationResult(reactions)
+
+        commentReactionListState.onQueryMoreReactions(paginationResult, queryConfig)
+        commentReactionListState.onCommentRemoved()
+
+        assertEquals(emptyList<FeedsReactionData>(), commentReactionListState.reactions.value)
+    }
+
     companion object {
         private val queryConfig =
             CommentReactionsQueryConfig(filter = null, sort = CommentReactionsSort.Default)

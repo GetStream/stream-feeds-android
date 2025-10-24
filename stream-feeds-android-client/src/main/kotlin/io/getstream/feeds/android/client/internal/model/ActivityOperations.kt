@@ -112,11 +112,11 @@ internal fun ActivityData.upsertComment(comment: CommentData): ActivityData {
 /**
  * Removes a comment from the activity, updating the comment count and the list of comments.
  *
- * @param comment The comment to be removed.
+ * @param commentId The ID of the comment to be removed.
  * @return A new [ActivityData] instance with the updated comments and comment count.
  */
-internal fun ActivityData.removeComment(comment: CommentData): ActivityData {
-    val updatedComments = this.comments.filter { it.id != comment.id }
+internal fun ActivityData.removeComment(commentId: String): ActivityData {
+    val updatedComments = this.comments.filter { it.id != commentId }
     return this.copy(comments = updatedComments, commentCount = max(0, this.commentCount - 1))
 }
 

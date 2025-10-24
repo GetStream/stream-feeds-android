@@ -128,15 +128,15 @@ internal class CommentReplyListStateImplTest {
     }
 
     @Test
-    fun `on onCommentRemoved with top-level comment, remove it from state`() = runTest {
-        val comment1 = threadedCommentData("comment-1", text = "First comment")
-        val comment2 = threadedCommentData("comment-2", text = "Second comment")
+    fun `on onCommentRemoved with parent comment, clear all replies`() = runTest {
+        val reply1 = threadedCommentData("reply-1", text = "First reply")
+        val reply2 = threadedCommentData("reply-2", text = "Second reply")
 
-        setupInitialReplies(comment1, comment2)
+        setupInitialReplies(reply1, reply2)
 
-        state.onCommentRemoved("comment-1")
+        state.onCommentRemoved(query.commentId)
 
-        assertEquals(listOf(comment2), state.replies.value)
+        assertEquals(emptyList<ThreadedCommentData>(), state.replies.value)
     }
 
     @Test
