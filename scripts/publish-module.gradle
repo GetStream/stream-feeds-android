@@ -86,7 +86,7 @@ afterEvaluate {
                         }
                         developer {
                             id = 'gpunto'
-                            name = 'Gianmarco'
+                            name = 'Gianmarco David'
                             email = 'gianmarco.david@getstream.io'
                         }
                     }
