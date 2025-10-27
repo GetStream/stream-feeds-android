@@ -57,8 +57,6 @@ public data class ReviewQueueItemResponse(
     public val activity: io.getstream.feeds.android.network.models.EnrichedActivity? = null,
     @Json(name = "assigned_to")
     public val assignedTo: io.getstream.feeds.android.network.models.UserResponse? = null,
-    @Json(name = "call")
-    public val call: io.getstream.feeds.android.network.models.CallResponse? = null,
     @Json(name = "entity_creator")
     public val entityCreator: io.getstream.feeds.android.network.models.EntityCreatorResponse? =
         null,
