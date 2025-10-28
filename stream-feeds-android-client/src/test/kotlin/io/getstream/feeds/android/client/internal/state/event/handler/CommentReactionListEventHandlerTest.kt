@@ -17,6 +17,7 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.internal.state.CommentReactionListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpdated
@@ -45,6 +46,16 @@ internal class CommentReactionListEventHandlerTest(
         @Parameterized.Parameters(name = "{0}")
         fun data(): Collection<Array<Any>> =
             listOf(
+                testParams<CommentReactionListStateUpdates>(
+                    name = "CommentDeleted matching comment",
+                    event = CommentDeleted("feed-1", matchingComment),
+                    verifyBlock = { state -> state.onCommentRemoved() },
+                ),
+                testParams<CommentReactionListStateUpdates>(
+                    name = "CommentDeleted non-matching comment",
+                    event = CommentDeleted("feed-1", nonMatchingComment),
+                    verifyBlock = { state -> state wasNot called },
+                ),
                 testParams<CommentReactionListStateUpdates>(
                     name = "CommentReactionAdded matching comment",
                     event = CommentReactionAdded("feed-1", matchingComment, reaction),

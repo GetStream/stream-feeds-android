@@ -45,7 +45,7 @@ internal class CommentListImpl(
 
     private val _state: CommentListStateImpl = CommentListStateImpl(query, currentUserId)
 
-    private val eventHandler = CommentListEventHandler(_state)
+    private val eventHandler = CommentListEventHandler(query.filter, _state)
 
     init {
         subscriptionManager.subscribe(eventHandler)
