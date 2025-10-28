@@ -102,7 +102,7 @@ internal class CommentReplyListStateImplTest {
         setupInitialReplies(parentComment)
 
         val oldReply =
-            threadedCommentData(
+            commentData(
                 id = "reply-1",
                 parentId = "parent-1",
                 text = "Old reply",
@@ -110,7 +110,7 @@ internal class CommentReplyListStateImplTest {
             )
 
         val newReply =
-            threadedCommentData(
+            commentData(
                 id = "reply-2",
                 parentId = "parent-1",
                 text = "New reply",
@@ -118,11 +118,14 @@ internal class CommentReplyListStateImplTest {
             )
 
         // Add replies in reverse order to test sorting
-        state.onCommentAdded(oldReply)
-        state.onCommentAdded(newReply)
+        state.onCommentUpserted(oldReply)
+        state.onCommentUpserted(newReply)
 
         val expectedParent =
-            parentComment.copy(replies = listOf(newReply, oldReply), replyCount = 2)
+            parentComment.copy(
+                replies = listOf(newReply, oldReply).map(::ThreadedCommentData),
+                replyCount = 2,
+            )
 
         assertEquals(listOf(expectedParent), state.replies.value)
     }
