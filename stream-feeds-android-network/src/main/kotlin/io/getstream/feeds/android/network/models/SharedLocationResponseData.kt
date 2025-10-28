@@ -32,8 +32,4 @@ public data class SharedLocationResponseData(
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
     @Json(name = "user_id") public val userId: kotlin.String,
     @Json(name = "end_at") public val endAt: java.util.Date? = null,
-    @Json(name = "channel")
-    public val channel: io.getstream.feeds.android.network.models.ChannelResponse? = null,
-    @Json(name = "message")
-    public val message: io.getstream.feeds.android.network.models.MessageResponse? = null,
 )

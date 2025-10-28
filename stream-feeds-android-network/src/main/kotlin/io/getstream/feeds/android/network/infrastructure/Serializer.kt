@@ -70,32 +70,6 @@ public object Serializer {
                 io.getstream.feeds.android.network.models.BodyguardSeverityRule.Severity
                     .SeverityAdapter()
             )
-            .add(io.getstream.feeds.android.network.models.ChannelConfig.Automod.AutomodAdapter())
-            .add(
-                io.getstream.feeds.android.network.models.ChannelConfig.AutomodBehavior
-                    .AutomodBehaviorAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.ChannelConfig.BlocklistBehavior
-                    .BlocklistBehaviorAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.ChannelConfigWithInfo.Automod
-                    .AutomodAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.ChannelConfigWithInfo.AutomodBehavior
-                    .AutomodBehaviorAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.ChannelConfigWithInfo.BlocklistBehavior
-                    .BlocklistBehaviorAdapter()
-            )
-            .add(io.getstream.feeds.android.network.models.ChannelMember.Role.RoleAdapter())
-            .add(
-                io.getstream.feeds.android.network.models.ChannelOwnCapability
-                    .ChannelOwnCapabilityAdapter()
-            )
             .add(
                 io.getstream.feeds.android.network.models.ConfigOverrides.BlocklistBehavior
                     .BlocklistBehaviorAdapter()
@@ -152,7 +126,6 @@ public object Serializer {
             .add(io.getstream.feeds.android.network.models.ImageSize.Crop.CropAdapter())
             .add(io.getstream.feeds.android.network.models.ImageSize.Resize.ResizeAdapter())
             .add(io.getstream.feeds.android.network.models.LLMRule.Action.ActionAdapter())
-            .add(io.getstream.feeds.android.network.models.MessageResponse.Type.TypeAdapter())
             .add(io.getstream.feeds.android.network.models.OCRRule.Action.ActionAdapter())
             .add(
                 io.getstream.feeds.android.network.models.PushPreferenceInput.CallLevel

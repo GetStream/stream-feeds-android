@@ -64,8 +64,6 @@ public data class ReviewQueueItemResponse(
     public val feedsV2Activity: io.getstream.feeds.android.network.models.EnrichedActivity? = null,
     @Json(name = "feeds_v2_reaction")
     public val feedsV2Reaction: io.getstream.feeds.android.network.models.Reaction? = null,
-    @Json(name = "message")
-    public val message: io.getstream.feeds.android.network.models.MessageResponse? = null,
     @Json(name = "moderation_payload")
     public val moderationPayload: io.getstream.feeds.android.network.models.ModerationPayload? =
         null,
