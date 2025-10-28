@@ -193,7 +193,7 @@ internal interface CommentReplyListStateUpdates {
     fun onCommentRemoved(commentId: String)
 
     /**
-     * Handles the addition of a new comment reply.
+     * Handles the addition or update of a new comment reply.
      *
      * @param comment The comment data for the newly added reply.
      */
