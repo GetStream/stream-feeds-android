@@ -73,13 +73,13 @@ internal class CommentListStateImpl(
         }
     }
 
-    override fun onCommentUpdated(comment: CommentData) {
+    override fun onCommentUpserted(comment: CommentData) {
         _comments.update { current ->
             current.upsertSorted(
                 element = comment,
                 idSelector = CommentData::id,
                 comparator = comparator,
-                update = CommentData::update,
+                update = { it.update(comment) },
             )
         }
     }
@@ -120,11 +120,11 @@ internal interface CommentListStateUpdates {
     fun onQueryMoreComments(result: PaginationResult<CommentData>)
 
     /**
-     * Handles the update of a comment in the list.
+     * Handles the addition or update of a comment in the list.
      *
-     * @param comment The updated comment data.
+     * @param comment The comment data.
      */
-    fun onCommentUpdated(comment: CommentData)
+    fun onCommentUpserted(comment: CommentData)
 
     /**
      * Handles the removal of a comment from the list.

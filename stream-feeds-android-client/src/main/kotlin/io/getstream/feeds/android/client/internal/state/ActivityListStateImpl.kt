@@ -128,7 +128,7 @@ internal class ActivityListStateImpl(
         _activities.update { current ->
             current.map { activity ->
                 if (activity.id == comment.objectId) {
-                    activity.removeComment(comment)
+                    activity.removeComment(comment.id)
                 } else {
                     activity
                 }

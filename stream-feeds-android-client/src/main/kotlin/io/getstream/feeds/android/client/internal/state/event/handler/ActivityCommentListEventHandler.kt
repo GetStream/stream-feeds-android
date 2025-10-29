@@ -15,7 +15,6 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.internal.state.ActivityCommentListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
@@ -36,7 +35,7 @@ internal class ActivityCommentListEventHandler(
 
             is StateUpdateEvent.CommentAdded -> {
                 if (event.comment.objectId == objectId && event.comment.objectType == objectType) {
-                    state.onCommentAdded(ThreadedCommentData(event.comment))
+                    state.onCommentUpserted(event.comment)
                 }
             }
 
@@ -48,13 +47,7 @@ internal class ActivityCommentListEventHandler(
 
             is StateUpdateEvent.CommentUpdated -> {
                 if (event.comment.objectId == objectId && event.comment.objectType == objectType) {
-                    state.onCommentUpdated(event.comment)
-                }
-            }
-
-            is StateUpdateEvent.CommentReactionAdded -> {
-                if (event.comment.objectId == objectId && event.comment.objectType == objectType) {
-                    state.onCommentReactionUpserted(event.comment, event.reaction)
+                    state.onCommentUpserted(event.comment)
                 }
             }
 
@@ -64,7 +57,7 @@ internal class ActivityCommentListEventHandler(
                 }
             }
 
-            is StateUpdateEvent.CommentReactionUpdated -> {
+            is StateUpdateEvent.CommentReactionUpserted -> {
                 if (event.comment.objectId == objectId && event.comment.objectType == objectType) {
                     state.onCommentReactionUpserted(event.comment, event.reaction)
                 }

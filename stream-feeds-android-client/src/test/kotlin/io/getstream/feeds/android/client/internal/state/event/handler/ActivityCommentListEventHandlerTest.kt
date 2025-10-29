@@ -15,15 +15,13 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.internal.state.ActivityCommentListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpserted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentUpdated
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
@@ -66,9 +64,7 @@ internal class ActivityCommentListEventHandlerTest(
                 testParams<ActivityCommentListStateUpdates>(
                     name = "CommentAdded matching object",
                     event = CommentAdded("feed-1", matchingComment),
-                    verifyBlock = { state ->
-                        state.onCommentAdded(ThreadedCommentData(matchingComment))
-                    },
+                    verifyBlock = { state -> state.onCommentUpserted(matchingComment) },
                 ),
                 testParams<ActivityCommentListStateUpdates>(
                     name = "CommentAdded non-matching object",
@@ -88,23 +84,11 @@ internal class ActivityCommentListEventHandlerTest(
                 testParams<ActivityCommentListStateUpdates>(
                     name = "CommentUpdated matching object",
                     event = CommentUpdated("feed-1", matchingComment),
-                    verifyBlock = { state -> state.onCommentUpdated(matchingComment) },
+                    verifyBlock = { state -> state.onCommentUpserted(matchingComment) },
                 ),
                 testParams<ActivityCommentListStateUpdates>(
                     name = "CommentUpdated non-matching object",
                     event = CommentUpdated("feed-1", nonMatchingComment),
-                    verifyBlock = { state -> state wasNot called },
-                ),
-                testParams<ActivityCommentListStateUpdates>(
-                    name = "CommentReactionAdded matching object",
-                    event = CommentReactionAdded("feed-1", matchingComment, feedsReactionData()),
-                    verifyBlock = { state ->
-                        state.onCommentReactionUpserted(matchingComment, feedsReactionData())
-                    },
-                ),
-                testParams<ActivityCommentListStateUpdates>(
-                    name = "CommentReactionAdded non-matching object",
-                    event = CommentReactionAdded("feed-1", nonMatchingComment, feedsReactionData()),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<ActivityCommentListStateUpdates>(
@@ -121,16 +105,16 @@ internal class ActivityCommentListEventHandlerTest(
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<ActivityCommentListStateUpdates>(
-                    name = "CommentReactionUpdated matching object",
-                    event = CommentReactionUpdated("feed-1", matchingComment, feedsReactionData()),
+                    name = "CommentReactionUpserted matching object",
+                    event = CommentReactionUpserted("feed-1", matchingComment, feedsReactionData()),
                     verifyBlock = { state ->
                         state.onCommentReactionUpserted(matchingComment, feedsReactionData())
                     },
                 ),
                 testParams<ActivityCommentListStateUpdates>(
-                    name = "CommentReactionUpdated non-matching object",
+                    name = "CommentReactionUpserted non-matching object",
                     event =
-                        CommentReactionUpdated("feed-1", nonMatchingComment, feedsReactionData()),
+                        CommentReactionUpserted("feed-1", nonMatchingComment, feedsReactionData()),
                     verifyBlock = { state -> state wasNot called },
                 ),
             )

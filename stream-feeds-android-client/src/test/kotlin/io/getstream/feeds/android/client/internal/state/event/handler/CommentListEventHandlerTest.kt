@@ -15,12 +15,15 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
+import io.getstream.android.core.api.filter.equal
+import io.getstream.feeds.android.client.api.state.query.CommentsFilter
+import io.getstream.feeds.android.client.api.state.query.CommentsFilterField
 import io.getstream.feeds.android.client.internal.state.CommentListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpserted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentUpdated
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
@@ -36,10 +39,12 @@ internal class CommentListEventHandlerTest(
 ) : BaseEventHandlerTest<CommentListStateUpdates>(testName, event, verifyBlock) {
 
     override val state: CommentListStateUpdates = mockk(relaxed = true)
-    override val handler = CommentListEventHandler(state)
+    override val handler = CommentListEventHandler(filter, state)
 
     companion object {
-        private val comment = commentData()
+        private val filter: CommentsFilter = CommentsFilterField.objectId.equal("activity-123")
+        private val comment = commentData(objectId = "activity-123")
+        private val nonMatchingComment = commentData(objectId = "different-activity")
         private val reaction = feedsReactionData()
 
         @JvmStatic
@@ -47,9 +52,19 @@ internal class CommentListEventHandlerTest(
         fun data(): Collection<Array<Any>> =
             listOf(
                 testParams<CommentListStateUpdates>(
+                    name = "CommentAdded matching filter",
+                    event = CommentAdded("feed-1", comment),
+                    verifyBlock = { state -> state.onCommentUpserted(comment) },
+                ),
+                testParams<CommentListStateUpdates>(
+                    name = "CommentAdded non-matching filter",
+                    event = CommentAdded("feed-1", nonMatchingComment),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<CommentListStateUpdates>(
                     name = "CommentUpdated",
                     event = CommentUpdated("feed-1", comment),
-                    verifyBlock = { state -> state.onCommentUpdated(comment) },
+                    verifyBlock = { state -> state.onCommentUpserted(comment) },
                 ),
                 testParams<CommentListStateUpdates>(
                     name = "CommentDeleted",
@@ -57,24 +72,14 @@ internal class CommentListEventHandlerTest(
                     verifyBlock = { state -> state.onCommentRemoved(comment.id) },
                 ),
                 testParams<CommentListStateUpdates>(
-                    name = "CommentReactionAdded",
-                    event = CommentReactionAdded("feed-1", comment, reaction),
-                    verifyBlock = { state -> state.onCommentReactionUpserted(comment, reaction) },
-                ),
-                testParams<CommentListStateUpdates>(
                     name = "CommentReactionDeleted",
                     event = CommentReactionDeleted("feed-1", comment, reaction),
                     verifyBlock = { state -> state.onCommentReactionRemoved(comment, reaction) },
                 ),
                 testParams<CommentListStateUpdates>(
-                    name = "CommentReactionUpdated",
-                    event = CommentReactionUpdated("feed-1", comment, reaction),
+                    name = "CommentReactionUpserted",
+                    event = CommentReactionUpserted("feed-1", comment, reaction),
                     verifyBlock = { state -> state.onCommentReactionUpserted(comment, reaction) },
-                ),
-                testParams<CommentListStateUpdates>(
-                    name = "unknown event",
-                    event = StateUpdateEvent.CommentAdded("feed-1", comment),
-                    verifyBlock = { state -> state wasNot called },
                 ),
             )
     }

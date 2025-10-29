@@ -15,14 +15,12 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.internal.state.CommentReplyListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpserted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentUpdated
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
@@ -47,9 +45,7 @@ internal class CommentReplyListEventHandlerTest(
                 testParams<CommentReplyListStateUpdates>(
                     name = "CommentAdded",
                     event = CommentAdded("feed-1", commentData()),
-                    verifyBlock = { state ->
-                        state.onCommentAdded(ThreadedCommentData(commentData()))
-                    },
+                    verifyBlock = { state -> state.onCommentUpserted(commentData()) },
                 ),
                 testParams<CommentReplyListStateUpdates>(
                     name = "CommentDeleted",
@@ -59,11 +55,11 @@ internal class CommentReplyListEventHandlerTest(
                 testParams<CommentReplyListStateUpdates>(
                     name = "CommentUpdated",
                     event = CommentUpdated("feed-1", commentData()),
-                    verifyBlock = { state -> state.onCommentUpdated(commentData()) },
+                    verifyBlock = { state -> state.onCommentUpserted(commentData()) },
                 ),
                 testParams<CommentReplyListStateUpdates>(
-                    name = "CommentReactionAdded",
-                    event = CommentReactionAdded("feed-1", commentData(), feedsReactionData()),
+                    name = "CommentReactionUpserted",
+                    event = CommentReactionUpserted("feed-1", commentData(), feedsReactionData()),
                     verifyBlock = { state ->
                         state.onCommentReactionUpserted(commentData(), feedsReactionData())
                     },
@@ -73,13 +69,6 @@ internal class CommentReplyListEventHandlerTest(
                     event = CommentReactionDeleted("feed-1", commentData(), feedsReactionData()),
                     verifyBlock = { state ->
                         state.onCommentReactionRemoved(commentData(), feedsReactionData())
-                    },
-                ),
-                testParams<CommentReplyListStateUpdates>(
-                    name = "CommentReactionUpdated",
-                    event = CommentReactionUpdated("feed-1", commentData(), feedsReactionData()),
-                    verifyBlock = { state ->
-                        state.onCommentReactionUpserted(commentData(), feedsReactionData())
                     },
                 ),
             )

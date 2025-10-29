@@ -56,6 +56,10 @@ internal class CommentReactionListStateImpl(override val query: CommentReactions
     override val pagination: PaginationData?
         get() = _pagination
 
+    override fun onCommentRemoved() {
+        _reactions.update { emptyList() }
+    }
+
     override fun onQueryMoreReactions(
         result: PaginationResult<FeedsReactionData>,
         queryConfig: CommentReactionsQueryConfig,
@@ -82,6 +86,9 @@ internal interface CommentReactionListMutableState :
     CommentReactionListState, CommentReactionListStateUpdates
 
 internal interface CommentReactionListStateUpdates {
+
+    /** Handles the deletion of the parent comment. */
+    fun onCommentRemoved()
 
     /**
      * Handles the successful loading of reactions.

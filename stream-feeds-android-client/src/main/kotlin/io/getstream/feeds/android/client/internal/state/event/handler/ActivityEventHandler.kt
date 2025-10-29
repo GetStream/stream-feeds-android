@@ -51,17 +51,12 @@ internal class ActivityEventHandler(
                 state.onActivityUpdated(event.activity)
             }
 
-            is StateUpdateEvent.ActivityReactionAdded -> {
-                if (event.fid != fid.rawValue || event.reaction.activityId != activityId) return
-                state.onReactionUpserted(event.reaction, event.activity)
-            }
-
             is StateUpdateEvent.ActivityReactionDeleted -> {
                 if (event.fid != fid.rawValue || event.reaction.activityId != activityId) return
                 state.onReactionRemoved(event.reaction, event.activity)
             }
 
-            is StateUpdateEvent.ActivityReactionUpdated -> {
+            is StateUpdateEvent.ActivityReactionUpserted -> {
                 if (event.fid != fid.rawValue || event.reaction.activityId != activityId) return
                 state.onReactionUpserted(event.reaction, event.activity)
             }
@@ -82,6 +77,31 @@ internal class ActivityEventHandler(
                 val eventActivity = event.bookmark.activity
                 if (fid.rawValue !in eventActivity.feeds || eventActivity.id != activityId) return
                 state.onBookmarkUpserted(event.bookmark)
+            }
+
+            is StateUpdateEvent.CommentAdded -> {
+                if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
+                state.onCommentUpserted(event.comment)
+            }
+
+            is StateUpdateEvent.CommentDeleted -> {
+                if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
+                state.onCommentRemoved(event.comment.id)
+            }
+
+            is StateUpdateEvent.CommentUpdated -> {
+                if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
+                state.onCommentUpserted(event.comment)
+            }
+
+            is StateUpdateEvent.CommentReactionDeleted -> {
+                if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
+                state.onCommentReactionRemoved(event.comment, event.reaction)
+            }
+
+            is StateUpdateEvent.CommentReactionUpserted -> {
+                if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
+                state.onCommentReactionUpserted(event.comment, event.reaction)
             }
 
             is StateUpdateEvent.PollDeleted -> {

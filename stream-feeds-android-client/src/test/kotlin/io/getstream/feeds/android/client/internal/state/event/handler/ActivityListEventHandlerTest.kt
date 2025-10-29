@@ -21,18 +21,16 @@ import io.getstream.feeds.android.client.internal.state.ActivityListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpserted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpserted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollUpdated
@@ -96,21 +94,6 @@ internal class ActivityListEventHandlerTest(
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<ActivityListStateUpdates>(
-                    name = "ActivityReactionAdded",
-                    event =
-                        ActivityReactionAdded(
-                            "feed-1",
-                            activityData("activity-1"),
-                            feedsReactionData("activity-1"),
-                        ),
-                    verifyBlock = { state ->
-                        state.onReactionUpserted(
-                            feedsReactionData("activity-1"),
-                            activityData("activity-1"),
-                        )
-                    },
-                ),
-                testParams<ActivityListStateUpdates>(
                     name = "ActivityReactionDeleted",
                     event =
                         ActivityReactionDeleted(
@@ -126,9 +109,9 @@ internal class ActivityListEventHandlerTest(
                     },
                 ),
                 testParams<ActivityListStateUpdates>(
-                    name = "ActivityReactionUpdated",
+                    name = "ActivityReactionUpserted",
                     event =
-                        ActivityReactionUpdated(
+                        ActivityReactionUpserted(
                             "feed-1",
                             activityData("activity-1"),
                             feedsReactionData("activity-1"),
@@ -171,13 +154,6 @@ internal class ActivityListEventHandlerTest(
                     verifyBlock = { state -> state.onCommentUpserted(commentData()) },
                 ),
                 testParams<ActivityListStateUpdates>(
-                    name = "CommentReactionAdded",
-                    event = CommentReactionAdded("feed-1", commentData(), feedsReactionData()),
-                    verifyBlock = { state ->
-                        state.onCommentReactionUpserted(commentData(), feedsReactionData())
-                    },
-                ),
-                testParams<ActivityListStateUpdates>(
                     name = "CommentReactionDeleted",
                     event = CommentReactionDeleted("feed-1", commentData(), feedsReactionData()),
                     verifyBlock = { state ->
@@ -185,8 +161,8 @@ internal class ActivityListEventHandlerTest(
                     },
                 ),
                 testParams<ActivityListStateUpdates>(
-                    name = "CommentReactionUpdated",
-                    event = CommentReactionUpdated("feed-1", commentData(), feedsReactionData()),
+                    name = "CommentReactionUpserted",
+                    event = CommentReactionUpserted("feed-1", commentData(), feedsReactionData()),
                     verifyBlock = { state ->
                         state.onCommentReactionUpserted(commentData(), feedsReactionData())
                     },
