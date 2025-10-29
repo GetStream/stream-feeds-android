@@ -41,5 +41,5 @@ public data class FeedsReactionData(
     public val id: String = "${activityId}${commentId}${user.id}${type}"
 
     /** Identifier for grouping a user's reactions. */
-    public val userReactionsGroupId: String = "${activityId}${commentId}${user.id}"
+    internal val userReactionsGroupId: String = "${activityId}${commentId}${user.id}"
 }
