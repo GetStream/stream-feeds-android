@@ -137,7 +137,7 @@ internal fun <T, ID> List<T>.upsertSorted(
     element: T,
     idSelector: (T) -> ID,
     comparator: Comparator<in T>,
-    update: (found: T) -> T = { element },
+    update: (old: T) -> T = { element },
 ): List<T> {
     val elementId = idSelector(element)
     val existingIndex = this.indexOfFirst { idSelector(it) == elementId }
