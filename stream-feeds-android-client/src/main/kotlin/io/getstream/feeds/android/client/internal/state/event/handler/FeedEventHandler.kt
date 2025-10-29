@@ -69,19 +69,13 @@ internal class FeedEventHandler(
                 }
             }
 
-            is StateUpdateEvent.ActivityReactionAdded -> {
-                if (event.fid == fid.rawValue) {
-                    state.onReactionUpserted(event.reaction, event.activity)
-                }
-            }
-
             is StateUpdateEvent.ActivityReactionDeleted -> {
                 if (event.fid == fid.rawValue) {
                     state.onReactionRemoved(event.reaction, event.activity)
                 }
             }
 
-            is StateUpdateEvent.ActivityReactionUpdated -> {
+            is StateUpdateEvent.ActivityReactionUpserted -> {
                 if (event.fid == fid.rawValue) {
                     state.onReactionUpserted(event.reaction, event.activity)
                 }
@@ -135,19 +129,13 @@ internal class FeedEventHandler(
                 }
             }
 
-            is StateUpdateEvent.CommentReactionAdded -> {
-                if (event.fid == fid.rawValue) {
-                    state.onCommentReactionUpserted(event.comment, event.reaction)
-                }
-            }
-
             is StateUpdateEvent.CommentReactionDeleted -> {
                 if (event.fid == fid.rawValue) {
                     state.onCommentReactionRemoved(event.comment, event.reaction)
                 }
             }
 
-            is StateUpdateEvent.CommentReactionUpdated -> {
+            is StateUpdateEvent.CommentReactionUpserted -> {
                 if (event.fid == fid.rawValue) {
                     state.onCommentReactionUpserted(event.comment, event.reaction)
                 }

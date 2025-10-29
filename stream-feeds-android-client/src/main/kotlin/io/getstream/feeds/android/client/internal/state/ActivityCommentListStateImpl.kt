@@ -22,14 +22,13 @@ import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
-import io.getstream.feeds.android.client.internal.model.addReply
 import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.model.update
+import io.getstream.feeds.android.client.internal.model.upsertNestedReply
 import io.getstream.feeds.android.client.internal.model.upsertReaction
 import io.getstream.feeds.android.client.internal.state.query.toComparator
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.treeRemoveFirst
-import io.getstream.feeds.android.client.internal.utils.treeUpdateFirst
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -72,30 +71,23 @@ internal class ActivityCommentListStateImpl(
         }
     }
 
-    override fun onCommentAdded(comment: ThreadedCommentData) {
+    override fun onCommentUpserted(comment: CommentData) {
         if (comment.parentId == null) {
             // If the comment is a top-level comment, add it directly
             _comments.update { current ->
-                current.upsertSorted(comment, ThreadedCommentData::id, commentsComparator)
+                current.upsertSorted(
+                    element = ThreadedCommentData(comment),
+                    idSelector = ThreadedCommentData::id,
+                    comparator = commentsComparator,
+                    update = { it.update(comment) },
+                )
             }
         } else {
             // If it's a reply, find the parent and add it to the parent's replies
             // Update the comments list by searching for the parent in all top-level comments
             _comments.update { current ->
-                current.map { parent -> addNestedReply(parent, comment) }
+                current.map { parent -> parent.upsertNestedReply(comment, commentsComparator) }
             }
-        }
-    }
-
-    override fun onCommentUpdated(comment: CommentData) {
-        _comments.update { current ->
-            current.treeUpdateFirst(
-                matcher = { it.id == comment.id },
-                childrenSelector = { it.replies.orEmpty() },
-                updateElement = { it.update(comment) },
-                updateChildren = { parent, children -> parent.copy(replies = children) },
-                comparator = commentsComparator,
-            )
         }
     }
 
@@ -117,24 +109,6 @@ internal class ActivityCommentListStateImpl(
 
     override fun onCommentReactionRemoved(comment: CommentData, reaction: FeedsReactionData) {
         _comments.update { current -> current.map { removeCommentReaction(it, comment, reaction) } }
-    }
-
-    private fun addNestedReply(
-        parent: ThreadedCommentData,
-        reply: ThreadedCommentData,
-    ): ThreadedCommentData {
-        // If this comment is the parent, add the reply directly
-        if (parent.id == reply.parentId) {
-            return parent.addReply(reply, commentsComparator)
-        }
-        // If this comment has replies, recursively search through them
-        val replies = parent.replies
-        if (!replies.isNullOrEmpty()) {
-            val updatedReplies = replies.map { replyComment -> addNestedReply(replyComment, reply) }
-            return parent.copy(replies = updatedReplies)
-        }
-        // No matching parent found in this subtree, return unchanged
-        return parent
     }
 
     private fun upsertCommentReaction(
@@ -194,25 +168,18 @@ internal interface ActivityCommentListStateUpdates {
     fun onQueryMoreComments(result: PaginationResult<ThreadedCommentData>)
 
     /**
-     * Handles the addition of a new comment.
-     *
-     * @param comment The comment that was added.
-     */
-    fun onCommentAdded(comment: ThreadedCommentData)
-
-    /**
-     * Handles the update of an existing comment.
-     *
-     * @param comment The updated comment data.
-     */
-    fun onCommentUpdated(comment: CommentData)
-
-    /**
      * Handles the removal of a comment.
      *
      * @param commentId The ID of the comment that was removed.
      */
     fun onCommentRemoved(commentId: String)
+
+    /**
+     * Handles the addition or update of a comment.
+     *
+     * @param comment The comment that was added or updated.
+     */
+    fun onCommentUpserted(comment: CommentData)
 
     /**
      * Handles the addition or update of a reaction to a comment.

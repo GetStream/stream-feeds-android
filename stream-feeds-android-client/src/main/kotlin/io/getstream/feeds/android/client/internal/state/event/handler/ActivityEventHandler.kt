@@ -51,17 +51,12 @@ internal class ActivityEventHandler(
                 state.onActivityUpdated(event.activity)
             }
 
-            is StateUpdateEvent.ActivityReactionAdded -> {
-                if (event.fid != fid.rawValue || event.reaction.activityId != activityId) return
-                state.onReactionUpserted(event.reaction, event.activity)
-            }
-
             is StateUpdateEvent.ActivityReactionDeleted -> {
                 if (event.fid != fid.rawValue || event.reaction.activityId != activityId) return
                 state.onReactionRemoved(event.reaction, event.activity)
             }
 
-            is StateUpdateEvent.ActivityReactionUpdated -> {
+            is StateUpdateEvent.ActivityReactionUpserted -> {
                 if (event.fid != fid.rawValue || event.reaction.activityId != activityId) return
                 state.onReactionUpserted(event.reaction, event.activity)
             }
@@ -99,17 +94,12 @@ internal class ActivityEventHandler(
                 state.onCommentUpserted(event.comment)
             }
 
-            is StateUpdateEvent.CommentReactionAdded -> {
-                if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
-                state.onCommentReactionUpserted(event.comment, event.reaction)
-            }
-
             is StateUpdateEvent.CommentReactionDeleted -> {
                 if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
                 state.onCommentReactionRemoved(event.comment, event.reaction)
             }
 
-            is StateUpdateEvent.CommentReactionUpdated -> {
+            is StateUpdateEvent.CommentReactionUpserted -> {
                 if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
                 state.onCommentReactionUpserted(event.comment, event.reaction)
             }

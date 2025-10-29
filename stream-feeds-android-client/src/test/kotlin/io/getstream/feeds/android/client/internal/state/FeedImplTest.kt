@@ -637,7 +637,7 @@ internal class FeedImplTest {
         assertEquals(listOf(expected), feed.state.activities.value)
         verify {
             stateEventListener.onEvent(
-                StateUpdateEvent.ActivityReactionAdded("group:id", updatedActivity, reaction)
+                StateUpdateEvent.ActivityReactionUpserted("group:id", updatedActivity, reaction)
             )
         }
     }
@@ -691,7 +691,7 @@ internal class FeedImplTest {
         assertEquals(reaction, result.getOrNull())
         verify {
             stateEventListener.onEvent(
-                StateUpdateEvent.CommentReactionAdded(fid.rawValue, comment, reaction)
+                StateUpdateEvent.CommentReactionUpserted(fid.rawValue, comment, reaction)
             )
         }
     }

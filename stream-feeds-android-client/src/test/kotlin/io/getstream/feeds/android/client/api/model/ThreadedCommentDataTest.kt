@@ -16,8 +16,8 @@
 package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.client.api.state.query.CommentsSortDataFields
-import io.getstream.feeds.android.client.internal.model.addReply
 import io.getstream.feeds.android.client.internal.model.removeReaction
+import io.getstream.feeds.android.client.internal.model.upsertNestedReply
 import io.getstream.feeds.android.client.internal.model.upsertReaction
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
@@ -129,13 +129,13 @@ internal class ThreadedCommentDataTest {
     }
 
     @Test
-    fun `addReply should append reply, increment replyCount and keep replies sorted by createdAt`() {
+    fun `upsertNestedReply should append reply, increment replyCount and keep replies sorted by createdAt`() {
         // Given
         val comparator =
             Comparator<CommentsSortDataFields> { a, b -> b.createdAt.compareTo(a.createdAt) }
 
         val originalComment =
-            threadedCommentData(
+            commentData(
                 id = "original-comment-1",
                 parentId = "parent-1",
                 createdAt = Date(1L),
@@ -143,7 +143,7 @@ internal class ThreadedCommentDataTest {
             )
 
         val newComment =
-            threadedCommentData(
+            commentData(
                 id = "updated-comment-1",
                 parentId = "parent-1",
                 createdAt = Date(2L),
@@ -154,15 +154,16 @@ internal class ThreadedCommentDataTest {
             threadedCommentData(
                 id = "parent-1",
                 text = "Parent comment",
-                replies = listOf(originalComment),
+                replies = listOf(ThreadedCommentData(originalComment)),
                 replyCount = 1,
             )
 
         // When
-        val result = parent.addReply(newComment, comparator)
+        val result = parent.upsertNestedReply(newComment, comparator)
 
         // Then
         assertEquals(2, result.replyCount)
-        assertEquals(listOf(newComment, originalComment), result.replies)
+        val expected = listOf(newComment, originalComment).map(::ThreadedCommentData)
+        assertEquals(expected, result.replies)
     }
 }
