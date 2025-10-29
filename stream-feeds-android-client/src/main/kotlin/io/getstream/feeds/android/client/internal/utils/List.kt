@@ -60,7 +60,7 @@ internal fun <T> List<T>.upsert(element: T, idSelector: (T) -> String): List<T> 
  * Inserts an element into the list, ensuring uniqueness based on a specified key.
  *
  * This function removes any existing elements in the list that have the same key as the new
- * [element] (as determined by the [keySelector]), and then appends [element] The operation returns
+ * [element] (as determined by the [keySelector]), and then appends [element]. The operation returns
  * a new list, leaving the original list unchanged.
  *
  * @param element The element to insert into the list.
