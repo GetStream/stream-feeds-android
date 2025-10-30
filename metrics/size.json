@@ -1,8 +1,8 @@
 {
   "debug": {
-    "stream-feeds-android-client": 3316
+    "stream-feeds-android-client": 3208
   },
   "release": {
-    "stream-feeds-android-client": 2492
+    "stream-feeds-android-client": 2404
   }
 }
