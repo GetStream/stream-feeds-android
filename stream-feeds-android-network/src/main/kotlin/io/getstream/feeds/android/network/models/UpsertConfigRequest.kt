@@ -63,7 +63,4 @@ public data class UpsertConfigRequest(
     public val velocityFilterConfig:
         io.getstream.feeds.android.network.models.VelocityFilterConfig? =
         null,
-    @Json(name = "video_call_rule_config")
-    public val videoCallRuleConfig: io.getstream.feeds.android.network.models.VideoCallRuleConfig? =
-        null,
 )
