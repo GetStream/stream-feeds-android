@@ -69,7 +69,7 @@ internal class CommentReactionListStateImplTest {
         commentReactionListState.onQueryMoreReactions(paginationResult, queryConfig)
 
         val newReaction = feedsReactionData(commentId = "comment-1", userId = "user-2")
-        commentReactionListState.onReactionUpserted(newReaction)
+        commentReactionListState.onReactionUpserted(newReaction, enforceUnique = false)
 
         assertEquals(listOf(initialReaction, newReaction), commentReactionListState.reactions.value)
     }
@@ -85,6 +85,26 @@ internal class CommentReactionListStateImplTest {
 
         assertEquals(emptyList<FeedsReactionData>(), commentReactionListState.reactions.value)
     }
+
+    @Test
+    fun `on onReactionUpserted with enforceUnique true, then replace all existing user reactions with single new one`() =
+        runTest {
+            val existingReactions =
+                listOf(
+                    feedsReactionData(commentId = "comment-1", type = "like", userId = "user-id"),
+                    feedsReactionData(commentId = "comment-1", type = "heart", userId = "user-id"),
+                )
+
+            val paginationResult = defaultPaginationResult(existingReactions)
+            commentReactionListState.onQueryMoreReactions(paginationResult, queryConfig)
+
+            val newReaction =
+                feedsReactionData(commentId = "comment-1", type = "smile", userId = "user-id")
+
+            commentReactionListState.onReactionUpserted(newReaction, enforceUnique = true)
+
+            assertEquals(listOf(newReaction), commentReactionListState.reactions.value)
+        }
 
     companion object {
         private val queryConfig =

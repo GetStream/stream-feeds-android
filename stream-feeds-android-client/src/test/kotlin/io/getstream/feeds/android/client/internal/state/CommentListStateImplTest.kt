@@ -108,9 +108,31 @@ internal class CommentListStateImplTest {
         setupInitialComments(comment)
 
         val updatedComment = commentData("comment-1", text = "Updated")
-        state.onCommentReactionUpserted(updatedComment, reaction)
+        state.onCommentReactionUpserted(updatedComment, reaction, enforceUnique = false)
 
         val expectedComment = updatedComment.copy(ownReactions = listOf(reaction))
+        assertEquals(listOf(expectedComment), state.comments.value)
+    }
+
+    @Test
+    fun `on onCommentReactionUpserted with enforceUnique true, then replace all existing user reactions with single new one`() {
+        val existingReactions =
+            listOf(
+                feedsReactionData(commentId = "comment-1", type = "like", userId = currentUserId),
+                feedsReactionData(commentId = "comment-1", type = "heart", userId = currentUserId),
+            )
+
+        val comment = commentData("comment-1", ownReactions = existingReactions)
+        val update = commentData("comment-1", ownReactions = existingReactions)
+
+        setupInitialComments(comment)
+
+        val newReaction =
+            feedsReactionData(commentId = "comment-1", type = "smile", userId = currentUserId)
+
+        state.onCommentReactionUpserted(update, newReaction, enforceUnique = true)
+
+        val expectedComment = update.copy(ownReactions = listOf(newReaction))
         assertEquals(listOf(expectedComment), state.comments.value)
     }
 

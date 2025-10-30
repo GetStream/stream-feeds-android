@@ -83,8 +83,14 @@ internal class ActivityStateImpl(
         }
     }
 
-    override fun onReactionUpserted(reaction: FeedsReactionData, activity: ActivityData) {
-        _activity.update { current -> current?.upsertReaction(activity, reaction, currentUserId) }
+    override fun onReactionUpserted(
+        reaction: FeedsReactionData,
+        activity: ActivityData,
+        enforceUnique: Boolean,
+    ) {
+        _activity.update { current ->
+            current?.upsertReaction(activity, reaction, currentUserId, enforceUnique)
+        }
     }
 
     override fun onReactionRemoved(reaction: FeedsReactionData, activity: ActivityData) {
@@ -113,9 +119,13 @@ internal class ActivityStateImpl(
         }
     }
 
-    override fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData) {
+    override fun onCommentReactionUpserted(
+        comment: CommentData,
+        reaction: FeedsReactionData,
+        enforceUnique: Boolean,
+    ) {
         _activity.update { current ->
-            current?.upsertCommentReaction(comment, reaction, currentUserId)
+            current?.upsertCommentReaction(comment, reaction, currentUserId, enforceUnique)
         }
     }
 
@@ -175,8 +185,13 @@ internal interface ActivityStateUpdates {
      *
      * @param reaction The reaction that was added or updated.
      * @param activity The activity the reaction belongs to.
+     * @param enforceUnique Whether to replace existing reactions by the same user.
      */
-    fun onReactionUpserted(reaction: FeedsReactionData, activity: ActivityData)
+    fun onReactionUpserted(
+        reaction: FeedsReactionData,
+        activity: ActivityData,
+        enforceUnique: Boolean,
+    )
 
     /**
      * Called when a reaction is removed from the activity.
@@ -227,8 +242,13 @@ internal interface ActivityStateUpdates {
      *
      * @param comment The comment to which the reaction was added or updated.
      * @param reaction The reaction that was added or updated.
+     * @param enforceUnique Whether to replace existing reactions by the same user.
      */
-    fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData)
+    fun onCommentReactionUpserted(
+        comment: CommentData,
+        reaction: FeedsReactionData,
+        enforceUnique: Boolean,
+    )
 
     /**
      * Called when the associated poll is deleted.

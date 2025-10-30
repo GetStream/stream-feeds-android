@@ -162,12 +162,12 @@ internal class FeedEventHandlerTest(
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityReactionUpserted matching feed",
-                    event = ActivityReactionUpserted(fid.rawValue, activity, reaction),
-                    verifyBlock = { state -> state.onReactionUpserted(reaction, activity) },
+                    event = ActivityReactionUpserted(fid.rawValue, activity, reaction, true),
+                    verifyBlock = { state -> state.onReactionUpserted(reaction, activity, true) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityReactionUpserted non-matching feed",
-                    event = ActivityReactionUpserted("group:different", activity, reaction),
+                    event = ActivityReactionUpserted("group:different", activity, reaction, true),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
@@ -279,14 +279,15 @@ internal class FeedEventHandlerTest(
                 ),
                 testParams<FeedStateUpdates>(
                     name = "CommentReactionUpserted matching feed",
-                    event = CommentReactionUpserted(fid.rawValue, comment, commentReaction),
+                    event = CommentReactionUpserted(fid.rawValue, comment, commentReaction, false),
                     verifyBlock = { state ->
-                        state.onCommentReactionUpserted(comment, commentReaction)
+                        state.onCommentReactionUpserted(comment, commentReaction, false)
                     },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "CommentReactionUpserted non-matching feed",
-                    event = CommentReactionUpserted("group:different", comment, commentReaction),
+                    event =
+                        CommentReactionUpserted("group:different", comment, commentReaction, false),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(

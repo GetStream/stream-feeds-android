@@ -17,8 +17,6 @@ package io.getstream.feeds.android.client.internal.model
 
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
-import io.getstream.feeds.android.client.api.model.toModel
-import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.network.models.CommentResponse
 
 /** Converts a [CommentResponse] to a [CommentData] model. */
@@ -84,14 +82,16 @@ internal fun CommentData.removeReaction(
  * @param reaction The reaction to be added.
  * @param currentUserId The ID of the current user, used to determine if the reaction belongs to
  *   them.
+ * @param enforceUnique Whether to replace existing reactions by the same user.
  * @return A new [CommentData] instance with the updated reactions and counts.
  */
 internal fun CommentData.upsertReaction(
     updated: CommentData,
     reaction: FeedsReactionData,
     currentUserId: String,
+    enforceUnique: Boolean,
 ): CommentData =
-    changeReactions(updated, reaction, currentUserId) { upsert(reaction, FeedsReactionData::id) }
+    changeReactions(updated, reaction, currentUserId) { upsertReaction(reaction, enforceUnique) }
 
 internal inline fun CommentData.changeReactions(
     updated: CommentData,

@@ -213,9 +213,13 @@ internal class FeedStateImpl(
         }
     }
 
-    override fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData) {
+    override fun onCommentReactionUpserted(
+        comment: CommentData,
+        reaction: FeedsReactionData,
+        enforceUnique: Boolean,
+    ) {
         updateActivitiesWhere({ it.id == comment.objectId }) { activity ->
-            activity.upsertCommentReaction(comment, reaction, currentUserId)
+            activity.upsertCommentReaction(comment, reaction, currentUserId, enforceUnique)
         }
     }
 
@@ -257,9 +261,13 @@ internal class FeedStateImpl(
         _followRequests.update { current -> current.filter { it.id != id } }
     }
 
-    override fun onReactionUpserted(reaction: FeedsReactionData, activity: ActivityData) {
+    override fun onReactionUpserted(
+        reaction: FeedsReactionData,
+        activity: ActivityData,
+        enforceUnique: Boolean,
+    ) {
         updateActivitiesWhere({ it.id == reaction.activityId }) { currentActivity ->
-            currentActivity.upsertReaction(activity, reaction, currentUserId)
+            currentActivity.upsertReaction(activity, reaction, currentUserId, enforceUnique)
         }
     }
 
@@ -398,7 +406,11 @@ internal interface FeedStateUpdates {
     fun onCommentReactionRemoved(comment: CommentData, reaction: FeedsReactionData)
 
     /** Handles updates to the feed state when a comment reaction is added or updated. */
-    fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData)
+    fun onCommentReactionUpserted(
+        comment: CommentData,
+        reaction: FeedsReactionData,
+        enforceUnique: Boolean,
+    )
 
     /** Handles updates to the feed state when the feed is deleted. */
     fun onFeedDeleted()
@@ -421,8 +433,12 @@ internal interface FeedStateUpdates {
     /** Handles updates to the feed state when a follow request is removed. */
     fun onFollowRequestRemoved(id: String)
 
-    /** Handles updates to the feed state when a reaction is added. */
-    fun onReactionUpserted(reaction: FeedsReactionData, activity: ActivityData)
+    /** Handles updates to the feed state when a reaction is added or updated. */
+    fun onReactionUpserted(
+        reaction: FeedsReactionData,
+        activity: ActivityData,
+        enforceUnique: Boolean,
+    )
 
     /** Handles updates to the feed state when a reaction is removed. */
     fun onReactionRemoved(reaction: FeedsReactionData, activity: ActivityData)

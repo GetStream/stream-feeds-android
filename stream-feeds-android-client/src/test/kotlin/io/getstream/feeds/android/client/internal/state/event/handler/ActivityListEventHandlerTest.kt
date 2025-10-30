@@ -115,11 +115,13 @@ internal class ActivityListEventHandlerTest(
                             "feed-1",
                             activityData("activity-1"),
                             feedsReactionData("activity-1"),
+                            true,
                         ),
                     verifyBlock = { state ->
                         state.onReactionUpserted(
                             feedsReactionData("activity-1"),
                             activityData("activity-1"),
+                            true,
                         )
                     },
                 ),
@@ -162,9 +164,15 @@ internal class ActivityListEventHandlerTest(
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "CommentReactionUpserted",
-                    event = CommentReactionUpserted("feed-1", commentData(), feedsReactionData()),
+                    event =
+                        CommentReactionUpserted(
+                            "feed-1",
+                            commentData(),
+                            feedsReactionData(),
+                            false,
+                        ),
                     verifyBlock = { state ->
-                        state.onCommentReactionUpserted(commentData(), feedsReactionData())
+                        state.onCommentReactionUpserted(commentData(), feedsReactionData(), false)
                     },
                 ),
                 testParams<ActivityListStateUpdates>(

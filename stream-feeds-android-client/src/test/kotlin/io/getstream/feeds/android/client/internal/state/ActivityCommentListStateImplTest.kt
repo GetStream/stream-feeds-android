@@ -37,7 +37,7 @@ internal class ActivityCommentListStateImplTest {
             objectType = "activity",
             sort = CommentsSort.First,
         )
-    private val state = ActivityCommentListStateImpl(query, currentUserId = "user_1")
+    private val state = ActivityCommentListStateImpl(query, currentUserId = "user-1")
 
     @Test
     fun `onQueryMoreComments when called, then merge comments and update pagination`() {
@@ -139,7 +139,7 @@ internal class ActivityCommentListStateImplTest {
 
     @Test
     fun `on onCommentUpdated, then preserve ownReactions when updating threaded comment`() {
-        val ownReaction = feedsReactionData("c1", "like", "user_1")
+        val ownReaction = feedsReactionData("c1", "like", "user-1")
         val originalComment =
             threadedCommentData(
                 id = "c1",
@@ -197,7 +197,7 @@ internal class ActivityCommentListStateImplTest {
         val update = commentData(id = "c1", text = "Updated comment")
 
         setupInitialState(comment)
-        state.onCommentReactionUpserted(update, reaction)
+        state.onCommentReactionUpserted(update, reaction, enforceUnique = false)
 
         val expected = comment.copy(text = "Updated comment")
         assertEquals(listOf(expected), state.comments.value)
@@ -217,9 +217,45 @@ internal class ActivityCommentListStateImplTest {
         val update = commentData(id = "c2", parentId = "c1", text = "Updated text")
 
         setupInitialState(parent)
-        state.onCommentReactionUpserted(update, reaction)
+        state.onCommentReactionUpserted(update, reaction, enforceUnique = false)
 
         val expected = parent.copy(replies = listOf(child.copy(text = "Updated text")))
+        assertEquals(listOf(expected), state.comments.value)
+    }
+
+    @Test
+    fun `onCommentReactionUpserted with enforceUnique true, then replace all existing user reactions with single new one`() {
+        val existingReactions =
+            listOf(
+                feedsReactionData(
+                    activityId = "c1",
+                    type = "like",
+                    userId = "user-1",
+                    createdAt = Date(1000),
+                ),
+                feedsReactionData(
+                    activityId = "c1",
+                    type = "heart",
+                    userId = "user-1",
+                    createdAt = Date(1500),
+                ),
+            )
+        val comment = threadedCommentData(id = "c1", ownReactions = existingReactions)
+
+        // New reaction from same user
+        val newReaction =
+            feedsReactionData(
+                activityId = "c1",
+                type = "smile",
+                userId = "user-1",
+                createdAt = Date(2000),
+            )
+        val update = commentData(id = "c1")
+
+        setupInitialState(comment)
+        state.onCommentReactionUpserted(update, newReaction, enforceUnique = true)
+
+        val expected = comment.copy(ownReactions = listOf(newReaction))
         assertEquals(listOf(expected), state.comments.value)
     }
 

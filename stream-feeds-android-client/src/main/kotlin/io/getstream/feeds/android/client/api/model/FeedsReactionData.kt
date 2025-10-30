@@ -38,6 +38,8 @@ public data class FeedsReactionData(
 ) {
 
     /** Unique identifier for the reaction. */
-    public val id: String
-        get() = "${activityId}${commentId}${user.id}${type}"
+    public val id: String = "${activityId}${commentId}${user.id}${type}"
+
+    /** Identifier for grouping a user's reactions. */
+    internal val userReactionsGroupId: String = "${activityId}${commentId}${user.id}"
 }

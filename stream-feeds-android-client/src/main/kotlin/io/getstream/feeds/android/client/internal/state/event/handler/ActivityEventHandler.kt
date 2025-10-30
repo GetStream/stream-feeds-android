@@ -58,7 +58,7 @@ internal class ActivityEventHandler(
 
             is StateUpdateEvent.ActivityReactionUpserted -> {
                 if (event.fid != fid.rawValue || event.reaction.activityId != activityId) return
-                state.onReactionUpserted(event.reaction, event.activity)
+                state.onReactionUpserted(event.reaction, event.activity, event.enforceUnique)
             }
 
             is StateUpdateEvent.BookmarkAdded -> {
@@ -101,7 +101,7 @@ internal class ActivityEventHandler(
 
             is StateUpdateEvent.CommentReactionUpserted -> {
                 if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
-                state.onCommentReactionUpserted(event.comment, event.reaction)
+                state.onCommentReactionUpserted(event.comment, event.reaction, event.enforceUnique)
             }
 
             is StateUpdateEvent.PollDeleted -> {

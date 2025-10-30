@@ -45,7 +45,7 @@ internal class ActivityListEventHandler(
                 state.onReactionRemoved(event.reaction, event.activity)
 
             is StateUpdateEvent.ActivityReactionUpserted ->
-                state.onReactionUpserted(event.reaction, event.activity)
+                state.onReactionUpserted(event.reaction, event.activity, event.enforceUnique)
 
             is StateUpdateEvent.BookmarkAdded -> state.onBookmarkUpserted(event.bookmark)
             is StateUpdateEvent.BookmarkDeleted -> state.onBookmarkRemoved(event.bookmark)
@@ -57,7 +57,7 @@ internal class ActivityListEventHandler(
                 state.onCommentReactionRemoved(event.comment, event.reaction)
 
             is StateUpdateEvent.CommentReactionUpserted ->
-                state.onCommentReactionUpserted(event.comment, event.reaction)
+                state.onCommentReactionUpserted(event.comment, event.reaction, event.enforceUnique)
 
             is StateUpdateEvent.PollDeleted -> state.onPollDeleted(event.pollId)
             is StateUpdateEvent.PollUpdated -> state.onPollUpdated(event.poll)
