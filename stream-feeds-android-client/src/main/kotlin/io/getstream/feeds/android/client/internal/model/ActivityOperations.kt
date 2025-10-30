@@ -185,8 +185,9 @@ internal fun ActivityData.upsertReaction(
     updated: ActivityData,
     reaction: FeedsReactionData,
     currentUserId: String,
+    enforceUnique: Boolean,
 ): ActivityData =
-    changeReactions(updated, reaction, currentUserId) { upsert(reaction, FeedsReactionData::id) }
+    changeReactions(updated, reaction, currentUserId) { upsertReaction(reaction, enforceUnique) }
 
 /**
  * Merges the receiver activity with [updated] and updates own reactions using the provided
@@ -232,10 +233,11 @@ internal fun ActivityData.upsertCommentReaction(
     updated: CommentData,
     reaction: FeedsReactionData,
     currentUserId: String,
+    enforceUnique: Boolean,
 ): ActivityData =
     copy(
         comments =
             comments.updateIf({ it.id == updated.id }) { comment ->
-                comment.upsertReaction(updated, reaction, currentUserId)
+                comment.upsertReaction(updated, reaction, currentUserId, enforceUnique)
             }
     )

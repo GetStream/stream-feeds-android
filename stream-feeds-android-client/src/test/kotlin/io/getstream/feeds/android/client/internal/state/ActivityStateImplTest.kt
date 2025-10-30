@@ -168,7 +168,7 @@ internal class ActivityStateImplTest {
 
             val reaction = feedsReactionData("activity-1", "like", currentUserId)
             val updatedActivity = activityData("activity-1", text = "Updated activity")
-            activityState.onReactionUpserted(reaction, updatedActivity)
+            activityState.onReactionUpserted(reaction, updatedActivity, enforceUnique = false)
 
             val expected = updatedActivity.copy(ownReactions = listOf(reaction))
             assertEquals(expected, activityState.activity.value)
@@ -182,7 +182,7 @@ internal class ActivityStateImplTest {
 
             val reaction = feedsReactionData("activity-1", "like", "other-user")
             val updatedActivity = activityData("activity-1", text = "Updated activity")
-            activityState.onReactionUpserted(reaction, updatedActivity)
+            activityState.onReactionUpserted(reaction, updatedActivity, enforceUnique = false)
 
             val expected = updatedActivity.copy(ownReactions = emptyList())
             assertEquals(expected, activityState.activity.value)
@@ -479,7 +479,7 @@ internal class ActivityStateImplTest {
         setupInitialActivity(initialActivity)
 
         val reaction = feedsReactionData("comment-1", "like", currentUserId)
-        activityState.onCommentReactionUpserted(comment, reaction)
+        activityState.onCommentReactionUpserted(comment, reaction, enforceUnique = false)
 
         val expectedComment = comment.copy(ownReactions = listOf(reaction))
         val expectedActivity = initialActivity.copy(comments = listOf(expectedComment))
@@ -500,6 +500,38 @@ internal class ActivityStateImplTest {
         val expectedActivity = initialActivity.copy(comments = listOf(expectedComment))
         assertEquals(expectedActivity, activityState.activity.value)
     }
+
+    @Test
+    fun `on onCommentReactionUpserted with enforceUnique true, replace existing user reactions with new one`() =
+        runTest {
+            val existingReactions =
+                listOf(
+                    feedsReactionData(
+                        commentId = "comment-1",
+                        type = "like",
+                        userId = currentUserId,
+                    ),
+                    feedsReactionData(
+                        commentId = "comment-1",
+                        type = "heart",
+                        userId = currentUserId,
+                    ),
+                )
+
+            val comment =
+                commentData("comment-1", objectId = "activity-1", ownReactions = existingReactions)
+            val initialActivity = activityData("activity-1", comments = listOf(comment))
+            setupInitialActivity(initialActivity)
+
+            val newReaction =
+                feedsReactionData(commentId = "comment-1", type = "smile", userId = currentUserId)
+
+            activityState.onCommentReactionUpserted(comment, newReaction, enforceUnique = true)
+
+            val expectedComment = comment.copy(ownReactions = listOf(newReaction))
+            val expectedActivity = initialActivity.copy(comments = listOf(expectedComment))
+            assertEquals(expectedActivity, activityState.activity.value)
+        }
 
     private fun setupInitialActivity(activity: ActivityData) {
         activityState.onActivityUpdated(activity)

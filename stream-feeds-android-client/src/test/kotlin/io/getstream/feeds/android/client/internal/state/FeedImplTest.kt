@@ -37,6 +37,7 @@ import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpserted
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
@@ -637,7 +638,7 @@ internal class FeedImplTest {
         assertEquals(listOf(expected), feed.state.activities.value)
         verify {
             stateEventListener.onEvent(
-                StateUpdateEvent.ActivityReactionUpserted("group:id", updatedActivity, reaction)
+                ActivityReactionUpserted("group:id", updatedActivity, reaction, false)
             )
         }
     }
@@ -691,7 +692,7 @@ internal class FeedImplTest {
         assertEquals(reaction, result.getOrNull())
         verify {
             stateEventListener.onEvent(
-                StateUpdateEvent.CommentReactionUpserted(fid.rawValue, comment, reaction)
+                StateUpdateEvent.CommentReactionUpserted(fid.rawValue, comment, reaction, false)
             )
         }
     }

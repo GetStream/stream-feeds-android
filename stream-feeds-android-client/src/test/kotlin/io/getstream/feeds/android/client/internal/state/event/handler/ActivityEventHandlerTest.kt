@@ -105,13 +105,21 @@ internal class ActivityEventHandlerTest(
                             fid.rawValue,
                             activity,
                             feedsReactionData(activityId),
+                            false,
                         ),
-                    verifyBlock = { it.onReactionUpserted(feedsReactionData(activityId), activity) },
+                    verifyBlock = {
+                        it.onReactionUpserted(feedsReactionData(activityId), activity, false)
+                    },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "ActivityReactionUpserted non-matching feed",
                     event =
-                        ActivityReactionUpserted(otherFid, activity, feedsReactionData(activityId)),
+                        ActivityReactionUpserted(
+                            otherFid,
+                            activity,
+                            feedsReactionData(activityId),
+                            false,
+                        ),
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
@@ -121,6 +129,7 @@ internal class ActivityEventHandlerTest(
                             fid.rawValue,
                             activity,
                             feedsReactionData(otherId),
+                            false,
                         ),
                     verifyBlock = { it wasNot called },
                 ),
@@ -316,12 +325,21 @@ internal class ActivityEventHandlerTest(
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "CommentReactionUpserted matching feed and activity",
-                    event = CommentReactionUpserted(fid.rawValue, matchingComment, commentReaction),
-                    verifyBlock = { it.onCommentReactionUpserted(matchingComment, commentReaction) },
+                    event =
+                        CommentReactionUpserted(
+                            fid.rawValue,
+                            matchingComment,
+                            commentReaction,
+                            false,
+                        ),
+                    verifyBlock = {
+                        it.onCommentReactionUpserted(matchingComment, commentReaction, false)
+                    },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "CommentReactionUpserted non-matching feed",
-                    event = CommentReactionUpserted(otherFid, matchingComment, commentReaction),
+                    event =
+                        CommentReactionUpserted(otherFid, matchingComment, commentReaction, false),
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
@@ -331,6 +349,7 @@ internal class ActivityEventHandlerTest(
                             fid.rawValue,
                             nonMatchingActivityComment,
                             commentReaction,
+                            false,
                         ),
                     verifyBlock = { it wasNot called },
                 ),

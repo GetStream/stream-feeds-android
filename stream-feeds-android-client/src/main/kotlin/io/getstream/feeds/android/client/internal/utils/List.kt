@@ -57,6 +57,26 @@ internal fun <T> List<T>.upsert(element: T, idSelector: (T) -> String): List<T> 
 }
 
 /**
+ * Inserts an element into the list, ensuring uniqueness based on a specified key.
+ *
+ * This function removes any existing elements in the list that have the same key as the new
+ * [element] (as determined by the [keySelector]), and then appends [element]. The operation returns
+ * a new list, leaving the original list unchanged.
+ *
+ * @param element The element to insert into the list.
+ * @param keySelector A function that extracts a key from an element. Used to determine uniqueness.
+ * @return A new list containing all original elements except those with the same key as [element],
+ *   plus the new [element] at the end.
+ */
+internal fun <T, R> List<T>.insertUniqueBy(element: T, keySelector: (T) -> R): List<T> {
+    val elementKey = keySelector(element)
+    return toMutableList().apply {
+        removeAll { keySelector(it) == elementKey }
+        add(element)
+    }
+}
+
+/**
  * Inserts an element into a mutable list while maintaining sorted order.
  *
  * This function uses binary search to find the correct insertion point for the new element,

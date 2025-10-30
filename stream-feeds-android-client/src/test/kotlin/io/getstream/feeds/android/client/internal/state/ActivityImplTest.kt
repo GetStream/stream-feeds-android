@@ -219,7 +219,12 @@ internal class ActivityImplTest {
         assertEquals(reactionData, result.getOrNull())
         verify {
             stateEventListener.onEvent(
-                StateUpdateEvent.CommentReactionUpserted(fid.rawValue, commentData, reactionData)
+                StateUpdateEvent.CommentReactionUpserted(
+                    fid.rawValue,
+                    commentData,
+                    reactionData,
+                    false,
+                )
             )
         }
     }

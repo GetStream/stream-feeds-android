@@ -118,8 +118,9 @@ internal fun ThreadedCommentData.upsertReaction(
     updated: CommentData,
     reaction: FeedsReactionData,
     currentUserId: String,
+    enforceUnique: Boolean,
 ): ThreadedCommentData =
-    changeReactions(updated, reaction, currentUserId) { upsert(reaction, FeedsReactionData::id) }
+    changeReactions(updated, reaction, currentUserId) { upsertReaction(reaction, enforceUnique) }
 
 /**
  * Merges the receiver comment with [updated] and updates own reactions using the provided

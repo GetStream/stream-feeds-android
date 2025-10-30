@@ -39,7 +39,7 @@ internal class CommentReactionListEventHandler(
 
             is StateUpdateEvent.CommentReactionUpserted -> {
                 if (event.comment.id == commentId) {
-                    state.onReactionUpserted(event.reaction)
+                    state.onReactionUpserted(event.reaction, event.enforceUnique)
                 }
             }
 

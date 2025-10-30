@@ -41,7 +41,7 @@ internal class CommentReplyListEventHandler(private val state: CommentReplyListS
             }
 
             is StateUpdateEvent.CommentReactionUpserted -> {
-                state.onCommentReactionUpserted(event.comment, event.reaction)
+                state.onCommentReactionUpserted(event.comment, event.reaction, event.enforceUnique)
             }
 
             else -> {}

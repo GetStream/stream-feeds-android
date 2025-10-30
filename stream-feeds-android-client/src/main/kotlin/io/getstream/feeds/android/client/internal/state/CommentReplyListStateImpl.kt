@@ -96,9 +96,15 @@ internal class CommentReplyListStateImpl(
         _replies.update { current -> current.map { it.upsertNestedReply(comment, comparator) } }
     }
 
-    override fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData) {
+    override fun onCommentReactionUpserted(
+        comment: CommentData,
+        reaction: FeedsReactionData,
+        enforceUnique: Boolean,
+    ) {
         _replies.update { current ->
-            current.map { parent -> addNestedReplyReaction(parent, comment, reaction) }
+            current.map { parent ->
+                addNestedReplyReaction(parent, comment, reaction, enforceUnique)
+            }
         }
     }
 
@@ -132,10 +138,11 @@ internal class CommentReplyListStateImpl(
         parent: ThreadedCommentData,
         comment: CommentData,
         reaction: FeedsReactionData,
+        enforceUnique: Boolean,
     ): ThreadedCommentData {
         // If this comment is the parent, add the reaction directly
         if (parent.id == comment.id) {
-            return parent.upsertReaction(comment, reaction, currentUserId)
+            return parent.upsertReaction(comment, reaction, currentUserId, enforceUnique)
         }
         // If the parent has no replies, return it unchanged
         if (parent.replies.isNullOrEmpty()) {
@@ -144,7 +151,9 @@ internal class CommentReplyListStateImpl(
         // Otherwise, recursively search for the comment in the replies
         return parent.copy(
             replies =
-                parent.replies.map { child -> addNestedReplyReaction(child, comment, reaction) }
+                parent.replies.map { child ->
+                    addNestedReplyReaction(child, comment, reaction, enforceUnique)
+                }
         )
     }
 
@@ -204,8 +213,13 @@ internal interface CommentReplyListStateUpdates {
      *
      * @param comment The comment that received the reaction.
      * @param reaction The reaction data that was added to the comment.
+     * @param enforceUnique Whether to replace existing reactions by the same user.
      */
-    fun onCommentReactionUpserted(comment: CommentData, reaction: FeedsReactionData)
+    fun onCommentReactionUpserted(
+        comment: CommentData,
+        reaction: FeedsReactionData,
+        enforceUnique: Boolean,
+    )
 
     /**
      * Handles the removal of a reaction from a comment reply.
