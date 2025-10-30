@@ -27,8 +27,6 @@ public data class Ban(
     @Json(name = "shadow") public val shadow: kotlin.Boolean,
     @Json(name = "expires") public val expires: java.util.Date? = null,
     @Json(name = "reason") public val reason: kotlin.String? = null,
-    @Json(name = "channel")
-    public val channel: io.getstream.feeds.android.network.models.Channel? = null,
     @Json(name = "created_by")
     public val createdBy: io.getstream.feeds.android.network.models.User? = null,
     @Json(name = "target") public val target: io.getstream.feeds.android.network.models.User? = null,
