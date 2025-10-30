@@ -1,12 +1,17 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.stream.android.application)
     alias(libs.plugins.kotlin.android)
 }
 
-apply(from = "$rootDir/scripts/android.gradle")
-
 android {
     namespace = "io.getstream.feeds.android.metrics"
+    compileSdk = libs.versions.compileSdk.get().toInt()
+
+    defaultConfig {
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
+    }
+
     buildTypes {
         release {
             signingConfig = signingConfigs.findByName("debug")

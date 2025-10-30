@@ -16,10 +16,6 @@
 package io.getstream.feeds.android
 
 object Configuration {
-    const val compileSdk = 36
-    const val targetSdk = 36
-    const val sampleTargetSdk = 36
-    const val minSdk = 21
     const val majorVersion = 0
     const val minorVersion = 4
     const val patchVersion = 0
