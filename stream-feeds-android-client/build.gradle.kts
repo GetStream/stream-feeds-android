@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.stream.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.arturbosch.detekt)
@@ -17,17 +17,20 @@ rootProject.extra.apply {
     set("PUBLISH_VERSION", rootProject.extra.get("rootVersionName"))
 }
 
-apply(from = "${rootDir}/scripts/publish-module.gradle")
-apply(from = "$rootDir/scripts/android.gradle")
+apply(from = "$rootDir/scripts/publish-module.gradle")
 
 android {
     namespace = "io.getstream.feeds.android.client"
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     buildFeatures {
         buildConfig = true
     }
 
     defaultConfig {
+        minSdk = libs.versions.minSdk.get().toInt()
+        testOptions.targetSdk = libs.versions.targetSdk.get().toInt()
+        lint.targetSdk = libs.versions.targetSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "PRODUCT_NAME", "\"stream-feeds-android\"")
         buildConfigField("String", "PRODUCT_VERSION", "\"${Configuration.versionName}\"")
@@ -38,7 +41,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
             consumerProguardFiles("consumer-rules.pro")
         }
@@ -62,7 +65,6 @@ tasks.withType<KotlinCompile>().configureEach {
                 "-opt-in=io.getstream.android.core.annotations.StreamInternalApi",
             ),
         )
-        jvmTarget.set(JvmTarget.JVM_11)
     }
 }
 
