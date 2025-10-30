@@ -39,10 +39,6 @@ public object Serializer {
                 io.getstream.feeds.android.network.models.AddActivityRequest.Visibility
                     .VisibilityAdapter()
             )
-            .add(
-                io.getstream.feeds.android.network.models.AudioSettingsResponse.DefaultDevice
-                    .DefaultDeviceAdapter()
-            )
             .add(io.getstream.feeds.android.network.models.AutomodRule.Action.ActionAdapter())
             .add(
                 io.getstream.feeds.android.network.models.AutomodSemanticFiltersRule.Action
@@ -73,32 +69,6 @@ public object Serializer {
             .add(
                 io.getstream.feeds.android.network.models.BodyguardSeverityRule.Severity
                     .SeverityAdapter()
-            )
-            .add(io.getstream.feeds.android.network.models.ChannelConfig.Automod.AutomodAdapter())
-            .add(
-                io.getstream.feeds.android.network.models.ChannelConfig.AutomodBehavior
-                    .AutomodBehaviorAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.ChannelConfig.BlocklistBehavior
-                    .BlocklistBehaviorAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.ChannelConfigWithInfo.Automod
-                    .AutomodAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.ChannelConfigWithInfo.AutomodBehavior
-                    .AutomodBehaviorAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.ChannelConfigWithInfo.BlocklistBehavior
-                    .BlocklistBehaviorAdapter()
-            )
-            .add(io.getstream.feeds.android.network.models.ChannelMember.Role.RoleAdapter())
-            .add(
-                io.getstream.feeds.android.network.models.ChannelOwnCapability
-                    .ChannelOwnCapabilityAdapter()
             )
             .add(
                 io.getstream.feeds.android.network.models.ConfigOverrides.BlocklistBehavior
@@ -153,18 +123,9 @@ public object Serializer {
                     .PushPreferenceAdapter()
             )
             .add(io.getstream.feeds.android.network.models.FollowResponse.Status.StatusAdapter())
-            .add(
-                io.getstream.feeds.android.network.models.FrameRecordingSettingsResponse.Mode
-                    .ModeAdapter()
-            )
             .add(io.getstream.feeds.android.network.models.ImageSize.Crop.CropAdapter())
             .add(io.getstream.feeds.android.network.models.ImageSize.Resize.ResizeAdapter())
             .add(io.getstream.feeds.android.network.models.LLMRule.Action.ActionAdapter())
-            .add(io.getstream.feeds.android.network.models.MessageResponse.Type.TypeAdapter())
-            .add(
-                io.getstream.feeds.android.network.models.NoiseCancellationSettings.Mode
-                    .ModeAdapter()
-            )
             .add(io.getstream.feeds.android.network.models.OCRRule.Action.ActionAdapter())
             .add(
                 io.getstream.feeds.android.network.models.PushPreferenceInput.CallLevel
@@ -185,19 +146,6 @@ public object Serializer {
                     .ActionTypeAdapter()
             )
             .add(
-                io.getstream.feeds.android.network.models.TranscriptionSettingsResponse
-                    .ClosedCaptionMode
-                    .ClosedCaptionModeAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.TranscriptionSettingsResponse.Language
-                    .LanguageAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.TranscriptionSettingsResponse.Mode
-                    .ModeAdapter()
-            )
-            .add(
                 io.getstream.feeds.android.network.models.UpdateFeedMembersRequest.Operation
                     .OperationAdapter()
             )
@@ -216,10 +164,6 @@ public object Serializer {
             .add(
                 io.getstream.feeds.android.network.models.VelocityFilterConfigRule.CascadingAction
                     .CascadingActionAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.VideoSettingsResponse.CameraFacing
-                    .CameraFacingAdapter()
             )
             .add(io.getstream.feeds.android.network.infrastructure.BigDecimalAdapter())
             .add(io.getstream.feeds.android.network.infrastructure.BigIntegerAdapter())

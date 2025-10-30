@@ -34,8 +34,6 @@ public data class ModerationCustomActionEvent(
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
     @Json(name = "action_options")
     public val actionOptions: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
-    @Json(name = "message")
-    public val message: io.getstream.feeds.android.network.models.MessageResponse? = null,
 ) :
     io.getstream.feeds.android.network.models.WSClientEvent,
     io.getstream.feeds.android.network.models.WSEvent,

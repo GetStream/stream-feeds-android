@@ -40,10 +40,6 @@ public data class FullUserResponse(
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
     @Json(name = "blocked_user_ids")
     public val blockedUserIds: kotlin.collections.List<kotlin.String> = emptyList(),
-    @Json(name = "channel_mutes")
-    public val channelMutes:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.ChannelMute> =
-        emptyList(),
     @Json(name = "devices")
     public val devices:
         kotlin.collections.List<io.getstream.feeds.android.network.models.DeviceResponse> =

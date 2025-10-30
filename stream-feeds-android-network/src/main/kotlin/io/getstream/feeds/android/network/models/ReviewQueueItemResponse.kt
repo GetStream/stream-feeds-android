@@ -57,8 +57,6 @@ public data class ReviewQueueItemResponse(
     public val activity: io.getstream.feeds.android.network.models.EnrichedActivity? = null,
     @Json(name = "assigned_to")
     public val assignedTo: io.getstream.feeds.android.network.models.UserResponse? = null,
-    @Json(name = "call")
-    public val call: io.getstream.feeds.android.network.models.CallResponse? = null,
     @Json(name = "entity_creator")
     public val entityCreator: io.getstream.feeds.android.network.models.EntityCreatorResponse? =
         null,
@@ -66,8 +64,6 @@ public data class ReviewQueueItemResponse(
     public val feedsV2Activity: io.getstream.feeds.android.network.models.EnrichedActivity? = null,
     @Json(name = "feeds_v2_reaction")
     public val feedsV2Reaction: io.getstream.feeds.android.network.models.Reaction? = null,
-    @Json(name = "message")
-    public val message: io.getstream.feeds.android.network.models.MessageResponse? = null,
     @Json(name = "moderation_payload")
     public val moderationPayload: io.getstream.feeds.android.network.models.ModerationPayload? =
         null,

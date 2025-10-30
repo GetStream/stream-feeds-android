@@ -23,10 +23,6 @@ import kotlin.io.*
 
 /**  */
 public data class PrivacySettings(
-    @Json(name = "delivery_receipts")
-    public val deliveryReceipts: io.getstream.feeds.android.network.models.DeliveryReceipts? = null,
     @Json(name = "read_receipts")
-    public val readReceipts: io.getstream.feeds.android.network.models.ReadReceipts? = null,
-    @Json(name = "typing_indicators")
-    public val typingIndicators: io.getstream.feeds.android.network.models.TypingIndicators? = null,
+    public val readReceipts: io.getstream.feeds.android.network.models.ReadReceipts? = null
 )

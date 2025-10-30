@@ -31,8 +31,6 @@ public data class ModerationMarkReviewedEvent(
     public val item: io.getstream.feeds.android.network.models.ReviewQueueItemResponse,
     @Json(name = "type") public val type: kotlin.String,
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
-    @Json(name = "message")
-    public val message: io.getstream.feeds.android.network.models.MessageResponse? = null,
 ) :
     io.getstream.feeds.android.network.models.WSEvent,
     io.getstream.feeds.android.network.models.WSClientEvent,

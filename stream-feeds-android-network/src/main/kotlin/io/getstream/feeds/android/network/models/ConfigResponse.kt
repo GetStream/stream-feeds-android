@@ -19,7 +19,6 @@ package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
 import kotlin.collections.*
-import kotlin.collections.List
 import kotlin.io.*
 
 /**  */
@@ -29,8 +28,6 @@ public data class ConfigResponse(
     @Json(name = "key") public val key: kotlin.String,
     @Json(name = "team") public val team: kotlin.String,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
-    @Json(name = "supported_video_call_harm_types")
-    public val supportedVideoCallHarmTypes: kotlin.collections.List<kotlin.String> = emptyList(),
     @Json(name = "ai_image_config")
     public val aiImageConfig: io.getstream.feeds.android.network.models.AIImageConfig? = null,
     @Json(name = "ai_text_config")
@@ -56,8 +53,5 @@ public data class ConfigResponse(
     @Json(name = "velocity_filter_config")
     public val velocityFilterConfig:
         io.getstream.feeds.android.network.models.VelocityFilterConfig? =
-        null,
-    @Json(name = "video_call_rule_config")
-    public val videoCallRuleConfig: io.getstream.feeds.android.network.models.VideoCallRuleConfig? =
         null,
 )
