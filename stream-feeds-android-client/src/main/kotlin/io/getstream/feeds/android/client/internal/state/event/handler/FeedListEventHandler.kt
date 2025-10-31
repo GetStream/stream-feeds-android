@@ -41,6 +41,9 @@ internal class FeedListEventHandler(
             is StateUpdateEvent.FeedUpdated -> {
                 if (event.feed matches filter) {
                     state.onFeedUpserted(event.feed)
+                } else {
+                    // We remove elements that used to match the filter but no longer do
+                    state.onFeedRemoved(event.feed.fid.rawValue)
                 }
             }
 

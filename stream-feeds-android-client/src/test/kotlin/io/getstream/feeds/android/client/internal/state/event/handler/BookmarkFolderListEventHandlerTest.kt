@@ -15,6 +15,8 @@
  */
 package io.getstream.feeds.android.client.internal.state.event.handler
 
+import io.getstream.android.core.api.filter.equal
+import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersFilterField
 import io.getstream.feeds.android.client.internal.state.BookmarkFolderListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkFolderDeleted
@@ -31,9 +33,13 @@ internal class BookmarkFolderListEventHandlerTest(
 ) : BaseEventHandlerTest<BookmarkFolderListStateUpdates>(testName, event, verifyBlock) {
 
     override val state: BookmarkFolderListStateUpdates = mockk(relaxed = true)
-    override val handler = BookmarkFolderListEventHandler(state)
+    override val handler = BookmarkFolderListEventHandler(filter, state)
 
     companion object {
+        private val filter = BookmarkFoldersFilterField.folderName.equal("important")
+        private val matchingFolder = bookmarkFolderData(name = "important")
+        private val nonMatchingFolder = bookmarkFolderData(name = "general")
+
         @JvmStatic
         @Parameterized.Parameters(name = "{0}")
         fun data(): List<Array<Any>> =
@@ -44,9 +50,14 @@ internal class BookmarkFolderListEventHandlerTest(
                     verifyBlock = { state -> state.onBookmarkFolderRemoved("folder-123") },
                 ),
                 testParams<BookmarkFolderListStateUpdates>(
-                    name = "BookmarkFolderUpdated calls onBookmarkFolderUpdated",
-                    event = BookmarkFolderUpdated(bookmarkFolderData()),
-                    verifyBlock = { state -> state.onBookmarkFolderUpdated(bookmarkFolderData()) },
+                    name = "BookmarkFolderUpdated matching filter",
+                    event = BookmarkFolderUpdated(matchingFolder),
+                    verifyBlock = { state -> state.onBookmarkFolderUpdated(matchingFolder) },
+                ),
+                testParams<BookmarkFolderListStateUpdates>(
+                    name = "BookmarkFolderUpdated non-matching filter",
+                    event = BookmarkFolderUpdated(nonMatchingFolder),
+                    verifyBlock = { state -> state.onBookmarkFolderRemoved(nonMatchingFolder.id) },
                 ),
             )
     }

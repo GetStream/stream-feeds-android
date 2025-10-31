@@ -40,6 +40,9 @@ internal class PollListEventHandler(
             is StateUpdateEvent.PollUpdated -> {
                 if (event.poll matches filter) {
                     state.onPollUpdated(event.poll)
+                } else {
+                    // We remove elements that used to match the filter but no longer do
+                    state.onPollDeleted(event.poll.id)
                 }
             }
 

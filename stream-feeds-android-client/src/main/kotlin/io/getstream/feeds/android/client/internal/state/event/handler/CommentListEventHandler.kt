@@ -35,7 +35,14 @@ internal class CommentListEventHandler(
             }
 
             is StateUpdateEvent.CommentDeleted -> state.onCommentRemoved(event.comment.id)
-            is StateUpdateEvent.CommentUpdated -> state.onCommentUpserted(event.comment)
+            is StateUpdateEvent.CommentUpdated -> {
+                if (event.comment matches filter) {
+                    state.onCommentUpserted(event.comment)
+                } else {
+                    // We remove elements that used to match the filter but no longer do
+                    state.onCommentRemoved(event.comment.id)
+                }
+            }
             is StateUpdateEvent.CommentReactionDeleted ->
                 state.onCommentReactionRemoved(event.comment, event.reaction)
 
