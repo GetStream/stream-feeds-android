@@ -33,6 +33,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionRes
 import io.getstream.feeds.android.client.internal.test.TestData.pinActivityResponse
 import io.getstream.feeds.android.client.internal.test.TestData.unpinActivityResponse
 import io.getstream.feeds.android.network.apis.FeedsApi
+import io.getstream.feeds.android.network.models.ActivityFeedbackRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.AddActivityResponse
 import io.getstream.feeds.android.network.models.AddReactionRequest
@@ -296,6 +297,17 @@ internal class ActivitiesRepositoryImplTest {
                     models = apiResult.activities.map { it.toModel() },
                     pagination = PaginationData(next = apiResult.next, previous = apiResult.prev),
                 ),
+        )
+    }
+
+    @Test
+    fun `on activityFeedback delegate to api`() {
+        val request = ActivityFeedbackRequest(hide = true)
+        testDelegation(
+            apiFunction = { feedsApi.activityFeedback("activityId", request) },
+            repositoryCall = { repository.activityFeedback("activityId", request) },
+            apiResult = Unit,
+            repositoryResult = Unit,
         )
     }
 }

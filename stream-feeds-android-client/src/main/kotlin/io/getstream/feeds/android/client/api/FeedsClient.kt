@@ -59,6 +59,7 @@ import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
 import io.getstream.feeds.android.client.internal.client.createFeedsClient
+import io.getstream.feeds.android.network.models.ActivityFeedbackRequest
 import io.getstream.feeds.android.network.models.ActivityRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
@@ -240,6 +241,27 @@ public interface FeedsClient {
     public suspend fun deleteActivities(
         request: DeleteActivitiesRequest
     ): Result<DeleteActivitiesResponse>
+
+    /**
+     * Submits feedback for an activity.
+     *
+     * Example:
+     * ```
+     * // Hide an activity
+     * client.activityFeedback("activity-123", ActivityFeedbackRequest(hide = true))
+     *
+     * // Unhide an activity
+     * client.activityFeedback("activity-123", ActivityFeedbackRequest(hide = false))
+     * ```
+     *
+     * @param activityId The unique identifier of the activity.
+     * @param request The feedback request to be submitted.
+     * @return A [Result] indicating success or failure of the operation.
+     */
+    public suspend fun activityFeedback(
+        activityId: String,
+        request: ActivityFeedbackRequest,
+    ): Result<Unit>
 
     /**
      * Creates a bookmark list instance based on the provided query.
