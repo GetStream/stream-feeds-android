@@ -83,6 +83,16 @@ internal class ActivityStateImpl(
         }
     }
 
+    override fun onActivityHidden(activityId: String, hidden: Boolean) {
+        _activity.update { current ->
+            if (current?.id == activityId) {
+                current.copy(hidden = hidden)
+            } else {
+                current
+            }
+        }
+    }
+
     override fun onReactionUpserted(
         reaction: FeedsReactionData,
         activity: ActivityData,
@@ -179,6 +189,14 @@ internal interface ActivityStateUpdates {
      * @param activity The updated activity data.
      */
     fun onActivityUpdated(activity: ActivityData)
+
+    /**
+     * Called when the activity is hidden or unhidden.
+     *
+     * @param activityId The ID of the activity that was hidden or unhidden.
+     * @param hidden Whether the activity is hidden (true) or unhidden (false).
+     */
+    fun onActivityHidden(activityId: String, hidden: Boolean)
 
     /**
      * Called when a reaction is added to or updated in the activity.
