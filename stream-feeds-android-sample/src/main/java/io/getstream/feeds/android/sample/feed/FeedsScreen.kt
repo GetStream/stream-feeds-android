@@ -55,6 +55,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -200,6 +201,7 @@ private fun FeedsScreenContent(
                             onBookmarkClick = { viewModel.onBookmarkClick(activity) },
                             onDeleteClick = { viewModel.onDeleteClick(activity.id) },
                             onEditSave = { viewModel.onEditActivity(activity.id, it) },
+                            onHideClick = { viewModel.onHideActivity(activity) },
                             pollSection = { poll ->
                                 PollSection(
                                     activityId = activity.id,
@@ -416,6 +418,7 @@ fun ActivityContent(
     onBookmarkClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onEditSave: ((String) -> Unit),
+    onHideClick: () -> Unit,
     pollSection: @Composable (PollData) -> Unit,
 ) {
     var showRepostDialog by remember { mutableStateOf(false) }
@@ -428,17 +431,16 @@ fun ActivityContent(
     Column(
         modifier =
             Modifier.fillMaxWidth()
-                .conditional(isCurrentUserAuthor) {
-                    combinedClickable(
-                        indication = null,
-                        interactionSource = null,
-                        onClick = { /* Regular click - do nothing */ },
-                        onLongClick = {
-                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                            showContextMenu = true
-                        },
-                    )
-                }
+                .conditional(data.hidden) { alpha(0.5f) }
+                .combinedClickable(
+                    indication = null,
+                    interactionSource = null,
+                    onClick = { /* Regular click - do nothing */ },
+                    onLongClick = {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                        showContextMenu = true
+                    },
+                )
                 .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
@@ -492,16 +494,16 @@ fun ActivityContent(
         if (showContextMenu) {
             ContentContextMenuDialog(
                 title = "Post Options",
-                showEdit = data.parent == null && data.poll == null,
+                actions = activityContextDialogActions(isCurrentUserAuthor, data),
+                onActionClick = { actionId ->
+                    when (actionId) {
+                        MenuAction.Id.EDIT -> showEditDialog = true
+                        MenuAction.Id.HIDE -> onHideClick()
+                        MenuAction.Id.DELETE -> onDeleteClick()
+                    }
+                    showContextMenu = false
+                },
                 onDismiss = { showContextMenu = false },
-                onEdit = {
-                    showEditDialog = true
-                    showContextMenu = false
-                },
-                onDelete = {
-                    onDeleteClick()
-                    showContextMenu = false
-                },
             )
         }
 
@@ -521,6 +523,21 @@ fun ActivityContent(
         HorizontalDivider(modifier = Modifier.fillMaxWidth().padding(top = 16.dp), thickness = 1.dp)
     }
 }
+
+@Composable
+private fun activityContextDialogActions(isAuthor: Boolean, data: ActivityData): List<MenuAction> =
+    remember(isAuthor, data.hidden, data.parent, data.poll) {
+        buildList {
+            add(MenuAction.hide(data.hidden))
+
+            if (!isAuthor) return@buildList
+
+            if (data.parent == null && data.poll == null) {
+                add(MenuAction.edit)
+            }
+            add(MenuAction.delete)
+        }
+    }
 
 @Composable
 fun LogoutConfirmationDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {

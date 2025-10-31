@@ -271,16 +271,15 @@ private fun Comment(
         if (showContextMenu) {
             ContentContextMenuDialog(
                 title = "Comment Options",
-                showEdit = true,
+                actions = remember { listOf(MenuAction.edit, MenuAction.delete) },
+                onActionClick = { actionId ->
+                    when (actionId) {
+                        MenuAction.Id.EDIT -> showEditDialog = true
+                        MenuAction.Id.DELETE -> onEvent(Event.OnDelete(data.id))
+                    }
+                    showContextMenu = false
+                },
                 onDismiss = { showContextMenu = false },
-                onEdit = {
-                    showEditDialog = true
-                    showContextMenu = false
-                },
-                onDelete = {
-                    onEvent(Event.OnDelete(data.id))
-                    showContextMenu = false
-                },
             )
         }
 
