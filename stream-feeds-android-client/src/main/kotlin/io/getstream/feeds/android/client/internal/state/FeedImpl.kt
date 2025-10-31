@@ -37,6 +37,7 @@ import io.getstream.feeds.android.client.internal.repository.ActivitiesRepositor
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
+import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.handler.FeedEventHandler
@@ -227,8 +228,15 @@ internal class FeedImpl(
             )
         return feedsRepository
             .getOrCreateFeed(query)
-            .onSuccess { _state.onQueryMoreActivities(it.activities, it.activitiesQueryConfig) }
-            .map { it.activities.models }
+            .onSuccess {
+                _state.onQueryMoreActivities(
+                    activities = it.activities,
+                    aggregatedActivities = it.aggregatedActivities,
+                    pagination = it.pagination,
+                    queryConfig = it.activitiesQueryConfig,
+                )
+            }
+            .map(GetOrCreateInfo::activities)
     }
 
     override suspend fun addBookmark(

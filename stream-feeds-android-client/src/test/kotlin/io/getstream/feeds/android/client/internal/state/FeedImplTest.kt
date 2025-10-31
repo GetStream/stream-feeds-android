@@ -770,16 +770,17 @@ internal class FeedImplTest {
         val paginationData = PaginationData(next = "cursor")
 
         return GetOrCreateInfo(
-            activities = PaginationResult(models = activities, pagination = paginationData),
+            pagination = paginationData,
+            activities = activities,
             activitiesQueryConfig =
                 QueryConfiguration(filter = null, sort = ActivitiesSort.Default),
+            aggregatedActivities = emptyList(),
             feed = testFeedData,
             followers = followers,
             following = following,
             followRequests = followRequests,
             members = PaginationResult(models = members, pagination = paginationData),
             pinnedActivities = emptyList(),
-            aggregatedActivities = emptyList(),
             notificationStatus = null,
         )
     }
