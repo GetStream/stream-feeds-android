@@ -79,7 +79,12 @@ internal class ActivityImpl(
     private val _state: ActivityStateImpl = ActivityStateImpl(currentUserId, commentList.state)
 
     private val eventHandler =
-        ActivityEventHandler(fid = fid, activityId = activityId, state = _state)
+        ActivityEventHandler(
+            fid = fid,
+            activityId = activityId,
+            currentUserId = currentUserId,
+            state = _state,
+        )
 
     init {
         subscriptionManager.subscribe(eventHandler)
