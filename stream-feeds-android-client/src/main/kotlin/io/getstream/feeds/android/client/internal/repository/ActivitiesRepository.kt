@@ -22,6 +22,7 @@ import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
+import io.getstream.feeds.android.network.models.ActivityFeedbackRequest
 import io.getstream.feeds.android.network.models.ActivityRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.AddReactionRequest
@@ -177,4 +178,13 @@ internal interface ActivitiesRepository {
         activityId: String,
         request: QueryActivityReactionsRequest,
     ): Result<PaginationResult<FeedsReactionData>>
+
+    /**
+     * Submits feedback for an activity (e.g., hide, show less, show more).
+     *
+     * @param activityId The ID of the activity to provide feedback for.
+     * @param request The feedback request containing the feedback actions.
+     * @return A [Result] indicating success or failure.
+     */
+    suspend fun activityFeedback(activityId: String, request: ActivityFeedbackRequest): Result<Unit>
 }

@@ -29,6 +29,7 @@ import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.client.internal.state.query.toRequest
 import io.getstream.feeds.android.network.apis.FeedsApi
+import io.getstream.feeds.android.network.models.ActivityFeedbackRequest
 import io.getstream.feeds.android.network.models.ActivityRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.AddReactionRequest
@@ -156,5 +157,12 @@ internal class ActivitiesRepositoryImpl(
             models = response.reactions.map { it.toModel() },
             pagination = PaginationData(next = response.next, previous = response.prev),
         )
+    }
+
+    override suspend fun activityFeedback(
+        activityId: String,
+        request: ActivityFeedbackRequest,
+    ): Result<Unit> = runSafely {
+        api.activityFeedback(activityId = activityId, activityFeedbackRequest = request)
     }
 }

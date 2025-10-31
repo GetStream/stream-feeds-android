@@ -39,6 +39,7 @@ import io.getstream.feeds.android.client.internal.state.event.handler.ActivityEv
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.subscribe.onEvent
 import io.getstream.feeds.android.client.internal.utils.flatMap
+import io.getstream.feeds.android.network.models.ActivityFeedbackRequest
 import io.getstream.feeds.android.network.models.AddCommentReactionRequest
 import io.getstream.feeds.android.network.models.CastPollVoteRequest
 import io.getstream.feeds.android.network.models.CreatePollOptionRequest
@@ -192,6 +193,16 @@ internal class ActivityImpl(
                 )
             }
             .map { it.first }
+    }
+
+    override suspend fun activityFeedback(request: ActivityFeedbackRequest): Result<Unit> {
+        return activitiesRepository.activityFeedback(activityId, request).onSuccess {
+            request.hide?.let { hidden ->
+                subscriptionManager.onEvent(
+                    StateUpdateEvent.ActivityHidden(activityId, currentUserId, hidden)
+                )
+            }
+        }
     }
 
     override suspend fun pin(): Result<Unit> {

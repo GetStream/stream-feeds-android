@@ -34,6 +34,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import io.getstream.feeds.android.client.internal.test.TestData.pollOptionData
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
 import io.getstream.feeds.android.client.internal.test.TestSubscriptionManager
+import io.getstream.feeds.android.network.models.ActivityFeedbackRequest
 import io.getstream.feeds.android.network.models.AddCommentReactionRequest
 import io.getstream.feeds.android.network.models.CastPollVoteRequest
 import io.getstream.feeds.android.network.models.CreatePollOptionRequest
@@ -494,6 +495,19 @@ internal class ActivityImplTest {
             assertEquals(expectedPoll, activity.state.poll.value)
             verify { stateEventListener.onEvent(PollUpdated(fid.rawValue, expectedPoll)) }
         }
+
+    @Test
+    fun `on activityFeedback, delegate to repository`() = runTest {
+        val request = ActivityFeedbackRequest(hide = true)
+
+        coEvery { activitiesRepository.activityFeedback("activityId", request) } returns
+            Result.success(Unit)
+
+        val result = activity.activityFeedback(request)
+
+        assertEquals(Unit, result.getOrNull())
+        coVerify { activitiesRepository.activityFeedback("activityId", request) }
+    }
 
     private suspend fun setupActivityWithPoll(poll: PollData = pollData("poll-1")) {
         val activityWithPoll = activityData("activityId", poll = poll)
