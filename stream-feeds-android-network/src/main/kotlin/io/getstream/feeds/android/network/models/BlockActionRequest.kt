@@ -22,6 +22,6 @@ import kotlin.collections.*
 import kotlin.io.*
 
 /**  */
-public data class ShadowBlockActionRequest(
+public data class BlockActionRequest(
     @Json(name = "reason") public val reason: kotlin.String? = null
 )

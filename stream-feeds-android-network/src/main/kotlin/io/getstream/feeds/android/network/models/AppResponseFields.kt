@@ -25,9 +25,9 @@ import kotlin.io.*
 public data class AppResponseFields(
     @Json(name = "async_url_enrich_enabled") public val asyncUrlEnrichEnabled: kotlin.Boolean,
     @Json(name = "auto_translation_enabled") public val autoTranslationEnabled: kotlin.Boolean,
+    @Json(name = "id") public val id: kotlin.Int,
     @Json(name = "name") public val name: kotlin.String,
-    @Json(name = "region") public val region: kotlin.String,
-    @Json(name = "shard") public val shard: kotlin.String,
+    @Json(name = "placement") public val placement: kotlin.String,
     @Json(name = "file_upload_config")
     public val fileUploadConfig: io.getstream.feeds.android.network.models.FileUploadConfig,
     @Json(name = "image_upload_config")

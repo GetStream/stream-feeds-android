@@ -21,6 +21,7 @@ import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
+import io.getstream.feeds.android.client.api.model.FeedSuggestionData
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
@@ -70,7 +71,10 @@ internal interface FeedsRepository {
 
     // BEGIN: Follows
 
-    suspend fun queryFollowSuggestions(feedGroupId: String, limit: Int?): Result<List<FeedData>>
+    suspend fun queryFollowSuggestions(
+        feedGroupId: String,
+        limit: Int?,
+    ): Result<List<FeedSuggestionData>>
 
     suspend fun queryFollows(request: QueryFollowsRequest): Result<PaginationResult<FollowData>>
 

@@ -27,6 +27,7 @@ public data class GetFollowSuggestionsResponse(
     @Json(name = "duration") public val duration: kotlin.String,
     @Json(name = "suggestions")
     public val suggestions:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.FeedResponse> =
+        kotlin.collections.List<io.getstream.feeds.android.network.models.FeedSuggestionResponse> =
         emptyList(),
+    @Json(name = "algorithm_used") public val algorithmUsed: kotlin.String? = null,
 )
