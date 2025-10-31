@@ -45,6 +45,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.updateFeedMember
 import io.getstream.feeds.android.client.internal.test.TestData.updateFeedResponse
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.AcceptFollowRequest
+import io.getstream.feeds.android.network.models.FeedSuggestionResponse
 import io.getstream.feeds.android.network.models.FollowRequest
 import io.getstream.feeds.android.network.models.QueryFeedMembersRequest
 import io.getstream.feeds.android.network.models.QueryFollowsRequest
@@ -154,7 +155,7 @@ internal class FeedsRepositoryImplTest {
             apiFunction = { feedsApi.getFollowSuggestions("user", 10) },
             repositoryCall = { repository.queryFollowSuggestions("user", 10) },
             apiResult = apiResult,
-            repositoryResult = listOf(feedResponse().toModel()),
+            repositoryResult = apiResult.suggestions.map(FeedSuggestionResponse::toModel),
         )
     }
 

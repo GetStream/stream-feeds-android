@@ -42,8 +42,8 @@ internal class AppRepositoryImplTest {
                 name = "Test App",
                 fileUploadConfig = fileUploadConfig,
                 imageUploadConfig = imageUploadConfig,
-                region = "region",
-                shard = "shard",
+                id = 0,
+                placement = "placement",
             )
         val apiResponse = GetApplicationResponse(duration = "100ms", app = appResponseFields)
 

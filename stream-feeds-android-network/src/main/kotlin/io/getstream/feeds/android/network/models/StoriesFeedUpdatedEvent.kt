@@ -32,6 +32,10 @@ public data class StoriesFeedUpdatedEvent(
     @Json(name = "type") public val type: kotlin.String,
     @Json(name = "feed_visibility") public val feedVisibility: kotlin.String? = null,
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
+    @Json(name = "activities")
+    public val activities:
+        kotlin.collections.List<io.getstream.feeds.android.network.models.ActivityResponse>? =
+        emptyList(),
     @Json(name = "aggregated_activities")
     public val aggregatedActivities:
         kotlin.collections.List<
@@ -41,15 +45,15 @@ public data class StoriesFeedUpdatedEvent(
     @Json(name = "user")
     public val user: io.getstream.feeds.android.network.models.UserResponseCommonFields? = null,
 ) :
-    io.getstream.feeds.android.network.models.WSEvent,
     io.getstream.feeds.android.network.models.WSClientEvent,
+    io.getstream.feeds.android.network.models.WSEvent,
     io.getstream.feeds.android.network.models.FeedEvent {
 
-    override fun getWSEventType(): kotlin.String {
+    override fun getWSClientEventType(): kotlin.String {
         return type
     }
 
-    override fun getWSClientEventType(): kotlin.String {
+    override fun getWSEventType(): kotlin.String {
         return type
     }
 }

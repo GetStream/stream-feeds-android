@@ -25,33 +25,33 @@ import kotlin.io.*
 
 /**  */
 public data class FeedGroup(
-    @Json(name = "AggregationVersion") public val aggregationVersion: kotlin.Int,
-    @Json(name = "AppPK") public val appPK: kotlin.Int,
+    @Json(name = "aggregation_version") public val aggregationVersion: kotlin.Int,
+    @Json(name = "app_pk") public val appPk: kotlin.Int,
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "DefaultVisibility") public val defaultVisibility: kotlin.String,
-    @Json(name = "ID") public val iD: kotlin.String,
+    @Json(name = "default_visibility") public val defaultVisibility: kotlin.String,
+    @Json(name = "group_id") public val groupId: kotlin.String,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
-    @Json(name = "ActivityProcessors")
+    @Json(name = "activity_processors")
     public val activityProcessors:
         kotlin.collections.List<io.getstream.feeds.android.network.models.ActivityProcessorConfig> =
         emptyList(),
-    @Json(name = "ActivitySelectors")
+    @Json(name = "activity_selectors")
     public val activitySelectors:
         kotlin.collections.List<io.getstream.feeds.android.network.models.ActivitySelectorConfig> =
         emptyList(),
-    @Json(name = "Custom")
+    @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-    @Json(name = "DeletedAt") public val deletedAt: java.util.Date? = null,
-    @Json(name = "LastFeedGetAt") public val lastFeedGetAt: java.util.Date? = null,
-    @Json(name = "Aggregation")
+    @Json(name = "deleted_at") public val deletedAt: java.util.Date? = null,
+    @Json(name = "last_feed_get_at") public val lastFeedGetAt: java.util.Date? = null,
+    @Json(name = "aggregation")
     public val aggregation: io.getstream.feeds.android.network.models.AggregationConfig? = null,
-    @Json(name = "Notification")
+    @Json(name = "notification")
     public val notification: io.getstream.feeds.android.network.models.NotificationConfig? = null,
-    @Json(name = "PushNotification")
+    @Json(name = "push_notification")
     public val pushNotification: io.getstream.feeds.android.network.models.PushNotificationConfig? =
         null,
-    @Json(name = "Ranking")
+    @Json(name = "ranking")
     public val ranking: io.getstream.feeds.android.network.models.RankingConfig? = null,
-    @Json(name = "Stories")
+    @Json(name = "stories")
     public val stories: io.getstream.feeds.android.network.models.StoriesConfig? = null,
 )

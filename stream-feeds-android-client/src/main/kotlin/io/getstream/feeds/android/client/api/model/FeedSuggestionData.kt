@@ -13,16 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:Suppress("ArrayInDataClass", "EnumEntryName", "RemoveRedundantQualifierName", "UnusedImport")
+package io.getstream.feeds.android.client.api.model
 
-package io.getstream.feeds.android.network.models
-
-import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
-
-/**  */
-public data class PrivacySettingsResponse(
-    @Json(name = "read_receipts")
-    public val readReceipts: io.getstream.feeds.android.network.models.ReadReceiptsResponse? = null
+public data class FeedSuggestionData(
+    public val feed: FeedData,
+    public val algorithmScores: Map<String, Float>?,
+    public val reason: String?,
+    public val recommendationScore: Float?,
 )

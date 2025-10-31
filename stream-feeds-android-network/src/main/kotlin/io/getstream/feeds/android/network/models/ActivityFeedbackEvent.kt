@@ -22,15 +22,18 @@ import kotlin.collections.*
 import kotlin.collections.Map
 import kotlin.io.*
 
-/** This event is sent when a moderation item is marked as reviewed */
-public data class ModerationMarkReviewedEvent(
+/** Emitted when activity feedback is provided. */
+public data class ActivityFeedbackEvent(
     @Json(name = "created_at") public val createdAt: java.util.Date,
+    @Json(name = "activity_feedback")
+    public val activityFeedback:
+        io.getstream.feeds.android.network.models.ActivityFeedbackEventPayload,
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-    @Json(name = "item")
-    public val item: io.getstream.feeds.android.network.models.ReviewQueueItemResponse,
     @Json(name = "type") public val type: kotlin.String,
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
+    @Json(name = "user")
+    public val user: io.getstream.feeds.android.network.models.UserResponseCommonFields? = null,
 ) :
     io.getstream.feeds.android.network.models.WSClientEvent,
     io.getstream.feeds.android.network.models.WSEvent,

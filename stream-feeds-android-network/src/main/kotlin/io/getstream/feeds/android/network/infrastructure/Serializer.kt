@@ -28,6 +28,10 @@ public object Serializer {
                 io.getstream.feeds.android.network.models.AWSRekognitionRule.Action.ActionAdapter()
             )
             .add(
+                io.getstream.feeds.android.network.models.ActivityFeedbackEventPayload.Action
+                    .ActionAdapter()
+            )
+            .add(
                 io.getstream.feeds.android.network.models.ActivityRequest.Visibility
                     .VisibilityAdapter()
             )

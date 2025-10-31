@@ -24,9 +24,6 @@ import kotlin.io.*
 /** Request to provide feedback on an activity */
 public data class ActivityFeedbackRequest(
     @Json(name = "hide") public val hide: kotlin.Boolean? = null,
-    @Json(name = "mute_user") public val muteUser: kotlin.Boolean? = null,
-    @Json(name = "reason") public val reason: kotlin.String? = null,
-    @Json(name = "report") public val report: kotlin.Boolean? = null,
     @Json(name = "show_less") public val showLess: kotlin.Boolean? = null,
     @Json(name = "show_more") public val showMore: kotlin.Boolean? = null,
 )

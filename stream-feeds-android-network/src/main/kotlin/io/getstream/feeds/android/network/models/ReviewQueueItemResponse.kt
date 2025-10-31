@@ -30,6 +30,7 @@ public data class ReviewQueueItemResponse(
     @Json(name = "entity_type") public val entityType: kotlin.String,
     @Json(name = "flags_count") public val flagsCount: kotlin.Int,
     @Json(name = "id") public val id: kotlin.String,
+    @Json(name = "latest_moderator_action") public val latestModeratorAction: kotlin.String,
     @Json(name = "recommended_action") public val recommendedAction: kotlin.String,
     @Json(name = "reviewed_by") public val reviewedBy: kotlin.String,
     @Json(name = "severity") public val severity: kotlin.Int,
@@ -64,6 +65,10 @@ public data class ReviewQueueItemResponse(
     public val feedsV2Activity: io.getstream.feeds.android.network.models.EnrichedActivity? = null,
     @Json(name = "feeds_v2_reaction")
     public val feedsV2Reaction: io.getstream.feeds.android.network.models.Reaction? = null,
+    @Json(name = "feeds_v3_activity")
+    public val feedsV3Activity: io.getstream.feeds.android.network.models.ActivityResponse? = null,
+    @Json(name = "feeds_v3_comment")
+    public val feedsV3Comment: io.getstream.feeds.android.network.models.CommentResponse? = null,
     @Json(name = "moderation_payload")
     public val moderationPayload: io.getstream.feeds.android.network.models.ModerationPayload? =
         null,

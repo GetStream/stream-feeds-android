@@ -58,6 +58,8 @@ import java.util.Date
  * @property feeds The list of feed IDs where this activity appears. An activity can appear in
  *   multiple feeds simultaneously.
  * @property filterTags Tags used for content filtering and categorization.
+ * @property hidden Whether the activity has been hidden by the current user. Hidden activities may
+ *   be filtered from feed views depending on application logic.
  * @property id The unique identifier of the activity.
  * @property interestTags Tags indicating user interests or content categories for recommendation
  *   purposes.
@@ -105,6 +107,7 @@ public data class ActivityData(
     val expiresAt: Date?,
     val feeds: List<String>,
     val filterTags: List<String>,
+    val hidden: Boolean,
     val id: String,
     val interestTags: List<String>,
     val isWatched: Boolean?,

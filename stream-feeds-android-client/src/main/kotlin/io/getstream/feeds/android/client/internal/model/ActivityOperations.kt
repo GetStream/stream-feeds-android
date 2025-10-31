@@ -41,6 +41,7 @@ internal fun ActivityResponse.toModel(): ActivityData =
         expiresAt = expiresAt,
         feeds = feeds,
         filterTags = filterTags,
+        hidden = hidden,
         id = id,
         interestTags = interestTags,
         isWatched = isWatched,

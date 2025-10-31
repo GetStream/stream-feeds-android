@@ -26,6 +26,7 @@ import kotlin.io.*
 /**  */
 public data class ActivitySelectorConfig(
     @Json(name = "cutoff_time") public val cutoffTime: java.util.Date,
+    @Json(name = "cutoff_window") public val cutoffWindow: kotlin.String? = null,
     @Json(name = "min_popularity") public val minPopularity: kotlin.Int? = null,
     @Json(name = "type") public val type: kotlin.String? = null,
     @Json(name = "sort")

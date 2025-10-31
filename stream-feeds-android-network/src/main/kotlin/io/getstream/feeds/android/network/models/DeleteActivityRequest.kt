@@ -23,5 +23,6 @@ import kotlin.io.*
 
 /**  */
 public data class DeleteActivityRequest(
-    @Json(name = "hard_delete") public val hardDelete: kotlin.Boolean? = null
+    @Json(name = "hard_delete") public val hardDelete: kotlin.Boolean? = null,
+    @Json(name = "reason") public val reason: kotlin.String? = null,
 )
