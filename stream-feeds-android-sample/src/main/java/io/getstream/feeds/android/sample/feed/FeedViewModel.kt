@@ -174,6 +174,21 @@ constructor(private val application: Application, loginManager: LoginManager) : 
         }
     }
 
+    fun onHideActivity(activity: ActivityData) {
+        val newHiddenState = !activity.hidden
+        viewState.withFirstContent(viewModelScope) {
+            client
+                .activityFeedback(
+                    activity.id,
+                    io.getstream.feeds.android.network.models.ActivityFeedbackRequest(
+                        hide = newHiddenState
+                    ),
+                )
+                .logResult(TAG, "Hiding activity: ${activity.id}, hidden: $newHiddenState")
+                .notifyOnFailure { "Failed to hide activity" }
+        }
+    }
+
     fun onCreatePostClick() {
         _createContentState.value = CreateContentState.Composing
     }
@@ -280,6 +295,7 @@ constructor(private val application: Application, loginManager: LoginManager) : 
         val ownStoriesQuery = feedQuery(Feeds.story(userId), userId)
 
         return ViewState(
+            client = client,
             userId = userId,
             userImage = client.user.imageURL,
             timeline = client.feed(timelineQuery),
@@ -306,6 +322,7 @@ constructor(private val application: Application, loginManager: LoginManager) : 
     }
 
     data class ViewState(
+        val client: FeedsClient,
         val userId: String,
         val userImage: String?,
         val timeline: Feed,

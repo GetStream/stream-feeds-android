@@ -269,18 +269,22 @@ private fun Comment(
 
         // Context menu dialog for long press
         if (showContextMenu) {
+            val errorColor = MaterialTheme.colorScheme.error
+            val actions =
+                remember(errorColor) { listOf(MenuAction.edit, MenuAction.delete(errorColor)) }
+
             ContentContextMenuDialog(
                 title = "Comment Options",
-                showEdit = true,
+                actions = actions,
+                onActionClick = { actionId ->
+                    when (actionId) {
+                        MenuAction.Id.EDIT -> showEditDialog = true
+                        MenuAction.Id.DELETE -> onEvent(Event.OnDelete(data.id))
+                        MenuAction.Id.HIDE -> {} // Not used for comments
+                    }
+                    showContextMenu = false
+                },
                 onDismiss = { showContextMenu = false },
-                onEdit = {
-                    showEditDialog = true
-                    showContextMenu = false
-                },
-                onDelete = {
-                    onEvent(Event.OnDelete(data.id))
-                    showContextMenu = false
-                },
             )
         }
 

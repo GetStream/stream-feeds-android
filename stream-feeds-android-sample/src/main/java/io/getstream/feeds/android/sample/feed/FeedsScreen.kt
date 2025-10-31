@@ -55,6 +55,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -200,6 +201,7 @@ private fun FeedsScreenContent(
                             onBookmarkClick = { viewModel.onBookmarkClick(activity) },
                             onDeleteClick = { viewModel.onDeleteClick(activity.id) },
                             onEditSave = { viewModel.onEditActivity(activity.id, it) },
+                            onHideClick = { viewModel.onHideActivity(activity) },
                             pollSection = { poll ->
                                 PollSection(
                                     activityId = activity.id,
@@ -416,6 +418,7 @@ fun ActivityContent(
     onBookmarkClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onEditSave: ((String) -> Unit),
+    onHideClick: () -> Unit,
     pollSection: @Composable (PollData) -> Unit,
 ) {
     var showRepostDialog by remember { mutableStateOf(false) }
@@ -425,26 +428,26 @@ fun ActivityContent(
 
     // Check if current user is the author
     val isCurrentUserAuthor = data.user.id == currentUserId
+
     Column(
         modifier =
             Modifier.fillMaxWidth()
-                .conditional(isCurrentUserAuthor) {
-                    combinedClickable(
-                        indication = null,
-                        interactionSource = null,
-                        onClick = { /* Regular click - do nothing */ },
-                        onLongClick = {
-                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                            showContextMenu = true
-                        },
-                    )
-                }
+                .conditional(data.hidden) { alpha(0.5f) }
+                .combinedClickable(
+                    indication = null,
+                    interactionSource = null,
+                    onClick = { /* Regular click - do nothing */ },
+                    onLongClick = {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                        showContextMenu = true
+                    },
+                )
                 .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
             UserAvatar(avatarUrl = user.image)
 
-            Column(modifier = Modifier.fillMaxWidth().padding(start = 12.dp)) {
+            Column(modifier = Modifier.weight(1f).padding(start = 12.dp)) {
                 Text(
                     text = user.name ?: user.id,
                     fontSize = 16.sp,
@@ -490,18 +493,32 @@ fun ActivityContent(
 
         // Context menu dialog for long press
         if (showContextMenu) {
+            val errorColor = MaterialTheme.colorScheme.error
+            val actions =
+                remember(isCurrentUserAuthor, data.hidden, data.parent, data.poll, errorColor) {
+                    buildList {
+                        if (isCurrentUserAuthor && data.parent == null && data.poll == null) {
+                            add(MenuAction.edit)
+                        }
+                        add(MenuAction.hide(data.hidden))
+                        if (isCurrentUserAuthor) {
+                            add(MenuAction.delete(errorColor))
+                        }
+                    }
+                }
+
             ContentContextMenuDialog(
                 title = "Post Options",
-                showEdit = data.parent == null && data.poll == null,
+                actions = actions,
+                onActionClick = { actionId ->
+                    when (actionId) {
+                        MenuAction.Id.EDIT -> showEditDialog = true
+                        MenuAction.Id.HIDE -> onHideClick()
+                        MenuAction.Id.DELETE -> onDeleteClick()
+                    }
+                    showContextMenu = false
+                },
                 onDismiss = { showContextMenu = false },
-                onEdit = {
-                    showEditDialog = true
-                    showContextMenu = false
-                },
-                onDelete = {
-                    onDeleteClick()
-                    showContextMenu = false
-                },
             )
         }
 

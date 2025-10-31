@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,33 +35,54 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.getstream.feeds.android.sample.R
 
+data class MenuAction(
+    val id: Id,
+    val text: String,
+    val iconRes: Int,
+    val tint: Color = Color.Unspecified,
+) {
+    enum class Id {
+        EDIT,
+        DELETE,
+        HIDE,
+    }
+
+    companion object {
+        val edit = MenuAction(Id.EDIT, "Edit", R.drawable.edit_24)
+
+        fun delete(errorColor: Color): MenuAction =
+            MenuAction(Id.DELETE, "Delete", R.drawable.delete_24, errorColor)
+
+        fun hide(isHidden: Boolean): MenuAction =
+            MenuAction(Id.HIDE, if (isHidden) "Unhide" else "Hide", R.drawable.close)
+    }
+}
+
 @Composable
 fun ContentContextMenuDialog(
     title: String,
-    showEdit: Boolean,
+    actions: List<MenuAction>,
+    onActionClick: (MenuAction.Id) -> Unit,
     onDismiss: () -> Unit,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = title, fontWeight = FontWeight.Bold, fontSize = 16.sp) },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
-                if (showEdit) {
-                    MenuItemRow(iconRes = R.drawable.edit_24, text = "Edit", onClick = onEdit)
+                actions.forEachIndexed { index, action ->
+                    if (index > 0) {
+                        HorizontalDivider(thickness = 1.dp)
+                    }
 
-                    // Divider between Edit and Delete
-                    HorizontalDivider(thickness = 1.dp)
+                    MenuItemRow(
+                        iconRes = action.iconRes,
+                        text = action.text,
+                        onClick = { onActionClick(action.id) },
+                        tint = action.tint,
+                        textColor = action.tint,
+                    )
                 }
-
-                MenuItemRow(
-                    iconRes = R.drawable.delete_24,
-                    text = "Delete",
-                    onClick = onDelete,
-                    tint = MaterialTheme.colorScheme.error,
-                    textColor = MaterialTheme.colorScheme.error,
-                )
             }
         },
         confirmButton = {},
