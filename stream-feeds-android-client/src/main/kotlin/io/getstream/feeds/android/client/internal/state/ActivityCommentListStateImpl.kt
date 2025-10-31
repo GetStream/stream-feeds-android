@@ -22,13 +22,13 @@ import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
+import io.getstream.feeds.android.client.internal.model.removeComment
 import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.model.update
 import io.getstream.feeds.android.client.internal.model.upsertNestedReply
 import io.getstream.feeds.android.client.internal.model.upsertReaction
 import io.getstream.feeds.android.client.internal.state.query.toComparator
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
-import io.getstream.feeds.android.client.internal.utils.treeRemoveFirst
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -92,15 +92,7 @@ internal class ActivityCommentListStateImpl(
     }
 
     override fun onCommentRemoved(commentId: String) {
-        _comments.update { current ->
-            current.treeRemoveFirst(
-                matcher = { it.id == commentId },
-                childrenSelector = { it.replies.orEmpty() },
-                updateChildren = { parent, children ->
-                    parent.copy(replies = children, replyCount = parent.replyCount - 1)
-                },
-            )
-        }
+        _comments.update { current -> current.removeComment(commentId) }
     }
 
     override fun onCommentReactionUpserted(
