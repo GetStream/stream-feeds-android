@@ -23,6 +23,7 @@ import io.getstream.feeds.android.client.api.model.FeedAddActivityRequest
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
+import io.getstream.feeds.android.client.api.model.FeedSuggestionData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
@@ -282,7 +283,7 @@ public interface Feed {
      * @return A [Result] containing a list of [FeedData] representing the suggested feeds if
      *   successful, or an error if the operation fails.
      */
-    public suspend fun queryFollowSuggestions(limit: Int?): Result<List<FeedData>>
+    public suspend fun queryFollowSuggestions(limit: Int?): Result<List<FeedSuggestionData>>
 
     /**
      * Follows another feed.

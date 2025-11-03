@@ -23,6 +23,7 @@ import io.getstream.android.core.api.utils.flatMap
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.model.FeedSuggestionData
 import io.getstream.feeds.android.client.api.state.Feed
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.sample.login.LoginManager
@@ -62,6 +63,7 @@ class ProfileViewModel @Inject constructor(loginManager: LoginManager) : ViewMod
                 client
                     .feed(Feeds.user(client.user.id))
                     .queryFollowSuggestions(10)
+                    .map { suggestions -> suggestions.map(FeedSuggestionData::feed) }
                     .logResult(TAG, "Getting follow suggestions")
                     .getOrDefault(emptyList())
         }

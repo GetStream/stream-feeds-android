@@ -32,10 +32,15 @@ public data class SubmitActionRequest(
     @Json(name = "item_id") public val itemId: kotlin.String,
     @Json(name = "ban")
     public val ban: io.getstream.feeds.android.network.models.BanActionRequest? = null,
+    @Json(name = "block")
+    public val block: io.getstream.feeds.android.network.models.BlockActionRequest? = null,
     @Json(name = "custom")
     public val custom: io.getstream.feeds.android.network.models.CustomActionRequest? = null,
     @Json(name = "delete_activity")
     public val deleteActivity: io.getstream.feeds.android.network.models.DeleteActivityRequest? =
+        null,
+    @Json(name = "delete_comment")
+    public val deleteComment: io.getstream.feeds.android.network.models.DeleteCommentRequest? =
         null,
     @Json(name = "delete_message")
     public val deleteMessage: io.getstream.feeds.android.network.models.DeleteMessageRequest? =
@@ -47,6 +52,9 @@ public data class SubmitActionRequest(
     public val deleteUser: io.getstream.feeds.android.network.models.DeleteUserRequest? = null,
     @Json(name = "mark_reviewed")
     public val markReviewed: io.getstream.feeds.android.network.models.MarkReviewedRequest? = null,
+    @Json(name = "shadow_block")
+    public val shadowBlock: io.getstream.feeds.android.network.models.ShadowBlockActionRequest? =
+        null,
     @Json(name = "unban")
     public val unban: io.getstream.feeds.android.network.models.UnbanActionRequest? = null,
 ) {
@@ -59,8 +67,10 @@ public data class SubmitActionRequest(
             public fun fromString(s: kotlin.String): ActionType =
                 when (s) {
                     "ban" -> Ban
+                    "block" -> Block
                     "custom" -> Custom
                     "delete_activity" -> DeleteActivity
+                    "delete_comment" -> DeleteComment
                     "delete_message" -> DeleteMessage
                     "delete_reaction" -> DeleteReaction
                     "delete_user" -> DeleteUser
@@ -78,9 +88,13 @@ public data class SubmitActionRequest(
 
         public object Ban : ActionType("ban")
 
+        public object Block : ActionType("block")
+
         public object Custom : ActionType("custom")
 
         public object DeleteActivity : ActionType("delete_activity")
+
+        public object DeleteComment : ActionType("delete_comment")
 
         public object DeleteMessage : ActionType("delete_message")
 

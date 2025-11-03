@@ -64,6 +64,8 @@ public class WSEventAdapter : JsonAdapter<WSEvent>() {
                 io.getstream.feeds.android.network.models.ActivityAddedEvent::class.java
             "feeds.activity.deleted" ->
                 io.getstream.feeds.android.network.models.ActivityDeletedEvent::class.java
+            "feeds.activity.feedback" ->
+                io.getstream.feeds.android.network.models.ActivityFeedbackEvent::class.java
             "feeds.activity.marked" ->
                 io.getstream.feeds.android.network.models.ActivityMarkEvent::class.java
             "feeds.activity.pinned" ->

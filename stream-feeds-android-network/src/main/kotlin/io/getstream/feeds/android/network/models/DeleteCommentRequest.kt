@@ -22,7 +22,7 @@ import kotlin.collections.*
 import kotlin.io.*
 
 /**  */
-public data class PrivacySettingsResponse(
-    @Json(name = "read_receipts")
-    public val readReceipts: io.getstream.feeds.android.network.models.ReadReceiptsResponse? = null
+public data class DeleteCommentRequest(
+    @Json(name = "hard_delete") public val hardDelete: kotlin.Boolean? = null,
+    @Json(name = "reason") public val reason: kotlin.String? = null,
 )

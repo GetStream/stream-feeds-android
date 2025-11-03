@@ -86,8 +86,8 @@ internal class FeedsSingleFlightApiTest(private val testCase: SingleFlightTestCa
                         name = "Test App",
                         fileUploadConfig = FileUploadConfig(sizeLimit = 0),
                         imageUploadConfig = FileUploadConfig(sizeLimit = 0),
-                        region = "region",
-                        shard = "shard",
+                        id = 0,
+                        placement = "placement",
                     ),
             )
 

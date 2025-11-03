@@ -17,8 +17,11 @@
 
 package io.getstream.feeds.android.network.models
 
+import com.squareup.moshi.Json
 import kotlin.collections.*
 import kotlin.io.*
 
 /**  */
-public class ShadowBlockActionRequest()
+public data class ShadowBlockActionRequest(
+    @Json(name = "reason") public val reason: kotlin.String? = null
+)

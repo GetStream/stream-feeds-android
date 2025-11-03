@@ -28,4 +28,5 @@ public data class DeleteUserRequest(
     @Json(name = "delete_feeds_content") public val deleteFeedsContent: kotlin.Boolean? = null,
     @Json(name = "hard_delete") public val hardDelete: kotlin.Boolean? = null,
     @Json(name = "mark_messages_deleted") public val markMessagesDeleted: kotlin.Boolean? = null,
+    @Json(name = "reason") public val reason: kotlin.String? = null,
 )
