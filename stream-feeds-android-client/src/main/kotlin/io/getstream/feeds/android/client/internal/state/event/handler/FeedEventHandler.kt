@@ -195,6 +195,8 @@ internal class FeedEventHandler(
                 }
             }
 
+            // The fid in poll events doesn't necessarily match all the feeds that contain the poll
+            // so we can't early return here based on that.
             is StateUpdateEvent.PollDeleted -> state.onPollDeleted(event.pollId)
 
             is StateUpdateEvent.PollUpdated -> state.onPollUpdated(event.poll)
