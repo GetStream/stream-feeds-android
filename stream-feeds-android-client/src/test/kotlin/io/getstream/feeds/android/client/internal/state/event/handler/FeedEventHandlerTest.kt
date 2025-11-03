@@ -93,6 +93,7 @@ internal class FeedEventHandlerTest(
         private val matchingFollow = followData(sourceFid = fid.rawValue)
         private val nonMatchingFollow =
             followData(sourceFid = "other:feed", targetFid = "another:feed")
+        private val activities = listOf(activity)
         private val aggregatedActivities =
             listOf(
                 AggregatedActivityData(
@@ -364,12 +365,14 @@ internal class FeedEventHandlerTest(
                 ),
                 testParams<FeedStateUpdates>(
                     name = "StoriesFeedUpdated matching feed",
-                    event = StoriesFeedUpdated(fid.rawValue, aggregatedActivities),
-                    verifyBlock = { state -> state.onStoriesFeedUpdated(aggregatedActivities) },
+                    event = StoriesFeedUpdated(fid.rawValue, activities, aggregatedActivities),
+                    verifyBlock = { state ->
+                        state.onStoriesFeedUpdated(activities, aggregatedActivities)
+                    },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "StoriesFeedUpdated non-matching feed",
-                    event = StoriesFeedUpdated("group:different", aggregatedActivities),
+                    event = StoriesFeedUpdated("group:different", activities, aggregatedActivities),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
