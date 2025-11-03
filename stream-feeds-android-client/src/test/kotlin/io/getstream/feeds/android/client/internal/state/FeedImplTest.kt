@@ -44,6 +44,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedData
 import io.getstream.feeds.android.client.internal.test.TestData.feedMemberData
+import io.getstream.feeds.android.client.internal.test.TestData.feedSuggestionData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.getstream.feeds.android.client.internal.test.TestData.followData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
@@ -516,7 +517,8 @@ internal class FeedImplTest {
     fun `on queryFollowSuggestions, delegate to repository`() = runTest {
         val feed = createFeed()
         val limit = 10
-        val suggestions = listOf(feedData("suggested-1"), feedData("suggested-2"))
+        val suggestions =
+            listOf(feedSuggestionData("suggested-1"), feedSuggestionData("suggested-2"))
 
         coEvery { feedsRepository.queryFollowSuggestions("group", limit) } returns
             Result.success(suggestions)

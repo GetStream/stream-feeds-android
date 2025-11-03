@@ -20,6 +20,7 @@ import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
+import io.getstream.feeds.android.client.api.model.FeedSuggestionData
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationData
@@ -117,7 +118,7 @@ internal class FeedsRepositoryImpl(private val api: FeedsApi) : FeedsRepository 
     override suspend fun queryFollowSuggestions(
         feedGroupId: String,
         limit: Int?,
-    ): Result<List<FeedData>> = runSafely {
+    ): Result<List<FeedSuggestionData>> = runSafely {
         api.getFollowSuggestions(feedGroupId = feedGroupId, limit = limit).suggestions.map {
             it.toModel()
         }

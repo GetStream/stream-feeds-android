@@ -312,8 +312,20 @@ internal class FeedStateImpl(
         _notificationStatus.update { notificationStatus }
     }
 
-    override fun onStoriesFeedUpdated(aggregatedActivities: List<AggregatedActivityData>) {
+    override fun onStoriesFeedUpdated(
+        activities: List<ActivityData>,
+        aggregatedActivities: List<AggregatedActivityData>,
+    ) {
+        updateActivities(activities)
         updateAggregatedActivities(aggregatedActivities)
+    }
+
+    private fun updateActivities(activities: List<ActivityData>) {
+        val updatedMap = activities.associateBy(ActivityData::id)
+
+        updateActivitiesWhere({ it.id in updatedMap }) { activity ->
+            updatedMap[activity.id]?.let(activity::update) ?: activity
+        }
     }
 
     private fun updateAggregatedActivities(aggregatedActivities: List<AggregatedActivityData>) {
@@ -477,8 +489,12 @@ internal interface FeedStateUpdates {
     /**
      * Handles updates to a stories feed.
      *
+     * @param activities The list of activities that were updated in the stories feed.
      * @param aggregatedActivities The list of aggregated activities that were updated in the
      *   stories feed.
      */
-    fun onStoriesFeedUpdated(aggregatedActivities: List<AggregatedActivityData>)
+    fun onStoriesFeedUpdated(
+        activities: List<ActivityData>,
+        aggregatedActivities: List<AggregatedActivityData>,
+    )
 }

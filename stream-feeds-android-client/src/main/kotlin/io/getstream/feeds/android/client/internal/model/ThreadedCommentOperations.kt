@@ -200,3 +200,38 @@ private fun ThreadedCommentData.upsertReply(
         }
     return copy(replies = updatedReplies, replyCount = updatedCount)
 }
+
+/**
+ * Removes a comment with the given [commentId] from the list.
+ *
+ * @param commentId The ID of the comment to remove.
+ * @return A new list of [ThreadedCommentData] with the specified comment removed.
+ */
+internal fun List<ThreadedCommentData>.removeComment(commentId: String): List<ThreadedCommentData> {
+    val indexToRemove = indexOfFirst { it.id == commentId }
+    return if (indexToRemove >= 0) {
+        // A top-level comment was removed, update the state
+        toMutableList().apply { removeAt(indexToRemove) }
+    } else {
+        // It might be a nested reply, search and remove recursively
+        map { parent -> parent.removeReply(commentId) }
+    }
+}
+
+private fun ThreadedCommentData.removeReply(commentIdToRemove: String): ThreadedCommentData {
+    // If this comment has no replies, nothing to remove
+    if (replies.isNullOrEmpty()) {
+        return this
+    }
+    // Check if the comment to remove is a direct reply
+    val indexToRemove = replies.indexOfFirst { it.id == commentIdToRemove }
+    if (indexToRemove >= 0) {
+        // Found and removed a direct child, update reply count
+        return copy(
+            replies = replies.toMutableList().apply { removeAt(indexToRemove) },
+            replyCount = replyCount - 1,
+        )
+    }
+    // If not found, recursively check each reply
+    return copy(replies = replies.map { child -> child.removeReply(commentIdToRemove) })
+}

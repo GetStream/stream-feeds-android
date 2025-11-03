@@ -27,6 +27,7 @@ import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FeedMemberStatus
+import io.getstream.feeds.android.client.api.model.FeedSuggestionData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.FileUploadConfigData
 import io.getstream.feeds.android.client.api.model.FollowData
@@ -49,6 +50,7 @@ import io.getstream.feeds.android.network.models.CommentResponse
 import io.getstream.feeds.android.network.models.DeleteCommentResponse
 import io.getstream.feeds.android.network.models.FeedMemberResponse
 import io.getstream.feeds.android.network.models.FeedResponse
+import io.getstream.feeds.android.network.models.FeedSuggestionResponse
 import io.getstream.feeds.android.network.models.FeedsReactionResponse
 import io.getstream.feeds.android.network.models.FollowResponse
 import io.getstream.feeds.android.network.models.GetFollowSuggestionsResponse
@@ -207,6 +209,7 @@ internal object TestData {
         comments: List<CommentData> = emptyList(),
         feeds: List<String> = emptyList(),
         createdAt: Long = 1000,
+        hidden: Boolean = false,
     ): ActivityData =
         ActivityData(
             attachments = emptyList(),
@@ -221,6 +224,7 @@ internal object TestData {
             expiresAt = null,
             feeds = feeds,
             filterTags = emptyList(),
+            hidden = hidden,
             id = id,
             interestTags = emptyList(),
             isWatched = null,
@@ -337,6 +341,8 @@ internal object TestData {
             updatedAt = Date(1000),
             visibility = ActivityResponse.Visibility.Public,
             user = userResponse(),
+            hidden = false,
+            preview = false,
         )
 
     fun feedsReactionResponse() =
@@ -606,6 +612,14 @@ internal object TestData {
             visibility = "public",
         )
 
+    fun feedSuggestionData(id: String) =
+        FeedSuggestionData(
+            feed = feedData(id),
+            algorithmScores = emptyMap(),
+            reason = null,
+            recommendationScore = null,
+        )
+
     fun moderationConfigData(
         key: String = "config-1",
         team: String = "team-1",
@@ -732,8 +746,29 @@ internal object TestData {
     fun rejectFeedMemberResponse() =
         RejectFeedMemberInviteResponse(duration = "duration", member = feedMemberResponse())
 
+    fun feedSuggestionResponse() =
+        FeedSuggestionResponse(
+            createdAt = Date(1000),
+            description = "Test feed description",
+            feed = "user:feed-1",
+            followerCount = 0,
+            followingCount = 0,
+            groupId = "user",
+            id = "feed-1",
+            memberCount = 0,
+            name = "Test Feed",
+            pinCount = 0,
+            updatedAt = Date(1000),
+            createdBy = userResponse(),
+            deletedAt = null,
+            reason = null,
+        )
+
     fun followSuggestionsResponse() =
-        GetFollowSuggestionsResponse(duration = "duration", suggestions = listOf(feedResponse()))
+        GetFollowSuggestionsResponse(
+            duration = "duration",
+            suggestions = listOf(feedSuggestionResponse()),
+        )
 
     fun commentResponse() =
         CommentResponse(
