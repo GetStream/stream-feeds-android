@@ -15,6 +15,17 @@
  */
 package io.getstream.feeds.android.client.api.model
 
+import io.getstream.feeds.android.client.api.state.Feed
+
+/**
+ * Model representing a feed suggestion
+ *
+ * @property feed The suggested feed.
+ * @property algorithmScores A map of algorithm scores associated with the suggestion.
+ * @property reason The reason for the suggestion.
+ * @property recommendationScore The overall recommendation score for the suggestion.
+ * @see [Feed.queryFollowSuggestions].
+ */
 public data class FeedSuggestionData(
     public val feed: FeedData,
     public val algorithmScores: Map<String, Float>?,
