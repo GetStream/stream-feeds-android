@@ -22,8 +22,8 @@ import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.state.CommentReplyListState
 import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
+import io.getstream.feeds.android.client.internal.model.removeComment
 import io.getstream.feeds.android.client.internal.model.removeReaction
-import io.getstream.feeds.android.client.internal.model.update
 import io.getstream.feeds.android.client.internal.model.upsertNestedReply
 import io.getstream.feeds.android.client.internal.model.upsertReaction
 import io.getstream.feeds.android.client.internal.state.query.toComparator
@@ -76,16 +76,7 @@ internal class CommentReplyListStateImpl(
     }
 
     private fun onReplyRemoved(commentId: String) {
-        _replies.update { current ->
-            val filteredTopLevel = current.filter { it.id != commentId }
-            if (filteredTopLevel.size != current.size) {
-                // A top-level comment was removed, update the state
-                filteredTopLevel
-            } else {
-                // It might be a nested reply, search and remove recursively
-                current.map { parent -> removeNestedReply(parent, commentId) }
-            }
-        }
+        _replies.update { current -> current.removeComment(commentId) }
     }
 
     override fun onCommentUpserted(comment: CommentData) {
@@ -112,26 +103,6 @@ internal class CommentReplyListStateImpl(
         _replies.update { current ->
             current.map { parent -> removeNestedReplyReaction(parent, comment, reaction) }
         }
-    }
-
-    private fun removeNestedReply(
-        comment: ThreadedCommentData,
-        commentIdToRemove: String,
-    ): ThreadedCommentData {
-        // If this comment has no replies, nothing to remove
-        if (comment.replies.isNullOrEmpty()) {
-            return comment
-        }
-        // Check if the comment to remove is a direct reply
-        val filteredReplies = comment.replies.filter { it.id != commentIdToRemove }
-        if (filteredReplies.size != comment.replies.size) {
-            // Found and removed a direct child, update reply count
-            return comment.copy(replies = filteredReplies, replyCount = comment.replyCount - 1)
-        }
-        // If not found, recursively check each reply
-        return comment.copy(
-            replies = comment.replies.map { child -> removeNestedReply(child, commentIdToRemove) }
-        )
     }
 
     private fun addNestedReplyReaction(
