@@ -191,7 +191,7 @@ internal class FeedEventHandler(
 
             is StateUpdateEvent.StoriesFeedUpdated -> {
                 if (event.fid == fid.rawValue) {
-                    state.onStoriesFeedUpdated(event.aggregatedActivities)
+                    state.onStoriesFeedUpdated(event.activities, event.aggregatedActivities)
                 }
             }
 

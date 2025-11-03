@@ -37,6 +37,7 @@ import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionUpdatedEvent
 import io.getstream.feeds.android.network.models.ActivityRemovedFromFeedEvent
+import io.getstream.feeds.android.network.models.ActivityResponse
 import io.getstream.feeds.android.network.models.ActivityUnpinnedEvent
 import io.getstream.feeds.android.network.models.ActivityUpdatedEvent
 import io.getstream.feeds.android.network.models.AggregatedActivityResponse
@@ -161,6 +162,7 @@ internal sealed interface StateUpdateEvent {
 
     data class StoriesFeedUpdated(
         val fid: String,
+        val activities: List<ActivityData>,
         val aggregatedActivities: List<AggregatedActivityData>,
     ) : StateUpdateEvent
 
@@ -272,6 +274,7 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
         is StoriesFeedUpdatedEvent ->
             StateUpdateEvent.StoriesFeedUpdated(
                 fid = fid,
+                activities = activities?.map(ActivityResponse::toModel).orEmpty(),
                 aggregatedActivities =
                     aggregatedActivities?.map(AggregatedActivityResponse::toModel).orEmpty(),
             )

@@ -518,8 +518,9 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on onStoriesFeedUpdated, update matching groups`() = runTest {
-        val initial =
+    fun `on onStoriesFeedUpdated, update matching activities and groups`() = runTest {
+        val initialActivities = List(3) { activityData("story-$it") }
+        val initialAggregated =
             List(3) {
                 aggregatedActivityData(
                     activities = listOf(activityData("story-$it")),
@@ -528,17 +529,18 @@ internal class FeedStateImplTest {
                     userCount = it,
                 )
             }
+        setupInitialState(activities = initialActivities, aggregatedActivities = initialAggregated)
 
-        setupInitialState(aggregatedActivities = initial)
-
-        val updated0 =
+        val updatedActivity0 = activityData("story-0", text = "Updated 0")
+        val updatedActivity2 = activityData("story-2", text = "Updated 2")
+        val updatedAggregated0 =
             aggregatedActivityData(
                 activities = listOf(activityData("story-0-updated")),
                 activityCount = 10,
                 group = "story-group-0",
                 userCount = 10,
             )
-        val updated2 =
+        val updatedAggregated2 =
             aggregatedActivityData(
                 activities = listOf(activityData("story-2-updated")),
                 activityCount = 30,
@@ -546,9 +548,19 @@ internal class FeedStateImplTest {
                 userCount = 30,
             )
 
-        feedState.onStoriesFeedUpdated(listOf(updated0, updated2))
+        feedState.onStoriesFeedUpdated(
+            listOf(updatedActivity0, updatedActivity2),
+            listOf(updatedAggregated0, updatedAggregated2),
+        )
 
-        assertEquals(listOf(updated0, initial[1], updated2), feedState.aggregatedActivities.value)
+        assertEquals(
+            listOf(updatedActivity0, initialActivities[1], updatedActivity2),
+            feedState.activities.value,
+        )
+        assertEquals(
+            listOf(updatedAggregated0, initialAggregated[1], updatedAggregated2),
+            feedState.aggregatedActivities.value,
+        )
     }
 
     // Helper functions
