@@ -25,6 +25,7 @@ import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.FollowData
+import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.model.toModel
@@ -143,6 +144,9 @@ internal sealed interface StateUpdateEvent {
     data class FeedMemberRemoved(val fid: String, val memberId: String) : StateUpdateEvent
 
     data class FeedMemberUpdated(val fid: String, val member: FeedMemberData) : StateUpdateEvent
+
+    data class FeedMemberBatchUpdate(val fid: String, val updates: ModelUpdates<FeedMemberData>) :
+        StateUpdateEvent
 
     data class FollowAdded(val follow: FollowData) : StateUpdateEvent
 

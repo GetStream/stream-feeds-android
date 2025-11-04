@@ -82,12 +82,13 @@ internal class MemberListStateImpl(override val query: MembersQuery) : MemberLis
     override fun onMembersUpdated(updates: ModelUpdates<FeedMemberData>) {
         // Create a map for efficient lookups of updated members
         val updatesMap = updates.updated.associateBy(FeedMemberData::id)
+        val removedIdSet = updates.removedIds.toSet()
 
         _members.update { current ->
             current
                 .mapNotNullTo(mutableListOf()) { member ->
                     // Apply updates and filter out removed members in a single pass
-                    if (member.id in updates.removedIds) {
+                    if (member.id in removedIdSet) {
                         null
                     } else {
                         updatesMap[member.id] ?: member
