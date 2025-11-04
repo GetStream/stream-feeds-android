@@ -104,30 +104,18 @@ internal class ActivityEventHandler(
                 state.onCommentReactionUpserted(event.comment, event.reaction, event.enforceUnique)
             }
 
-            is StateUpdateEvent.PollDeleted -> {
-                if (event.fid != fid.rawValue) return
-                state.onPollDeleted(event.pollId)
-            }
+            // The fid in poll events doesn't necessarily match all the feeds that contain the poll
+            // so we can't early return here based on that.
+            is StateUpdateEvent.PollDeleted -> state.onPollDeleted(event.pollId)
 
-            is StateUpdateEvent.PollUpdated -> {
-                if (event.fid != fid.rawValue) return
-                state.onPollUpdated(event.poll)
-            }
+            is StateUpdateEvent.PollUpdated -> state.onPollUpdated(event.poll)
 
-            is StateUpdateEvent.PollVoteCasted -> {
-                if (event.fid != fid.rawValue) return
+            is StateUpdateEvent.PollVoteCasted -> state.onPollVoteUpserted(event.vote, event.pollId)
+
+            is StateUpdateEvent.PollVoteChanged ->
                 state.onPollVoteUpserted(event.vote, event.pollId)
-            }
 
-            is StateUpdateEvent.PollVoteChanged -> {
-                if (event.fid != fid.rawValue) return
-                state.onPollVoteUpserted(event.vote, event.pollId)
-            }
-
-            is StateUpdateEvent.PollVoteRemoved -> {
-                if (event.fid != fid.rawValue) return
-                state.onPollVoteRemoved(event.vote, event.pollId)
-            }
+            is StateUpdateEvent.PollVoteRemoved -> state.onPollVoteRemoved(event.vote, event.pollId)
 
             else -> {}
         }
