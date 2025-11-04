@@ -1,10 +1,8 @@
-import io.getstream.feeds.android.Configuration
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.stream.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.maven.publish)
 }
 
 android {
@@ -49,12 +47,4 @@ dependencies {
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin)
     implementation(libs.retrofit)
-}
-
-mavenPublishing {
-    coordinates(
-        groupId = Configuration.artifactGroup,
-        artifactId = "stream-feeds-android-network",
-        version = rootProject.version.toString(),
-    )
 }
