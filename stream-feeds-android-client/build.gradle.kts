@@ -1,4 +1,3 @@
-import io.getstream.feeds.android.Configuration
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -8,7 +7,6 @@ plugins {
     alias(libs.plugins.arturbosch.detekt)
     alias(libs.plugins.sonarqube)
     alias(libs.plugins.kover)
-    alias(libs.plugins.maven.publish)
 }
 
 android {
@@ -25,7 +23,7 @@ android {
         lint.targetSdk = libs.versions.targetSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "PRODUCT_NAME", "\"stream-feeds-android\"")
-        buildConfigField("String", "PRODUCT_VERSION", "\"${Configuration.versionName}\"")
+        buildConfigField("String", "PRODUCT_VERSION", "\"$version\"")
     }
 
     buildTypes {
@@ -85,12 +83,4 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.turbine)
-}
-
-mavenPublishing {
-    coordinates(
-        groupId = Configuration.artifactGroup,
-        artifactId = "stream-feeds-android-client",
-        version = rootProject.version.toString()
-    )
 }
