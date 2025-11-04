@@ -1,19 +1,11 @@
 import io.getstream.feeds.android.Configuration
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.stream.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.maven.publish)
 }
-
-rootProject.extra.apply {
-    set("PUBLISH_GROUP_ID", Configuration.artifactGroup)
-    set("PUBLISH_ARTIFACT_ID", "stream-feeds-android-network")
-    set("PUBLISH_VERSION", rootProject.extra.get("rootVersionName"))
-}
-
-apply(from = "$rootDir/scripts/publish-module.gradle")
 
 android {
     namespace = "io.getstream.feeds.android.network"
@@ -39,10 +31,6 @@ android {
             consumerProguardFiles("consumer-rules.pro")
         }
     }
-
-    publishing {
-        singleVariant("release") { }
-    }
 }
 
 tasks.withType<KotlinCompile>().configureEach {
@@ -61,4 +49,12 @@ dependencies {
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin)
     implementation(libs.retrofit)
+}
+
+mavenPublishing {
+    coordinates(
+        groupId = Configuration.artifactGroup,
+        artifactId = "stream-feeds-android-network",
+        version = rootProject.version.toString()
+    )
 }
