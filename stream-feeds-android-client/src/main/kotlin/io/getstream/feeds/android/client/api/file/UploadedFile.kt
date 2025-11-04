@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.getstream.feeds.android.client.api.file
 
 public data class UploadedFile(val fileUrl: String, val thumbnailUrl: String?)
