@@ -16,7 +16,6 @@
 package io.getstream.feeds.android.client.internal.model
 
 import io.getstream.feeds.android.client.api.model.AppData
-import io.getstream.feeds.android.client.api.model.toModel
 import io.getstream.feeds.android.network.models.AppResponseFields
 
 /**
