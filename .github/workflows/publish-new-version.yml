@@ -29,6 +29,8 @@ jobs:
       file-path: ./buildSrc/src/main/kotlin/io/getstream/feeds/android/Configuration.kt
       excluded-modules: "stream-feeds-android-sample"
       use-official-plugin: false
+      # Disable explicit documentation tasks as they are already included while publishing
+      documentation-tasks: tasks
     secrets:
       OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
       OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
