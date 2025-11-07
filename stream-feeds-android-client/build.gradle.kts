@@ -91,6 +91,6 @@ mavenPublishing {
     coordinates(
         groupId = Configuration.artifactGroup,
         artifactId = "stream-feeds-android-client",
-        version = rootProject.version.toString()
+        version = rootProject.version.toString(),
     )
 }
