@@ -1,5 +1,4 @@
 import io.getstream.feeds.android.Configuration
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -9,15 +8,8 @@ plugins {
     alias(libs.plugins.arturbosch.detekt)
     alias(libs.plugins.sonarqube)
     alias(libs.plugins.kover)
+    alias(libs.plugins.maven.publish)
 }
-
-rootProject.extra.apply {
-    set("PUBLISH_GROUP_ID", Configuration.artifactGroup)
-    set("PUBLISH_ARTIFACT_ID", "stream-feeds-android-client")
-    set("PUBLISH_VERSION", rootProject.extra.get("rootVersionName"))
-}
-
-apply(from = "$rootDir/scripts/publish-module.gradle")
 
 android {
     namespace = "io.getstream.feeds.android.client"
@@ -48,10 +40,6 @@ android {
         debug {
             consumerProguardFiles("consumer-rules.pro")
         }
-    }
-
-    publishing {
-        singleVariant("release") { }
     }
 }
 
@@ -97,4 +85,12 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.turbine)
+}
+
+mavenPublishing {
+    coordinates(
+        groupId = Configuration.artifactGroup,
+        artifactId = "stream-feeds-android-client",
+        version = rootProject.version.toString()
+    )
 }
