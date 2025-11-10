@@ -21,12 +21,8 @@ import org.junit.Test
 
 internal class ListUpsertTest {
 
-    data class TestUser(val id: String, val name: String, val age: Int)
-
-    // MARK: - Update Existing Element Tests
-
     @Test
-    fun testUpsert_updateExistingElement() {
+    fun `upsert updates existing element in place`() {
         val originalList =
             listOf(
                 TestUser("1", "Alice", 25),
@@ -35,118 +31,105 @@ internal class ListUpsertTest {
             )
 
         val updatedUser = TestUser("2", "Bob Updated", 31)
-        val result = originalList.upsert(updatedUser) { it.id }
+        val result = originalList.upsert(updatedUser, TestUser::id)
 
-        assertEquals(3, result.size)
-        assertEquals("Alice", result[0].name)
-        assertEquals("Bob Updated", result[1].name)
-        assertEquals(31, result[1].age)
-        assertEquals("Charlie", result[2].name)
+        val expected =
+            listOf(
+                TestUser("1", "Alice", 25),
+                TestUser("2", "Bob Updated", 31),
+                TestUser("3", "Charlie", 35),
+            )
+        assertEquals(expected, result)
     }
 
-    // MARK: - Insert New Element Tests
-
     @Test
-    fun testUpsert_insertNewElement_intoEmptyList() {
+    fun `upsert inserts new element into empty list`() {
         val originalList = emptyList<TestUser>()
         val newUser = TestUser("1", "Alice", 25)
-        val result = originalList.upsert(newUser) { it.id }
+        val result = originalList.upsert(newUser, TestUser::id)
 
-        assertEquals(1, result.size)
-        assertEquals("Alice", result[0].name)
-        assertEquals("1", result[0].id)
+        val expected = listOf(TestUser("1", "Alice", 25))
+        assertEquals(expected, result)
     }
 
     @Test
-    fun testUpsert_insertNewElement_intoNonEmptyList() {
+    fun `upsert appends new element to non-empty list`() {
         val originalList = listOf(TestUser("1", "Alice", 25), TestUser("2", "Bob", 30))
 
         val newUser = TestUser("3", "Charlie", 35)
-        val result = originalList.upsert(newUser) { it.id }
+        val result = originalList.upsert(newUser, TestUser::id)
 
-        assertEquals(3, result.size)
-        assertEquals("Alice", result[0].name)
-        assertEquals("Bob", result[1].name)
-        assertEquals("Charlie", result[2].name)
+        val expected =
+            listOf(
+                TestUser("1", "Alice", 25),
+                TestUser("2", "Bob", 30),
+                TestUser("3", "Charlie", 35),
+            )
+        assertEquals(expected, result)
     }
 
-    // MARK: - Immutability Tests
-
     @Test
-    fun testUpsert_originalListUnchanged_onUpdate() {
+    fun `upsert leaves original list unchanged on update`() {
         val originalList = listOf(TestUser("1", "Alice", 25), TestUser("2", "Bob", 30))
 
         val updatedUser = TestUser("1", "Alice Updated", 26)
-        val result = originalList.upsert(updatedUser) { it.id }
+        val result = originalList.upsert(updatedUser, TestUser::id)
 
-        // Original list should be unchanged
-        assertEquals(2, originalList.size)
-        assertEquals("Alice", originalList[0].name)
-        assertEquals(25, originalList[0].age)
-
-        // Result should be different
         assertNotSame(originalList, result)
-        assertEquals("Alice Updated", result[0].name)
-        assertEquals(26, result[0].age)
+        val expectedOriginal = listOf(TestUser("1", "Alice", 25), TestUser("2", "Bob", 30))
+        assertEquals(expectedOriginal, originalList)
+
+        val expectedResult = listOf(TestUser("1", "Alice Updated", 26), TestUser("2", "Bob", 30))
+        assertEquals(expectedResult, result)
     }
 
     @Test
-    fun testUpsert_originalListUnchanged_onInsert() {
+    fun `upsert leaves original list unchanged on insert`() {
         val originalList = listOf(TestUser("1", "Alice", 25))
         val newUser = TestUser("2", "Bob", 30)
-        val result = originalList.upsert(newUser) { it.id }
+        val result = originalList.upsert(newUser, TestUser::id)
 
-        // Original list should be unchanged
-        assertEquals(1, originalList.size)
-        assertEquals("Alice", originalList[0].name)
-
-        // Result should be different
         assertNotSame(originalList, result)
-        assertEquals(2, result.size)
-        assertEquals("Bob", result[1].name)
+        val expectedOriginal = listOf(TestUser("1", "Alice", 25))
+        assertEquals(expectedOriginal, originalList)
+
+        val expectedResult = listOf(TestUser("1", "Alice", 25), TestUser("2", "Bob", 30))
+        assertEquals(expectedResult, result)
     }
 
-    // MARK: - Edge Cases
-
     @Test
-    fun testUpsert_singleElementList_update() {
+    fun `upsert updates single element in single-element list`() {
         val originalList = listOf(TestUser("1", "Alice", 25))
         val updatedUser = TestUser("1", "Alice Updated", 26)
-        val result = originalList.upsert(updatedUser) { it.id }
+        val result = originalList.upsert(updatedUser, TestUser::id)
 
-        assertEquals(1, result.size)
-        assertEquals("Alice Updated", result[0].name)
-        assertEquals(26, result[0].age)
+        val expected = listOf(TestUser("1", "Alice Updated", 26))
+        assertEquals(expected, result)
     }
 
     @Test
-    fun testUpsert_singleElementList_insert() {
+    fun `upsert appends to single-element list`() {
         val originalList = listOf(TestUser("1", "Alice", 25))
         val newUser = TestUser("2", "Bob", 30)
-        val result = originalList.upsert(newUser) { it.id }
+        val result = originalList.upsert(newUser, TestUser::id)
 
-        assertEquals(2, result.size)
-        assertEquals("Alice", result[0].name)
-        assertEquals("Bob", result[1].name)
+        val expected = listOf(TestUser("1", "Alice", 25), TestUser("2", "Bob", 30))
+        assertEquals(expected, result)
     }
 
     @Test
-    fun testUpsert_duplicateConsecutiveOperations() {
+    fun `upsert handles consecutive operations`() {
         val originalList = listOf(TestUser("1", "Alice", 25))
 
-        // Update the same element twice
-        var result = originalList.upsert(TestUser("1", "Alice Updated", 26)) { it.id }
-        result = result.upsert(TestUser("1", "Alice Final", 27)) { it.id }
+        var result = originalList.upsert(TestUser("1", "Alice Updated", 26), TestUser::id)
+        result = result.upsert(TestUser("1", "Alice Final", 27), TestUser::id)
 
-        assertEquals(1, result.size)
-        assertEquals("Alice Final", result[0].name)
-        assertEquals(27, result[0].age)
+        val expected = listOf(TestUser("1", "Alice Final", 27))
+        assertEquals(expected, result)
     }
 
-    // MARK: - Order Preservation Tests
-
     @Test
-    fun testUpsert_preservesOriginalOrder_onUpdate() {
+    fun `upsert preserves original order when updating`() {
         val originalList =
             listOf(
                 TestUser("1", "Alice", 25),
@@ -156,25 +139,55 @@ internal class ListUpsertTest {
             )
 
         val updatedUser = TestUser("2", "Bob Updated", 31)
-        val result = originalList.upsert(updatedUser) { it.id }
+        val result = originalList.upsert(updatedUser, TestUser::id)
 
-        assertEquals(4, result.size)
-        assertEquals("Alice", result[0].name)
-        assertEquals("Bob Updated", result[1].name)
-        assertEquals("Charlie", result[2].name)
-        assertEquals("David", result[3].name)
+        val expected =
+            listOf(
+                TestUser("1", "Alice", 25),
+                TestUser("2", "Bob Updated", 31),
+                TestUser("3", "Charlie", 35),
+                TestUser("4", "David", 40),
+            )
+        assertEquals(expected, result)
     }
 
     @Test
-    fun testUpsert_appendsToEnd_onInsert() {
+    fun `upsert appends new element to end of list`() {
         val originalList = listOf(TestUser("1", "Alice", 25), TestUser("2", "Bob", 30))
 
         val newUser = TestUser("3", "Charlie", 35)
-        val result = originalList.upsert(newUser) { it.id }
+        val result = originalList.upsert(newUser, TestUser::id)
 
-        assertEquals(3, result.size)
-        assertEquals("Alice", result[0].name)
-        assertEquals("Bob", result[1].name)
-        assertEquals("Charlie", result[2].name) // Added at the end
+        val expected =
+            listOf(
+                TestUser("1", "Alice", 25),
+                TestUser("2", "Bob", 30),
+                TestUser("3", "Charlie", 35),
+            )
+        assertEquals(expected, result)
     }
+
+    @Test
+    fun `upsertAll updates matching elements in place and appends new ones`() {
+        val originalList =
+            listOf(
+                TestUser("1", "Alice", 25),
+                TestUser("2", "Bob", 30),
+                TestUser("3", "Charlie", 35),
+            )
+
+        val updates = listOf(TestUser("2", "Bob Updated", 31), TestUser("4", "David", 40))
+        val result = originalList.upsertAll(updates, TestUser::id)
+
+        val expected =
+            listOf(
+                TestUser("1", "Alice", 25),
+                TestUser("2", "Bob Updated", 31),
+                TestUser("3", "Charlie", 35),
+                TestUser("4", "David", 40),
+            )
+        assertEquals(expected, result)
+    }
+
+    data class TestUser(val id: String, val name: String, val age: Int)
 }
