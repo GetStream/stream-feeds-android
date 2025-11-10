@@ -89,21 +89,42 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on queryMoreActivities, then merge activities`() = runTest {
-        val initialActivities = listOf(activityData())
-        setupInitialState(initialActivities)
+    fun `on queryMoreActivities, merge with new activities and aggregated activities`() = runTest {
+        val initialActivities = listOf(activityData("activity-1"))
+        val initialAggregated =
+            listOf(
+                aggregatedActivityData(
+                    group = "group-1",
+                    activities = listOf(activityData("activity-1")),
+                    activityCount = 1,
+                )
+            )
+        setupInitialState(activities = initialActivities, aggregatedActivities = initialAggregated)
 
         val newActivities = listOf(activityData("activity-2"), activityData("activity-3"))
-        val newPaginationResult =
-            PaginationResult(
-                models = newActivities,
-                pagination = PaginationData(next = "next-cursor-2", previous = null),
+        val newAggregated =
+            listOf(
+                aggregatedActivityData(
+                    group = "group-2",
+                    activities = listOf(activityData("activity-2")),
+                ),
+                aggregatedActivityData(
+                    group = "group-3",
+                    activities = listOf(activityData("activity-3")),
+                ),
             )
+        val newPagination = PaginationData(next = "next-cursor-2", previous = null)
 
-        feedState.onQueryMoreActivities(newPaginationResult, createQueryConfig())
+        feedState.onQueryMoreActivities(
+            activities = newActivities,
+            aggregatedActivities = newAggregated,
+            pagination = newPagination,
+            queryConfig = createQueryConfig(),
+        )
 
-        assertEquals(3, feedState.activities.value.size)
-        assertEquals("next-cursor-2", feedState.activitiesPagination?.next)
+        assertEquals(newPagination, feedState.activitiesPagination)
+        assertEquals(initialActivities + newActivities, feedState.activities.value)
+        assertEquals((initialAggregated + newAggregated), feedState.aggregatedActivities.value)
     }
 
     @Test
@@ -672,22 +693,19 @@ internal class FeedStateImplTest {
         pinnedActivities: List<ActivityPinData> = emptyList(),
         aggregatedActivities: List<AggregatedActivityData> = emptyList(),
     ): GetOrCreateInfo {
-        val paginationResult =
-            PaginationResult(
-                models = activities,
-                pagination = PaginationData(next = "next-cursor", previous = null),
-            )
+        val pagination = PaginationData(next = "next-cursor", previous = null)
         val queryConfig = createQueryConfig()
 
         return GetOrCreateInfo(
-            activities = paginationResult,
+            pagination = pagination,
+            activities = activities,
             activitiesQueryConfig = queryConfig,
+            aggregatedActivities = aggregatedActivities,
             feed = feed,
             followers = followers,
             following = following,
             followRequests = followRequests,
             pinnedActivities = pinnedActivities,
-            aggregatedActivities = aggregatedActivities,
             notificationStatus = null,
             members =
                 PaginationResult(
