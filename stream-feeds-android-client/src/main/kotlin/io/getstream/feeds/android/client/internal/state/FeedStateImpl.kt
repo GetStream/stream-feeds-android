@@ -343,12 +343,28 @@ internal class FeedStateImpl(
             _followers.update { it.upsert(follow, FollowData::id) }
             _followRequests.update { current -> current.filter { it.id != follow.id } }
         }
+
+        updateFeedOnFollowChanged(follow)
     }
 
     private fun removeFollow(follow: FollowData) {
         _following.update { current -> current.filter { it.id != follow.id } }
         _followers.update { current -> current.filter { it.id != follow.id } }
         _followRequests.update { current -> current.filter { it.id != follow.id } }
+
+        updateFeedOnFollowChanged(follow)
+    }
+
+    private fun updateFeedOnFollowChanged(follow: FollowData) {
+        val updated =
+            when (fid) {
+                follow.targetFeed.fid -> follow.targetFeed
+                follow.sourceFeed.fid -> follow.sourceFeed
+                else -> null
+            }
+        if (updated != null) {
+            _feed.update { current -> current?.update(updated) ?: updated }
+        }
     }
 
     private fun updateFollow(follow: FollowData) {

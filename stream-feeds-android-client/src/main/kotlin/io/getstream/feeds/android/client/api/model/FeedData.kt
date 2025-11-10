@@ -15,9 +15,7 @@
  */
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.network.models.FeedOwnCapability
-import io.getstream.feeds.android.network.models.FeedResponse
 import java.util.Date
 
 /**
@@ -60,26 +58,3 @@ public data class FeedData(
     public val updatedAt: Date,
     public val visibility: String?,
 )
-
-/** Converts a [FeedResponse] to a [FeedData] model. */
-public fun FeedResponse.toModel(): FeedData =
-    FeedData(
-        createdAt = createdAt,
-        createdBy = createdBy.toModel(),
-        custom = custom,
-        deletedAt = deletedAt,
-        description = description,
-        fid = FeedId(feed),
-        filterTags = filterTags,
-        followerCount = followerCount,
-        followingCount = followingCount,
-        groupId = groupId,
-        id = id,
-        memberCount = memberCount,
-        ownCapabilities = ownCapabilities.orEmpty(),
-        ownMembership = ownMembership?.toModel(),
-        name = name,
-        pinCount = pinCount,
-        updatedAt = updatedAt,
-        visibility = visibility,
-    )

@@ -376,54 +376,29 @@ internal class FeedEventHandlerTest(
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
-                    name = "PollDeleted matching feed",
-                    event = PollDeleted(fid.rawValue, pollId),
+                    name = "PollDeleted handled regardless of feed ID",
+                    event = PollDeleted("any:feed", pollId),
                     verifyBlock = { state -> state.onPollDeleted(pollId) },
                 ),
                 testParams<FeedStateUpdates>(
-                    name = "PollDeleted non-matching feed",
-                    event = PollDeleted("group:different", pollId),
-                    verifyBlock = { state -> state wasNot called },
-                ),
-                testParams<FeedStateUpdates>(
-                    name = "PollUpdated matching feed",
-                    event = PollUpdated(fid.rawValue, poll),
+                    name = "PollUpdated handled regardless of feed ID",
+                    event = PollUpdated("any:feed", poll),
                     verifyBlock = { state -> state.onPollUpdated(poll) },
                 ),
                 testParams<FeedStateUpdates>(
-                    name = "PollUpdated non-matching feed",
-                    event = PollUpdated("group:different", poll),
-                    verifyBlock = { state -> state wasNot called },
-                ),
-                testParams<FeedStateUpdates>(
-                    name = "PollVoteCasted matching feed",
-                    event = PollVoteCasted(fid.rawValue, pollId, pollVote),
+                    name = "PollVoteCasted handled regardless of feed ID",
+                    event = PollVoteCasted("any:feed", pollId, pollVote),
                     verifyBlock = { state -> state.onPollVoteUpserted(pollVote, pollId) },
                 ),
                 testParams<FeedStateUpdates>(
-                    name = "PollVoteCasted non-matching feed",
-                    event = PollVoteCasted("group:different", pollId, pollVote),
-                    verifyBlock = { state -> state wasNot called },
-                ),
-                testParams<FeedStateUpdates>(
-                    name = "PollVoteChanged matching feed",
-                    event = PollVoteChanged(fid.rawValue, pollId, pollVote),
+                    name = "PollVoteChanged handled regardless of feed ID",
+                    event = PollVoteChanged("any:feed", pollId, pollVote),
                     verifyBlock = { state -> state.onPollVoteUpserted(pollVote, pollId) },
                 ),
                 testParams<FeedStateUpdates>(
-                    name = "PollVoteChanged non-matching feed",
-                    event = PollVoteChanged("group:different", pollId, pollVote),
-                    verifyBlock = { state -> state wasNot called },
-                ),
-                testParams<FeedStateUpdates>(
-                    name = "PollVoteRemoved matching feed",
-                    event = PollVoteRemoved(fid.rawValue, pollId, pollVote),
+                    name = "PollVoteRemoved handled regardless of feed ID",
+                    event = PollVoteRemoved("any:feed", pollId, pollVote),
                     verifyBlock = { state -> state.onPollVoteRemoved(pollVote, pollId) },
-                ),
-                testParams<FeedStateUpdates>(
-                    name = "PollVoteRemoved non-matching feed",
-                    event = PollVoteRemoved("group:different", pollId, pollVote),
-                    verifyBlock = { state -> state wasNot called },
                 ),
             )
     }

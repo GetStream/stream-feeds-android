@@ -365,7 +365,11 @@ internal class FeedImpl(
     ): Result<ModelUpdates<FeedMemberData>> {
         return feedsRepository
             .updateFeedMembers(feedGroupId = group, feedId = id, request = request)
-            .onSuccess { updates -> memberList.mutableState.onMembersUpdated(updates) }
+            .onSuccess { updates ->
+                subscriptionManager.onEvent(
+                    StateUpdateEvent.FeedMemberBatchUpdate(fid.rawValue, updates)
+                )
+            }
     }
 
     override suspend fun acceptFeedMember(): Result<FeedMemberData> {
