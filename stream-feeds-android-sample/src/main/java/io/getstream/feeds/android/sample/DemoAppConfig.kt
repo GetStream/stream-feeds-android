@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.getstream.feeds.android.sample
 
 data class DemoAppConfig(val apiKey: String, val token: (String) -> String) {
