@@ -52,32 +52,32 @@ internal class PollListEventHandlerTest(
             listOf(
                 testParams<PollListStateUpdates>(
                     name = "PollDeleted",
-                    event = PollDeleted("feed-1", "poll-1"),
+                    event = PollDeleted("poll-1"),
                     verifyBlock = { state -> state.onPollDeleted("poll-1") },
                 ),
                 testParams<PollListStateUpdates>(
                     name = "PollUpdated matching filter",
-                    event = PollUpdated("feed-1", matchingPoll),
+                    event = PollUpdated(matchingPoll),
                     verifyBlock = { state -> state.onPollUpdated(matchingPoll) },
                 ),
                 testParams<PollListStateUpdates>(
                     name = "PollUpdated non-matching filter",
-                    event = PollUpdated("feed-1", nonMatchingPoll),
+                    event = PollUpdated(nonMatchingPoll),
                     verifyBlock = { state -> state.onPollDeleted(nonMatchingPoll.id) },
                 ),
                 testParams<PollListStateUpdates>(
                     name = "PollVoteCasted",
-                    event = PollVoteCasted("feed-1", "poll-1", pollVote),
+                    event = PollVoteCasted("poll-1", pollVote),
                     verifyBlock = { state -> state.onPollVoteUpserted("poll-1", pollVote) },
                 ),
                 testParams<PollListStateUpdates>(
                     name = "PollVoteChanged",
-                    event = PollVoteChanged("feed-1", "poll-1", pollVote),
+                    event = PollVoteChanged("poll-1", pollVote),
                     verifyBlock = { state -> state.onPollVoteUpserted("poll-1", pollVote) },
                 ),
                 testParams<PollListStateUpdates>(
                     name = "PollVoteRemoved",
-                    event = PollVoteRemoved("feed-1", "poll-1", pollVote),
+                    event = PollVoteRemoved("poll-1", pollVote),
                     verifyBlock = { state -> state.onPollVoteRemoved("poll-1", pollVote) },
                 ),
             )

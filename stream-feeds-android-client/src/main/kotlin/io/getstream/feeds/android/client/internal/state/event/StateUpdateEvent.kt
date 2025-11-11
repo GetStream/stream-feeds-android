@@ -171,18 +171,15 @@ internal sealed interface StateUpdateEvent {
         val aggregatedActivities: List<AggregatedActivityData>,
     ) : StateUpdateEvent
 
-    data class PollDeleted(val fid: String, val pollId: String) : StateUpdateEvent
+    data class PollDeleted(val pollId: String) : StateUpdateEvent
 
-    data class PollUpdated(val fid: String, val poll: PollData) : StateUpdateEvent
+    data class PollUpdated(val poll: PollData) : StateUpdateEvent
 
-    data class PollVoteRemoved(val fid: String, val pollId: String, val vote: PollVoteData) :
-        StateUpdateEvent
+    data class PollVoteRemoved(val pollId: String, val vote: PollVoteData) : StateUpdateEvent
 
-    data class PollVoteCasted(val fid: String, val pollId: String, val vote: PollVoteData) :
-        StateUpdateEvent
+    data class PollVoteCasted(val pollId: String, val vote: PollVoteData) : StateUpdateEvent
 
-    data class PollVoteChanged(val fid: String, val pollId: String, val vote: PollVoteData) :
-        StateUpdateEvent
+    data class PollVoteChanged(val pollId: String, val vote: PollVoteData) : StateUpdateEvent
 }
 
 internal fun WSEvent.toModel(): StateUpdateEvent? =
@@ -301,20 +298,17 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
 
         is FeedMemberUpdatedEvent -> StateUpdateEvent.FeedMemberUpdated(fid, member.toModel())
 
-        is PollClosedFeedEvent -> StateUpdateEvent.PollUpdated(fid, poll.toModel())
+        is PollClosedFeedEvent -> StateUpdateEvent.PollUpdated(poll.toModel())
 
-        is PollDeletedFeedEvent -> StateUpdateEvent.PollDeleted(fid, poll.id)
+        is PollDeletedFeedEvent -> StateUpdateEvent.PollDeleted(poll.id)
 
-        is PollUpdatedFeedEvent -> StateUpdateEvent.PollUpdated(fid, poll.toModel())
+        is PollUpdatedFeedEvent -> StateUpdateEvent.PollUpdated(poll.toModel())
 
-        is PollVoteCastedFeedEvent ->
-            StateUpdateEvent.PollVoteCasted(fid, poll.id, pollVote.toModel())
+        is PollVoteCastedFeedEvent -> StateUpdateEvent.PollVoteCasted(poll.id, pollVote.toModel())
 
-        is PollVoteChangedFeedEvent ->
-            StateUpdateEvent.PollVoteChanged(fid, poll.id, pollVote.toModel())
+        is PollVoteChangedFeedEvent -> StateUpdateEvent.PollVoteChanged(poll.id, pollVote.toModel())
 
-        is PollVoteRemovedFeedEvent ->
-            StateUpdateEvent.PollVoteRemoved(fid, poll.id, pollVote.toModel())
+        is PollVoteRemovedFeedEvent -> StateUpdateEvent.PollVoteRemoved(poll.id, pollVote.toModel())
 
         else -> null
     }

@@ -292,7 +292,7 @@ internal class ActivityImplTest {
 
         assertEquals(updatedPoll, result.getOrNull())
         assertEquals(updatedPoll, activity.state.poll.value)
-        verify { stateEventListener.onEvent(PollUpdated(fid.rawValue, updatedPoll)) }
+        verify { stateEventListener.onEvent(PollUpdated(updatedPoll)) }
     }
 
     @Test
@@ -307,7 +307,7 @@ internal class ActivityImplTest {
 
         assertEquals(closedPoll, result.getOrNull())
         assertEquals(closedPoll, activity.state.poll.value)
-        verify { stateEventListener.onEvent(PollUpdated(fid.rawValue, closedPoll)) }
+        verify { stateEventListener.onEvent(PollUpdated(closedPoll)) }
     }
 
     @Test
@@ -323,9 +323,7 @@ internal class ActivityImplTest {
 
             assertEquals(Unit, result.getOrNull())
             assertEquals(null, activity.state.poll.value)
-            verify {
-                stateEventListener.onEvent(StateUpdateEvent.PollDeleted(fid.rawValue, "poll-1"))
-            }
+            verify { stateEventListener.onEvent(StateUpdateEvent.PollDeleted("poll-1")) }
         }
 
     @Test
@@ -351,7 +349,7 @@ internal class ActivityImplTest {
 
             assertEquals(option, result.getOrNull())
             assertEquals(expectedPoll, activity.state.poll.value)
-            verify { stateEventListener.onEvent(PollUpdated(fid.rawValue, expectedPoll)) }
+            verify { stateEventListener.onEvent(PollUpdated(expectedPoll)) }
         }
 
     @Test
@@ -372,11 +370,7 @@ internal class ActivityImplTest {
             assertEquals(1, actualPoll.voteCount)
             assertEquals(1, actualPoll.voteCountsByOption["option-1"])
             assertEquals(listOf(vote), actualPoll.latestVotesByOption["option-1"])
-            verify {
-                stateEventListener.onEvent(
-                    StateUpdateEvent.PollVoteCasted(fid.rawValue, "poll-1", vote)
-                )
-            }
+            verify { stateEventListener.onEvent(StateUpdateEvent.PollVoteCasted("poll-1", vote)) }
         }
 
     @Test
@@ -394,11 +388,7 @@ internal class ActivityImplTest {
 
             assertEquals(vote, result.getOrNull())
             assertNotNull("Poll should still exist", activity.state.poll.value)
-            verify {
-                stateEventListener.onEvent(
-                    StateUpdateEvent.PollVoteRemoved(fid.rawValue, "poll-1", vote)
-                )
-            }
+            verify { stateEventListener.onEvent(StateUpdateEvent.PollVoteRemoved("poll-1", vote)) }
         }
 
     @Test
@@ -416,7 +406,7 @@ internal class ActivityImplTest {
 
             assertEquals(updatedPoll, result.getOrNull())
             assertEquals(updatedPoll, activity.state.poll.value)
-            verify { stateEventListener.onEvent(PollUpdated(fid.rawValue, updatedPoll)) }
+            verify { stateEventListener.onEvent(PollUpdated(updatedPoll)) }
         }
 
     @Test
@@ -433,7 +423,7 @@ internal class ActivityImplTest {
 
             assertEquals(updatedPoll, result.getOrNull())
             assertEquals(updatedPoll, activity.state.poll.value)
-            verify { stateEventListener.onEvent(PollUpdated(fid.rawValue, updatedPoll)) }
+            verify { stateEventListener.onEvent(PollUpdated(updatedPoll)) }
         }
 
     @Test
@@ -455,7 +445,7 @@ internal class ActivityImplTest {
 
         assertEquals(Unit, result.getOrNull())
         assertEquals(expectedPoll, activity.state.poll.value)
-        verify { stateEventListener.onEvent(PollUpdated(fid.rawValue, expectedPoll)) }
+        verify { stateEventListener.onEvent(PollUpdated(expectedPoll)) }
     }
 
     @Test
@@ -474,7 +464,7 @@ internal class ActivityImplTest {
             val result = activity.getPollOption(optionId, userId)
 
             assertEquals(option, result.getOrNull())
-            verify { stateEventListener.onEvent(PollUpdated(fid.rawValue, expectedPoll)) }
+            verify { stateEventListener.onEvent(PollUpdated(expectedPoll)) }
         }
 
     @Test
@@ -494,7 +484,7 @@ internal class ActivityImplTest {
 
             assertEquals(updatedOption, result.getOrNull())
             assertEquals(expectedPoll, activity.state.poll.value)
-            verify { stateEventListener.onEvent(PollUpdated(fid.rawValue, expectedPoll)) }
+            verify { stateEventListener.onEvent(PollUpdated(expectedPoll)) }
         }
 
     @Test

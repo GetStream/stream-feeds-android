@@ -211,28 +211,28 @@ internal class ActivityEventHandlerTest(
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
-                    name = "PollDeleted handled regardless of feed ID",
-                    event = PollDeleted("any:feed", "poll-1"),
+                    name = "PollDeleted always handled",
+                    event = PollDeleted("poll-1"),
                     verifyBlock = { it.onPollDeleted("poll-1") },
                 ),
                 testParams<ActivityStateUpdates>(
-                    name = "PollUpdated handled regardless of feed ID",
-                    event = PollUpdated("any:feed", pollData()),
+                    name = "PollUpdated always handled",
+                    event = PollUpdated(pollData()),
                     verifyBlock = { it.onPollUpdated(pollData()) },
                 ),
                 testParams<ActivityStateUpdates>(
-                    name = "PollVoteCasted handled regardless of feed ID",
-                    event = PollVoteCasted("any:feed", "poll-1", pollVoteData()),
+                    name = "PollVoteCasted always handled",
+                    event = PollVoteCasted("poll-1", pollVoteData()),
                     verifyBlock = { it.onPollVoteUpserted(pollVoteData(), "poll-1") },
                 ),
                 testParams<ActivityStateUpdates>(
-                    name = "PollVoteChanged handled regardless of feed ID",
-                    event = PollVoteChanged("any:feed", "poll-1", pollVoteData()),
+                    name = "PollVoteChanged always handled",
+                    event = PollVoteChanged("poll-1", pollVoteData()),
                     verifyBlock = { it.onPollVoteUpserted(pollVoteData(), "poll-1") },
                 ),
                 testParams<ActivityStateUpdates>(
-                    name = "PollVoteRemoved handled regardless of feed ID",
-                    event = PollVoteRemoved("any:feed", "poll-1", pollVoteData()),
+                    name = "PollVoteRemoved always handled",
+                    event = PollVoteRemoved("poll-1", pollVoteData()),
                     verifyBlock = { it.onPollVoteRemoved(pollVoteData(), "poll-1") },
                 ),
                 testParams<ActivityStateUpdates>(

@@ -47,42 +47,42 @@ internal class PollVoteListEventHandlerTest(
             listOf(
                 testParams<PollVoteListStateUpdates>(
                     name = "PollDeleted matching poll",
-                    event = PollDeleted("feed-1", pollId),
+                    event = PollDeleted(pollId),
                     verifyBlock = { state -> state.onPollDeleted() },
                 ),
                 testParams<PollVoteListStateUpdates>(
                     name = "PollDeleted non-matching poll",
-                    event = PollDeleted("feed-1", otherPollId),
+                    event = PollDeleted(otherPollId),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<PollVoteListStateUpdates>(
                     name = "PollVoteCasted matching poll",
-                    event = PollVoteCasted("feed-1", pollId, pollVoteData()),
+                    event = PollVoteCasted(pollId, pollVoteData()),
                     verifyBlock = { state -> state.pollVoteUpserted(pollVoteData()) },
                 ),
                 testParams<PollVoteListStateUpdates>(
                     name = "PollVoteCasted non-matching poll",
-                    event = PollVoteCasted("feed-1", otherPollId, pollVoteData()),
+                    event = PollVoteCasted(otherPollId, pollVoteData()),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<PollVoteListStateUpdates>(
                     name = "PollVoteChanged matching poll",
-                    event = PollVoteChanged("feed-1", pollId, pollVoteData()),
+                    event = PollVoteChanged(pollId, pollVoteData()),
                     verifyBlock = { state -> state.pollVoteUpserted(pollVoteData()) },
                 ),
                 testParams<PollVoteListStateUpdates>(
                     name = "PollVoteChanged non-matching poll",
-                    event = PollVoteChanged("feed-1", otherPollId, pollVoteData()),
+                    event = PollVoteChanged(otherPollId, pollVoteData()),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<PollVoteListStateUpdates>(
                     name = "PollVoteRemoved matching poll",
-                    event = PollVoteRemoved("feed-1", pollId, pollVoteData("poll-vote-1")),
+                    event = PollVoteRemoved(pollId, pollVoteData("poll-vote-1")),
                     verifyBlock = { state -> state.pollVoteRemoved("poll-vote-1") },
                 ),
                 testParams<PollVoteListStateUpdates>(
                     name = "PollVoteRemoved non-matching poll",
-                    event = PollVoteRemoved("feed-1", otherPollId, pollVoteData("poll-vote-1")),
+                    event = PollVoteRemoved(otherPollId, pollVoteData("poll-vote-1")),
                     verifyBlock = { state -> state wasNot called },
                 ),
             )
