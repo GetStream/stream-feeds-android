@@ -70,8 +70,6 @@ internal class ActivityEventHandlerTest(
             bookmarkData(activityData(activityId, feeds = listOf(fid.rawValue)))
         private val nonMatchingActivityBookmark =
             bookmarkData(activityData(otherId, feeds = listOf(fid.rawValue)))
-        private val nonMatchingFeedBookmark =
-            bookmarkData(activityData(activityId, feeds = listOf(otherFid)))
         private val matchingComment = commentData(objectId = activityId)
         private val nonMatchingActivityComment = commentData(objectId = "other-activity")
         private val commentReaction = feedsReactionData()
@@ -183,14 +181,9 @@ internal class ActivityEventHandlerTest(
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
-                    name = "BookmarkDeleted matching feed and activity",
+                    name = "BookmarkDeleted matching activity",
                     event = BookmarkDeleted(matchingBookmark),
                     verifyBlock = { it.onBookmarkRemoved(matchingBookmark) },
-                ),
-                testParams<ActivityStateUpdates>(
-                    name = "BookmarkDeleted non-matching feed",
-                    event = BookmarkDeleted(nonMatchingFeedBookmark),
-                    verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "BookmarkDeleted non-matching activity",
@@ -198,14 +191,9 @@ internal class ActivityEventHandlerTest(
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
-                    name = "BookmarkAdded matching feed and activity",
+                    name = "BookmarkAdded matching activity",
                     event = BookmarkAdded(matchingBookmark),
                     verifyBlock = { it.onBookmarkUpserted(matchingBookmark) },
-                ),
-                testParams<ActivityStateUpdates>(
-                    name = "BookmarkAdded non-matching feed",
-                    event = BookmarkAdded(nonMatchingFeedBookmark),
-                    verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "BookmarkAdded non-matching activity",
@@ -213,14 +201,9 @@ internal class ActivityEventHandlerTest(
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
-                    name = "BookmarkUpdated matching feed and activity",
+                    name = "BookmarkUpdated matching activity",
                     event = BookmarkUpdated(matchingBookmark),
                     verifyBlock = { it.onBookmarkUpserted(matchingBookmark) },
-                ),
-                testParams<ActivityStateUpdates>(
-                    name = "BookmarkUpdated non-matching feed",
-                    event = BookmarkUpdated(nonMatchingFeedBookmark),
-                    verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "BookmarkUpdated non-matching activity",

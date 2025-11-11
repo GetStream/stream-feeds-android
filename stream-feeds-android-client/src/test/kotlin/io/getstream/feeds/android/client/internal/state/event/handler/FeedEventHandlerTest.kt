@@ -87,8 +87,6 @@ internal class FeedEventHandlerTest(
         private val reaction = feedsReactionData(activityId)
         private val matchingBookmark =
             bookmarkData(activityData(feeds = listOf(fid.rawValue, "other:feed")))
-        private val nonMatchingBookmark =
-            bookmarkData(activityData(feeds = listOf("other:feed", "another:feed")))
         private val comment = commentData()
         private val commentReaction = feedsReactionData()
         private val matchingFeed = feedData(id = fid.id, groupId = fid.group)
@@ -225,34 +223,19 @@ internal class FeedEventHandlerTest(
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
-                    name = "BookmarkAdded matching feeds",
+                    name = "BookmarkAdded always handled",
                     event = BookmarkAdded(matchingBookmark),
                     verifyBlock = { state -> state.onBookmarkUpserted(matchingBookmark) },
                 ),
                 testParams<FeedStateUpdates>(
-                    name = "BookmarkAdded non-matching feeds",
-                    event = BookmarkAdded(nonMatchingBookmark),
-                    verifyBlock = { state -> state wasNot called },
-                ),
-                testParams<FeedStateUpdates>(
-                    name = "BookmarkDeleted matching activity feeds",
+                    name = "BookmarkDeleted always handled",
                     event = BookmarkDeleted(matchingBookmark),
                     verifyBlock = { state -> state.onBookmarkRemoved(matchingBookmark) },
                 ),
                 testParams<FeedStateUpdates>(
-                    name = "BookmarkDeleted non-matching activity feeds",
-                    event = BookmarkDeleted(nonMatchingBookmark),
-                    verifyBlock = { state -> state wasNot called },
-                ),
-                testParams<FeedStateUpdates>(
-                    name = "BookmarkUpserted matching feeds",
+                    name = "BookmarkUpdated always handled",
                     event = BookmarkUpdated(matchingBookmark),
                     verifyBlock = { state -> state.onBookmarkUpserted(matchingBookmark) },
-                ),
-                testParams<FeedStateUpdates>(
-                    name = "BookmarkUpserted non-matching feeds",
-                    event = BookmarkUpdated(nonMatchingBookmark),
-                    verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "CommentAdded matching feed",
