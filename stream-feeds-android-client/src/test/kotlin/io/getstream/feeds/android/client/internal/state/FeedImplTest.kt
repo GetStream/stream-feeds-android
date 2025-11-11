@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
@@ -782,16 +783,17 @@ internal class FeedImplTest {
         val paginationData = PaginationData(next = "cursor")
 
         return GetOrCreateInfo(
-            activities = PaginationResult(models = activities, pagination = paginationData),
+            pagination = paginationData,
+            activities = activities,
             activitiesQueryConfig =
                 QueryConfiguration(filter = null, sort = ActivitiesSort.Default),
+            aggregatedActivities = emptyList(),
             feed = testFeedData,
             followers = followers,
             following = following,
             followRequests = followRequests,
             members = PaginationResult(models = members, pagination = paginationData),
             pinnedActivities = emptyList(),
-            aggregatedActivities = emptyList(),
             notificationStatus = null,
         )
     }

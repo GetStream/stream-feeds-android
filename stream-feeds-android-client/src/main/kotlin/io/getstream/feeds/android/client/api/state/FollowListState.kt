@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.getstream.feeds.android.client.api.state
 
 import io.getstream.feeds.android.client.api.model.FollowData

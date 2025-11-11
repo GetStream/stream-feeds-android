@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.getstream.feeds.android.client.internal.utils
 
 import io.getstream.android.core.api.sort.CompositeComparator
@@ -215,6 +216,37 @@ internal fun <T, ID> List<T>.upsertSorted(
     sort: List<Sort<T>>,
     update: (old: T) -> T = { element },
 ): List<T> = upsertSorted(element, idSelector, CompositeComparator(sort), update)
+
+/**
+ * Upserts all elements from another list into this list based on a specified key.
+ *
+ * This function updates existing elements in the list that have the same key (as determined by
+ * [idSelector]) as elements in [that] list. If an element from [that] does not exist in this list,
+ * it is appended.
+ *
+ * @param that The list of elements to upsert into this list.
+ * @param idSelector A function that extracts a key from an element. This is used to determine
+ *   whether an element already exists in the list.
+ * @return A new list containing the upserted elements. Existing elements are updated, and new
+ *   elements are appended.
+ */
+internal fun <T, R> List<T>.upsertAll(that: List<T>, idSelector: (T) -> R): List<T> {
+    // Using LinkedHashMap instead of e.g. HashMap to preserve order
+    val toUpsert = that.associateByTo(LinkedHashMap(), idSelector)
+    val result = ArrayList<T>(this.size + that.size)
+
+    // Update what should be updated
+    forEach { item ->
+        val key = idSelector(item)
+        result.add(toUpsert[key] ?: item)
+        toUpsert.remove(key)
+    }
+
+    // Insert the rest
+    result.addAll(toUpsert.values)
+
+    return result
+}
 
 /**
  * Merges two sorted arrays while maintaining the sort order and handling duplicates.
