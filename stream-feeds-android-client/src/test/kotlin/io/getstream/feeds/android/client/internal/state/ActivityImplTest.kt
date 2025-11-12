@@ -92,7 +92,7 @@ internal class ActivityImplTest {
 
         activity.addComment(request, progress)
 
-        verify { stateEventListener.onEvent(CommentAdded(FidScope.all, commentData)) }
+        verify { stateEventListener.onEvent(CommentAdded(FidScope.unknown, commentData)) }
     }
 
     @Test
@@ -109,7 +109,7 @@ internal class ActivityImplTest {
         activity.addCommentsBatch(requests)
 
         commentData.forEach { data ->
-            verify { stateEventListener.onEvent(CommentAdded(FidScope.all, data)) }
+            verify { stateEventListener.onEvent(CommentAdded(FidScope.unknown, data)) }
         }
     }
 
@@ -126,7 +126,7 @@ internal class ActivityImplTest {
 
         assertEquals(activityData, result.getOrNull())
         assertEquals(activityData, activity.state.activity.value)
-        verify { stateEventListener.onEvent(ActivityUpdated(FidScope.all, activityData)) }
+        verify { stateEventListener.onEvent(ActivityUpdated(FidScope.unknown, activityData)) }
     }
 
     @Test
@@ -163,7 +163,7 @@ internal class ActivityImplTest {
         val result = activity.getComment(commentId)
 
         assertEquals(comment, result.getOrNull())
-        verify { stateEventListener.onEvent(CommentUpdated(FidScope.all, comment)) }
+        verify { stateEventListener.onEvent(CommentUpdated(FidScope.unknown, comment)) }
     }
 
     @Test
@@ -180,8 +180,8 @@ internal class ActivityImplTest {
         assertEquals(Unit, result.getOrNull())
         assertEquals(expectedActivity, activity.state.activity.value)
         verify {
-            stateEventListener.onEvent(CommentDeleted(FidScope.all, deleteData.first))
-            stateEventListener.onEvent(ActivityUpdated(FidScope.all, expectedActivity))
+            stateEventListener.onEvent(CommentDeleted(FidScope.unknown, deleteData.first))
+            stateEventListener.onEvent(ActivityUpdated(FidScope.unknown, expectedActivity))
         }
     }
 
@@ -196,7 +196,7 @@ internal class ActivityImplTest {
         val result = activity.updateComment(commentId, request)
 
         assertEquals(updatedComment, result.getOrNull())
-        verify { stateEventListener.onEvent(CommentUpdated(FidScope.all, updatedComment)) }
+        verify { stateEventListener.onEvent(CommentUpdated(FidScope.unknown, updatedComment)) }
     }
 
     @Test
@@ -214,7 +214,7 @@ internal class ActivityImplTest {
         verify {
             stateEventListener.onEvent(
                 StateUpdateEvent.CommentReactionUpserted(
-                    FidScope.all,
+                    FidScope.unknown,
                     commentData,
                     reactionData,
                     false,
@@ -237,7 +237,7 @@ internal class ActivityImplTest {
         assertEquals(reactionData, result.getOrNull())
         verify {
             stateEventListener.onEvent(
-                CommentReactionDeleted(FidScope.all, commentData, reactionData)
+                CommentReactionDeleted(FidScope.unknown, commentData, reactionData)
             )
         }
     }
@@ -251,7 +251,7 @@ internal class ActivityImplTest {
 
         assertEquals(Unit, result.getOrNull())
         assertEquals(activityData, activity.state.activity.value)
-        verify { stateEventListener.onEvent(ActivityUpdated(FidScope.all, activityData)) }
+        verify { stateEventListener.onEvent(ActivityUpdated(FidScope.unknown, activityData)) }
     }
 
     @Test
@@ -264,7 +264,7 @@ internal class ActivityImplTest {
 
         assertEquals(Unit, result.getOrNull())
         assertEquals(activityData, activity.state.activity.value)
-        verify { stateEventListener.onEvent(ActivityUpdated(FidScope.all, activityData)) }
+        verify { stateEventListener.onEvent(ActivityUpdated(FidScope.unknown, activityData)) }
     }
 
     @Test

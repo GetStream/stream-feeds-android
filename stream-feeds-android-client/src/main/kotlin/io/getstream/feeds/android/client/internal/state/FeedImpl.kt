@@ -171,7 +171,7 @@ internal class FeedImpl(
         attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?,
     ): Result<ActivityData> {
         return activitiesRepository.addActivity(request, attachmentUploadProgress).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.ActivityAdded(FidScope.all, it))
+            subscriptionManager.onEvent(StateUpdateEvent.ActivityAdded(FidScope.unknown, it))
         }
     }
 
@@ -180,13 +180,13 @@ internal class FeedImpl(
         request: UpdateActivityRequest,
     ): Result<ActivityData> {
         return activitiesRepository.updateActivity(id, request).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.all, it))
+            subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.unknown, it))
         }
     }
 
     override suspend fun deleteActivity(id: String, hardDelete: Boolean): Result<Unit> {
         return activitiesRepository.deleteActivity(id, hardDelete).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.ActivityDeleted(FidScope.all, id))
+            subscriptionManager.onEvent(StateUpdateEvent.ActivityDeleted(FidScope.unknown, id))
         }
     }
 
@@ -207,7 +207,7 @@ internal class FeedImpl(
                 parentId = activityId,
             )
         return activitiesRepository.addActivity(FeedAddActivityRequest(request)).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.ActivityAdded(FidScope.all, it))
+            subscriptionManager.onEvent(StateUpdateEvent.ActivityAdded(FidScope.unknown, it))
         }
     }
 
@@ -275,7 +275,7 @@ internal class FeedImpl(
 
     override suspend fun getComment(commentId: String): Result<CommentData> {
         return commentsRepository.getComment(commentId).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(FidScope.all, it))
+            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(FidScope.unknown, it))
         }
     }
 
@@ -284,7 +284,7 @@ internal class FeedImpl(
         attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?,
     ): Result<CommentData> {
         return commentsRepository.addComment(request, attachmentUploadProgress).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.CommentAdded(FidScope.all, it))
+            subscriptionManager.onEvent(StateUpdateEvent.CommentAdded(FidScope.unknown, it))
         }
     }
 
@@ -293,7 +293,7 @@ internal class FeedImpl(
         request: UpdateCommentRequest,
     ): Result<CommentData> {
         return commentsRepository.updateComment(commentId, request).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(FidScope.all, it))
+            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(FidScope.unknown, it))
         }
     }
 
@@ -301,9 +301,11 @@ internal class FeedImpl(
         return commentsRepository
             .deleteComment(commentId, hardDelete)
             .onSuccess { (comment, activity) ->
-                subscriptionManager.onEvent(StateUpdateEvent.CommentDeleted(FidScope.all, comment))
                 subscriptionManager.onEvent(
-                    StateUpdateEvent.ActivityUpdated(FidScope.all, activity)
+                    StateUpdateEvent.CommentDeleted(FidScope.unknown, comment)
+                )
+                subscriptionManager.onEvent(
+                    StateUpdateEvent.ActivityUpdated(FidScope.unknown, activity)
                 )
             }
             .map {}
@@ -399,7 +401,7 @@ internal class FeedImpl(
             .onSuccess { (reaction, activity) ->
                 subscriptionManager.onEvent(
                     StateUpdateEvent.ActivityReactionUpserted(
-                        scope = FidScope.all,
+                        scope = FidScope.unknown,
                         activity = activity,
                         reaction = reaction,
                         enforceUnique = request.enforceUnique == true,
@@ -417,7 +419,7 @@ internal class FeedImpl(
             .deleteActivityReaction(activityId = activityId, type = type)
             .onSuccess { (reaction, activity) ->
                 subscriptionManager.onEvent(
-                    StateUpdateEvent.ActivityReactionDeleted(FidScope.all, activity, reaction)
+                    StateUpdateEvent.ActivityReactionDeleted(FidScope.unknown, activity, reaction)
                 )
             }
             .map { it.first }
@@ -432,7 +434,7 @@ internal class FeedImpl(
             .onSuccess { (reaction, comment) ->
                 subscriptionManager.onEvent(
                     StateUpdateEvent.CommentReactionUpserted(
-                        scope = FidScope.all,
+                        scope = FidScope.unknown,
                         comment = comment,
                         reaction = reaction,
                         enforceUnique = request.enforceUnique == true,
@@ -450,7 +452,7 @@ internal class FeedImpl(
             .deleteCommentReaction(commentId = commentId, type = type)
             .onSuccess { (reaction, comment) ->
                 subscriptionManager.onEvent(
-                    StateUpdateEvent.CommentReactionDeleted(FidScope.all, comment, reaction)
+                    StateUpdateEvent.CommentReactionDeleted(FidScope.unknown, comment, reaction)
                 )
             }
             .map { it.first }
@@ -468,7 +470,7 @@ internal class FeedImpl(
                     type = activityType,
                 )
             activitiesRepository.addActivity(FeedAddActivityRequest(request)).onSuccess {
-                subscriptionManager.onEvent(StateUpdateEvent.ActivityAdded(FidScope.all, it))
+                subscriptionManager.onEvent(StateUpdateEvent.ActivityAdded(FidScope.unknown, it))
             }
         }
     }

@@ -94,7 +94,7 @@ internal class ActivityImpl(
     override suspend fun get(): Result<ActivityData> {
         val activity =
             activitiesRepository.getActivity(activityId).onSuccess {
-                subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.all, it))
+                subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.unknown, it))
             }
         // Query the comments as well (state will be updated automatically)
         queryComments()
@@ -111,7 +111,7 @@ internal class ActivityImpl(
 
     override suspend fun getComment(commentId: String): Result<CommentData> {
         return commentsRepository.getComment(commentId).onSuccess { comment ->
-            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(FidScope.all, comment))
+            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(FidScope.unknown, comment))
         }
     }
 
@@ -122,7 +122,7 @@ internal class ActivityImpl(
         return commentsRepository
             .addComment(request = request, attachmentUploadProgress = attachmentUploadProgress)
             .onSuccess {
-                subscriptionManager.onEvent(StateUpdateEvent.CommentAdded(FidScope.all, it))
+                subscriptionManager.onEvent(StateUpdateEvent.CommentAdded(FidScope.unknown, it))
             }
     }
 
@@ -133,7 +133,7 @@ internal class ActivityImpl(
         return commentsRepository.addCommentsBatch(requests, attachmentUploadProgress).onSuccess {
             comments ->
             comments.forEach {
-                subscriptionManager.onEvent(StateUpdateEvent.CommentAdded(FidScope.all, it))
+                subscriptionManager.onEvent(StateUpdateEvent.CommentAdded(FidScope.unknown, it))
             }
         }
     }
@@ -142,9 +142,11 @@ internal class ActivityImpl(
         return commentsRepository
             .deleteComment(commentId, hardDelete)
             .onSuccess { (comment, activity) ->
-                subscriptionManager.onEvent(StateUpdateEvent.CommentDeleted(FidScope.all, comment))
                 subscriptionManager.onEvent(
-                    StateUpdateEvent.ActivityUpdated(FidScope.all, activity)
+                    StateUpdateEvent.CommentDeleted(FidScope.unknown, comment)
+                )
+                subscriptionManager.onEvent(
+                    StateUpdateEvent.ActivityUpdated(FidScope.unknown, activity)
                 )
             }
             .map {}
@@ -155,7 +157,7 @@ internal class ActivityImpl(
         request: UpdateCommentRequest,
     ): Result<CommentData> {
         return commentsRepository.updateComment(commentId, request).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(FidScope.all, it))
+            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(FidScope.unknown, it))
         }
     }
 
@@ -168,7 +170,7 @@ internal class ActivityImpl(
             .onSuccess { (reaction, comment) ->
                 subscriptionManager.onEvent(
                     StateUpdateEvent.CommentReactionUpserted(
-                        scope = FidScope.all,
+                        scope = FidScope.unknown,
                         comment = comment,
                         reaction = reaction,
                         enforceUnique = request.enforceUnique == true,
@@ -186,7 +188,7 @@ internal class ActivityImpl(
             .deleteCommentReaction(commentId, type)
             .onSuccess { (reaction, comment) ->
                 subscriptionManager.onEvent(
-                    StateUpdateEvent.CommentReactionDeleted(FidScope.all, comment, reaction)
+                    StateUpdateEvent.CommentReactionDeleted(FidScope.unknown, comment, reaction)
                 )
             }
             .map { it.first }
@@ -206,7 +208,7 @@ internal class ActivityImpl(
         return activitiesRepository
             .pin(activityId, fid)
             .onSuccess {
-                subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.all, it))
+                subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.unknown, it))
             }
             .map { Unit }
     }
@@ -215,7 +217,7 @@ internal class ActivityImpl(
         return activitiesRepository
             .unpin(activityId, fid)
             .onSuccess {
-                subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.all, it))
+                subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.unknown, it))
             }
             .map { Unit }
     }

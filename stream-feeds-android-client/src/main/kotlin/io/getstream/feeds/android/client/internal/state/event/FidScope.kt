@@ -47,7 +47,7 @@ internal value class FidScope private constructor(private val fid: String?) {
          * Matches all feeds. Useful when constructing [StateUpdateEvent]s internally on successful
          * API calls, since we can't know all fids affected by that call
          */
-        val all = FidScope(null)
+        val unknown = FidScope(null)
 
         /**
          * Matches only the specific feed with the given [fid]. To be used in [StateUpdateEvent]s
