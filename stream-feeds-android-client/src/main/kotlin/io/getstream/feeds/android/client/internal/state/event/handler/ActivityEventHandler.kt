@@ -22,9 +22,11 @@ import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventList
 
 /**
  * This class handles activity-related WebSocket events and updates the activity state accordingly.
- * It is responsible for processing incoming events related to polls, such as poll updates, poll
- * votes, and poll closures.
+ * It is responsible for processing incoming events related to activities, including reactions,
+ * comments, bookmarks, polls (such as poll updates, poll votes, and poll closures), and other
+ * activity updates or deletions.
  *
+ * @param activityId The ID of the activity this handler is associated with.
  * @param currentUserId The ID of the current user, used to filter user-specific events.
  * @property state The instance that manages updates to the activity state.
  */
