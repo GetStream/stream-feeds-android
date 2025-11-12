@@ -27,11 +27,13 @@ import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventList
  * votes, and poll closures.
  *
  * @param fid The unique identifier for the feed this handler is associated with.
+ * @param currentUserId The ID of the current user, used to filter user-specific events.
  * @property state The instance that manages updates to the activity state.
  */
 internal class ActivityEventHandler(
     private val fid: FeedId,
     private val activityId: String,
+    private val currentUserId: String,
     private val state: ActivityStateUpdates,
 ) : StateUpdateEventListener {
 
@@ -50,6 +52,11 @@ internal class ActivityEventHandler(
             is StateUpdateEvent.ActivityUpdated -> {
                 if (event.fid != fid.rawValue || event.activity.id != activityId) return
                 state.onActivityUpdated(event.activity)
+            }
+
+            is StateUpdateEvent.ActivityHidden -> {
+                if (event.activityId != activityId || event.userId != currentUserId) return
+                state.onActivityHidden(event.activityId, event.hidden)
             }
 
             is StateUpdateEvent.ActivityReactionDeleted -> {

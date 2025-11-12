@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,33 +38,56 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.getstream.feeds.android.sample.R
 
+data class MenuAction(
+    val id: String,
+    val text: String,
+    val iconRes: Int,
+    val tint: ColorScheme.() -> Color = { Color.Unspecified },
+) {
+    object Id {
+        const val EDIT = "edit"
+        const val DELETE = "delete"
+        const val HIDE = "hide"
+    }
+
+    companion object {
+        val edit = MenuAction(Id.EDIT, "Edit", R.drawable.edit_24)
+
+        val delete: MenuAction =
+            MenuAction(Id.DELETE, "Delete", R.drawable.delete_24, ColorScheme::error)
+
+        fun hide(isHidden: Boolean): MenuAction =
+            MenuAction(Id.HIDE, if (isHidden) "Unhide" else "Hide", R.drawable.close)
+    }
+}
+
 @Composable
 fun ContentContextMenuDialog(
     title: String,
-    showEdit: Boolean,
+    actions: List<MenuAction>,
+    onActionClick: (String) -> Unit,
     onDismiss: () -> Unit,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = title, fontWeight = FontWeight.Bold, fontSize = 16.sp) },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
-                if (showEdit) {
-                    MenuItemRow(iconRes = R.drawable.edit_24, text = "Edit", onClick = onEdit)
+                actions.forEachIndexed { index, action ->
+                    if (index > 0) {
+                        HorizontalDivider(thickness = 1.dp)
+                    }
 
-                    // Divider between Edit and Delete
-                    HorizontalDivider(thickness = 1.dp)
+                    val tint = action.tint(MaterialTheme.colorScheme)
+
+                    MenuItemRow(
+                        iconRes = action.iconRes,
+                        text = action.text,
+                        onClick = { onActionClick(action.id) },
+                        tint = tint,
+                        textColor = tint,
+                    )
                 }
-
-                MenuItemRow(
-                    iconRes = R.drawable.delete_24,
-                    text = "Delete",
-                    onClick = onDelete,
-                    tint = MaterialTheme.colorScheme.error,
-                    textColor = MaterialTheme.colorScheme.error,
-                )
             }
         },
         confirmButton = {},

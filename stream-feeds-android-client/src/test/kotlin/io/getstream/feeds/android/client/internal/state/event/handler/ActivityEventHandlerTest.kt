@@ -20,6 +20,7 @@ import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.internal.state.ActivityStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityHidden
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpserted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityUpdated
@@ -55,11 +56,13 @@ internal class ActivityEventHandlerTest(
 ) : BaseEventHandlerTest<ActivityStateUpdates>(testName, event, verifyBlock) {
 
     override val state: ActivityStateUpdates = mockk(relaxed = true)
-    override val handler: StateUpdateEventListener = ActivityEventHandler(fid, activityId, state)
+    override val handler: StateUpdateEventListener =
+        ActivityEventHandler(fid, activityId, userId, state)
 
     companion object {
         private val fid = FeedId("user", "activity-1")
         private const val otherFid = "user:other-activity"
+        private const val userId = "user-1"
         private const val activityId = "test-activity-id"
         private const val otherId = "other-activity"
         private val activity = activityData(activityId)
@@ -162,6 +165,21 @@ internal class ActivityEventHandlerTest(
                 testParams<ActivityStateUpdates>(
                     name = "ActivityUpdated non-matching activity",
                     event = ActivityUpdated(fid.rawValue, activityData("other-activity")),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityHidden matching activity and user",
+                    event = ActivityHidden(activityId, userId, hidden = true),
+                    verifyBlock = { it.onActivityHidden(activityId, true) },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityHidden non-matching activity",
+                    event = ActivityHidden("other-activity", userId, hidden = true),
+                    verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "ActivityHidden non-matching user",
+                    event = ActivityHidden(activityId, "other-user", hidden = true),
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(

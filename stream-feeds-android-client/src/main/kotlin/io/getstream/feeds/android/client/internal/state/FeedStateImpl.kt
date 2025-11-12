@@ -189,6 +189,12 @@ internal class FeedStateImpl(
         _pinnedActivities.update { current -> current.filter { it.activity.id != activityId } }
     }
 
+    override fun onActivityHidden(activityId: String, hidden: Boolean) {
+        updateActivitiesWhere({ it.id == activityId }) { activity ->
+            activity.copy(hidden = hidden)
+        }
+    }
+
     override fun onBookmarkRemoved(bookmark: BookmarkData) {
         updateActivitiesWhere({ it.id == bookmark.activity.id }) { activity ->
             activity.deleteBookmark(bookmark, currentUserId)
@@ -425,6 +431,9 @@ internal interface FeedStateUpdates {
 
     /** Handles updates to the feed state when an activity is unpinned. */
     fun onActivityUnpinned(activityId: String)
+
+    /** Handles updates to the feed state when an activity is hidden or unhidden. */
+    fun onActivityHidden(activityId: String, hidden: Boolean)
 
     /** Handles updates to the feed state when a bookmark is removed. */
     fun onBookmarkRemoved(bookmark: BookmarkData)

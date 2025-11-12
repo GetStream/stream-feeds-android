@@ -32,6 +32,8 @@ import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.network.models.ActivityAddedEvent
 import io.getstream.feeds.android.network.models.ActivityDeletedEvent
+import io.getstream.feeds.android.network.models.ActivityFeedbackEvent
+import io.getstream.feeds.android.network.models.ActivityFeedbackEventPayload
 import io.getstream.feeds.android.network.models.ActivityPinnedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
@@ -90,6 +92,9 @@ internal sealed interface StateUpdateEvent {
         StateUpdateEvent
 
     data class ActivityUnpinned(val fid: String, val activityId: String) : StateUpdateEvent
+
+    data class ActivityHidden(val activityId: String, val userId: String, val hidden: Boolean) :
+        StateUpdateEvent
 
     data class ActivityReactionDeleted(
         val fid: String,
@@ -195,6 +200,17 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
 
         is ActivityUnpinnedEvent ->
             StateUpdateEvent.ActivityUnpinned(fid, pinnedActivity.activity.id)
+
+        is ActivityFeedbackEvent ->
+            when (activityFeedback.action) {
+                ActivityFeedbackEventPayload.Action.Hide ->
+                    StateUpdateEvent.ActivityHidden(
+                        activityId = activityFeedback.activityId,
+                        userId = activityFeedback.user.id,
+                        hidden = activityFeedback.value == "true",
+                    )
+                else -> null
+            }
 
         is ActivityReactionAddedEvent ->
             StateUpdateEvent.ActivityReactionUpserted(

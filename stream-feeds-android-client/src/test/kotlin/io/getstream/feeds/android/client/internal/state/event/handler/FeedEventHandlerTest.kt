@@ -25,6 +25,7 @@ import io.getstream.feeds.android.client.internal.state.FeedStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityHidden
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityPinned
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpserted
@@ -74,11 +75,12 @@ internal class FeedEventHandlerTest(
 ) : BaseEventHandlerTest<FeedStateUpdates>(testName, event, verifyBlock) {
 
     override val state: FeedStateUpdates = mockk(relaxed = true)
-    override val handler = FeedEventHandler(fid, filter, state)
+    override val handler = FeedEventHandler(fid, filter, userId, state)
 
     companion object {
         private val fid = FeedId("group", "feed-1")
         private val filter = ActivitiesFilterField.type.equal("post")
+        private const val userId = "user-1"
         private const val activityId = "activity-1"
         private val activity = activityData(activityId, type = "post")
         private val nonMatchingActivity = activityData(activityId, type = "comment")
@@ -206,6 +208,21 @@ internal class FeedEventHandlerTest(
                     name = "ActivityUnpinned non-matching feed",
                     event = ActivityUnpinned("group:different", activityId),
                     verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<FeedStateUpdates>(
+                    name = "ActivityHidden with hidden=true, matching user",
+                    event = ActivityHidden(activityId, userId, hidden = true),
+                    verifyBlock = { state -> state.onActivityHidden(activityId, true) },
+                ),
+                testParams<FeedStateUpdates>(
+                    name = "ActivityHidden with hidden=false, matching user",
+                    event = ActivityHidden(activityId, userId, hidden = false),
+                    verifyBlock = { state -> state.onActivityHidden(activityId, false) },
+                ),
+                testParams<FeedStateUpdates>(
+                    name = "ActivityHidden non-matching user",
+                    event = ActivityHidden(activityId, "other-user", hidden = true),
+                    verifyBlock = { it wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "BookmarkAdded matching feeds",

@@ -101,6 +101,12 @@ internal class ActivityListStateImpl(
         }
     }
 
+    override fun onActivityHidden(activityId: String, hidden: Boolean) {
+        _activities.update { current ->
+            current.updateIf({ it.id == activityId }) { activity -> activity.copy(hidden = hidden) }
+        }
+    }
+
     override fun onBookmarkRemoved(bookmark: BookmarkData) {
         _activities.update { current ->
             current.updateIf({ it.id == bookmark.activity.id }) { activity ->
@@ -243,6 +249,14 @@ internal interface ActivityListStateUpdates {
      * @param activity The activity data.
      */
     fun onActivityUpserted(activity: ActivityData)
+
+    /**
+     * Called when an activity is hidden or unhidden.
+     *
+     * @param activityId The ID of the activity that was hidden or unhidden.
+     * @param hidden Whether the activity is hidden (true) or unhidden (false).
+     */
+    fun onActivityHidden(activityId: String, hidden: Boolean)
 
     /**
      * Called when a bookmark was removed.

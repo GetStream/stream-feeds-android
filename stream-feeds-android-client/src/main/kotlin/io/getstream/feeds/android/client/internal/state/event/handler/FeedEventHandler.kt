@@ -31,11 +31,13 @@ import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventList
  *
  * @param fid The unique identifier for the feed this handler is associated with.
  * @param activityFilter An optional filter to determine which activities should be processed.
+ * @param currentUserId The ID of the current user, used to filter user-specific events.
  * @property state The instance that manages updates to the feed state.
  */
 internal class FeedEventHandler(
     private val fid: FeedId,
     private val activityFilter: ActivitiesFilter?,
+    private val currentUserId: String,
     private val state: FeedStateUpdates,
 ) : StateUpdateEventListener {
 
@@ -96,6 +98,12 @@ internal class FeedEventHandler(
             is StateUpdateEvent.ActivityUnpinned -> {
                 if (event.fid == fid.rawValue) {
                     state.onActivityUnpinned(event.activityId)
+                }
+            }
+
+            is StateUpdateEvent.ActivityHidden -> {
+                if (event.userId == currentUserId) {
+                    state.onActivityHidden(event.activityId, event.hidden)
                 }
             }
 

@@ -94,6 +94,7 @@ import io.getstream.feeds.android.client.internal.state.PollVoteListImpl
 import io.getstream.feeds.android.client.internal.state.event.toModel
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
+import io.getstream.feeds.android.network.models.ActivityFeedbackRequest
 import io.getstream.feeds.android.network.models.ActivityRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
@@ -267,6 +268,13 @@ internal class FeedsClientImpl(
         request: DeleteActivitiesRequest
     ): Result<DeleteActivitiesResponse> {
         return activitiesRepository.deleteActivities(request)
+    }
+
+    override suspend fun activityFeedback(
+        activityId: String,
+        request: ActivityFeedbackRequest,
+    ): Result<Unit> {
+        return activitiesRepository.activityFeedback(activityId, request)
     }
 
     override fun bookmarkList(query: BookmarksQuery): BookmarkList =

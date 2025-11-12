@@ -22,8 +22,16 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.query.matches
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
+/**
+ * This class handles activity list events and updates the activity list state accordingly.
+ *
+ * @param filter An optional filter to determine which activities should be processed.
+ * @param currentUserId The ID of the current user, used to filter user-specific events.
+ * @property state The instance that manages updates to the activity list state.
+ */
 internal class ActivityListEventHandler(
     private val filter: ActivitiesFilter?,
+    private val currentUserId: String,
     private val state: ActivityListStateUpdates,
 ) : StateUpdateEventListener {
 
@@ -42,6 +50,12 @@ internal class ActivityListEventHandler(
                 } else {
                     // We remove elements that used to match the filter but no longer do
                     state.onActivityRemoved(event.activity.id)
+                }
+            }
+
+            is StateUpdateEvent.ActivityHidden -> {
+                if (event.userId == currentUserId) {
+                    state.onActivityHidden(event.activityId, event.hidden)
                 }
             }
 

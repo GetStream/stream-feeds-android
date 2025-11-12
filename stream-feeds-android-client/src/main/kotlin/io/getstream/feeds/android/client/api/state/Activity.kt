@@ -26,6 +26,7 @@ import io.getstream.feeds.android.client.api.model.PollOptionData
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
+import io.getstream.feeds.android.network.models.ActivityFeedbackRequest
 import io.getstream.feeds.android.network.models.AddCommentReactionRequest
 import io.getstream.feeds.android.network.models.CastPollVoteRequest
 import io.getstream.feeds.android.network.models.CreatePollOptionRequest
@@ -164,6 +165,23 @@ public interface Activity {
         commentId: String,
         type: String,
     ): Result<FeedsReactionData>
+
+    /**
+     * Submits feedback for this activity.
+     *
+     * Example:
+     * ```
+     * // Hide an activity
+     * activity.activityFeedback(ActivityFeedbackRequest(hide = true))
+     *
+     * // Unhide an activity
+     * activity.activityFeedback(ActivityFeedbackRequest(hide = false))
+     * ```
+     *
+     * @param request The feedback request to be submitted.
+     * @return A [Result] indicating success or failure of the operation.
+     */
+    public suspend fun activityFeedback(request: ActivityFeedbackRequest): Result<Unit>
 
     /**
      * Pins an activity in the feed.
