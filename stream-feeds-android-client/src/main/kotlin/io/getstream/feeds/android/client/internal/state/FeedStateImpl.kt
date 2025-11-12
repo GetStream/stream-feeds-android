@@ -218,10 +218,14 @@ internal class FeedStateImpl(
 
     override fun onFeedDeleted() {
         _activities.update { emptyList() }
+        _aggregatedActivities.update { emptyList() }
         _feed.update { null }
         _followers.update { emptyList() }
         _following.update { emptyList() }
         _followRequests.update { emptyList() }
+        _pinnedActivities.update { emptyList() }
+        _notificationStatus.update { null }
+        _activitiesPagination = null
         // Clear the member list state
         memberListState.clear()
     }
