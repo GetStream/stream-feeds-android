@@ -49,19 +49,19 @@ internal class FeedEventHandler(
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
             is StateUpdateEvent.ActivityAdded -> {
-                if (event.fid == fid.rawValue && event.activity matches activityFilter) {
+                if (event.scope matches fid && event.activity matches activityFilter) {
                     state.onActivityUpserted(event.activity)
                 }
             }
 
             is StateUpdateEvent.ActivityDeleted -> {
-                if (event.fid == fid.rawValue) {
+                if (event.scope matches fid) {
                     state.onActivityRemoved(event.activityId)
                 }
             }
 
             is StateUpdateEvent.ActivityUpdated -> {
-                if (event.fid == fid.rawValue) {
+                if (event.scope matches fid) {
                     if (event.activity matches activityFilter) {
                         state.onActivityUpserted(event.activity)
                     } else {
@@ -72,31 +72,31 @@ internal class FeedEventHandler(
             }
 
             is StateUpdateEvent.ActivityRemovedFromFeed -> {
-                if (event.fid == fid.rawValue) {
+                if (event.scope matches fid) {
                     state.onActivityRemoved(event.activityId)
                 }
             }
 
             is StateUpdateEvent.ActivityReactionDeleted -> {
-                if (event.fid == fid.rawValue) {
+                if (event.scope matches fid) {
                     state.onReactionRemoved(event.reaction, event.activity)
                 }
             }
 
             is StateUpdateEvent.ActivityReactionUpserted -> {
-                if (event.fid == fid.rawValue) {
+                if (event.scope matches fid) {
                     state.onReactionUpserted(event.reaction, event.activity, event.enforceUnique)
                 }
             }
 
             is StateUpdateEvent.ActivityPinned -> {
-                if (event.fid == fid.rawValue) {
+                if (event.scope matches fid) {
                     state.onActivityPinned(event.pinnedActivity)
                 }
             }
 
             is StateUpdateEvent.ActivityUnpinned -> {
-                if (event.fid == fid.rawValue) {
+                if (event.scope matches fid) {
                     state.onActivityUnpinned(event.activityId)
                 }
             }
@@ -120,31 +120,31 @@ internal class FeedEventHandler(
             }
 
             is StateUpdateEvent.CommentAdded -> {
-                if (event.fid == fid.rawValue) {
+                if (event.scope matches fid) {
                     state.onCommentUpserted(event.comment)
                 }
             }
 
             is StateUpdateEvent.CommentDeleted -> {
-                if (event.fid == fid.rawValue) {
+                if (event.scope matches fid) {
                     state.onCommentRemoved(event.comment)
                 }
             }
 
             is StateUpdateEvent.CommentUpdated -> {
-                if (event.fid == fid.rawValue) {
+                if (event.scope matches fid) {
                     state.onCommentUpserted(event.comment)
                 }
             }
 
             is StateUpdateEvent.CommentReactionDeleted -> {
-                if (event.fid == fid.rawValue) {
+                if (event.scope matches fid) {
                     state.onCommentReactionRemoved(event.comment, event.reaction)
                 }
             }
 
             is StateUpdateEvent.CommentReactionUpserted -> {
-                if (event.fid == fid.rawValue) {
+                if (event.scope matches fid) {
                     state.onCommentReactionUpserted(
                         event.comment,
                         event.reaction,

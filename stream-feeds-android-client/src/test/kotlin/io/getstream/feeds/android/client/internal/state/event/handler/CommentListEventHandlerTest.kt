@@ -20,6 +20,7 @@ import io.getstream.android.core.api.filter.equal
 import io.getstream.feeds.android.client.api.state.query.CommentsFilter
 import io.getstream.feeds.android.client.api.state.query.CommentsFilterField
 import io.getstream.feeds.android.client.internal.state.CommentListStateUpdates
+import io.getstream.feeds.android.client.internal.state.event.FidScope
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentDeleted
@@ -43,6 +44,7 @@ internal class CommentListEventHandlerTest(
     override val handler = CommentListEventHandler(filter, state)
 
     companion object {
+        private val fidScope = FidScope.of("feed-1")
         private val filter: CommentsFilter = CommentsFilterField.objectId.equal("activity-123")
         private val comment = commentData(objectId = "activity-123")
         private val nonMatchingComment = commentData(objectId = "different-activity")
@@ -54,37 +56,37 @@ internal class CommentListEventHandlerTest(
             listOf(
                 testParams<CommentListStateUpdates>(
                     name = "CommentAdded matching filter",
-                    event = CommentAdded("feed-1", comment),
+                    event = CommentAdded(fidScope, comment),
                     verifyBlock = { state -> state.onCommentUpserted(comment) },
                 ),
                 testParams<CommentListStateUpdates>(
                     name = "CommentAdded non-matching filter",
-                    event = CommentAdded("feed-1", nonMatchingComment),
+                    event = CommentAdded(fidScope, nonMatchingComment),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<CommentListStateUpdates>(
                     name = "CommentUpdated matching filter",
-                    event = CommentUpdated("feed-1", comment),
+                    event = CommentUpdated(fidScope, comment),
                     verifyBlock = { state -> state.onCommentUpserted(comment) },
                 ),
                 testParams<CommentListStateUpdates>(
                     name = "CommentUpdated non-matching filter",
-                    event = CommentUpdated("feed-1", nonMatchingComment),
+                    event = CommentUpdated(fidScope, nonMatchingComment),
                     verifyBlock = { state -> state.onCommentRemoved(nonMatchingComment.id) },
                 ),
                 testParams<CommentListStateUpdates>(
                     name = "CommentDeleted",
-                    event = CommentDeleted("feed-1", comment),
+                    event = CommentDeleted(fidScope, comment),
                     verifyBlock = { state -> state.onCommentRemoved(comment.id) },
                 ),
                 testParams<CommentListStateUpdates>(
                     name = "CommentReactionDeleted",
-                    event = CommentReactionDeleted("feed-1", comment, reaction),
+                    event = CommentReactionDeleted(fidScope, comment, reaction),
                     verifyBlock = { state -> state.onCommentReactionRemoved(comment, reaction) },
                 ),
                 testParams<CommentListStateUpdates>(
                     name = "CommentReactionUpserted",
-                    event = CommentReactionUpserted("feed-1", comment, reaction, false),
+                    event = CommentReactionUpserted(fidScope, comment, reaction, false),
                     verifyBlock = { state ->
                         state.onCommentReactionUpserted(comment, reaction, false)
                     },

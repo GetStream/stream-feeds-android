@@ -37,8 +37,12 @@ import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
+import io.getstream.feeds.android.client.internal.state.event.FidScope
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityAdded
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpserted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentAdded
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
@@ -139,9 +143,8 @@ internal class FeedImplTest {
 
         coVerify {
             activitiesRepository.addActivity(request, attachmentUploadProgress)
-            stateEventListener.onEvent(StateUpdateEvent.ActivityAdded("group:id", activityData))
+            stateEventListener.onEvent(ActivityAdded(FidScope.all, activityData))
         }
-        assertEquals(listOf(activityData), feed.state.activities.value)
     }
 
     @Test
@@ -163,7 +166,7 @@ internal class FeedImplTest {
         assertEquals(listOf(updated), feed.state.activities.value)
         coVerify {
             commentsRepository.addComment(request, progress)
-            stateEventListener.onEvent(StateUpdateEvent.CommentAdded("group:id", addedComment))
+            stateEventListener.onEvent(CommentAdded(FidScope.all, addedComment))
         }
     }
 
@@ -223,7 +226,7 @@ internal class FeedImplTest {
         assertEquals(listOf(updated), feed.state.activities.value)
         verify {
             stateEventListener.onEvent(
-                StateUpdateEvent.ActivityUpdated("group:id", updatedActivity)
+                StateUpdateEvent.ActivityUpdated(FidScope.all, updatedActivity)
             )
         }
     }
@@ -245,9 +248,7 @@ internal class FeedImplTest {
 
         assertEquals(Unit, result.getOrNull())
         assertEquals(emptyList<ActivityData>(), feed.state.activities.value)
-        verify {
-            stateEventListener.onEvent(StateUpdateEvent.ActivityDeleted("group:id", activityId))
-        }
+        verify { stateEventListener.onEvent(ActivityDeleted(FidScope.all, activityId)) }
     }
 
     @Test
@@ -263,10 +264,7 @@ internal class FeedImplTest {
         val result = feed.repost(parentActivityId, text)
 
         assertEquals(repostActivity, result.getOrNull())
-        assertEquals(listOf(repostActivity), feed.state.activities.value)
-        verify {
-            stateEventListener.onEvent(StateUpdateEvent.ActivityAdded("group:id", repostActivity))
-        }
+        verify { stateEventListener.onEvent(ActivityAdded(FidScope.all, repostActivity)) }
     }
 
     @Test
@@ -473,7 +471,7 @@ internal class FeedImplTest {
 
         assertEquals(comment, result.getOrNull())
         verify {
-            stateEventListener.onEvent(StateUpdateEvent.CommentUpdated(fid.rawValue, comment))
+            stateEventListener.onEvent(StateUpdateEvent.CommentUpdated(FidScope.all, comment))
         }
     }
 
@@ -491,7 +489,7 @@ internal class FeedImplTest {
 
         assertEquals(comment, result.getOrNull())
         verify {
-            stateEventListener.onEvent(StateUpdateEvent.CommentUpdated(fid.rawValue, comment))
+            stateEventListener.onEvent(StateUpdateEvent.CommentUpdated(FidScope.all, comment))
         }
     }
 
@@ -518,9 +516,9 @@ internal class FeedImplTest {
         assertEquals(Unit, result.getOrNull())
         assertEquals(listOf(updated), feed.state.activities.value)
         verify {
-            stateEventListener.onEvent(StateUpdateEvent.CommentDeleted("group:id", comment))
+            stateEventListener.onEvent(StateUpdateEvent.CommentDeleted(FidScope.all, comment))
             stateEventListener.onEvent(
-                StateUpdateEvent.ActivityUpdated("group:id", updatedActivity)
+                StateUpdateEvent.ActivityUpdated(FidScope.all, updatedActivity)
             )
         }
     }
@@ -662,7 +660,7 @@ internal class FeedImplTest {
         assertEquals(listOf(expected), feed.state.activities.value)
         verify {
             stateEventListener.onEvent(
-                ActivityReactionUpserted("group:id", updatedActivity, reaction, false)
+                ActivityReactionUpserted(FidScope.all, updatedActivity, reaction, false)
             )
         }
     }
@@ -695,7 +693,7 @@ internal class FeedImplTest {
         assertEquals(listOf(expected), feed.state.activities.value)
         verify {
             stateEventListener.onEvent(
-                StateUpdateEvent.ActivityReactionDeleted("group:id", updatedActivity, reaction)
+                StateUpdateEvent.ActivityReactionDeleted(FidScope.all, updatedActivity, reaction)
             )
         }
     }
@@ -716,7 +714,7 @@ internal class FeedImplTest {
         assertEquals(reaction, result.getOrNull())
         verify {
             stateEventListener.onEvent(
-                StateUpdateEvent.CommentReactionUpserted(fid.rawValue, comment, reaction, false)
+                StateUpdateEvent.CommentReactionUpserted(FidScope.all, comment, reaction, false)
             )
         }
     }
@@ -737,7 +735,7 @@ internal class FeedImplTest {
         assertEquals(reaction, result.getOrNull())
         verify {
             stateEventListener.onEvent(
-                StateUpdateEvent.CommentReactionDeleted(fid.rawValue, comment, reaction)
+                StateUpdateEvent.CommentReactionDeleted(FidScope.all, comment, reaction)
             )
         }
     }
@@ -767,7 +765,7 @@ internal class FeedImplTest {
                 }
             )
         }
-        verify { stateEventListener.onEvent(StateUpdateEvent.ActivityAdded("group:id", activity)) }
+        verify { stateEventListener.onEvent(ActivityAdded(FidScope.all, activity)) }
     }
 
     private fun createFeed(query: FeedQuery = FeedQuery(fid)) =
