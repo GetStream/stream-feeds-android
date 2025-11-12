@@ -30,8 +30,17 @@ import io.getstream.feeds.android.network.models.WSEvent
  */
 @JvmInline
 internal value class FidScope private constructor(private val fid: String?) {
-    /** Checks if this matcher matches the given [feedId]. This happens */
+    /**
+     * Checks if this matcher matches the given [feedId], i.e. when the fid is the same or the scope
+     * is 'all'.
+     */
     infix fun matches(feedId: FeedId): Boolean = fid == null || fid == feedId.rawValue
+
+    /**
+     * Checks if this matcher **strictly** matches the given [feedId], i.e. only when the fid is the
+     * same.
+     */
+    infix fun strictlyMatches(feedId: FeedId): Boolean = fid == feedId.rawValue
 
     companion object Companion {
         /**

@@ -127,25 +127,25 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on onActivityUpserted, then add activity`() = runTest {
+    fun `on onActivityAdded, then add activity`() = runTest {
         val initialActivity = activityData()
         setupInitialState(listOf(initialActivity))
 
         val newActivity = activityData("activity-2")
-        feedState.onActivityUpserted(newActivity)
+        feedState.onActivityAdded(newActivity)
 
         val activities = feedState.activities.value
         assertEquals(listOf(initialActivity, newActivity), activities)
     }
 
     @Test
-    fun `on onActivityUpserted, then update activity`() = runTest {
+    fun `on onActivityUpdated, then update activity`() = runTest {
         val initialActivity = activityData("activity-1")
         val activityPin = activityPin(initialActivity)
         setupInitialState(listOf(initialActivity), listOf(activityPin))
 
         val updatedActivity = activityData("activity-1", text = "Updated activity")
-        feedState.onActivityUpserted(updatedActivity)
+        feedState.onActivityUpdated(updatedActivity)
 
         assertEquals(listOf(updatedActivity), feedState.activities.value)
         val expectedPinnedActivity = activityPin.copy(activity = updatedActivity)
@@ -153,7 +153,7 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on onActivityUpserted, then preserve own properties in activity`() = runTest {
+    fun `on onActivityUpdated, then preserve own properties in activity`() = runTest {
         val initialBookmark = bookmarkData("activity-1", currentUserId)
         val initialReaction = feedsReactionData("activity-1", "like", currentUserId)
         val ownVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
@@ -178,7 +178,7 @@ internal class FeedStateImplTest {
                 ownBookmarks = emptyList(),
                 ownReactions = emptyList(),
             )
-        feedState.onActivityUpserted(updatedActivity)
+        feedState.onActivityUpdated(updatedActivity)
 
         // Verify all "own" properties are preserved
         val expectedPoll = updatedPoll.copy(ownVotes = listOf(ownVote))
@@ -192,13 +192,13 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on onActivityUpserted with new poll in feed, then set new poll`() = runTest {
+    fun `on onActivityUpdated with new poll in feed, then set new poll`() = runTest {
         val initialActivity = activityData("activity-1", text = "Original", poll = null)
         setupInitialState(listOf(initialActivity))
 
         val newPoll = pollData("poll-1", "New Poll")
         val updatedActivity = activityData("activity-1", text = "Updated", poll = newPoll)
-        feedState.onActivityUpserted(updatedActivity)
+        feedState.onActivityUpdated(updatedActivity)
 
         assertEquals(listOf(updatedActivity), feedState.activities.value)
     }

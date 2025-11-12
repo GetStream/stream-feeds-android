@@ -80,7 +80,6 @@ import io.getstream.feeds.android.network.models.WSEvent
  */
 internal sealed interface StateUpdateEvent {
 
-    // TODO [G.] We should split "upserted" handling into added/updated
     data class ActivityAdded(val scope: FidScope, val activity: ActivityData) : StateUpdateEvent
 
     data class ActivityDeleted(val scope: FidScope, val activityId: String) : StateUpdateEvent

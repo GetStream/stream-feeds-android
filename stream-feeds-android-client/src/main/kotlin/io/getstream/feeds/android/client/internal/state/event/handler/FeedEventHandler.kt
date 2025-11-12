@@ -49,8 +49,9 @@ internal class FeedEventHandler(
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
             is StateUpdateEvent.ActivityAdded -> {
-                if (event.scope matches fid && event.activity matches activityFilter) {
-                    state.onActivityUpserted(event.activity)
+                // We add activities only on strict matches, i.e. we're sure they belong to the feed
+                if (event.scope strictlyMatches fid && event.activity matches activityFilter) {
+                    state.onActivityAdded(event.activity)
                 }
             }
 
@@ -63,7 +64,7 @@ internal class FeedEventHandler(
             is StateUpdateEvent.ActivityUpdated -> {
                 if (event.scope matches fid) {
                     if (event.activity matches activityFilter) {
-                        state.onActivityUpserted(event.activity)
+                        state.onActivityUpdated(event.activity)
                     } else {
                         // We remove elements that used to match the filter but no longer do
                         state.onActivityRemoved(event.activity.id)
