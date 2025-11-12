@@ -16,7 +16,6 @@
 
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.internal.state.ActivityStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
@@ -26,12 +25,10 @@ import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventList
  * It is responsible for processing incoming events related to polls, such as poll updates, poll
  * votes, and poll closures.
  *
- * @param fid The unique identifier for the feed this handler is associated with.
  * @param currentUserId The ID of the current user, used to filter user-specific events.
  * @property state The instance that manages updates to the activity state.
  */
 internal class ActivityEventHandler(
-    private val fid: FeedId,
     private val activityId: String,
     private val currentUserId: String,
     private val state: ActivityStateUpdates,
@@ -45,12 +42,12 @@ internal class ActivityEventHandler(
     override fun onEvent(event: StateUpdateEvent) {
         when (event) {
             is StateUpdateEvent.ActivityDeleted -> {
-                if (event.fid != fid.rawValue || event.activityId != activityId) return
+                if (event.activityId != activityId) return
                 state.onActivityRemoved()
             }
 
             is StateUpdateEvent.ActivityUpdated -> {
-                if (event.fid != fid.rawValue || event.activity.id != activityId) return
+                if (event.activity.id != activityId) return
                 state.onActivityUpdated(event.activity)
             }
 
@@ -60,12 +57,12 @@ internal class ActivityEventHandler(
             }
 
             is StateUpdateEvent.ActivityReactionDeleted -> {
-                if (event.fid != fid.rawValue || event.reaction.activityId != activityId) return
+                if (event.reaction.activityId != activityId) return
                 state.onReactionRemoved(event.reaction, event.activity)
             }
 
             is StateUpdateEvent.ActivityReactionUpserted -> {
-                if (event.fid != fid.rawValue || event.reaction.activityId != activityId) return
+                if (event.reaction.activityId != activityId) return
                 state.onReactionUpserted(event.reaction, event.activity, event.enforceUnique)
             }
 
@@ -85,27 +82,27 @@ internal class ActivityEventHandler(
             }
 
             is StateUpdateEvent.CommentAdded -> {
-                if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
+                if (event.comment.objectId != activityId) return
                 state.onCommentUpserted(event.comment)
             }
 
             is StateUpdateEvent.CommentDeleted -> {
-                if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
+                if (event.comment.objectId != activityId) return
                 state.onCommentRemoved(event.comment.id)
             }
 
             is StateUpdateEvent.CommentUpdated -> {
-                if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
+                if (event.comment.objectId != activityId) return
                 state.onCommentUpserted(event.comment)
             }
 
             is StateUpdateEvent.CommentReactionDeleted -> {
-                if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
+                if (event.comment.objectId != activityId) return
                 state.onCommentReactionRemoved(event.comment, event.reaction)
             }
 
             is StateUpdateEvent.CommentReactionUpserted -> {
-                if (fid.rawValue != event.fid || event.comment.objectId != activityId) return
+                if (event.comment.objectId != activityId) return
                 state.onCommentReactionUpserted(event.comment, event.reaction, event.enforceUnique)
             }
 
