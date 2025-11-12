@@ -220,7 +220,6 @@ internal class FeedImpl(
         val query =
             FeedQuery(
                 fid = fid,
-                activityFilter = _state.activitiesQueryConfig?.filter,
                 activityLimit = limit ?: query.activityLimit,
                 activityNext = next,
                 activitySelectorOptions = null,
@@ -240,7 +239,6 @@ internal class FeedImpl(
                     activities = it.activities,
                     aggregatedActivities = it.aggregatedActivities,
                     pagination = it.pagination,
-                    queryConfig = it.activitiesQueryConfig,
                 )
             }
             .map(GetOrCreateInfo::activities)

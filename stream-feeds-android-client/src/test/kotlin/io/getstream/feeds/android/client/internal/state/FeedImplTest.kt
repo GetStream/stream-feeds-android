@@ -26,11 +26,9 @@ import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
-import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
 import io.getstream.feeds.android.client.internal.model.PaginationResult
-import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
@@ -785,8 +783,6 @@ internal class FeedImplTest {
         return GetOrCreateInfo(
             pagination = paginationData,
             activities = activities,
-            activitiesQueryConfig =
-                QueryConfiguration(filter = null, sort = ActivitiesSort.Default),
             aggregatedActivities = emptyList(),
             feed = testFeedData,
             followers = followers,

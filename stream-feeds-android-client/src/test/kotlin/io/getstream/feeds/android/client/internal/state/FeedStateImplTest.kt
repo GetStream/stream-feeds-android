@@ -25,11 +25,9 @@ import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollVoteData
-import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
-import io.getstream.feeds.android.client.internal.state.query.ActivitiesQueryConfig
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.activityPin
 import io.getstream.feeds.android.client.internal.test.TestData.aggregatedActivityData
@@ -120,7 +118,6 @@ internal class FeedStateImplTest {
             activities = newActivities,
             aggregatedActivities = newAggregated,
             pagination = newPagination,
-            queryConfig = createQueryConfig(),
         )
 
         assertEquals(newPagination, feedState.activitiesPagination)
@@ -695,12 +692,10 @@ internal class FeedStateImplTest {
         aggregatedActivities: List<AggregatedActivityData> = emptyList(),
     ): GetOrCreateInfo {
         val pagination = PaginationData(next = "next-cursor", previous = null)
-        val queryConfig = createQueryConfig()
 
         return GetOrCreateInfo(
             pagination = pagination,
             activities = activities,
-            activitiesQueryConfig = queryConfig,
             aggregatedActivities = aggregatedActivities,
             feed = feed,
             followers = followers,
@@ -715,9 +710,6 @@ internal class FeedStateImplTest {
                 ),
         )
     }
-
-    private fun createQueryConfig() =
-        ActivitiesQueryConfig(filter = null, sort = ActivitiesSort.Default)
 
     private fun setupActivityWithPoll(poll: PollData): ActivityData {
         val activity = activityData("activity-1", poll = poll)
