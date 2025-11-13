@@ -212,6 +212,7 @@ internal object TestData {
         feeds: List<String> = emptyList(),
         createdAt: Long = 1000,
         hidden: Boolean = false,
+        user: UserData = userData("user-1"),
     ): ActivityData =
         ActivityData(
             attachments = emptyList(),
@@ -248,7 +249,7 @@ internal object TestData {
             text = text,
             type = type,
             updatedAt = Date(1000),
-            user = userData("user-1"),
+            user = user,
             visibility = ActivityDataVisibility.Public,
             visibilityTag = null,
         )

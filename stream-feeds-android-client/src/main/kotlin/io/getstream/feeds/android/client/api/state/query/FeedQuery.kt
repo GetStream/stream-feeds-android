@@ -16,8 +16,10 @@
 
 package io.getstream.feeds.android.client.api.state.query
 
+import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedInputData
+import io.getstream.feeds.android.client.internal.state.query.defaultOnNewActivity
 
 /**
  * A query configuration for retrieving and managing feed data from Stream feeds.
@@ -38,6 +40,7 @@ import io.getstream.feeds.android.client.api.model.FeedInputData
  * @param view Overwrite the default ranking or aggregation logic for this feed (for example: good
  *   for split testing).
  * @param watch If true, subscribes to web-socket events for this feed.
+ * @param onNewActivity Determines if and where new activities should be inserted.
  */
 public data class FeedQuery(
     public val fid: FeedId,
@@ -54,6 +57,8 @@ public data class FeedQuery(
     public val memberLimit: Int? = null,
     public val view: String? = null,
     public val watch: Boolean = true,
+    public val onNewActivity: (FeedQuery, ActivityData, currentUserId: String) -> InsertionAction =
+        ::defaultOnNewActivity,
 ) {
 
     /**
