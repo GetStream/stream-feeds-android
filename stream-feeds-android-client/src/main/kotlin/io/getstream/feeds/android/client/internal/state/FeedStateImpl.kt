@@ -16,7 +16,6 @@
 
 package io.getstream.feeds.android.client.internal.state
 
-import io.getstream.android.core.api.sort.Sort
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.ActivityPinData
 import io.getstream.feeds.android.client.api.model.AggregatedActivityData
@@ -31,7 +30,6 @@ import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.state.FeedState
-import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.model.deleteBookmark
@@ -49,12 +47,9 @@ import io.getstream.feeds.android.client.internal.model.upsertCommentReaction
 import io.getstream.feeds.android.client.internal.model.upsertReaction
 import io.getstream.feeds.android.client.internal.model.upsertVote
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
-import io.getstream.feeds.android.client.internal.state.query.ActivitiesQueryConfig
-import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.client.internal.utils.upsertAll
-import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import io.getstream.feeds.android.network.models.NotificationStatusResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -90,12 +85,6 @@ internal class FeedStateImpl(
         MutableStateFlow(null)
 
     private var _activitiesPagination: PaginationData? = null
-
-    internal var activitiesQueryConfig: ActivitiesQueryConfig? = null
-        private set
-
-    private val activitiesSorting: List<Sort<ActivityData>>
-        get() = activitiesQueryConfig?.sort ?: ActivitiesSort.Default
 
     override val fid: FeedId
         get() = feedQuery.fid
@@ -134,7 +123,6 @@ internal class FeedStateImpl(
         _activities.update { result.activities }
         _aggregatedActivities.update { result.aggregatedActivities }
         _activitiesPagination = result.pagination
-        activitiesQueryConfig = result.activitiesQueryConfig
         _feed.update { result.feed }
         _followers.update { result.followers }
         _following.update { result.following }
@@ -150,14 +138,9 @@ internal class FeedStateImpl(
         activities: List<ActivityData>,
         aggregatedActivities: List<AggregatedActivityData>,
         pagination: PaginationData,
-        queryConfig: ActivitiesQueryConfig,
     ) {
         _activitiesPagination = pagination
-        activitiesQueryConfig = queryConfig
-        // Merge the new activities with the existing ones (keeping the sort order)
-        _activities.update { current ->
-            current.mergeSorted(activities, ActivityData::id, activitiesSorting)
-        }
+        _activities.update { current -> current.upsertAll(activities, ActivityData::id) }
         _aggregatedActivities.update { current ->
             current.upsertAll(aggregatedActivities, AggregatedActivityData::group)
         }
@@ -169,9 +152,7 @@ internal class FeedStateImpl(
                 existingActivity.update(activity)
             }
         } else {
-            _activities.update { current ->
-                current.upsertSorted(activity, ActivityData::id, activitiesSorting)
-            }
+            _activities.update { current -> current.upsert(activity, ActivityData::id) }
         }
     }
 
@@ -417,7 +398,6 @@ internal interface FeedStateUpdates {
         activities: List<ActivityData>,
         aggregatedActivities: List<AggregatedActivityData>,
         pagination: PaginationData,
-        queryConfig: ActivitiesQueryConfig,
     )
 
     /** Handles updates to the feed state when activity is added or updated. */
