@@ -16,6 +16,7 @@
 
 package io.getstream.feeds.android.client.internal.state
 
+import io.getstream.android.core.api.filter.equal
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.FeedAddActivityRequest
@@ -26,6 +27,7 @@ import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
+import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
 import io.getstream.feeds.android.client.internal.model.PaginationResult
@@ -84,7 +86,7 @@ internal class FeedImplTest {
 
     @Test
     fun `on getOrCreate with watch enabled, then call feedWatchHandler`() = runTest {
-        val feed = createFeed(watch = true)
+        val feed = createFeed(FeedQuery(fid, watch = true))
         val testFeedData = feedData()
         val feedInfo = getOrCreateInfo(testFeedData)
         coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
@@ -98,7 +100,7 @@ internal class FeedImplTest {
 
     @Test
     fun `on getOrCreate with watch disabled, then do not call feedWatchHandler`() = runTest {
-        val feed = createFeed(watch = false)
+        val feed = createFeed(FeedQuery(fid, watch = false))
         val testFeedData = feedData()
         val feedInfo = getOrCreateInfo(testFeedData)
         coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
@@ -390,10 +392,20 @@ internal class FeedImplTest {
 
     @Test
     fun `on queryMoreActivities, delegate to repository`() = runTest {
-        val feed = createFeed()
+        val initialQuery =
+            FeedQuery(fid = fid, activityFilter = ActivitiesFilterField.id.equal("id"))
+        val feed = createFeed(initialQuery)
         val limit = 10
         val newActivity = activityData("activity-2")
         val initialActivities = listOf(activityData("activity-1"))
+        val expectedQuery =
+            initialQuery.copy(
+                activityLimit = limit,
+                activityNext = "cursor",
+                followerLimit = 0,
+                followingLimit = 0,
+                memberLimit = 0,
+            )
 
         setupInitialState(feed, activities = initialActivities)
 
@@ -405,6 +417,7 @@ internal class FeedImplTest {
 
         assertEquals(listOf(newActivity), result.getOrNull())
         assertEquals(initialActivities + newActivity, feed.state.activities.value)
+        coVerify { feedsRepository.getOrCreateFeed(expectedQuery) }
     }
 
     @Test
@@ -757,9 +770,9 @@ internal class FeedImplTest {
         verify { stateEventListener.onEvent(StateUpdateEvent.ActivityAdded("group:id", activity)) }
     }
 
-    private fun createFeed(watch: Boolean = false) =
+    private fun createFeed(query: FeedQuery = FeedQuery(fid)) =
         FeedImpl(
-            query = FeedQuery(fid, watch = watch),
+            query = query,
             currentUserId = "user",
             activitiesRepository = activitiesRepository,
             bookmarksRepository = bookmarksRepository,

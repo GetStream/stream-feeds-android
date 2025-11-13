@@ -220,6 +220,7 @@ internal class FeedImpl(
         val query =
             FeedQuery(
                 fid = fid,
+                activityFilter = query.activityFilter,
                 activityLimit = limit ?: query.activityLimit,
                 activityNext = next,
                 activitySelectorOptions = null,
