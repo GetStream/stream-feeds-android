@@ -22,6 +22,7 @@ import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
+import io.getstream.feeds.android.client.api.state.query.InsertionAction
 import io.getstream.feeds.android.client.internal.state.FeedStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.FidScope
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
@@ -125,7 +126,9 @@ internal class FeedEventHandlerTest(
                 testParams<FeedStateUpdates>(
                     name = "ActivityAdded matching feed and filter",
                     event = ActivityAdded(fidScope, activity),
-                    verifyBlock = { state -> state.onActivityAdded(activity) },
+                    verifyBlock = { state ->
+                        state.onActivityAdded(activity, InsertionAction.AddToStart)
+                    },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityAdded non-matching feed",
@@ -135,7 +138,9 @@ internal class FeedEventHandlerTest(
                 testParams<FeedStateUpdates>(
                     name = "ActivityAdded non-matching filter",
                     event = ActivityAdded(fidScope, nonMatchingActivity),
-                    verifyBlock = { state -> state wasNot called },
+                    verifyBlock = { state ->
+                        state.onActivityAdded(nonMatchingActivity, InsertionAction.Ignore)
+                    },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityRemovedFromFeed matching feed",

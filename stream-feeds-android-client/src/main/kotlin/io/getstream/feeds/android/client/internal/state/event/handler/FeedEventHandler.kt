@@ -47,11 +47,9 @@ internal class FeedEventHandler(
         when (event) {
             is StateUpdateEvent.ActivityAdded -> {
                 // We add activities only on strict matches, i.e. we're sure they belong to the feed
-                if (
-                    event.scope strictlyMatches query.fid &&
-                        event.activity matches query.activityFilter
-                ) {
-                    state.onActivityAdded(event.activity)
+                if (event.scope strictlyMatches query.fid) {
+                    val insertionAction = query.onNewActivity(query, event.activity, currentUserId)
+                    state.onActivityAdded(event.activity, insertionAction)
                 }
             }
 
