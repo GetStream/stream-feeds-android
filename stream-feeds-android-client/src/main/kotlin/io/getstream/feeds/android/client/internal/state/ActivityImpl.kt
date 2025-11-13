@@ -227,7 +227,7 @@ internal class ActivityImpl(
     override suspend fun closePoll(): Result<PollData> {
         return poll().flatMap { poll ->
             pollsRepository.closePoll(pollId = poll.id).onSuccess {
-                subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(fid.rawValue, it))
+                subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(it))
             }
         }
     }
@@ -235,7 +235,7 @@ internal class ActivityImpl(
     override suspend fun deletePoll(userId: String?): Result<Unit> {
         return poll().flatMap { poll ->
             pollsRepository.deletePoll(pollId = poll.id, userId = userId).onSuccess {
-                subscriptionManager.onEvent(StateUpdateEvent.PollDeleted(fid.rawValue, poll.id))
+                subscriptionManager.onEvent(StateUpdateEvent.PollDeleted(poll.id))
             }
         }
     }
@@ -243,7 +243,7 @@ internal class ActivityImpl(
     override suspend fun getPoll(userId: String?): Result<PollData> {
         return poll().flatMap { poll ->
             pollsRepository.getPoll(pollId = poll.id, userId = userId).onSuccess {
-                subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(fid.rawValue, it))
+                subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(it))
             }
         }
     }
@@ -251,14 +251,14 @@ internal class ActivityImpl(
     override suspend fun updatePollPartial(request: UpdatePollPartialRequest): Result<PollData> {
         return poll().flatMap { poll ->
             pollsRepository.updatePollPartial(poll.id, request).onSuccess {
-                subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(fid.rawValue, it))
+                subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(it))
             }
         }
     }
 
     override suspend fun updatePoll(request: UpdatePollRequest): Result<PollData> {
         return pollsRepository.updatePoll(request).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(fid.rawValue, it))
+            subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(it))
         }
     }
 
@@ -268,7 +268,7 @@ internal class ActivityImpl(
         return poll().flatMap { poll ->
             pollsRepository.createPollOption(poll.id, request).onSuccess {
                 val newPoll = poll.addOption(it)
-                subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(fid.rawValue, newPoll))
+                subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(newPoll))
             }
         }
     }
@@ -279,7 +279,7 @@ internal class ActivityImpl(
                 .deletePollOption(pollId = poll.id, optionId = optionId, userId = userId)
                 .onSuccess {
                     val newPoll = poll.removeOption(optionId)
-                    subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(fid.rawValue, newPoll))
+                    subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(newPoll))
                 }
         }
     }
@@ -290,7 +290,7 @@ internal class ActivityImpl(
                 .getPollOption(pollId = poll.id, optionId = optionId, userId = userId)
                 .onSuccess {
                     val newPoll = poll.updateOption(it)
-                    subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(fid.rawValue, newPoll))
+                    subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(newPoll))
                 }
         }
     }
@@ -301,7 +301,7 @@ internal class ActivityImpl(
         return poll().flatMap { poll ->
             pollsRepository.updatePollOption(poll.id, request).onSuccess {
                 val newPoll = poll.updateOption(it)
-                subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(fid.rawValue, newPoll))
+                subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(newPoll))
             }
         }
     }
@@ -312,9 +312,7 @@ internal class ActivityImpl(
                 .castPollVote(activityId = activityId, pollId = poll.id, request = request)
                 .onSuccess {
                     it?.let { vote ->
-                        subscriptionManager.onEvent(
-                            StateUpdateEvent.PollVoteCasted(fid.rawValue, poll.id, vote)
-                        )
+                        subscriptionManager.onEvent(StateUpdateEvent.PollVoteCasted(poll.id, vote))
                     }
                 }
         }
@@ -331,9 +329,7 @@ internal class ActivityImpl(
                 )
                 .onSuccess {
                     it?.let { vote ->
-                        subscriptionManager.onEvent(
-                            StateUpdateEvent.PollVoteRemoved(fid.rawValue, poll.id, vote)
-                        )
+                        subscriptionManager.onEvent(StateUpdateEvent.PollVoteRemoved(poll.id, vote))
                     }
                 }
         }

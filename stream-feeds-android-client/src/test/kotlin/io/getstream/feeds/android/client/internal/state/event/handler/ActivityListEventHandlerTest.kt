@@ -190,27 +190,27 @@ internal class ActivityListEventHandlerTest(
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "PollDeleted",
-                    event = PollDeleted("feed-1", "poll-1"),
+                    event = PollDeleted("poll-1"),
                     verifyBlock = { state -> state.onPollDeleted("poll-1") },
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "PollUpdated",
-                    event = PollUpdated("feed-1", pollData()),
+                    event = PollUpdated(pollData()),
                     verifyBlock = { state -> state.onPollUpdated(pollData()) },
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "PollVoteCasted",
-                    event = PollVoteCasted("feed-1", "poll-1", pollVoteData()),
+                    event = PollVoteCasted("poll-1", pollVoteData()),
                     verifyBlock = { state -> state.onPollVoteUpserted("poll-1", pollVoteData()) },
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "PollVoteChanged",
-                    event = PollVoteChanged("feed-1", "poll-1", pollVoteData()),
+                    event = PollVoteChanged("poll-1", pollVoteData()),
                     verifyBlock = { state -> state.onPollVoteUpserted("poll-1", pollVoteData()) },
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "PollVoteRemoved",
-                    event = PollVoteRemoved("feed-1", "poll-1", pollVoteData()),
+                    event = PollVoteRemoved("poll-1", pollVoteData()),
                     verifyBlock = { state -> state.onPollVoteRemoved("poll-1", pollVoteData()) },
                 ),
             )

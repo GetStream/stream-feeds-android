@@ -87,8 +87,6 @@ internal class FeedEventHandlerTest(
         private val reaction = feedsReactionData(activityId)
         private val matchingBookmark =
             bookmarkData(activityData(feeds = listOf(fid.rawValue, "other:feed")))
-        private val nonMatchingBookmark =
-            bookmarkData(activityData(feeds = listOf("other:feed", "another:feed")))
         private val comment = commentData()
         private val commentReaction = feedsReactionData()
         private val matchingFeed = feedData(id = fid.id, groupId = fid.group)
@@ -225,34 +223,19 @@ internal class FeedEventHandlerTest(
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
-                    name = "BookmarkAdded matching feeds",
+                    name = "BookmarkAdded always handled",
                     event = BookmarkAdded(matchingBookmark),
                     verifyBlock = { state -> state.onBookmarkUpserted(matchingBookmark) },
                 ),
                 testParams<FeedStateUpdates>(
-                    name = "BookmarkAdded non-matching feeds",
-                    event = BookmarkAdded(nonMatchingBookmark),
-                    verifyBlock = { state -> state wasNot called },
-                ),
-                testParams<FeedStateUpdates>(
-                    name = "BookmarkDeleted matching activity feeds",
+                    name = "BookmarkDeleted always handled",
                     event = BookmarkDeleted(matchingBookmark),
                     verifyBlock = { state -> state.onBookmarkRemoved(matchingBookmark) },
                 ),
                 testParams<FeedStateUpdates>(
-                    name = "BookmarkDeleted non-matching activity feeds",
-                    event = BookmarkDeleted(nonMatchingBookmark),
-                    verifyBlock = { state -> state wasNot called },
-                ),
-                testParams<FeedStateUpdates>(
-                    name = "BookmarkUpserted matching feeds",
+                    name = "BookmarkUpdated always handled",
                     event = BookmarkUpdated(matchingBookmark),
                     verifyBlock = { state -> state.onBookmarkUpserted(matchingBookmark) },
-                ),
-                testParams<FeedStateUpdates>(
-                    name = "BookmarkUpserted non-matching feeds",
-                    event = BookmarkUpdated(nonMatchingBookmark),
-                    verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "CommentAdded matching feed",
@@ -395,27 +378,27 @@ internal class FeedEventHandlerTest(
                 ),
                 testParams<FeedStateUpdates>(
                     name = "PollDeleted handled regardless of feed ID",
-                    event = PollDeleted("any:feed", pollId),
+                    event = PollDeleted(pollId),
                     verifyBlock = { state -> state.onPollDeleted(pollId) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "PollUpdated handled regardless of feed ID",
-                    event = PollUpdated("any:feed", poll),
+                    event = PollUpdated(poll),
                     verifyBlock = { state -> state.onPollUpdated(poll) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "PollVoteCasted handled regardless of feed ID",
-                    event = PollVoteCasted("any:feed", pollId, pollVote),
+                    event = PollVoteCasted(pollId, pollVote),
                     verifyBlock = { state -> state.onPollVoteUpserted(pollVote, pollId) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "PollVoteChanged handled regardless of feed ID",
-                    event = PollVoteChanged("any:feed", pollId, pollVote),
+                    event = PollVoteChanged(pollId, pollVote),
                     verifyBlock = { state -> state.onPollVoteUpserted(pollVote, pollId) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "PollVoteRemoved handled regardless of feed ID",
-                    event = PollVoteRemoved("any:feed", pollId, pollVote),
+                    event = PollVoteRemoved(pollId, pollVote),
                     verifyBlock = { state -> state.onPollVoteRemoved(pollVote, pollId) },
                 ),
             )

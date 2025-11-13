@@ -70,20 +70,17 @@ internal class ActivityEventHandler(
             }
 
             is StateUpdateEvent.BookmarkAdded -> {
-                val eventActivity = event.bookmark.activity
-                if (fid.rawValue !in eventActivity.feeds || eventActivity.id != activityId) return
+                if (event.bookmark.activity.id != activityId) return
                 state.onBookmarkUpserted(event.bookmark)
             }
 
             is StateUpdateEvent.BookmarkDeleted -> {
-                val eventActivity = event.bookmark.activity
-                if (fid.rawValue !in eventActivity.feeds || eventActivity.id != activityId) return
+                if (event.bookmark.activity.id != activityId) return
                 state.onBookmarkRemoved(event.bookmark)
             }
 
             is StateUpdateEvent.BookmarkUpdated -> {
-                val eventActivity = event.bookmark.activity
-                if (fid.rawValue !in eventActivity.feeds || eventActivity.id != activityId) return
+                if (event.bookmark.activity.id != activityId) return
                 state.onBookmarkUpserted(event.bookmark)
             }
 
