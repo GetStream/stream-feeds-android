@@ -49,7 +49,7 @@ internal class StreamFeedUploaderTest {
         coEvery { cdnApi.sendFile(any()) } returns uploadResponse
         val expectedResult =
             Result.success(UploadedFile(fileUrl = "file", thumbnailUrl = "thumbnail"))
-        val payload = FeedUploadPayload(file = File("test.txt"), type = FileType.Other("txt"))
+        val payload = FeedUploadPayload(file = File("test.txt"), type = object : FileType {})
 
         val result = uploader.upload(payload)
 
@@ -62,7 +62,7 @@ internal class StreamFeedUploaderTest {
         coEvery { cdnApi.sendImage(any()) } returns uploadResponse
         val expectedResult =
             Result.success(UploadedFile(fileUrl = "img", thumbnailUrl = "thumbnail"))
-        val payload = FeedUploadPayload(file = File("test.png"), type = FileType.Image("png"))
+        val payload = FeedUploadPayload(file = File("test.png"), type = FileType.Image)
 
         val result = uploader.upload(payload)
 
@@ -72,7 +72,7 @@ internal class StreamFeedUploaderTest {
     @Test
     fun `upload when a progress listener is provided, then notify progress`() = runTest {
         val file = temporaryFolder.newFile("test.png").apply { writeText("dummy file content") }
-        val payload = FeedUploadPayload(file = file, type = FileType.Image("png"))
+        val payload = FeedUploadPayload(file = file, type = FileType.Image)
         val progressListener: (Double) -> Unit = mockk(relaxed = true)
         val uploadResponse = FileUploadResponse(duration = "", file = "img", thumbUrl = "thumbnail")
         coEvery { cdnApi.sendImage(any()) } answers

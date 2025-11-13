@@ -25,8 +25,7 @@ import java.io.File
  * type, and the contextual metadata required to process it.
  *
  * @property file The local [File] object on disk that is to be uploaded.
- * @property type The semantic type of the file, represented by the [FileType] sealed interface.
- *   This helps differentiate between images, videos, documents, etc.
+ * @property type The semantic type of the file, represented by the [FileType] interface.
  * @property context The metadata required to process the upload.
  */
 public data class UploadPayload<C : UploadContext>(
