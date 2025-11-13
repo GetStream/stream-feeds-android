@@ -20,16 +20,15 @@ import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationData
-import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
-import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.client.internal.repository.RepositoryTestUtils.testDelegation
 import io.getstream.feeds.android.client.internal.state.query.toRequest
 import io.getstream.feeds.android.client.internal.test.TestData.acceptFeedMemberResponse
 import io.getstream.feeds.android.client.internal.test.TestData.acceptFollowResponse
+import io.getstream.feeds.android.client.internal.test.TestData.activityResponse
 import io.getstream.feeds.android.client.internal.test.TestData.feedMemberResponse
 import io.getstream.feeds.android.client.internal.test.TestData.feedResponse
 import io.getstream.feeds.android.client.internal.test.TestData.followResponse
@@ -45,6 +44,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.updateFeedMember
 import io.getstream.feeds.android.client.internal.test.TestData.updateFeedResponse
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.AcceptFollowRequest
+import io.getstream.feeds.android.network.models.ActivityResponse
 import io.getstream.feeds.android.network.models.FeedSuggestionResponse
 import io.getstream.feeds.android.network.models.FollowRequest
 import io.getstream.feeds.android.network.models.QueryFeedMembersRequest
@@ -65,7 +65,15 @@ internal class FeedsRepositoryImplTest {
     fun `on getOrCreateFeed, delegate to api`() = runTest {
         val query = FeedQuery(group = "user", id = "user-1")
         val request = query.toRequest()
-        val apiResult = getOrCreateFeedResponse()
+        val apiResult =
+            getOrCreateFeedResponse(
+                activities =
+                    listOf(
+                        activityResponse("activity-2", createdAt = 2000),
+                        activityResponse("activity-1", createdAt = 1000),
+                        activityResponse("activity-3", createdAt = 3000),
+                    )
+            )
 
         testDelegation(
             apiFunction = {
@@ -76,12 +84,7 @@ internal class FeedsRepositoryImplTest {
             repositoryResult =
                 GetOrCreateInfo(
                     pagination = PaginationData(next = "next", previous = "prev"),
-                    activities = emptyList(),
-                    activitiesQueryConfig =
-                        QueryConfiguration(
-                            filter = query.activityFilter,
-                            sort = ActivitiesSort.Default,
-                        ),
+                    activities = apiResult.activities.map(ActivityResponse::toModel),
                     aggregatedActivities = emptyList(),
                     feed = apiResult.feed.toModel(),
                     followers = emptyList(),

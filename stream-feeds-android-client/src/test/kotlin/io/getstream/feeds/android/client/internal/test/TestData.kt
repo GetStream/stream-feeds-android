@@ -329,11 +329,11 @@ internal object TestData {
             updatedAt = Date(1000),
         )
 
-    fun activityResponse(id: String = ""): ActivityResponse =
+    fun activityResponse(id: String = "", createdAt: Long = 1000): ActivityResponse =
         ActivityResponse(
             bookmarkCount = 0,
             commentCount = 0,
-            createdAt = Date(1000),
+            createdAt = Date(createdAt),
             id = id,
             popularity = 0,
             reactionCount = 0,
@@ -685,11 +685,11 @@ internal object TestData {
             custom = emptyMap(),
         )
 
-    fun getOrCreateFeedResponse() =
+    fun getOrCreateFeedResponse(activities: List<ActivityResponse> = emptyList()) =
         GetOrCreateFeedResponse(
             created = false,
             duration = "duration",
-            activities = emptyList(),
+            activities = activities,
             aggregatedActivities = emptyList(),
             followers = emptyList(),
             following = emptyList(),

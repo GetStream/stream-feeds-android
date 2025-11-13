@@ -29,7 +29,6 @@ import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
-import io.getstream.feeds.android.client.internal.state.query.ActivitiesQueryConfig
 import io.getstream.feeds.android.network.models.AcceptFollowRequest
 import io.getstream.feeds.android.network.models.FollowRequest
 import io.getstream.feeds.android.network.models.NotificationStatusResponse
@@ -115,20 +114,18 @@ internal interface FeedsRepository {
  * Data class representing the information returned when getting or creating a feed.
  *
  * @property activities A paginated result of activities associated with the feed.
- * @property activitiesQueryConfig The configuration used to query activities.
+ * @property aggregatedActivities A list of aggregated activities in the feed.
  * @property feed The feed data associated with the feed.
  * @property followers A list of followers for the feed.
  * @property following A list of feeds that this feed is following.
  * @property followRequests A list of follow requests for the feed.
  * @property members A paginated result of members in the feed.
  * @property pinnedActivities A list of activities that are pinned in the feed.
- * @property aggregatedActivities A list of aggregated activities in the feed.
  * @property notificationStatus The notification status for the feed, if available.
  */
 internal data class GetOrCreateInfo(
     val pagination: PaginationData,
     val activities: List<ActivityData>,
-    val activitiesQueryConfig: ActivitiesQueryConfig,
     val aggregatedActivities: List<AggregatedActivityData>,
     val feed: FeedData,
     val followers: List<FollowData>,

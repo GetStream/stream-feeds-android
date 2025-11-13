@@ -16,7 +16,6 @@
 
 package io.getstream.feeds.android.client.internal.repository
 
-import io.getstream.android.core.api.sort.sortedWith
 import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
@@ -25,11 +24,9 @@ import io.getstream.feeds.android.client.api.model.FeedSuggestionData
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationData
-import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
-import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.model.isFollowRequest
 import io.getstream.feeds.android.client.internal.model.isFollowerOf
 import io.getstream.feeds.android.client.internal.model.isFollowing
@@ -65,10 +62,7 @@ internal class FeedsRepositoryImpl(private val api: FeedsApi) : FeedsRepository 
         val rawFollowers = response.followers.map { it.toModel() }
         GetOrCreateInfo(
             pagination = PaginationData(next = response.next, previous = response.prev),
-            activities =
-                response.activities.map { it.toModel() }.sortedWith(ActivitiesSort.Default),
-            activitiesQueryConfig =
-                QueryConfiguration(filter = query.activityFilter, sort = ActivitiesSort.Default),
+            activities = response.activities.map { it.toModel() },
             aggregatedActivities = response.aggregatedActivities.map { it.toModel() },
             feed = response.feed.toModel(),
             followers = rawFollowers.filter { it.isFollowerOf(fid) },
