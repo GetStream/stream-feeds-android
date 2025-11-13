@@ -49,7 +49,7 @@ internal class StreamFeedUploaderTest {
         coEvery { cdnApi.sendFile(any()) } returns uploadResponse
         val expectedResult =
             Result.success(UploadedFile(fileUrl = "file", thumbnailUrl = "thumbnail"))
-        val payload = FeedUploadPayload(file = File("test.txt"), type = object : FileType {})
+        val payload = FeedUploadPayload(file = File("test.txt"), type = FileType.Other)
 
         val result = uploader.upload(payload)
 
