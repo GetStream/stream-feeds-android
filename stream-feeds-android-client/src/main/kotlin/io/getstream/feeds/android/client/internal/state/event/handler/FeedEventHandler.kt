@@ -16,9 +16,8 @@
 
 package io.getstream.feeds.android.client.internal.state.event.handler
 
-import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FollowData
-import io.getstream.feeds.android.client.api.state.query.ActivitiesFilter
+import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.state.FeedStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.query.matches
@@ -29,14 +28,12 @@ import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventList
  * processing incoming events related to feeds, such as activity updates, reactions, comments, and
  * other feed-related actions.
  *
- * @param fid The unique identifier for the feed this handler is associated with.
- * @param activityFilter An optional filter to determine which activities should be processed.
+ * @param query The feed query this handler is associated with.
  * @param currentUserId The ID of the current user, used to filter user-specific events.
  * @property state The instance that manages updates to the feed state.
  */
 internal class FeedEventHandler(
-    private val fid: FeedId,
-    private val activityFilter: ActivitiesFilter?,
+    private val query: FeedQuery,
     private val currentUserId: String,
     private val state: FeedStateUpdates,
 ) : StateUpdateEventListener {
@@ -50,20 +47,23 @@ internal class FeedEventHandler(
         when (event) {
             is StateUpdateEvent.ActivityAdded -> {
                 // We add activities only on strict matches, i.e. we're sure they belong to the feed
-                if (event.scope strictlyMatches fid && event.activity matches activityFilter) {
+                if (
+                    event.scope strictlyMatches query.fid &&
+                        event.activity matches query.activityFilter
+                ) {
                     state.onActivityAdded(event.activity)
                 }
             }
 
             is StateUpdateEvent.ActivityDeleted -> {
-                if (event.scope matches fid) {
+                if (event.scope matches query.fid) {
                     state.onActivityRemoved(event.activityId)
                 }
             }
 
             is StateUpdateEvent.ActivityUpdated -> {
-                if (event.scope matches fid) {
-                    if (event.activity matches activityFilter) {
+                if (event.scope matches query.fid) {
+                    if (event.activity matches query.activityFilter) {
                         state.onActivityUpdated(event.activity)
                     } else {
                         // We remove elements that used to match the filter but no longer do
@@ -73,31 +73,31 @@ internal class FeedEventHandler(
             }
 
             is StateUpdateEvent.ActivityRemovedFromFeed -> {
-                if (event.scope matches fid) {
+                if (event.scope matches query.fid) {
                     state.onActivityRemoved(event.activityId)
                 }
             }
 
             is StateUpdateEvent.ActivityReactionDeleted -> {
-                if (event.scope matches fid) {
+                if (event.scope matches query.fid) {
                     state.onReactionRemoved(event.reaction, event.activity)
                 }
             }
 
             is StateUpdateEvent.ActivityReactionUpserted -> {
-                if (event.scope matches fid) {
+                if (event.scope matches query.fid) {
                     state.onReactionUpserted(event.reaction, event.activity, event.enforceUnique)
                 }
             }
 
             is StateUpdateEvent.ActivityPinned -> {
-                if (event.scope matches fid) {
+                if (event.scope matches query.fid) {
                     state.onActivityPinned(event.pinnedActivity)
                 }
             }
 
             is StateUpdateEvent.ActivityUnpinned -> {
-                if (event.scope matches fid) {
+                if (event.scope matches query.fid) {
                     state.onActivityUnpinned(event.activityId)
                 }
             }
@@ -121,31 +121,31 @@ internal class FeedEventHandler(
             }
 
             is StateUpdateEvent.CommentAdded -> {
-                if (event.scope matches fid) {
+                if (event.scope matches query.fid) {
                     state.onCommentUpserted(event.comment)
                 }
             }
 
             is StateUpdateEvent.CommentDeleted -> {
-                if (event.scope matches fid) {
+                if (event.scope matches query.fid) {
                     state.onCommentRemoved(event.comment)
                 }
             }
 
             is StateUpdateEvent.CommentUpdated -> {
-                if (event.scope matches fid) {
+                if (event.scope matches query.fid) {
                     state.onCommentUpserted(event.comment)
                 }
             }
 
             is StateUpdateEvent.CommentReactionDeleted -> {
-                if (event.scope matches fid) {
+                if (event.scope matches query.fid) {
                     state.onCommentReactionRemoved(event.comment, event.reaction)
                 }
             }
 
             is StateUpdateEvent.CommentReactionUpserted -> {
-                if (event.scope matches fid) {
+                if (event.scope matches query.fid) {
                     state.onCommentReactionUpserted(
                         event.comment,
                         event.reaction,
@@ -155,13 +155,13 @@ internal class FeedEventHandler(
             }
 
             is StateUpdateEvent.FeedDeleted -> {
-                if (event.fid == fid.rawValue) {
+                if (event.fid == query.fid.rawValue) {
                     state.onFeedDeleted()
                 }
             }
 
             is StateUpdateEvent.FeedUpdated -> {
-                if (event.feed.fid == fid) {
+                if (event.feed.fid == query.fid) {
                     state.onFeedUpdated(event.feed)
                 }
             }
@@ -185,7 +185,7 @@ internal class FeedEventHandler(
             }
 
             is StateUpdateEvent.NotificationFeedUpdated -> {
-                if (event.fid == fid.rawValue) {
+                if (event.fid == query.fid.rawValue) {
                     state.onNotificationFeedUpdated(
                         aggregatedActivities = event.aggregatedActivities,
                         notificationStatus = event.notificationStatus,
@@ -194,7 +194,7 @@ internal class FeedEventHandler(
             }
 
             is StateUpdateEvent.StoriesFeedUpdated -> {
-                if (event.fid == fid.rawValue) {
+                if (event.fid == query.fid.rawValue) {
                     state.onStoriesFeedUpdated(event.activities, event.aggregatedActivities)
                 }
             }
@@ -218,5 +218,6 @@ internal class FeedEventHandler(
         }
     }
 
-    private fun FollowData.matchesFeed() = sourceFeed.fid == fid || targetFeed.fid == fid
+    private fun FollowData.matchesFeed() =
+        sourceFeed.fid == query.fid || targetFeed.fid == query.fid
 }

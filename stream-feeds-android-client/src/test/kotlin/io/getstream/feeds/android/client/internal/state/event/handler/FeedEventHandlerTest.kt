@@ -21,6 +21,7 @@ import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
+import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.state.FeedStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.FidScope
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
@@ -76,13 +77,14 @@ internal class FeedEventHandlerTest(
 ) : BaseEventHandlerTest<FeedStateUpdates>(testName, event, verifyBlock) {
 
     override val state: FeedStateUpdates = mockk(relaxed = true)
-    override val handler = FeedEventHandler(fid, filter, userId, state)
+    override val handler = FeedEventHandler(query, userId, state)
 
     companion object {
         private val fid = FeedId("group", "feed-1")
         private val fidScope = FidScope.of(fid)
         private val otherFidScope = FidScope.of("group:different")
-        private val filter = ActivitiesFilterField.type.equal("post")
+        private val query =
+            FeedQuery(fid = fid, activityFilter = ActivitiesFilterField.type.equal("post"))
         private const val userId = "user-1"
         private const val activityId = "activity-1"
         private val activity = activityData(activityId, type = "post")
