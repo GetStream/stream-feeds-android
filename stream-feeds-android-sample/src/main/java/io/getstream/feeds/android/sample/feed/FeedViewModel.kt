@@ -259,7 +259,7 @@ constructor(private val application: Application, loginManager: LoginManager) : 
             text = text,
             feeds = listOf(feedId.rawValue),
             expiresAt = if (isStory) Clock.System.now().plus(1.days).toString() else null,
-            attachmentUploads = attachments.map { FeedUploadPayload(it, FileType.Image("jpeg")) },
+            attachmentUploads = attachments.map { FeedUploadPayload(it, FileType.Image) },
         )
 
     fun onCreatePoll(poll: PollFormData) {

@@ -71,8 +71,8 @@ internal class ActivitiesRepositoryImplTest {
     fun `on addActivity, upload attachments and send api request`() = runTest {
         val attachmentUploads =
             listOf(
-                FeedUploadPayload(File("1"), FileType.Image("jpg")),
-                FeedUploadPayload(File("2"), FileType.Image("png")),
+                FeedUploadPayload(File("1"), FileType.Image),
+                FeedUploadPayload(File("2"), FileType.Image),
             )
         val request =
             FeedAddActivityRequest(
@@ -111,7 +111,7 @@ internal class ActivitiesRepositoryImplTest {
 
     @Test
     fun `addActivity on upload error return failure`() = runTest {
-        val attachmentUploads = listOf(FeedUploadPayload(File("some file"), FileType.Image("jpg")))
+        val attachmentUploads = listOf(FeedUploadPayload(File("some file"), FileType.Image))
         val request =
             FeedAddActivityRequest(
                 request = AddActivityRequest(type = "post", text = "Nice post"),

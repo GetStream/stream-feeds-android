@@ -67,8 +67,8 @@ internal class CommentsRepositoryImplTest {
     fun `on addComment, upload attachments and send api request`() = runTest {
         val attachmentUploads =
             listOf(
-                FeedUploadPayload(File("1"), FileType.Image("jpg")),
-                FeedUploadPayload(File("2"), FileType.Image("png")),
+                FeedUploadPayload(File("1"), FileType.Image),
+                FeedUploadPayload(File("2"), FileType.Image),
             )
         val request =
             ActivityAddCommentRequest(
@@ -101,7 +101,7 @@ internal class CommentsRepositoryImplTest {
 
     @Test
     fun `addComment on error return failure`() = runTest {
-        val attachmentUploads = listOf(FeedUploadPayload(File("some file"), FileType.Image("jpg")))
+        val attachmentUploads = listOf(FeedUploadPayload(File("some file"), FileType.Image))
         val request =
             ActivityAddCommentRequest(
                 request =
@@ -122,8 +122,8 @@ internal class CommentsRepositoryImplTest {
 
     @Test
     fun `on addCommentsBatch, upload attachments and send api request`() = runTest {
-        val payload1 = FeedUploadPayload(File("1"), FileType.Image("jpg"))
-        val payload2 = FeedUploadPayload(File("2"), FileType.Image("png"))
+        val payload1 = FeedUploadPayload(File("1"), FileType.Image)
+        val payload2 = FeedUploadPayload(File("2"), FileType.Image)
         val requests =
             listOf(
                 ActivityAddCommentRequest(

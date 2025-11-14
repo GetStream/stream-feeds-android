@@ -151,7 +151,7 @@ constructor(
                             createNotificationActivity = true,
                             attachmentUploads =
                                 attachmentFiles.map {
-                                    FeedUploadPayload(file = it, type = FileType.Image("jpeg"))
+                                    FeedUploadPayload(file = it, type = FileType.Image)
                                 },
                         ),
                         attachmentUploadProgress = { file, progress ->

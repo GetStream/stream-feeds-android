@@ -19,8 +19,8 @@ package io.getstream.feeds.android.client.internal.file
 import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.file.FeedUploader
+import io.getstream.feeds.android.client.api.file.FileType
 import io.getstream.feeds.android.client.api.file.UploadedFile
-import io.getstream.feeds.android.client.api.file.isImage
 import io.getstream.feeds.android.client.internal.http.ProgressRequestBody
 import java.io.File
 import okhttp3.MediaType
@@ -45,7 +45,12 @@ internal class StreamFeedUploader(
                 body = requestBody,
             )
 
-        val response = if (payload.type.isImage) cdnApi.sendImage(part) else cdnApi.sendFile(part)
+        val response =
+            if (payload.type == FileType.Image) {
+                cdnApi.sendImage(part)
+            } else {
+                cdnApi.sendFile(part)
+            }
 
         UploadedFile(
             fileUrl = response.file ?: throw IllegalStateException("Uploaded file URL is null"),
