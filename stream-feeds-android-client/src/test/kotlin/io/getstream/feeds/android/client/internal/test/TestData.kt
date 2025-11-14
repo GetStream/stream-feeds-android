@@ -211,6 +211,7 @@ internal object TestData {
         comments: List<CommentData> = emptyList(),
         feeds: List<String> = emptyList(),
         createdAt: Long = 1000,
+        updatedAt: Long = createdAt,
         hidden: Boolean = false,
     ): ActivityData =
         ActivityData(
@@ -247,7 +248,7 @@ internal object TestData {
             shareCount = 0,
             text = text,
             type = type,
-            updatedAt = Date(1000),
+            updatedAt = Date(updatedAt),
             user = userData("user-1"),
             visibility = ActivityDataVisibility.Public,
             visibilityTag = null,

@@ -30,6 +30,7 @@ import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
 import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.api.model.UserAuthType
@@ -268,12 +269,14 @@ internal class FeedsClientImpl(
     override suspend fun upsertActivities(
         activities: List<ActivityRequest>
     ): Result<List<ActivityData>> {
-        return activitiesRepository.upsertActivities(activities).onSuccess {
-            it.forEach { activity ->
-                stateEventsSubscriptionManager.onEvent(
-                    StateUpdateEvent.ActivityAdded(FidScope.unknown, activity)
-                )
-            }
+        return activitiesRepository.upsertActivities(activities).onSuccess { resultActivities ->
+            val (updated, added) =
+                resultActivities.partition { activity ->
+                    activity.updatedAt.time - activity.createdAt.time > 100
+                }
+
+            val updates = ModelUpdates(added = added, removedIds = emptySet(), updated = updated)
+            stateEventsSubscriptionManager.onEvent(StateUpdateEvent.ActivityBatchUpdated(updates))
         }
     }
 
@@ -281,11 +284,13 @@ internal class FeedsClientImpl(
         request: DeleteActivitiesRequest
     ): Result<DeleteActivitiesResponse> {
         return activitiesRepository.deleteActivities(request).onSuccess {
-            it.deletedIds.forEach { activityId ->
-                stateEventsSubscriptionManager.onEvent(
-                    StateUpdateEvent.ActivityDeleted(FidScope.unknown, activityId)
+            val updates =
+                ModelUpdates<ActivityData>(
+                    added = emptyList(),
+                    removedIds = it.deletedIds.toSet(),
+                    updated = emptyList(),
                 )
-            }
+            stateEventsSubscriptionManager.onEvent(StateUpdateEvent.ActivityBatchUpdated(updates))
         }
     }
 

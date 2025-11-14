@@ -89,6 +89,8 @@ internal sealed interface StateUpdateEvent {
 
     data class ActivityUpdated(val scope: FidScope, val activity: ActivityData) : StateUpdateEvent
 
+    data class ActivityBatchUpdated(val updates: ModelUpdates<ActivityData>) : StateUpdateEvent
+
     data class ActivityPinned(val scope: FidScope, val pinnedActivity: ActivityPinData) :
         StateUpdateEvent
 
@@ -210,6 +212,7 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
                         userId = activityFeedback.user.id,
                         hidden = activityFeedback.value == "true",
                     )
+
                 else -> null
             }
 
