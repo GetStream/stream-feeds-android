@@ -92,7 +92,9 @@ import io.getstream.feeds.android.client.internal.state.MemberListImpl
 import io.getstream.feeds.android.client.internal.state.ModerationConfigListImpl
 import io.getstream.feeds.android.client.internal.state.PollListImpl
 import io.getstream.feeds.android.client.internal.state.PollVoteListImpl
+import io.getstream.feeds.android.client.internal.state.event.FidScope
 import io.getstream.feeds.android.client.internal.state.event.StateEventEnricher
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FollowBatchUpdate
 import io.getstream.feeds.android.client.internal.state.event.handler.OnNewActivity
 import io.getstream.feeds.android.client.internal.state.event.toModel
@@ -269,19 +271,39 @@ internal class FeedsClientImpl(
         )
 
     override suspend fun addActivity(request: AddActivityRequest): Result<ActivityData> {
-        return activitiesRepository.addActivity(request)
+        return activitiesRepository.addActivity(request).onSuccess {
+            stateEventsSubscriptionManager.onEvent(
+                StateUpdateEvent.ActivityAdded(FidScope.unknown, it)
+            )
+        }
     }
 
     override suspend fun upsertActivities(
         activities: List<ActivityRequest>
     ): Result<List<ActivityData>> {
-        return activitiesRepository.upsertActivities(activities)
+        return activitiesRepository.upsertActivities(activities).onSuccess { resultActivities ->
+            val (updated, added) =
+                resultActivities.partition { activity ->
+                    activity.updatedAt.time - activity.createdAt.time > 100
+                }
+
+            val updates = ModelUpdates(added = added, removedIds = emptySet(), updated = updated)
+            stateEventsSubscriptionManager.onEvent(StateUpdateEvent.ActivityBatchUpdated(updates))
+        }
     }
 
     override suspend fun deleteActivities(
         request: DeleteActivitiesRequest
     ): Result<DeleteActivitiesResponse> {
-        return activitiesRepository.deleteActivities(request)
+        return activitiesRepository.deleteActivities(request).onSuccess {
+            val updates =
+                ModelUpdates<ActivityData>(
+                    added = emptyList(),
+                    removedIds = it.deletedIds.toSet(),
+                    updated = emptyList(),
+                )
+            stateEventsSubscriptionManager.onEvent(StateUpdateEvent.ActivityBatchUpdated(updates))
+        }
     }
 
     override suspend fun activityFeedback(

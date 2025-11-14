@@ -55,9 +55,11 @@ import io.getstream.feeds.android.client.internal.repository.FilesRepository
 import io.getstream.feeds.android.client.internal.repository.ModerationRepository
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.state.event.StateEventEnricher
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityBatchUpdated
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
+import io.getstream.feeds.android.client.internal.test.TestSubscriptionManager
 import io.getstream.feeds.android.network.models.ActivityRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
@@ -82,9 +84,8 @@ internal class FeedsClientImplTest {
     private val coreClient: StreamClient = mockk(relaxed = true)
     private val feedsEventsSubscriptionManager: StreamSubscriptionManager<FeedsEventListener> =
         mockk(relaxed = true)
-    private val stateEventsSubscriptionManager:
-        StreamSubscriptionManager<StateUpdateEventListener> =
-        mockk(relaxed = true)
+    private val stateEventListener: StateUpdateEventListener = mockk(relaxed = true)
+    private val stateEventsSubscriptionManager = TestSubscriptionManager(stateEventListener)
     private val apiKey: StreamApiKey = StreamApiKey.fromString("test-api-key")
     private val user: User = User(id = "test-user")
     private val activitiesRepository: ActivitiesRepository = mockk(relaxed = true)
@@ -195,16 +196,25 @@ internal class FeedsClientImplTest {
     }
 
     @Test
-    fun `upsertActivities when given activities, then delegates to activities repository`() =
+    fun `upsertActivities when given activities, delegate to repository and fire batch event`() =
         runTest {
             val activities = listOf(ActivityRequest(type = "post", text = "Hello world"))
-            val activityDataList = listOf(activityData(id = "activity-1", text = "Hello world"))
+            val added = activityData(id = "activity-2", createdAt = 2000, updatedAt = 2050)
+            val updated = activityData(id = "activity-1", createdAt = 1000, updatedAt = 1200)
+            val activityDataList = listOf(updated, added)
             coEvery { activitiesRepository.upsertActivities(activities) } returns
                 Result.success(activityDataList)
+            val expectedUpdates =
+                ModelUpdates(
+                    added = listOf(added),
+                    removedIds = emptySet(),
+                    updated = listOf(updated),
+                )
 
             val result = feedsClient.upsertActivities(activities)
 
             assertEquals(activityDataList, result.getOrNull())
+            verify { stateEventListener.onEvent(ActivityBatchUpdated(expectedUpdates)) }
         }
 
     @Test
@@ -233,6 +243,17 @@ internal class FeedsClientImplTest {
         val result = feedsClient.deleteActivities(request)
 
         assertEquals(deleteResponse, result.getOrNull())
+        verify {
+            stateEventListener.onEvent(
+                ActivityBatchUpdated(
+                    ModelUpdates(
+                        added = emptyList(),
+                        removedIds = setOf("activity-1", "activity-2"),
+                        updated = emptyList(),
+                    )
+                )
+            )
+        }
     }
 
     @Test
