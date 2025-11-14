@@ -91,9 +91,12 @@ import io.getstream.feeds.android.client.internal.state.MemberListImpl
 import io.getstream.feeds.android.client.internal.state.ModerationConfigListImpl
 import io.getstream.feeds.android.client.internal.state.PollListImpl
 import io.getstream.feeds.android.client.internal.state.PollVoteListImpl
+import io.getstream.feeds.android.client.internal.state.event.FidScope
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.toModel
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
+import io.getstream.feeds.android.client.internal.subscribe.onEvent
 import io.getstream.feeds.android.network.models.ActivityFeedbackRequest
 import io.getstream.feeds.android.network.models.ActivityRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
@@ -255,19 +258,35 @@ internal class FeedsClientImpl(
         )
 
     override suspend fun addActivity(request: AddActivityRequest): Result<ActivityData> {
-        return activitiesRepository.addActivity(request)
+        return activitiesRepository.addActivity(request).onSuccess {
+            stateEventsSubscriptionManager.onEvent(
+                StateUpdateEvent.ActivityAdded(FidScope.unknown, it)
+            )
+        }
     }
 
     override suspend fun upsertActivities(
         activities: List<ActivityRequest>
     ): Result<List<ActivityData>> {
-        return activitiesRepository.upsertActivities(activities)
+        return activitiesRepository.upsertActivities(activities).onSuccess {
+            it.forEach { activity ->
+                stateEventsSubscriptionManager.onEvent(
+                    StateUpdateEvent.ActivityAdded(FidScope.unknown, activity)
+                )
+            }
+        }
     }
 
     override suspend fun deleteActivities(
         request: DeleteActivitiesRequest
     ): Result<DeleteActivitiesResponse> {
-        return activitiesRepository.deleteActivities(request)
+        return activitiesRepository.deleteActivities(request).onSuccess {
+            it.deletedIds.forEach { activityId ->
+                stateEventsSubscriptionManager.onEvent(
+                    StateUpdateEvent.ActivityDeleted(FidScope.unknown, activityId)
+                )
+            }
+        }
     }
 
     override suspend fun activityFeedback(
