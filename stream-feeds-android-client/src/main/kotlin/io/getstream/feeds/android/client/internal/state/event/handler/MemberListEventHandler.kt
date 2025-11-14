@@ -61,7 +61,7 @@ internal class MemberListEventHandler(
                 val added = event.updates.added.filter { it matches filter }
                 // We remove elements that used to match the filter but no longer do
                 val (updated, removed) = event.updates.updated.partition { it matches filter }
-                val removedIds = event.updates.removedIds.toMutableList()
+                val removedIds = event.updates.removedIds.toMutableSet()
                 removed.mapTo(removedIds, FeedMemberData::id)
 
                 state.onMembersUpdated(

@@ -105,7 +105,7 @@ internal class MemberListEventHandlerTest(
                                     ModelUpdates(
                                         added = listOf(matchingMember, nonMatchingMember),
                                         updated = listOf(anotherMatching, anotherNonMatching),
-                                        removedIds = listOf("removed-1", "removed-2"),
+                                        removedIds = setOf("removed-1", "removed-2"),
                                     ),
                             ),
                         verifyBlock = { state ->
@@ -114,7 +114,7 @@ internal class MemberListEventHandlerTest(
                                     added = listOf(matchingMember),
                                     updated = listOf(anotherMatching),
                                     removedIds =
-                                        listOf("removed-1", "removed-2", anotherNonMatching.id),
+                                        setOf("removed-1", "removed-2", anotherNonMatching.id),
                                 )
                             )
                         },
@@ -129,7 +129,7 @@ internal class MemberListEventHandlerTest(
                                 ModelUpdates(
                                     added = listOf(matchingMember),
                                     updated = emptyList(),
-                                    removedIds = listOf("removed-1"),
+                                    removedIds = setOf("removed-1"),
                                 ),
                         ),
                     verifyBlock = { state -> state wasNot called },
