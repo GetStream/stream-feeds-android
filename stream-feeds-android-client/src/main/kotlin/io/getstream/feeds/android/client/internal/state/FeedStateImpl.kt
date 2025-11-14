@@ -146,13 +146,13 @@ internal class FeedStateImpl(
         }
     }
 
-    override fun onActivityUpserted(activity: ActivityData) {
-        if (_activities.value.any { it.id == activity.id }) {
-            updateActivitiesWhere({ it.id == activity.id }) { existingActivity ->
-                existingActivity.update(activity)
-            }
-        } else {
-            _activities.update { current -> current.upsert(activity, ActivityData::id) }
+    override fun onActivityAdded(activity: ActivityData) {
+        _activities.update { current -> current.upsert(activity, ActivityData::id) }
+    }
+
+    override fun onActivityUpdated(activity: ActivityData) {
+        updateActivitiesWhere({ it.id == activity.id }) { existingActivity ->
+            existingActivity.update(activity)
         }
     }
 
@@ -404,8 +404,11 @@ internal interface FeedStateUpdates {
         pagination: PaginationData,
     )
 
-    /** Handles updates to the feed state when activity is added or updated. */
-    fun onActivityUpserted(activity: ActivityData)
+    /** Handles updates to the feed state when activity is added. */
+    fun onActivityAdded(activity: ActivityData)
+
+    /** Handles updates to the feed state when activity is updated. */
+    fun onActivityUpdated(activity: ActivityData)
 
     /** Handles updates to the feed state when an activity is removed. */
     fun onActivityRemoved(activityId: String)
