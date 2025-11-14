@@ -44,6 +44,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 internal class FeedStateImplTest {
@@ -400,20 +401,29 @@ internal class FeedStateImplTest {
 
     @Test
     fun `on onFeedDeleted, then clear all state`() = runTest {
+        val activity = activityData()
+        val notificationStatus = NotificationStatusResponse(unread = 5, unseen = 3)
         setupInitialState(
-            activities = listOf(activityData()),
+            activities = listOf(activity),
+            aggregatedActivities = listOf(aggregatedActivityData()),
+            pinnedActivities = listOf(activityPin(activity)),
             followers = listOf(followData()),
             following = listOf(followData()),
             followRequests = listOf(followData()),
         )
+        feedState.onNotificationFeedUpdated(emptyList(), notificationStatus)
 
         feedState.onFeedDeleted()
 
-        assertEquals(emptyList<ActivityData>(), feedState.activities.value)
+        assertTrue(feedState.activities.value.isEmpty())
+        assertTrue(feedState.aggregatedActivities.value.isEmpty())
+        assertTrue(feedState.pinnedActivities.value.isEmpty())
         assertNull(feedState.feed.value)
-        assertEquals(emptyList<FollowData>(), feedState.followers.value)
-        assertEquals(emptyList<FollowData>(), feedState.following.value)
-        assertEquals(emptyList<FollowData>(), feedState.followRequests.value)
+        assertTrue(feedState.followers.value.isEmpty())
+        assertTrue(feedState.following.value.isEmpty())
+        assertTrue(feedState.followRequests.value.isEmpty())
+        assertNull(feedState.notificationStatus.value)
+        assertNull(feedState.activitiesPagination)
     }
 
     @Test
