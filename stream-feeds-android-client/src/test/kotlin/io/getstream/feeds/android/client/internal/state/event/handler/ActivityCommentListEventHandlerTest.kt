@@ -16,9 +16,11 @@
 
 package io.getstream.feeds.android.client.internal.state.event.handler
 
+import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.internal.state.ActivityCommentListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.FidScope
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityBatchUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentDeleted
@@ -62,6 +64,30 @@ internal class ActivityCommentListEventHandlerTest(
                 testParams<ActivityCommentListStateUpdates>(
                     name = "ActivityDeleted non-matching activity",
                     event = ActivityDeleted(fidScope, differentObjectId),
+                    verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<ActivityCommentListStateUpdates>(
+                    name = "ActivityBatchUpdated matching activity in removedIds",
+                    event =
+                        ActivityBatchUpdated(
+                            ModelUpdates(
+                                added = emptyList(),
+                                removedIds = setOf(objectId),
+                                updated = emptyList(),
+                            )
+                        ),
+                    verifyBlock = { state -> state.onActivityRemoved() },
+                ),
+                testParams<ActivityCommentListStateUpdates>(
+                    name = "ActivityBatchUpdated non-matching activity in removedIds",
+                    event =
+                        ActivityBatchUpdated(
+                            ModelUpdates(
+                                added = emptyList(),
+                                removedIds = setOf(differentObjectId),
+                                updated = emptyList(),
+                            )
+                        ),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<ActivityCommentListStateUpdates>(

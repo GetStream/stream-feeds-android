@@ -34,6 +34,12 @@ internal class ActivityCommentListEventHandler(
                 }
             }
 
+            is StateUpdateEvent.ActivityBatchUpdated -> {
+                if (objectId in event.updates.removedIds) {
+                    state.onActivityRemoved()
+                }
+            }
+
             is StateUpdateEvent.CommentAdded -> {
                 if (event.comment.objectId == objectId && event.comment.objectType == objectType) {
                     state.onCommentUpserted(event.comment)
