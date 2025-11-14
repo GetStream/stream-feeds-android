@@ -19,7 +19,21 @@ package io.getstream.feeds.android.client.internal.state.query
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
 import io.getstream.android.core.api.filter.matches
+import io.getstream.feeds.android.client.api.model.ModelUpdates
 
 internal infix fun <M, F : FilterField<M>> M.matches(filter: Filter<M, F>?): Boolean =
     // Null filter means "no filter", so everything matches
     filter == null || filter.matches(this)
+
+internal fun <M, F : Filter<M, *>> ModelUpdates<M>.applyFilter(
+    filter: F?,
+    getId: M.() -> String,
+): ModelUpdates<M> {
+    val added = added.filter { it matches filter }
+    // We remove elements that used to match the filter but no longer do
+    val (updated, removed) = updated.partition { it matches filter }
+    val removedIds = removedIds.toMutableSet()
+    removed.mapTo(removedIds, getId)
+
+    return ModelUpdates(added = added, updated = updated, removedIds = removedIds)
+}
