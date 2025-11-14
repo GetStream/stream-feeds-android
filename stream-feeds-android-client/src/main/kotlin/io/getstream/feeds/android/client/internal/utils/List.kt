@@ -46,7 +46,8 @@ internal inline fun <T> List<T>.updateIf(filter: (T) -> Boolean, update: (T) -> 
  *   determine if an element already exists in the list.
  * @param prepend Whether the new element should be added at the start instead of the end.
  * @return A new list containing the upserted element. If an existing element was found, it will be
- *   replaced; otherwise, the new element will be added to the start or end of the list depending on the [prepend] parameter.
+ *   replaced; otherwise, the new element will be added to the start or end of the list depending on
+ *   the [prepend] parameter.
  */
 internal fun <T> List<T>.upsert(
     element: T,
