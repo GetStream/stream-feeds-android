@@ -19,6 +19,7 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.android.core.api.filter.equal
 import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
 import io.getstream.feeds.android.client.internal.state.ActivityListStateUpdates
+import io.getstream.feeds.android.client.internal.state.event.FidScope
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
@@ -62,6 +63,7 @@ internal class ActivityListEventHandlerTest(
     companion object {
         private val testFilter = ActivitiesFilterField.type.equal("post")
         private const val userId = "user-1"
+        private val fidScope = FidScope.of("feed-1")
 
         @JvmStatic
         @Parameterized.Parameters(name = "{0}")
@@ -69,31 +71,31 @@ internal class ActivityListEventHandlerTest(
             listOf(
                 testParams<ActivityListStateUpdates>(
                     name = "ActivityAdded with matching filter",
-                    event = ActivityAdded("feed-1", activityData("activity-1", type = "post")),
+                    event = ActivityAdded(fidScope, activityData("activity-1", type = "post")),
                     verifyBlock = { state ->
                         state.onActivityUpserted(activityData("activity-1", type = "post"))
                     },
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "ActivityAdded with non-matching filter",
-                    event = ActivityAdded("feed-1", activityData("activity-1", type = "story")),
+                    event = ActivityAdded(fidScope, activityData("activity-1", type = "story")),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "ActivityDeleted",
-                    event = ActivityDeleted("feed-1", "activity-1"),
+                    event = ActivityDeleted(fidScope, "activity-1"),
                     verifyBlock = { state -> state.onActivityRemoved("activity-1") },
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "ActivityUpdated with matching filter",
-                    event = ActivityUpdated("feed-1", activityData("activity-1", type = "post")),
+                    event = ActivityUpdated(fidScope, activityData("activity-1", type = "post")),
                     verifyBlock = { state ->
                         state.onActivityUpserted(activityData("activity-1", type = "post"))
                     },
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "ActivityUpdated with non-matching filter",
-                    event = ActivityUpdated("feed-1", activityData("activity-1", type = "story")),
+                    event = ActivityUpdated(fidScope, activityData("activity-1", type = "story")),
                     verifyBlock = { state -> state.onActivityRemoved("activity-1") },
                 ),
                 testParams<ActivityListStateUpdates>(
@@ -110,7 +112,7 @@ internal class ActivityListEventHandlerTest(
                     name = "ActivityReactionDeleted",
                     event =
                         ActivityReactionDeleted(
-                            "feed-1",
+                            fidScope,
                             activityData("activity-1"),
                             feedsReactionData("activity-1"),
                         ),
@@ -125,7 +127,7 @@ internal class ActivityListEventHandlerTest(
                     name = "ActivityReactionUpserted",
                     event =
                         ActivityReactionUpserted(
-                            "feed-1",
+                            fidScope,
                             activityData("activity-1"),
                             feedsReactionData("activity-1"),
                             true,
@@ -155,22 +157,22 @@ internal class ActivityListEventHandlerTest(
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "CommentAdded",
-                    event = CommentAdded("feed-1", commentData()),
+                    event = CommentAdded(fidScope, commentData()),
                     verifyBlock = { state -> state.onCommentUpserted(commentData()) },
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "CommentDeleted",
-                    event = CommentDeleted("feed-1", commentData()),
+                    event = CommentDeleted(fidScope, commentData()),
                     verifyBlock = { state -> state.onCommentRemoved(commentData()) },
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "CommentUpdated",
-                    event = CommentUpdated("feed-1", commentData()),
+                    event = CommentUpdated(fidScope, commentData()),
                     verifyBlock = { state -> state.onCommentUpserted(commentData()) },
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "CommentReactionDeleted",
-                    event = CommentReactionDeleted("feed-1", commentData(), feedsReactionData()),
+                    event = CommentReactionDeleted(fidScope, commentData(), feedsReactionData()),
                     verifyBlock = { state ->
                         state.onCommentReactionRemoved(commentData(), feedsReactionData())
                     },
@@ -179,7 +181,7 @@ internal class ActivityListEventHandlerTest(
                     name = "CommentReactionUpserted",
                     event =
                         CommentReactionUpserted(
-                            "feed-1",
+                            fidScope,
                             commentData(),
                             feedsReactionData(),
                             false,

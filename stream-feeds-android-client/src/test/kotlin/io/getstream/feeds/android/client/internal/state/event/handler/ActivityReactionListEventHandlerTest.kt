@@ -17,6 +17,7 @@
 package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.internal.state.ActivityReactionListStateUpdates
+import io.getstream.feeds.android.client.internal.state.event.FidScope
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionDeleted
@@ -40,6 +41,7 @@ internal class ActivityReactionListEventHandlerTest(
     companion object {
         private const val activityId = "activity-1"
         private const val differentActivityId = "different-activity"
+        private val fidScope = FidScope.of("feed-1")
 
         @JvmStatic
         @Parameterized.Parameters(name = "{0}")
@@ -47,19 +49,19 @@ internal class ActivityReactionListEventHandlerTest(
             listOf(
                 testParams<ActivityReactionListStateUpdates>(
                     name = "ActivityDeleted matching activity",
-                    event = ActivityDeleted("feed-1", activityId),
+                    event = ActivityDeleted(fidScope, activityId),
                     verifyBlock = { state -> state.onActivityRemoved() },
                 ),
                 testParams<ActivityReactionListStateUpdates>(
                     name = "ActivityDeleted non-matching activity",
-                    event = ActivityDeleted("feed-1", differentActivityId),
+                    event = ActivityDeleted(fidScope, differentActivityId),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<ActivityReactionListStateUpdates>(
                     name = "ActivityReactionDeleted for matching activity",
                     event =
                         ActivityReactionDeleted(
-                            "feed-1",
+                            fidScope,
                             activityData(activityId),
                             feedsReactionData(activityId),
                         ),
@@ -71,7 +73,7 @@ internal class ActivityReactionListEventHandlerTest(
                     name = "ActivityReactionDeleted for different activity",
                     event =
                         ActivityReactionDeleted(
-                            "feed-1",
+                            fidScope,
                             activityData(differentActivityId),
                             feedsReactionData(differentActivityId),
                         ),
@@ -81,7 +83,7 @@ internal class ActivityReactionListEventHandlerTest(
                     name = "ActivityReactionUpserted for matching activity",
                     event =
                         ActivityReactionUpserted(
-                            "feed-1",
+                            fidScope,
                             activityData(activityId),
                             feedsReactionData(activityId),
                             true,
@@ -94,7 +96,7 @@ internal class ActivityReactionListEventHandlerTest(
                     name = "ActivityReactionUpserted for different activity",
                     event =
                         ActivityReactionUpserted(
-                            "feed-1",
+                            fidScope,
                             activityData(differentActivityId),
                             feedsReactionData(differentActivityId),
                             true,

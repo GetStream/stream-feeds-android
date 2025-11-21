@@ -22,6 +22,7 @@ import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
 import io.getstream.feeds.android.client.internal.state.FeedStateUpdates
+import io.getstream.feeds.android.client.internal.state.event.FidScope
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
@@ -79,6 +80,8 @@ internal class FeedEventHandlerTest(
 
     companion object {
         private val fid = FeedId("group", "feed-1")
+        private val fidScope = FidScope.of(fid)
+        private val otherFidScope = FidScope.of("group:different")
         private val filter = ActivitiesFilterField.type.equal("post")
         private const val userId = "user-1"
         private const val activityId = "activity-1"
@@ -119,92 +122,92 @@ internal class FeedEventHandlerTest(
             listOf(
                 testParams<FeedStateUpdates>(
                     name = "ActivityAdded matching feed and filter",
-                    event = ActivityAdded(fid.rawValue, activity),
-                    verifyBlock = { state -> state.onActivityUpserted(activity) },
+                    event = ActivityAdded(fidScope, activity),
+                    verifyBlock = { state -> state.onActivityAdded(activity) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityAdded non-matching feed",
-                    event = ActivityAdded("group:different", activity),
+                    event = ActivityAdded(otherFidScope, activity),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityAdded non-matching filter",
-                    event = ActivityAdded(fid.rawValue, nonMatchingActivity),
+                    event = ActivityAdded(fidScope, nonMatchingActivity),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityRemovedFromFeed matching feed",
-                    event = ActivityRemovedFromFeed(fid.rawValue, activityId),
+                    event = ActivityRemovedFromFeed(fidScope, activityId),
                     verifyBlock = { state -> state.onActivityRemoved(activityId) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityRemovedFromFeed non-matching feed",
-                    event = ActivityRemovedFromFeed("group:different", activityId),
+                    event = ActivityRemovedFromFeed(otherFidScope, activityId),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityDeleted matching feed",
-                    event = ActivityDeleted(fid.rawValue, activityId),
+                    event = ActivityDeleted(fidScope, activityId),
                     verifyBlock = { state -> state.onActivityRemoved(activityId) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityDeleted non-matching feed",
-                    event = ActivityDeleted("group:different", activityId),
+                    event = ActivityDeleted(otherFidScope, activityId),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityReactionDeleted matching feed",
-                    event = ActivityReactionDeleted(fid.rawValue, activity, reaction),
+                    event = ActivityReactionDeleted(fidScope, activity, reaction),
                     verifyBlock = { state -> state.onReactionRemoved(reaction, activity) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityReactionDeleted non-matching feed",
-                    event = ActivityReactionDeleted("group:different", activity, reaction),
+                    event = ActivityReactionDeleted(otherFidScope, activity, reaction),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityReactionUpserted matching feed",
-                    event = ActivityReactionUpserted(fid.rawValue, activity, reaction, true),
+                    event = ActivityReactionUpserted(fidScope, activity, reaction, true),
                     verifyBlock = { state -> state.onReactionUpserted(reaction, activity, true) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityReactionUpserted non-matching feed",
-                    event = ActivityReactionUpserted("group:different", activity, reaction, true),
+                    event = ActivityReactionUpserted(otherFidScope, activity, reaction, true),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityUpdated matching feed and filter",
-                    event = ActivityUpdated(fid.rawValue, activity),
-                    verifyBlock = { state -> state.onActivityUpserted(activity) },
+                    event = ActivityUpdated(fidScope, activity),
+                    verifyBlock = { state -> state.onActivityUpdated(activity) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityUpdated non-matching feed",
-                    event = ActivityUpdated("group:different", activity),
+                    event = ActivityUpdated(otherFidScope, activity),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityUpdated non-matching filter",
-                    event = ActivityUpdated(fid.rawValue, nonMatchingActivity),
+                    event = ActivityUpdated(fidScope, nonMatchingActivity),
                     verifyBlock = { state -> state.onActivityRemoved(nonMatchingActivity.id) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityPinned matching feed",
-                    event = ActivityPinned(fid.rawValue, activityPin(activity)),
+                    event = ActivityPinned(fidScope, activityPin(activity)),
                     verifyBlock = { state -> state.onActivityPinned(activityPin(activity)) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityPinned non-matching feed",
-                    event = ActivityPinned("group:different", activityPin(activity)),
+                    event = ActivityPinned(otherFidScope, activityPin(activity)),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityUnpinned matching feed",
-                    event = ActivityUnpinned(fid.rawValue, activityId),
+                    event = ActivityUnpinned(fidScope, activityId),
                     verifyBlock = { state -> state.onActivityUnpinned(activityId) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityUnpinned non-matching feed",
-                    event = ActivityUnpinned("group:different", activityId),
+                    event = ActivityUnpinned(otherFidScope, activityId),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
@@ -239,57 +242,56 @@ internal class FeedEventHandlerTest(
                 ),
                 testParams<FeedStateUpdates>(
                     name = "CommentAdded matching feed",
-                    event = CommentAdded(fid.rawValue, comment),
+                    event = CommentAdded(fidScope, comment),
                     verifyBlock = { state -> state.onCommentUpserted(comment) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "CommentAdded non-matching feed",
-                    event = CommentAdded("group:different", comment),
+                    event = CommentAdded(otherFidScope, comment),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "CommentDeleted matching feed",
-                    event = CommentDeleted(fid.rawValue, comment),
+                    event = CommentDeleted(fidScope, comment),
                     verifyBlock = { state -> state.onCommentRemoved(comment) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "CommentDeleted non-matching feed",
-                    event = CommentDeleted("group:different", comment),
+                    event = CommentDeleted(otherFidScope, comment),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "CommentUpdated matching feed",
-                    event = CommentUpdated(fid.rawValue, comment),
+                    event = CommentUpdated(fidScope, comment),
                     verifyBlock = { state -> state.onCommentUpserted(comment) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "CommentUpdated non-matching feed",
-                    event = CommentUpdated("group:different", comment),
+                    event = CommentUpdated(otherFidScope, comment),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "CommentReactionDeleted matching feed",
-                    event = CommentReactionDeleted(fid.rawValue, comment, commentReaction),
+                    event = CommentReactionDeleted(fidScope, comment, commentReaction),
                     verifyBlock = { state ->
                         state.onCommentReactionRemoved(comment, commentReaction)
                     },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "CommentReactionDeleted non-matching feed",
-                    event = CommentReactionDeleted("group:different", comment, commentReaction),
+                    event = CommentReactionDeleted(otherFidScope, comment, commentReaction),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "CommentReactionUpserted matching feed",
-                    event = CommentReactionUpserted(fid.rawValue, comment, commentReaction, false),
+                    event = CommentReactionUpserted(fidScope, comment, commentReaction, false),
                     verifyBlock = { state ->
                         state.onCommentReactionUpserted(comment, commentReaction, false)
                     },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "CommentReactionUpserted non-matching feed",
-                    event =
-                        CommentReactionUpserted("group:different", comment, commentReaction, false),
+                    event = CommentReactionUpserted(otherFidScope, comment, commentReaction, false),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(

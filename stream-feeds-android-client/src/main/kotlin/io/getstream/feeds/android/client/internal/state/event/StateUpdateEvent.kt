@@ -80,30 +80,31 @@ import io.getstream.feeds.android.network.models.WSEvent
  */
 internal sealed interface StateUpdateEvent {
 
-    data class ActivityAdded(val fid: String, val activity: ActivityData) : StateUpdateEvent
+    data class ActivityAdded(val scope: FidScope, val activity: ActivityData) : StateUpdateEvent
 
-    data class ActivityDeleted(val fid: String, val activityId: String) : StateUpdateEvent
+    data class ActivityDeleted(val scope: FidScope, val activityId: String) : StateUpdateEvent
 
-    data class ActivityRemovedFromFeed(val fid: String, val activityId: String) : StateUpdateEvent
-
-    data class ActivityUpdated(val fid: String, val activity: ActivityData) : StateUpdateEvent
-
-    data class ActivityPinned(val fid: String, val pinnedActivity: ActivityPinData) :
+    data class ActivityRemovedFromFeed(val scope: FidScope, val activityId: String) :
         StateUpdateEvent
 
-    data class ActivityUnpinned(val fid: String, val activityId: String) : StateUpdateEvent
+    data class ActivityUpdated(val scope: FidScope, val activity: ActivityData) : StateUpdateEvent
+
+    data class ActivityPinned(val scope: FidScope, val pinnedActivity: ActivityPinData) :
+        StateUpdateEvent
+
+    data class ActivityUnpinned(val scope: FidScope, val activityId: String) : StateUpdateEvent
 
     data class ActivityHidden(val activityId: String, val userId: String, val hidden: Boolean) :
         StateUpdateEvent
 
     data class ActivityReactionDeleted(
-        val fid: String,
+        val scope: FidScope,
         val activity: ActivityData,
         val reaction: FeedsReactionData,
     ) : StateUpdateEvent
 
     data class ActivityReactionUpserted(
-        val fid: String,
+        val scope: FidScope,
         val activity: ActivityData,
         val reaction: FeedsReactionData,
         val enforceUnique: Boolean,
@@ -119,20 +120,20 @@ internal sealed interface StateUpdateEvent {
 
     data class BookmarkFolderUpdated(val folder: BookmarkFolderData) : StateUpdateEvent
 
-    data class CommentAdded(val fid: String, val comment: CommentData) : StateUpdateEvent
+    data class CommentAdded(val scope: FidScope, val comment: CommentData) : StateUpdateEvent
 
-    data class CommentDeleted(val fid: String, val comment: CommentData) : StateUpdateEvent
+    data class CommentDeleted(val scope: FidScope, val comment: CommentData) : StateUpdateEvent
 
-    data class CommentUpdated(val fid: String, val comment: CommentData) : StateUpdateEvent
+    data class CommentUpdated(val scope: FidScope, val comment: CommentData) : StateUpdateEvent
 
     data class CommentReactionDeleted(
-        val fid: String,
+        val scope: FidScope,
         val comment: CommentData,
         val reaction: FeedsReactionData,
     ) : StateUpdateEvent
 
     data class CommentReactionUpserted(
-        val fid: String,
+        val scope: FidScope,
         val comment: CommentData,
         val reaction: FeedsReactionData,
         val enforceUnique: Boolean,
@@ -184,19 +185,22 @@ internal sealed interface StateUpdateEvent {
 
 internal fun WSEvent.toModel(): StateUpdateEvent? =
     when (this) {
-        is ActivityAddedEvent -> StateUpdateEvent.ActivityAdded(fid, activity.toModel())
+        is ActivityAddedEvent ->
+            StateUpdateEvent.ActivityAdded(FidScope.of(fid), activity.toModel())
 
-        is ActivityDeletedEvent -> StateUpdateEvent.ActivityDeleted(fid, activity.id)
+        is ActivityDeletedEvent -> StateUpdateEvent.ActivityDeleted(FidScope.of(fid), activity.id)
 
         is ActivityRemovedFromFeedEvent ->
-            StateUpdateEvent.ActivityRemovedFromFeed(fid, activity.id)
+            StateUpdateEvent.ActivityRemovedFromFeed(FidScope.of(fid), activity.id)
 
-        is ActivityUpdatedEvent -> StateUpdateEvent.ActivityUpdated(fid, activity.toModel())
+        is ActivityUpdatedEvent ->
+            StateUpdateEvent.ActivityUpdated(FidScope.of(fid), activity.toModel())
 
-        is ActivityPinnedEvent -> StateUpdateEvent.ActivityPinned(fid, pinnedActivity.toModel())
+        is ActivityPinnedEvent ->
+            StateUpdateEvent.ActivityPinned(FidScope.of(fid), pinnedActivity.toModel())
 
         is ActivityUnpinnedEvent ->
-            StateUpdateEvent.ActivityUnpinned(fid, pinnedActivity.activity.id)
+            StateUpdateEvent.ActivityUnpinned(FidScope.of(fid), pinnedActivity.activity.id)
 
         is ActivityFeedbackEvent ->
             when (activityFeedback.action) {
@@ -211,18 +215,22 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
 
         is ActivityReactionAddedEvent ->
             StateUpdateEvent.ActivityReactionUpserted(
-                fid = fid,
+                scope = FidScope.of(fid),
                 activity = activity.toModel(),
                 reaction = reaction.toModel(),
                 enforceUnique = false,
             )
 
         is ActivityReactionDeletedEvent ->
-            StateUpdateEvent.ActivityReactionDeleted(fid, activity.toModel(), reaction.toModel())
+            StateUpdateEvent.ActivityReactionDeleted(
+                FidScope.of(fid),
+                activity.toModel(),
+                reaction.toModel(),
+            )
 
         is ActivityReactionUpdatedEvent ->
             StateUpdateEvent.ActivityReactionUpserted(
-                fid = fid,
+                scope = FidScope.of(fid),
                 activity = activity.toModel(),
                 reaction = reaction.toModel(),
                 enforceUnique = true,
@@ -239,26 +247,32 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
         is BookmarkFolderUpdatedEvent ->
             StateUpdateEvent.BookmarkFolderUpdated(bookmarkFolder.toModel())
 
-        is CommentAddedEvent -> StateUpdateEvent.CommentAdded(fid, comment.toModel())
+        is CommentAddedEvent -> StateUpdateEvent.CommentAdded(FidScope.of(fid), comment.toModel())
 
-        is CommentUpdatedEvent -> StateUpdateEvent.CommentUpdated(fid, comment.toModel())
+        is CommentUpdatedEvent ->
+            StateUpdateEvent.CommentUpdated(FidScope.of(fid), comment.toModel())
 
-        is CommentDeletedEvent -> StateUpdateEvent.CommentDeleted(fid, comment.toModel())
+        is CommentDeletedEvent ->
+            StateUpdateEvent.CommentDeleted(FidScope.of(fid), comment.toModel())
 
         is CommentReactionAddedEvent ->
             StateUpdateEvent.CommentReactionUpserted(
-                fid = fid,
+                scope = FidScope.of(fid),
                 comment = comment.toModel(),
                 reaction = reaction.toModel(),
                 enforceUnique = false,
             )
 
         is CommentReactionDeletedEvent ->
-            StateUpdateEvent.CommentReactionDeleted(fid, comment.toModel(), reaction.toModel())
+            StateUpdateEvent.CommentReactionDeleted(
+                scope = FidScope.of(fid),
+                comment = comment.toModel(),
+                reaction = reaction.toModel(),
+            )
 
         is CommentReactionUpdatedEvent ->
             StateUpdateEvent.CommentReactionUpserted(
-                fid = fid,
+                scope = FidScope.of(fid),
                 comment = comment.toModel(),
                 reaction = reaction.toModel(),
                 enforceUnique = true,
