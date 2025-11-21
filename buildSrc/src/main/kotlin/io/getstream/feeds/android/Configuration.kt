@@ -17,7 +17,7 @@ package io.getstream.feeds.android
 
 object Configuration {
     const val majorVersion = 0
-    const val minorVersion = 5
+    const val minorVersion = 6
     const val patchVersion = 0
     const val versionName = "$majorVersion.$minorVersion.$patchVersion"
     const val snapshotVersionName = "$majorVersion.$minorVersion.${patchVersion + 1}-SNAPSHOT"
