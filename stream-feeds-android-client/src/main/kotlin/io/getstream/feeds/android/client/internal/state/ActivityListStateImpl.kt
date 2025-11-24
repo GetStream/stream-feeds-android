@@ -16,11 +16,13 @@
 
 package io.getstream.feeds.android.client.internal.state
 
+import io.getstream.android.core.api.sort.CompositeComparator
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
+import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollVoteData
@@ -106,6 +108,27 @@ internal class ActivityListStateImpl(
                 sort = activitiesSorting,
                 update = { old -> old.update(activity) },
             )
+        }
+    }
+
+    override fun onActivitiesUpdated(updates: ModelUpdates<ActivityData>) {
+        // Create a map for efficient lookups of updated members
+        val updatesMap = updates.updated.associateBy(ActivityData::id)
+
+        _activities.update { current ->
+            current
+                .mapNotNullTo(mutableListOf()) { member ->
+                    // Apply updates and filter out removed members in a single pass
+                    if (member.id in updates.removedIds) {
+                        null
+                    } else {
+                        updatesMap[member.id] ?: member
+                    }
+                }
+                .apply {
+                    addAll(updates.added)
+                    sortWith(CompositeComparator(activitiesSorting))
+                }
         }
     }
 
@@ -266,6 +289,13 @@ internal interface ActivityListStateUpdates {
      * @param activity The activity data.
      */
     fun onActivityUpserted(activity: ActivityData)
+
+    /**
+     * Called on batch activity updates, e.g. batch deletions or upsertions.
+     *
+     * @param updates The model updates containing added, updated, and removed activities.
+     */
+    fun onActivitiesUpdated(updates: ModelUpdates<ActivityData>)
 
     /**
      * Called when an activity is hidden or unhidden.

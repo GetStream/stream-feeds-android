@@ -16,9 +16,11 @@
 
 package io.getstream.feeds.android.client.internal.state.event.handler
 
+import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.state.query.ActivitiesFilter
 import io.getstream.feeds.android.client.internal.state.ActivityListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
+import io.getstream.feeds.android.client.internal.state.query.applyFilter
 import io.getstream.feeds.android.client.internal.state.query.matches
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
@@ -51,6 +53,10 @@ internal class ActivityListEventHandler(
                     // We remove elements that used to match the filter but no longer do
                     state.onActivityRemoved(event.activity.id)
                 }
+            }
+
+            is StateUpdateEvent.ActivityBatchUpdated -> {
+                state.onActivitiesUpdated(event.updates.applyFilter(filter, ActivityData::id))
             }
 
             is StateUpdateEvent.ActivityHidden -> {
