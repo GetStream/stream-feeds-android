@@ -18,10 +18,13 @@ package io.getstream.feeds.android.client.api.state.query
 
 import io.getstream.android.core.api.filter.Filter
 import io.getstream.android.core.api.filter.FilterField
+import io.getstream.android.core.api.model.location.BoundingBox
+import io.getstream.android.core.api.model.location.CircularRegion
 import io.getstream.android.core.api.sort.Sort
 import io.getstream.android.core.api.sort.SortDirection
 import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.ActivityData
+import io.getstream.feeds.android.client.internal.model.toCoordinate
 
 /**
  * A query for retrieving activities with filtering, sorting, and pagination options.
@@ -146,6 +149,28 @@ public data class ActivitiesFilterField(
          */
         public val interestTags: ActivitiesFilterField =
             ActivitiesFilterField("interest_tags", ActivityData::interestTags)
+
+        /**
+         * Filter by proximity to a location.
+         *
+         * Requires matching against [CircularRegion] or a [Map] with `lat` (latitude), `lng`
+         * (longitude), and `distance` (in kilometers).
+         *
+         * Supported operators: `equal`
+         */
+        public val near: ActivitiesFilterField =
+            ActivitiesFilterField("near") { it.location?.toCoordinate() }
+
+        /**
+         * Filter by activities within a bounding box.
+         *
+         * Can be matched against [BoundingBox] or a [Map] with `ne_lat`, `ne_lng` (northeast
+         * corner), `sw_lat`, `sw_lng` (southwest corner).
+         *
+         * Supported operators: `equal`
+         */
+        public val withinBounds: ActivitiesFilterField =
+            ActivitiesFilterField("within_bounds") { it.location?.toCoordinate() }
     }
 }
 
