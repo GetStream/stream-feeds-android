@@ -25,6 +25,7 @@ import io.getstream.android.core.api.sort.SortDirection
 import io.getstream.android.core.api.sort.SortField
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.internal.model.toCoordinate
+import io.getstream.feeds.android.client.internal.state.query.unsupportedLocalValue
 
 /**
  * A query for retrieving activities with filtering, sorting, and pagination options.
@@ -86,6 +87,14 @@ public data class ActivitiesFilterField(
          * Supported operators: `equal`, `in`
          */
         public val id: ActivitiesFilterField = ActivitiesFilterField("id", ActivityData::id)
+
+        /**
+         * Filter by the feed ID(s) that the activity belongs to.
+         *
+         * Supported operators: `equal`, `in`
+         */
+        public val feed: ActivitiesFilterField =
+            ActivitiesFilterField("feed", unsupportedLocalValue)
 
         /**
          * Filter by activity filter tags.
