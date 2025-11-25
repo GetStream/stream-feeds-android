@@ -17,6 +17,7 @@
 package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.internal.state.CommentReactionListStateUpdates
+import io.getstream.feeds.android.client.internal.state.event.FidScope
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
@@ -41,6 +42,7 @@ internal class CommentReactionListEventHandlerTest(
         private val reaction = feedsReactionData()
         private val matchingComment = commentData("comment-1")
         private val nonMatchingComment = commentData("different-comment")
+        private val fidScope = FidScope.of("feed-1")
 
         @JvmStatic
         @Parameterized.Parameters(name = "{0}")
@@ -48,32 +50,32 @@ internal class CommentReactionListEventHandlerTest(
             listOf(
                 testParams<CommentReactionListStateUpdates>(
                     name = "CommentDeleted matching comment",
-                    event = CommentDeleted("feed-1", matchingComment),
+                    event = CommentDeleted(fidScope, matchingComment),
                     verifyBlock = { state -> state.onCommentRemoved() },
                 ),
                 testParams<CommentReactionListStateUpdates>(
                     name = "CommentDeleted non-matching comment",
-                    event = CommentDeleted("feed-1", nonMatchingComment),
+                    event = CommentDeleted(fidScope, nonMatchingComment),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<CommentReactionListStateUpdates>(
                     name = "CommentReactionDeleted matching comment",
-                    event = CommentReactionDeleted("feed-1", matchingComment, reaction),
+                    event = CommentReactionDeleted(fidScope, matchingComment, reaction),
                     verifyBlock = { state -> state.onReactionRemoved(reaction) },
                 ),
                 testParams<CommentReactionListStateUpdates>(
                     name = "CommentReactionDeleted non-matching comment",
-                    event = CommentReactionDeleted("feed-1", nonMatchingComment, reaction),
+                    event = CommentReactionDeleted(fidScope, nonMatchingComment, reaction),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<CommentReactionListStateUpdates>(
                     name = "CommentReactionUpserted matching comment",
-                    event = CommentReactionUpserted("feed-1", matchingComment, reaction, false),
+                    event = CommentReactionUpserted(fidScope, matchingComment, reaction, false),
                     verifyBlock = { state -> state.onReactionUpserted(reaction, false) },
                 ),
                 testParams<CommentReactionListStateUpdates>(
                     name = "CommentReactionUpserted non-matching comment",
-                    event = CommentReactionUpserted("feed-1", nonMatchingComment, reaction, false),
+                    event = CommentReactionUpserted(fidScope, nonMatchingComment, reaction, false),
                     verifyBlock = { state -> state wasNot called },
                 ),
             )

@@ -17,6 +17,7 @@
 package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.internal.state.ActivityStateUpdates
+import io.getstream.feeds.android.client.internal.state.event.FidScope
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityHidden
@@ -57,10 +58,10 @@ internal class ActivityEventHandlerTest(
     override val handler = ActivityEventHandler(activityId, userId, state)
 
     companion object {
-        private const val fid = "feed-1"
         private const val userId = "user-1"
         private const val activityId = "test-activity-id"
         private const val otherId = "other-activity"
+        private val fidScope = FidScope.of("feed-1")
         private val activity = activityData(activityId)
         private val matchingBookmark = bookmarkData(activityData(activityId))
         private val nonMatchingBookmark = bookmarkData(activityData(otherId))
@@ -74,19 +75,20 @@ internal class ActivityEventHandlerTest(
             listOf(
                 testParams<ActivityStateUpdates>(
                     name = "ActivityReactionDeleted matching activity",
-                    event = ActivityReactionDeleted(fid, activity, feedsReactionData(activityId)),
+                    event =
+                        ActivityReactionDeleted(fidScope, activity, feedsReactionData(activityId)),
                     verifyBlock = { it.onReactionRemoved(feedsReactionData(activityId), activity) },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "ActivityReactionDeleted non-matching activity",
-                    event = ActivityReactionDeleted(fid, activity, feedsReactionData(otherId)),
+                    event = ActivityReactionDeleted(fidScope, activity, feedsReactionData(otherId)),
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "ActivityReactionUpserted matching activity",
                     event =
                         ActivityReactionUpserted(
-                            fid,
+                            fidScope,
                             activity,
                             feedsReactionData(activityId),
                             false,
@@ -98,27 +100,32 @@ internal class ActivityEventHandlerTest(
                 testParams<ActivityStateUpdates>(
                     name = "ActivityReactionUpserted non-matching activity",
                     event =
-                        ActivityReactionUpserted(fid, activity, feedsReactionData(otherId), false),
+                        ActivityReactionUpserted(
+                            fidScope,
+                            activity,
+                            feedsReactionData(otherId),
+                            false,
+                        ),
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "ActivityDeleted matching activity",
-                    event = ActivityDeleted(fid, activityId),
+                    event = ActivityDeleted(fidScope, activityId),
                     verifyBlock = { it.onActivityRemoved() },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "ActivityDeleted non-matching activity",
-                    event = ActivityDeleted(fid, "other-activity"),
+                    event = ActivityDeleted(fidScope, "other-activity"),
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "ActivityUpdated matching activity",
-                    event = ActivityUpdated(fid, activity),
+                    event = ActivityUpdated(fidScope, activity),
                     verifyBlock = { it.onActivityUpdated(activity) },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "ActivityUpdated non-matching activity",
-                    event = ActivityUpdated(fid, activityData("other-activity")),
+                    event = ActivityUpdated(fidScope, activityData("other-activity")),
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
@@ -193,47 +200,48 @@ internal class ActivityEventHandlerTest(
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "CommentAdded matching activity",
-                    event = CommentAdded(fid, matchingComment),
+                    event = CommentAdded(fidScope, matchingComment),
                     verifyBlock = { it.onCommentUpserted(matchingComment) },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "CommentAdded non-matching activity",
-                    event = CommentAdded(fid, nonMatchingComment),
+                    event = CommentAdded(fidScope, nonMatchingComment),
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "CommentDeleted matching activity",
-                    event = CommentDeleted(fid, matchingComment),
+                    event = CommentDeleted(fidScope, matchingComment),
                     verifyBlock = { it.onCommentRemoved(matchingComment.id) },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "CommentDeleted non-matching activity",
-                    event = CommentDeleted(fid, nonMatchingComment),
+                    event = CommentDeleted(fidScope, nonMatchingComment),
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "CommentUpdated matching activity",
-                    event = CommentUpdated(fid, matchingComment),
+                    event = CommentUpdated(fidScope, matchingComment),
                     verifyBlock = { it.onCommentUpserted(matchingComment) },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "CommentUpdated non-matching activity",
-                    event = CommentUpdated(fid, nonMatchingComment),
+                    event = CommentUpdated(fidScope, nonMatchingComment),
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "CommentReactionDeleted matching activity",
-                    event = CommentReactionDeleted(fid, matchingComment, commentReaction),
+                    event = CommentReactionDeleted(fidScope, matchingComment, commentReaction),
                     verifyBlock = { it.onCommentReactionRemoved(matchingComment, commentReaction) },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "CommentReactionDeleted non-matching activity",
-                    event = CommentReactionDeleted(fid, nonMatchingComment, commentReaction),
+                    event = CommentReactionDeleted(fidScope, nonMatchingComment, commentReaction),
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "CommentReactionUpserted matching activity",
-                    event = CommentReactionUpserted(fid, matchingComment, commentReaction, false),
+                    event =
+                        CommentReactionUpserted(fidScope, matchingComment, commentReaction, false),
                     verifyBlock = {
                         it.onCommentReactionUpserted(matchingComment, commentReaction, false)
                     },
@@ -241,7 +249,12 @@ internal class ActivityEventHandlerTest(
                 testParams<ActivityStateUpdates>(
                     name = "CommentReactionUpserted non-matching activity",
                     event =
-                        CommentReactionUpserted(fid, nonMatchingComment, commentReaction, false),
+                        CommentReactionUpserted(
+                            fidScope,
+                            nonMatchingComment,
+                            commentReaction,
+                            false,
+                        ),
                     verifyBlock = { it wasNot called },
                 ),
             )

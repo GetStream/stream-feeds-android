@@ -29,7 +29,6 @@ import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventList
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkFolderData
-import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.mockk.MockKVerificationScope
 import io.mockk.called
 import io.mockk.mockk
@@ -91,7 +90,7 @@ internal class BookmarkListEventHandlerTest(
                 ),
                 testParams<BookmarkListStateUpdates>(
                     name = "unknown event",
-                    event = StateUpdateEvent.CommentAdded("feed-1", commentData()),
+                    event = StateUpdateEvent.PollDeleted("poll-1"),
                     verifyBlock = { state -> state wasNot called },
                 ),
             )

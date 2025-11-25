@@ -17,6 +17,7 @@
 package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.internal.state.CommentReplyListStateUpdates
+import io.getstream.feeds.android.client.internal.state.event.FidScope
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentDeleted
@@ -39,30 +40,32 @@ internal class CommentReplyListEventHandlerTest(
     override val handler = CommentReplyListEventHandler(state)
 
     companion object {
+        private val fidScope = FidScope.of("feed-1")
+
         @JvmStatic
         @Parameterized.Parameters(name = "{0}")
         fun data(): List<Array<Any>> =
             listOf(
                 testParams<CommentReplyListStateUpdates>(
                     name = "CommentAdded",
-                    event = CommentAdded("feed-1", commentData()),
+                    event = CommentAdded(fidScope, commentData()),
                     verifyBlock = { state -> state.onCommentUpserted(commentData()) },
                 ),
                 testParams<CommentReplyListStateUpdates>(
                     name = "CommentDeleted",
-                    event = CommentDeleted("feed-1", commentData()),
+                    event = CommentDeleted(fidScope, commentData()),
                     verifyBlock = { state -> state.onCommentRemoved(commentData().id) },
                 ),
                 testParams<CommentReplyListStateUpdates>(
                     name = "CommentUpdated",
-                    event = CommentUpdated("feed-1", commentData()),
+                    event = CommentUpdated(fidScope, commentData()),
                     verifyBlock = { state -> state.onCommentUpserted(commentData()) },
                 ),
                 testParams<CommentReplyListStateUpdates>(
                     name = "CommentReactionUpserted",
                     event =
                         CommentReactionUpserted(
-                            "feed-1",
+                            fidScope,
                             commentData(),
                             feedsReactionData(),
                             false,
@@ -73,7 +76,7 @@ internal class CommentReplyListEventHandlerTest(
                 ),
                 testParams<CommentReplyListStateUpdates>(
                     name = "CommentReactionDeleted",
-                    event = CommentReactionDeleted("feed-1", commentData(), feedsReactionData()),
+                    event = CommentReactionDeleted(fidScope, commentData(), feedsReactionData()),
                     verifyBlock = { state ->
                         state.onCommentReactionRemoved(commentData(), feedsReactionData())
                     },
