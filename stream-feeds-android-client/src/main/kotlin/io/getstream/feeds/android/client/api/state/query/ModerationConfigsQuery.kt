@@ -141,6 +141,14 @@ public sealed interface ModerationConfigsSortField : SortField<ModerationConfigD
         )
 
     /**
+     * Sort by the team associated with the configuration. This field allows sorting configurations
+     * by team (alphabetical order).
+     */
+    public data object Team :
+        ModerationConfigsSortField,
+        SortField<ModerationConfigData> by SortField.create("team", ModerationConfigData::team)
+
+    /**
      * Sort by the last update timestamp of the configuration. This field allows sorting
      * configurations by when they were last updated (newest/oldest first).
      */
