@@ -82,7 +82,7 @@ internal class FeedEventHandlerTest(
         private val fid = FeedId("group", "feed-1")
         private val fidScope = FidScope.of(fid)
         private val otherFidScope = FidScope.of("group:different")
-        private val filter = ActivitiesFilterField.type.equal("post")
+        private val filter = ActivitiesFilterField.activityType.equal("post")
         private const val userId = "user-1"
         private const val activityId = "activity-1"
         private val activity = activityData(activityId, type = "post")

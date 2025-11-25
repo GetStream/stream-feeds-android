@@ -123,7 +123,7 @@ public data class ActivitiesFilterField(
          *
          * Supported operators: `equal`, `in`
          */
-        public val type: ActivitiesFilterField =
+        public val activityType: ActivitiesFilterField =
             ActivitiesFilterField("activity_type", ActivityData::type)
 
         /**
