@@ -23,6 +23,8 @@ import io.getstream.feeds.android.client.api.state.ActivityListState
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
+import io.getstream.feeds.android.client.internal.repository.FeedsCapabilityRepository
+import io.getstream.feeds.android.client.internal.repository.cache
 import io.getstream.feeds.android.client.internal.state.event.handler.ActivityListEventHandler
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
@@ -43,6 +45,7 @@ internal class ActivityListImpl(
     override val query: ActivitiesQuery,
     private val currentUserId: String,
     private val activitiesRepository: ActivitiesRepository,
+    private val capabilityRepository: FeedsCapabilityRepository,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
 ) : ActivityList {
 
@@ -88,6 +91,7 @@ internal class ActivityListImpl(
             .queryActivities(query)
             .onSuccess {
                 _state.onQueryMoreActivities(it, QueryConfiguration(query.filter, query.sort))
+                capabilityRepository.cache(it.models.mapNotNull(ActivityData::currentFeed))
             }
             .map { it.models }
     }
