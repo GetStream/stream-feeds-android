@@ -127,7 +127,7 @@ public sealed interface ModerationConfigsSortField : SortField<ModerationConfigD
      */
     public data object Key :
         ModerationConfigsSortField,
-        SortField<ModerationConfigData> by SortField.create("id", ModerationConfigData::key)
+        SortField<ModerationConfigData> by SortField.create("key", ModerationConfigData::key)
 
     /**
      * Sort by the creation timestamp of the configuration. This field allows sorting configurations
@@ -151,5 +151,3 @@ public sealed interface ModerationConfigsSortField : SortField<ModerationConfigD
             ModerationConfigData::updatedAt,
         )
 }
-
-/** Converts this [ModerationConfigsQuery] to a [QueryModerationConfigsRequest]. */
