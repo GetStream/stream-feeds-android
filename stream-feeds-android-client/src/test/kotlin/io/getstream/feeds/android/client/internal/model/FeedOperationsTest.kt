@@ -67,7 +67,7 @@ internal class FeedOperationsTest {
     }
 
     @Test
-    fun `on update with no ownCapabilities in original, then use empty list`() {
+    fun `on update with no ownCapabilities in original, then use empty set`() {
         val originalFeed = feedData().copy(ownCapabilities = emptySet())
         val updatedFeed =
             feedData()
