@@ -79,9 +79,9 @@ internal fun ActivityResponse.Visibility.toModel(): ActivityDataVisibility =
     }
 
 /**
- * Extension function to update the activity while preserving own bookmarks, reactions, and poll
- * votes because "own" data from WS events is not reliable. Optionally, different instances can be
- * provided to be used instead of the current ones.
+ * Extension function to update the activity while preserving own bookmarks, reactions, poll votes,
+ * and feed capabilities because "own" data from WS events is not reliable. Optionally, different
+ * instances can be provided to be used instead of the current ones.
  */
 internal fun ActivityData.update(
     updated: ActivityData,
@@ -92,6 +92,7 @@ internal fun ActivityData.update(
         ownBookmarks = ownBookmarks,
         ownReactions = ownReactions,
         poll = updated.poll?.let { poll?.update(it) ?: it },
+        currentFeed = updated.currentFeed?.let { currentFeed?.update(it) ?: it },
     )
 
 /**
