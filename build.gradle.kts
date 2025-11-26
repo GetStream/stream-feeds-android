@@ -2,8 +2,6 @@ import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.getstream.feeds.android.Configuration
 
-apply(from = "${rootDir}/gradle/scripts/sonar.gradle")
-
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
     alias(libs.plugins.stream.project)
@@ -17,13 +15,15 @@ plugins {
     alias(libs.plugins.arturbosch.detekt) apply true
     id("com.google.gms.google-services") version "4.4.3" apply false
     alias(libs.plugins.maven.publish)
-    alias(libs.plugins.sonarqube)
-    alias(libs.plugins.kover)
 }
 
 streamProject {
     spotless {
-        useKtfmt.set(true)
+        useKtfmt = true
+    }
+
+    coverage {
+        includedModules = setOf("stream-feeds-android-client")
     }
 }
 
@@ -34,13 +34,8 @@ detekt {
     buildUponDefaultConfig = true
 }
 
-subprojects {
-    apply(from = "${rootDir}/gradle/scripts/coverage.gradle")
-}
-
 private val isSnapshot = System.getenv("SNAPSHOT")?.toBoolean() == true
 version = if (isSnapshot) Configuration.snapshotVersionName else Configuration.versionName
-
 
 subprojects {
     plugins.withId("com.vanniktech.maven.publish") {

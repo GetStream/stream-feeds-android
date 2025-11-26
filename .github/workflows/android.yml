@@ -73,7 +73,7 @@ jobs:
       - uses: GetStream/android-ci-actions/actions/gradle-cache@main
 
       - name: Run unit tests
-        run: ./gradlew :stream-feeds-android-client:koverXmlReportDebug --scan --stacktrace
+        run: ./gradlew testCoverage --scan --stacktrace
 
       - name: Unit tests results
         uses: actions/upload-artifact@v4
