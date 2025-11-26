@@ -691,6 +691,26 @@ internal class FeedStateImplTest {
         assertEquals(expected, feedState.feed.value)
     }
 
+    @Test
+    fun `on onFeedCapabilitiesUpdated, update matching activities`() = runTest {
+        val feedId1 = FeedId("user:1")
+        val feed1 = feedData(id = "1", groupId = "user", ownCapabilities = emptySet())
+        val feed2 = feedData(id = "2", groupId = "user", ownCapabilities = emptySet())
+        val activity1 = activityData("activity-1", currentFeed = feed1)
+        val activity2 = activityData("activity-2", currentFeed = feed2)
+        val activityPin = activityPin(activity1)
+        setupInitialState(listOf(activity1, activity2), listOf(activityPin))
+
+        val newCapabilities = setOf(FeedOwnCapability.ReadFeed, FeedOwnCapability.AddActivity)
+        feedState.onFeedCapabilitiesUpdated(mapOf(feedId1 to newCapabilities))
+
+        val expectedActivity1 =
+            activity1.copy(currentFeed = feed1.copy(ownCapabilities = newCapabilities))
+        val expectedPinnedActivity = activityPin.copy(activity = expectedActivity1)
+        assertEquals(listOf(expectedActivity1, activity2), feedState.activities.value)
+        assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
+    }
+
     // Helper functions
     private fun setupInitialState(
         activities: List<ActivityData> = listOf(activityData("activity-1")),

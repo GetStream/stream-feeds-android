@@ -17,6 +17,7 @@
 package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.android.core.api.filter.equal
+import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
 import io.getstream.feeds.android.client.internal.state.ActivityListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.FidScope
@@ -35,6 +36,7 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.C
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpserted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedCapabilitiesUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteCasted
@@ -46,6 +48,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
+import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.mockk.MockKVerificationScope
 import io.mockk.called
 import io.mockk.mockk
@@ -190,6 +193,15 @@ internal class ActivityListEventHandlerTest(
                         state.onCommentReactionUpserted(commentData(), feedsReactionData(), false)
                     },
                 ),
+                kotlin.run {
+                    val capabilities = mapOf(FeedId("user:1") to setOf(FeedOwnCapability.ReadFeed))
+
+                    testParams<ActivityListStateUpdates>(
+                        name = "FeedCapabilitiesUpdated",
+                        event = FeedCapabilitiesUpdated(capabilities),
+                        verifyBlock = { state -> state.onFeedCapabilitiesUpdated(capabilities) },
+                    )
+                },
                 testParams<ActivityListStateUpdates>(
                     name = "PollDeleted",
                     event = PollDeleted("poll-1"),

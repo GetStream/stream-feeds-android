@@ -17,6 +17,7 @@
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.ActivityData
+import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
 import io.getstream.feeds.android.client.internal.state.query.ActivitiesQueryConfig
@@ -24,9 +25,11 @@ import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
+import io.getstream.feeds.android.client.internal.test.TestData.feedData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
+import io.getstream.feeds.android.network.models.FeedOwnCapability
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -369,6 +372,27 @@ internal class ActivityListStateImplTest {
             )
         val expectedActivity = activity1.copy(poll = expectedPoll)
         assertEquals(listOf(expectedActivity, activity2), activityListState.activities.value)
+    }
+
+    @Test
+    fun `on onFeedCapabilitiesUpdated, update matching activities`() = runTest {
+        val feedId1 = FeedId("user:1")
+        val feed1 = feedData(id = "1", groupId = "user", ownCapabilities = emptySet())
+        val feed2 = feedData(id = "2", groupId = "user", ownCapabilities = emptySet())
+        val activity1 = activityData("activity-1", currentFeed = feed1)
+        val activity2 = activityData("activity-2", currentFeed = feed2)
+        val activity3 = activityData("activity-3", currentFeed = null)
+        setupInitialActivities(activity1, activity2, activity3)
+        val newCapabilities = setOf(FeedOwnCapability.ReadFeed, FeedOwnCapability.AddActivity)
+
+        activityListState.onFeedCapabilitiesUpdated(mapOf(feedId1 to newCapabilities))
+
+        val expectedActivity1 =
+            activity1.copy(currentFeed = feed1.copy(ownCapabilities = newCapabilities))
+        assertEquals(
+            listOf(expectedActivity1, activity2, activity3),
+            activityListState.activities.value,
+        )
     }
 
     private fun setupInitialActivities(vararg activities: ActivityData) {

@@ -24,6 +24,7 @@ import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.network.models.ActivityResponse
+import io.getstream.feeds.android.network.models.FeedOwnCapability
 import kotlin.math.max
 
 /** Converts an [ActivityResponse] to an [ActivityData] model. */
@@ -242,3 +243,8 @@ internal fun ActivityData.upsertCommentReaction(
                 comment.upsertReaction(updated, reaction, currentUserId, enforceUnique)
             }
     )
+
+/** Updates the feed's own capabilities in the [ActivityData]. */
+internal fun ActivityData.updateFeedCapabilities(
+    capabilities: Set<FeedOwnCapability>
+): ActivityData = copy(currentFeed = currentFeed?.copy(ownCapabilities = capabilities))
