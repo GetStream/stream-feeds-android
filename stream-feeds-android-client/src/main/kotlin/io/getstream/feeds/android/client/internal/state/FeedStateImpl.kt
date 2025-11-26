@@ -161,7 +161,7 @@ internal class FeedStateImpl(
                 }
             }
 
-            InsertionAction.Ignore -> {}
+            InsertionAction.Ignore -> Unit // Nothing to execute
         }
     }
 
