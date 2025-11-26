@@ -26,10 +26,10 @@ internal class FeedOperationsTest {
     @Test
     fun `on update with different ownCapabilities, then preserve original ownCapabilities`() {
         val originalCapabilities =
-            listOf(FeedOwnCapability.AddActivity, FeedOwnCapability.DeleteFeed)
+            setOf(FeedOwnCapability.AddActivity, FeedOwnCapability.DeleteFeed)
         val originalFeed = feedData().copy(ownCapabilities = originalCapabilities)
 
-        val newCapabilities = listOf(FeedOwnCapability.UpdateFeed)
+        val newCapabilities = setOf(FeedOwnCapability.UpdateFeed)
         val updatedFeed = feedData().copy(ownCapabilities = newCapabilities, name = "Updated Name")
 
         val result = originalFeed.update(updatedFeed)
@@ -43,7 +43,7 @@ internal class FeedOperationsTest {
         val originalFeed =
             feedData(id = "feed-1", name = "Original Name", description = "Original Description")
                 .copy(
-                    ownCapabilities = listOf(FeedOwnCapability.AddActivity),
+                    ownCapabilities = setOf(FeedOwnCapability.AddActivity),
                     followerCount = 10,
                     followingCount = 20,
                     memberCount = 5,
@@ -53,7 +53,7 @@ internal class FeedOperationsTest {
         val updatedFeed =
             feedData(id = "feed-1", name = "Updated Name", description = "Updated Description")
                 .copy(
-                    ownCapabilities = emptyList(),
+                    ownCapabilities = emptySet(),
                     followerCount = 15,
                     followingCount = 25,
                     memberCount = 8,
@@ -62,20 +62,20 @@ internal class FeedOperationsTest {
 
         val result = originalFeed.update(updatedFeed)
 
-        val expected = updatedFeed.copy(ownCapabilities = listOf(FeedOwnCapability.AddActivity))
+        val expected = updatedFeed.copy(ownCapabilities = setOf(FeedOwnCapability.AddActivity))
         assertEquals(expected, result)
     }
 
     @Test
-    fun `on update with no ownCapabilities in original, then use empty list`() {
-        val originalFeed = feedData().copy(ownCapabilities = emptyList())
+    fun `on update with no ownCapabilities in original, then use empty set`() {
+        val originalFeed = feedData().copy(ownCapabilities = emptySet())
         val updatedFeed =
             feedData()
-                .copy(ownCapabilities = listOf(FeedOwnCapability.AddActivity), name = "Updated")
+                .copy(ownCapabilities = setOf(FeedOwnCapability.AddActivity), name = "Updated")
 
         val result = originalFeed.update(updatedFeed)
 
-        val expected = updatedFeed.copy(ownCapabilities = emptyList())
+        val expected = updatedFeed.copy(ownCapabilities = emptySet())
         assertEquals(expected, result)
     }
 }

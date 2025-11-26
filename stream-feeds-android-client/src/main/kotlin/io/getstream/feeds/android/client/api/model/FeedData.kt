@@ -52,7 +52,7 @@ public data class FeedData(
     public val groupId: String,
     public val id: String,
     public val memberCount: Int,
-    public val ownCapabilities: List<FeedOwnCapability>,
+    public val ownCapabilities: Set<FeedOwnCapability>,
     public val ownMembership: FeedMemberData?,
     public val name: String,
     public val pinCount: Int,
