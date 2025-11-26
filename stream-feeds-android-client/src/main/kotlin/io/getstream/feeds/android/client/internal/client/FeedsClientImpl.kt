@@ -92,6 +92,7 @@ import io.getstream.feeds.android.client.internal.state.MemberListImpl
 import io.getstream.feeds.android.client.internal.state.ModerationConfigListImpl
 import io.getstream.feeds.android.client.internal.state.PollListImpl
 import io.getstream.feeds.android.client.internal.state.PollVoteListImpl
+import io.getstream.feeds.android.client.internal.state.event.StateEventEnricher
 import io.getstream.feeds.android.client.internal.state.event.handler.OnNewActivity
 import io.getstream.feeds.android.client.internal.state.event.toModel
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
@@ -115,6 +116,7 @@ internal class FeedsClientImpl(
     private val coreClient: StreamClient,
     private val feedsEventsSubscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
     private val stateEventsSubscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
+    private val stateEventEnricher: StateEventEnricher,
     override val apiKey: StreamApiKey,
     override val user: User,
     private val connectionRecoveryHandler: ConnectionRecoveryHandler,
@@ -156,7 +158,7 @@ internal class FeedsClientImpl(
                     logger.v { "[onEvent] Received event from core: $event" }
                     _events.tryEmit(event)
                     feedsEventsSubscriptionManager.forEach { it.onEvent(event) }
-                    event.toModel()?.let { stateEvent ->
+                    event.toModel()?.let(stateEventEnricher::enrich)?.let { stateEvent ->
                         stateEventsSubscriptionManager.forEach { listener ->
                             listener.onEvent(stateEvent)
                         }

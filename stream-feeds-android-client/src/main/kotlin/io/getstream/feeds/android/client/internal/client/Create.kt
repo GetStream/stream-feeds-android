@@ -67,6 +67,7 @@ import io.getstream.feeds.android.client.internal.repository.FilesRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.ModerationRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.PollsRepositoryImpl
 import io.getstream.feeds.android.client.internal.serialization.FeedsMoshiJsonParser
+import io.getstream.feeds.android.client.internal.state.event.StateEventEnricher
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.infrastructure.Serializer
@@ -253,6 +254,7 @@ internal fun createFeedsClient(
             api = feedsApi,
             subscriptionManager = stateEventsSubscriptionManager,
         )
+    val stateEventEnricher = StateEventEnricher(feedsCapabilityRepository)
 
     val moderation = ModerationImpl(moderationRepository)
     val errorBus = MutableSharedFlow<StreamClientException>(extraBufferCapacity = 100)
@@ -291,6 +293,7 @@ internal fun createFeedsClient(
                 maxWeakSubscriptions = Integer.MAX_VALUE,
             ),
         stateEventsSubscriptionManager = stateEventsSubscriptionManager,
+        stateEventEnricher = stateEventEnricher,
         feedWatchHandler = feedWatchHandler,
         errorBus = errorBus,
         scope = clientScope,

@@ -56,6 +56,7 @@ import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.FilesRepository
 import io.getstream.feeds.android.client.internal.repository.ModerationRepository
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
+import io.getstream.feeds.android.client.internal.state.event.StateEventEnricher
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
@@ -101,6 +102,9 @@ internal class FeedsClientImplTest {
     private val moderationRepository: ModerationRepository = mockk(relaxed = true)
     private val pollsRepository: PollsRepository = mockk(relaxed = true)
     private val feedsCapabilityRepository: FeedsCapabilityRepository = mockk(relaxed = true)
+    private val stateEventEnricher: StateEventEnricher = mockk {
+        every { enrich(any()) } answers { firstArg() }
+    }
     private val uploader: FeedUploader = mockk(relaxed = true)
     private val moderation: Moderation = mockk(relaxed = true)
     private val feedWatchHandler: FeedWatchHandler = mockk(relaxed = true)
@@ -113,6 +117,7 @@ internal class FeedsClientImplTest {
             coreClient = coreClient,
             feedsEventsSubscriptionManager = feedsEventsSubscriptionManager,
             stateEventsSubscriptionManager = stateEventsSubscriptionManager,
+            stateEventEnricher = stateEventEnricher,
             apiKey = apiKey,
             user = user,
             connectionRecoveryHandler = connectionRecoveryHandler,
@@ -171,6 +176,7 @@ internal class FeedsClientImplTest {
                 coreClient = coreClient,
                 feedsEventsSubscriptionManager = feedsEventsSubscriptionManager,
                 stateEventsSubscriptionManager = stateEventsSubscriptionManager,
+                stateEventEnricher = stateEventEnricher,
                 apiKey = apiKey,
                 user = anonymousUser,
                 connectionRecoveryHandler = connectionRecoveryHandler,
