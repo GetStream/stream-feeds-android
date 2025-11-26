@@ -44,18 +44,15 @@ internal class FeedsCapabilityRepository(
         batcher.onBatch { ids, _, _ -> processBatch(ids) }
     }
 
-    /** Caches the provided [capabilities], replacing existing entries for the same feed IDs. */
+    /** Caches the provided [capabilities] and notify listeners in case of changes. */
     fun cache(capabilities: Map<FeedId, Set<FeedOwnCapability>>) {
+        val before = cache.toMap()
         cache.putAll(capabilities)
-        // TODO [G.] do we really want to fire an event? The implication is that we'll notify all
-        //  listeners even if they don't care about these feeds. The alternative is to  avoid
-        //  notifying and let `ActivityAdded` handlers/states pull capabilities on demand. Maybe
-        //  that's more error-prone though? We'd have to suspend on an hypothetical `getOrRequest`
-        //  -> is that fine or would it be prone to race conditions?
-        //  Another alternative is to debounce notifications. That should be relatively simple to do
-        //  by launching a coroutine that delays and then notifies, and cancelling the previous job
-        //  each time.
-        subscriptionManager.onEvent(FeedCapabilitiesUpdated(cache.toMap()))
+        val after = cache.toMap()
+
+        if (after != before) {
+            subscriptionManager.onEvent(FeedCapabilitiesUpdated(cache.toMap()))
+        }
     }
 
     fun getOrRequest(id: FeedId): Set<FeedOwnCapability>? {

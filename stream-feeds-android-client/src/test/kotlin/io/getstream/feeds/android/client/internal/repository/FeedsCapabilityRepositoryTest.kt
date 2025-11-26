@@ -57,18 +57,20 @@ internal class FeedsCapabilityRepositoryTest {
         )
 
     @Test
-    fun `cache when given capabilities, store them in cache and notify`() {
-        val feedId1 = FeedId("user:1")
-        val feedId2 = FeedId("user:2")
-        val capabilities =
-            mapOf(
-                feedId1 to setOf(FeedOwnCapability.ReadFeed, FeedOwnCapability.AddActivity),
-                feedId2 to setOf(FeedOwnCapability.ReadFeed),
-            )
+    fun `cache when given same capabilities, notify only on changes`() {
+        val capabilities1 = mapOf(FeedId("user:1") to setOf(FeedOwnCapability.ReadFeed))
+        val capabilities2 = mapOf(FeedId("user:2") to setOf(FeedOwnCapability.AddActivity))
 
-        repository.cache(capabilities)
+        repository.cache(capabilities1)
+        verify(exactly = 1) { stateEventListener.onEvent(FeedCapabilitiesUpdated(capabilities1)) }
 
-        verify { stateEventListener.onEvent(FeedCapabilitiesUpdated(capabilities)) }
+        repository.cache(capabilities1)
+        verify(exactly = 1) { stateEventListener.onEvent(any()) }
+
+        repository.cache(capabilities2)
+        val allCapabilities = capabilities1 + capabilities2
+        verify(exactly = 1) { stateEventListener.onEvent(FeedCapabilitiesUpdated(allCapabilities)) }
+        verify(exactly = 2) { stateEventListener.onEvent(any()) }
     }
 
     @Test
