@@ -44,6 +44,7 @@ import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.state.event.FidScope
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.handler.FeedEventHandler
+import io.getstream.feeds.android.client.internal.state.event.handler.OnNewActivity
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.subscribe.onEvent
 import io.getstream.feeds.android.client.internal.utils.flatMap
@@ -92,6 +93,7 @@ import io.getstream.feeds.android.network.models.UpdateFeedRequest
 internal class FeedImpl(
     private val query: FeedQuery,
     private val currentUserId: String,
+    private val onNewActivity: OnNewActivity,
     private val activitiesRepository: ActivitiesRepository,
     private val bookmarksRepository: BookmarksRepository,
     private val commentsRepository: CommentsRepository,
@@ -116,7 +118,12 @@ internal class FeedImpl(
         )
 
     private val eventHandler =
-        FeedEventHandler(query = query, currentUserId = currentUserId, state = _state)
+        FeedEventHandler(
+            query = query,
+            currentUserId = currentUserId,
+            onNewActivity = onNewActivity,
+            state = _state,
+        )
 
     init {
         subscriptionManager.subscribe(eventHandler)

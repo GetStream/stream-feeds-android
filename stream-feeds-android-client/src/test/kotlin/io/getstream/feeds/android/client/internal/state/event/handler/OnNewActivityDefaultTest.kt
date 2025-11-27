@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package io.getstream.feeds.android.client.internal.state.query
+package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.android.core.api.filter.equal
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.state.InsertionAction
 import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
-import io.getstream.feeds.android.client.api.state.query.InsertionAction
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.userData
 import org.junit.Assert.assertEquals

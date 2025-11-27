@@ -91,6 +91,7 @@ import io.getstream.feeds.android.client.internal.state.MemberListImpl
 import io.getstream.feeds.android.client.internal.state.ModerationConfigListImpl
 import io.getstream.feeds.android.client.internal.state.PollListImpl
 import io.getstream.feeds.android.client.internal.state.PollVoteListImpl
+import io.getstream.feeds.android.client.internal.state.event.handler.OnNewActivity
 import io.getstream.feeds.android.client.internal.state.event.toModel
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
@@ -185,14 +186,17 @@ internal class FeedsClientImpl(
         return coreClient.disconnect()
     }
 
-    override fun feed(group: String, id: String): Feed = feed(FeedId(group, id))
+    override fun feed(group: String, id: String, onNewActivity: OnNewActivity): Feed =
+        feed(FeedId(group, id), onNewActivity)
 
-    override fun feed(fid: FeedId): Feed = feed(FeedQuery(fid))
+    override fun feed(fid: FeedId, onNewActivity: OnNewActivity): Feed =
+        feed(FeedQuery(fid), onNewActivity)
 
-    override fun feed(query: FeedQuery): Feed =
+    override fun feed(query: FeedQuery, onNewActivity: OnNewActivity): Feed =
         FeedImpl(
             query = query,
             currentUserId = user.id,
+            onNewActivity = onNewActivity,
             activitiesRepository = activitiesRepository,
             bookmarksRepository = bookmarksRepository,
             commentsRepository = commentsRepository,

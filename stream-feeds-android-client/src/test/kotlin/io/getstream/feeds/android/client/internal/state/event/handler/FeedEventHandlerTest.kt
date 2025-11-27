@@ -20,9 +20,9 @@ import io.getstream.android.core.api.filter.equal
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.state.InsertionAction
 import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
-import io.getstream.feeds.android.client.api.state.query.InsertionAction
 import io.getstream.feeds.android.client.internal.state.FeedStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.FidScope
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
@@ -78,7 +78,7 @@ internal class FeedEventHandlerTest(
 ) : BaseEventHandlerTest<FeedStateUpdates>(testName, event, verifyBlock) {
 
     override val state: FeedStateUpdates = mockk(relaxed = true)
-    override val handler = FeedEventHandler(query, userId, state)
+    override val handler = FeedEventHandler(query, userId, ::defaultOnNewActivity, state)
 
     companion object {
         private val fid = FeedId("group", "feed-1")

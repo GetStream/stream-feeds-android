@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package io.getstream.feeds.android.client.api.state.query
+package io.getstream.feeds.android.client.api.state
+
+import io.getstream.feeds.android.client.api.FeedsClient
 
 /**
  * Represents the action to take when inserting an item into a list. Used, for example, to decide if
  * and where to insert new activities into a feed.
  *
- * @see [FeedQuery]
+ * @see [FeedsClient.feed]
  */
 public enum class InsertionAction {
     /** Insert the item at the start of the list. */

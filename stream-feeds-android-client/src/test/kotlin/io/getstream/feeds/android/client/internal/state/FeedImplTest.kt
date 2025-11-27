@@ -43,6 +43,7 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.A
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityReactionUpserted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentAdded
+import io.getstream.feeds.android.client.internal.state.event.handler.defaultOnNewActivity
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
@@ -776,6 +777,7 @@ internal class FeedImplTest {
         FeedImpl(
             query = query,
             currentUserId = "user",
+            onNewActivity = ::defaultOnNewActivity,
             activitiesRepository = activitiesRepository,
             bookmarksRepository = bookmarksRepository,
             commentsRepository = commentsRepository,

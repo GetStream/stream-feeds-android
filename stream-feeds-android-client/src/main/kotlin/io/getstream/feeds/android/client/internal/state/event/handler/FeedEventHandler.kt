@@ -35,6 +35,7 @@ import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventList
 internal class FeedEventHandler(
     private val query: FeedQuery,
     private val currentUserId: String,
+    private val onNewActivity: OnNewActivity,
     private val state: FeedStateUpdates,
 ) : StateUpdateEventListener {
 
@@ -48,7 +49,7 @@ internal class FeedEventHandler(
             is StateUpdateEvent.ActivityAdded -> {
                 // We add activities only on strict matches, i.e. we're sure they belong to the feed
                 if (event.scope strictlyMatches query.fid) {
-                    val insertionAction = query.onNewActivity(query, event.activity, currentUserId)
+                    val insertionAction = onNewActivity(query, event.activity, currentUserId)
                     state.onActivityAdded(event.activity, insertionAction)
                 }
             }

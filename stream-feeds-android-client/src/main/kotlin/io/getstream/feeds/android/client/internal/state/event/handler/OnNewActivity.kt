@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-package io.getstream.feeds.android.client.internal.state.query
+package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.api.model.ActivityData
+import io.getstream.feeds.android.client.api.state.InsertionAction
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
-import io.getstream.feeds.android.client.api.state.query.InsertionAction
+import io.getstream.feeds.android.client.internal.state.query.matches
+
+internal typealias OnNewActivity =
+    (FeedQuery, ActivityData, currentUserId: String) -> InsertionAction
 
 internal fun defaultOnNewActivity(
     query: FeedQuery,
