@@ -442,7 +442,7 @@ internal object TestData {
                     groupId = "user",
                     id = source.id,
                     memberCount = 0,
-                    ownCapabilities = emptyList(),
+                    ownCapabilities = emptySet(),
                     ownMembership = null,
                     name = "Test Feed",
                     pinCount = 0,
@@ -464,7 +464,7 @@ internal object TestData {
                     groupId = "user",
                     id = target.id,
                     memberCount = 0,
-                    ownCapabilities = emptyList(),
+                    ownCapabilities = emptySet(),
                     ownMembership = null,
                     name = "Target Feed",
                     pinCount = 0,
@@ -593,7 +593,7 @@ internal object TestData {
         name: String = "Test Feed",
         description: String = "Test feed description",
         createdAt: Long = 1000,
-        ownCapabilities: List<FeedOwnCapability> = emptyList(),
+        ownCapabilities: Set<FeedOwnCapability> = emptySet(),
     ): FeedData =
         FeedData(
             createdAt = Date(createdAt),

@@ -621,7 +621,7 @@ internal class FeedStateImplTest {
             feedData(
                 id = "test",
                 groupId = "user",
-                ownCapabilities = listOf(FeedOwnCapability.UpdateFeed),
+                ownCapabilities = setOf(FeedOwnCapability.UpdateFeed),
             )
         setupInitialState(feed = initialFeed)
 
@@ -640,7 +640,7 @@ internal class FeedStateImplTest {
             feedData(
                 id = "test",
                 groupId = "user",
-                ownCapabilities = listOf(FeedOwnCapability.UpdateFeed),
+                ownCapabilities = setOf(FeedOwnCapability.UpdateFeed),
             )
         setupInitialState(feed = initialFeed)
 
@@ -659,7 +659,7 @@ internal class FeedStateImplTest {
             feedData(
                 id = "test",
                 groupId = "user",
-                ownCapabilities = listOf(FeedOwnCapability.UpdateFeed),
+                ownCapabilities = setOf(FeedOwnCapability.UpdateFeed),
             )
         setupInitialState(feed = initialFeed)
 
@@ -678,7 +678,7 @@ internal class FeedStateImplTest {
             feedData(
                 id = "test",
                 groupId = "user",
-                ownCapabilities = listOf(FeedOwnCapability.UpdateFeed),
+                ownCapabilities = setOf(FeedOwnCapability.UpdateFeed),
             )
         setupInitialState(feed = initialFeed)
 
