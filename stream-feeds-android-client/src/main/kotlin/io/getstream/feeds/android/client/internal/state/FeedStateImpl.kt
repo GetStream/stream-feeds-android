@@ -30,6 +30,7 @@ import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.state.FeedState
+import io.getstream.feeds.android.client.api.state.InsertionAction
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.model.deleteBookmark
@@ -146,8 +147,22 @@ internal class FeedStateImpl(
         }
     }
 
-    override fun onActivityAdded(activity: ActivityData) {
-        _activities.update { current -> current.upsert(activity, ActivityData::id) }
+    override fun onActivityAdded(activity: ActivityData, action: InsertionAction) {
+        when (action) {
+            InsertionAction.AddToStart -> {
+                _activities.update { current ->
+                    current.upsert(activity, ActivityData::id, prepend = true)
+                }
+            }
+
+            InsertionAction.AddToEnd -> {
+                _activities.update { current ->
+                    current.upsert(activity, ActivityData::id, prepend = false)
+                }
+            }
+
+            InsertionAction.Ignore -> Unit // Nothing to execute
+        }
     }
 
     override fun onActivityUpdated(activity: ActivityData) {
@@ -405,7 +420,7 @@ internal interface FeedStateUpdates {
     )
 
     /** Handles updates to the feed state when activity is added. */
-    fun onActivityAdded(activity: ActivityData)
+    fun onActivityAdded(activity: ActivityData, action: InsertionAction)
 
     /** Handles updates to the feed state when activity is updated. */
     fun onActivityUpdated(activity: ActivityData)

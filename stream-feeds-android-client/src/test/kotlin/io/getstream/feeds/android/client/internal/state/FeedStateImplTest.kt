@@ -25,6 +25,7 @@ import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollVoteData
+import io.getstream.feeds.android.client.api.state.InsertionAction
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
@@ -127,15 +128,36 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on onActivityAdded, then add activity`() = runTest {
+    fun `on onActivityAdded with Ignore action, then ignore activity`() = runTest {
         val initialActivity = activityData()
         setupInitialState(listOf(initialActivity))
 
         val newActivity = activityData("activity-2")
-        feedState.onActivityAdded(newActivity)
+        feedState.onActivityAdded(newActivity, InsertionAction.Ignore)
 
-        val activities = feedState.activities.value
-        assertEquals(listOf(initialActivity, newActivity), activities)
+        assertEquals(listOf(initialActivity), feedState.activities.value)
+    }
+
+    @Test
+    fun `on onActivityAdded with AddToStart action, then prepend activity`() = runTest {
+        val initialActivity = activityData()
+        setupInitialState(listOf(initialActivity))
+
+        val newActivity = activityData("activity-2")
+        feedState.onActivityAdded(newActivity, InsertionAction.AddToStart)
+
+        assertEquals(listOf(newActivity, initialActivity), feedState.activities.value)
+    }
+
+    @Test
+    fun `on onActivityAdded with AddToEnd action, then append activity`() = runTest {
+        val initialActivity = activityData()
+        setupInitialState(listOf(initialActivity))
+
+        val newActivity = activityData("activity-2")
+        feedState.onActivityAdded(newActivity, InsertionAction.AddToEnd)
+
+        assertEquals(listOf(initialActivity, newActivity), feedState.activities.value)
     }
 
     @Test

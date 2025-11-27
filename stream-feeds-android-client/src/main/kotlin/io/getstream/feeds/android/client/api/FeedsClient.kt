@@ -40,6 +40,7 @@ import io.getstream.feeds.android.client.api.state.CommentReplyList
 import io.getstream.feeds.android.client.api.state.Feed
 import io.getstream.feeds.android.client.api.state.FeedList
 import io.getstream.feeds.android.client.api.state.FollowList
+import io.getstream.feeds.android.client.api.state.InsertionAction
 import io.getstream.feeds.android.client.api.state.MemberList
 import io.getstream.feeds.android.client.api.state.ModerationConfigList
 import io.getstream.feeds.android.client.api.state.PollList
@@ -60,6 +61,7 @@ import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
 import io.getstream.feeds.android.client.internal.client.createFeedsClient
+import io.getstream.feeds.android.client.internal.state.event.handler.defaultOnNewActivity
 import io.getstream.feeds.android.network.models.ActivityFeedbackRequest
 import io.getstream.feeds.android.network.models.ActivityRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
@@ -100,9 +102,15 @@ public interface FeedsClient {
      *
      * @param group The feed group identifier (e.g., "user", "timeline", "notification").
      * @param id The specific feed identifier within the group (e.g., "john", "flat").
+     * @param onNewActivity Determines if and where new activities should be inserted.
      * @return A [Feed] instance that can be used to interact with the specified feed.
      */
-    public fun feed(group: String, id: String): Feed
+    public fun feed(
+        group: String,
+        id: String,
+        onNewActivity: (FeedQuery, ActivityData, currentUserId: String) -> InsertionAction =
+            ::defaultOnNewActivity,
+    ): Feed
 
     /**
      * Creates a feed instance for the specified feed ID.
@@ -117,9 +125,14 @@ public interface FeedsClient {
      * ```
      *
      * @param fid The [FeedId] identifier containing the group and ID.
+     * @param onNewActivity Determines if and where new activities should be inserted.
      * @return A [Feed] instance that can be used to interact with the specified feed.
      */
-    public fun feed(fid: FeedId): Feed
+    public fun feed(
+        fid: FeedId,
+        onNewActivity: (FeedQuery, ActivityData, currentUserId: String) -> InsertionAction =
+            ::defaultOnNewActivity,
+    ): Feed
 
     /**
      * Fetches a feed based on the provided [FeedQuery].
@@ -138,9 +151,14 @@ public interface FeedsClient {
      * ```
      *
      * @param query The feed query containing the feed identifier and optional configuration.
+     * @param onNewActivity Determines if and where new activities should be inserted.
      * @return A [Feed] instance that can be used to interact with the specified feed.
      */
-    public fun feed(query: FeedQuery): Feed
+    public fun feed(
+        query: FeedQuery,
+        onNewActivity: (FeedQuery, ActivityData, currentUserId: String) -> InsertionAction =
+            ::defaultOnNewActivity,
+    ): Feed
 
     /**
      * Creates a feed list instance based on the provided query.

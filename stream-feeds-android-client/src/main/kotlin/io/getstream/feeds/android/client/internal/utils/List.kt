@@ -41,19 +41,24 @@ internal inline fun <T> List<T>.updateIf(filter: (T) -> Boolean, update: (T) -> 
  *
  * The operation returns a new immutable list, leaving the original list unchanged.
  *
- * @param T The type of elements in the list.
  * @param element The element to insert or use for updating an existing element.
  * @param idSelector A function that extracts a unique identifier from an element. This is used to
  *   determine if an element already exists in the list.
+ * @param prepend Whether the new element should be added at the start instead of the end.
  * @return A new list containing the upserted element. If an existing element was found, it will be
- *   replaced; otherwise, the new element will be added to the end.
+ *   replaced; otherwise, the new element will be added to the start or end of the list depending on
+ *   the [prepend] parameter.
  */
-internal fun <T> List<T>.upsert(element: T, idSelector: (T) -> String): List<T> {
+internal fun <T> List<T>.upsert(
+    element: T,
+    idSelector: (T) -> String,
+    prepend: Boolean = false,
+): List<T> {
     val existingIndex = this.indexOfFirst { idSelector(it) == idSelector(element) }
-    return if (existingIndex >= 0) {
-        this.toMutableList().apply { this[existingIndex] = element }
-    } else {
-        this + element
+    return when {
+        existingIndex >= 0 -> toMutableList().apply { this[existingIndex] = element }
+        prepend -> toMutableList().apply { add(0, element) }
+        else -> this + element
     }
 }
 
