@@ -19,6 +19,7 @@ package io.getstream.feeds.android.client.internal.state
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.CommentData
+import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PollData
@@ -33,6 +34,7 @@ import io.getstream.feeds.android.client.internal.model.removeCommentReaction
 import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.model.removeVote
 import io.getstream.feeds.android.client.internal.model.update
+import io.getstream.feeds.android.client.internal.model.updateFeedCapabilities
 import io.getstream.feeds.android.client.internal.model.upsertBookmark
 import io.getstream.feeds.android.client.internal.model.upsertComment
 import io.getstream.feeds.android.client.internal.model.upsertCommentReaction
@@ -42,6 +44,7 @@ import io.getstream.feeds.android.client.internal.state.query.ActivitiesQueryCon
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
+import io.getstream.feeds.android.network.models.FeedOwnCapability
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -159,6 +162,17 @@ internal class ActivityListStateImpl(
         _activities.update { current ->
             current.updateIf({ it.id == comment.objectId }) { activity ->
                 activity.upsertCommentReaction(comment, reaction, currentUserId, enforceUnique)
+            }
+        }
+    }
+
+    override fun onFeedCapabilitiesUpdated(capabilities: Map<FeedId, Set<FeedOwnCapability>>) {
+        _activities.update { current ->
+            current.map { activity ->
+                activity.currentFeed
+                    ?.fid
+                    ?.let(capabilities::get)
+                    ?.let(activity::updateFeedCapabilities) ?: activity
             }
         }
     }
@@ -306,6 +320,13 @@ internal interface ActivityListStateUpdates {
         reaction: FeedsReactionData,
         enforceUnique: Boolean,
     )
+
+    /**
+     * Called when feed capabilities are updated.
+     *
+     * @param capabilities A map of feed IDs to their updated set of own capabilities.
+     */
+    fun onFeedCapabilitiesUpdated(capabilities: Map<FeedId, Set<FeedOwnCapability>>)
 
     /**
      * Called when a poll is deleted.
