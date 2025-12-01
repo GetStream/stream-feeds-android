@@ -39,7 +39,7 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class FeedsCapabilityRepositoryTest {
+internal class FeedsCapabilityRepositoryImplTest {
     private val batchCallbackSlot = slot<suspend (List<FeedId>, Long, Int) -> Unit>()
     private val batcher: StreamBatcher<FeedId> =
         mockk(relaxed = true) { justRun { onBatch(capture(batchCallbackSlot)) } }
@@ -49,7 +49,7 @@ internal class FeedsCapabilityRepositoryTest {
     private val subscriptionManager = TestSubscriptionManager(stateEventListener)
 
     private val repository =
-        FeedsCapabilityRepository(
+        FeedsCapabilityRepositoryImpl(
             batcher = batcher,
             retryProcessor = retryProcessor,
             api = api,

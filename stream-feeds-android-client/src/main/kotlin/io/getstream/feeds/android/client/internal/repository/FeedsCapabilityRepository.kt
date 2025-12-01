@@ -16,82 +16,31 @@
 
 package io.getstream.feeds.android.client.internal.repository
 
-import io.getstream.android.core.api.model.StreamRetryPolicy
-import io.getstream.android.core.api.processing.StreamBatcher
-import io.getstream.android.core.api.processing.StreamRetryProcessor
-import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedCapabilitiesUpdated
-import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
-import io.getstream.feeds.android.client.internal.subscribe.onEvent
-import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.FeedOwnCapability
-import io.getstream.feeds.android.network.models.OwnCapabilitiesBatchRequest
 import java.util.Collections.singletonMap
-import java.util.concurrent.ConcurrentHashMap
-import kotlinx.coroutines.CoroutineScope
 
-internal class FeedsCapabilityRepository(
-    private val batcher: StreamBatcher<FeedId>,
-    private val retryProcessor: StreamRetryProcessor,
-    private val api: FeedsApi,
-    private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
-) {
-    private val cache = ConcurrentHashMap<FeedId, Set<FeedOwnCapability>>()
+/**
+ * A repository for managing feed capabilities. Caches feed capabilities and requests capabilities
+ * that are not yet cached.
+ */
+internal interface FeedsCapabilityRepository {
+    /**
+     * Caches the provided feed capabilities.
+     *
+     * @param capabilities A map of feed IDs to their corresponding sets of capabilities.
+     */
+    fun cache(capabilities: Map<FeedId, Set<FeedOwnCapability>>)
 
-    init {
-        batcher.onBatch { ids, _, _ -> processBatch(ids) }
-    }
-
-    /** Caches the provided [capabilities] and notify listeners in case of changes. */
-    fun cache(capabilities: Map<FeedId, Set<FeedOwnCapability>>) {
-        val before = cache.toMap()
-        cache.putAll(capabilities)
-        val after = cache.toMap()
-
-        if (after != before) {
-            subscriptionManager.onEvent(FeedCapabilitiesUpdated(cache.toMap()))
-        }
-    }
-
-    fun getOrRequest(id: FeedId): Set<FeedOwnCapability>? {
-        val cached = cache[id]
-
-        if (cached == null) {
-            batcher.offer(id)
-        }
-
-        return cached
-    }
-
-    private suspend fun processBatch(ids: List<FeedId>) {
-        ids.filterNotTo(mutableSetOf(), cache::containsKey)
-            .takeIf(Set<FeedId>::isNotEmpty)
-            ?.let { uniqueIds -> retryProcessor.retry(retryPolicy) { fetch(uniqueIds) } }
-            ?.onSuccess(::cache)
-    }
-
-    private suspend fun fetch(ids: Set<FeedId>): Map<FeedId, Set<FeedOwnCapability>> {
-        val request = OwnCapabilitiesBatchRequest(ids.map(FeedId::rawValue))
-
-        return api.ownCapabilitiesBatch(ownCapabilitiesBatchRequest = request)
-            .capabilities
-            .entries
-            .associateBy(keySelector = { FeedId(it.key) }, valueTransform = { it.value.toSet() })
-    }
-
-    companion object {
-        private val retryPolicy = StreamRetryPolicy.exponential(maxRetries = 3)
-
-        fun createBatcher(scope: CoroutineScope) =
-            StreamBatcher<FeedId>(
-                scope = scope,
-                batchSize = 100,
-                initialDelayMs = 2000,
-                maxDelayMs = 10_000,
-            )
-    }
+    /**
+     * Retrieves cached capabilities for the specified feed. If the capabilities are not cached,
+     * queue them for fetching and return null.
+     *
+     * @param id The feed ID to retrieve capabilities for.
+     * @return The cached capabilities for the feed, or null if not cached.
+     */
+    fun getOrRequest(id: FeedId): Set<FeedOwnCapability>?
 }
 
 internal fun FeedsCapabilityRepository.cache(feed: FeedData) {

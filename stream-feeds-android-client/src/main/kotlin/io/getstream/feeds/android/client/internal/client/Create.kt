@@ -61,7 +61,7 @@ import io.getstream.feeds.android.client.internal.repository.AppRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.CommentsRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.DevicesRepositoryImpl
-import io.getstream.feeds.android.client.internal.repository.FeedsCapabilityRepository
+import io.getstream.feeds.android.client.internal.repository.FeedsCapabilityRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.FeedsRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.FilesRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.ModerationRepositoryImpl
@@ -248,8 +248,8 @@ internal fun createFeedsClient(
     val moderationRepository = ModerationRepositoryImpl(feedsApi)
     val pollsRepository = PollsRepositoryImpl(feedsApi)
     val feedsCapabilityRepository =
-        FeedsCapabilityRepository(
-            batcher = FeedsCapabilityRepository.createBatcher(clientScope),
+        FeedsCapabilityRepositoryImpl(
+            batcher = FeedsCapabilityRepositoryImpl.createBatcher(clientScope),
             retryProcessor = StreamRetryProcessor(logProvider.taggedLogger("FeedCapability")),
             api = feedsApi,
             subscriptionManager = stateEventsSubscriptionManager,
