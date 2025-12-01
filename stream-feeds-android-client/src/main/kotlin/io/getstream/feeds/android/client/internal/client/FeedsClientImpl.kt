@@ -69,7 +69,7 @@ import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.repository.CollectionsRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.DevicesRepository
-import io.getstream.feeds.android.client.internal.repository.FeedsCapabilityRepository
+import io.getstream.feeds.android.client.internal.repository.FeedOwnDataRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.FilesRepository
 import io.getstream.feeds.android.client.internal.repository.ModerationRepository
@@ -126,7 +126,7 @@ internal class FeedsClientImpl(
     private val filesRepository: FilesRepository,
     private val moderationRepository: ModerationRepository,
     private val pollsRepository: PollsRepository,
-    private val feedsCapabilityRepository: FeedsCapabilityRepository,
+    private val feedOwnDataRepository: FeedOwnDataRepository,
     private val collectionsRepository: CollectionsRepository,
     override val uploader: FeedUploader,
     override val moderation: Moderation,
@@ -205,7 +205,7 @@ internal class FeedsClientImpl(
             commentsRepository = commentsRepository,
             feedsRepository = feedsRepository,
             pollsRepository = pollsRepository,
-            capabilityRepository = feedsCapabilityRepository,
+            feedOwnDataRepository = feedOwnDataRepository,
             subscriptionManager = stateEventsSubscriptionManager,
             feedWatchHandler = feedWatchHandler,
         )
@@ -214,7 +214,7 @@ internal class FeedsClientImpl(
         FeedListImpl(
             query = query,
             feedsRepository = feedsRepository,
-            capabilityRepository = feedsCapabilityRepository,
+            feedOwnDataRepository = feedOwnDataRepository,
             subscriptionManager = stateEventsSubscriptionManager,
         )
 
@@ -233,7 +233,7 @@ internal class FeedsClientImpl(
             activitiesRepository = activitiesRepository,
             commentsRepository = commentsRepository,
             pollsRepository = pollsRepository,
-            capabilityRepository = feedsCapabilityRepository,
+            feedOwnDataRepository = feedOwnDataRepository,
             subscriptionManager = stateEventsSubscriptionManager,
             commentList =
                 ActivityCommentListImpl(
@@ -254,7 +254,7 @@ internal class FeedsClientImpl(
             query = query,
             currentUserId = user.id,
             activitiesRepository = activitiesRepository,
-            capabilityRepository = feedsCapabilityRepository,
+            feedOwnDataRepository = feedOwnDataRepository,
             subscriptionManager = stateEventsSubscriptionManager,
         )
 
