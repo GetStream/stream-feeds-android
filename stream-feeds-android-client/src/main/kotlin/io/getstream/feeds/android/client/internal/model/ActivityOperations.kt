@@ -87,13 +87,22 @@ internal fun ActivityData.update(
     updated: ActivityData,
     ownBookmarks: List<BookmarkData> = this.ownBookmarks,
     ownReactions: List<FeedsReactionData> = this.ownReactions,
-): ActivityData =
-    updated.copy(
+): ActivityData {
+    // Workaround until the backend fixes the issue with missing currentFeed in some WS events
+    val updatedCurrentFeed =
+        if (updated.currentFeed == null && updated.feeds.size == 1 && this.currentFeed != null) {
+            this.currentFeed
+        } else {
+            updated.currentFeed?.let { this.currentFeed?.update(it) ?: it }
+        }
+
+    return updated.copy(
         ownBookmarks = ownBookmarks,
         ownReactions = ownReactions,
         poll = updated.poll?.let { poll?.update(it) ?: it },
-        currentFeed = updated.currentFeed?.let { currentFeed?.update(it) ?: it },
+        currentFeed = updatedCurrentFeed,
     )
+}
 
 /**
  * Adds a comment to the activity, updating the comment count and the list of comments.

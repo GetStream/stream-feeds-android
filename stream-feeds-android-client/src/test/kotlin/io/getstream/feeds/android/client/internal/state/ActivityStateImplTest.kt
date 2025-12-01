@@ -173,6 +173,30 @@ internal class ActivityStateImplTest {
     }
 
     @Test
+    fun `on onActivityUpdated with single feed and no currentFeed, then preserve currentFeed`() =
+        runTest {
+            val initialFeed = feedData(id = "1", groupId = "user")
+            val initialActivity =
+                activityData(
+                    "activity-1",
+                    text = "Original",
+                    currentFeed = initialFeed,
+                    feeds = listOf("user:1"),
+                )
+            val updatedActivity =
+                activityData(
+                    "activity-1",
+                    text = "Updated",
+                    currentFeed = null,
+                    feeds = listOf("user:1"),
+                )
+            setupAndUpdateActivity(initialActivity, updatedActivity)
+
+            val expectedActivity = updatedActivity.copy(currentFeed = initialFeed)
+            assertEquals(expectedActivity, activityState.activity.value)
+        }
+
+    @Test
     fun `on onReactionUpserted from current user, then update activity and own reactions`() =
         runTest {
             val initialActivity = activityData("activity-1")
