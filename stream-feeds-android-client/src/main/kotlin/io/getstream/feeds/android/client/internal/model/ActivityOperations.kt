@@ -24,6 +24,7 @@ import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.network.models.ActivityResponse
+import io.getstream.feeds.android.network.models.FeedOwnCapability
 import kotlin.math.max
 
 /** Converts an [ActivityResponse] to an [ActivityData] model. */
@@ -78,20 +79,30 @@ internal fun ActivityResponse.Visibility.toModel(): ActivityDataVisibility =
     }
 
 /**
- * Extension function to update the activity while preserving own bookmarks, reactions, and poll
- * votes because "own" data from WS events is not reliable. Optionally, different instances can be
- * provided to be used instead of the current ones.
+ * Extension function to update the activity while preserving own bookmarks, reactions, poll votes,
+ * and feed capabilities because "own" data from WS events is not reliable. Optionally, different
+ * instances can be provided to be used instead of the current ones.
  */
 internal fun ActivityData.update(
     updated: ActivityData,
     ownBookmarks: List<BookmarkData> = this.ownBookmarks,
     ownReactions: List<FeedsReactionData> = this.ownReactions,
-): ActivityData =
-    updated.copy(
+): ActivityData {
+    // Workaround until the backend fixes the issue with missing currentFeed in some WS events
+    val updatedCurrentFeed =
+        if (updated.currentFeed == null && updated.feeds.size == 1 && this.currentFeed != null) {
+            this.currentFeed
+        } else {
+            updated.currentFeed?.let { this.currentFeed?.update(it) ?: it }
+        }
+
+    return updated.copy(
         ownBookmarks = ownBookmarks,
         ownReactions = ownReactions,
         poll = updated.poll?.let { poll?.update(it) ?: it },
+        currentFeed = updatedCurrentFeed,
     )
+}
 
 /**
  * Adds a comment to the activity, updating the comment count and the list of comments.
@@ -242,3 +253,8 @@ internal fun ActivityData.upsertCommentReaction(
                 comment.upsertReaction(updated, reaction, currentUserId, enforceUnique)
             }
     )
+
+/** Updates the feed's own capabilities in the [ActivityData]. */
+internal fun ActivityData.updateFeedCapabilities(
+    capabilities: Set<FeedOwnCapability>
+): ActivityData = copy(currentFeed = currentFeed?.copy(ownCapabilities = capabilities))

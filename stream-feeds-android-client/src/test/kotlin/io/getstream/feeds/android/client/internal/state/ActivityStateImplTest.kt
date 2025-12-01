@@ -17,14 +17,17 @@
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.ActivityData
+import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
+import io.getstream.feeds.android.client.internal.test.TestData.feedData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
+import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -130,6 +133,9 @@ internal class ActivityStateImplTest {
         val initialReaction = feedsReactionData("activity-1", "like", currentUserId)
         val ownVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
         val initialPoll = pollData("poll-1", "Test Poll", ownVotes = listOf(ownVote))
+        val initialCapabilities = setOf(FeedOwnCapability.ReadFeed, FeedOwnCapability.AddActivity)
+        val initialFeed =
+            feedData(id = "1", groupId = "user", ownCapabilities = initialCapabilities)
         val initialActivity =
             activityData(
                 "activity-1",
@@ -137,9 +143,11 @@ internal class ActivityStateImplTest {
                 poll = initialPoll,
                 ownBookmarks = listOf(initialBookmark),
                 ownReactions = listOf(initialReaction),
+                currentFeed = initialFeed,
             )
         // Backend sends update with empty "own" properties
         val updatedPoll = pollData("poll-1", "Updated Poll", ownVotes = emptyList())
+        val updatedFeed = feedData(id = "1", groupId = "user", ownCapabilities = emptySet())
         val updatedActivity =
             activityData(
                 "activity-1",
@@ -147,19 +155,46 @@ internal class ActivityStateImplTest {
                 poll = updatedPoll,
                 ownBookmarks = emptyList(),
                 ownReactions = emptyList(),
+                currentFeed = updatedFeed,
             )
         setupAndUpdateActivity(initialActivity, updatedActivity)
 
         // Verify all "own" properties are preserved
         val expectedPoll = updatedPoll.copy(ownVotes = listOf(ownVote))
+        val expectedFeed = updatedFeed.copy(ownCapabilities = initialCapabilities)
         val expectedActivity =
             updatedActivity.copy(
                 poll = expectedPoll,
                 ownBookmarks = listOf(initialBookmark),
                 ownReactions = listOf(initialReaction),
+                currentFeed = expectedFeed,
             )
         expectActivityAndPoll(expectedActivity, expectedPoll)
     }
+
+    @Test
+    fun `on onActivityUpdated with single feed and no currentFeed, then preserve currentFeed`() =
+        runTest {
+            val initialFeed = feedData(id = "1", groupId = "user")
+            val initialActivity =
+                activityData(
+                    "activity-1",
+                    text = "Original",
+                    currentFeed = initialFeed,
+                    feeds = listOf("user:1"),
+                )
+            val updatedActivity =
+                activityData(
+                    "activity-1",
+                    text = "Updated",
+                    currentFeed = null,
+                    feeds = listOf("user:1"),
+                )
+            setupAndUpdateActivity(initialActivity, updatedActivity)
+
+            val expectedActivity = updatedActivity.copy(currentFeed = initialFeed)
+            assertEquals(expectedActivity, activityState.activity.value)
+        }
 
     @Test
     fun `on onReactionUpserted from current user, then update activity and own reactions`() =
@@ -532,6 +567,48 @@ internal class ActivityStateImplTest {
             val expectedComment = comment.copy(ownReactions = listOf(newReaction))
             val expectedActivity = initialActivity.copy(comments = listOf(expectedComment))
             assertEquals(expectedActivity, activityState.activity.value)
+        }
+
+    @Test
+    fun `on onFeedCapabilitiesUpdated, update matching activity`() = runTest {
+        val feedId1 = FeedId("user:1")
+        val feed1 = feedData(id = "1", groupId = "user", ownCapabilities = emptySet())
+        val activity1 = activityData("activity-1", currentFeed = feed1)
+        setupInitialActivity(activity1)
+        val newCapabilities = setOf(FeedOwnCapability.ReadFeed, FeedOwnCapability.AddActivity)
+
+        activityState.onFeedCapabilitiesUpdated(mapOf(feedId1 to newCapabilities))
+
+        val expectedActivity1 =
+            activity1.copy(currentFeed = feed1.copy(ownCapabilities = newCapabilities))
+        assertEquals(expectedActivity1, activityState.activity.value)
+    }
+
+    @Test
+    fun `on onFeedCapabilitiesUpdated with non-matching feed, keep activity unchanged`() = runTest {
+        val feedId1 = FeedId("user:1")
+        val feedId2 = FeedId("user:2")
+        val feed1 = feedData(id = "1", groupId = "user", ownCapabilities = emptySet())
+        val activity1 = activityData("activity-1", currentFeed = feed1)
+        setupInitialActivity(activity1)
+        val newCapabilities = setOf(FeedOwnCapability.ReadFeed, FeedOwnCapability.AddActivity)
+
+        activityState.onFeedCapabilitiesUpdated(mapOf(feedId2 to newCapabilities))
+
+        assertEquals(activity1, activityState.activity.value)
+    }
+
+    @Test
+    fun `on onFeedCapabilitiesUpdated with activity without feed, keep activity unchanged`() =
+        runTest {
+            val feedId1 = FeedId("user:1")
+            val activity1 = activityData("activity-1", currentFeed = null)
+            setupInitialActivity(activity1)
+            val newCapabilities = setOf(FeedOwnCapability.ReadFeed, FeedOwnCapability.AddActivity)
+
+            activityState.onFeedCapabilitiesUpdated(mapOf(feedId1 to newCapabilities))
+
+            assertEquals(activity1, activityState.activity.value)
         }
 
     private fun setupInitialActivity(activity: ActivityData) {

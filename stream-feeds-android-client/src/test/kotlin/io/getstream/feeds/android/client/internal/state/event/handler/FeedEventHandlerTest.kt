@@ -43,6 +43,7 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.C
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpserted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedCapabilitiesUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FollowAdded
@@ -64,6 +65,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionDat
 import io.getstream.feeds.android.client.internal.test.TestData.followData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
+import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.getstream.feeds.android.network.models.NotificationStatusResponse
 import io.mockk.MockKVerificationScope
 import io.mockk.called
@@ -321,6 +323,15 @@ internal class FeedEventHandlerTest(
                     event = FeedUpdated(nonMatchingFeed),
                     verifyBlock = { state -> state wasNot called },
                 ),
+                kotlin.run {
+                    val capabilities = mapOf(FeedId("user:1") to setOf(FeedOwnCapability.ReadFeed))
+
+                    testParams<FeedStateUpdates>(
+                        name = "FeedCapabilitiesUpdated handled regardless of feed ID",
+                        event = FeedCapabilitiesUpdated(capabilities),
+                        verifyBlock = { state -> state.onFeedCapabilitiesUpdated(capabilities) },
+                    )
+                },
                 testParams<FeedStateUpdates>(
                     name = "FollowAdded matching feed",
                     event = FollowAdded(matchingFollow),

@@ -213,6 +213,7 @@ internal object TestData {
         createdAt: Long = 1000,
         hidden: Boolean = false,
         user: UserData = userData("user-1"),
+        currentFeed: FeedData? = null,
     ): ActivityData =
         ActivityData(
             attachments = emptyList(),
@@ -220,7 +221,7 @@ internal object TestData {
             commentCount = comments.size,
             comments = comments,
             createdAt = Date(createdAt),
-            currentFeed = null,
+            currentFeed = currentFeed,
             custom = emptyMap(),
             deletedAt = null,
             editedAt = null,

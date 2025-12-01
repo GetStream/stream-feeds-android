@@ -165,6 +165,10 @@ internal class FeedEventHandler(
                 }
             }
 
+            is StateUpdateEvent.FeedCapabilitiesUpdated -> {
+                state.onFeedCapabilitiesUpdated(event.capabilities)
+            }
+
             is StateUpdateEvent.FollowAdded -> {
                 if (event.follow.matchesFeed()) {
                     state.onFollowAdded(event.follow)

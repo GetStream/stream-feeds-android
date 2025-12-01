@@ -61,11 +61,14 @@ import io.getstream.feeds.android.client.internal.repository.AppRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.CommentsRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.DevicesRepositoryImpl
+import io.getstream.feeds.android.client.internal.repository.FeedsCapabilityRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.FeedsRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.FilesRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.ModerationRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.PollsRepositoryImpl
 import io.getstream.feeds.android.client.internal.serialization.FeedsMoshiJsonParser
+import io.getstream.feeds.android.client.internal.state.event.StateEventEnricher
+import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.infrastructure.Serializer
 import io.getstream.feeds.android.network.models.WSEvent
@@ -210,7 +213,7 @@ internal fun createFeedsClient(
             lifecycleObserver =
                 StreamLifecycleObserver(
                     scope = clientScope,
-                    lifecycle = ProcessLifecycleOwner.Companion.get().lifecycle,
+                    lifecycle = ProcessLifecycleOwner.get().lifecycle,
                 ),
             networkStateProvider =
                 NetworkStateProvider(
@@ -227,6 +230,14 @@ internal fun createFeedsClient(
     val retrofit = createRetrofit(endpointConfig, okHttpClient)
     val feedsApi: FeedsApi = FeedsSingleFlightApi(retrofit.create(), singleFlight)
     val uploader: FeedUploader = config.customUploader ?: StreamFeedUploader(retrofit.create())
+
+    val stateEventsSubscriptionManager =
+        StreamSubscriptionManager<StateUpdateEventListener>(
+            logProvider.taggedLogger("StateEventSubscriptions"),
+            maxStrongSubscriptions = Integer.MAX_VALUE,
+            maxWeakSubscriptions = Integer.MAX_VALUE,
+        )
+
     val activitiesRepository = ActivitiesRepositoryImpl(feedsApi, uploader)
     val appRepository = AppRepositoryImpl(feedsApi)
     val bookmarksRepository = BookmarksRepositoryImpl(feedsApi)
@@ -236,6 +247,14 @@ internal fun createFeedsClient(
     val filesRepository = FilesRepositoryImpl(feedsApi)
     val moderationRepository = ModerationRepositoryImpl(feedsApi)
     val pollsRepository = PollsRepositoryImpl(feedsApi)
+    val feedsCapabilityRepository =
+        FeedsCapabilityRepositoryImpl(
+            batcher = FeedsCapabilityRepositoryImpl.createBatcher(clientScope),
+            retryProcessor = StreamRetryProcessor(logProvider.taggedLogger("FeedCapability")),
+            api = feedsApi,
+            subscriptionManager = stateEventsSubscriptionManager,
+        )
+    val stateEventEnricher = StateEventEnricher(feedsCapabilityRepository)
 
     val moderation = ModerationImpl(moderationRepository)
     val errorBus = MutableSharedFlow<StreamClientException>(extraBufferCapacity = 100)
@@ -263,6 +282,7 @@ internal fun createFeedsClient(
         filesRepository = filesRepository,
         moderationRepository = moderationRepository,
         pollsRepository = pollsRepository,
+        feedsCapabilityRepository = feedsCapabilityRepository,
         uploader = uploader,
         moderation = moderation,
         coreClient = client,
@@ -272,12 +292,8 @@ internal fun createFeedsClient(
                 maxStrongSubscriptions = Integer.MAX_VALUE,
                 maxWeakSubscriptions = Integer.MAX_VALUE,
             ),
-        stateEventsSubscriptionManager =
-            StreamSubscriptionManager(
-                logProvider.taggedLogger("StateEventSubscriptions"),
-                maxStrongSubscriptions = Integer.MAX_VALUE,
-                maxWeakSubscriptions = Integer.MAX_VALUE,
-            ),
+        stateEventsSubscriptionManager = stateEventsSubscriptionManager,
+        stateEventEnricher = stateEventEnricher,
         feedWatchHandler = feedWatchHandler,
         errorBus = errorBus,
         scope = clientScope,

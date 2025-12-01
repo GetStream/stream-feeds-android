@@ -71,6 +71,7 @@ import io.getstream.feeds.android.client.internal.repository.AppRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.DevicesRepository
+import io.getstream.feeds.android.client.internal.repository.FeedsCapabilityRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.FilesRepository
 import io.getstream.feeds.android.client.internal.repository.ModerationRepository
@@ -91,6 +92,7 @@ import io.getstream.feeds.android.client.internal.state.MemberListImpl
 import io.getstream.feeds.android.client.internal.state.ModerationConfigListImpl
 import io.getstream.feeds.android.client.internal.state.PollListImpl
 import io.getstream.feeds.android.client.internal.state.PollVoteListImpl
+import io.getstream.feeds.android.client.internal.state.event.StateEventEnricher
 import io.getstream.feeds.android.client.internal.state.event.handler.OnNewActivity
 import io.getstream.feeds.android.client.internal.state.event.toModel
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
@@ -114,6 +116,7 @@ internal class FeedsClientImpl(
     private val coreClient: StreamClient,
     private val feedsEventsSubscriptionManager: StreamSubscriptionManager<FeedsEventListener>,
     private val stateEventsSubscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
+    private val stateEventEnricher: StateEventEnricher,
     override val apiKey: StreamApiKey,
     override val user: User,
     private val connectionRecoveryHandler: ConnectionRecoveryHandler,
@@ -126,6 +129,7 @@ internal class FeedsClientImpl(
     private val filesRepository: FilesRepository,
     private val moderationRepository: ModerationRepository,
     private val pollsRepository: PollsRepository,
+    private val feedsCapabilityRepository: FeedsCapabilityRepository,
     override val uploader: FeedUploader,
     override val moderation: Moderation,
     private val feedWatchHandler: FeedWatchHandler,
@@ -154,7 +158,7 @@ internal class FeedsClientImpl(
                     logger.v { "[onEvent] Received event from core: $event" }
                     _events.tryEmit(event)
                     feedsEventsSubscriptionManager.forEach { it.onEvent(event) }
-                    event.toModel()?.let { stateEvent ->
+                    event.toModel()?.let(stateEventEnricher::enrich)?.let { stateEvent ->
                         stateEventsSubscriptionManager.forEach { listener ->
                             listener.onEvent(stateEvent)
                         }
@@ -202,6 +206,7 @@ internal class FeedsClientImpl(
             commentsRepository = commentsRepository,
             feedsRepository = feedsRepository,
             pollsRepository = pollsRepository,
+            capabilityRepository = feedsCapabilityRepository,
             subscriptionManager = stateEventsSubscriptionManager,
             feedWatchHandler = feedWatchHandler,
         )
@@ -210,6 +215,7 @@ internal class FeedsClientImpl(
         FeedListImpl(
             query = query,
             feedsRepository = feedsRepository,
+            capabilityRepository = feedsCapabilityRepository,
             subscriptionManager = stateEventsSubscriptionManager,
         )
 
@@ -228,6 +234,7 @@ internal class FeedsClientImpl(
             activitiesRepository = activitiesRepository,
             commentsRepository = commentsRepository,
             pollsRepository = pollsRepository,
+            capabilityRepository = feedsCapabilityRepository,
             subscriptionManager = stateEventsSubscriptionManager,
             commentList =
                 ActivityCommentListImpl(
@@ -248,6 +255,7 @@ internal class FeedsClientImpl(
             query = query,
             currentUserId = user.id,
             activitiesRepository = activitiesRepository,
+            capabilityRepository = feedsCapabilityRepository,
             subscriptionManager = stateEventsSubscriptionManager,
         )
 

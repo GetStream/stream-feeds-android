@@ -42,6 +42,7 @@ import io.getstream.feeds.android.client.internal.model.removeCommentReaction
 import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.model.removeVote
 import io.getstream.feeds.android.client.internal.model.update
+import io.getstream.feeds.android.client.internal.model.updateFeedCapabilities
 import io.getstream.feeds.android.client.internal.model.upsertBookmark
 import io.getstream.feeds.android.client.internal.model.upsertComment
 import io.getstream.feeds.android.client.internal.model.upsertCommentReaction
@@ -51,6 +52,7 @@ import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
 import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.client.internal.utils.upsertAll
+import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.getstream.feeds.android.network.models.NotificationStatusResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -249,6 +251,16 @@ internal class FeedStateImpl(
         _feed.update { feed }
     }
 
+    override fun onFeedCapabilitiesUpdated(capabilities: Map<FeedId, Set<FeedOwnCapability>>) {
+        updateActivitiesWhere({ it.currentFeed?.fid in capabilities }) { activityData ->
+            // The null path should never be hit because of the filter above
+            activityData.currentFeed
+                ?.fid
+                ?.let(capabilities::get)
+                ?.let(activityData::updateFeedCapabilities) ?: activityData
+        }
+    }
+
     override fun onFollowAdded(follow: FollowData) {
         addFollow(follow)
     }
@@ -379,7 +391,7 @@ internal class FeedStateImpl(
         addFollow(follow)
     }
 
-    private fun updateActivitiesWhere(
+    private inline fun updateActivitiesWhere(
         filter: (ActivityData) -> Boolean,
         update: (ActivityData) -> ActivityData,
     ) {
@@ -464,6 +476,9 @@ internal interface FeedStateUpdates {
 
     /** Handles updates to the feed state when the feed is updated. */
     fun onFeedUpdated(feed: FeedData)
+
+    /** Handles updates to feed capabilities. */
+    fun onFeedCapabilitiesUpdated(capabilities: Map<FeedId, Set<FeedOwnCapability>>)
 
     /** Handles updates to the feed state when a follow is added. */
     fun onFollowAdded(follow: FollowData)

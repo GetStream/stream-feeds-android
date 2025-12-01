@@ -180,6 +180,9 @@ internal class FeedStateImplTest {
         val initialReaction = feedsReactionData("activity-1", "like", currentUserId)
         val ownVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
         val initialPoll = pollData("poll-1", "Test Poll", ownVotes = listOf(ownVote))
+        val initialCapabilities = setOf(FeedOwnCapability.ReadFeed, FeedOwnCapability.AddActivity)
+        val initialFeed =
+            feedData(id = "1", groupId = "user", ownCapabilities = initialCapabilities)
         val initialActivity =
             activityData(
                 "activity-1",
@@ -187,11 +190,13 @@ internal class FeedStateImplTest {
                 poll = initialPoll,
                 ownBookmarks = listOf(initialBookmark),
                 ownReactions = listOf(initialReaction),
+                currentFeed = initialFeed,
             )
         setupInitialState(listOf(initialActivity))
 
         // Backend sends update with empty "own" properties
         val updatedPoll = pollData("poll-1", "Updated Poll", ownVotes = emptyList())
+        val updatedFeed = feedData(id = "1", groupId = "user", ownCapabilities = emptySet())
         val updatedActivity =
             activityData(
                 "activity-1",
@@ -199,16 +204,19 @@ internal class FeedStateImplTest {
                 poll = updatedPoll,
                 ownBookmarks = emptyList(),
                 ownReactions = emptyList(),
+                currentFeed = updatedFeed,
             )
         feedState.onActivityUpdated(updatedActivity)
 
         // Verify all "own" properties are preserved
         val expectedPoll = updatedPoll.copy(ownVotes = listOf(ownVote))
+        val expectedFeed = updatedFeed.copy(ownCapabilities = initialCapabilities)
         val expectedActivity =
             updatedActivity.copy(
                 poll = expectedPoll,
                 ownBookmarks = listOf(initialBookmark),
                 ownReactions = listOf(initialReaction),
+                currentFeed = expectedFeed,
             )
         assertEquals(listOf(expectedActivity), feedState.activities.value)
     }
@@ -689,6 +697,26 @@ internal class FeedStateImplTest {
 
         val expected = updatedSourceFeed.copy(ownCapabilities = initialFeed.ownCapabilities)
         assertEquals(expected, feedState.feed.value)
+    }
+
+    @Test
+    fun `on onFeedCapabilitiesUpdated, update matching activities`() = runTest {
+        val feedId1 = FeedId("user:1")
+        val feed1 = feedData(id = "1", groupId = "user", ownCapabilities = emptySet())
+        val feed2 = feedData(id = "2", groupId = "user", ownCapabilities = emptySet())
+        val activity1 = activityData("activity-1", currentFeed = feed1)
+        val activity2 = activityData("activity-2", currentFeed = feed2)
+        val activityPin = activityPin(activity1)
+        setupInitialState(listOf(activity1, activity2), listOf(activityPin))
+
+        val newCapabilities = setOf(FeedOwnCapability.ReadFeed, FeedOwnCapability.AddActivity)
+        feedState.onFeedCapabilitiesUpdated(mapOf(feedId1 to newCapabilities))
+
+        val expectedActivity1 =
+            activity1.copy(currentFeed = feed1.copy(ownCapabilities = newCapabilities))
+        val expectedPinnedActivity = activityPin.copy(activity = expectedActivity1)
+        assertEquals(listOf(expectedActivity1, activity2), feedState.activities.value)
+        assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
     }
 
     // Helper functions

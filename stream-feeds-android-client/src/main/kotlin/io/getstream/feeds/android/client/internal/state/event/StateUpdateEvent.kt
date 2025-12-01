@@ -23,6 +23,7 @@ import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.BookmarkFolderData
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedData
+import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.FollowData
@@ -59,6 +60,7 @@ import io.getstream.feeds.android.network.models.FeedDeletedEvent
 import io.getstream.feeds.android.network.models.FeedMemberAddedEvent
 import io.getstream.feeds.android.network.models.FeedMemberRemovedEvent
 import io.getstream.feeds.android.network.models.FeedMemberUpdatedEvent
+import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.getstream.feeds.android.network.models.FeedUpdatedEvent
 import io.getstream.feeds.android.network.models.FollowCreatedEvent
 import io.getstream.feeds.android.network.models.FollowDeletedEvent
@@ -144,6 +146,9 @@ internal sealed interface StateUpdateEvent {
     data class FeedDeleted(val fid: String) : StateUpdateEvent
 
     data class FeedUpdated(val feed: FeedData) : StateUpdateEvent
+
+    data class FeedCapabilitiesUpdated(val capabilities: Map<FeedId, Set<FeedOwnCapability>>) :
+        StateUpdateEvent
 
     data class FeedMemberAdded(val fid: String, val member: FeedMemberData) : StateUpdateEvent
 
