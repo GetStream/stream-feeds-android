@@ -16,13 +16,14 @@
 
 package io.getstream.feeds.android.client.internal.state
 
+import io.getstream.android.core.api.sort.CompositeComparator
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.state.CommentReactionListState
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsSort
 import io.getstream.feeds.android.client.internal.model.PaginationResult
-import io.getstream.feeds.android.client.internal.model.upsertReaction
+import io.getstream.feeds.android.client.internal.model.upsertReactionSorted
 import io.getstream.feeds.android.client.internal.state.query.CommentReactionsQueryConfig
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,8 +49,8 @@ internal class CommentReactionListStateImpl(override val query: CommentReactions
 
     private var _pagination: PaginationData? = null
 
-    private val reactionsSorting: List<CommentReactionsSort>
-        get() = query.sort ?: CommentReactionsSort.Default
+    private val reactionsSorting: CompositeComparator<FeedsReactionData> =
+        CompositeComparator(query.sort ?: CommentReactionsSort.Default)
 
     override val reactions: StateFlow<List<FeedsReactionData>>
         get() = _reactions.asStateFlow()
@@ -79,7 +80,9 @@ internal class CommentReactionListStateImpl(override val query: CommentReactions
     }
 
     override fun onReactionUpserted(reaction: FeedsReactionData, enforceUnique: Boolean) {
-        _reactions.update { current -> current.upsertReaction(reaction, enforceUnique) }
+        _reactions.update { current ->
+            current.upsertReactionSorted(reaction, enforceUnique, reactionsSorting)
+        }
     }
 }
 

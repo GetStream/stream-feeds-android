@@ -71,7 +71,7 @@ internal class ActivityReactionListStateImplTest {
     }
 
     @Test
-    fun `on reactionUpserted with new reaction, then insert in sorted order`() = runTest {
+    fun `on onReactionUpserted for new reaction, then insert in sorted order`() = runTest {
         val olderReaction =
             feedsReactionData(activityId = "activity-1", userId = "user-1", createdAt = Date(1000))
         val newerReaction =
@@ -82,12 +82,54 @@ internal class ActivityReactionListStateImplTest {
 
         val middleReaction =
             feedsReactionData(activityId = "activity-1", userId = "user-2", createdAt = Date(2000))
-        activityReactionListState.onReactionUpserted(middleReaction)
+        activityReactionListState.onReactionUpserted(middleReaction, enforceUnique = false)
 
         // The reaction is inserted in sorted position (newest first)
         val expectedOrder = listOf(newerReaction, middleReaction, olderReaction)
         assertEquals(expectedOrder, activityReactionListState.reactions.value)
     }
+
+    @Test
+    fun `on onReactionUpserted with enforceUnique true, replace existing user reactions and keep sort order`() =
+        runTest {
+            val existingReactions =
+                listOf(
+                    feedsReactionData(
+                        commentId = "comment-1",
+                        type = "like",
+                        userId = "another-user",
+                        createdAt = Date(4000),
+                    ),
+                    feedsReactionData(
+                        commentId = "comment-1",
+                        type = "heart",
+                        userId = "the-user",
+                        createdAt = Date(3000),
+                    ),
+                    feedsReactionData(
+                        commentId = "comment-1",
+                        type = "like",
+                        userId = "the-user",
+                        createdAt = Date(2000),
+                    ),
+                )
+
+            val paginationResult = defaultPaginationResult(existingReactions)
+            activityReactionListState.onQueryMoreActivityReactions(paginationResult, queryConfig)
+
+            val newReaction =
+                feedsReactionData(
+                    commentId = "comment-1",
+                    type = "smile",
+                    userId = "the-user",
+                    createdAt = Date(5000),
+                )
+
+            activityReactionListState.onReactionUpserted(newReaction, enforceUnique = true)
+
+            val expected = listOf(newReaction, existingReactions.first())
+            assertEquals(expected, activityReactionListState.reactions.value)
+        }
 
     @Test
     fun `on onActivityRemoved, clear all reactions`() = runTest {
