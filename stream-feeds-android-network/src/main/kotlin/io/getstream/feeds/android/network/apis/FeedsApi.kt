@@ -242,7 +242,12 @@ public interface FeedsApi {
         @Path("id") id: kotlin.String
     ): io.getstream.feeds.android.network.models.GetActivityResponse
 
-    /** Partially activity update Updates certain fields of the activity */
+    /**
+     * Partially activity update Updates certain fields of the activity. Use 'set' to update
+     * specific fields and 'unset' to remove fields. This allows you to update only the fields you
+     * need without replacing the entire activity. Useful for updating reply restrictions
+     * ('restrict_replies'), mentioned users, or custom data.
+     */
     @PATCH("/api/v2/feeds/activities/{id}")
     public suspend fun updateActivityPartial(
         @Path("id") id: kotlin.String,
@@ -251,20 +256,33 @@ public interface FeedsApi {
             io.getstream.feeds.android.network.models.UpdateActivityPartialRequest,
     ): io.getstream.feeds.android.network.models.UpdateActivityPartialResponse
 
-    /** Partially activity update Updates certain fields of the activity */
+    /**
+     * Partially activity update Updates certain fields of the activity. Use 'set' to update
+     * specific fields and 'unset' to remove fields. This allows you to update only the fields you
+     * need without replacing the entire activity. Useful for updating reply restrictions
+     * ('restrict_replies'), mentioned users, or custom data.
+     */
     @PATCH("/api/v2/feeds/activities/{id}")
     public suspend fun updateActivityPartial(
         @Path("id") id: kotlin.String
     ): io.getstream.feeds.android.network.models.UpdateActivityPartialResponse
 
-    /** Full activity update Replaces an activity with the provided data */
+    /**
+     * Full activity update Replaces an activity with the provided data. Use this to update text,
+     * attachments, reply restrictions ('restrict_replies'), mentioned users, and other activity
+     * fields. Note: This is a full update - any fields not provided will be cleared.
+     */
     @PUT("/api/v2/feeds/activities/{id}")
     public suspend fun updateActivity(
         @Path("id") id: kotlin.String,
         @Body updateActivityRequest: io.getstream.feeds.android.network.models.UpdateActivityRequest,
     ): io.getstream.feeds.android.network.models.UpdateActivityResponse
 
-    /** Full activity update Replaces an activity with the provided data */
+    /**
+     * Full activity update Replaces an activity with the provided data. Use this to update text,
+     * attachments, reply restrictions ('restrict_replies'), mentioned users, and other activity
+     * fields. Note: This is a full update - any fields not provided will be cleared.
+     */
     @PUT("/api/v2/feeds/activities/{id}")
     public suspend fun updateActivity(
         @Path("id") id: kotlin.String
@@ -316,6 +334,45 @@ public interface FeedsApi {
         io.getstream.feeds.android.network.models.QueryBookmarksResponse
 
     /**
+     * Delete multiple collections Delete collections in a batch operation. Users can only delete
+     * their own collections.
+     */
+    @DELETE("/api/v2/feeds/collections")
+    public suspend fun deleteCollections(
+        @Query("collection_refs") collectionRefs: kotlin.collections.List<kotlin.String>
+    ): io.getstream.feeds.android.network.models.DeleteCollectionsResponse
+
+    /**
+     * Read collections Read collections with optional filtering by user ID and collection name. By
+     * default, users can only read their own collections.
+     */
+    @GET("/api/v2/feeds/collections")
+    public suspend fun readCollections(
+        @Query("collection_refs") collectionRefs: kotlin.collections.List<kotlin.String>
+    ): io.getstream.feeds.android.network.models.ReadCollectionsResponse
+
+    /**
+     * Update multiple collections Update existing collections in a batch operation. Only the custom
+     * data field is updatable. Users can only update their own collections.
+     */
+    @PATCH("/api/v2/feeds/collections")
+    public suspend fun updateCollections(
+        @Body
+        updateCollectionsRequest: io.getstream.feeds.android.network.models.UpdateCollectionsRequest
+    ): io.getstream.feeds.android.network.models.UpdateCollectionsResponse
+
+    /**
+     * Create multiple collections Create new collections in a batch operation. Collections are data
+     * objects that can be attached to activities for managing shared data across multiple
+     * activities.
+     */
+    @POST("/api/v2/feeds/collections")
+    public suspend fun createCollections(
+        @Body
+        createCollectionsRequest: io.getstream.feeds.android.network.models.CreateCollectionsRequest
+    ): io.getstream.feeds.android.network.models.CreateCollectionsResponse
+
+    /**
      * Get comments for an object Retrieve a threaded list of comments for a specific object (e.g.,
      * activity), with configurable depth, sorting, and pagination
      */
@@ -339,6 +396,13 @@ public interface FeedsApi {
     public suspend fun addComment(
         @Body addCommentRequest: io.getstream.feeds.android.network.models.AddCommentRequest
     ): io.getstream.feeds.android.network.models.AddCommentResponse
+
+    /**
+     * Add a comment or reply Adds a comment to an object (e.g., activity) or a reply to an existing
+     * comment, and broadcasts appropriate events
+     */
+    @POST("/api/v2/feeds/comments")
+    public suspend fun addComment(): io.getstream.feeds.android.network.models.AddCommentResponse
 
     /**
      * Add multiple comments in a batch Adds multiple comments in a single request. Each comment
@@ -623,16 +687,15 @@ public interface FeedsApi {
     ): io.getstream.feeds.android.network.models.CreateFeedsBatchResponse
 
     /**
-     * Get capabilities for multiple feeds Retrieves capabilities for multiple feeds in a single
-     * request. Useful for batch processing when activities are added to feeds.
+     * Get own fields for multiple feeds Retrieves own_follows, own_capabilities, and/or
+     * own_membership for multiple feeds in a single request. If fields are not specified, all three
+     * fields are returned.
      */
-    @POST("/api/v2/feeds/feeds/own_capabilities/batch")
-    public suspend fun ownCapabilitiesBatch(
+    @POST("/api/v2/feeds/feeds/own/batch")
+    public suspend fun ownBatch(
         @Query("connection_id") connectionId: kotlin.String? = null,
-        @Body
-        ownCapabilitiesBatchRequest:
-            io.getstream.feeds.android.network.models.OwnCapabilitiesBatchRequest,
-    ): io.getstream.feeds.android.network.models.OwnCapabilitiesBatchResponse
+        @Body ownBatchRequest: io.getstream.feeds.android.network.models.OwnBatchRequest,
+    ): io.getstream.feeds.android.network.models.OwnBatchResponse
 
     /** Query feeds Query feeds with filter query */
     @POST("/api/v2/feeds/feeds/query")
@@ -678,6 +741,16 @@ public interface FeedsApi {
         @Body followBatchRequest: io.getstream.feeds.android.network.models.FollowBatchRequest
     ): io.getstream.feeds.android.network.models.FollowBatchResponse
 
+    /**
+     * Upsert multiple follows at once Creates or updates multiple follows at once. Does not return
+     * an error if follows already exist. Broadcasts FollowAddedEvent only for newly created
+     * follows.
+     */
+    @POST("/api/v2/feeds/follows/batch/upsert")
+    public suspend fun getOrCreateFollows(
+        @Body followBatchRequest: io.getstream.feeds.android.network.models.FollowBatchRequest
+    ): io.getstream.feeds.android.network.models.FollowBatchResponse
+
     /** Query follows Query follows based on filters with pagination and sorting options */
     @POST("/api/v2/feeds/follows/query")
     public suspend fun queryFollows(
@@ -701,6 +774,15 @@ public interface FeedsApi {
         @Path("source") source: kotlin.String,
         @Path("target") target: kotlin.String,
     ): io.getstream.feeds.android.network.models.UnfollowResponse
+
+    /**
+     * Unfollow multiple feeds (idempotent) Removes multiple follows and broadcasts
+     * FollowRemovedEvent for each. Does not return an error if follows don't exist.
+     */
+    @POST("/api/v2/feeds/unfollow/batch/upsert")
+    public suspend fun getOrCreateUnfollows(
+        @Body unfollowBatchRequest: io.getstream.feeds.android.network.models.UnfollowBatchRequest
+    ): io.getstream.feeds.android.network.models.UnfollowBatchResponse
 
     /** Create Guest */
     @POST("/api/v2/guest")

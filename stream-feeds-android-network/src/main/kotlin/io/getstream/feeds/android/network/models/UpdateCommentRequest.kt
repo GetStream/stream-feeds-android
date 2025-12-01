@@ -26,6 +26,7 @@ import kotlin.io.*
 /**  */
 public data class UpdateCommentRequest(
     @Json(name = "comment") public val comment: kotlin.String? = null,
+    @Json(name = "skip_enrich_url") public val skipEnrichUrl: kotlin.Boolean? = null,
     @Json(name = "skip_push") public val skipPush: kotlin.Boolean? = null,
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),

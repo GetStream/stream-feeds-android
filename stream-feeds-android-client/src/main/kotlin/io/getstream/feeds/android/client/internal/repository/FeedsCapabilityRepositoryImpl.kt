@@ -26,7 +26,7 @@ import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventList
 import io.getstream.feeds.android.client.internal.subscribe.onEvent
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.FeedOwnCapability
-import io.getstream.feeds.android.network.models.OwnCapabilitiesBatchRequest
+import io.getstream.feeds.android.network.models.OwnBatchRequest
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.CoroutineScope
 
@@ -70,12 +70,15 @@ internal class FeedsCapabilityRepositoryImpl(
     }
 
     private suspend fun fetch(ids: Set<FeedId>): Map<FeedId, Set<FeedOwnCapability>> {
-        val request = OwnCapabilitiesBatchRequest(ids.map(FeedId::rawValue))
+        val request = OwnBatchRequest(ids.map(FeedId::rawValue))
 
-        return api.ownCapabilitiesBatch(ownCapabilitiesBatchRequest = request)
-            .capabilities
+        return api.ownBatch(ownBatchRequest = request)
+            .data
             .entries
-            .associateBy(keySelector = { FeedId(it.key) }, valueTransform = { it.value.toSet() })
+            .mapNotNull { (id, data) ->
+                data.ownCapabilities?.toSet()?.let { capabilities -> FeedId(id) to capabilities }
+            }
+            .toMap()
     }
 
     companion object {

@@ -21,26 +21,15 @@ package io.getstream.feeds.android.network.models
 import com.squareup.moshi.Json
 import kotlin.collections.*
 import kotlin.collections.List
-import kotlin.collections.Map
 import kotlin.io.*
 
 /**  */
-public data class AddCommentRequest(
-    @Json(name = "comment") public val comment: kotlin.String? = null,
-    @Json(name = "create_notification_activity")
-    public val createNotificationActivity: kotlin.Boolean? = null,
-    @Json(name = "id") public val id: kotlin.String? = null,
-    @Json(name = "object_id") public val objectId: kotlin.String? = null,
-    @Json(name = "object_type") public val objectType: kotlin.String? = null,
-    @Json(name = "parent_id") public val parentId: kotlin.String? = null,
-    @Json(name = "skip_enrich_url") public val skipEnrichUrl: kotlin.Boolean? = null,
-    @Json(name = "skip_push") public val skipPush: kotlin.Boolean? = null,
+public data class NotificationComment(
+    @Json(name = "comment") public val comment: kotlin.String,
+    @Json(name = "id") public val id: kotlin.String,
+    @Json(name = "user_id") public val userId: kotlin.String,
     @Json(name = "attachments")
     public val attachments:
         kotlin.collections.List<io.getstream.feeds.android.network.models.Attachment>? =
         emptyList(),
-    @Json(name = "mentioned_user_ids")
-    public val mentionedUserIds: kotlin.collections.List<kotlin.String>? = emptyList(),
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
 )

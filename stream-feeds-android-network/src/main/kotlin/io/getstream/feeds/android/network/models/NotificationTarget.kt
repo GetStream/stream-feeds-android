@@ -34,4 +34,6 @@ public data class NotificationTarget(
     public val attachments:
         kotlin.collections.List<io.getstream.feeds.android.network.models.Attachment>? =
         emptyList(),
+    @Json(name = "comment")
+    public val comment: io.getstream.feeds.android.network.models.NotificationComment? = null,
 )

@@ -48,6 +48,7 @@ public data class CreateBlockListRequest(
                     "domain" -> Domain
                     "domain_allowlist" -> DomainAllowlist
                     "email" -> Email
+                    "email_allowlist" -> EmailAllowlist
                     "regex" -> Regex
                     "word" -> Word
                     else -> Unknown(s)
@@ -59,6 +60,8 @@ public data class CreateBlockListRequest(
         public object DomainAllowlist : Type("domain_allowlist")
 
         public object Email : Type("email")
+
+        public object EmailAllowlist : Type("email_allowlist")
 
         public object Regex : Type("regex")
 

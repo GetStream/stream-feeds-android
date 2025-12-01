@@ -24,12 +24,13 @@ import kotlin.collections.Map
 import kotlin.io.*
 
 /**  */
-public data class BookmarkFolderResponse(
-    @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "id") public val id: kotlin.String,
-    @Json(name = "name") public val name: kotlin.String,
-    @Json(name = "updated_at") public val updatedAt: java.util.Date,
-    @Json(name = "user") public val user: io.getstream.feeds.android.network.models.UserResponse,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+public data class FeedsPreferencesResponse(
+    @Json(name = "comment") public val comment: kotlin.String? = null,
+    @Json(name = "comment_reaction") public val commentReaction: kotlin.String? = null,
+    @Json(name = "follow") public val follow: kotlin.String? = null,
+    @Json(name = "mention") public val mention: kotlin.String? = null,
+    @Json(name = "reaction") public val reaction: kotlin.String? = null,
+    @Json(name = "custom_activity_types")
+    public val customActivityTypes: kotlin.collections.Map<kotlin.String, kotlin.String>? =
+        emptyMap(),
 )

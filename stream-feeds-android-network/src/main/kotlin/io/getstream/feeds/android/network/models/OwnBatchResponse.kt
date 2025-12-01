@@ -24,12 +24,13 @@ import kotlin.collections.Map
 import kotlin.io.*
 
 /**  */
-public data class BookmarkFolderResponse(
-    @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "id") public val id: kotlin.String,
-    @Json(name = "name") public val name: kotlin.String,
-    @Json(name = "updated_at") public val updatedAt: java.util.Date,
-    @Json(name = "user") public val user: io.getstream.feeds.android.network.models.UserResponse,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+public data class OwnBatchResponse(
+    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "data")
+    public val data:
+        kotlin.collections.Map<
+            kotlin.String,
+            io.getstream.feeds.android.network.models.FeedOwnData,
+        > =
+        emptyMap(),
 )

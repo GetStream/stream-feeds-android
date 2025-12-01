@@ -35,15 +35,15 @@ public data class BookmarkFolderUpdatedEvent(
     @Json(name = "user")
     public val user: io.getstream.feeds.android.network.models.UserResponseCommonFields? = null,
 ) :
-    io.getstream.feeds.android.network.models.WSEvent,
     io.getstream.feeds.android.network.models.WSClientEvent,
+    io.getstream.feeds.android.network.models.WSEvent,
     io.getstream.feeds.android.network.models.FeedEvent {
 
-    override fun getWSEventType(): kotlin.String {
+    override fun getWSClientEventType(): kotlin.String {
         return type
     }
 
-    override fun getWSClientEventType(): kotlin.String {
+    override fun getWSEventType(): kotlin.String {
         return type
     }
 }

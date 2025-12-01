@@ -339,6 +339,7 @@ internal object TestData {
             id = id,
             popularity = 0,
             reactionCount = 0,
+            restrictReplies = "",
             score = 0f,
             shareCount = 0,
             type = "",
@@ -411,6 +412,7 @@ internal object TestData {
             custom = emptyMap(),
             id = "folder-1",
             name = "Test Folder",
+            user = userResponse(),
             updatedAt = Date(1000),
         )
 

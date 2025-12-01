@@ -24,28 +24,9 @@ import kotlin.collections.Map
 import kotlin.io.*
 
 /**  */
-public data class PollVoteRemovedFeedEvent(
-    @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "fid") public val fid: kotlin.String,
+public data class UpdateCollectionRequest(
+    @Json(name = "id") public val id: kotlin.String,
+    @Json(name = "name") public val name: kotlin.String,
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-    @Json(name = "poll")
-    public val poll: io.getstream.feeds.android.network.models.PollResponseData,
-    @Json(name = "poll_vote")
-    public val pollVote: io.getstream.feeds.android.network.models.PollVoteResponseData,
-    @Json(name = "type") public val type: kotlin.String,
-    @Json(name = "feed_visibility") public val feedVisibility: kotlin.String? = null,
-    @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
-) :
-    io.getstream.feeds.android.network.models.WSClientEvent,
-    io.getstream.feeds.android.network.models.WSEvent,
-    io.getstream.feeds.android.network.models.FeedEvent {
-
-    override fun getWSClientEventType(): kotlin.String {
-        return type
-    }
-
-    override fun getWSEventType(): kotlin.String {
-        return type
-    }
-}
+)

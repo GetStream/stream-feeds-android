@@ -24,6 +24,7 @@ import kotlin.io.*
 
 /**  */
 public data class NotificationConfig(
+    @Json(name = "deduplication_window") public val deduplicationWindow: kotlin.String? = null,
     @Json(name = "track_read") public val trackRead: kotlin.Boolean? = null,
     @Json(name = "track_seen") public val trackSeen: kotlin.Boolean? = null,
 )

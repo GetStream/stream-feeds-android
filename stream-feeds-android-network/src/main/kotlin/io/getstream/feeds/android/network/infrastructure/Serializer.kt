@@ -33,12 +33,20 @@ public object Serializer {
                     .ActionAdapter()
             )
             .add(
+                io.getstream.feeds.android.network.models.ActivityRequest.RestrictReplies
+                    .RestrictRepliesAdapter()
+            )
+            .add(
                 io.getstream.feeds.android.network.models.ActivityRequest.Visibility
                     .VisibilityAdapter()
             )
             .add(
                 io.getstream.feeds.android.network.models.ActivityResponse.Visibility
                     .VisibilityAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.AddActivityRequest.RestrictReplies
+                    .RestrictRepliesAdapter()
             )
             .add(
                 io.getstream.feeds.android.network.models.AddActivityRequest.Visibility
@@ -93,6 +101,10 @@ public object Serializer {
             .add(
                 io.getstream.feeds.android.network.models.Device.PushProvider.PushProviderAdapter()
             )
+            .add(
+                io.getstream.feeds.android.network.models.EnrichedCollectionResponse.Status
+                    .StatusAdapter()
+            )
             .add(io.getstream.feeds.android.network.models.FeedInput.Visibility.VisibilityAdapter())
             .add(
                 io.getstream.feeds.android.network.models.FeedMemberResponse.Status.StatusAdapter()
@@ -110,6 +122,10 @@ public object Serializer {
             .add(
                 io.getstream.feeds.android.network.models.FeedsPreferences.CommentReaction
                     .CommentReactionAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.FeedsPreferences.CommentReply
+                    .CommentReplyAdapter()
             )
             .add(io.getstream.feeds.android.network.models.FeedsPreferences.Follow.FollowAdapter())
             .add(
@@ -132,6 +148,7 @@ public object Serializer {
             .add(io.getstream.feeds.android.network.models.ImageSize.Resize.ResizeAdapter())
             .add(io.getstream.feeds.android.network.models.LLMRule.Action.ActionAdapter())
             .add(io.getstream.feeds.android.network.models.OCRRule.Action.ActionAdapter())
+            .add(io.getstream.feeds.android.network.models.OwnBatchRequest.Fields.FieldsAdapter())
             .add(
                 io.getstream.feeds.android.network.models.PushPreferenceInput.CallLevel
                     .CallLevelAdapter()
@@ -149,6 +166,10 @@ public object Serializer {
             .add(
                 io.getstream.feeds.android.network.models.SubmitActionRequest.ActionType
                     .ActionTypeAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.UpdateActivityRequest.RestrictReplies
+                    .RestrictRepliesAdapter()
             )
             .add(
                 io.getstream.feeds.android.network.models.UpdateFeedMembersRequest.Operation

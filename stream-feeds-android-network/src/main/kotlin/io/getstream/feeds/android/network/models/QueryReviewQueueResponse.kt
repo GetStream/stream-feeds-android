@@ -44,4 +44,6 @@ public data class QueryReviewQueueResponse(
     public val stats: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
     @Json(name = "next") public val next: kotlin.String? = null,
     @Json(name = "prev") public val prev: kotlin.String? = null,
+    @Json(name = "filter_config")
+    public val filterConfig: io.getstream.feeds.android.network.models.FilterConfigResponse? = null,
 )

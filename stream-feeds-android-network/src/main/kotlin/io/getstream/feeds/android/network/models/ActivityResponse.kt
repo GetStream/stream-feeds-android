@@ -39,6 +39,7 @@ public data class ActivityResponse(
     @Json(name = "popularity") public val popularity: kotlin.Int,
     @Json(name = "preview") public val preview: kotlin.Boolean,
     @Json(name = "reaction_count") public val reactionCount: kotlin.Int,
+    @Json(name = "restrict_replies") public val restrictReplies: kotlin.String,
     @Json(name = "score") public val score: kotlin.Float,
     @Json(name = "share_count") public val shareCount: kotlin.Int,
     @Json(name = "type") public val type: kotlin.String,
@@ -73,6 +74,13 @@ public data class ActivityResponse(
     public val ownReactions:
         kotlin.collections.List<io.getstream.feeds.android.network.models.FeedsReactionResponse> =
         emptyList(),
+    @Json(name = "collections")
+    public val collections:
+        kotlin.collections.Map<
+            kotlin.String,
+            io.getstream.feeds.android.network.models.EnrichedCollectionResponse,
+        > =
+        emptyMap(),
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
     @Json(name = "reaction_groups")

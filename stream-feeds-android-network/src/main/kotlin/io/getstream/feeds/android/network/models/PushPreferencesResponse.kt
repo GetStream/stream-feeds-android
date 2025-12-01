@@ -20,16 +20,16 @@ package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
 import kotlin.collections.*
-import kotlin.collections.Map
 import kotlin.io.*
 
 /**  */
-public data class BookmarkFolderResponse(
-    @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "id") public val id: kotlin.String,
-    @Json(name = "name") public val name: kotlin.String,
-    @Json(name = "updated_at") public val updatedAt: java.util.Date,
-    @Json(name = "user") public val user: io.getstream.feeds.android.network.models.UserResponse,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+public data class PushPreferencesResponse(
+    @Json(name = "call_level") public val callLevel: kotlin.String? = null,
+    @Json(name = "chat_level") public val chatLevel: kotlin.String? = null,
+    @Json(name = "disabled_until") public val disabledUntil: java.util.Date? = null,
+    @Json(name = "feeds_level") public val feedsLevel: kotlin.String? = null,
+    @Json(name = "feeds_preferences")
+    public val feedsPreferences:
+        io.getstream.feeds.android.network.models.FeedsPreferencesResponse? =
+        null,
 )
