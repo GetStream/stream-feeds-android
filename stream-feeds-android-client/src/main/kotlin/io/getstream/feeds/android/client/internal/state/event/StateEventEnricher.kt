@@ -17,9 +17,9 @@
 package io.getstream.feeds.android.client.internal.state.event
 
 import io.getstream.feeds.android.client.internal.model.updateFeedCapabilities
-import io.getstream.feeds.android.client.internal.repository.FeedsCapabilityRepository
+import io.getstream.feeds.android.client.internal.repository.FeedOwnDataRepository
 
-internal class StateEventEnricher(private val capabilityRepository: FeedsCapabilityRepository) {
+internal class StateEventEnricher(private val feedOwnDataRepository: FeedOwnDataRepository) {
     fun enrich(event: StateUpdateEvent): StateUpdateEvent {
         return when (event) {
             is StateUpdateEvent.ActivityAdded -> enrich(event)
@@ -29,7 +29,7 @@ internal class StateEventEnricher(private val capabilityRepository: FeedsCapabil
 
     private fun enrich(event: StateUpdateEvent.ActivityAdded): StateUpdateEvent.ActivityAdded {
         val feed = event.activity.currentFeed ?: return event
-        val capabilities = capabilityRepository.getOrRequest(feed.fid) ?: return event
+        val capabilities = feedOwnDataRepository.getOrRequest(feed.fid) ?: return event
 
         return event.copy(activity = event.activity.updateFeedCapabilities(capabilities))
     }

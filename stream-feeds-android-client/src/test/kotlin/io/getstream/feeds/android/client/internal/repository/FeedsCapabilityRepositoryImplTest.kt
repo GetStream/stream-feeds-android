@@ -50,7 +50,7 @@ internal class FeedsCapabilityRepositoryImplTest {
     private val subscriptionManager = TestSubscriptionManager(stateEventListener)
 
     private val repository =
-        FeedsCapabilityRepositoryImpl(
+        FeedOwnDataRepositoryImpl(
             batcher = batcher,
             retryProcessor = retryProcessor,
             api = api,

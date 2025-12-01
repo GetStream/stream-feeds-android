@@ -21,7 +21,7 @@ import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
-import io.getstream.feeds.android.client.internal.repository.FeedsCapabilityRepository
+import io.getstream.feeds.android.client.internal.repository.FeedOwnDataRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.feedData
@@ -34,7 +34,7 @@ import org.junit.Test
 
 internal class FeedListImplTest {
     private val feedsRepository: FeedsRepository = mockk()
-    private val capabilityRepository: FeedsCapabilityRepository = mockk(relaxed = true)
+    private val feedOwnDataRepository: FeedOwnDataRepository = mockk(relaxed = true)
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener> =
         mockk(relaxed = true)
     private val query = FeedsQuery(limit = 10, watch = false)
@@ -43,7 +43,7 @@ internal class FeedListImplTest {
         FeedListImpl(
             query = query,
             feedsRepository = feedsRepository,
-            capabilityRepository = capabilityRepository,
+            feedOwnDataRepository = feedOwnDataRepository,
             subscriptionManager = subscriptionManager,
         )
 

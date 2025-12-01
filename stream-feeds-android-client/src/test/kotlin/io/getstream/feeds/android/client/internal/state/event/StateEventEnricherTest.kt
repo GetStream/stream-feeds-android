@@ -17,7 +17,7 @@
 package io.getstream.feeds.android.client.internal.state.event
 
 import io.getstream.feeds.android.client.api.model.FeedId
-import io.getstream.feeds.android.client.internal.repository.FeedsCapabilityRepository
+import io.getstream.feeds.android.client.internal.repository.FeedOwnDataRepository
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityAdded
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.feedData
@@ -28,9 +28,9 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 internal class StateEventEnricherTest {
-    private val capabilityRepository: FeedsCapabilityRepository = mockk(relaxed = true)
+    private val feedOwnDataRepository: FeedOwnDataRepository = mockk(relaxed = true)
 
-    private val enricher = StateEventEnricher(capabilityRepository)
+    private val enricher = StateEventEnricher(feedOwnDataRepository)
 
     @Test
     fun `on enrich ActivityAdded with feed and capabilities exist, enrich feed`() {
@@ -41,7 +41,7 @@ internal class StateEventEnricherTest {
         val expectedFeed = feedData(id = "1", groupId = "user", ownCapabilities = capabilities)
         val expectedEvent = event.copy(activity = activityData(currentFeed = expectedFeed))
 
-        every { capabilityRepository.getOrRequest(feedId) } returns capabilities
+        every { feedOwnDataRepository.getOrRequest(feedId) } returns capabilities
 
         val result = enricher.enrich(event)
 
@@ -55,7 +55,7 @@ internal class StateEventEnricherTest {
         val activity = activityData().copy(currentFeed = feed)
         val event = ActivityAdded(FidScope.of(feedId), activity)
 
-        every { capabilityRepository.getOrRequest(feedId) } returns null
+        every { feedOwnDataRepository.getOrRequest(feedId) } returns null
 
         val result = enricher.enrich(event)
 

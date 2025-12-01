@@ -30,12 +30,12 @@ import io.getstream.feeds.android.network.models.OwnBatchRequest
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.CoroutineScope
 
-internal class FeedsCapabilityRepositoryImpl(
+internal class FeedOwnDataRepositoryImpl(
     private val batcher: StreamBatcher<FeedId>,
     private val retryProcessor: StreamRetryProcessor,
     private val api: FeedsApi,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
-) : FeedsCapabilityRepository {
+) : FeedOwnDataRepository {
     private val cache = ConcurrentHashMap<FeedId, Set<FeedOwnCapability>>()
 
     init {

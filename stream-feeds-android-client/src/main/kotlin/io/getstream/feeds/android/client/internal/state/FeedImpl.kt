@@ -38,7 +38,7 @@ import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHand
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
-import io.getstream.feeds.android.client.internal.repository.FeedsCapabilityRepository
+import io.getstream.feeds.android.client.internal.repository.FeedOwnDataRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
@@ -101,7 +101,7 @@ internal class FeedImpl(
     private val commentsRepository: CommentsRepository,
     private val feedsRepository: FeedsRepository,
     private val pollsRepository: PollsRepository,
-    private val capabilityRepository: FeedsCapabilityRepository,
+    private val feedOwnDataRepository: FeedOwnDataRepository,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
     private val feedWatchHandler: FeedWatchHandler,
 ) : Feed {
@@ -152,7 +152,7 @@ internal class FeedImpl(
             .getOrCreateFeed(query)
             .onSuccess {
                 _state.onQueryFeed(it)
-                capabilityRepository.cache(it.feed)
+                feedOwnDataRepository.cache(it.feed)
             }
             .map { it.feed }
     }

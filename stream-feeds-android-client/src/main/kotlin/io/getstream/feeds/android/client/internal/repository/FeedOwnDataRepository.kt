@@ -25,7 +25,7 @@ import java.util.Collections.singletonMap
  * A repository for managing feed capabilities. Caches feed capabilities and requests capabilities
  * that are not yet cached.
  */
-internal interface FeedsCapabilityRepository {
+internal interface FeedOwnDataRepository {
     /**
      * Caches the provided feed capabilities.
      *
@@ -43,10 +43,10 @@ internal interface FeedsCapabilityRepository {
     fun getOrRequest(id: FeedId): Set<FeedOwnCapability>?
 }
 
-internal fun FeedsCapabilityRepository.cache(feed: FeedData) {
+internal fun FeedOwnDataRepository.cache(feed: FeedData) {
     cache(singletonMap(feed.fid, feed.ownCapabilities))
 }
 
-internal fun FeedsCapabilityRepository.cache(feeds: Iterable<FeedData>) {
+internal fun FeedOwnDataRepository.cache(feeds: Iterable<FeedData>) {
     cache(feeds.associateBy(FeedData::fid, FeedData::ownCapabilities))
 }
