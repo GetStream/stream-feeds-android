@@ -16,6 +16,7 @@
 
 package io.getstream.feeds.android.client.internal.state.event.handler
 
+import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.internal.state.ActivityStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.FidScope
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
@@ -32,6 +33,7 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.C
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpserted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedCapabilitiesUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteCasted
@@ -43,6 +45,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
+import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.mockk.MockKVerificationScope
 import io.mockk.called
 import io.mockk.mockk
@@ -257,6 +260,15 @@ internal class ActivityEventHandlerTest(
                         ),
                     verifyBlock = { it wasNot called },
                 ),
+                kotlin.run {
+                    val capabilities = mapOf(FeedId("user:1") to setOf(FeedOwnCapability.ReadFeed))
+
+                    testParams<ActivityStateUpdates>(
+                        name = "FeedCapabilitiesUpdated always handled",
+                        event = FeedCapabilitiesUpdated(capabilities),
+                        verifyBlock = { state -> state.onFeedCapabilitiesUpdated(capabilities) },
+                    )
+                },
             )
     }
 }
