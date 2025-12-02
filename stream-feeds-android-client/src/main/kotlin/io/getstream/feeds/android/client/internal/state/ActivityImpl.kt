@@ -315,7 +315,7 @@ internal class ActivityImpl(
                 .onSuccess { (vote, updatedPoll) ->
                     vote?.let { vote ->
                         subscriptionManager.onEvent(
-                            StateUpdateEvent.PollVoteCasted(updatedPoll.id, vote)
+                            StateUpdateEvent.PollVoteCasted(updatedPoll, vote)
                         )
                     }
                 }
@@ -335,7 +335,7 @@ internal class ActivityImpl(
                 .onSuccess { (vote, updatedPoll) ->
                     vote?.let { vote ->
                         subscriptionManager.onEvent(
-                            StateUpdateEvent.PollVoteRemoved(updatedPoll.id, vote)
+                            StateUpdateEvent.PollVoteRemoved(updatedPoll, vote)
                         )
                     }
                 }

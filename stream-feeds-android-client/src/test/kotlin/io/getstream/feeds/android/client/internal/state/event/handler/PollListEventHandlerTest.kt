@@ -67,18 +67,18 @@ internal class PollListEventHandlerTest(
                 ),
                 testParams<PollListStateUpdates>(
                     name = "PollVoteCasted",
-                    event = PollVoteCasted("poll-1", pollVote),
-                    verifyBlock = { state -> state.onPollVoteUpserted("poll-1", pollVote) },
+                    event = PollVoteCasted(matchingPoll, pollVote),
+                    verifyBlock = { state -> state.onPollVoteUpserted(matchingPoll, pollVote) },
                 ),
                 testParams<PollListStateUpdates>(
                     name = "PollVoteChanged",
-                    event = PollVoteChanged("poll-1", pollVote),
-                    verifyBlock = { state -> state.onPollVoteUpserted("poll-1", pollVote) },
+                    event = PollVoteChanged(matchingPoll, pollVote),
+                    verifyBlock = { state -> state.onPollVoteUpserted(matchingPoll, pollVote) },
                 ),
                 testParams<PollListStateUpdates>(
                     name = "PollVoteRemoved",
-                    event = PollVoteRemoved("poll-1", pollVote),
-                    verifyBlock = { state -> state.onPollVoteRemoved("poll-1", pollVote) },
+                    event = PollVoteRemoved(matchingPoll, pollVote),
+                    verifyBlock = { state -> state.onPollVoteRemoved(matchingPoll, pollVote) },
                 ),
             )
     }
