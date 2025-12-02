@@ -335,52 +335,67 @@ internal class ActivityListStateImplTest {
     }
 
     @Test
-    fun `on onPollVoteUpserted, update poll with new vote`() = runTest {
+    fun `onPollVoteUpserted with current user vote, update poll and add to ownVotes`() = runTest {
         val originalPoll = pollData("poll-1", "Test Poll")
         val activity1 = activityData("activity-1", poll = originalPoll)
         val activity2 = activityData("activity-2")
         setupInitialActivities(activity1, activity2)
 
         val vote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
-        activityListState.onPollVoteUpserted("poll-1", vote)
+        val updatedPoll = pollData("poll-1", "Updated Poll")
+        activityListState.onPollVoteUpserted(updatedPoll, vote)
 
-        val expectedPoll =
-            originalPoll.copy(
-                ownVotes = listOf(vote),
-                latestVotesByOption = mapOf("option-1" to listOf(vote)),
-                voteCountsByOption = mapOf("option-1" to 1),
-                voteCount = 1,
-            )
-        val expectedActivity = activity1.copy(poll = expectedPoll)
+        val expectedActivity = activity1.copy(poll = updatedPoll.copy(ownVotes = listOf(vote)))
         assertEquals(listOf(expectedActivity, activity2), activityListState.activities.value)
     }
 
     @Test
-    fun `on onPollVoteRemoved, update poll with vote removed`() = runTest {
-        val existingVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
-        val originalPoll =
-            pollData(
-                "poll-1",
-                "Test Poll",
-                ownVotes = listOf(existingVote),
-                latestVotesByOption = mapOf("option-1" to listOf(existingVote)),
-                voteCountsByOption = mapOf("option-1" to 1),
-                voteCount = 1,
-            )
+    fun `onPollVoteUpserted with different user vote, update poll and keep ownVotes`() = runTest {
+        val existingVote = pollVoteData("existing-vote", "poll-1", "option-1", currentUserId)
+        val originalPoll = pollData("poll-1", "Test Poll", ownVotes = listOf(existingVote))
         val activity1 = activityData("activity-1", poll = originalPoll)
         val activity2 = activityData("activity-2")
         setupInitialActivities(activity1, activity2)
 
-        activityListState.onPollVoteRemoved("poll-1", existingVote)
+        val vote = pollVoteData("vote-1", "poll-1", "option-1", "other-user")
+        val updatedPoll = pollData("poll-1", "Updated Poll")
+        activityListState.onPollVoteUpserted(updatedPoll, vote)
 
-        val expectedPoll =
-            originalPoll.copy(
-                ownVotes = emptyList(),
-                latestVotesByOption = mapOf("option-1" to emptyList()),
-                voteCountsByOption = mapOf("option-1" to 0),
-                voteCount = 0,
-            )
-        val expectedActivity = activity1.copy(poll = expectedPoll)
+        val expectedActivity =
+            activity1.copy(poll = updatedPoll.copy(ownVotes = originalPoll.ownVotes))
+        assertEquals(listOf(expectedActivity, activity2), activityListState.activities.value)
+    }
+
+    @Test
+    fun `onPollVoteRemoved with current user vote, update poll and remove from ownVotes`() =
+        runTest {
+            val existingVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
+            val originalPoll = pollData("poll-1", "Test Poll", ownVotes = listOf(existingVote))
+            val activity1 = activityData("activity-1", poll = originalPoll)
+            val activity2 = activityData("activity-2")
+            setupInitialActivities(activity1, activity2)
+
+            val updatedPoll = pollData("poll-1", "Updated Poll")
+            activityListState.onPollVoteRemoved(updatedPoll, existingVote)
+
+            val expectedActivity = activity1.copy(poll = updatedPoll.copy(ownVotes = emptyList()))
+            assertEquals(listOf(expectedActivity, activity2), activityListState.activities.value)
+        }
+
+    @Test
+    fun `onPollVoteRemoved with different user vote, update poll and keep ownVotes`() = runTest {
+        val existingVote = pollVoteData("existing-vote", "poll-1", "option-1", currentUserId)
+        val originalPoll = pollData("poll-1", "Test Poll", ownVotes = listOf(existingVote))
+        val activity1 = activityData("activity-1", poll = originalPoll)
+        val activity2 = activityData("activity-2")
+        setupInitialActivities(activity1, activity2)
+
+        val vote = pollVoteData("vote-1", "poll-1", "option-1", "other-user")
+        val updatedPoll = pollData("poll-1", "Updated Poll")
+        activityListState.onPollVoteRemoved(updatedPoll, vote)
+
+        val expectedActivity =
+            activity1.copy(poll = updatedPoll.copy(ownVotes = originalPoll.ownVotes))
         assertEquals(listOf(expectedActivity, activity2), activityListState.activities.value)
     }
 

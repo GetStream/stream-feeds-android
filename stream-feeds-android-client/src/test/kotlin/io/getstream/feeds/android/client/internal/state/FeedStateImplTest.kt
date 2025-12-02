@@ -512,60 +512,86 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on onPollVoteUpserted, then update poll with changed vote in activities`() = runTest {
-        val originalVote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
-        val poll = pollWithVote("poll-1", originalVote)
+    fun `onPollVoteUpserted with current user vote, update poll and add to ownVotes`() = runTest {
+        val poll = pollData("poll-1", "Test Poll")
         val activity = activityData("activity-1", poll = poll)
         val activityPin = activityPin(activity)
         setupInitialState(listOf(activity), listOf(activityPin))
-        val changedVote = pollVoteData("vote-1", "poll-1", "option-2", currentUserId)
+        val vote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
 
-        feedState.onPollVoteUpserted(changedVote, "poll-1")
+        val updatedPoll = pollData("poll-1", "Updated Poll")
+        feedState.onPollVoteUpserted(updatedPoll, vote)
 
-        val expectedPoll =
-            poll.copy(
-                voteCount = 1,
-                ownVotes = listOf(changedVote),
-                latestVotesByOption =
-                    mapOf("option-1" to emptyList(), "option-2" to listOf(changedVote)),
-                voteCountsByOption = mapOf("option-1" to 0, "option-2" to 1),
-            )
-        val expectedActivity = activity.copy(poll = expectedPoll)
-        assertEquals(listOf(expectedActivity), feedState.activities.value)
+        val expectedActivity = activity.copy(poll = updatedPoll.copy(ownVotes = listOf(vote)))
         val expectedPinnedActivity = activityPin.copy(activity = expectedActivity)
+        assertEquals(listOf(expectedActivity), feedState.activities.value)
         assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
     }
 
     @Test
-    fun `on onPollVoteRemoved, then remove vote from poll in activities`() = runTest {
-        val vote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
-        val poll = pollWithVote("poll-1", vote)
+    fun `onPollVoteUpserted with different user vote, update poll and keep ownVotes`() = runTest {
+        val existingVote = pollVoteData("existing-vote", "poll-1", "option-1", currentUserId)
+        val poll = pollData("poll-1", "Test Poll", ownVotes = listOf(existingVote))
         val activity = activityData("activity-1", poll = poll)
         val activityPin = activityPin(activity)
         setupInitialState(listOf(activity), listOf(activityPin))
+        val vote = pollVoteData("vote-1", "poll-1", "option-1", "other-user")
 
-        feedState.onPollVoteRemoved(vote, "poll-1")
+        val updatedPoll = pollData("poll-1", "Updated Poll")
+        feedState.onPollVoteUpserted(updatedPoll, vote)
 
-        val expectedPoll =
-            poll.copy(
-                voteCount = 0,
-                ownVotes = emptyList(),
-                latestVotesByOption = mapOf("option-1" to emptyList()),
-                voteCountsByOption = mapOf("option-1" to 0),
-            )
-        val expectedActivity = activity.copy(poll = expectedPoll)
-        assertEquals(listOf(expectedActivity), feedState.activities.value)
+        val expectedActivity = activity.copy(poll = updatedPoll.copy(ownVotes = poll.ownVotes))
         val expectedPinnedActivity = activityPin.copy(activity = expectedActivity)
+        assertEquals(listOf(expectedActivity), feedState.activities.value)
         assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
     }
+
+    @Test
+    fun `onPollVoteRemoved with current user vote, update poll and remove from ownVotes`() =
+        runTest {
+            val vote = pollVoteData("vote-1", "poll-1", "option-1", currentUserId)
+            val poll = pollData("poll-1", "Test Poll", ownVotes = listOf(vote))
+            val activity = activityData("activity-1", poll = poll)
+            val activityPin = activityPin(activity)
+            setupInitialState(listOf(activity), listOf(activityPin))
+
+            val updatedPoll = pollData("poll-1", "Updated Poll")
+            feedState.onPollVoteRemoved(updatedPoll, vote)
+
+            val expectedActivity = activity.copy(poll = updatedPoll.copy(ownVotes = emptyList()))
+            val expectedPinnedActivity = activityPin.copy(activity = expectedActivity)
+            assertEquals(listOf(expectedActivity), feedState.activities.value)
+            assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
+        }
+
+    @Test
+    fun `on onPollVoteRemoved with different user vote, then update poll and keep ownVotes`() =
+        runTest {
+            val existingVote = pollVoteData("existing-vote", "poll-1", "option-1", currentUserId)
+            val poll = pollData("poll-1", "Test Poll", ownVotes = listOf(existingVote))
+            val activity = activityData("activity-1", poll = poll)
+            val activityPin = activityPin(activity)
+            setupInitialState(listOf(activity), listOf(activityPin))
+            val vote = pollVoteData("vote-1", "poll-1", "option-1", "other-user")
+
+            val updatedPoll = pollData("poll-1", "Updated Poll")
+            feedState.onPollVoteRemoved(updatedPoll, vote)
+
+            val expectedActivity =
+                activity.copy(poll = updatedPoll.copy(ownVotes = listOf(existingVote)))
+            val expectedPinnedActivity = activityPin.copy(activity = expectedActivity)
+            assertEquals(listOf(expectedActivity), feedState.activities.value)
+            assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)
+        }
 
     @Test
     fun `on poll events with different poll id, then keep existing polls unchanged`() = runTest {
         val poll = pollData("poll-1", "Test Poll")
         val activity = setupActivityWithPoll(poll)
         val vote = pollVoteData("vote-1", "poll-2", "option-1", currentUserId)
+        val differentPoll = pollData("poll-2", "Different Poll")
 
-        feedState.onPollVoteUpserted(vote, "poll-2")
+        feedState.onPollVoteUpserted(differentPoll, vote)
 
         expectActivityWithPoll(activity, poll)
     }

@@ -25,6 +25,8 @@ import kotlin.io.*
 /**  */
 public data class PollVoteResponse(
     @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "poll")
+    public val poll: io.getstream.feeds.android.network.models.PollResponseData? = null,
     @Json(name = "vote")
     public val vote: io.getstream.feeds.android.network.models.PollVoteResponseData? = null,
 )

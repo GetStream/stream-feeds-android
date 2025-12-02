@@ -437,18 +437,18 @@ internal class FeedEventHandlerTest(
                 ),
                 testParams<FeedStateUpdates>(
                     name = "PollVoteCasted handled regardless of feed ID",
-                    event = PollVoteCasted(pollId, pollVote),
-                    verifyBlock = { state -> state.onPollVoteUpserted(pollVote, pollId) },
+                    event = PollVoteCasted(poll, pollVote),
+                    verifyBlock = { state -> state.onPollVoteUpserted(poll, pollVote) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "PollVoteChanged handled regardless of feed ID",
-                    event = PollVoteChanged(pollId, pollVote),
-                    verifyBlock = { state -> state.onPollVoteUpserted(pollVote, pollId) },
+                    event = PollVoteChanged(poll, pollVote),
+                    verifyBlock = { state -> state.onPollVoteUpserted(poll, pollVote) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "PollVoteRemoved handled regardless of feed ID",
-                    event = PollVoteRemoved(pollId, pollVote),
-                    verifyBlock = { state -> state.onPollVoteRemoved(pollVote, pollId) },
+                    event = PollVoteRemoved(poll, pollVote),
+                    verifyBlock = { state -> state.onPollVoteRemoved(poll, pollVote) },
                 ),
             )
     }
