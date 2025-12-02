@@ -182,11 +182,11 @@ internal sealed interface StateUpdateEvent {
 
     data class PollUpdated(val poll: PollData) : StateUpdateEvent
 
-    data class PollVoteRemoved(val pollId: String, val vote: PollVoteData) : StateUpdateEvent
+    data class PollVoteRemoved(val poll: PollData, val vote: PollVoteData) : StateUpdateEvent
 
-    data class PollVoteCasted(val pollId: String, val vote: PollVoteData) : StateUpdateEvent
+    data class PollVoteCasted(val poll: PollData, val vote: PollVoteData) : StateUpdateEvent
 
-    data class PollVoteChanged(val pollId: String, val vote: PollVoteData) : StateUpdateEvent
+    data class PollVoteChanged(val poll: PollData, val vote: PollVoteData) : StateUpdateEvent
 }
 
 internal fun WSEvent.toModel(): StateUpdateEvent? =
@@ -325,11 +325,14 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
 
         is PollUpdatedFeedEvent -> StateUpdateEvent.PollUpdated(poll.toModel())
 
-        is PollVoteCastedFeedEvent -> StateUpdateEvent.PollVoteCasted(poll.id, pollVote.toModel())
+        is PollVoteCastedFeedEvent ->
+            StateUpdateEvent.PollVoteCasted(poll.toModel(), pollVote.toModel())
 
-        is PollVoteChangedFeedEvent -> StateUpdateEvent.PollVoteChanged(poll.id, pollVote.toModel())
+        is PollVoteChangedFeedEvent ->
+            StateUpdateEvent.PollVoteChanged(poll.toModel(), pollVote.toModel())
 
-        is PollVoteRemovedFeedEvent -> StateUpdateEvent.PollVoteRemoved(poll.id, pollVote.toModel())
+        is PollVoteRemovedFeedEvent ->
+            StateUpdateEvent.PollVoteRemoved(poll.toModel(), pollVote.toModel())
 
         else -> null
     }

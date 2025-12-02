@@ -194,18 +194,18 @@ internal class ActivityListStateImpl(
         }
     }
 
-    override fun onPollVoteRemoved(pollId: String, vote: PollVoteData) {
+    override fun onPollVoteRemoved(poll: PollData, vote: PollVoteData) {
         _activities.update { current ->
-            current.updateIf({ it.poll?.id == pollId }) { activity ->
-                activity.copy(poll = activity.poll?.removeVote(vote, currentUserId))
+            current.updateIf({ it.poll?.id == poll.id }) { activity ->
+                activity.copy(poll = activity.poll?.removeVote(poll, vote, currentUserId))
             }
         }
     }
 
-    override fun onPollVoteUpserted(pollId: String, vote: PollVoteData) {
+    override fun onPollVoteUpserted(poll: PollData, vote: PollVoteData) {
         _activities.update { current ->
-            current.updateIf({ it.poll?.id == pollId }) { activity ->
-                activity.copy(poll = activity.poll?.upsertVote(vote, currentUserId))
+            current.updateIf({ it.poll?.id == poll.id }) { activity ->
+                activity.copy(poll = activity.poll?.upsertVote(poll, vote, currentUserId))
             }
         }
     }
@@ -348,18 +348,18 @@ internal interface ActivityListStateUpdates {
     /**
      * Called when a vote is removed from a poll.
      *
-     * @param pollId The ID of the poll associated with the vote.
+     * @param poll The poll associated with the vote.
      * @param vote The vote that was removed.
      */
-    fun onPollVoteRemoved(pollId: String, vote: PollVoteData)
+    fun onPollVoteRemoved(poll: PollData, vote: PollVoteData)
 
     /**
      * Called when a vote is added to or updated in a poll.
      *
-     * @param pollId The ID of the poll associated with the vote.
+     * @param poll The poll associated with the vote.
      * @param vote The vote that was added or updated.
      */
-    fun onPollVoteUpserted(pollId: String, vote: PollVoteData)
+    fun onPollVoteUpserted(poll: PollData, vote: PollVoteData)
 
     /**
      * Called when a reaction is added to or updated in an activity.

@@ -114,10 +114,14 @@ internal class PollsRepositoryImpl(private val api: FeedsApi) : PollsRepository 
         activityId: String,
         pollId: String,
         request: CastPollVoteRequest,
-    ): Result<PollVoteData?> = runSafely {
-        api.castPollVote(activityId = activityId, pollId = pollId, castPollVoteRequest = request)
-            .vote
-            ?.toModel()
+    ): Result<Pair<PollVoteData?, PollData?>> = runSafely {
+        val response =
+            api.castPollVote(
+                activityId = activityId,
+                pollId = pollId,
+                castPollVoteRequest = request,
+            )
+        response.vote?.toModel() to response.poll?.toModel()
     }
 
     override suspend fun queryPollVotes(
@@ -140,14 +144,14 @@ internal class PollsRepositoryImpl(private val api: FeedsApi) : PollsRepository 
         pollId: String,
         voteId: String,
         userId: String?,
-    ): Result<PollVoteData?> = runSafely {
-        api.deletePollVote(
+    ): Result<Pair<PollVoteData?, PollData?>> = runSafely {
+        val response =
+            api.deletePollVote(
                 activityId = activityId,
                 pollId = pollId,
                 voteId = voteId,
                 userId = userId,
             )
-            .vote
-            ?.toModel()
+        response.vote?.toModel() to response.poll?.toModel()
     }
 }
