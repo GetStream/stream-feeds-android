@@ -218,7 +218,7 @@ internal class PollsRepositoryImplTest {
     @Test
     fun `on castPollVote, delegate to api`() = runTest {
         val request = CastPollVoteRequest(vote = VoteData(optionId = "option-1"))
-        val apiResult = PollVoteResponse("duration", pollVoteResponseData())
+        val apiResult = PollVoteResponse("duration", pollVoteResponseData(), pollResponseData())
 
         testDelegation(
             apiFunction = { feedsApi.castPollVote("activityId", "pollId", request) },
@@ -259,7 +259,7 @@ internal class PollsRepositoryImplTest {
 
     @Test
     fun `on deletePollVote, delegate to api`() = runTest {
-        val apiResult = PollVoteResponse("duration", pollVoteResponseData())
+        val apiResult = PollVoteResponse("duration", pollVoteResponseData(), pollResponseData())
 
         testDelegation(
             apiFunction = { feedsApi.deletePollVote("activityId", "pollId", "voteId", "userId") },
