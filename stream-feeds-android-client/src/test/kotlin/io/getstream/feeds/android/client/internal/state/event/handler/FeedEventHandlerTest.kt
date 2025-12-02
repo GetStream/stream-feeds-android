@@ -23,6 +23,7 @@ import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.InsertionAction
 import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
+import io.getstream.feeds.android.client.internal.model.FeedOwnValues
 import io.getstream.feeds.android.client.internal.state.FeedStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.FidScope
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
@@ -43,8 +44,8 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.C
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpserted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentUpdated
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedCapabilitiesUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedOwnValuesUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FollowAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FollowDeleted
@@ -61,6 +62,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.activityPin
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedData
+import io.getstream.feeds.android.client.internal.test.TestData.feedMemberData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.getstream.feeds.android.client.internal.test.TestData.followData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
@@ -324,12 +326,18 @@ internal class FeedEventHandlerTest(
                     verifyBlock = { state -> state wasNot called },
                 ),
                 kotlin.run {
-                    val capabilities = mapOf(FeedId("user:1") to setOf(FeedOwnCapability.ReadFeed))
+                    val feedOwnValues =
+                        FeedOwnValues(
+                            capabilities = setOf(FeedOwnCapability.ReadFeed),
+                            follows = listOf(followData()),
+                            membership = feedMemberData(),
+                        )
+                    val map = mapOf(FeedId("user:1") to feedOwnValues)
 
                     testParams<FeedStateUpdates>(
-                        name = "FeedCapabilitiesUpdated handled regardless of feed ID",
-                        event = FeedCapabilitiesUpdated(capabilities),
-                        verifyBlock = { state -> state.onFeedCapabilitiesUpdated(capabilities) },
+                        name = "FeedOwnValuesUpdated handled regardless of feed ID",
+                        event = FeedOwnValuesUpdated(map),
+                        verifyBlock = { state -> state.onFeedOwnValuesUpdated(map) },
                     )
                 },
                 testParams<FeedStateUpdates>(

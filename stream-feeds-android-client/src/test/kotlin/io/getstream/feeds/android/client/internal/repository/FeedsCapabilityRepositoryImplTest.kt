@@ -21,8 +21,11 @@ import io.getstream.android.core.api.processing.StreamBatcher
 import io.getstream.android.core.api.processing.StreamRetryProcessor
 import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.FeedId
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedCapabilitiesUpdated
+import io.getstream.feeds.android.client.internal.model.toModel
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedOwnValuesUpdated
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
+import io.getstream.feeds.android.client.internal.test.TestData.feedMemberResponse
+import io.getstream.feeds.android.client.internal.test.TestData.followResponse
 import io.getstream.feeds.android.client.internal.test.TestSubscriptionManager
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.FeedOwnCapability
@@ -50,7 +53,7 @@ internal class FeedsCapabilityRepositoryImplTest {
     private val subscriptionManager = TestSubscriptionManager(stateEventListener)
 
     private val repository =
-        FeedOwnDataRepositoryImpl(
+        FeedOwnValuesRepositoryImpl(
             batcher = batcher,
             retryProcessor = retryProcessor,
             api = api,
@@ -59,18 +62,18 @@ internal class FeedsCapabilityRepositoryImplTest {
 
     @Test
     fun `cache when given same capabilities, notify only on changes`() {
-        val capabilities1 = mapOf(FeedId("user:1") to setOf(FeedOwnCapability.ReadFeed))
-        val capabilities2 = mapOf(FeedId("user:2") to setOf(FeedOwnCapability.AddActivity))
+        val ownValues1 = mapOf(FeedId("user:1") to testFeedOwnValues1)
+        val ownValues2 = mapOf(FeedId("user:2") to testFeedOwnValues2)
 
-        repository.cache(capabilities1)
-        verify(exactly = 1) { stateEventListener.onEvent(FeedCapabilitiesUpdated(capabilities1)) }
+        repository.cache(ownValues1)
+        verify(exactly = 1) { stateEventListener.onEvent(FeedOwnValuesUpdated(ownValues1)) }
 
-        repository.cache(capabilities1)
+        repository.cache(ownValues1)
         verify(exactly = 1) { stateEventListener.onEvent(any()) }
 
-        repository.cache(capabilities2)
-        val allCapabilities = capabilities1 + capabilities2
-        verify(exactly = 1) { stateEventListener.onEvent(FeedCapabilitiesUpdated(allCapabilities)) }
+        repository.cache(ownValues2)
+        val allCapabilities = ownValues1 + ownValues2
+        verify(exactly = 1) { stateEventListener.onEvent(FeedOwnValuesUpdated(allCapabilities)) }
         verify(exactly = 2) { stateEventListener.onEvent(any()) }
     }
 
@@ -87,12 +90,11 @@ internal class FeedsCapabilityRepositoryImplTest {
     @Test
     fun `getOrRequest when feed ID is already cached, return cached and do not offer to batcher`() {
         val feedId = FeedId("user:1")
-        val capabilities = setOf(FeedOwnCapability.ReadFeed)
-        repository.cache(mapOf(feedId to capabilities))
+        repository.cache(mapOf(feedId to testFeedOwnValues1))
 
         val result = repository.getOrRequest(feedId)
 
-        assertEquals(capabilities, result)
+        assertEquals(testFeedOwnValues1, result)
         verify(exactly = 0) { batcher.offer(any()) }
     }
 
@@ -102,10 +104,7 @@ internal class FeedsCapabilityRepositoryImplTest {
         val feedId2 = FeedId("user:2")
         val feedIds = listOf(feedId1, feedId2)
         val ownData =
-            mapOf(
-                feedId1.rawValue to FeedOwnData(listOf(FeedOwnCapability.ReadFeed)),
-                feedId2.rawValue to FeedOwnData(listOf(FeedOwnCapability.AddActivity)),
-            )
+            mapOf(feedId1.rawValue to testFeedOwnData1, feedId2.rawValue to testFeedOwnData2)
         val response = OwnBatchResponse("1ms", ownData)
 
         coEvery { api.ownBatch(connectionId = null, ownBatchRequest = any()) } returns response
@@ -114,11 +113,8 @@ internal class FeedsCapabilityRepositoryImplTest {
 
         verify {
             stateEventListener.onEvent(
-                FeedCapabilitiesUpdated(
-                    mapOf(
-                        feedId1 to setOf(FeedOwnCapability.ReadFeed),
-                        feedId2 to setOf(FeedOwnCapability.AddActivity),
-                    )
+                FeedOwnValuesUpdated(
+                    mapOf(feedId1 to testFeedOwnValues1, feedId2 to testFeedOwnValues2)
                 )
             )
         }
@@ -130,10 +126,7 @@ internal class FeedsCapabilityRepositoryImplTest {
         val feedId2 = FeedId("user:2")
         val feedIds = listOf(feedId1, feedId2)
         val ownData =
-            mapOf(
-                feedId1.rawValue to FeedOwnData(listOf(FeedOwnCapability.ReadFeed)),
-                feedId2.rawValue to FeedOwnData(listOf(FeedOwnCapability.AddActivity)),
-            )
+            mapOf(feedId1.rawValue to testFeedOwnData1, feedId2.rawValue to testFeedOwnData2)
         val response = OwnBatchResponse("1ms", ownData)
         var callCount = 0
 
@@ -151,11 +144,8 @@ internal class FeedsCapabilityRepositoryImplTest {
         assertEquals(3, callCount)
         verify {
             stateEventListener.onEvent(
-                FeedCapabilitiesUpdated(
-                    mapOf(
-                        feedId1 to setOf(FeedOwnCapability.ReadFeed),
-                        feedId2 to setOf(FeedOwnCapability.AddActivity),
-                    )
+                FeedOwnValuesUpdated(
+                    mapOf(feedId1 to testFeedOwnValues1, feedId2 to testFeedOwnValues2)
                 )
             )
         }
@@ -177,5 +167,22 @@ internal class FeedsCapabilityRepositoryImplTest {
             }
             return Result.failure(lastException ?: Exception("Retry exhausted"))
         }
+    }
+
+    companion object {
+        private val testFeedOwnData1 =
+            FeedOwnData(
+                ownCapabilities = listOf(FeedOwnCapability.ReadFeed),
+                ownFollows = listOf(followResponse()),
+                ownMembership = feedMemberResponse(),
+            )
+        private val testFeedOwnData2 =
+            FeedOwnData(
+                ownCapabilities = listOf(FeedOwnCapability.AddActivity),
+                ownFollows = listOf(followResponse()),
+                ownMembership = feedMemberResponse(),
+            )
+        private val testFeedOwnValues1 = testFeedOwnData1.toModel()
+        private val testFeedOwnValues2 = testFeedOwnData2.toModel()
     }
 }

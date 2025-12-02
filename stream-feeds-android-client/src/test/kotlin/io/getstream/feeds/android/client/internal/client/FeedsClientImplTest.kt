@@ -51,7 +51,7 @@ import io.getstream.feeds.android.client.internal.repository.AppRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.DevicesRepository
-import io.getstream.feeds.android.client.internal.repository.FeedOwnDataRepository
+import io.getstream.feeds.android.client.internal.repository.FeedOwnValuesRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.FilesRepository
 import io.getstream.feeds.android.client.internal.repository.ModerationRepository
@@ -101,7 +101,7 @@ internal class FeedsClientImplTest {
     private val filesRepository: FilesRepository = mockk(relaxed = true)
     private val moderationRepository: ModerationRepository = mockk(relaxed = true)
     private val pollsRepository: PollsRepository = mockk(relaxed = true)
-    private val feedOwnDataRepository: FeedOwnDataRepository = mockk(relaxed = true)
+    private val feedOwnValuesRepository: FeedOwnValuesRepository = mockk(relaxed = true)
     private val stateEventEnricher: StateEventEnricher = mockk {
         every { enrich(any()) } answers { firstArg() }
     }
@@ -130,7 +130,7 @@ internal class FeedsClientImplTest {
             filesRepository = filesRepository,
             moderationRepository = moderationRepository,
             pollsRepository = pollsRepository,
-            feedOwnDataRepository = feedOwnDataRepository,
+            feedOwnValuesRepository = feedOwnValuesRepository,
             uploader = uploader,
             moderation = moderation,
             feedWatchHandler = feedWatchHandler,
@@ -189,7 +189,7 @@ internal class FeedsClientImplTest {
                 filesRepository = filesRepository,
                 moderationRepository = moderationRepository,
                 pollsRepository = pollsRepository,
-                feedOwnDataRepository = feedOwnDataRepository,
+                feedOwnValuesRepository = feedOwnValuesRepository,
                 uploader = uploader,
                 moderation = moderation,
                 feedWatchHandler = feedWatchHandler,

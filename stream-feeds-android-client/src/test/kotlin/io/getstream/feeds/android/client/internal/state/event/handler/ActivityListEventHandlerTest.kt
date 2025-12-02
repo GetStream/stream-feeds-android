@@ -19,6 +19,7 @@ package io.getstream.feeds.android.client.internal.state.event.handler
 import io.getstream.android.core.api.filter.equal
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
+import io.getstream.feeds.android.client.internal.model.FeedOwnValues
 import io.getstream.feeds.android.client.internal.state.ActivityListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.FidScope
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
@@ -36,7 +37,7 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.C
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentReactionUpserted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentUpdated
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedCapabilitiesUpdated
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedOwnValuesUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteCasted
@@ -45,7 +46,9 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.P
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
+import io.getstream.feeds.android.client.internal.test.TestData.feedMemberData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
+import io.getstream.feeds.android.client.internal.test.TestData.followData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
 import io.getstream.feeds.android.network.models.FeedOwnCapability
@@ -194,12 +197,18 @@ internal class ActivityListEventHandlerTest(
                     },
                 ),
                 kotlin.run {
-                    val capabilities = mapOf(FeedId("user:1") to setOf(FeedOwnCapability.ReadFeed))
+                    val feedOwnValues =
+                        FeedOwnValues(
+                            capabilities = setOf(FeedOwnCapability.ReadFeed),
+                            follows = listOf(followData()),
+                            membership = feedMemberData(),
+                        )
+                    val map = mapOf(FeedId("user:1") to feedOwnValues)
 
                     testParams<ActivityListStateUpdates>(
-                        name = "FeedCapabilitiesUpdated",
-                        event = FeedCapabilitiesUpdated(capabilities),
-                        verifyBlock = { state -> state.onFeedCapabilitiesUpdated(capabilities) },
+                        name = "FeedOwnValuesUpdated",
+                        event = FeedOwnValuesUpdated(map),
+                        verifyBlock = { state -> state.onFeedOwnValuesUpdated(map) },
                     )
                 },
                 testParams<ActivityListStateUpdates>(

@@ -22,7 +22,7 @@ import io.getstream.feeds.android.client.api.state.FeedList
 import io.getstream.feeds.android.client.api.state.FeedListState
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
-import io.getstream.feeds.android.client.internal.repository.FeedOwnDataRepository
+import io.getstream.feeds.android.client.internal.repository.FeedOwnValuesRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.cache
 import io.getstream.feeds.android.client.internal.state.event.handler.FeedListEventHandler
@@ -39,7 +39,7 @@ import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventList
 internal class FeedListImpl(
     override val query: FeedsQuery,
     private val feedsRepository: FeedsRepository,
-    private val feedOwnDataRepository: FeedOwnDataRepository,
+    private val feedOwnValuesRepository: FeedOwnValuesRepository,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
 ) : FeedList {
 
@@ -81,7 +81,7 @@ internal class FeedListImpl(
             .queryFeeds(query)
             .onSuccess {
                 _state.onQueryMoreFeeds(it, QueryConfiguration(query.filter, query.sort))
-                feedOwnDataRepository.cache(it.models)
+                feedOwnValuesRepository.cache(it.models)
             }
             .map { it.models }
     }
