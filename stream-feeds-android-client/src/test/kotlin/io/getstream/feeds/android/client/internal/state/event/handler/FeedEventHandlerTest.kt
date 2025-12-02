@@ -94,7 +94,7 @@ internal class FeedEventHandlerTest(
         private val nonMatchingActivity = activityData(activityId, type = "comment")
         private val reaction = feedsReactionData(activityId)
         private val matchingBookmark =
-            bookmarkData(activityData(feeds = listOf(fid.rawValue, "other:feed")))
+            bookmarkData(activityData(feeds = listOf(fid, FeedId("other:feed"))))
         private val comment = commentData()
         private val commentReaction = feedsReactionData()
         private val matchingFeed = feedData(id = fid.id, groupId = fid.group)

@@ -181,14 +181,14 @@ internal class ActivityStateImplTest {
                     "activity-1",
                     text = "Original",
                     currentFeed = initialFeed,
-                    feeds = listOf("user:1"),
+                    feeds = listOf(FeedId("user:1")),
                 )
             val updatedActivity =
                 activityData(
                     "activity-1",
                     text = "Updated",
                     currentFeed = null,
-                    feeds = listOf("user:1"),
+                    feeds = listOf(FeedId("user:1")),
                 )
             setupAndUpdateActivity(initialActivity, updatedActivity)
 
