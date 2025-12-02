@@ -212,12 +212,11 @@ internal class FeedEventHandler(
 
             is StateUpdateEvent.PollUpdated -> state.onPollUpdated(event.poll)
 
-            is StateUpdateEvent.PollVoteCasted -> state.onPollVoteUpserted(event.vote, event.pollId)
+            is StateUpdateEvent.PollVoteCasted -> state.onPollVoteUpserted(event.poll, event.vote)
 
-            is StateUpdateEvent.PollVoteChanged ->
-                state.onPollVoteUpserted(event.vote, event.pollId)
+            is StateUpdateEvent.PollVoteChanged -> state.onPollVoteUpserted(event.poll, event.vote)
 
-            is StateUpdateEvent.PollVoteRemoved -> state.onPollVoteRemoved(event.vote, event.pollId)
+            is StateUpdateEvent.PollVoteRemoved -> state.onPollVoteRemoved(event.poll, event.vote)
 
             else -> {
                 // Handle other events if necessary

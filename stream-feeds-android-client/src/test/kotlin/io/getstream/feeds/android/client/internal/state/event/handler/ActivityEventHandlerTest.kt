@@ -191,18 +191,18 @@ internal class ActivityEventHandlerTest(
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "PollVoteCasted always handled",
-                    event = PollVoteCasted("poll-1", pollVoteData()),
-                    verifyBlock = { it.onPollVoteUpserted(pollVoteData(), "poll-1") },
+                    event = PollVoteCasted(pollData(), pollVoteData()),
+                    verifyBlock = { it.onPollVoteUpserted(pollData(), pollVoteData()) },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "PollVoteChanged always handled",
-                    event = PollVoteChanged("poll-1", pollVoteData()),
-                    verifyBlock = { it.onPollVoteUpserted(pollVoteData(), "poll-1") },
+                    event = PollVoteChanged(pollData(), pollVoteData()),
+                    verifyBlock = { it.onPollVoteUpserted(pollData(), pollVoteData()) },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "PollVoteRemoved always handled",
-                    event = PollVoteRemoved("poll-1", pollVoteData()),
-                    verifyBlock = { it.onPollVoteRemoved(pollVoteData(), "poll-1") },
+                    event = PollVoteRemoved(pollData(), pollVoteData()),
+                    verifyBlock = { it.onPollVoteRemoved(pollData(), pollVoteData()) },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "CommentAdded matching activity",

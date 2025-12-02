@@ -350,15 +350,15 @@ internal class FeedStateImpl(
         }
     }
 
-    override fun onPollVoteRemoved(vote: PollVoteData, pollId: String) {
-        updateActivitiesWhere({ it.poll?.id == pollId }) { activity ->
-            activity.copy(poll = activity.poll?.removeVote(vote, currentUserId))
+    override fun onPollVoteRemoved(poll: PollData, vote: PollVoteData) {
+        updateActivitiesWhere({ it.poll?.id == poll.id }) { activity ->
+            activity.copy(poll = activity.poll?.removeVote(poll, vote, currentUserId))
         }
     }
 
-    override fun onPollVoteUpserted(vote: PollVoteData, pollId: String) {
-        updateActivitiesWhere({ it.poll?.id == pollId }) { activity ->
-            activity.copy(poll = activity.poll?.upsertVote(vote, currentUserId))
+    override fun onPollVoteUpserted(poll: PollData, vote: PollVoteData) {
+        updateActivitiesWhere({ it.poll?.id == poll.id }) { activity ->
+            activity.copy(poll = activity.poll?.upsertVote(poll, vote, currentUserId))
         }
     }
 
@@ -554,10 +554,10 @@ internal interface FeedStateUpdates {
     fun onPollUpdated(poll: PollData)
 
     /** Handles updates to the feed state when a poll vote is removed. */
-    fun onPollVoteRemoved(vote: PollVoteData, pollId: String)
+    fun onPollVoteRemoved(poll: PollData, vote: PollVoteData)
 
     /** Handles updates to the feed state when a poll vote is casted or changed. */
-    fun onPollVoteUpserted(vote: PollVoteData, pollId: String)
+    fun onPollVoteUpserted(poll: PollData, vote: PollVoteData)
 
     /**
      * Handles updates to a notification feed.

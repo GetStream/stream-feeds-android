@@ -224,7 +224,7 @@ internal class PollsRepositoryImplTest {
             apiFunction = { feedsApi.castPollVote("activityId", "pollId", request) },
             repositoryCall = { repository.castPollVote("activityId", "pollId", request) },
             apiResult = apiResult,
-            repositoryResult = apiResult.vote?.toModel(),
+            repositoryResult = apiResult.vote?.toModel() to apiResult.poll.toModel(),
         )
     }
 
@@ -267,7 +267,7 @@ internal class PollsRepositoryImplTest {
                 repository.deletePollVote("activityId", "pollId", "voteId", "userId")
             },
             apiResult = apiResult,
-            repositoryResult = apiResult.vote?.toModel(),
+            repositoryResult = apiResult.vote?.toModel() to apiResult.poll.toModel(),
         )
     }
 }
