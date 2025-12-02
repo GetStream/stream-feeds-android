@@ -209,7 +209,7 @@ internal object TestData {
         ownBookmarks: List<BookmarkData> = emptyList(),
         ownReactions: List<FeedsReactionData> = emptyList(),
         comments: List<CommentData> = emptyList(),
-        feeds: List<String> = emptyList(),
+        feeds: List<FeedId> = emptyList(),
         createdAt: Long = 1000,
         hidden: Boolean = false,
         user: UserData = userData("user-1"),

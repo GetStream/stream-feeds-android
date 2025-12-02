@@ -20,6 +20,7 @@ import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.ActivityDataVisibility
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.CommentData
+import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsert
@@ -40,7 +41,7 @@ internal fun ActivityResponse.toModel(): ActivityData =
         deletedAt = deletedAt,
         editedAt = editedAt,
         expiresAt = expiresAt,
-        feeds = feeds,
+        feeds = feeds.map(::FeedId),
         filterTags = filterTags,
         hidden = hidden,
         id = id,

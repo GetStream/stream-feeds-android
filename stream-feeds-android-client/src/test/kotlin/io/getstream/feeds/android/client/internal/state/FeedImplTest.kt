@@ -275,7 +275,7 @@ internal class FeedImplTest {
         val feed = createFeed()
         val activityId = "activity-1"
         val request = AddBookmarkRequest(folderId = "folder-1")
-        val activity = activityData(activityId).copy(feeds = listOf("group:id"))
+        val activity = activityData(activityId).copy(feeds = listOf(FeedId("group:id")))
         val bookmark = bookmarkData(activityId, userId = "user").copy(activity = activity)
 
         // Set up initial state with activity
