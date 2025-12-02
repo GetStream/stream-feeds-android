@@ -20,6 +20,7 @@ import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedSuggestionData
 import io.getstream.feeds.android.network.models.FeedSuggestionResponse
+import io.getstream.feeds.android.network.models.FollowResponse
 
 internal fun FeedSuggestionResponse.toModel(): FeedSuggestionData =
     FeedSuggestionData(
@@ -38,6 +39,7 @@ internal fun FeedSuggestionResponse.toModel(): FeedSuggestionData =
                 id = id,
                 memberCount = memberCount,
                 ownCapabilities = ownCapabilities?.toSet().orEmpty(),
+                ownFollows = ownFollows?.map(FollowResponse::toModel).orEmpty(),
                 ownMembership = ownMembership?.toModel(),
                 name = name,
                 pinCount = pinCount,

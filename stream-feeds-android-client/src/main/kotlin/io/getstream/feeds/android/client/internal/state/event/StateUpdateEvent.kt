@@ -30,6 +30,7 @@ import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollVoteData
+import io.getstream.feeds.android.client.internal.model.FeedOwnValues
 import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.network.models.ActivityAddedEvent
 import io.getstream.feeds.android.network.models.ActivityDeletedEvent
@@ -60,7 +61,6 @@ import io.getstream.feeds.android.network.models.FeedDeletedEvent
 import io.getstream.feeds.android.network.models.FeedMemberAddedEvent
 import io.getstream.feeds.android.network.models.FeedMemberRemovedEvent
 import io.getstream.feeds.android.network.models.FeedMemberUpdatedEvent
-import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.getstream.feeds.android.network.models.FeedUpdatedEvent
 import io.getstream.feeds.android.network.models.FollowCreatedEvent
 import io.getstream.feeds.android.network.models.FollowDeletedEvent
@@ -147,8 +147,7 @@ internal sealed interface StateUpdateEvent {
 
     data class FeedUpdated(val feed: FeedData) : StateUpdateEvent
 
-    data class FeedCapabilitiesUpdated(val capabilities: Map<FeedId, Set<FeedOwnCapability>>) :
-        StateUpdateEvent
+    data class FeedOwnValuesUpdated(val data: Map<FeedId, FeedOwnValues>) : StateUpdateEvent
 
     data class FeedMemberAdded(val fid: String, val member: FeedMemberData) : StateUpdateEvent
 
@@ -215,6 +214,7 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
                         userId = activityFeedback.user.id,
                         hidden = activityFeedback.value == "true",
                     )
+
                 else -> null
             }
 

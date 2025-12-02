@@ -34,7 +34,7 @@ import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
-import io.getstream.feeds.android.client.internal.repository.FeedOwnDataRepository
+import io.getstream.feeds.android.client.internal.repository.FeedOwnValuesRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
@@ -86,7 +86,7 @@ internal class FeedImplTest {
     private val commentsRepository: CommentsRepository = mockk(relaxed = true)
     private val feedsRepository: FeedsRepository = mockk(relaxed = true)
     private val pollsRepository: PollsRepository = mockk(relaxed = true)
-    private val feedOwnDataRepository: FeedOwnDataRepository = mockk(relaxed = true)
+    private val feedOwnValuesRepository: FeedOwnValuesRepository = mockk(relaxed = true)
     private val feedWatchHandler: FeedWatchHandler = mockk(relaxed = true)
     private val stateEventListener: StateUpdateEventListener = mockk(relaxed = true)
     private val fid = FeedId("group:id")
@@ -785,7 +785,7 @@ internal class FeedImplTest {
             commentsRepository = commentsRepository,
             feedsRepository = feedsRepository,
             pollsRepository = pollsRepository,
-            feedOwnDataRepository = feedOwnDataRepository,
+            feedOwnValuesRepository = feedOwnValuesRepository,
             subscriptionManager = TestSubscriptionManager(stateEventListener),
             feedWatchHandler = feedWatchHandler,
         )

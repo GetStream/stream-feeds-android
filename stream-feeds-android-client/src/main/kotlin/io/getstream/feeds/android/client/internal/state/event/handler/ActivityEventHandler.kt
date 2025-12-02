@@ -108,8 +108,7 @@ internal class ActivityEventHandler(
                 state.onCommentReactionUpserted(event.comment, event.reaction, event.enforceUnique)
             }
 
-            is StateUpdateEvent.FeedCapabilitiesUpdated ->
-                state.onFeedCapabilitiesUpdated(event.capabilities)
+            is StateUpdateEvent.FeedOwnValuesUpdated -> state.onFeedOwnValuesUpdated(event.data)
 
             // The fid in poll events doesn't necessarily match all the feeds that contain the poll
             // so we can't early return here based on that.

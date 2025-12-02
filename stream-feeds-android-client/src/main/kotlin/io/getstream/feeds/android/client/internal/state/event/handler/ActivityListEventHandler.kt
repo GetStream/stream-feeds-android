@@ -77,8 +77,7 @@ internal class ActivityListEventHandler(
             is StateUpdateEvent.CommentReactionUpserted ->
                 state.onCommentReactionUpserted(event.comment, event.reaction, event.enforceUnique)
 
-            is StateUpdateEvent.FeedCapabilitiesUpdated ->
-                state.onFeedCapabilitiesUpdated(event.capabilities)
+            is StateUpdateEvent.FeedOwnValuesUpdated -> state.onFeedOwnValuesUpdated(event.data)
 
             is StateUpdateEvent.PollDeleted -> state.onPollDeleted(event.pollId)
             is StateUpdateEvent.PollUpdated -> state.onPollUpdated(event.poll)

@@ -22,7 +22,7 @@ import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
-import io.getstream.feeds.android.client.internal.repository.FeedOwnDataRepository
+import io.getstream.feeds.android.client.internal.repository.FeedOwnValuesRepository
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.mockk.coEvery
@@ -34,7 +34,7 @@ import org.junit.Test
 
 internal class ActivityListImplTest {
     private val activitiesRepository: ActivitiesRepository = mockk()
-    private val feedOwnDataRepository: FeedOwnDataRepository = mockk(relaxed = true)
+    private val feedOwnValuesRepository: FeedOwnValuesRepository = mockk(relaxed = true)
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener> =
         mockk(relaxed = true)
     private val query = ActivitiesQuery(limit = 10)
@@ -45,7 +45,7 @@ internal class ActivityListImplTest {
             query = query,
             currentUserId = currentUserId,
             activitiesRepository = activitiesRepository,
-            feedOwnDataRepository = feedOwnDataRepository,
+            feedOwnValuesRepository = feedOwnValuesRepository,
             subscriptionManager = subscriptionManager,
         )
 

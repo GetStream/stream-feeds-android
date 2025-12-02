@@ -62,7 +62,7 @@ import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.repository.CollectionsRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.CommentsRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.DevicesRepositoryImpl
-import io.getstream.feeds.android.client.internal.repository.FeedOwnDataRepositoryImpl
+import io.getstream.feeds.android.client.internal.repository.FeedOwnValuesRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.FeedsRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.FilesRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.ModerationRepositoryImpl
@@ -249,14 +249,14 @@ internal fun createFeedsClient(
     val moderationRepository = ModerationRepositoryImpl(feedsApi)
     val pollsRepository = PollsRepositoryImpl(feedsApi)
     val collectionsRepository = CollectionsRepositoryImpl(feedsApi)
-    val feedOwnDataRepository =
-        FeedOwnDataRepositoryImpl(
-            batcher = FeedOwnDataRepositoryImpl.createBatcher(clientScope),
+    val feedOwnValuesRepository =
+        FeedOwnValuesRepositoryImpl(
+            batcher = FeedOwnValuesRepositoryImpl.createBatcher(clientScope),
             retryProcessor = StreamRetryProcessor(logProvider.taggedLogger("FeedCapability")),
             api = feedsApi,
             subscriptionManager = stateEventsSubscriptionManager,
         )
-    val stateEventEnricher = StateEventEnricher(feedOwnDataRepository)
+    val stateEventEnricher = StateEventEnricher(feedOwnValuesRepository)
 
     val moderation = ModerationImpl(moderationRepository)
     val errorBus = MutableSharedFlow<StreamClientException>(extraBufferCapacity = 100)
@@ -285,7 +285,7 @@ internal fun createFeedsClient(
         moderationRepository = moderationRepository,
         pollsRepository = pollsRepository,
         collectionsRepository = collectionsRepository,
-        feedOwnDataRepository = feedOwnDataRepository,
+        feedOwnValuesRepository = feedOwnValuesRepository,
         uploader = uploader,
         moderation = moderation,
         coreClient = client,
