@@ -41,7 +41,7 @@ internal class ActivityReactionListEventHandler(
 
             is StateUpdateEvent.ActivityReactionUpserted -> {
                 if (event.reaction.activityId == activityId) {
-                    state.onReactionUpserted(event.reaction)
+                    state.onReactionUpserted(event.reaction, event.enforceUnique)
                 }
             }
 

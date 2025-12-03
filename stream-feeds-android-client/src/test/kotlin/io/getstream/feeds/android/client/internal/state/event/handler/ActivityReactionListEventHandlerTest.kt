@@ -89,7 +89,7 @@ internal class ActivityReactionListEventHandlerTest(
                             true,
                         ),
                     verifyBlock = { state ->
-                        state.onReactionUpserted(feedsReactionData(activityId))
+                        state.onReactionUpserted(feedsReactionData(activityId), true)
                     },
                 ),
                 testParams<ActivityReactionListStateUpdates>(

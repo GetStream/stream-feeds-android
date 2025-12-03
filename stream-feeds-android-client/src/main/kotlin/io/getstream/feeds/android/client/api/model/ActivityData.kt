@@ -106,7 +106,7 @@ public data class ActivityData(
     val deletedAt: Date?,
     val editedAt: Date?,
     val expiresAt: Date?,
-    val feeds: List<String>,
+    val feeds: List<FeedId>,
     val filterTags: List<String>,
     val hidden: Boolean,
     val id: String,

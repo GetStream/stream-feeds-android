@@ -18,7 +18,9 @@ package io.getstream.feeds.android.client.internal.model
 
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.internal.utils.insertUniqueBy
+import io.getstream.feeds.android.client.internal.utils.insertUniqueBySorted
 import io.getstream.feeds.android.client.internal.utils.upsert
+import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import io.getstream.feeds.android.network.models.FeedsReactionResponse
 
 /**
@@ -48,4 +50,19 @@ internal fun List<FeedsReactionData>.upsertReaction(
         insertUniqueBy(reaction, FeedsReactionData::userReactionsGroupId)
     } else {
         upsert(reaction, FeedsReactionData::id)
+    }
+
+/**
+ * Inserts or updates a reaction in the list keeping the list sorted by [comparator]. If
+ * [enforceUnique] is true, it ensures that only one reaction per user exists in the list.
+ */
+internal fun List<FeedsReactionData>.upsertReactionSorted(
+    reaction: FeedsReactionData,
+    enforceUnique: Boolean,
+    comparator: Comparator<FeedsReactionData>,
+): List<FeedsReactionData> =
+    if (enforceUnique) {
+        insertUniqueBySorted(reaction, FeedsReactionData::userReactionsGroupId, comparator)
+    } else {
+        upsertSorted(reaction, FeedsReactionData::id, comparator)
     }
