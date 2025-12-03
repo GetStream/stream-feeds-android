@@ -18,10 +18,14 @@ package io.getstream.feeds.android.client.internal.file
 
 import android.webkit.MimeTypeMap
 import java.io.File
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 
-internal fun File.getMimeType(): String =
-    MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension) ?: "application/octet-stream"
+internal suspend fun File.getMimeType(): String =
+    withContext(Dispatchers.IO) {
+        MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension) ?: "application/octet-stream"
+    }
 
-internal fun File.getMediaType(): MediaType = getMimeType().toMediaType()
+internal suspend fun File.getMediaType(): MediaType = getMimeType().toMediaType()

@@ -39,6 +39,12 @@ internal class FeedEventHandler(
     private val state: FeedStateUpdates,
 ) : StateUpdateEventListener {
 
+    // TODO [G.] onEvent is executed on the main thread on local state updates. I'm a bit afraid of
+    //  just moving it to the background because it could create race conditions. We could have
+    //  maybe a queue (sharedflow? SerialProcessingQueue?) either in handlers or in states and queue
+    //  stuff as it comes and
+    //  then execute in background. We should run some benchmarks/stress test to see what's the
+    //  behavior now & how much of an improvement the queue would make.
     /**
      * Processes a state update event and updates the feed state.
      *

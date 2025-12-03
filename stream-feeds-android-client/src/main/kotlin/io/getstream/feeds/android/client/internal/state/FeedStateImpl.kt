@@ -32,6 +32,7 @@ import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.client.api.state.InsertionAction
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
+import io.getstream.feeds.android.client.gol
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.model.deleteBookmark
 import io.getstream.feeds.android.client.internal.model.isFollowRequest
@@ -290,12 +291,14 @@ internal class FeedStateImpl(
         activity: ActivityData,
         enforceUnique: Boolean,
     ) {
+        gol(Thread.currentThread(), fid.rawValue, "upserted")
         updateActivitiesWhere({ it.id == reaction.activityId }) { currentActivity ->
             currentActivity.upsertReaction(activity, reaction, currentUserId, enforceUnique)
         }
     }
 
     override fun onReactionRemoved(reaction: FeedsReactionData, activity: ActivityData) {
+        gol(Thread.currentThread(), fid.rawValue, "removed")
         updateActivitiesWhere({ it.id == reaction.activityId }) { currentActivity ->
             currentActivity.removeReaction(activity, reaction, currentUserId)
         }
