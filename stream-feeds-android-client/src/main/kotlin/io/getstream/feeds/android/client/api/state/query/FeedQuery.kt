@@ -29,7 +29,6 @@ import io.getstream.feeds.android.network.models.EnrichmentOptions
  * @param activityLimit Maximum number of activities to retrieve.
  * @param activityNext Pagination cursor for fetching the next page of activities.
  * @param activityPrevious Pagination cursor for fetching the previous page of activities.
- * @param activitySelectorOptions Custom options for activity selection and processing.
  * @param data Additional data to associate with the feed.
  * @param enrichmentOptions Options to control enrichment of feed data.
  * @param externalRanking Additional data used for ranking activities in the feed.
@@ -47,7 +46,6 @@ public data class FeedQuery(
     public val activityLimit: Int? = null,
     public val activityNext: String? = null,
     public val activityPrevious: String? = null,
-    public val activitySelectorOptions: Map<String, Any>? = null,
     public val data: FeedInputData? = null,
     public val enrichmentOptions: EnrichmentOptions? = null,
     public val externalRanking: Map<String, Any>? = null,
@@ -68,7 +66,6 @@ public data class FeedQuery(
      * @param activityLimit Maximum number of activities to retrieve.
      * @param activityNext Pagination cursor for fetching the next page of activities.
      * @param activityPrevious Pagination cursor for fetching the previous page of activities.
-     * @param activitySelectorOptions Custom options for activity selection and processing.
      * @param data Additional data to associate with the feed.
      * @param externalRanking Additional data used for ranking activities in the feed.
      * @param followerLimit Maximum number of followers to retrieve.
@@ -86,7 +83,6 @@ public data class FeedQuery(
         activityLimit: Int? = null,
         activityNext: String? = null,
         activityPrevious: String? = null,
-        activitySelectorOptions: Map<String, Any>? = null,
         data: FeedInputData? = null,
         externalRanking: Map<String, Any>? = null,
         followerLimit: Int? = null,
@@ -101,7 +97,6 @@ public data class FeedQuery(
         activityLimit = activityLimit,
         activityNext = activityNext,
         activityPrevious = activityPrevious,
-        activitySelectorOptions = activitySelectorOptions,
         data = data,
         externalRanking = externalRanking,
         followerLimit = followerLimit,
