@@ -20,18 +20,9 @@ package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
 import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
 import kotlin.io.*
 
 /**  */
-public data class OwnCapabilitiesBatchResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
-    @Json(name = "capabilities")
-    public val capabilities:
-        kotlin.collections.Map<
-            kotlin.String,
-            kotlin.collections.List<io.getstream.feeds.android.network.models.FeedOwnCapability>,
-        > =
-        emptyMap(),
+public data class FlagCountRuleParameters(
+    @Json(name = "threshold") public val threshold: kotlin.Int? = null
 )

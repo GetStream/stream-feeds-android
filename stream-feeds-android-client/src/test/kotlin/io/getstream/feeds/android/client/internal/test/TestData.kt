@@ -236,14 +236,17 @@ internal object TestData {
             location = null,
             mentionedUsers = emptyList(),
             moderation = null,
+            moderationAction = null,
             notificationContext = null,
             ownBookmarks = ownBookmarks,
             ownReactions = ownReactions,
             parent = null,
             poll = poll,
             popularity = 0,
+            preview = false,
             reactionCount = 0,
             reactionGroups = emptyMap(),
+            restrictReplies = "",
             score = 0f,
             searchData = emptyMap(),
             shareCount = 0,
@@ -329,6 +332,7 @@ internal object TestData {
             id = id,
             name = name,
             updatedAt = Date(1000),
+            user = userData("user-1"),
         )
 
     fun activityResponse(id: String = "", createdAt: Long = 1000): ActivityResponse =
@@ -339,6 +343,7 @@ internal object TestData {
             id = id,
             popularity = 0,
             reactionCount = 0,
+            restrictReplies = "",
             score = 0f,
             shareCount = 0,
             type = "",
@@ -411,6 +416,7 @@ internal object TestData {
             custom = emptyMap(),
             id = "folder-1",
             name = "Test Folder",
+            user = userResponse(),
             updatedAt = Date(1000),
         )
 

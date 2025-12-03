@@ -44,6 +44,8 @@ import io.getstream.feeds.android.network.models.BlockUsersResponse
 import io.getstream.feeds.android.network.models.CastPollVoteRequest
 import io.getstream.feeds.android.network.models.CreateBlockListRequest
 import io.getstream.feeds.android.network.models.CreateBlockListResponse
+import io.getstream.feeds.android.network.models.CreateCollectionsRequest
+import io.getstream.feeds.android.network.models.CreateCollectionsResponse
 import io.getstream.feeds.android.network.models.CreateDeviceRequest
 import io.getstream.feeds.android.network.models.CreateFeedsBatchRequest
 import io.getstream.feeds.android.network.models.CreateFeedsBatchResponse
@@ -57,6 +59,7 @@ import io.getstream.feeds.android.network.models.DeleteActivityReactionResponse
 import io.getstream.feeds.android.network.models.DeleteActivityResponse
 import io.getstream.feeds.android.network.models.DeleteBookmarkFolderResponse
 import io.getstream.feeds.android.network.models.DeleteBookmarkResponse
+import io.getstream.feeds.android.network.models.DeleteCollectionsResponse
 import io.getstream.feeds.android.network.models.DeleteCommentReactionResponse
 import io.getstream.feeds.android.network.models.DeleteCommentResponse
 import io.getstream.feeds.android.network.models.DeleteFeedResponse
@@ -86,8 +89,8 @@ import io.getstream.feeds.android.network.models.ListDevicesResponse
 import io.getstream.feeds.android.network.models.MarkActivityRequest
 import io.getstream.feeds.android.network.models.MuteRequest
 import io.getstream.feeds.android.network.models.MuteResponse
-import io.getstream.feeds.android.network.models.OwnCapabilitiesBatchRequest
-import io.getstream.feeds.android.network.models.OwnCapabilitiesBatchResponse
+import io.getstream.feeds.android.network.models.OwnBatchRequest
+import io.getstream.feeds.android.network.models.OwnBatchResponse
 import io.getstream.feeds.android.network.models.PinActivityRequest
 import io.getstream.feeds.android.network.models.PinActivityResponse
 import io.getstream.feeds.android.network.models.PollOptionResponse
@@ -121,6 +124,7 @@ import io.getstream.feeds.android.network.models.QueryReviewQueueRequest
 import io.getstream.feeds.android.network.models.QueryReviewQueueResponse
 import io.getstream.feeds.android.network.models.QueryUsersPayload
 import io.getstream.feeds.android.network.models.QueryUsersResponse
+import io.getstream.feeds.android.network.models.ReadCollectionsResponse
 import io.getstream.feeds.android.network.models.RejectFeedMemberInviteRequest
 import io.getstream.feeds.android.network.models.RejectFeedMemberInviteResponse
 import io.getstream.feeds.android.network.models.RejectFollowRequest
@@ -133,6 +137,8 @@ import io.getstream.feeds.android.network.models.SubmitActionRequest
 import io.getstream.feeds.android.network.models.SubmitActionResponse
 import io.getstream.feeds.android.network.models.UnblockUsersRequest
 import io.getstream.feeds.android.network.models.UnblockUsersResponse
+import io.getstream.feeds.android.network.models.UnfollowBatchRequest
+import io.getstream.feeds.android.network.models.UnfollowBatchResponse
 import io.getstream.feeds.android.network.models.UnfollowResponse
 import io.getstream.feeds.android.network.models.UnpinActivityResponse
 import io.getstream.feeds.android.network.models.UpdateActivityPartialRequest
@@ -145,6 +151,8 @@ import io.getstream.feeds.android.network.models.UpdateBookmarkFolderRequest
 import io.getstream.feeds.android.network.models.UpdateBookmarkFolderResponse
 import io.getstream.feeds.android.network.models.UpdateBookmarkRequest
 import io.getstream.feeds.android.network.models.UpdateBookmarkResponse
+import io.getstream.feeds.android.network.models.UpdateCollectionsRequest
+import io.getstream.feeds.android.network.models.UpdateCollectionsResponse
 import io.getstream.feeds.android.network.models.UpdateCommentRequest
 import io.getstream.feeds.android.network.models.UpdateCommentResponse
 import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
@@ -396,6 +404,30 @@ internal class FeedsSingleFlightApi(
     override suspend fun queryBookmarks(): QueryBookmarksResponse =
         singleFlight("queryBookmarks") { delegate.queryBookmarks() }
 
+    override suspend fun deleteCollections(
+        collectionRefs: List<String>
+    ): DeleteCollectionsResponse =
+        singleFlight("deleteCollections", collectionRefs) {
+            delegate.deleteCollections(collectionRefs)
+        }
+
+    override suspend fun readCollections(collectionRefs: List<String>): ReadCollectionsResponse =
+        singleFlight("readCollections", collectionRefs) { delegate.readCollections(collectionRefs) }
+
+    override suspend fun updateCollections(
+        updateCollectionsRequest: UpdateCollectionsRequest
+    ): UpdateCollectionsResponse =
+        singleFlight("updateCollections", updateCollectionsRequest) {
+            delegate.updateCollections(updateCollectionsRequest)
+        }
+
+    override suspend fun createCollections(
+        createCollectionsRequest: CreateCollectionsRequest
+    ): CreateCollectionsResponse =
+        singleFlight("createCollections", createCollectionsRequest) {
+            delegate.createCollections(createCollectionsRequest)
+        }
+
     override suspend fun getComments(
         objectId: String,
         objectType: String,
@@ -422,6 +454,9 @@ internal class FeedsSingleFlightApi(
 
     override suspend fun addComment(addCommentRequest: AddCommentRequest): AddCommentResponse =
         singleFlight("addComment", addCommentRequest) { delegate.addComment(addCommentRequest) }
+
+    override suspend fun addComment(): AddCommentResponse =
+        singleFlight("addComment") { delegate.addComment() }
 
     override suspend fun addCommentsBatch(
         addCommentsBatchRequest: AddCommentsBatchRequest
@@ -658,12 +693,12 @@ internal class FeedsSingleFlightApi(
             delegate.createFeedsBatch(createFeedsBatchRequest)
         }
 
-    override suspend fun ownCapabilitiesBatch(
+    override suspend fun ownBatch(
         connectionId: String?,
-        ownCapabilitiesBatchRequest: OwnCapabilitiesBatchRequest,
-    ): OwnCapabilitiesBatchResponse =
-        singleFlight("ownCapabilitiesBatch", connectionId, ownCapabilitiesBatchRequest) {
-            delegate.ownCapabilitiesBatch(connectionId, ownCapabilitiesBatchRequest)
+        ownBatchRequest: OwnBatchRequest,
+    ): OwnBatchResponse =
+        singleFlight("ownBatch", connectionId, ownBatchRequest) {
+            delegate.ownBatch(connectionId, ownBatchRequest)
         }
 
     override suspend fun queryFeeds(
@@ -697,6 +732,13 @@ internal class FeedsSingleFlightApi(
     override suspend fun followBatch(followBatchRequest: FollowBatchRequest): FollowBatchResponse =
         singleFlight("followBatch", followBatchRequest) { delegate.followBatch(followBatchRequest) }
 
+    override suspend fun getOrCreateFollows(
+        followBatchRequest: FollowBatchRequest
+    ): FollowBatchResponse =
+        singleFlight("getOrCreateFollows", followBatchRequest) {
+            delegate.getOrCreateFollows(followBatchRequest)
+        }
+
     override suspend fun queryFollows(
         queryFollowsRequest: QueryFollowsRequest
     ): QueryFollowsResponse =
@@ -716,6 +758,13 @@ internal class FeedsSingleFlightApi(
 
     override suspend fun unfollow(source: String, target: String): UnfollowResponse =
         singleFlight("unfollow", source, target) { delegate.unfollow(source, target) }
+
+    override suspend fun getOrCreateUnfollows(
+        unfollowBatchRequest: UnfollowBatchRequest
+    ): UnfollowBatchResponse =
+        singleFlight("getOrCreateUnfollows", unfollowBatchRequest) {
+            delegate.getOrCreateUnfollows(unfollowBatchRequest)
+        }
 
     override suspend fun createGuest(createGuestRequest: CreateGuestRequest): CreateGuestResponse =
         singleFlight("createGuest", createGuestRequest) { delegate.createGuest(createGuestRequest) }

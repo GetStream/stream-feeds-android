@@ -14,24 +14,13 @@
  * limitations under the License.
  */
 
-package io.getstream.feeds.android.client.api.model
+@file:Suppress("ArrayInDataClass", "EnumEntryName", "RemoveRedundantQualifierName", "UnusedImport")
 
-import java.util.Date
+package io.getstream.feeds.android.network.models
 
-/**
- * Data class representing a bookmark folder.
- *
- * @property createdAt The date the folder was created.
- * @property custom Optional custom data as a map.
- * @property id Unique identifier for the folder.
- * @property name Name of the folder.
- * @property updatedAt The date the folder was last updated.
- */
-public data class BookmarkFolderData(
-    val createdAt: Date,
-    val custom: Map<String, Any?>?,
-    val id: String,
-    val name: String,
-    val updatedAt: Date,
-    val user: UserData,
-)
+import com.squareup.moshi.Json
+import kotlin.collections.*
+import kotlin.io.*
+
+/**  */
+public data class SRTIngress(@Json(name = "address") public val address: kotlin.String)

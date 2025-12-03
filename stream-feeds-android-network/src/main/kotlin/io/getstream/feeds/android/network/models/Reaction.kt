@@ -20,18 +20,43 @@ package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
 import kotlin.collections.*
+import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.io.*
 
 /**  */
 public data class Reaction(
+    @Json(name = "activity_id") public val activityId: kotlin.String,
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "message_id") public val messageId: kotlin.String,
-    @Json(name = "score") public val score: kotlin.Int,
-    @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "kind") public val kind: kotlin.String,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-    @Json(name = "user_id") public val userId: kotlin.String? = null,
+    @Json(name = "user_id") public val userId: kotlin.String,
+    @Json(name = "deleted_at") public val deletedAt: java.util.Date? = null,
+    @Json(name = "id") public val id: kotlin.String? = null,
+    @Json(name = "parent") public val parent: kotlin.String? = null,
+    @Json(name = "score") public val score: kotlin.Float? = null,
+    @Json(name = "target_feeds")
+    public val targetFeeds: kotlin.collections.List<kotlin.String>? = emptyList(),
+    @Json(name = "children_counts")
+    public val childrenCounts: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "data") public val data: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "latest_children")
+    public val latestChildren:
+        kotlin.collections.Map<
+            kotlin.String,
+            kotlin.collections.List<io.getstream.feeds.android.network.models.Reaction>,
+        >? =
+        emptyMap(),
+    @Json(name = "moderation")
+    public val moderation: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "own_children")
+    public val ownChildren:
+        kotlin.collections.Map<
+            kotlin.String,
+            kotlin.collections.List<io.getstream.feeds.android.network.models.Reaction>,
+        >? =
+        emptyMap(),
+    @Json(name = "target_feeds_extra_data")
+    public val targetFeedsExtraData: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
     @Json(name = "user") public val user: io.getstream.feeds.android.network.models.User? = null,
 )

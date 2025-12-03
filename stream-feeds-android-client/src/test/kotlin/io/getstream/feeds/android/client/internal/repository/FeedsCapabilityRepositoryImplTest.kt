@@ -26,7 +26,8 @@ import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventList
 import io.getstream.feeds.android.client.internal.test.TestSubscriptionManager
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.FeedOwnCapability
-import io.getstream.feeds.android.network.models.OwnCapabilitiesBatchResponse
+import io.getstream.feeds.android.network.models.FeedOwnData
+import io.getstream.feeds.android.network.models.OwnBatchResponse
 import io.mockk.coEvery
 import io.mockk.justRun
 import io.mockk.mockk
@@ -100,16 +101,14 @@ internal class FeedsCapabilityRepositoryImplTest {
         val feedId1 = FeedId("user:1")
         val feedId2 = FeedId("user:2")
         val feedIds = listOf(feedId1, feedId2)
-        val capabilities =
+        val ownData =
             mapOf(
-                feedId1.rawValue to listOf(FeedOwnCapability.ReadFeed),
-                feedId2.rawValue to listOf(FeedOwnCapability.AddActivity),
+                feedId1.rawValue to FeedOwnData(listOf(FeedOwnCapability.ReadFeed)),
+                feedId2.rawValue to FeedOwnData(listOf(FeedOwnCapability.AddActivity)),
             )
-        val response = OwnCapabilitiesBatchResponse("1ms", capabilities)
+        val response = OwnBatchResponse("1ms", ownData)
 
-        coEvery {
-            api.ownCapabilitiesBatch(connectionId = null, ownCapabilitiesBatchRequest = any())
-        } returns response
+        coEvery { api.ownBatch(connectionId = null, ownBatchRequest = any()) } returns response
 
         batchCallbackSlot.captured(feedIds, 0L, 0)
 
@@ -130,15 +129,15 @@ internal class FeedsCapabilityRepositoryImplTest {
         val feedId1 = FeedId("user:1")
         val feedId2 = FeedId("user:2")
         val feedIds = listOf(feedId1, feedId2)
-        val capabilities =
+        val ownData =
             mapOf(
-                feedId1.rawValue to listOf(FeedOwnCapability.ReadFeed),
-                feedId2.rawValue to listOf(FeedOwnCapability.AddActivity),
+                feedId1.rawValue to FeedOwnData(listOf(FeedOwnCapability.ReadFeed)),
+                feedId2.rawValue to FeedOwnData(listOf(FeedOwnCapability.AddActivity)),
             )
-        val response = OwnCapabilitiesBatchResponse("1ms", capabilities)
+        val response = OwnBatchResponse("1ms", ownData)
         var callCount = 0
 
-        coEvery { api.ownCapabilitiesBatch(null, ownCapabilitiesBatchRequest = any()) } coAnswers
+        coEvery { api.ownBatch(null, ownBatchRequest = any()) } coAnswers
             {
                 callCount++
                 if (callCount < 3) {

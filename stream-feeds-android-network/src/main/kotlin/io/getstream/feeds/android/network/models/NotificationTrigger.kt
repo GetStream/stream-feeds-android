@@ -26,4 +26,6 @@ import kotlin.io.*
 public data class NotificationTrigger(
     @Json(name = "text") public val text: kotlin.String,
     @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "comment")
+    public val comment: io.getstream.feeds.android.network.models.NotificationComment? = null,
 )

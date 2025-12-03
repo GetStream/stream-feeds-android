@@ -30,6 +30,10 @@ public data class RuleBuilderCondition(
     public val contentCountRuleParams:
         io.getstream.feeds.android.network.models.ContentCountRuleParameters? =
         null,
+    @Json(name = "content_flag_count_rule_params")
+    public val contentFlagCountRuleParams:
+        io.getstream.feeds.android.network.models.FlagCountRuleParameters? =
+        null,
     @Json(name = "image_content_params")
     public val imageContentParams:
         io.getstream.feeds.android.network.models.ImageContentParameters? =
@@ -49,6 +53,10 @@ public data class RuleBuilderCondition(
     @Json(name = "user_custom_property_params")
     public val userCustomPropertyParams:
         io.getstream.feeds.android.network.models.UserCustomPropertyParameters? =
+        null,
+    @Json(name = "user_flag_count_rule_params")
+    public val userFlagCountRuleParams:
+        io.getstream.feeds.android.network.models.FlagCountRuleParameters? =
         null,
     @Json(name = "user_rule_params")
     public val userRuleParams: io.getstream.feeds.android.network.models.UserRuleParameters? = null,

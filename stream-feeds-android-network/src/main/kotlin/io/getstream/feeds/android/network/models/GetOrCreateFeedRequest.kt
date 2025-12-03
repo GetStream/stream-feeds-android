@@ -25,15 +25,17 @@ import kotlin.io.*
 
 /** Client request */
 public data class GetOrCreateFeedRequest(
+    @Json(name = "id_around") public val idAround: kotlin.String? = null,
     @Json(name = "limit") public val limit: kotlin.Int? = null,
     @Json(name = "next") public val next: kotlin.String? = null,
     @Json(name = "prev") public val prev: kotlin.String? = null,
     @Json(name = "view") public val view: kotlin.String? = null,
     @Json(name = "watch") public val watch: kotlin.Boolean? = null,
-    @Json(name = "activity_selector_options")
-    public val activitySelectorOptions: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
     @Json(name = "data")
     public val data: io.getstream.feeds.android.network.models.FeedInput? = null,
+    @Json(name = "enrichment_options")
+    public val enrichmentOptions: io.getstream.feeds.android.network.models.EnrichmentOptions? =
+        null,
     @Json(name = "external_ranking")
     public val externalRanking: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
     @Json(name = "filter")

@@ -20,10 +20,13 @@ package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
 import kotlin.collections.*
-import kotlin.collections.List
+import kotlin.collections.Map
 import kotlin.io.*
 
 /**  */
-public data class OwnCapabilitiesBatchRequest(
-    @Json(name = "feeds") public val feeds: kotlin.collections.List<kotlin.String> = emptyList()
+public data class CollectionRequest(
+    @Json(name = "name") public val name: kotlin.String,
+    @Json(name = "custom")
+    public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
+    @Json(name = "id") public val id: kotlin.String? = null,
 )

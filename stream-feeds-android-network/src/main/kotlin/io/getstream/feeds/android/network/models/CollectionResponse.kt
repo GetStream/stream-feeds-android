@@ -23,25 +23,13 @@ import kotlin.collections.*
 import kotlin.collections.Map
 import kotlin.io.*
 
-/** This event is sent when a moderation item is marked as reviewed */
-public data class ModerationMarkReviewedEvent(
-    @Json(name = "created_at") public val createdAt: java.util.Date,
+/**  */
+public data class CollectionResponse(
+    @Json(name = "id") public val id: kotlin.String,
+    @Json(name = "name") public val name: kotlin.String,
+    @Json(name = "created_at") public val createdAt: java.util.Date? = null,
+    @Json(name = "updated_at") public val updatedAt: java.util.Date? = null,
+    @Json(name = "user_id") public val userId: kotlin.String? = null,
     @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-    @Json(name = "item")
-    public val item: io.getstream.feeds.android.network.models.ReviewQueueItemResponse,
-    @Json(name = "type") public val type: kotlin.String,
-    @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
-) :
-    io.getstream.feeds.android.network.models.WSEvent,
-    io.getstream.feeds.android.network.models.WSClientEvent,
-    io.getstream.feeds.android.network.models.FeedEvent {
-
-    override fun getWSEventType(): kotlin.String {
-        return type
-    }
-
-    override fun getWSClientEventType(): kotlin.String {
-        return type
-    }
-}
+    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+)

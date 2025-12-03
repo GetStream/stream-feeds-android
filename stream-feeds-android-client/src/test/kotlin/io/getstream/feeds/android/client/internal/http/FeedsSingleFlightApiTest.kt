@@ -39,8 +39,8 @@ import io.getstream.feeds.android.network.models.FileUploadConfig
 import io.getstream.feeds.android.network.models.GetApplicationResponse
 import io.getstream.feeds.android.network.models.GetOGResponse
 import io.getstream.feeds.android.network.models.ListDevicesResponse
-import io.getstream.feeds.android.network.models.OwnCapabilitiesBatchRequest
-import io.getstream.feeds.android.network.models.OwnCapabilitiesBatchResponse
+import io.getstream.feeds.android.network.models.OwnBatchRequest
+import io.getstream.feeds.android.network.models.OwnBatchResponse
 import io.getstream.feeds.android.network.models.PollOptionResponse
 import io.getstream.feeds.android.network.models.PollResponse
 import io.getstream.feeds.android.network.models.PollVotesResponse
@@ -118,7 +118,6 @@ internal class FeedsSingleFlightApiTest(private val testCase: SingleFlightTestCa
                 activity = TestData.activityResponse(),
                 reaction = TestData.feedsReactionResponse(),
             )
-        private val testOwnCapabilitiesBatchResponse = OwnCapabilitiesBatchResponse("100ms")
 
         @JvmStatic
         @Parameterized.Parameters(name = "{0}")
@@ -369,12 +368,10 @@ internal class FeedsSingleFlightApiTest(private val testCase: SingleFlightTestCa
                 ),
                 arrayOf(
                     SingleFlightTestCase(
-                        testName = "ownCapabilitiesBatch",
-                        expectedKeyPrefix = "ownCapabilitiesBatch-connection123-",
-                        call = {
-                            it.ownCapabilitiesBatch("connection123", OwnCapabilitiesBatchRequest())
-                        },
-                        apiResult = testOwnCapabilitiesBatchResponse,
+                        testName = "ownBatch",
+                        expectedKeyPrefix = "ownBatch-connection123-",
+                        call = { it.ownBatch("connection123", OwnBatchRequest()) },
+                        apiResult = OwnBatchResponse("100ms"),
                     )
                 ),
             )

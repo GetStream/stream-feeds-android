@@ -232,7 +232,6 @@ internal class FeedImpl(
                 activityFilter = query.activityFilter,
                 activityLimit = limit ?: query.activityLimit,
                 activityNext = next,
-                activitySelectorOptions = null,
                 data = null,
                 externalRanking = null,
                 followerLimit = 0,

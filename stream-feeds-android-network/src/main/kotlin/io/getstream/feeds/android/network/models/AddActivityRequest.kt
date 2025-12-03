@@ -37,6 +37,8 @@ public data class AddActivityRequest(
     @Json(name = "id") public val id: kotlin.String? = null,
     @Json(name = "parent_id") public val parentId: kotlin.String? = null,
     @Json(name = "poll_id") public val pollId: kotlin.String? = null,
+    @Json(name = "restrict_replies") public val restrictReplies: RestrictReplies? = null,
+    @Json(name = "skip_enrich_url") public val skipEnrichUrl: kotlin.Boolean? = null,
     @Json(name = "text") public val text: kotlin.String? = null,
     @Json(name = "visibility") public val visibility: Visibility? = null,
     @Json(name = "visibility_tag") public val visibilityTag: kotlin.String? = null,
@@ -44,6 +46,8 @@ public data class AddActivityRequest(
     public val attachments:
         kotlin.collections.List<io.getstream.feeds.android.network.models.Attachment>? =
         emptyList(),
+    @Json(name = "collection_refs")
+    public val collectionRefs: kotlin.collections.List<kotlin.String>? = emptyList(),
     @Json(name = "filter_tags")
     public val filterTags: kotlin.collections.List<kotlin.String>? = emptyList(),
     @Json(name = "interest_tags")
@@ -57,6 +61,42 @@ public data class AddActivityRequest(
     @Json(name = "search_data")
     public val searchData: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
 ) {
+
+    /** RestrictReplies Enum */
+    public sealed class RestrictReplies(public val value: kotlin.String) {
+        override fun toString(): String = value
+
+        public companion object {
+            public fun fromString(s: kotlin.String): RestrictReplies =
+                when (s) {
+                    "everyone" -> Everyone
+                    "nobody" -> Nobody
+                    "people_i_follow" -> PeopleIFollow
+                    else -> Unknown(s)
+                }
+        }
+
+        public object Everyone : RestrictReplies("everyone")
+
+        public object Nobody : RestrictReplies("nobody")
+
+        public object PeopleIFollow : RestrictReplies("people_i_follow")
+
+        public data class Unknown(val unknownValue: kotlin.String) : RestrictReplies(unknownValue)
+
+        public class RestrictRepliesAdapter : JsonAdapter<RestrictReplies>() {
+            @FromJson
+            override fun fromJson(reader: JsonReader): RestrictReplies? {
+                val s = reader.nextString() ?: return null
+                return RestrictReplies.fromString(s)
+            }
+
+            @ToJson
+            override fun toJson(writer: JsonWriter, value: RestrictReplies?) {
+                writer.value(value?.value)
+            }
+        }
+    }
 
     /** Visibility Enum */
     public sealed class Visibility(public val value: kotlin.String) {
