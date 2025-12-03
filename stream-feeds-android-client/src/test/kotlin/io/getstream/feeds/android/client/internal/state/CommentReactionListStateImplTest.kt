@@ -22,6 +22,7 @@ import io.getstream.feeds.android.client.api.state.query.CommentReactionsSort
 import io.getstream.feeds.android.client.internal.state.query.CommentReactionsQueryConfig
 import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
+import java.util.Date
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -64,16 +65,60 @@ internal class CommentReactionListStateImplTest {
     }
 
     @Test
-    fun `on onReactionUpserted for new reaction, then add reaction`() = runTest {
-        val initialReaction = feedsReactionData(commentId = "comment-1", userId = "user-1")
+    fun `on onReactionUpserted for new reaction, then add reaction keeping sort order`() = runTest {
+        val initialReaction =
+            feedsReactionData(commentId = "comment-1", userId = "user-1", createdAt = Date(2000))
         val paginationResult = defaultPaginationResult(listOf(initialReaction))
         commentReactionListState.onQueryMoreReactions(paginationResult, queryConfig)
 
-        val newReaction = feedsReactionData(commentId = "comment-1", userId = "user-2")
+        val newReaction =
+            feedsReactionData(commentId = "comment-1", userId = "user-2", createdAt = Date(3000))
         commentReactionListState.onReactionUpserted(newReaction, enforceUnique = false)
 
-        assertEquals(listOf(initialReaction, newReaction), commentReactionListState.reactions.value)
+        assertEquals(listOf(newReaction, initialReaction), commentReactionListState.reactions.value)
     }
+
+    @Test
+    fun `on onReactionUpserted with enforceUnique true, replace existing user reactions and keep sort order`() =
+        runTest {
+            val existingReactions =
+                listOf(
+                    feedsReactionData(
+                        commentId = "comment-1",
+                        type = "like",
+                        userId = "another-user",
+                        createdAt = Date(4000),
+                    ),
+                    feedsReactionData(
+                        commentId = "comment-1",
+                        type = "heart",
+                        userId = "the-user",
+                        createdAt = Date(3000),
+                    ),
+                    feedsReactionData(
+                        commentId = "comment-1",
+                        type = "like",
+                        userId = "the-user",
+                        createdAt = Date(2000),
+                    ),
+                )
+
+            val paginationResult = defaultPaginationResult(existingReactions)
+            commentReactionListState.onQueryMoreReactions(paginationResult, queryConfig)
+
+            val newReaction =
+                feedsReactionData(
+                    commentId = "comment-1",
+                    type = "smile",
+                    userId = "the-user",
+                    createdAt = Date(5000),
+                )
+
+            commentReactionListState.onReactionUpserted(newReaction, enforceUnique = true)
+
+            val expected = listOf(newReaction, existingReactions.first())
+            assertEquals(expected, commentReactionListState.reactions.value)
+        }
 
     @Test
     fun `on onCommentRemoved, clear all reactions`() = runTest {
@@ -86,26 +131,6 @@ internal class CommentReactionListStateImplTest {
 
         assertEquals(emptyList<FeedsReactionData>(), commentReactionListState.reactions.value)
     }
-
-    @Test
-    fun `on onReactionUpserted with enforceUnique true, then replace all existing user reactions with single new one`() =
-        runTest {
-            val existingReactions =
-                listOf(
-                    feedsReactionData(commentId = "comment-1", type = "like", userId = "user-id"),
-                    feedsReactionData(commentId = "comment-1", type = "heart", userId = "user-id"),
-                )
-
-            val paginationResult = defaultPaginationResult(existingReactions)
-            commentReactionListState.onQueryMoreReactions(paginationResult, queryConfig)
-
-            val newReaction =
-                feedsReactionData(commentId = "comment-1", type = "smile", userId = "user-id")
-
-            commentReactionListState.onReactionUpserted(newReaction, enforceUnique = true)
-
-            assertEquals(listOf(newReaction), commentReactionListState.reactions.value)
-        }
 
     companion object {
         private val queryConfig =

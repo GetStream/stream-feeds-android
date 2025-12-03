@@ -83,6 +83,35 @@ internal fun <T, R> List<T>.insertUniqueBy(element: T, keySelector: (T) -> R): L
 }
 
 /**
+ * Inserts an element into a sorted list, ensuring uniqueness based on a specified key.
+ *
+ * This function removes any existing elements in the list that have the same key as the new
+ * [element] (as determined by the [keySelector]), and then inserts [element] in the correct
+ * position to maintain sorted order according to the provided [comparator]. The operation returns a
+ * new list, leaving the original list unchanged.
+ *
+ * **Note:** This function assumes that the list is already sorted according to the provided
+ * comparator. If the list is not sorted, the behavior is undefined.
+ *
+ * @param element The element to insert into the list.
+ * @param keySelector A function that extracts a key from an element. Used to determine uniqueness.
+ * @param comparator The comparator used to determine the sort order and insertion point.
+ * @return A new sorted list containing all original elements except those with the same key as
+ *   [element], plus the new [element] in the correct sorted position.
+ */
+internal fun <T, R> List<T>.insertUniqueBySorted(
+    element: T,
+    keySelector: (T) -> R,
+    comparator: Comparator<T>,
+): List<T> {
+    val elementKey = keySelector(element)
+    return toMutableList().apply {
+        removeAll { keySelector(it) == elementKey }
+        insertSorted(element, comparator)
+    }
+}
+
+/**
  * Inserts an element into a mutable list while maintaining sorted order.
  *
  * This function uses binary search to find the correct insertion point for the new element,

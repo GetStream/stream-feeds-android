@@ -16,15 +16,16 @@
 
 package io.getstream.feeds.android.client.internal.state
 
+import io.getstream.android.core.api.sort.CompositeComparator
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.state.ActivityReactionListState
 import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.ActivityReactionsSort
 import io.getstream.feeds.android.client.internal.model.PaginationResult
+import io.getstream.feeds.android.client.internal.model.upsertReactionSorted
 import io.getstream.feeds.android.client.internal.state.query.ActivityReactionsQueryConfig
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
-import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,8 +51,8 @@ internal class ActivityReactionListStateImpl(override val query: ActivityReactio
 
     private var _pagination: PaginationData? = null
 
-    private val reactionsSorting: List<ActivityReactionsSort>
-        get() = query.sort ?: ActivityReactionsSort.Default
+    private val reactionsSorting: CompositeComparator<FeedsReactionData> =
+        CompositeComparator(query.sort ?: ActivityReactionsSort.Default)
 
     override val reactions: StateFlow<List<FeedsReactionData>>
         get() = _reactions.asStateFlow()
@@ -76,9 +77,9 @@ internal class ActivityReactionListStateImpl(override val query: ActivityReactio
         }
     }
 
-    override fun onReactionUpserted(reaction: FeedsReactionData) {
+    override fun onReactionUpserted(reaction: FeedsReactionData, enforceUnique: Boolean) {
         _reactions.update { current ->
-            current.upsertSorted(reaction, FeedsReactionData::id, reactionsSorting)
+            current.upsertReactionSorted(reaction, enforceUnique, reactionsSorting)
         }
     }
 
@@ -119,8 +120,9 @@ internal interface ActivityReactionListStateUpdates {
      * Handles the addition or update of a reaction to the activity.
      *
      * @param reaction The reaction that was added.
+     * @param enforceUnique Whether to replace existing reactions by the same user.
      */
-    fun onReactionUpserted(reaction: FeedsReactionData)
+    fun onReactionUpserted(reaction: FeedsReactionData, enforceUnique: Boolean)
 
     /**
      * Handles the removal of a reaction from the activity.
