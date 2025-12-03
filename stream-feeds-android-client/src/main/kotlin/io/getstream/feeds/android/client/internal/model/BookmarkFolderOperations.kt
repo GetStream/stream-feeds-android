@@ -30,4 +30,5 @@ internal fun BookmarkFolderResponse.toModel(): BookmarkFolderData =
         id = id,
         name = name,
         updatedAt = updatedAt,
+        user = user.toModel(),
     )

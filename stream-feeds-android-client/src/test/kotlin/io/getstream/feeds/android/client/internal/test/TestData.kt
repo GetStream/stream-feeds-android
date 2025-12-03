@@ -329,6 +329,7 @@ internal object TestData {
             id = id,
             name = name,
             updatedAt = Date(1000),
+            user = userData("user-1"),
         )
 
     fun activityResponse(id: String = "", createdAt: Long = 1000): ActivityResponse =

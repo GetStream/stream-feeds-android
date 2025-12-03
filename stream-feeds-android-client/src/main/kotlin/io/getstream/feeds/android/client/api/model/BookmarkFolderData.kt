@@ -33,4 +33,5 @@ public data class BookmarkFolderData(
     val id: String,
     val name: String,
     val updatedAt: Date,
+    val user: UserData,
 )
