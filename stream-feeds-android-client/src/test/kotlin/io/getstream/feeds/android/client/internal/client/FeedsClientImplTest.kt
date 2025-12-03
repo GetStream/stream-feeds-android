@@ -26,7 +26,6 @@ import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.Moderation
 import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.FeedId
-import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
 import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.api.model.UserAuthType
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
@@ -65,10 +64,6 @@ import io.getstream.feeds.android.network.models.ActivityRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
-import io.getstream.feeds.android.network.models.ListDevicesResponse
-import io.getstream.feeds.android.network.models.PushPreferenceInput
-import io.getstream.feeds.android.network.models.UpsertPushPreferencesRequest
-import io.getstream.feeds.android.network.models.UpsertPushPreferencesResponse
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
