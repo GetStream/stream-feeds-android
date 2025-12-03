@@ -68,6 +68,8 @@ import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.network.models.ListDevicesResponse
+import io.getstream.feeds.android.network.models.UpsertPushPreferencesRequest
+import io.getstream.feeds.android.network.models.UpsertPushPreferencesResponse
 import io.getstream.feeds.android.network.models.WSEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -466,6 +468,16 @@ public interface FeedsClient {
      * @return A [Result] indicating success or failure of the deletion operation.
      */
     public suspend fun deleteDevice(id: String): Result<Unit>
+
+    /**
+     * Updates the push notification preferences for the current user.
+     *
+     * @param request The request containing the push notification preferences to be updated.
+     * @return A [Result] containing the response with the updated preferences if successful.
+     */
+    public suspend fun updatePushNotificationPreferences(
+        request: UpsertPushPreferencesRequest
+    ): Result<UpsertPushPreferencesResponse>
 
     /**
      * Deletes a previously uploaded file from the CDN.

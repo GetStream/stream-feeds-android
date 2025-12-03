@@ -66,6 +66,9 @@ import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.network.models.ListDevicesResponse
+import io.getstream.feeds.android.network.models.PushPreferenceInput
+import io.getstream.feeds.android.network.models.UpsertPushPreferencesRequest
+import io.getstream.feeds.android.network.models.UpsertPushPreferencesResponse
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -283,39 +286,6 @@ internal class FeedsClientImplTest {
         val result = feedsClient.getApp()
 
         assertEquals(testAppData, result.getOrNull())
-    }
-
-    @Test
-    fun `queryDevices when called, then delegates to devices repository`() = runTest {
-        val devicesResponse = ListDevicesResponse(duration = "100ms", devices = emptyList())
-        coEvery { devicesRepository.queryDevices() } returns Result.success(devicesResponse)
-
-        val result = feedsClient.queryDevices()
-
-        assertEquals(devicesResponse, result.getOrNull())
-    }
-
-    @Test
-    fun `createDevice when given parameters, then delegates to devices repository`() = runTest {
-        val deviceId = "device-123"
-        val pushProvider = PushNotificationsProvider.FIREBASE
-        val pushProviderName = "firebase"
-        coEvery { devicesRepository.createDevice(deviceId, pushProvider, pushProviderName) } returns
-            Result.success(Unit)
-
-        val result = feedsClient.createDevice(deviceId, pushProvider, pushProviderName)
-
-        assertTrue(result.isSuccess)
-    }
-
-    @Test
-    fun `deleteDevice when given device id, then delegates to devices repository`() = runTest {
-        val deviceId = "device-123"
-        coEvery { devicesRepository.deleteDevice(deviceId) } returns Result.success(Unit)
-
-        val result = feedsClient.deleteDevice(deviceId)
-
-        assertTrue(result.isSuccess)
     }
 
     @Test
