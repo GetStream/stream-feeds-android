@@ -17,6 +17,7 @@
 package io.getstream.feeds.android.sample
 
 import android.app.Application
+import android.os.StrictMode
 import coil3.SingletonImageLoader
 import dagger.hilt.android.HiltAndroidApp
 import io.getstream.feeds.android.sample.ui.CoilImageLoaderFactory
@@ -26,5 +27,10 @@ class SampleApp : Application() {
     override fun onCreate() {
         super.onCreate()
         SingletonImageLoader.setSafe(CoilImageLoaderFactory())
+
+        val threadPolicy = StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build()
+        val vmPolicy = StrictMode.VmPolicy.Builder().detectAll().penaltyLog().build()
+        StrictMode.setThreadPolicy(threadPolicy)
+        StrictMode.setVmPolicy(vmPolicy)
     }
 }
