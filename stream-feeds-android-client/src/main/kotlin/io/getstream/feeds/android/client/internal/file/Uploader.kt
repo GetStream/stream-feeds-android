@@ -40,6 +40,7 @@ internal suspend fun <C : UploadContext> Uploader<C>.uploadAll(
                         upload(payload = localFile, progress = progressCallback).getOrThrow()
                     Attachment(
                         assetUrl = uploadedFile.fileUrl,
+                        imageUrl = uploadedFile.imageUrl,
                         thumbUrl = uploadedFile.thumbnailUrl,
                     )
                 }

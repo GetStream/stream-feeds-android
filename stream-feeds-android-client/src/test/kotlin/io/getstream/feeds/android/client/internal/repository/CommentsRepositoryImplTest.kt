@@ -85,8 +85,8 @@ internal class CommentsRepositoryImplTest {
                 attachments =
                     listOf(
                         Attachment(imageUrl = "alreadyUploaded", type = "image"),
-                        Attachment(assetUrl = "file/1", thumbUrl = "thumb/1"),
-                        Attachment(assetUrl = "file/2", thumbUrl = "thumb/2"),
+                        Attachment(assetUrl = "file/1", imageUrl = "file/1", thumbUrl = "thumb/1"),
+                        Attachment(assetUrl = "file/2", imageUrl = "file/2", thumbUrl = "thumb/2"),
                     ),
             )
         mockUploader()
@@ -148,7 +148,11 @@ internal class CommentsRepositoryImplTest {
                     attachments =
                         listOf(
                             Attachment(imageUrl = "alreadyUploaded1", type = "image"),
-                            Attachment(assetUrl = "file/1", thumbUrl = "thumb/1"),
+                            Attachment(
+                                assetUrl = "file/1",
+                                imageUrl = "file/1",
+                                thumbUrl = "thumb/1",
+                            ),
                         ),
                 ),
                 AddCommentRequest(
@@ -158,7 +162,11 @@ internal class CommentsRepositoryImplTest {
                     attachments =
                         listOf(
                             Attachment(imageUrl = "alreadyUploaded2", type = "image"),
-                            Attachment(assetUrl = "file/2", thumbUrl = "thumb/2"),
+                            Attachment(
+                                assetUrl = "file/2",
+                                imageUrl = "file/2",
+                                thumbUrl = "thumb/2",
+                            ),
                         ),
                 ),
             )
@@ -177,7 +185,13 @@ internal class CommentsRepositoryImplTest {
         coEvery { uploader.upload(any()) } answers
             {
                 val name = firstArg<FeedUploadPayload>().file.name
-                Result.success(UploadedFile(fileUrl = "file/$name", thumbnailUrl = "thumb/$name"))
+                Result.success(
+                    UploadedFile(
+                        fileUrl = "file/$name",
+                        imageUrl = "file/$name",
+                        thumbnailUrl = "thumb/$name",
+                    )
+                )
             }
     }
 
