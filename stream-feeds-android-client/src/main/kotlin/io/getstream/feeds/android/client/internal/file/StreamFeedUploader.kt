@@ -53,7 +53,8 @@ internal class StreamFeedUploader(
             }
 
         UploadedFile(
-            fileUrl = response.file ?: throw IllegalStateException("Uploaded file URL is null"),
+            fileUrl = checkNotNull(response.file) { "Uploaded file URL is null" },
+            imageUrl = response.file.takeIf { payload.type == FileType.Image },
             thumbnailUrl = response.thumbUrl,
         )
     }
