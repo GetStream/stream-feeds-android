@@ -18,20 +18,21 @@ package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
-import io.getstream.feeds.android.network.models.FeedOwnCapability
+import io.getstream.feeds.android.client.internal.model.FeedOwnValues
+import io.getstream.feeds.android.client.internal.model.ownValues
 import java.util.Collections.singletonMap
 
 /**
  * A repository for managing feed capabilities. Caches feed capabilities and requests capabilities
  * that are not yet cached.
  */
-internal interface FeedsCapabilityRepository {
+internal interface FeedOwnValuesRepository {
     /**
      * Caches the provided feed capabilities.
      *
      * @param capabilities A map of feed IDs to their corresponding sets of capabilities.
      */
-    fun cache(capabilities: Map<FeedId, Set<FeedOwnCapability>>)
+    fun cache(capabilities: Map<FeedId, FeedOwnValues>)
 
     /**
      * Retrieves cached capabilities for the specified feed. If the capabilities are not cached,
@@ -40,13 +41,13 @@ internal interface FeedsCapabilityRepository {
      * @param id The feed ID to retrieve capabilities for.
      * @return The cached capabilities for the feed, or null if not cached.
      */
-    fun getOrRequest(id: FeedId): Set<FeedOwnCapability>?
+    fun getOrRequest(id: FeedId): FeedOwnValues?
 }
 
-internal fun FeedsCapabilityRepository.cache(feed: FeedData) {
-    cache(singletonMap(feed.fid, feed.ownCapabilities))
+internal fun FeedOwnValuesRepository.cache(feed: FeedData) {
+    cache(singletonMap(feed.fid, feed.ownValues()))
 }
 
-internal fun FeedsCapabilityRepository.cache(feeds: Iterable<FeedData>) {
-    cache(feeds.associateBy(FeedData::fid, FeedData::ownCapabilities))
+internal fun FeedOwnValuesRepository.cache(feeds: Iterable<FeedData>) {
+    cache(feeds.associateBy(FeedData::fid, FeedData::ownValues))
 }

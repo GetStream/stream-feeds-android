@@ -23,7 +23,7 @@ import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
-import io.getstream.feeds.android.client.internal.repository.FeedsCapabilityRepository
+import io.getstream.feeds.android.client.internal.repository.FeedOwnValuesRepository
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.state.event.FidScope
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
@@ -65,7 +65,7 @@ internal class ActivityImplTest {
     private val activitiesRepository: ActivitiesRepository = mockk()
     private val commentsRepository: CommentsRepository = mockk()
     private val pollsRepository: PollsRepository = mockk()
-    private val capabilityRepository: FeedsCapabilityRepository = mockk(relaxed = true)
+    private val feedOwnValuesRepository: FeedOwnValuesRepository = mockk(relaxed = true)
     private val commentListState = mockk<ActivityCommentListMutableState>(relaxed = true)
     private val activityCommentListImpl: ActivityCommentListImpl = mockk {
         every { state } returns commentListState
@@ -81,7 +81,7 @@ internal class ActivityImplTest {
             activitiesRepository = activitiesRepository,
             commentsRepository = commentsRepository,
             pollsRepository = pollsRepository,
-            capabilityRepository = capabilityRepository,
+            feedOwnValuesRepository = feedOwnValuesRepository,
             commentList = activityCommentListImpl,
             subscriptionManager = TestSubscriptionManager(stateEventListener),
         )

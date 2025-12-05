@@ -165,8 +165,8 @@ internal class FeedEventHandler(
                 }
             }
 
-            is StateUpdateEvent.FeedCapabilitiesUpdated -> {
-                state.onFeedCapabilitiesUpdated(event.capabilities)
+            is StateUpdateEvent.FeedOwnValuesUpdated -> {
+                state.onFeedOwnValuesUpdated(event.data)
             }
 
             is StateUpdateEvent.FollowAdded -> {

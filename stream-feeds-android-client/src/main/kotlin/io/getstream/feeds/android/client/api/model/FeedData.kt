@@ -53,6 +53,7 @@ public data class FeedData(
     public val id: String,
     public val memberCount: Int,
     public val ownCapabilities: Set<FeedOwnCapability>,
+    public val ownFollows: List<FollowData>,
     public val ownMembership: FeedMemberData?,
     public val name: String,
     public val pinCount: Int,
