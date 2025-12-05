@@ -21,6 +21,8 @@ import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.CreateDeviceRequest
 import io.getstream.feeds.android.network.models.ListDevicesResponse
+import io.getstream.feeds.android.network.models.UpsertPushPreferencesRequest
+import io.getstream.feeds.android.network.models.UpsertPushPreferencesResponse
 
 /**
  * Default implementation of the [DevicesRepository] interface. Uses the provided [FeedsApi] to
@@ -54,4 +56,10 @@ internal class DevicesRepositoryImpl(private val api: FeedsApi) : DevicesReposit
     }
 
     override suspend fun deleteDevice(id: String): Result<Unit> = runSafely { api.deleteDevice(id) }
+
+    override suspend fun updatePushNotificationPreferences(
+        request: UpsertPushPreferencesRequest
+    ): Result<UpsertPushPreferencesResponse> = runSafely {
+        api.updatePushNotificationPreferences(request)
+    }
 }

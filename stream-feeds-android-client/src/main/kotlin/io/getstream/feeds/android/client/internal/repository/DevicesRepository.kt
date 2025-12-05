@@ -18,6 +18,8 @@ package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
 import io.getstream.feeds.android.network.models.ListDevicesResponse
+import io.getstream.feeds.android.network.models.UpsertPushPreferencesRequest
+import io.getstream.feeds.android.network.models.UpsertPushPreferencesResponse
 
 /** Repository interface for managing push devices associated with the current user. */
 internal interface DevicesRepository {
@@ -50,4 +52,14 @@ internal interface DevicesRepository {
      * @return A [Result] indicating success or failure of the deletion operation.
      */
     suspend fun deleteDevice(id: String): Result<Unit>
+
+    /**
+     * Updates the push notification preferences for the current user.
+     *
+     * @param request The request containing the push notification preferences to be updated.
+     * @return A [Result] containing the response with the updated preferences if successful.
+     */
+    suspend fun updatePushNotificationPreferences(
+        request: UpsertPushPreferencesRequest
+    ): Result<UpsertPushPreferencesResponse>
 }

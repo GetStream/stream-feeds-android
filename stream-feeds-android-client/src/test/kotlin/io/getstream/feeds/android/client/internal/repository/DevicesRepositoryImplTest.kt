@@ -21,7 +21,11 @@ import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.CreateDeviceRequest
 import io.getstream.feeds.android.network.models.DeviceResponse
 import io.getstream.feeds.android.network.models.ListDevicesResponse
+import io.getstream.feeds.android.network.models.PushPreferenceInput
+import io.getstream.feeds.android.network.models.PushPreferenceInput.FeedsLevel
 import io.getstream.feeds.android.network.models.Response
+import io.getstream.feeds.android.network.models.UpsertPushPreferencesRequest
+import io.getstream.feeds.android.network.models.UpsertPushPreferencesResponse
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -270,5 +274,37 @@ internal class DevicesRepositoryImplTest {
         assertTrue(result.isFailure)
         assertEquals(expectedException, result.exceptionOrNull())
         coVerify(exactly = 1) { feedsApi.deleteDevice(deviceId) }
+    }
+
+    @Test
+    fun `updatePushNotificationPreferences should return success when api succeeds`() = runTest {
+        // Given
+        val input = PushPreferenceInput(userId = "user-1", feedsLevel = FeedsLevel.All)
+        val request = UpsertPushPreferencesRequest(preferences = listOf(input))
+        val expectedResponse = UpsertPushPreferencesResponse(duration = "100ms")
+        coEvery { feedsApi.updatePushNotificationPreferences(request) } returns expectedResponse
+
+        // When
+        val result = repository.updatePushNotificationPreferences(request)
+
+        // Then
+        assertEquals(expectedResponse, result.getOrNull())
+        coVerify(exactly = 1) { feedsApi.updatePushNotificationPreferences(request) }
+    }
+
+    @Test
+    fun `updatePushNotificationPreferences should return failure when api throws`() = runTest {
+        // Given
+        val input = PushPreferenceInput(userId = "user-1", feedsLevel = FeedsLevel.All)
+        val request = UpsertPushPreferencesRequest(preferences = listOf(input))
+        val expectedException = RuntimeException("Update preferences failed")
+        coEvery { feedsApi.updatePushNotificationPreferences(request) } throws expectedException
+
+        // When
+        val result = repository.updatePushNotificationPreferences(request)
+
+        // Then
+        assertEquals(Result.failure<Any>(expectedException), result)
+        coVerify(exactly = 1) { feedsApi.updatePushNotificationPreferences(request) }
     }
 }

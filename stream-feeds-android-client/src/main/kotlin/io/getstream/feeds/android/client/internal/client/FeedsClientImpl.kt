@@ -30,7 +30,6 @@ import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.FeedId
-import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
 import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.api.model.UserAuthType
 import io.getstream.feeds.android.client.api.state.Activity
@@ -102,7 +101,6 @@ import io.getstream.feeds.android.network.models.ActivityRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
-import io.getstream.feeds.android.network.models.ListDevicesResponse
 import io.getstream.feeds.android.network.models.WSEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BufferOverflow
@@ -136,7 +134,7 @@ internal class FeedsClientImpl(
     private val logger: StreamLogger,
     scope: CoroutineScope,
     errorBus: Flow<StreamClientException>,
-) : FeedsClient {
+) : FeedsClient, DevicesRepository by devicesRepository {
 
     override val state: StateFlow<StreamConnectionState>
         get() = coreClient.connectionState
@@ -361,22 +359,6 @@ internal class FeedsClientImpl(
 
     override suspend fun getApp(): Result<AppData> {
         return appRepository.getApp()
-    }
-
-    override suspend fun queryDevices(): Result<ListDevicesResponse> {
-        return devicesRepository.queryDevices()
-    }
-
-    override suspend fun createDevice(
-        id: String,
-        pushProvider: PushNotificationsProvider,
-        pushProviderName: String,
-    ): Result<Unit> {
-        return devicesRepository.createDevice(id, pushProvider, pushProviderName)
-    }
-
-    override suspend fun deleteDevice(id: String): Result<Unit> {
-        return devicesRepository.deleteDevice(id)
     }
 
     override suspend fun deleteFile(url: String): Result<Unit> {
