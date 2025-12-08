@@ -30,7 +30,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 
 internal class StreamFeedUploader(
     private val cdnApi: CdnApi,
-    private val getMediaType: File.() -> MediaType = File::getMediaType,
+    private val getMediaType: suspend File.() -> MediaType = File::getMediaType,
 ) : FeedUploader {
     override suspend fun upload(
         payload: FeedUploadPayload,
