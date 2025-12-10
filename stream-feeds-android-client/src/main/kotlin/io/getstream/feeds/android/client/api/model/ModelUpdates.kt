@@ -26,6 +26,6 @@ package io.getstream.feeds.android.client.api.model
  */
 public data class ModelUpdates<T>(
     public val added: List<T>,
-    public val removedIds: List<String>,
+    public val removedIds: Set<String>,
     public val updated: List<T>,
 )
