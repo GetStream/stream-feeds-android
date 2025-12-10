@@ -26,6 +26,7 @@ import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.FollowData
+import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollVoteData
@@ -50,6 +51,7 @@ import io.getstream.feeds.android.client.internal.model.upsertCommentReaction
 import io.getstream.feeds.android.client.internal.model.upsertReaction
 import io.getstream.feeds.android.client.internal.model.upsertVote
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
+import io.getstream.feeds.android.client.internal.utils.applyUpdates
 import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.client.internal.utils.upsertAll
@@ -271,6 +273,35 @@ internal class FeedStateImpl(
         updateFollow(follow)
     }
 
+    override fun onFollowsUpdated(updates: ModelUpdates<FollowData>) {
+        val newFollowing = mutableListOf<FollowData>()
+        val newFollowers = mutableListOf<FollowData>()
+        val newRequests = mutableListOf<FollowData>()
+
+        updates.added.forEach {
+            when {
+                it.isFollowRequest && (it.sourceFeed.fid == fid || it.targetFeed.fid == fid) -> {
+                    newRequests += it
+                }
+                it.isFollowing(fid) -> {
+                    newFollowing += it
+                }
+                it.isFollowerOf(fid) -> {
+                    newFollowers += it
+                }
+            }
+        }
+
+        _following.update { it.applyUpdates(updates.copy(added = newFollowing), FollowData::id) }
+        _followers.update { it.applyUpdates(updates.copy(added = newFollowers), FollowData::id) }
+        _followRequests.update {
+            // New accepted followings shouldn't count as follow requests anymore
+            val removedIds = newFollowers.mapTo(updates.removedIds.toMutableSet(), FollowData::id)
+            val requestUpdates = updates.copy(added = newRequests, removedIds = removedIds)
+            it.applyUpdates(requestUpdates, FollowData::id)
+        }
+    }
+
     override fun onUnfollow(sourceFid: FeedId, targetFid: FeedId) {
         _following.update { current ->
             current.filterNot {
@@ -486,6 +517,9 @@ internal interface FeedStateUpdates {
 
     /** Handles updates to the feed state when a follow is updated. */
     fun onFollowUpdated(follow: FollowData)
+
+    /** Handles update to the feed state on batch follow updates */
+    fun onFollowsUpdated(updates: ModelUpdates<FollowData>)
 
     /** Handles updates to the feed state when feed is unfollowed. */
     fun onUnfollow(sourceFid: FeedId, targetFid: FeedId)

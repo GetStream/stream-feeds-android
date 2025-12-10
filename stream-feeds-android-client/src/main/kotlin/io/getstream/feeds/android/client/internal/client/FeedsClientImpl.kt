@@ -28,7 +28,10 @@ import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.Moderation
 import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.ActivityData
+import io.getstream.feeds.android.client.api.model.BatchFollowData
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.model.FollowData
+import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.api.state.Activity
 import io.getstream.feeds.android.client.api.state.ActivityCommentList
@@ -91,15 +94,19 @@ import io.getstream.feeds.android.client.internal.state.ModerationConfigListImpl
 import io.getstream.feeds.android.client.internal.state.PollListImpl
 import io.getstream.feeds.android.client.internal.state.PollVoteListImpl
 import io.getstream.feeds.android.client.internal.state.event.StateEventEnricher
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FollowBatchUpdate
 import io.getstream.feeds.android.client.internal.state.event.handler.OnNewActivity
 import io.getstream.feeds.android.client.internal.state.event.toModel
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
+import io.getstream.feeds.android.client.internal.subscribe.onEvent
 import io.getstream.feeds.android.network.models.ActivityFeedbackRequest
 import io.getstream.feeds.android.network.models.ActivityRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
+import io.getstream.feeds.android.network.models.FollowBatchRequest
+import io.getstream.feeds.android.network.models.UnfollowBatchRequest
 import io.getstream.feeds.android.network.models.WSEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BufferOverflow
@@ -357,4 +364,31 @@ internal class FeedsClientImpl(
 
     override fun moderationConfigList(query: ModerationConfigsQuery): ModerationConfigList =
         ModerationConfigListImpl(query = query, moderationRepository = moderationRepository)
+
+    override suspend fun getOrCreateFollows(request: FollowBatchRequest): Result<BatchFollowData> {
+        return feedsRepository.getOrCreateFollows(request).onSuccess {
+            val createdIds = it.created.mapTo(mutableSetOf(), FollowData::id)
+            val updates =
+                ModelUpdates(
+                    added = it.created,
+                    removedIds = emptySet(),
+                    updated = it.follows.filterNot { it.id in createdIds },
+                )
+            stateEventsSubscriptionManager.onEvent(FollowBatchUpdate(updates))
+        }
+    }
+
+    override suspend fun getOrCreateUnfollows(
+        request: UnfollowBatchRequest
+    ): Result<List<FollowData>> {
+        return feedsRepository.getOrCreateUnfollows(request).onSuccess {
+            val updates =
+                ModelUpdates<FollowData>(
+                    added = emptyList(),
+                    removedIds = it.mapTo(mutableSetOf(), FollowData::id),
+                    updated = emptyList(),
+                )
+            stateEventsSubscriptionManager.onEvent(FollowBatchUpdate(updates))
+        }
+    }
 }

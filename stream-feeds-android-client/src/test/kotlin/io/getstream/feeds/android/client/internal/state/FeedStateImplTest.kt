@@ -22,6 +22,8 @@ import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FollowData
+import io.getstream.feeds.android.client.api.model.FollowStatus
+import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollVoteData
@@ -699,6 +701,50 @@ internal class FeedStateImplTest {
 
         val expected = updatedSourceFeed.copy(ownCapabilities = initialFeed.ownCapabilities)
         assertEquals(expected, feedState.feed.value)
+    }
+
+    @Test
+    fun `onFollowsUpdated, update following, followers, and follow requests`() = runTest {
+        val following1 = followData(sourceFid = "user:test", targetFid = "user:target-1")
+        val following2 = followData(sourceFid = "user:test", targetFid = "user:target-2")
+        val follower1 = followData(sourceFid = "user:source-1", targetFid = "user:test")
+        val follower2 = followData(sourceFid = "user:source-2", targetFid = "user:test")
+        val pendingRequest =
+            followData(
+                sourceFid = "user:source-3",
+                targetFid = "user:test",
+                status = FollowStatus.Pending,
+            )
+        setupInitialState(
+            following = listOf(following1, following2),
+            followers = listOf(follower1, follower2),
+            followRequests = listOf(pendingRequest),
+        )
+
+        val newFollowing = followData(sourceFid = "user:test", targetFid = "user:target-3")
+        val newFollower = followData(sourceFid = "user:source-3", targetFid = "user:test")
+        val newPendingRequest =
+            followData(
+                sourceFid = "user:source-4",
+                targetFid = "user:test",
+                status = FollowStatus.Pending,
+            )
+        val nonMatchingFollow = followData(sourceFid = "user:other-1", targetFid = "user:other-2")
+        val updatedFollowing2 = following2.copy(pushPreference = "disabled")
+        val updatedFollower2 = follower2.copy(pushPreference = "disabled")
+
+        val updates =
+            ModelUpdates(
+                added = listOf(newFollowing, newFollower, newPendingRequest, nonMatchingFollow),
+                updated = listOf(updatedFollowing2, updatedFollower2, nonMatchingFollow),
+                removedIds = setOf(following1.id, follower1.id, pendingRequest.id),
+            )
+
+        feedState.onFollowsUpdated(updates)
+
+        assertEquals(listOf(updatedFollowing2, newFollowing), feedState.following.value)
+        assertEquals(listOf(updatedFollower2, newFollower), feedState.followers.value)
+        assertEquals(listOf(newPendingRequest), feedState.followRequests.value)
     }
 
     @Test

@@ -19,6 +19,7 @@ package io.getstream.feeds.android.client.internal.repository
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.ActivityPinData
 import io.getstream.feeds.android.client.api.model.AggregatedActivityData
+import io.getstream.feeds.android.client.api.model.BatchFollowData
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
@@ -30,11 +31,13 @@ import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.network.models.AcceptFollowRequest
+import io.getstream.feeds.android.network.models.FollowBatchRequest
 import io.getstream.feeds.android.network.models.FollowRequest
 import io.getstream.feeds.android.network.models.NotificationStatusResponse
 import io.getstream.feeds.android.network.models.QueryFeedMembersRequest
 import io.getstream.feeds.android.network.models.QueryFollowsRequest
 import io.getstream.feeds.android.network.models.RejectFollowRequest
+import io.getstream.feeds.android.network.models.UnfollowBatchRequest
 import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.network.models.UpdateFeedRequest
 
@@ -82,6 +85,10 @@ internal interface FeedsRepository {
     suspend fun follow(request: FollowRequest): Result<FollowData>
 
     suspend fun unfollow(source: FeedId, target: FeedId): Result<FollowData>
+
+    suspend fun getOrCreateFollows(request: FollowBatchRequest): Result<BatchFollowData>
+
+    suspend fun getOrCreateUnfollows(request: UnfollowBatchRequest): Result<List<FollowData>>
 
     suspend fun acceptFollow(request: AcceptFollowRequest): Result<FollowData>
 

@@ -17,10 +17,12 @@
 package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.android.core.api.filter.equal
+import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.state.query.FollowsFilterField
 import io.getstream.feeds.android.client.internal.state.FollowListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FollowAdded
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FollowBatchUpdate
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FollowDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FollowUpdated
 import io.getstream.feeds.android.client.internal.test.TestData.followData
@@ -39,7 +41,11 @@ internal class FollowListEventHandlerTest(
     override val handler = FollowListEventHandler(filter, state)
 
     companion object {
-        private val filter = FollowsFilterField.sourceFeed.equal("user:timeline")
+        private val filter = FollowsFilterField.sourceFeed.equal("timeline:user-1")
+        private val matchingFollow =
+            followData(sourceFid = "timeline:user-1", targetFid = "user:user-2")
+        private val nonMatchingFollow =
+            followData(sourceFid = "user:user-1", targetFid = "user:user-2")
 
         @JvmStatic
         @Parameterized.Parameters(name = "{0}")
@@ -47,35 +53,47 @@ internal class FollowListEventHandlerTest(
             listOf(
                 testParams<FollowListStateUpdates>(
                     name = "FollowAdded matching filter",
-                    event = FollowAdded(followData(sourceFid = "user:timeline")),
-                    verifyBlock = { state ->
-                        state.onFollowUpserted(followData(sourceFid = "user:timeline"))
-                    },
+                    event = FollowAdded(matchingFollow),
+                    verifyBlock = { state -> state.onFollowUpserted(matchingFollow) },
                 ),
                 testParams<FollowListStateUpdates>(
                     name = "FollowAdded non-matching filter",
-                    event = FollowAdded(followData(sourceFid = "user:notifications")),
+                    event = FollowAdded(nonMatchingFollow),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FollowListStateUpdates>(
                     name = "FollowDeleted calls onFollowRemoved",
-                    event = FollowDeleted(followData(sourceFid = "user:timeline")),
-                    verifyBlock = { state ->
-                        state.onFollowRemoved(followData(sourceFid = "user:timeline"))
-                    },
+                    event = FollowDeleted(matchingFollow),
+                    verifyBlock = { state -> state.onFollowRemoved(matchingFollow) },
                 ),
                 testParams<FollowListStateUpdates>(
                     name = "FollowUpdated matching filter",
-                    event = FollowUpdated(followData(sourceFid = "user:timeline")),
-                    verifyBlock = { state ->
-                        state.onFollowUpserted(followData(sourceFid = "user:timeline"))
-                    },
+                    event = FollowUpdated(matchingFollow),
+                    verifyBlock = { state -> state.onFollowUpserted(matchingFollow) },
                 ),
                 testParams<FollowListStateUpdates>(
                     name = "FollowUpdated non-matching filter",
-                    event = FollowUpdated(followData(sourceFid = "user:notifications")),
+                    event = FollowUpdated(nonMatchingFollow),
+                    verifyBlock = { state -> state.onFollowRemoved(nonMatchingFollow) },
+                ),
+                testParams<FollowListStateUpdates>(
+                    name = "FollowBatchUpdate with mixed matching and non-matching follows",
+                    event =
+                        FollowBatchUpdate(
+                            ModelUpdates(
+                                added = listOf(matchingFollow, nonMatchingFollow),
+                                updated = listOf(matchingFollow, nonMatchingFollow),
+                                removedIds = setOf("test-id"),
+                            )
+                        ),
                     verifyBlock = { state ->
-                        state.onFollowRemoved(followData(sourceFid = "user:notifications"))
+                        state.onFollowsUpdated(
+                            ModelUpdates(
+                                added = listOf(matchingFollow),
+                                updated = listOf(matchingFollow),
+                                removedIds = setOf("test-id", nonMatchingFollow.id),
+                            )
+                        )
                     },
                 ),
             )

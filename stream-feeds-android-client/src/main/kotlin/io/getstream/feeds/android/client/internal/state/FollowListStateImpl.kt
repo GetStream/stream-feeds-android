@@ -16,13 +16,16 @@
 
 package io.getstream.feeds.android.client.internal.state
 
+import io.getstream.android.core.api.sort.CompositeComparator
 import io.getstream.feeds.android.client.api.model.FollowData
+import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.state.FollowListState
 import io.getstream.feeds.android.client.api.state.query.FollowsQuery
 import io.getstream.feeds.android.client.api.state.query.FollowsSort
 import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.state.query.FollowsQueryConfig
+import io.getstream.feeds.android.client.internal.utils.applyUpdates
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -74,6 +77,12 @@ internal class FollowListStateImpl(override val query: FollowsQuery) : FollowLis
     override fun onFollowRemoved(follow: FollowData) {
         _follows.update { current -> current.filter { it.id != follow.id } }
     }
+
+    override fun onFollowsUpdated(updates: ModelUpdates<FollowData>) {
+        _follows.update { current ->
+            current.applyUpdates(updates, FollowData::id, CompositeComparator(followsSorting))
+        }
+    }
 }
 
 /**
@@ -95,4 +104,7 @@ internal interface FollowListStateUpdates {
 
     /** Handles the removal of a follow. */
     fun onFollowRemoved(follow: FollowData)
+
+    /** Handles the batch update of follows. */
+    fun onFollowsUpdated(updates: ModelUpdates<FollowData>)
 }

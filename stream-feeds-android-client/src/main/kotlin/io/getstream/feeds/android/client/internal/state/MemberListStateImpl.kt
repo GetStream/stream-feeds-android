@@ -17,7 +17,6 @@
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.android.core.api.sort.CompositeComparator
-import io.getstream.android.core.api.sort.Sort
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationData
@@ -26,6 +25,7 @@ import io.getstream.feeds.android.client.api.state.query.MembersQuery
 import io.getstream.feeds.android.client.api.state.query.MembersSort
 import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.state.query.MembersQueryConfig
+import io.getstream.feeds.android.client.internal.utils.applyUpdates
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,7 +49,7 @@ internal class MemberListStateImpl(override val query: MembersQuery) : MemberLis
 
     private var _pagination: PaginationData? = null
 
-    private val membersSorting: List<Sort<FeedMemberData>>
+    private val membersSorting: List<MembersSort>
         get() = queryConfig?.sort ?: MembersSort.Default
 
     override val members: StateFlow<List<FeedMemberData>>
@@ -81,23 +81,8 @@ internal class MemberListStateImpl(override val query: MembersQuery) : MemberLis
     }
 
     override fun onMembersUpdated(updates: ModelUpdates<FeedMemberData>) {
-        // Create a map for efficient lookups of updated members
-        val updatesMap = updates.updated.associateBy(FeedMemberData::id)
-
         _members.update { current ->
-            current
-                .mapNotNullTo(mutableListOf()) { member ->
-                    // Apply updates and filter out removed members in a single pass
-                    if (member.id in updates.removedIds) {
-                        null
-                    } else {
-                        updatesMap[member.id] ?: member
-                    }
-                }
-                .apply {
-                    addAll(updates.added)
-                    sortWith(CompositeComparator(membersSorting))
-                }
+            current.applyUpdates(updates, FeedMemberData::id, CompositeComparator(membersSorting))
         }
     }
 
