@@ -157,7 +157,7 @@ internal class FeedsRepositoryImpl(private val api: FeedsApi) : FeedsRepository 
                 updateFeedMembersRequest = request,
             )
         val added = response.added.map { it.toModel() }
-        val removedIds = response.removedIds
+        val removedIds = response.removedIds.toSet()
         val updated = response.updated.map { it.toModel() }
         ModelUpdates(added, removedIds, updated)
     }
