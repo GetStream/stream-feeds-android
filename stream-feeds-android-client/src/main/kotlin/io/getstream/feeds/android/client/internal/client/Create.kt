@@ -85,6 +85,7 @@ import retrofit2.create
 /** Creates a [StreamClient] instance with the given configuration and dependencies. */
 internal fun createStreamCoreClient(
     scope: CoroutineScope,
+    context: Context,
     apiKey: StreamApiKey,
     userId: StreamUserId,
     wsUrl: StreamWsUrl,
@@ -123,6 +124,7 @@ internal fun createStreamCoreClient(
 
     return StreamClient(
         scope = scope,
+        context = context,
         apiKey = apiKey,
         userId = userId,
         wsUrl = wsUrl,
@@ -198,6 +200,7 @@ internal fun createFeedsClient(
     val client =
         createStreamCoreClient(
             clientScope,
+            context,
             apiKey,
             userId,
             StreamWsUrl.fromString(endpointConfig.wsUrl),
