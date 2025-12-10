@@ -16,6 +16,7 @@
 
 package io.getstream.feeds.android.client.internal.file
 
+import io.getstream.feeds.android.client.api.file.FileType
 import io.getstream.feeds.android.client.api.file.UploadContext
 import io.getstream.feeds.android.client.api.file.UploadPayload
 import io.getstream.feeds.android.client.api.file.Uploader
@@ -40,7 +41,9 @@ internal suspend fun <C : UploadContext> Uploader<C>.uploadAll(
                         upload(payload = localFile, progress = progressCallback).getOrThrow()
                     Attachment(
                         assetUrl = uploadedFile.fileUrl,
+                        imageUrl = uploadedFile.fileUrl.takeIf { localFile.type == FileType.Image },
                         thumbUrl = uploadedFile.thumbnailUrl,
+                        type = localFile.type.toAttachmentType(),
                     )
                 }
             }

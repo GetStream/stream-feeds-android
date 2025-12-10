@@ -47,26 +47,24 @@ internal class StreamFeedUploaderTest {
         val uploadResponse =
             FileUploadResponse(duration = "", file = "file", thumbUrl = "thumbnail")
         coEvery { cdnApi.sendFile(any()) } returns uploadResponse
-        val expectedResult =
-            Result.success(UploadedFile(fileUrl = "file", thumbnailUrl = "thumbnail"))
+        val expected = UploadedFile(fileUrl = "file", thumbnailUrl = "thumbnail")
         val payload = FeedUploadPayload(file = File("test.txt"), type = FileType.Other)
 
         val result = uploader.upload(payload)
 
-        assertEquals(expectedResult, result)
+        assertEquals(Result.success(expected), result)
     }
 
     @Test
     fun `upload when it's an image, then send it through the correct api`() = runTest {
         val uploadResponse = FileUploadResponse(duration = "", file = "img", thumbUrl = "thumbnail")
         coEvery { cdnApi.sendImage(any()) } returns uploadResponse
-        val expectedResult =
-            Result.success(UploadedFile(fileUrl = "img", thumbnailUrl = "thumbnail"))
+        val expected = UploadedFile(fileUrl = "img", thumbnailUrl = "thumbnail")
         val payload = FeedUploadPayload(file = File("test.png"), type = FileType.Image)
 
         val result = uploader.upload(payload)
 
-        assertEquals(expectedResult, result)
+        assertEquals(Result.success(expected), result)
     }
 
     @Test

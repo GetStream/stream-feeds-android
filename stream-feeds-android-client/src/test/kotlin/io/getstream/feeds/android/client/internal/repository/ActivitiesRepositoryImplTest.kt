@@ -92,8 +92,18 @@ internal class ActivitiesRepositoryImplTest {
                 attachments =
                     listOf(
                         Attachment(imageUrl = "alreadyUploaded", type = "image"),
-                        Attachment(assetUrl = "file/1", thumbUrl = "thumb/1"),
-                        Attachment(assetUrl = "file/2", thumbUrl = "thumb/2"),
+                        Attachment(
+                            assetUrl = "file/1",
+                            imageUrl = "file/1",
+                            thumbUrl = "thumb/1",
+                            type = "image",
+                        ),
+                        Attachment(
+                            assetUrl = "file/2",
+                            imageUrl = "file/2",
+                            thumbUrl = "thumb/2",
+                            type = "image",
+                        ),
                     ),
             )
 
