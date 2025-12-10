@@ -26,6 +26,10 @@ import kotlin.io.*
 /**  */
 public data class FollowBatchResponse(
     @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "created")
+    public val created:
+        kotlin.collections.List<io.getstream.feeds.android.network.models.FollowResponse> =
+        emptyList(),
     @Json(name = "follows")
     public val follows:
         kotlin.collections.List<io.getstream.feeds.android.network.models.FollowResponse> =
