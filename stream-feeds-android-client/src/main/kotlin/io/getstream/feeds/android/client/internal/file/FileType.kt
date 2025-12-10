@@ -17,6 +17,7 @@
 package io.getstream.feeds.android.client.internal.file
 
 import android.webkit.MimeTypeMap
+import io.getstream.feeds.android.client.api.file.FileType
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -29,3 +30,10 @@ internal suspend fun File.getMimeType(): String =
     }
 
 internal suspend fun File.getMediaType(): MediaType = getMimeType().toMediaType()
+
+internal fun FileType.toAttachmentType(): String? =
+    when (this) {
+        FileType.Image -> "image"
+        FileType.Other -> "file"
+        else -> null
+    }

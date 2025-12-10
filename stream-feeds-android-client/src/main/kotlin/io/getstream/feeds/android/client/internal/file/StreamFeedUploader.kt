@@ -54,7 +54,6 @@ internal class StreamFeedUploader(
 
         UploadedFile(
             fileUrl = checkNotNull(response.file) { "Uploaded file URL is null" },
-            imageUrl = response.file.takeIf { payload.type == FileType.Image },
             thumbnailUrl = response.thumbUrl,
         )
     }
