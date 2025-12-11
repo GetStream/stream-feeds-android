@@ -17,9 +17,7 @@
 package io.getstream.feeds.android.client.internal.client
 
 import android.content.Context
-import android.net.ConnectivityManager
 import android.os.Build
-import androidx.lifecycle.ProcessLifecycleOwner
 import io.getstream.android.core.api.StreamClient
 import io.getstream.android.core.api.authentication.StreamTokenManager
 import io.getstream.android.core.api.authentication.StreamTokenProvider
@@ -41,16 +39,12 @@ import io.getstream.android.core.api.socket.StreamWebSocketFactory
 import io.getstream.android.core.api.socket.listeners.StreamClientListener
 import io.getstream.android.core.api.socket.monitor.StreamHealthMonitor
 import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
-import io.getstream.android.core.network.NetworkStateProvider
 import io.getstream.feeds.android.client.BuildConfig
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.FeedsConfig
 import io.getstream.feeds.android.client.api.model.User
-import io.getstream.feeds.android.client.internal.client.reconnect.ConnectionRecoveryHandler
-import io.getstream.feeds.android.client.internal.client.reconnect.DefaultRetryStrategy
 import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
-import io.getstream.feeds.android.client.internal.client.reconnect.lifecycle.StreamLifecycleObserver
 import io.getstream.feeds.android.client.internal.file.StreamFeedUploader
 import io.getstream.feeds.android.client.internal.http.FeedsSingleFlightApi
 import io.getstream.feeds.android.client.internal.http.createHttpConfig
@@ -210,26 +204,6 @@ internal fun createFeedsClient(
             FeedsMoshiJsonParser(Serializer.moshi),
             logProvider,
         )
-    val connectionRecoveryHandler =
-        ConnectionRecoveryHandler(
-            scope = clientScope,
-            client = client,
-            lifecycleObserver =
-                StreamLifecycleObserver(
-                    scope = clientScope,
-                    lifecycle = ProcessLifecycleOwner.get().lifecycle,
-                ),
-            networkStateProvider =
-                NetworkStateProvider(
-                    scope = clientScope,
-                    connectivityManager =
-                        context.getSystemService(Context.CONNECTIVITY_SERVICE)
-                            as ConnectivityManager,
-                ),
-            keepConnectionAliveInBackground = false,
-            reconnectStrategy = DefaultRetryStrategy(),
-            logger = logProvider.taggedLogger("ConnectionRecoveryHandler"),
-        )
     val okHttpClient = okHttpBuilder.build()
     val retrofit = createRetrofit(endpointConfig, okHttpClient)
     val feedsApi: FeedsApi = FeedsSingleFlightApi(retrofit.create(), singleFlight)
@@ -277,7 +251,6 @@ internal fun createFeedsClient(
     return FeedsClientImpl(
         apiKey = apiKey,
         user = user,
-        connectionRecoveryHandler = connectionRecoveryHandler,
         activitiesRepository = activitiesRepository,
         appRepository = appRepository,
         bookmarksRepository = bookmarksRepository,
