@@ -27,8 +27,8 @@ import io.getstream.feeds.android.network.models.UpdateCollectionsResponse
 internal interface CollectionsRepository {
 
     /**
-     * Read collections with optional filtering by user ID and collection name. By default, users
-     * can only read their own collections.
+     * Read collections, filtering by collection references. By default, users can only read their
+     * own collections.
      *
      * @param refs List of collection references to read in the format "<name>:<id>".
      * @return A [Result] containing the [ReadCollectionsResponse] if successful.
