@@ -31,7 +31,6 @@ import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.User
-import io.getstream.feeds.android.client.api.model.UserAuthType
 import io.getstream.feeds.android.client.api.state.Activity
 import io.getstream.feeds.android.client.api.state.ActivityCommentList
 import io.getstream.feeds.android.client.api.state.ActivityList
@@ -174,10 +173,6 @@ internal class FeedsClientImpl(
     }
 
     override suspend fun connect(): Result<StreamConnectedUser> {
-        if (user.type == UserAuthType.ANONYMOUS) {
-            logger.e { "[connect] Attempting to connect an anonymous user, returning an error." }
-            return Result.failure(IllegalArgumentException("Anonymous users cannot connect."))
-        }
         coreClient.subscribe(clientSubscription)
         connectionRecoveryHandler.start()
         return coreClient.connect()

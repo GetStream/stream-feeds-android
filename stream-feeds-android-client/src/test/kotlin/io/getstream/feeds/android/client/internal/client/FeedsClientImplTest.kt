@@ -27,7 +27,6 @@ import io.getstream.feeds.android.client.api.Moderation
 import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.User
-import io.getstream.feeds.android.client.api.model.UserAuthType
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQuery
@@ -88,7 +87,7 @@ internal class FeedsClientImplTest {
         StreamSubscriptionManager<StateUpdateEventListener> =
         mockk(relaxed = true)
     private val apiKey: StreamApiKey = StreamApiKey.fromString("test-api-key")
-    private val user: User = User(id = "test-user", type = UserAuthType.REGULAR)
+    private val user: User = User(id = "test-user")
     private val connectionRecoveryHandler: ConnectionRecoveryHandler = mockk(relaxed = true)
     private val activitiesRepository: ActivitiesRepository = mockk(relaxed = true)
     private val appRepository: AppRepository = mockk(relaxed = true)
@@ -165,42 +164,6 @@ internal class FeedsClientImplTest {
 
             assertEquals(connectedUser, result.getOrNull())
         }
-
-    @Test
-    fun `connect when user is anonymous, then returns failure`() = runTest {
-        val anonymousUser = User(id = "!anon", type = UserAuthType.ANONYMOUS)
-        val anonymousClient =
-            FeedsClientImpl(
-                coreClient = coreClient,
-                feedsEventsSubscriptionManager = feedsEventsSubscriptionManager,
-                stateEventsSubscriptionManager = stateEventsSubscriptionManager,
-                stateEventEnricher = stateEventEnricher,
-                apiKey = apiKey,
-                user = anonymousUser,
-                connectionRecoveryHandler = connectionRecoveryHandler,
-                activitiesRepository = activitiesRepository,
-                appRepository = appRepository,
-                bookmarksRepository = bookmarksRepository,
-                commentsRepository = commentsRepository,
-                devicesRepository = devicesRepository,
-                feedsRepository = feedsRepository,
-                filesRepository = filesRepository,
-                moderationRepository = moderationRepository,
-                pollsRepository = pollsRepository,
-                feedsCapabilityRepository = feedsCapabilityRepository,
-                uploader = uploader,
-                moderation = moderation,
-                feedWatchHandler = feedWatchHandler,
-                logger = logger,
-                scope = scope,
-                errorBus = errorBus,
-            )
-
-        val result = anonymousClient.connect()
-
-        assertTrue(result.exceptionOrNull() is IllegalArgumentException)
-        assertEquals("Anonymous users cannot connect.", result.exceptionOrNull()?.message)
-    }
 
     @Test
     fun `disconnect when called, then stops recovery handler and disconnects core client`() =
