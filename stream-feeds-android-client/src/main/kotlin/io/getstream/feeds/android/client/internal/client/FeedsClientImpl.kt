@@ -28,7 +28,6 @@ import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.Moderation
 import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.ActivityData
-import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.api.state.Activity
@@ -67,6 +66,7 @@ import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHand
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.AppRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
+import io.getstream.feeds.android.client.internal.repository.CollectionsRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.DevicesRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsCapabilityRepository
@@ -127,13 +127,19 @@ internal class FeedsClientImpl(
     private val moderationRepository: ModerationRepository,
     private val pollsRepository: PollsRepository,
     private val feedsCapabilityRepository: FeedsCapabilityRepository,
+    private val collectionsRepository: CollectionsRepository,
     override val uploader: FeedUploader,
     override val moderation: Moderation,
     private val feedWatchHandler: FeedWatchHandler,
     private val logger: StreamLogger,
     scope: CoroutineScope,
     errorBus: Flow<StreamClientException>,
-) : FeedsClient, DevicesRepository by devicesRepository {
+) :
+    FeedsClient,
+    AppRepository by appRepository,
+    CollectionsRepository by collectionsRepository,
+    DevicesRepository by devicesRepository,
+    FilesRepository by filesRepository {
 
     override val state: StateFlow<StreamConnectionState>
         get() = coreClient.connectionState
@@ -351,16 +357,4 @@ internal class FeedsClientImpl(
 
     override fun moderationConfigList(query: ModerationConfigsQuery): ModerationConfigList =
         ModerationConfigListImpl(query = query, moderationRepository = moderationRepository)
-
-    override suspend fun getApp(): Result<AppData> {
-        return appRepository.getApp()
-    }
-
-    override suspend fun deleteFile(url: String): Result<Unit> {
-        return filesRepository.deleteFile(url)
-    }
-
-    override suspend fun deleteImage(url: String): Result<Unit> {
-        return filesRepository.deleteImage(url)
-    }
 }

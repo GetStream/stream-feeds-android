@@ -47,6 +47,7 @@ import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHand
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.AppRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
+import io.getstream.feeds.android.client.internal.repository.CollectionsRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.repository.DevicesRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsCapabilityRepository
@@ -58,7 +59,6 @@ import io.getstream.feeds.android.client.internal.state.event.StateEventEnricher
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
-import io.getstream.feeds.android.client.internal.test.TestData.appData
 import io.getstream.feeds.android.network.models.ActivityRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
@@ -99,6 +99,7 @@ internal class FeedsClientImplTest {
     private val moderationRepository: ModerationRepository = mockk(relaxed = true)
     private val pollsRepository: PollsRepository = mockk(relaxed = true)
     private val feedsCapabilityRepository: FeedsCapabilityRepository = mockk(relaxed = true)
+    private val collectionsRepository: CollectionsRepository = mockk(relaxed = true)
     private val stateEventEnricher: StateEventEnricher = mockk {
         every { enrich(any()) } answers { firstArg() }
     }
@@ -128,6 +129,7 @@ internal class FeedsClientImplTest {
             moderationRepository = moderationRepository,
             pollsRepository = pollsRepository,
             feedsCapabilityRepository = feedsCapabilityRepository,
+            collectionsRepository = collectionsRepository,
             uploader = uploader,
             moderation = moderation,
             feedWatchHandler = feedWatchHandler,
@@ -234,36 +236,6 @@ internal class FeedsClientImplTest {
         val result = feedsClient.deleteActivities(request)
 
         assertEquals(deleteResponse, result.getOrNull())
-    }
-
-    @Test
-    fun `getApp when called, then delegates to app repository`() = runTest {
-        val testAppData = appData(name = "Test App")
-        coEvery { appRepository.getApp() } returns Result.success(testAppData)
-
-        val result = feedsClient.getApp()
-
-        assertEquals(testAppData, result.getOrNull())
-    }
-
-    @Test
-    fun `deleteFile when given url, then delegates to files repository`() = runTest {
-        val fileUrl = "https://example.com/file.jpg"
-        coEvery { filesRepository.deleteFile(fileUrl) } returns Result.success(Unit)
-
-        val result = feedsClient.deleteFile(fileUrl)
-
-        assertTrue(result.isSuccess)
-    }
-
-    @Test
-    fun `deleteImage when given url, then delegates to files repository`() = runTest {
-        val imageUrl = "https://example.com/image.jpg"
-        coEvery { filesRepository.deleteImage(imageUrl) } returns Result.success(Unit)
-
-        val result = feedsClient.deleteImage(imageUrl)
-
-        assertTrue(result.isSuccess)
     }
 
     @Test
