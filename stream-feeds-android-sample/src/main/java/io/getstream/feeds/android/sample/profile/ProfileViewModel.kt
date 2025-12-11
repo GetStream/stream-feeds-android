@@ -16,17 +16,19 @@
 
 package io.getstream.feeds.android.sample.profile
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.getstream.android.core.api.utils.flatMap
 import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedSuggestionData
 import io.getstream.feeds.android.client.api.state.Feed
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
+import io.getstream.feeds.android.network.models.FollowBatchRequest
+import io.getstream.feeds.android.network.models.FollowPair
+import io.getstream.feeds.android.network.models.FollowRequest
+import io.getstream.feeds.android.network.models.UnfollowBatchRequest
 import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.util.Feeds
@@ -72,32 +74,44 @@ class ProfileViewModel @Inject constructor(loginManager: LoginManager) : ViewMod
 
     fun follow(feedId: FeedId) {
         state.withFirstContent(viewModelScope) {
-            feed
-                .follow(feedId, createNotificationActivity = true)
+            val requests =
+                listOf(
+                    FollowRequest(
+                        source = feed.fid.rawValue,
+                        target = feedId.rawValue,
+                        createNotificationActivity = true,
+                    ),
+                    FollowRequest(
+                        source = Feeds.stories(client.user.id).rawValue,
+                        target = Feeds.story(feedId.id).rawValue,
+                    ),
+                )
+            client
+                .getOrCreateFollows(FollowBatchRequest(requests))
                 .onSuccess {
                     // Update the follow suggestions after following a feed
                     _followSuggestions.update {
                         it.filter { suggestion -> suggestion.fid != feedId }
                     }
                 }
-                .onFailure { Log.e(TAG, "Failed to follow feed: $feedId", it) }
-                .flatMap {
-                    // Also make `stories:user_id` follow `story:their_id` to follow stories.
-                    client.feed(Feeds.stories(client.user.id)).follow(Feeds.story(feedId.id))
-                }
-                .onFailure { Log.e(TAG, "Failed to follow stories feed for: ${feedId.id}", it) }
+                .logResult(TAG, "Following: $feedId")
         }
     }
 
     fun unfollow(feedId: FeedId) {
         state.withFirstContent(viewModelScope) {
-            feed
-                .unfollow(feedId)
-                .logResult(TAG, "Unfollowing feed: $feedId")
-                .flatMap {
-                    client.feed(Feeds.stories(client.user.id)).unfollow(Feeds.story(feedId.id))
-                }
-                .logResult(TAG, "Unfollowing stories feed for: ${feedId.id}")
+            val followPairs =
+                listOf(
+                    FollowPair(source = feed.fid.rawValue, target = feedId.rawValue),
+                    FollowPair(
+                        source = Feeds.stories(client.user.id).rawValue,
+                        target = Feeds.story(feedId.id).rawValue,
+                    ),
+                )
+
+            client
+                .getOrCreateUnfollows(UnfollowBatchRequest(followPairs))
+                .logResult(TAG, "Unfollowing: $feedId")
         }
     }
 
