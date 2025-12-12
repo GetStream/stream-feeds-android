@@ -91,9 +91,9 @@ internal fun ActivityData.update(
     ownBookmarks: List<BookmarkData> = this.ownBookmarks,
     ownReactions: List<FeedsReactionData> = this.ownReactions,
 ): ActivityData {
-    // Workaround until the backend fixes the issue with missing currentFeed in some WS events
+    // currentFeed is missing in WS events when an activity is added to multiple feeds
     val updatedCurrentFeed =
-        if (updated.currentFeed == null && updated.feeds.size == 1 && this.currentFeed != null) {
+        if (updated.currentFeed == null && updated.feeds.size > 1) {
             this.currentFeed
         } else {
             updated.currentFeed?.let { this.currentFeed?.update(it) ?: it }

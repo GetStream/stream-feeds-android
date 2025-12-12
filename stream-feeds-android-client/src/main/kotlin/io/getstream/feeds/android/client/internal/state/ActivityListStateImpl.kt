@@ -100,7 +100,12 @@ internal class ActivityListStateImpl(
 
     override fun onActivityUpserted(activity: ActivityData) {
         _activities.update { current ->
-            current.upsertSorted(activity, ActivityData::id, activitiesSorting)
+            current.upsertSorted(
+                element = activity,
+                idSelector = ActivityData::id,
+                sort = activitiesSorting,
+                update = { old -> old.update(activity) },
+            )
         }
     }
 
