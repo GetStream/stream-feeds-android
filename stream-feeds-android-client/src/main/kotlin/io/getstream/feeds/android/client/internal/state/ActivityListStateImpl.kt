@@ -27,6 +27,7 @@ import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.state.ActivityListState
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.api.state.query.ActivitiesSort
+import io.getstream.feeds.android.client.internal.model.FeedOwnValues
 import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.model.deleteBookmark
 import io.getstream.feeds.android.client.internal.model.removeComment
@@ -34,7 +35,7 @@ import io.getstream.feeds.android.client.internal.model.removeCommentReaction
 import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.model.removeVote
 import io.getstream.feeds.android.client.internal.model.update
-import io.getstream.feeds.android.client.internal.model.updateFeedCapabilities
+import io.getstream.feeds.android.client.internal.model.updateFeedOwnValues
 import io.getstream.feeds.android.client.internal.model.upsertBookmark
 import io.getstream.feeds.android.client.internal.model.upsertComment
 import io.getstream.feeds.android.client.internal.model.upsertCommentReaction
@@ -44,7 +45,6 @@ import io.getstream.feeds.android.client.internal.state.query.ActivitiesQueryCon
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsertSorted
-import io.getstream.feeds.android.network.models.FeedOwnCapability
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -166,13 +166,11 @@ internal class ActivityListStateImpl(
         }
     }
 
-    override fun onFeedCapabilitiesUpdated(capabilities: Map<FeedId, Set<FeedOwnCapability>>) {
+    override fun onFeedOwnValuesUpdated(map: Map<FeedId, FeedOwnValues>) {
         _activities.update { current ->
             current.map { activity ->
-                activity.currentFeed
-                    ?.fid
-                    ?.let(capabilities::get)
-                    ?.let(activity::updateFeedCapabilities) ?: activity
+                activity.currentFeed?.fid?.let(map::get)?.let(activity::updateFeedOwnValues)
+                    ?: activity
             }
         }
     }
@@ -322,11 +320,11 @@ internal interface ActivityListStateUpdates {
     )
 
     /**
-     * Called when feed capabilities are updated.
+     * Called when feed own values are updated.
      *
-     * @param capabilities A map of feed IDs to their updated set of own capabilities.
+     * @param map A map of feed IDs to their updated set of own values.
      */
-    fun onFeedCapabilitiesUpdated(capabilities: Map<FeedId, Set<FeedOwnCapability>>)
+    fun onFeedOwnValuesUpdated(map: Map<FeedId, FeedOwnValues>)
 
     /**
      * Called when a poll is deleted.

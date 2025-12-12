@@ -18,7 +18,9 @@ package io.getstream.feeds.android.client.internal.model
 
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.network.models.FeedOwnData
 import io.getstream.feeds.android.network.models.FeedResponse
+import io.getstream.feeds.android.network.models.FollowResponse
 
 /** Converts a [FeedResponse] to a [FeedData] model. */
 internal fun FeedResponse.toModel(): FeedData =
@@ -36,6 +38,7 @@ internal fun FeedResponse.toModel(): FeedData =
         id = id,
         memberCount = memberCount,
         ownCapabilities = ownCapabilities?.toSet().orEmpty(),
+        ownFollows = ownFollows?.map(FollowResponse::toModel).orEmpty(),
         ownMembership = ownMembership?.toModel(),
         name = name,
         pinCount = pinCount,
@@ -44,8 +47,22 @@ internal fun FeedResponse.toModel(): FeedData =
     )
 
 /**
- * Extension function to update the feed while preserving own capabilities because "own" data from
- * WS events is not reliable.
+ * Extension function to update the feed while preserving "own" data because own data from WS events
+ * is not reliable.
  */
 internal fun FeedData.update(updated: FeedData): FeedData =
-    updated.copy(ownCapabilities = this.ownCapabilities)
+    updated.copy(
+        ownCapabilities = this.ownCapabilities,
+        ownFollows = this.ownFollows,
+        ownMembership = this.ownMembership,
+    )
+
+internal fun FeedData.ownValues(): FeedOwnValues =
+    FeedOwnValues(capabilities = ownCapabilities, follows = ownFollows, membership = ownMembership)
+
+internal fun FeedOwnData.toModel(): FeedOwnValues =
+    FeedOwnValues(
+        capabilities = ownCapabilities?.toSet().orEmpty(),
+        follows = ownFollows?.map(FollowResponse::toModel).orEmpty(),
+        membership = ownMembership?.toModel(),
+    )

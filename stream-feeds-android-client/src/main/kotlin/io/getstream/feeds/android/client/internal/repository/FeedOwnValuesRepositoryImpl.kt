@@ -21,38 +21,39 @@ import io.getstream.android.core.api.processing.StreamBatcher
 import io.getstream.android.core.api.processing.StreamRetryProcessor
 import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.model.FeedId
-import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedCapabilitiesUpdated
+import io.getstream.feeds.android.client.internal.model.FeedOwnValues
+import io.getstream.feeds.android.client.internal.model.toModel
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FeedOwnValuesUpdated
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.subscribe.onEvent
 import io.getstream.feeds.android.network.apis.FeedsApi
-import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.getstream.feeds.android.network.models.OwnBatchRequest
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.CoroutineScope
 
-internal class FeedsCapabilityRepositoryImpl(
+internal class FeedOwnValuesRepositoryImpl(
     private val batcher: StreamBatcher<FeedId>,
     private val retryProcessor: StreamRetryProcessor,
     private val api: FeedsApi,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
-) : FeedsCapabilityRepository {
-    private val cache = ConcurrentHashMap<FeedId, Set<FeedOwnCapability>>()
+) : FeedOwnValuesRepository {
+    private val cache = ConcurrentHashMap<FeedId, FeedOwnValues>()
 
     init {
         batcher.onBatch { ids, _, _ -> processBatch(ids) }
     }
 
-    override fun cache(capabilities: Map<FeedId, Set<FeedOwnCapability>>) {
+    override fun cache(ownValues: Map<FeedId, FeedOwnValues>) {
         val before = cache.toMap()
-        cache.putAll(capabilities)
+        cache.putAll(ownValues)
         val after = cache.toMap()
 
         if (after != before) {
-            subscriptionManager.onEvent(FeedCapabilitiesUpdated(cache.toMap()))
+            subscriptionManager.onEvent(FeedOwnValuesUpdated(cache.toMap()))
         }
     }
 
-    override fun getOrRequest(id: FeedId): Set<FeedOwnCapability>? {
+    override fun getOrRequest(id: FeedId): FeedOwnValues? {
         val cached = cache[id]
 
         if (cached == null) {
@@ -69,15 +70,13 @@ internal class FeedsCapabilityRepositoryImpl(
             ?.onSuccess(::cache)
     }
 
-    private suspend fun fetch(ids: Set<FeedId>): Map<FeedId, Set<FeedOwnCapability>> {
+    private suspend fun fetch(ids: Set<FeedId>): Map<FeedId, FeedOwnValues> {
         val request = OwnBatchRequest(ids.map(FeedId::rawValue))
 
         return api.ownBatch(ownBatchRequest = request)
             .data
             .entries
-            .mapNotNull { (id, data) ->
-                data.ownCapabilities?.toSet()?.let { capabilities -> FeedId(id) to capabilities }
-            }
+            .associateBy(keySelector = { FeedId(it.key) }, valueTransform = { it.value.toModel() })
             .toMap()
     }
 

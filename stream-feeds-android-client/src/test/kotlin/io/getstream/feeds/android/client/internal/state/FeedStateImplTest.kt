@@ -27,6 +27,7 @@ import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.state.InsertionAction
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
+import io.getstream.feeds.android.client.internal.model.FeedOwnValues
 import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
@@ -35,6 +36,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.aggregatedActivi
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedData
+import io.getstream.feeds.android.client.internal.test.TestData.feedMemberData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.getstream.feeds.android.client.internal.test.TestData.followData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
@@ -700,7 +702,7 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on onFeedCapabilitiesUpdated, update matching activities`() = runTest {
+    fun `on onFeedOwnValuesUpdated, update matching activities`() = runTest {
         val feedId1 = FeedId("user:1")
         val feed1 = feedData(id = "1", groupId = "user", ownCapabilities = emptySet())
         val feed2 = feedData(id = "2", groupId = "user", ownCapabilities = emptySet())
@@ -709,11 +711,23 @@ internal class FeedStateImplTest {
         val activityPin = activityPin(activity1)
         setupInitialState(listOf(activity1, activity2), listOf(activityPin))
 
-        val newCapabilities = setOf(FeedOwnCapability.ReadFeed, FeedOwnCapability.AddActivity)
-        feedState.onFeedCapabilitiesUpdated(mapOf(feedId1 to newCapabilities))
+        val newOwnValues =
+            FeedOwnValues(
+                capabilities = setOf(FeedOwnCapability.ReadFeed, FeedOwnCapability.AddActivity),
+                follows = listOf(followData()),
+                membership = feedMemberData(),
+            )
+        feedState.onFeedOwnValuesUpdated(mapOf(feedId1 to newOwnValues))
 
         val expectedActivity1 =
-            activity1.copy(currentFeed = feed1.copy(ownCapabilities = newCapabilities))
+            activity1.copy(
+                currentFeed =
+                    feed1.copy(
+                        ownCapabilities = newOwnValues.capabilities,
+                        ownFollows = newOwnValues.follows,
+                        ownMembership = newOwnValues.membership,
+                    )
+            )
         val expectedPinnedActivity = activityPin.copy(activity = expectedActivity1)
         assertEquals(listOf(expectedActivity1, activity2), feedState.activities.value)
         assertEquals(listOf(expectedPinnedActivity), feedState.pinnedActivities.value)

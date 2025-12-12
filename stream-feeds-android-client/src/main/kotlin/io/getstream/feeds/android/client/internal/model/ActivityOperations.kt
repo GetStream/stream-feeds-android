@@ -25,7 +25,6 @@ import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.network.models.ActivityResponse
-import io.getstream.feeds.android.network.models.FeedOwnCapability
 import kotlin.math.max
 
 /** Converts an [ActivityResponse] to an [ActivityData] model. */
@@ -84,7 +83,7 @@ internal fun ActivityResponse.Visibility.toModel(): ActivityDataVisibility =
 
 /**
  * Extension function to update the activity while preserving own bookmarks, reactions, poll votes,
- * and feed capabilities because "own" data from WS events is not reliable. Optionally, different
+ * and feed own data because "own" data from WS events is not reliable. Optionally, different
  * instances can be provided to be used instead of the current ones.
  */
 internal fun ActivityData.update(
@@ -258,7 +257,13 @@ internal fun ActivityData.upsertCommentReaction(
             }
     )
 
-/** Updates the feed's own capabilities in the [ActivityData]. */
-internal fun ActivityData.updateFeedCapabilities(
-    capabilities: Set<FeedOwnCapability>
-): ActivityData = copy(currentFeed = currentFeed?.copy(ownCapabilities = capabilities))
+/** Updates the feed's own values in the [ActivityData]. */
+internal fun ActivityData.updateFeedOwnValues(values: FeedOwnValues): ActivityData =
+    copy(
+        currentFeed =
+            currentFeed?.copy(
+                ownCapabilities = values.capabilities,
+                ownFollows = values.follows,
+                ownMembership = values.membership,
+            )
+    )

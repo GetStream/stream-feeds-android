@@ -34,7 +34,7 @@ import io.getstream.feeds.android.client.internal.model.removeOption
 import io.getstream.feeds.android.client.internal.model.updateOption
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
-import io.getstream.feeds.android.client.internal.repository.FeedsCapabilityRepository
+import io.getstream.feeds.android.client.internal.repository.FeedOwnValuesRepository
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.repository.cache
 import io.getstream.feeds.android.client.internal.state.event.FidScope
@@ -77,7 +77,7 @@ internal class ActivityImpl(
     private val activitiesRepository: ActivitiesRepository,
     private val commentsRepository: CommentsRepository,
     private val pollsRepository: PollsRepository,
-    private val capabilityRepository: FeedsCapabilityRepository,
+    private val feedOwnValuesRepository: FeedOwnValuesRepository,
     private val commentList: ActivityCommentListImpl,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
 ) : Activity {
@@ -98,7 +98,7 @@ internal class ActivityImpl(
         val activity =
             activitiesRepository.getActivity(activityId).onSuccess {
                 subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.unknown, it))
-                it.currentFeed?.let(capabilityRepository::cache)
+                it.currentFeed?.let(feedOwnValuesRepository::cache)
             }
         // Query the comments as well (state will be updated automatically)
         queryComments()

@@ -17,65 +17,50 @@
 package io.getstream.feeds.android.client.internal.model
 
 import io.getstream.feeds.android.client.internal.test.TestData.feedData
+import io.getstream.feeds.android.client.internal.test.TestData.feedMemberData
+import io.getstream.feeds.android.client.internal.test.TestData.followData
 import io.getstream.feeds.android.network.models.FeedOwnCapability
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 internal class FeedOperationsTest {
-
     @Test
-    fun `on update with different ownCapabilities, then preserve original ownCapabilities`() {
+    fun `on update with different own values, then preserve original`() {
         val originalCapabilities =
             setOf(FeedOwnCapability.AddActivity, FeedOwnCapability.DeleteFeed)
-        val originalFeed = feedData().copy(ownCapabilities = originalCapabilities)
+        val originalFollows = listOf(followData(sourceFid = "user:u1", targetFid = "user:u2"))
+        val originalMembership = feedMemberData(userId = "u1", role = "admin")
+        val originalFeed =
+            feedData(
+                id = "feed-1",
+                name = "Original Name",
+                description = "Original Description",
+                ownCapabilities = originalCapabilities,
+                ownFollows = originalFollows,
+                ownMembership = originalMembership,
+            )
 
         val newCapabilities = setOf(FeedOwnCapability.UpdateFeed)
-        val updatedFeed = feedData().copy(ownCapabilities = newCapabilities, name = "Updated Name")
-
-        val result = originalFeed.update(updatedFeed)
-
-        val expected = updatedFeed.copy(ownCapabilities = originalCapabilities)
-        assertEquals(expected, result)
-    }
-
-    @Test
-    fun `on update, then apply all other field changes`() {
-        val originalFeed =
-            feedData(id = "feed-1", name = "Original Name", description = "Original Description")
-                .copy(
-                    ownCapabilities = setOf(FeedOwnCapability.AddActivity),
-                    followerCount = 10,
-                    followingCount = 20,
-                    memberCount = 5,
-                    pinCount = 2,
-                )
-
+        val newFollows = listOf(followData(sourceFid = "user:u3", targetFid = "user:u4"))
+        val newMembership = feedMemberData(userId = "u2", role = "member")
         val updatedFeed =
-            feedData(id = "feed-1", name = "Updated Name", description = "Updated Description")
-                .copy(
-                    ownCapabilities = emptySet(),
-                    followerCount = 15,
-                    followingCount = 25,
-                    memberCount = 8,
-                    pinCount = 3,
-                )
+            feedData(
+                id = "feed-1",
+                name = "Updated Name",
+                description = "Updated Description",
+                ownCapabilities = newCapabilities,
+                ownFollows = newFollows,
+                ownMembership = newMembership,
+            )
 
         val result = originalFeed.update(updatedFeed)
 
-        val expected = updatedFeed.copy(ownCapabilities = setOf(FeedOwnCapability.AddActivity))
-        assertEquals(expected, result)
-    }
-
-    @Test
-    fun `on update with no ownCapabilities in original, then use empty set`() {
-        val originalFeed = feedData().copy(ownCapabilities = emptySet())
-        val updatedFeed =
-            feedData()
-                .copy(ownCapabilities = setOf(FeedOwnCapability.AddActivity), name = "Updated")
-
-        val result = originalFeed.update(updatedFeed)
-
-        val expected = updatedFeed.copy(ownCapabilities = emptySet())
+        val expected =
+            updatedFeed.copy(
+                ownCapabilities = originalCapabilities,
+                ownFollows = originalFollows,
+                ownMembership = originalMembership,
+            )
         assertEquals(expected, result)
     }
 }

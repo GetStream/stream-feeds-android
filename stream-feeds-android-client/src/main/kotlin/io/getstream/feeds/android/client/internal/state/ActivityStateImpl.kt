@@ -26,19 +26,19 @@ import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.api.state.ActivityState
+import io.getstream.feeds.android.client.internal.model.FeedOwnValues
 import io.getstream.feeds.android.client.internal.model.deleteBookmark
 import io.getstream.feeds.android.client.internal.model.removeComment
 import io.getstream.feeds.android.client.internal.model.removeCommentReaction
 import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.model.removeVote
 import io.getstream.feeds.android.client.internal.model.update
-import io.getstream.feeds.android.client.internal.model.updateFeedCapabilities
+import io.getstream.feeds.android.client.internal.model.updateFeedOwnValues
 import io.getstream.feeds.android.client.internal.model.upsertBookmark
 import io.getstream.feeds.android.client.internal.model.upsertComment
 import io.getstream.feeds.android.client.internal.model.upsertCommentReaction
 import io.getstream.feeds.android.client.internal.model.upsertReaction
 import io.getstream.feeds.android.client.internal.model.upsertVote
-import io.getstream.feeds.android.network.models.FeedOwnCapability
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -159,10 +159,9 @@ internal class ActivityStateImpl(
         updatePoll(pollId) { upsertVote(vote, currentUserId) }
     }
 
-    override fun onFeedCapabilitiesUpdated(capabilities: Map<FeedId, Set<FeedOwnCapability>>) {
+    override fun onFeedOwnValuesUpdated(map: Map<FeedId, FeedOwnValues>) {
         _activity.update { current ->
-            current?.currentFeed?.fid?.let(capabilities::get)?.let(current::updateFeedCapabilities)
-                ?: current
+            current?.currentFeed?.fid?.let(map::get)?.let(current::updateFeedOwnValues) ?: current
         }
     }
 
@@ -280,11 +279,11 @@ internal interface ActivityStateUpdates {
     )
 
     /**
-     * Called when feed capabilities are updated.
+     * Called when feed own values are updated.
      *
-     * @param capabilities A map of feed IDs to their updated capabilities.
+     * @param map A map of feed IDs to their updated own values.
      */
-    fun onFeedCapabilitiesUpdated(capabilities: Map<FeedId, Set<FeedOwnCapability>>)
+    fun onFeedOwnValuesUpdated(map: Map<FeedId, FeedOwnValues>)
 
     /**
      * Called when the associated poll is deleted.
