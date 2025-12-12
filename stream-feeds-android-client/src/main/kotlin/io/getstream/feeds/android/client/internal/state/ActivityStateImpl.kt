@@ -159,10 +159,9 @@ internal class ActivityStateImpl(
         updatePoll(pollId) { upsertVote(vote, currentUserId) }
     }
 
-    override fun onFeedOwnValuesUpdated(capabilities: Map<FeedId, FeedOwnValues>) {
+    override fun onFeedOwnValuesUpdated(map: Map<FeedId, FeedOwnValues>) {
         _activity.update { current ->
-            current?.currentFeed?.fid?.let(capabilities::get)?.let(current::updateFeedOwnValues)
-                ?: current
+            current?.currentFeed?.fid?.let(map::get)?.let(current::updateFeedOwnValues) ?: current
         }
     }
 
@@ -280,7 +279,7 @@ internal interface ActivityStateUpdates {
     )
 
     /**
-     * Called when feed capabilities are updated.
+     * Called when feed own values are updated.
      *
      * @param map A map of feed IDs to their updated own values.
      */

@@ -23,23 +23,24 @@ import io.getstream.feeds.android.client.internal.model.ownValues
 import java.util.Collections.singletonMap
 
 /**
- * A repository for managing feed capabilities. Caches feed capabilities and requests capabilities
- * that are not yet cached.
+ * A repository for managing feed own values, e.g. [FeedData.ownCapabilities],
+ * [FeedData.ownFollows], [FeedData.ownMembership]. Caches feed own values and requests those that
+ * are not yet cached.
  */
 internal interface FeedOwnValuesRepository {
     /**
-     * Caches the provided feed capabilities.
+     * Caches the provided feed own values.
      *
-     * @param capabilities A map of feed IDs to their corresponding sets of capabilities.
+     * @param ownValues A map of feed IDs to their corresponding sets of own values.
      */
-    fun cache(capabilities: Map<FeedId, FeedOwnValues>)
+    fun cache(ownValues: Map<FeedId, FeedOwnValues>)
 
     /**
-     * Retrieves cached capabilities for the specified feed. If the capabilities are not cached,
-     * queue them for fetching and return null.
+     * Retrieves cached own values for the specified feed. If the values are not cached, queues them
+     * for fetching and returns null.
      *
-     * @param id The feed ID to retrieve capabilities for.
-     * @return The cached capabilities for the feed, or null if not cached.
+     * @param id The feed ID to retrieve own values for.
+     * @return The cached own values for the feed, or null if not cached.
      */
     fun getOrRequest(id: FeedId): FeedOwnValues?
 }

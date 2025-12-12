@@ -43,9 +43,9 @@ internal class FeedOwnValuesRepositoryImpl(
         batcher.onBatch { ids, _, _ -> processBatch(ids) }
     }
 
-    override fun cache(capabilities: Map<FeedId, FeedOwnValues>) {
+    override fun cache(ownValues: Map<FeedId, FeedOwnValues>) {
         val before = cache.toMap()
-        cache.putAll(capabilities)
+        cache.putAll(ownValues)
         val after = cache.toMap()
 
         if (after != before) {

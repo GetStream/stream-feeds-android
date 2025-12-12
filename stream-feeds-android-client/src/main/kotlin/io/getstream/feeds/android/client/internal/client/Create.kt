@@ -252,7 +252,7 @@ internal fun createFeedsClient(
     val feedOwnValuesRepository =
         FeedOwnValuesRepositoryImpl(
             batcher = FeedOwnValuesRepositoryImpl.createBatcher(clientScope),
-            retryProcessor = StreamRetryProcessor(logProvider.taggedLogger("FeedCapability")),
+            retryProcessor = StreamRetryProcessor(logProvider.taggedLogger("FeedOwnValues")),
             api = feedsApi,
             subscriptionManager = stateEventsSubscriptionManager,
         )

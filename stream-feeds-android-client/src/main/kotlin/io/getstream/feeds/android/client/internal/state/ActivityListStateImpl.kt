@@ -320,7 +320,7 @@ internal interface ActivityListStateUpdates {
     )
 
     /**
-     * Called when feed capabilities are updated.
+     * Called when feed own values are updated.
      *
      * @param map A map of feed IDs to their updated set of own values.
      */

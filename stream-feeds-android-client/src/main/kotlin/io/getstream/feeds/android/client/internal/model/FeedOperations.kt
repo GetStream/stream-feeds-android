@@ -47,8 +47,8 @@ internal fun FeedResponse.toModel(): FeedData =
     )
 
 /**
- * Extension function to update the feed while preserving own capabilities because "own" data from
- * WS events is not reliable.
+ * Extension function to update the feed while preserving "own" data because own data from WS events
+ * is not reliable.
  */
 internal fun FeedData.update(updated: FeedData): FeedData =
     updated.copy(
