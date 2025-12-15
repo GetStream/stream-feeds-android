@@ -155,13 +155,23 @@ internal class FeedStateImpl(
         when (action) {
             InsertionAction.AddToStart -> {
                 _activities.update { current ->
-                    current.upsert(activity, ActivityData::id, prepend = true)
+                    current.upsert(
+                        element = activity,
+                        idSelector = ActivityData::id,
+                        update = { old -> old.update(activity) },
+                        prepend = true,
+                    )
                 }
             }
 
             InsertionAction.AddToEnd -> {
                 _activities.update { current ->
-                    current.upsert(activity, ActivityData::id, prepend = false)
+                    current.upsert(
+                        element = activity,
+                        idSelector = ActivityData::id,
+                        update = { old -> old.update(activity) },
+                        prepend = false,
+                    )
                 }
             }
 

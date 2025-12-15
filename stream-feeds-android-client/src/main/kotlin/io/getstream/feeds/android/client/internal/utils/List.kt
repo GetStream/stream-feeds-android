@@ -53,11 +53,13 @@ internal inline fun <T> List<T>.updateIf(filter: (T) -> Boolean, update: (T) -> 
 internal fun <T> List<T>.upsert(
     element: T,
     idSelector: (T) -> String,
+    update: (old: T) -> T = { element },
     prepend: Boolean = false,
 ): List<T> {
     val existingIndex = this.indexOfFirst { idSelector(it) == idSelector(element) }
     return when {
-        existingIndex >= 0 -> toMutableList().apply { this[existingIndex] = element }
+        existingIndex >= 0 ->
+            toMutableList().apply { this[existingIndex] = update(this[existingIndex]) }
         prepend -> toMutableList().apply { add(0, element) }
         else -> this + element
     }

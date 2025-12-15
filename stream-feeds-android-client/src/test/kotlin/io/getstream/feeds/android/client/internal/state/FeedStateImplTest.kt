@@ -165,6 +165,24 @@ internal class FeedStateImplTest {
     }
 
     @Test
+    fun `on onActivityAdded for existing activity, then update activity`() = runTest {
+        val initialActivity = activityData("activity-1", currentFeed = feedData("feed-1"))
+        setupInitialState(listOf(initialActivity))
+
+        val updatedActivity =
+            activityData(
+                "activity-1",
+                text = "Updated activity",
+                currentFeed = null,
+                feeds = listOf(FeedId("feed-1"), FeedId("feed-2")),
+            )
+        feedState.onActivityAdded(updatedActivity, InsertionAction.AddToStart)
+
+        val expected = updatedActivity.copy(currentFeed = initialActivity.currentFeed)
+        assertEquals(listOf(expected), feedState.activities.value)
+    }
+
+    @Test
     fun `on onActivityUpdated, then update activity`() = runTest {
         val initialActivity = activityData("activity-1")
         val activityPin = activityPin(initialActivity)

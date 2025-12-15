@@ -64,14 +64,21 @@ internal class ActivityListStateImplTest {
 
     @Test
     fun `on onActivityUpserted, then update specific activity`() = runTest {
-        val activity1 = activityData("activity-1")
+        val activity1 = activityData("activity-1", currentFeed = feedData("feed-1"))
         val activity2 = activityData("activity-2")
         setupInitialActivities(activity1, activity2)
 
-        val updatedActivity = activityData("activity-1", text = "Updated activity")
+        val updatedActivity =
+            activityData(
+                "activity-1",
+                text = "Updated activity",
+                currentFeed = null,
+                feeds = listOf(FeedId("feed-1"), FeedId("feed-2")),
+            )
         activityListState.onActivityUpserted(updatedActivity)
 
-        assertEquals(listOf(updatedActivity, activity2), activityListState.activities.value)
+        val expected = updatedActivity.copy(currentFeed = activity1.currentFeed)
+        assertEquals(listOf(expected, activity2), activityListState.activities.value)
     }
 
     @Test
