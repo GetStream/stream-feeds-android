@@ -176,7 +176,7 @@ internal class ActivityStateImplTest {
     }
 
     @Test
-    fun `on onActivityUpdated with single feed and no currentFeed, then preserve currentFeed`() =
+    fun `on onActivityUpdated with multiple feeds and no currentFeed, then preserve currentFeed`() =
         runTest {
             val initialFeed = feedData(id = "1", groupId = "user")
             val initialActivity =
@@ -184,14 +184,14 @@ internal class ActivityStateImplTest {
                     "activity-1",
                     text = "Original",
                     currentFeed = initialFeed,
-                    feeds = listOf(FeedId("user:1")),
+                    feeds = listOf(FeedId("user:1"), FeedId("custom:2")),
                 )
             val updatedActivity =
                 activityData(
                     "activity-1",
                     text = "Updated",
                     currentFeed = null,
-                    feeds = listOf(FeedId("user:1")),
+                    feeds = listOf(FeedId("user:1"), FeedId("custom:2")),
                 )
             setupAndUpdateActivity(initialActivity, updatedActivity)
 
