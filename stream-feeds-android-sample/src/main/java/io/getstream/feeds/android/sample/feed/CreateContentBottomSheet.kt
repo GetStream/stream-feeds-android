@@ -24,20 +24,18 @@ import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetValue
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -49,12 +47,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 
 enum class CreateContentState {
     Hidden,
@@ -62,24 +62,13 @@ enum class CreateContentState {
     Posting,
 }
 
-sealed class ContentConfig(
-    val title: String,
-    val requireText: Boolean,
-    val showStoryToggle: Boolean,
-) {
-    data class Post(
-        val onSubmit: (text: String, attachments: List<Uri>, isStory: Boolean) -> Unit
-    ) : ContentConfig(title = "Create Post", requireText = false, showStoryToggle = true)
-
-    data class Comment(val onSubmit: (text: String, attachments: List<Uri>) -> Unit) :
-        ContentConfig(title = "Add Comment", requireText = true, showStoryToggle = false)
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateContentBottomSheet(
     state: CreateContentState,
-    config: ContentConfig,
+    title: String,
+    requireText: Boolean,
+    onSubmit: (text: String, attachments: List<Uri>) -> Unit,
     onDismiss: () -> Unit,
 ) {
     if (state == CreateContentState.Hidden) return
@@ -95,7 +84,6 @@ fun CreateContentBottomSheet(
 
     var text by rememberSaveable { mutableStateOf("") }
     var attachments by rememberSaveable { mutableStateOf(emptyList<Uri>()) }
-    var isStory by rememberSaveable { mutableStateOf(false) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -107,26 +95,16 @@ fun CreateContentBottomSheet(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Companion.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(text = config.title, fontSize = 18.sp, fontWeight = FontWeight.Companion.Bold)
+                Text(text = title, fontSize = 18.sp, fontWeight = FontWeight.Bold)
 
                 if (state == CreateContentState.Posting) {
                     CircularProgressIndicator()
                 } else {
-                    val canPost =
-                        attachments.isNotEmpty() && !config.requireText || text.isNotBlank()
-                    TextButton(
-                        onClick = {
-                            when (config) {
-                                is ContentConfig.Post -> config.onSubmit(text, attachments, isStory)
-
-                                is ContentConfig.Comment -> config.onSubmit(text, attachments)
-                            }
-                        },
-                        enabled = canPost,
-                    ) {
-                        Text(text = "Submit", fontWeight = FontWeight.Companion.Medium)
+                    val canPost = attachments.isNotEmpty() && !requireText || text.isNotBlank()
+                    TextButton(onClick = { onSubmit(text, attachments) }, enabled = canPost) {
+                        Text(text = "Submit", fontWeight = FontWeight.Medium)
                     }
                 }
             }
@@ -143,44 +121,27 @@ fun CreateContentBottomSheet(
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             )
 
-            // Bottom toolbar with options
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                val hasAttachments = attachments.isNotEmpty()
-
-                AttachmentButton(
-                    hasAttachment = hasAttachments,
-                    onAttachmentsSelected = { uris -> attachments = uris },
-                    enabled = inputEnabled,
-                )
-
-                if (config.showStoryToggle) {
-                    Spacer(Modifier.weight(1f))
-                    Text(
-                        text = "Post as story",
-                        fontSize = 14.sp,
-                        modifier = Modifier.padding(end = 8.dp),
-                    )
-                    Switch(
-                        checked = isStory,
-                        onCheckedChange = { isStory = it },
-                        enabled = inputEnabled,
+            Row {
+                attachments.forEachIndexed { index, uri ->
+                    AsyncImage(
+                        model = uri,
+                        contentDescription = "Selected image $index",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.size(64.dp).clip(RoundedCornerShape(25)),
                     )
                 }
             }
+
+            AttachmentButton(
+                onAttachmentsSelected = { uris -> attachments = uris },
+                enabled = inputEnabled,
+            )
         }
     }
 }
 
 @Composable
-private fun AttachmentButton(
-    hasAttachment: Boolean,
-    onAttachmentsSelected: (List<Uri>) -> Unit,
-    enabled: Boolean,
-) {
+private fun AttachmentButton(onAttachmentsSelected: (List<Uri>) -> Unit, enabled: Boolean) {
     val activityLauncher =
         rememberLauncherForActivityResult(PickMultipleVisualMedia(), onAttachmentsSelected)
 
@@ -193,7 +154,6 @@ private fun AttachmentButton(
         Icon(
             painter = painterResource(android.R.drawable.ic_menu_gallery),
             contentDescription = "Add Image/Video",
-            tint = if (hasAttachment) MaterialTheme.colorScheme.onSurface else Color.Unspecified,
             modifier = Modifier.size(24.dp),
         )
     }

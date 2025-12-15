@@ -31,6 +31,6 @@ fun UserAvatar(avatarUrl: String?, modifier: Modifier = Modifier) {
         modifier = modifier.size(40.dp).clip(CircleShape),
         model = avatarUrl,
         contentDescription = null,
-        contentScale = ContentScale.FillBounds,
+        contentScale = ContentScale.Crop,
     )
 }

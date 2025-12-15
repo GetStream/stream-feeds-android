@@ -166,8 +166,9 @@ private fun ColumnScope.CommentsBottomSheetContent(
 
     CreateContentBottomSheet(
         state = createContentState,
-        config =
-            ContentConfig.Comment { text, attachments -> onEvent(Event.OnPost(text, attachments)) },
+        title = "Add Comment",
+        requireText = true,
+        onSubmit = { text, attachments -> onEvent(Event.OnPost(text, attachments)) },
         onDismiss = { onEvent(Event.OnContentCreateDismiss) },
     )
 }
