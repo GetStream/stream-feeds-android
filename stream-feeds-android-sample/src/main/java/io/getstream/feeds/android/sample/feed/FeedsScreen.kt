@@ -36,6 +36,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -78,7 +79,6 @@ import com.ramcosta.composedestinations.generated.destinations.NotificationsScre
 import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.getstream.feeds.android.client.api.model.ActivityData
-import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.UserData
 import io.getstream.feeds.android.network.models.Attachment
@@ -150,18 +150,22 @@ private fun FeedsScreenContent(
         Box(modifier = Modifier.fillMaxSize()) {
             // Feed content
             val activities by viewState.timeline.state.activities.collectAsStateWithLifecycle()
-            val storyGroups by
-                viewState.stories.state.aggregatedActivities.collectAsStateWithLifecycle()
             val listState = rememberLazyListState()
 
-            if (activities.isEmpty() && storyGroups.isEmpty()) {
-                EmptyContent()
-            } else {
-                ScrolledToBottomEffect(listState, action = viewModel::onLoadMore)
+            ScrolledToBottomEffect(listState, action = viewModel::onLoadMore)
 
-                LazyColumn(state = listState) {
-                    item { Stories(storyGroups, viewModel::onStoryWatched) }
+            LazyColumn(state = listState) {
+                item {
+                    Stories(
+                        state = viewState,
+                        onCreateStoryClick = (viewModel::onCreateStoryClick),
+                        onStoryWatched = viewModel::onStoryWatched,
+                    )
+                }
 
+                if (activities.isEmpty()) {
+                    item { EmptyContent() }
+                } else {
                     items(activities) { activity ->
                         if (activity.parent != null) {
                             Row(
@@ -229,7 +233,9 @@ private fun FeedsScreenContent(
             // Create Post Bottom Sheet
             CreateContentBottomSheet(
                 state = createContentState,
-                config = ContentConfig.Post(onSubmit = viewModel::onCreatePost),
+                title = "Create",
+                requireText = false,
+                onSubmit = viewModel::onContentSubmit,
                 onDismiss = viewModel::onContentCreateDismiss,
             )
 
@@ -244,24 +250,44 @@ private fun FeedsScreenContent(
 }
 
 @Composable
-fun Stories(storyGroups: List<AggregatedActivityData>, onStoryWatched: (String) -> Unit) {
+fun Stories(
+    state: ViewState,
+    onCreateStoryClick: () -> Unit,
+    onStoryWatched: (String, isOwn: Boolean) -> Unit,
+) {
+    val ownStories by state.ownStories.state.activities.collectAsStateWithLifecycle()
+    val storyGroups by state.stories.state.aggregatedActivities.collectAsStateWithLifecycle()
+
     var selectedStories by remember { mutableStateOf<List<ActivityData>>(emptyList()) }
 
     LazyRow {
+        item {
+            Box(Modifier.padding(8.dp)) {
+                StoriesItem(
+                    avatar = state.client.user.imageURL,
+                    activities = ownStories,
+                    onClick = { selectedStories = ownStories },
+                )
+                Icon(
+                    painter = painterResource(R.drawable.add_24),
+                    contentDescription = "Create story",
+                    tint = MaterialTheme.colorScheme.surface,
+                    modifier =
+                        Modifier.clickable(onClick = onCreateStoryClick)
+                            .align(Alignment.BottomEnd)
+                            .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape)
+                            .padding(2.dp)
+                            .background(MaterialTheme.colorScheme.onSurface, CircleShape),
+                )
+            }
+        }
+
         items(storyGroups) { storyGroup ->
-            val highlightColor =
-                if (storyGroup.activities.all { it.isWatched == true }) {
-                    MaterialTheme.colorScheme.surfaceDim
-                } else {
-                    MaterialTheme.colorScheme.secondary
-                }
-            UserAvatar(
-                storyGroup.activities.first().user.image,
-                Modifier.padding(8.dp)
-                    .size(72.dp)
-                    .border(3.dp, highlightColor, CircleShape)
-                    .border(6.dp, MaterialTheme.colorScheme.surface, CircleShape)
-                    .clickable { selectedStories = storyGroup.activities },
+            StoriesItem(
+                avatar = storyGroup.activities.first().user.image,
+                activities = storyGroup.activities,
+                onClick = { selectedStories = storyGroup.activities },
+                modifier = Modifier.padding(8.dp),
             )
         }
     }
@@ -269,10 +295,33 @@ fun Stories(storyGroups: List<AggregatedActivityData>, onStoryWatched: (String) 
     if (selectedStories.isNotEmpty()) {
         StoryScreen(
             activities = selectedStories,
-            onWatched = onStoryWatched,
+            onWatched = { id -> onStoryWatched(id, selectedStories == ownStories) },
             onDismiss = { selectedStories = emptyList() },
         )
     }
+}
+
+@Composable
+private fun StoriesItem(
+    avatar: String?,
+    activities: List<ActivityData>,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val highlightColor =
+        if (activities.all { it.isWatched == true }) {
+            MaterialTheme.colorScheme.onSurface.copy(alpha = .4f)
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        }
+    UserAvatar(
+        avatar,
+        modifier
+            .size(72.dp)
+            .border(3.dp, highlightColor, CircleShape)
+            .border(6.dp, MaterialTheme.colorScheme.surface, CircleShape)
+            .clickable(enabled = activities.isNotEmpty(), onClick = onClick),
+    )
 }
 
 @Composable
@@ -396,12 +445,17 @@ private fun ProfileIcon(onClick: () -> Unit) {
 
 @Composable
 fun EmptyContent() {
-    Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
-        Text(
-            text = "No activities yet. Start by creating a post!",
-            fontSize = 16.sp,
-            textAlign = TextAlign.Center,
-        )
+    Card(Modifier.padding(16.dp)) {
+        Box(
+            modifier = Modifier.fillMaxWidth().padding(32.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = "Nothing to see yet. Start by creating a post!",
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+            )
+        }
     }
 }
 

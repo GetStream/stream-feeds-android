@@ -32,6 +32,7 @@ import io.getstream.feeds.android.client.api.model.FeedInputData
 import io.getstream.feeds.android.client.api.model.FeedMemberRequestData
 import io.getstream.feeds.android.client.api.model.FeedVisibility
 import io.getstream.feeds.android.client.api.state.Feed
+import io.getstream.feeds.android.client.api.state.InsertionAction
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.network.models.ActivityFeedbackRequest
 import io.getstream.feeds.android.network.models.AddReactionRequest
@@ -78,6 +79,7 @@ constructor(private val application: Application, loginManager: LoginManager) : 
 
     private val _createContentState = MutableStateFlow(CreateContentState.Hidden)
     val createContentState: StateFlow<CreateContentState> = _createContentState.asStateFlow()
+    private var isComposingStory = false
 
     val pollController = FeedPollController(viewModelScope, loginManager)
 
@@ -92,7 +94,6 @@ constructor(private val application: Application, loginManager: LoginManager) : 
         viewState.withFirstContent(viewModelScope) {
             stories.getOrCreate().notifyOnFailure { "Error getting the stories" }
             ownStories.getOrCreate()
-            stories.followSelfIfNeeded(ownStories.fid)
         }
         viewState.withFirstContent(viewModelScope) { notifications.getOrCreate() }
     }
@@ -187,6 +188,12 @@ constructor(private val application: Application, loginManager: LoginManager) : 
     }
 
     fun onCreatePostClick() {
+        isComposingStory = false
+        _createContentState.value = CreateContentState.Composing
+    }
+
+    fun onCreateStoryClick() {
+        isComposingStory = true
         _createContentState.value = CreateContentState.Composing
     }
 
@@ -194,7 +201,7 @@ constructor(private val application: Application, loginManager: LoginManager) : 
         _createContentState.value = CreateContentState.Hidden
     }
 
-    fun onCreatePost(text: String, attachments: List<Uri>, isStory: Boolean) {
+    fun onContentSubmit(text: String, attachments: List<Uri>) {
         _createContentState.value = CreateContentState.Posting
 
         viewState.withFirstContent(viewModelScope) {
@@ -208,26 +215,24 @@ constructor(private val application: Application, loginManager: LoginManager) : 
                         return@withFirstContent
                     }
 
-            val postingFeed = if (isStory) ownStories else ownTimeline
+            val postingFeed = if (isComposingStory) ownStories else ownTimeline
 
             val result =
                 postingFeed
                     .addActivity(
                         request =
-                            addActivityRequest(postingFeed.fid, text, isStory, attachmentFiles),
+                            addActivityRequest(
+                                feedId = postingFeed.fid,
+                                text = text,
+                                isStory = isComposingStory,
+                                attachments = attachmentFiles,
+                            ),
                         attachmentUploadProgress = { file, progress ->
                             Log.d(TAG, "Uploading attachment: ${file.type}, progress: $progress")
                         },
                     )
                     .logResult(TAG, "Creating activity with text: $text")
                     .notifyOnFailure { "Failed to create post" }
-                    .onSuccess {
-                        // Creating a story doesn't trigger an update to aggregated activities
-                        // (stories are aggregated by user), so we refetch after posting
-                        if (isStory) {
-                            stories.getOrCreate()
-                        }
-                    }
 
             deleteFiles(attachmentFiles)
 
@@ -239,9 +244,9 @@ constructor(private val application: Application, loginManager: LoginManager) : 
         }
     }
 
-    fun onStoryWatched(storyId: String) {
+    fun onStoryWatched(storyId: String, isOwnStory: Boolean) {
         viewState.withFirstContent(viewModelScope) {
-            stories
+            (if (isOwnStory) ownStories else stories)
                 .markActivity(MarkActivityRequest(markWatched = listOf(storyId)))
                 .notifyOnFailure { "Failed to mark story as watched" }
         }
@@ -291,6 +296,13 @@ constructor(private val application: Application, loginManager: LoginManager) : 
         val storiesQuery = feedQuery(Feeds.stories(userId), userId)
         val ownStoriesQuery = feedQuery(Feeds.story(userId), userId)
 
+        // Since stories are sorted chronologically (oldest first), we add new ones at the end
+        val ownStories =
+            client.feed(
+                query = ownStoriesQuery,
+                onNewActivity = { _, _, _ -> InsertionAction.AddToEnd },
+            )
+
         return ViewState(
             client = client,
             userId = userId,
@@ -298,7 +310,7 @@ constructor(private val application: Application, loginManager: LoginManager) : 
             timeline = client.feed(timelineQuery),
             ownTimeline = client.feed(Feeds.user(userId)),
             stories = client.feed(storiesQuery),
-            ownStories = client.feed(ownStoriesQuery),
+            ownStories = ownStories,
             notifications = client.feed(Feeds.notifications(userId)),
         )
     }
