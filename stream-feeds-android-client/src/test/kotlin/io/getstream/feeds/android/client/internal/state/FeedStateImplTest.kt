@@ -747,13 +747,26 @@ internal class FeedStateImplTest {
                 targetFid = "user:test",
                 status = FollowStatus.Pending,
             )
+        val newSentRequest =
+            followData(
+                sourceFid = "user:test",
+                targetFid = "user:target-4",
+                status = FollowStatus.Pending,
+            )
         val nonMatchingFollow = followData(sourceFid = "user:other-1", targetFid = "user:other-2")
         val updatedFollowing2 = following2.copy(pushPreference = "disabled")
         val updatedFollower2 = follower2.copy(pushPreference = "disabled")
 
         val updates =
             ModelUpdates(
-                added = listOf(newFollowing, newFollower, newPendingRequest, nonMatchingFollow),
+                added =
+                    listOf(
+                        newFollowing,
+                        newFollower,
+                        newPendingRequest,
+                        newSentRequest,
+                        nonMatchingFollow,
+                    ),
                 updated = listOf(updatedFollowing2, updatedFollower2, nonMatchingFollow),
                 removedIds = setOf(following1.id, follower1.id, pendingRequest.id),
             )

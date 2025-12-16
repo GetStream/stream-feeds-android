@@ -290,7 +290,7 @@ internal class FeedStateImpl(
 
         updates.added.forEach {
             when {
-                it.isFollowRequest && (it.sourceFeed.fid == fid || it.targetFeed.fid == fid) -> {
+                it.isFollowRequest && it.targetFeed.fid == fid -> {
                     newRequests += it
                 }
                 it.isFollowing(fid) -> {
