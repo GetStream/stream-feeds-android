@@ -20,6 +20,7 @@ import io.getstream.android.core.api.filter.equal
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.state.InsertionAction
 import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
@@ -369,6 +370,26 @@ internal class FeedEventHandlerTest(
                     name = "FollowUpdated non-matching feed",
                     event = FollowUpdated(nonMatchingFollow),
                     verifyBlock = { state -> state wasNot called },
+                ),
+                testParams<FeedStateUpdates>(
+                    name = "FollowBatchUpdate always notifies state",
+                    event =
+                        StateUpdateEvent.FollowBatchUpdate(
+                            ModelUpdates(
+                                added = listOf(matchingFollow, nonMatchingFollow),
+                                updated = listOf(matchingFollow, nonMatchingFollow),
+                                removedIds = setOf("abc"),
+                            )
+                        ),
+                    verifyBlock = { state ->
+                        state.onFollowsUpdated(
+                            ModelUpdates(
+                                added = listOf(matchingFollow, nonMatchingFollow),
+                                updated = listOf(matchingFollow, nonMatchingFollow),
+                                removedIds = setOf("abc"),
+                            )
+                        )
+                    },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "NotificationFeedUpdated matching feed",

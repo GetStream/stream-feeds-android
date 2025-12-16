@@ -24,8 +24,10 @@ import io.getstream.android.core.api.model.value.StreamApiKey
 import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.AppData
+import io.getstream.feeds.android.client.api.model.BatchFollowData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsConfig
+import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
 import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.api.state.Activity
@@ -70,8 +72,10 @@ import io.getstream.feeds.android.network.models.CreateCollectionsResponse
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.network.models.DeleteCollectionsResponse
+import io.getstream.feeds.android.network.models.FollowBatchRequest
 import io.getstream.feeds.android.network.models.ListDevicesResponse
 import io.getstream.feeds.android.network.models.ReadCollectionsResponse
+import io.getstream.feeds.android.network.models.UnfollowBatchRequest
 import io.getstream.feeds.android.network.models.UpdateCollectionsRequest
 import io.getstream.feeds.android.network.models.UpdateCollectionsResponse
 import io.getstream.feeds.android.network.models.UpsertPushPreferencesRequest
@@ -545,6 +549,26 @@ public interface FeedsClient {
      * @return A [Result] indicating success or failure of the deletion operation.
      */
     public suspend fun deleteImage(url: String): Result<Unit>
+
+    /**
+     * Creates follow relationships in batch. Differently from [Feed.follow], this operation is
+     * idempotent: if any of the requested follow relationships already exists, the operation still
+     * succeeds and returns the existing data.
+     *
+     * @param request The request containing the list of follow relationships to create.
+     * @return The [BatchFollowData] containing the relevant follow data.
+     */
+    public suspend fun getOrCreateFollows(request: FollowBatchRequest): Result<BatchFollowData>
+
+    /**
+     * Deletes follow relationships in batch. Differently from [Feed.unfollow], this operation is
+     * idempotent: if any of the requested follow relationships already **does not** exist, the
+     * operation still succeeds and returns the ones that were actually deleted.
+     *
+     * @param request The request containing the list of follow relationships to delete.
+     * @return A list containing the deleted [FollowData].
+     */
+    public suspend fun getOrCreateUnfollows(request: UnfollowBatchRequest): Result<List<FollowData>>
 
     /**
      * Provides the API key used for authentication and service access.

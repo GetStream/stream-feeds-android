@@ -17,6 +17,7 @@
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.feeds.android.client.api.model.FollowData
+import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.state.query.FollowsQuery
 import io.getstream.feeds.android.client.api.state.query.FollowsSort
 import io.getstream.feeds.android.client.internal.state.query.FollowsQueryConfig
@@ -91,6 +92,31 @@ internal class FollowListStateImplTest {
         val remainingFollows = followListState.follows.value
         assertEquals(listOf(initialFollows[1]), remainingFollows)
     }
+
+    @Test
+    fun `on onFollowsUpdated with mixed operations, apply all updates and maintain sort`() =
+        runTest {
+            val follow1 = followData("user-1", "user-2", createdAt = 3000)
+            val follow2 = followData("user-2", "user-3", createdAt = 2000)
+            val follow3 = followData("user-3", "user-4", createdAt = 1000)
+            val initialFollows = listOf(follow1, follow2, follow3)
+            val paginationResult = defaultPaginationResult(initialFollows)
+            followListState.onQueryMoreFollows(paginationResult, queryConfig)
+
+            val newFollow = followData("user-5", "user-6", createdAt = 2500)
+            val updatedFollow2 = follow2.copy(pushPreference = "disabled")
+            val updates =
+                ModelUpdates(
+                    added = listOf(newFollow),
+                    updated = listOf(updatedFollow2),
+                    removedIds = setOf(follow3.id),
+                )
+
+            followListState.onFollowsUpdated(updates)
+
+            val expectedFollows = listOf(follow1, newFollow, updatedFollow2)
+            assertEquals(expectedFollows, followListState.follows.value)
+        }
 
     companion object {
         private val queryConfig = FollowsQueryConfig(filter = null, sort = FollowsSort.Default)

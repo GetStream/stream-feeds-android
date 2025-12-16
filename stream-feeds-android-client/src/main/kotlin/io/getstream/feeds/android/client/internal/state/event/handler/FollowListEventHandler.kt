@@ -16,6 +16,8 @@
 
 package io.getstream.feeds.android.client.internal.state.event.handler
 
+import io.getstream.feeds.android.client.api.model.FollowData
+import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.state.query.FollowsFilter
 import io.getstream.feeds.android.client.internal.state.FollowListStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
@@ -46,6 +48,18 @@ internal class FollowListEventHandler(
                     // We remove elements that used to match the filter but no longer do
                     state.onFollowRemoved(event.follow)
                 }
+            }
+
+            is StateUpdateEvent.FollowBatchUpdate -> {
+                val added = event.updates.added.filter { it matches filter }
+                // We remove elements that used to match the filter but no longer do
+                val (updated, removed) = event.updates.updated.partition { it matches filter }
+                val removedIds = event.updates.removedIds.toMutableSet()
+                removed.mapTo(removedIds, FollowData::id)
+
+                state.onFollowsUpdated(
+                    ModelUpdates(added = added, updated = updated, removedIds = removedIds)
+                )
             }
 
             else -> {}

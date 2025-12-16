@@ -148,7 +148,6 @@ public object Serializer {
             .add(io.getstream.feeds.android.network.models.ImageSize.Resize.ResizeAdapter())
             .add(io.getstream.feeds.android.network.models.LLMRule.Action.ActionAdapter())
             .add(io.getstream.feeds.android.network.models.OCRRule.Action.ActionAdapter())
-            .add(io.getstream.feeds.android.network.models.OwnBatchRequest.Fields.FieldsAdapter())
             .add(
                 io.getstream.feeds.android.network.models.PushPreferenceInput.CallLevel
                     .CallLevelAdapter()

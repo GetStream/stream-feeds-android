@@ -17,6 +17,7 @@
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.android.core.result.runSafely
+import io.getstream.feeds.android.client.api.model.BatchFollowData
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
@@ -34,10 +35,13 @@ import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.client.internal.state.query.toRequest
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.AcceptFollowRequest
+import io.getstream.feeds.android.network.models.FollowBatchRequest
 import io.getstream.feeds.android.network.models.FollowRequest
+import io.getstream.feeds.android.network.models.FollowResponse
 import io.getstream.feeds.android.network.models.QueryFeedMembersRequest
 import io.getstream.feeds.android.network.models.QueryFollowsRequest
 import io.getstream.feeds.android.network.models.RejectFollowRequest
+import io.getstream.feeds.android.network.models.UnfollowBatchRequest
 import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.network.models.UpdateFeedRequest
 
@@ -133,6 +137,22 @@ internal class FeedsRepositoryImpl(private val api: FeedsApi) : FeedsRepository 
 
     override suspend fun unfollow(source: FeedId, target: FeedId): Result<FollowData> = runSafely {
         api.unfollow(source = source.rawValue, target = target.rawValue).follow.toModel()
+    }
+
+    override suspend fun getOrCreateFollows(request: FollowBatchRequest): Result<BatchFollowData> =
+        runSafely {
+            val response = api.getOrCreateFollows(request)
+
+            BatchFollowData(
+                created = response.created.map(FollowResponse::toModel),
+                follows = response.follows.map(FollowResponse::toModel),
+            )
+        }
+
+    override suspend fun getOrCreateUnfollows(
+        request: UnfollowBatchRequest
+    ): Result<List<FollowData>> = runSafely {
+        api.getOrCreateUnfollows(request).follows.map(FollowResponse::toModel)
     }
 
     override suspend fun acceptFollow(request: AcceptFollowRequest): Result<FollowData> =

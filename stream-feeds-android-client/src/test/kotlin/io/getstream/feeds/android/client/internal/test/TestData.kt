@@ -54,6 +54,7 @@ import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.getstream.feeds.android.network.models.FeedResponse
 import io.getstream.feeds.android.network.models.FeedSuggestionResponse
 import io.getstream.feeds.android.network.models.FeedsReactionResponse
+import io.getstream.feeds.android.network.models.FollowBatchResponse
 import io.getstream.feeds.android.network.models.FollowResponse
 import io.getstream.feeds.android.network.models.GetFollowSuggestionsResponse
 import io.getstream.feeds.android.network.models.GetOrCreateFeedResponse
@@ -67,6 +68,7 @@ import io.getstream.feeds.android.network.models.QueryFollowsResponse
 import io.getstream.feeds.android.network.models.RejectFeedMemberInviteResponse
 import io.getstream.feeds.android.network.models.RejectFollowResponse
 import io.getstream.feeds.android.network.models.SingleFollowResponse
+import io.getstream.feeds.android.network.models.UnfollowBatchResponse
 import io.getstream.feeds.android.network.models.UnpinActivityResponse
 import io.getstream.feeds.android.network.models.UpdateFeedMembersResponse
 import io.getstream.feeds.android.network.models.UpdateFeedResponse
@@ -425,6 +427,9 @@ internal object TestData {
         targetFid: String = "user:user-2",
         createdAt: Long = 1000,
         updatedAt: Long = 1000,
+        status: FollowStatus = FollowStatus.Accepted,
+        requestAcceptedAt: Date? = if (status == FollowStatus.Accepted) Date(createdAt) else null,
+        requestRejectedAt: Date? = null,
     ): FollowData {
         val source = FeedId(sourceFid)
         val target = FeedId(targetFid)
@@ -433,8 +438,8 @@ internal object TestData {
             custom = emptyMap(),
             followerRole = "user",
             pushPreference = "all",
-            requestAcceptedAt = Date(createdAt),
-            requestRejectedAt = null,
+            requestAcceptedAt = requestAcceptedAt,
+            requestRejectedAt = requestRejectedAt,
             sourceFeed =
                 FeedData(
                     createdAt = Date(createdAt),
@@ -457,7 +462,7 @@ internal object TestData {
                     updatedAt = Date(updatedAt),
                     visibility = "public",
                 ),
-            status = FollowStatus.Accepted,
+            status = status,
             targetFeed =
                 FeedData(
                     createdAt = Date(createdAt),
@@ -659,13 +664,13 @@ internal object TestData {
             velocityFilterConfig = null,
         )
 
-    fun feedResponse() =
+    fun feedResponse(group: String = "user", id: String = "feed-1") =
         FeedResponse(
-            id = "feed-1",
-            groupId = "user",
+            id = id,
+            groupId = group,
             name = "Test Feed",
             description = "Test feed description",
-            feed = "user:feed-1",
+            feed = "$group:$id",
             followerCount = 0,
             followingCount = 0,
             memberCount = 0,
@@ -676,12 +681,15 @@ internal object TestData {
             custom = emptyMap(),
         )
 
-    fun followResponse() =
+    fun followResponse(
+        source: FeedResponse = feedResponse(),
+        target: FeedResponse = feedResponse(),
+    ) =
         FollowResponse(
             createdAt = Date(1000),
             updatedAt = Date(1000),
-            sourceFeed = feedResponse(),
-            targetFeed = feedResponse(),
+            sourceFeed = source,
+            targetFeed = target,
             status = FollowResponse.Status.Accepted,
             pushPreference = FollowResponse.PushPreference.All,
             followerRole = "user",
@@ -737,6 +745,14 @@ internal object TestData {
 
     fun rejectFollowResponse() =
         RejectFollowResponse(duration = "duration", follow = followResponse())
+
+    fun followBatchResponse(
+        created: List<FollowResponse> = emptyList(),
+        follows: List<FollowResponse> = emptyList(),
+    ) = FollowBatchResponse(duration = "duration", created = created, follows = follows)
+
+    fun unfollowBatchResponse(follows: List<FollowResponse> = emptyList()) =
+        UnfollowBatchResponse(duration = "duration", follows = follows)
 
     fun updateFeedResponse() = UpdateFeedResponse(duration = "duration", feed = feedResponse())
 

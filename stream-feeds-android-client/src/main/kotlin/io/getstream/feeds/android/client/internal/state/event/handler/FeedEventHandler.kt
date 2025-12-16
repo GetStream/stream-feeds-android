@@ -187,6 +187,10 @@ internal class FeedEventHandler(
                 }
             }
 
+            is StateUpdateEvent.FollowBatchUpdate -> {
+                state.onFollowsUpdated(event.updates)
+            }
+
             is StateUpdateEvent.NotificationFeedUpdated -> {
                 if (event.fid == query.fid.rawValue) {
                     state.onNotificationFeedUpdated(

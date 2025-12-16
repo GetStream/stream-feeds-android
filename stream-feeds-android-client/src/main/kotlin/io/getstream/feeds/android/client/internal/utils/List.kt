@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.utils
 
 import io.getstream.android.core.api.sort.CompositeComparator
 import io.getstream.android.core.api.sort.Sort
+import io.getstream.feeds.android.client.api.model.ModelUpdates
 
 /**
  * Updates elements in the list that match the given [filter] by applying the [update] function.
@@ -379,3 +380,26 @@ internal fun <T> List<T>.mergeSorted(
     idSelector: (T) -> String,
     sort: List<Sort<T>>,
 ): List<T> = mergeSorted(other, idSelector, CompositeComparator(sort))
+
+internal fun <T> List<T>.applyUpdates(
+    updates: ModelUpdates<T>,
+    idSelector: (T) -> String,
+    comparator: Comparator<in T>? = null,
+): List<T> {
+    // Create a map for efficient lookup of updated elements
+    val updatesMap = updates.updated.associateBy(idSelector)
+
+    return this.mapNotNullTo(mutableListOf<T>()) { element ->
+            val id = idSelector(element)
+            // Apply updates and filter out removed elements in a single pass
+            if (id in updates.removedIds) {
+                null
+            } else {
+                updatesMap[id] ?: element
+            }
+        }
+        .apply {
+            addAll(updates.added)
+            comparator?.let(this::sortWith)
+        }
+}

@@ -18,12 +18,7 @@
 
 package io.getstream.feeds.android.network.models
 
-import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonReader
-import com.squareup.moshi.JsonWriter
-import com.squareup.moshi.ToJson
 import kotlin.collections.*
 import kotlin.collections.List
 import kotlin.io.*
@@ -34,42 +29,5 @@ import kotlin.io.*
  */
 public data class OwnBatchRequest(
     @Json(name = "feeds") public val feeds: kotlin.collections.List<kotlin.String> = emptyList(),
-    @Json(name = "fields") public val fields: Fields? = null,
-) {
-
-    /** Fields Enum */
-    public sealed class Fields(public val value: kotlin.String) {
-        override fun toString(): String = value
-
-        public companion object {
-            public fun fromString(s: kotlin.String): Fields =
-                when (s) {
-                    "own_capabilities" -> OwnCapabilities
-                    "own_follows" -> OwnFollows
-                    "own_membership" -> OwnMembership
-                    else -> Unknown(s)
-                }
-        }
-
-        public object OwnCapabilities : Fields("own_capabilities")
-
-        public object OwnFollows : Fields("own_follows")
-
-        public object OwnMembership : Fields("own_membership")
-
-        public data class Unknown(val unknownValue: kotlin.String) : Fields(unknownValue)
-
-        public class FieldsAdapter : JsonAdapter<Fields>() {
-            @FromJson
-            override fun fromJson(reader: JsonReader): Fields? {
-                val s = reader.nextString() ?: return null
-                return Fields.fromString(s)
-            }
-
-            @ToJson
-            override fun toJson(writer: JsonWriter, value: Fields?) {
-                writer.value(value?.value)
-            }
-        }
-    }
-}
+    @Json(name = "fields") public val fields: kotlin.collections.List<kotlin.String>? = emptyList(),
+)

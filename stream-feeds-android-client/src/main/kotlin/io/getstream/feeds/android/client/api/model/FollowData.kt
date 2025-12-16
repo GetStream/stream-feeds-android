@@ -51,8 +51,7 @@ public data class FollowData(
      * Unique identifier for the follow relationship, generated from the source and target feed IDs
      * and the creation timestamp. Used for simpler identification of follow relationships.
      */
-    public val id: String
-        get() = "${sourceFeed.fid}${targetFeed.fid}${createdAt.time}"
+    public val id: String = "${sourceFeed.fid}${targetFeed.fid}${createdAt.time}"
 }
 
 /**

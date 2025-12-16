@@ -16,6 +16,7 @@
 
 package io.getstream.feeds.android.client.internal.repository
 
+import io.getstream.feeds.android.client.api.model.BatchFollowData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationData
@@ -30,6 +31,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.acceptFollowResp
 import io.getstream.feeds.android.client.internal.test.TestData.activityResponse
 import io.getstream.feeds.android.client.internal.test.TestData.feedMemberResponse
 import io.getstream.feeds.android.client.internal.test.TestData.feedResponse
+import io.getstream.feeds.android.client.internal.test.TestData.followBatchResponse
 import io.getstream.feeds.android.client.internal.test.TestData.followResponse
 import io.getstream.feeds.android.client.internal.test.TestData.followSuggestionsResponse
 import io.getstream.feeds.android.client.internal.test.TestData.getOrCreateFeedResponse
@@ -39,16 +41,20 @@ import io.getstream.feeds.android.client.internal.test.TestData.queryFollowsResp
 import io.getstream.feeds.android.client.internal.test.TestData.rejectFeedMemberResponse
 import io.getstream.feeds.android.client.internal.test.TestData.rejectFollowResponse
 import io.getstream.feeds.android.client.internal.test.TestData.singleFollowResponse
+import io.getstream.feeds.android.client.internal.test.TestData.unfollowBatchResponse
 import io.getstream.feeds.android.client.internal.test.TestData.updateFeedMembersResponse
 import io.getstream.feeds.android.client.internal.test.TestData.updateFeedResponse
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.AcceptFollowRequest
 import io.getstream.feeds.android.network.models.ActivityResponse
 import io.getstream.feeds.android.network.models.FeedSuggestionResponse
+import io.getstream.feeds.android.network.models.FollowBatchRequest
+import io.getstream.feeds.android.network.models.FollowPair
 import io.getstream.feeds.android.network.models.FollowRequest
 import io.getstream.feeds.android.network.models.QueryFeedMembersRequest
 import io.getstream.feeds.android.network.models.QueryFollowsRequest
 import io.getstream.feeds.android.network.models.RejectFollowRequest
+import io.getstream.feeds.android.network.models.UnfollowBatchRequest
 import io.getstream.feeds.android.network.models.UnfollowResponse
 import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.network.models.UpdateFeedRequest
@@ -285,6 +291,50 @@ internal class FeedsRepositoryImplTest {
                     models = listOf(feedMemberResponse().toModel()),
                     pagination = PaginationData(next = "next", previous = "prev"),
                 ),
+        )
+    }
+
+    @Test
+    fun `on getOrCreateFollows, delegate to api`() = runTest {
+        val follow1 = followResponse()
+        val follow2 =
+            followResponse(
+                source = feedResponse(id = "user-2"),
+                target = feedResponse(id = "user-3"),
+            )
+        val apiResult =
+            followBatchResponse(created = listOf(follow1), follows = listOf(follow1, follow2))
+        val request = FollowBatchRequest(follows = listOf(FollowRequest("user-1", "user-2")))
+
+        testDelegation(
+            apiFunction = { feedsApi.getOrCreateFollows(request) },
+            repositoryCall = { repository.getOrCreateFollows(request) },
+            apiResult = apiResult,
+            repositoryResult =
+                BatchFollowData(
+                    created = listOf(follow1.toModel()),
+                    follows = listOf(follow1.toModel(), follow2.toModel()),
+                ),
+        )
+    }
+
+    @Test
+    fun `on getOrCreateUnfollows, delegate to api`() = runTest {
+        val follow1 = followResponse()
+        val follow2 =
+            followResponse(
+                source = feedResponse(id = "user-2"),
+                target = feedResponse(id = "user-3"),
+            )
+        val apiResult = unfollowBatchResponse(follows = listOf(follow1, follow2))
+        val request =
+            UnfollowBatchRequest(follows = listOf(FollowPair("user:user-1", "user:user-2")))
+
+        testDelegation(
+            apiFunction = { feedsApi.getOrCreateUnfollows(request) },
+            repositoryCall = { repository.getOrCreateUnfollows(request) },
+            apiResult = apiResult,
+            repositoryResult = listOf(follow1.toModel(), follow2.toModel()),
         )
     }
 }

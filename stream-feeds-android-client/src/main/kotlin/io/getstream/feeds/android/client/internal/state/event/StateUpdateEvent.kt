@@ -164,6 +164,8 @@ internal sealed interface StateUpdateEvent {
 
     data class FollowUpdated(val follow: FollowData) : StateUpdateEvent
 
+    data class FollowBatchUpdate(val updates: ModelUpdates<FollowData>) : StateUpdateEvent
+
     data class NotificationFeedUpdated(
         val fid: String,
         val aggregatedActivities: List<AggregatedActivityData>,
