@@ -22,6 +22,7 @@ import io.getstream.android.core.api.StreamClient
 import io.getstream.android.core.api.authentication.StreamTokenManager
 import io.getstream.android.core.api.authentication.StreamTokenProvider
 import io.getstream.android.core.api.log.StreamLoggerProvider
+import io.getstream.android.core.api.model.StreamUser
 import io.getstream.android.core.api.model.config.StreamClientSerializationConfig
 import io.getstream.android.core.api.model.config.StreamHttpConfig
 import io.getstream.android.core.api.model.exceptions.StreamClientException
@@ -81,7 +82,7 @@ internal fun createStreamCoreClient(
     scope: CoroutineScope,
     context: Context,
     apiKey: StreamApiKey,
-    userId: StreamUserId,
+    user: StreamUser,
     wsUrl: StreamWsUrl,
     clientInfoHeader: StreamHttpClientInfoHeader,
     tokenProvider: StreamTokenProvider,
@@ -96,7 +97,7 @@ internal fun createStreamCoreClient(
             maxWeakSubscriptions = 250,
         )
     val singleFlight = StreamSingleFlightProcessor(scope)
-    val tokenManager = StreamTokenManager(userId, tokenProvider, singleFlight)
+    val tokenManager = StreamTokenManager(user.id, tokenProvider, singleFlight)
     val serialQueue =
         StreamSerialProcessingQueue(
             logger = logProvider.taggedLogger("SCSerialProcessing"),
@@ -120,7 +121,7 @@ internal fun createStreamCoreClient(
         scope = scope,
         context = context,
         apiKey = apiKey,
-        userId = userId,
+        user = user,
         wsUrl = wsUrl,
         products = listOf("feeds"),
         clientInfoHeader = clientInfoHeader,
@@ -174,8 +175,15 @@ internal fun createFeedsClient(
     // Processing
     val singleFlight = StreamSingleFlightProcessor(clientScope)
 
-    // UserID
+    // User
     val userId = StreamUserId.fromString(user.id)
+    val streamUser =
+        StreamUser(
+            id = userId,
+            name = user.name,
+            imageURL = user.imageURL,
+            customData = user.customData,
+        )
 
     // Setup network
     val endpointConfig = EndpointConfig.PRODUCTION // TODO: Make this configurable
@@ -196,7 +204,7 @@ internal fun createFeedsClient(
             clientScope,
             context,
             apiKey,
-            userId,
+            streamUser,
             StreamWsUrl.fromString(endpointConfig.wsUrl),
             clientInfoHeader,
             tokenProvider,
