@@ -48,7 +48,7 @@ internal class OnNewActivityDefaultTest(
         private val feedId = FeedId("group", "feed-1")
         private const val currentUserId = "current-user"
         private const val otherUserId = "other-user"
-        private val filter = ActivitiesFilterField.type.equal("post")
+        private val filter = ActivitiesFilterField.activityType.equal("post")
         private val matchingActivity = activityData(type = "post", user = userData(currentUserId))
         private val nonMatchingUserActivity =
             activityData(type = "post", user = userData(otherUserId))
