@@ -22,7 +22,6 @@ package io.getstream.feeds.android.client.api.model
  * @property id The unique identifier for the user.
  * @property name The name of the user (optional).
  * @property imageURL The URL of the user's image (optional).
- * @property role The role of the user (default "user").
  * @property customData Custom data associated with the user, represented as a map (default empty
  *   map).
  */
@@ -30,6 +29,5 @@ public data class User(
     public val id: String,
     public val name: String? = null,
     public val imageURL: String? = null,
-    public val role: String = "user",
     public val customData: Map<String, Any> = emptyMap(),
 )
