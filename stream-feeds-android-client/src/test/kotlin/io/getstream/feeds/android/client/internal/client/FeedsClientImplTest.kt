@@ -42,7 +42,6 @@ import io.getstream.feeds.android.client.api.state.query.MembersQuery
 import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
-import io.getstream.feeds.android.client.internal.client.reconnect.ConnectionRecoveryHandler
 import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.AppRepository
@@ -88,7 +87,6 @@ internal class FeedsClientImplTest {
         mockk(relaxed = true)
     private val apiKey: StreamApiKey = StreamApiKey.fromString("test-api-key")
     private val user: User = User(id = "test-user")
-    private val connectionRecoveryHandler: ConnectionRecoveryHandler = mockk(relaxed = true)
     private val activitiesRepository: ActivitiesRepository = mockk(relaxed = true)
     private val appRepository: AppRepository = mockk(relaxed = true)
     private val bookmarksRepository: BookmarksRepository = mockk(relaxed = true)
@@ -118,7 +116,6 @@ internal class FeedsClientImplTest {
             stateEventEnricher = stateEventEnricher,
             apiKey = apiKey,
             user = user,
-            connectionRecoveryHandler = connectionRecoveryHandler,
             activitiesRepository = activitiesRepository,
             appRepository = appRepository,
             bookmarksRepository = bookmarksRepository,
