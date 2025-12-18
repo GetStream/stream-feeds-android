@@ -127,7 +127,7 @@ public sealed interface ModerationConfigsSortField : SortField<ModerationConfigD
      */
     public data object Key :
         ModerationConfigsSortField,
-        SortField<ModerationConfigData> by SortField.create("id", ModerationConfigData::key)
+        SortField<ModerationConfigData> by SortField.create("key", ModerationConfigData::key)
 
     /**
      * Sort by the creation timestamp of the configuration. This field allows sorting configurations
@@ -141,6 +141,14 @@ public sealed interface ModerationConfigsSortField : SortField<ModerationConfigD
         )
 
     /**
+     * Sort by the team associated with the configuration. This field allows sorting configurations
+     * by team (alphabetical order).
+     */
+    public data object Team :
+        ModerationConfigsSortField,
+        SortField<ModerationConfigData> by SortField.create("team", ModerationConfigData::team)
+
+    /**
      * Sort by the last update timestamp of the configuration. This field allows sorting
      * configurations by when they were last updated (newest/oldest first).
      */
@@ -151,5 +159,3 @@ public sealed interface ModerationConfigsSortField : SortField<ModerationConfigD
             ModerationConfigData::updatedAt,
         )
 }
-
-/** Converts this [ModerationConfigsQuery] to a [QueryModerationConfigsRequest]. */

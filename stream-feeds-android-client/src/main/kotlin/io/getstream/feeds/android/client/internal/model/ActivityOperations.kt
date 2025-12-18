@@ -16,6 +16,7 @@
 
 package io.getstream.feeds.android.client.internal.model
 
+import io.getstream.android.core.api.model.location.LocationCoordinate
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.ActivityDataVisibility
 import io.getstream.feeds.android.client.api.model.BookmarkData
@@ -24,6 +25,7 @@ import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsert
+import io.getstream.feeds.android.network.models.ActivityLocation
 import io.getstream.feeds.android.network.models.ActivityResponse
 import kotlin.math.max
 
@@ -267,3 +269,5 @@ internal fun ActivityData.updateFeedOwnValues(values: FeedOwnValues): ActivityDa
                 ownMembership = values.membership,
             )
     )
+
+internal fun ActivityLocation.toCoordinate() = LocationCoordinate(lat.toDouble(), lng.toDouble())

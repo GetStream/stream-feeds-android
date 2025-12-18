@@ -67,7 +67,7 @@ internal class ActivityListEventHandlerTest(
     override val handler = ActivityListEventHandler(testFilter, userId, state)
 
     companion object {
-        private val testFilter = ActivitiesFilterField.type.equal("post")
+        private val testFilter = ActivitiesFilterField.activityType.equal("post")
         private const val userId = "user-1"
         private val fidScope = FidScope.of("feed-1")
 
