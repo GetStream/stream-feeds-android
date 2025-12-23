@@ -33,9 +33,8 @@ streamAndroidCore = "2.0.0"
 symbolProcessingApi = "2.2.0-2.0.2"
 lifecycleProcess = "2.9.1"
 lifecycleViewModelCompose = "2.4.0"
-streamConventions = "0.4.0"
+streamConventions = "0.5.0"
 turbine = "1.2.1"
-mavenPublish = "0.34.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -102,4 +101,4 @@ arturbosch-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt"
 stream-project = { id = "io.getstream.project", version.ref = "streamConventions" }
 stream-android-library = { id = "io.getstream.android.library", version.ref = "streamConventions" }
 stream-android-application = { id = "io.getstream.android.application", version.ref = "streamConventions" }
-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
+stream-publish = { id = "io.getstream.publish", version.ref = "streamConventions" }
