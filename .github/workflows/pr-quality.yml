@@ -15,5 +15,5 @@ concurrency:
 
 jobs:
   pr-checklist:
-    uses: GetStream/android-ci-actions/.github/workflows/pr-quality.yml@main
+    uses: GetStream/stream-build-conventions-android/.github/workflows/pr-quality.yml@v0.6.0
     secrets: inherit
