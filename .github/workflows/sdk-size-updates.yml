@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   update-sdk-sizes:
-    uses: GetStream/stream-build-conventions-android/.github/workflows/sdk-size-updates.yml@v0.6.0
+    uses: GetStream/stream-build-conventions-android/.github/workflows/sdk-size-updates.yml@v0.6.1
     with:
       modules: "stream-feeds-android-client"
       metrics-project: "stream-feeds-android-metrics"
