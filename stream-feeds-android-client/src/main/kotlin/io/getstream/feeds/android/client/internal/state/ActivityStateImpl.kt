@@ -151,12 +151,12 @@ internal class ActivityStateImpl(
         updatePoll(poll.id) { update(poll) }
     }
 
-    override fun onPollVoteRemoved(vote: PollVoteData, pollId: String) {
-        updatePoll(pollId) { removeVote(vote, currentUserId) }
+    override fun onPollVoteRemoved(poll: PollData, vote: PollVoteData) {
+        updatePoll(poll.id) { removeVote(poll, vote, currentUserId) }
     }
 
-    override fun onPollVoteUpserted(vote: PollVoteData, pollId: String) {
-        updatePoll(pollId) { upsertVote(vote, currentUserId) }
+    override fun onPollVoteUpserted(poll: PollData, vote: PollVoteData) {
+        updatePoll(poll.id) { upsertVote(poll, vote, currentUserId) }
     }
 
     override fun onFeedOwnValuesUpdated(map: Map<FeedId, FeedOwnValues>) {
@@ -302,16 +302,16 @@ internal interface ActivityStateUpdates {
     /**
      * Called when a vote is removed from the poll.
      *
+     * @param poll The poll associated with the removed vote.
      * @param vote The vote that was removed.
-     * @param pollId The ID of the poll associated with the removed vote.
      */
-    fun onPollVoteRemoved(vote: PollVoteData, pollId: String)
+    fun onPollVoteRemoved(poll: PollData, vote: PollVoteData)
 
     /**
      * Called when a vote is casted or changed in the poll.
      *
+     * @param poll The poll associated with the vote.
      * @param vote The vote.
-     * @param pollId The ID of the poll associated with the vote.
      */
-    fun onPollVoteUpserted(vote: PollVoteData, pollId: String)
+    fun onPollVoteUpserted(poll: PollData, vote: PollVoteData)
 }

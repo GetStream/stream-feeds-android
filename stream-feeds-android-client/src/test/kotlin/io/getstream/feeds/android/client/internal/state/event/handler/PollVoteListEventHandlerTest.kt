@@ -22,6 +22,7 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.P
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteCasted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteChanged
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.PollVoteRemoved
+import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
 import io.mockk.MockKVerificationScope
 import io.mockk.called
@@ -57,32 +58,32 @@ internal class PollVoteListEventHandlerTest(
                 ),
                 testParams<PollVoteListStateUpdates>(
                     name = "PollVoteCasted matching poll",
-                    event = PollVoteCasted(pollId, pollVoteData()),
+                    event = PollVoteCasted(pollData(pollId), pollVoteData()),
                     verifyBlock = { state -> state.pollVoteUpserted(pollVoteData()) },
                 ),
                 testParams<PollVoteListStateUpdates>(
                     name = "PollVoteCasted non-matching poll",
-                    event = PollVoteCasted(otherPollId, pollVoteData()),
+                    event = PollVoteCasted(pollData(otherPollId), pollVoteData()),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<PollVoteListStateUpdates>(
                     name = "PollVoteChanged matching poll",
-                    event = PollVoteChanged(pollId, pollVoteData()),
+                    event = PollVoteChanged(pollData(pollId), pollVoteData()),
                     verifyBlock = { state -> state.pollVoteUpserted(pollVoteData()) },
                 ),
                 testParams<PollVoteListStateUpdates>(
                     name = "PollVoteChanged non-matching poll",
-                    event = PollVoteChanged(otherPollId, pollVoteData()),
+                    event = PollVoteChanged(pollData(otherPollId), pollVoteData()),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<PollVoteListStateUpdates>(
                     name = "PollVoteRemoved matching poll",
-                    event = PollVoteRemoved(pollId, pollVoteData("poll-vote-1")),
+                    event = PollVoteRemoved(pollData(pollId), pollVoteData("poll-vote-1")),
                     verifyBlock = { state -> state.pollVoteRemoved("poll-vote-1") },
                 ),
                 testParams<PollVoteListStateUpdates>(
                     name = "PollVoteRemoved non-matching poll",
-                    event = PollVoteRemoved(otherPollId, pollVoteData("poll-vote-1")),
+                    event = PollVoteRemoved(pollData(otherPollId), pollVoteData("poll-vote-1")),
                     verifyBlock = { state -> state wasNot called },
                 ),
             )

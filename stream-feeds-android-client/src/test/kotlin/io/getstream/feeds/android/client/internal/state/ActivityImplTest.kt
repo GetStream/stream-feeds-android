@@ -58,7 +58,6 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Test
 
 internal class ActivityImplTest {
@@ -348,38 +347,37 @@ internal class ActivityImplTest {
         runTest {
             val poll = pollData("poll-1")
             val request = CastPollVoteRequest(vote = VoteData(optionId = "option-1"))
-            val vote = pollVoteData("vote-1", "poll-1", "option-1")
+            val vote = pollVoteData("vote-1", "poll-1", "option-1", userId = "currentUserId")
+            val updated = pollData("poll-1", "Updated Poll")
 
             setupActivityWithPoll(poll)
             coEvery { pollsRepository.castPollVote("activityId", "poll-1", request) } returns
-                Result.success(vote)
+                Result.success(vote to updated)
 
             val result = activity.castPollVote(request)
 
             assertEquals(vote, result.getOrNull())
-            val actualPoll = activity.state.poll.value!!
-            assertEquals(1, actualPoll.voteCount)
-            assertEquals(1, actualPoll.voteCountsByOption["option-1"])
-            assertEquals(listOf(vote), actualPoll.latestVotesByOption["option-1"])
-            verify { stateEventListener.onEvent(StateUpdateEvent.PollVoteCasted("poll-1", vote)) }
+            assertEquals(updated.copy(ownVotes = listOf(vote)), activity.state.poll.value)
+            verify { stateEventListener.onEvent(StateUpdateEvent.PollVoteCasted(updated, vote)) }
         }
 
     @Test
     fun `on deletePollVote when activity has poll, delegate to repository and update state`() =
         runTest {
             val poll = pollData("poll-1")
-            val vote = pollVoteData("vote-1", "poll-1", "option-1")
+            val vote = pollVoteData("vote-1", "poll-1", "option-1", userId = "currentUserId")
+            val updated = pollData("poll-1", "Updated Poll")
 
             setupActivityWithPoll(poll)
             coEvery {
                 pollsRepository.deletePollVote("activityId", "poll-1", "vote-1", "currentUserId")
-            } returns Result.success(vote)
+            } returns Result.success(vote to updated)
 
             val result = activity.deletePollVote("vote-1", "currentUserId")
 
             assertEquals(vote, result.getOrNull())
-            assertNotNull("Poll should still exist", activity.state.poll.value)
-            verify { stateEventListener.onEvent(StateUpdateEvent.PollVoteRemoved("poll-1", vote)) }
+            assertEquals(updated.copy(ownVotes = emptyList()), activity.state.poll.value)
+            verify { stateEventListener.onEvent(StateUpdateEvent.PollVoteRemoved(updated, vote)) }
         }
 
     @Test

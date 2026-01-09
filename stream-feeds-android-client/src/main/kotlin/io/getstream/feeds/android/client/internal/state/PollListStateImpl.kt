@@ -82,15 +82,15 @@ internal class PollListStateImpl(
         _polls.update { current -> current.updateIf({ it.id == poll.id }) { it.update(poll) } }
     }
 
-    override fun onPollVoteUpserted(pollId: String, vote: PollVoteData) {
+    override fun onPollVoteUpserted(poll: PollData, vote: PollVoteData) {
         _polls.update { current ->
-            current.updateIf({ it.id == pollId }) { it.upsertVote(vote, currentUserId) }
+            current.updateIf({ it.id == poll.id }) { it.upsertVote(poll, vote, currentUserId) }
         }
     }
 
-    override fun onPollVoteRemoved(pollId: String, vote: PollVoteData) {
+    override fun onPollVoteRemoved(poll: PollData, vote: PollVoteData) {
         _polls.update { current ->
-            current.updateIf({ it.id == pollId }) { it.removeVote(vote, currentUserId) }
+            current.updateIf({ it.id == poll.id }) { it.removeVote(poll, vote, currentUserId) }
         }
     }
 }
@@ -131,16 +131,16 @@ internal interface PollListStateUpdates {
     /**
      * Called when a poll vote is added or updated.
      *
-     * @param pollId The ID of the poll.
+     * @param poll The poll.
      * @param vote The vote that was added or updated.
      */
-    fun onPollVoteUpserted(pollId: String, vote: PollVoteData)
+    fun onPollVoteUpserted(poll: PollData, vote: PollVoteData)
 
     /**
      * Called when a poll vote is removed.
      *
-     * @param pollId The ID of the poll.
+     * @param poll The poll.
      * @param vote The vote that was removed.
      */
-    fun onPollVoteRemoved(pollId: String, vote: PollVoteData)
+    fun onPollVoteRemoved(poll: PollData, vote: PollVoteData)
 }

@@ -142,7 +142,7 @@ internal interface PollsRepository {
         activityId: String,
         pollId: String,
         request: CastPollVoteRequest,
-    ): Result<PollVoteData?>
+    ): Result<Pair<PollVoteData?, PollData?>>
 
     /**
      * Queries poll votes based on the provided query parameters.
@@ -164,5 +164,5 @@ internal interface PollsRepository {
         pollId: String,
         voteId: String,
         userId: String? = null,
-    ): Result<PollVoteData?>
+    ): Result<Pair<PollVoteData?, PollData?>>
 }

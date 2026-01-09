@@ -309,31 +309,37 @@ internal class ActivityImpl(
     }
 
     override suspend fun castPollVote(request: CastPollVoteRequest): Result<PollVoteData?> {
-        return poll().flatMap { poll ->
+        return poll().flatMap { currentPoll ->
             pollsRepository
-                .castPollVote(activityId = activityId, pollId = poll.id, request = request)
-                .onSuccess {
-                    it?.let { vote ->
-                        subscriptionManager.onEvent(StateUpdateEvent.PollVoteCasted(poll.id, vote))
+                .castPollVote(activityId = activityId, pollId = currentPoll.id, request = request)
+                .onSuccess { (vote, updatedPoll) ->
+                    if (vote != null && updatedPoll != null) {
+                        subscriptionManager.onEvent(
+                            StateUpdateEvent.PollVoteCasted(updatedPoll, vote)
+                        )
                     }
                 }
+                .map { it.first }
         }
     }
 
     override suspend fun deletePollVote(voteId: String, userId: String?): Result<PollVoteData?> {
-        return poll().flatMap { poll ->
+        return poll().flatMap { currentPoll ->
             pollsRepository
                 .deletePollVote(
                     activityId = activityId,
-                    pollId = poll.id,
+                    pollId = currentPoll.id,
                     voteId = voteId,
                     userId = userId,
                 )
-                .onSuccess {
-                    it?.let { vote ->
-                        subscriptionManager.onEvent(StateUpdateEvent.PollVoteRemoved(poll.id, vote))
+                .onSuccess { (vote, updatedPoll) ->
+                    if (vote != null && updatedPoll != null) {
+                        subscriptionManager.onEvent(
+                            StateUpdateEvent.PollVoteRemoved(updatedPoll, vote)
+                        )
                     }
                 }
+                .map { it.first }
         }
     }
 
