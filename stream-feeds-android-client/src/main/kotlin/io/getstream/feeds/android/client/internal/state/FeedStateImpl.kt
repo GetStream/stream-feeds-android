@@ -366,7 +366,7 @@ internal class FeedStateImpl(
         aggregatedActivities: List<AggregatedActivityData>,
         notificationStatus: NotificationStatusResponse?,
     ) {
-        updateAggregatedActivities(aggregatedActivities)
+        updateAggregatedActivities(aggregatedActivities, prependNew = true)
         _notificationStatus.update { notificationStatus }
     }
 
@@ -386,10 +386,21 @@ internal class FeedStateImpl(
         }
     }
 
-    private fun updateAggregatedActivities(aggregatedActivities: List<AggregatedActivityData>) {
-        val updatedMap = aggregatedActivities.associateBy(AggregatedActivityData::group)
+    private fun updateAggregatedActivities(
+        aggregatedActivities: List<AggregatedActivityData>,
+        prependNew: Boolean = false,
+    ) {
+        val updatedMap =
+            aggregatedActivities.associateByTo(mutableMapOf(), AggregatedActivityData::group)
 
-        _aggregatedActivities.update { current -> current.map { updatedMap[it.group] ?: it } }
+        _aggregatedActivities.update { current ->
+            current
+                .mapTo(mutableListOf()) { updatedMap.remove(it.group) ?: it }
+                .apply {
+                    val addIndex = if (prependNew) 0 else size
+                    addAll(addIndex, updatedMap.values)
+                }
+        }
     }
 
     private fun addFollow(follow: FollowData) {
