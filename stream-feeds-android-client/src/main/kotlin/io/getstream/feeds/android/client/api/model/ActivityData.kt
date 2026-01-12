@@ -98,6 +98,7 @@ import java.util.Date
 public data class ActivityData(
     val attachments: List<Attachment>,
     val bookmarkCount: Int,
+    val collections: Map<String, CollectionData>,
     val commentCount: Int,
     val comments: List<CommentData>,
     val createdAt: Date,

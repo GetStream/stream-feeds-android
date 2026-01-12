@@ -17,24 +17,27 @@
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.android.core.result.runSafely
+import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.network.apis.FeedsApi
+import io.getstream.feeds.android.network.models.CollectionResponse
 import io.getstream.feeds.android.network.models.CreateCollectionsRequest
 import io.getstream.feeds.android.network.models.UpdateCollectionsRequest
 
 internal class CollectionsRepositoryImpl(private val api: FeedsApi) : CollectionsRepository {
     override suspend fun readCollections(refs: List<String>) = runSafely {
-        api.readCollections(refs)
+        api.readCollections(refs).collections.map(CollectionResponse::toModel)
     }
 
     override suspend fun createCollections(request: CreateCollectionsRequest) = runSafely {
-        api.createCollections(request)
+        api.createCollections(request).collections.map(CollectionResponse::toModel)
     }
 
     override suspend fun deleteCollections(refs: List<String>) = runSafely {
         api.deleteCollections(refs)
+        Unit
     }
 
     override suspend fun updateCollections(request: UpdateCollectionsRequest) = runSafely {
-        api.updateCollections(request)
+        api.updateCollections(request).collections.map(CollectionResponse::toModel)
     }
 }

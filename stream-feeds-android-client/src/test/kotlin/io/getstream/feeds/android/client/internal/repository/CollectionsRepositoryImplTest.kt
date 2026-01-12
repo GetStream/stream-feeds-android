@@ -16,6 +16,7 @@
 
 package io.getstream.feeds.android.client.internal.repository
 
+import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.client.internal.repository.RepositoryTestUtils.testDelegation
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.CollectionRequest
@@ -46,6 +47,7 @@ internal class CollectionsRepositoryImplTest {
             apiFunction = { feedsApi.readCollections(refs) },
             repositoryCall = { repository.readCollections(refs) },
             apiResult = apiResult,
+            repositoryResult = apiResult.collections.map(CollectionResponse::toModel),
         )
     }
 
@@ -73,6 +75,7 @@ internal class CollectionsRepositoryImplTest {
             apiFunction = { feedsApi.createCollections(request) },
             repositoryCall = { repository.createCollections(request) },
             apiResult = apiResult,
+            repositoryResult = apiResult.collections.map(CollectionResponse::toModel),
         )
     }
 
@@ -85,6 +88,7 @@ internal class CollectionsRepositoryImplTest {
             apiFunction = { feedsApi.deleteCollections(refs) },
             repositoryCall = { repository.deleteCollections(refs) },
             apiResult = apiResult,
+            repositoryResult = Unit,
         )
     }
 
@@ -111,6 +115,7 @@ internal class CollectionsRepositoryImplTest {
             apiFunction = { feedsApi.updateCollections(request) },
             repositoryCall = { repository.updateCollections(request) },
             apiResult = apiResult,
+            repositoryResult = apiResult.collections.map(CollectionResponse::toModel),
         )
     }
 

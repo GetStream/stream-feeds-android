@@ -16,12 +16,9 @@
 
 package io.getstream.feeds.android.client.internal.repository
 
+import io.getstream.feeds.android.client.api.model.CollectionData
 import io.getstream.feeds.android.network.models.CreateCollectionsRequest
-import io.getstream.feeds.android.network.models.CreateCollectionsResponse
-import io.getstream.feeds.android.network.models.DeleteCollectionsResponse
-import io.getstream.feeds.android.network.models.ReadCollectionsResponse
 import io.getstream.feeds.android.network.models.UpdateCollectionsRequest
-import io.getstream.feeds.android.network.models.UpdateCollectionsResponse
 
 /** A repository for managing collections. */
 internal interface CollectionsRepository {
@@ -31,37 +28,33 @@ internal interface CollectionsRepository {
      * own collections.
      *
      * @param refs List of collection references to read in the format "<name>:<id>".
-     * @return A [Result] containing the [ReadCollectionsResponse] if successful.
+     * @return A [Result] containing the list of [CollectionData] if successful.
      */
-    suspend fun readCollections(refs: List<String>): Result<ReadCollectionsResponse>
+    suspend fun readCollections(refs: List<String>): Result<List<CollectionData>>
 
     /**
      * Create new collections in a batch operation. Collections are data objects that can be
      * attached to activities for managing shared data across multiple activities.
      *
      * @param request The [CreateCollectionsRequest] containing the collections to be created.
-     * @return A [Result] containing the [CreateCollectionsResponse] if successful.
+     * @return A [Result] containing the list of [CollectionData] if successful.
      */
-    suspend fun createCollections(
-        request: CreateCollectionsRequest
-    ): Result<CreateCollectionsResponse>
+    suspend fun createCollections(request: CreateCollectionsRequest): Result<List<CollectionData>>
 
     /**
      * Delete collections in a batch operation. Users can only delete their own collections.
      *
      * @param refs List of collection references to delete in the format "<name>:<id>".
-     * @return A [Result] containing the [DeleteCollectionsResponse] if successful.
+     * @return A [Result] indicating whether the operation was successful.
      */
-    suspend fun deleteCollections(refs: List<String>): Result<DeleteCollectionsResponse>
+    suspend fun deleteCollections(refs: List<String>): Result<Unit>
 
     /**
      * Update existing collections in a batch operation. Only the custom data field is updatable.
      * Users can only update their own collections.
      *
      * @param request The [UpdateCollectionsRequest] containing the collections to be updated.
-     * @return A [Result] containing the [UpdateCollectionsResponse] if successful.
+     * @return A [Result] containing the list of [CollectionData] if successful.
      */
-    suspend fun updateCollections(
-        request: UpdateCollectionsRequest
-    ): Result<UpdateCollectionsResponse>
+    suspend fun updateCollections(request: UpdateCollectionsRequest): Result<List<CollectionData>>
 }

@@ -25,6 +25,7 @@ import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.BatchFollowData
+import io.getstream.feeds.android.client.api.model.CollectionData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsConfig
 import io.getstream.feeds.android.client.api.model.FollowData
@@ -68,16 +69,12 @@ import io.getstream.feeds.android.network.models.ActivityFeedbackRequest
 import io.getstream.feeds.android.network.models.ActivityRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.CreateCollectionsRequest
-import io.getstream.feeds.android.network.models.CreateCollectionsResponse
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
-import io.getstream.feeds.android.network.models.DeleteCollectionsResponse
 import io.getstream.feeds.android.network.models.FollowBatchRequest
 import io.getstream.feeds.android.network.models.ListDevicesResponse
-import io.getstream.feeds.android.network.models.ReadCollectionsResponse
 import io.getstream.feeds.android.network.models.UnfollowBatchRequest
 import io.getstream.feeds.android.network.models.UpdateCollectionsRequest
-import io.getstream.feeds.android.network.models.UpdateCollectionsResponse
 import io.getstream.feeds.android.network.models.UpsertPushPreferencesRequest
 import io.getstream.feeds.android.network.models.UpsertPushPreferencesResponse
 import io.getstream.feeds.android.network.models.WSEvent
@@ -454,39 +451,39 @@ public interface FeedsClient {
      * own collections.
      *
      * @param refs List of collection references to read in the format "<name>:<id>".
-     * @return A [Result] containing the [ReadCollectionsResponse] if successful.
+     * @return A [Result] containing the list of [CollectionData] if successful.
      */
-    public suspend fun readCollections(refs: List<String>): Result<ReadCollectionsResponse>
+    public suspend fun readCollections(refs: List<String>): Result<List<CollectionData>>
 
     /**
      * Create new collections in a batch operation. Collections are data objects that can be
      * attached to activities for managing shared data across multiple activities.
      *
      * @param request The [CreateCollectionsRequest] containing the collections to be created.
-     * @return A [Result] containing the [CreateCollectionsResponse] if successful.
+     * @return A [Result] containing the list of [CollectionData] if successful.
      */
     public suspend fun createCollections(
         request: CreateCollectionsRequest
-    ): Result<CreateCollectionsResponse>
+    ): Result<List<CollectionData>>
 
     /**
      * Delete collections in a batch operation. Users can only delete their own collections.
      *
      * @param refs List of collection references to delete in the format "<name>:<id>".
-     * @return A [Result] containing the [DeleteCollectionsResponse] if successful.
+     * @return A [Result] indicating whether the operation was successful.
      */
-    public suspend fun deleteCollections(refs: List<String>): Result<DeleteCollectionsResponse>
+    public suspend fun deleteCollections(refs: List<String>): Result<Unit>
 
     /**
      * Update existing collections in a batch operation. Only the custom data field is updatable.
      * Users can only update their own collections.
      *
      * @param request The [UpdateCollectionsRequest] containing the collections to be updated.
-     * @return A [Result] containing the [UpdateCollectionsResponse] if successful.
+     * @return A [Result] containing the list of [CollectionData] if successful.
      */
     public suspend fun updateCollections(
         request: UpdateCollectionsRequest
-    ): Result<UpdateCollectionsResponse>
+    ): Result<List<CollectionData>>
 
     /**
      * Queries all devices associated with the current user.
