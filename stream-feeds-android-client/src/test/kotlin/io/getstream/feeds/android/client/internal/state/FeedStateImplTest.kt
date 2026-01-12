@@ -597,7 +597,7 @@ internal class FeedStateImplTest {
     }
 
     @Test
-    fun `on onNotificationFeedUpdated, update matching groups and notification status`() = runTest {
+    fun `on onNotificationFeedUpdated, upsert groups and update notification status`() = runTest {
         val initial =
             List(3) {
                 aggregatedActivityData(
@@ -617,16 +617,26 @@ internal class FeedStateImplTest {
                 group = "group-1",
                 userCount = 5,
             )
+        val new =
+            aggregatedActivityData(
+                activities = listOf(activityData("activity-new")),
+                activityCount = 10,
+                group = "group-new",
+                userCount = 10,
+            )
         val notificationStatus = NotificationStatusResponse(unread = 5, unseen = 3)
 
-        feedState.onNotificationFeedUpdated(listOf(updated), notificationStatus)
+        feedState.onNotificationFeedUpdated(listOf(updated, new), notificationStatus)
 
-        assertEquals(listOf(initial[0], updated, initial[2]), feedState.aggregatedActivities.value)
+        assertEquals(
+            listOf(new, initial[0], updated, initial[2]),
+            feedState.aggregatedActivities.value,
+        )
         assertEquals(notificationStatus, feedState.notificationStatus.value)
     }
 
     @Test
-    fun `on onStoriesFeedUpdated, update matching activities and groups`() = runTest {
+    fun `on onStoriesFeedUpdated, update matching activities and upsert groups`() = runTest {
         val initialActivities = List(3) { activityData("story-$it") }
         val initialAggregated =
             List(3) {
@@ -639,34 +649,33 @@ internal class FeedStateImplTest {
             }
         setupInitialState(activities = initialActivities, aggregatedActivities = initialAggregated)
 
-        val updatedActivity0 = activityData("story-0", text = "Updated 0")
-        val updatedActivity2 = activityData("story-2", text = "Updated 2")
-        val updatedAggregated0 =
+        val updatedActivity = activityData("story-1", text = "Updated 1")
+        val updatedAggregated =
             aggregatedActivityData(
-                activities = listOf(activityData("story-0-updated")),
-                activityCount = 10,
-                group = "story-group-0",
-                userCount = 10,
+                activities = listOf(activityData("story-1-updated")),
+                activityCount = 20,
+                group = "story-group-1",
+                userCount = 20,
             )
-        val updatedAggregated2 =
+        val newAggregated =
             aggregatedActivityData(
-                activities = listOf(activityData("story-2-updated")),
-                activityCount = 30,
-                group = "story-group-2",
-                userCount = 30,
+                activities = listOf(activityData("story-new")),
+                activityCount = 5,
+                group = "story-group-new",
+                userCount = 5,
             )
 
         feedState.onStoriesFeedUpdated(
-            listOf(updatedActivity0, updatedActivity2),
-            listOf(updatedAggregated0, updatedAggregated2),
+            listOf(updatedActivity),
+            listOf(updatedAggregated, newAggregated),
         )
 
         assertEquals(
-            listOf(updatedActivity0, initialActivities[1], updatedActivity2),
+            listOf(initialActivities[0], updatedActivity, initialActivities[2]),
             feedState.activities.value,
         )
         assertEquals(
-            listOf(updatedAggregated0, initialAggregated[1], updatedAggregated2),
+            listOf(initialAggregated[0], updatedAggregated, initialAggregated[2], newAggregated),
             feedState.aggregatedActivities.value,
         )
     }
