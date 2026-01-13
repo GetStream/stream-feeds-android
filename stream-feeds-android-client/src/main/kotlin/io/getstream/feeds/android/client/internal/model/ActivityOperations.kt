@@ -34,6 +34,7 @@ internal fun ActivityResponse.toModel(): ActivityData =
     ActivityData(
         attachments = attachments,
         bookmarkCount = bookmarkCount,
+        collections = collections.mapValues { it.value.toModel() },
         commentCount = commentCount,
         comments = comments.map { it.toModel() },
         createdAt = createdAt,

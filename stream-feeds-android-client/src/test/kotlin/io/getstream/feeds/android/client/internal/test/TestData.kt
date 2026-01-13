@@ -220,6 +220,7 @@ internal object TestData {
         ActivityData(
             attachments = emptyList(),
             bookmarkCount = 0,
+            collections = emptyMap(),
             commentCount = comments.size,
             comments = comments,
             createdAt = Date(createdAt),
