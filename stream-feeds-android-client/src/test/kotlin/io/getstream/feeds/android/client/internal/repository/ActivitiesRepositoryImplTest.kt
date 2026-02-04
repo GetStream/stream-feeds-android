@@ -49,6 +49,8 @@ import io.getstream.feeds.android.network.models.MarkActivityRequest
 import io.getstream.feeds.android.network.models.QueryActivitiesResponse
 import io.getstream.feeds.android.network.models.QueryActivityReactionsRequest
 import io.getstream.feeds.android.network.models.QueryActivityReactionsResponse
+import io.getstream.feeds.android.network.models.UpdateActivityPartialRequest
+import io.getstream.feeds.android.network.models.UpdateActivityPartialResponse
 import io.getstream.feeds.android.network.models.UpdateActivityRequest
 import io.getstream.feeds.android.network.models.UpdateActivityResponse
 import io.getstream.feeds.android.network.models.UpsertActivitiesRequest
@@ -177,6 +179,19 @@ internal class ActivitiesRepositoryImplTest {
         testDelegation(
             apiFunction = { feedsApi.updateActivity("id", request) },
             repositoryCall = { repository.updateActivity("id", request) },
+            apiResult = apiResult,
+            repositoryResult = apiResult.activity.toModel(),
+        )
+    }
+
+    @Test
+    fun `on updateActivityPartial, delegate to api`() {
+        val request = UpdateActivityPartialRequest(set = mapOf("text" to "Updated"))
+        val apiResult = UpdateActivityPartialResponse("duration", activityResponse())
+
+        testDelegation(
+            apiFunction = { feedsApi.updateActivityPartial("id", request) },
+            repositoryCall = { repository.updateActivityPartial("id", request) },
             apiResult = apiResult,
             repositoryResult = apiResult.activity.toModel(),
         )

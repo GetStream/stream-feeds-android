@@ -64,6 +64,7 @@ import io.getstream.feeds.android.network.models.CreatePollRequest
 import io.getstream.feeds.android.network.models.FeedMemberRequest
 import io.getstream.feeds.android.network.models.FollowRequest
 import io.getstream.feeds.android.network.models.MarkActivityRequest
+import io.getstream.feeds.android.network.models.UpdateActivityPartialRequest
 import io.getstream.feeds.android.network.models.UpdateActivityRequest
 import io.getstream.feeds.android.network.models.UpdateBookmarkRequest
 import io.getstream.feeds.android.network.models.UpdateCommentRequest
@@ -223,6 +224,32 @@ internal class FeedImplTest {
             Result.success(updatedActivity)
 
         val result = feed.updateActivity(activityId, request)
+
+        val updated = originalActivity.copy(text = updatedActivity.text)
+        assertEquals(updatedActivity, result.getOrNull())
+        assertEquals(listOf(updated), feed.state.activities.value)
+        verify {
+            stateEventListener.onEvent(
+                StateUpdateEvent.ActivityUpdated(FidScope.unknown, updatedActivity)
+            )
+        }
+    }
+
+    @Test
+    fun `on updateActivityPartial, delegate to repository and fire event`() = runTest {
+        val feed = createFeed()
+        val activityId = "activity-1"
+        val request = UpdateActivityPartialRequest(set = mapOf("text" to "Partially updated"))
+        val originalActivity = activityData(activityId, "Original activity")
+        val updatedActivity = activityData(activityId, "Partially updated")
+
+        // Set up initial state with activity
+        setupInitialState(feed, activities = listOf(originalActivity))
+
+        coEvery { activitiesRepository.updateActivityPartial(activityId, request) } returns
+            Result.success(updatedActivity)
+
+        val result = feed.updateActivityPartial(activityId, request)
 
         val updated = originalActivity.copy(text = updatedActivity.text)
         assertEquals(updatedActivity, result.getOrNull())

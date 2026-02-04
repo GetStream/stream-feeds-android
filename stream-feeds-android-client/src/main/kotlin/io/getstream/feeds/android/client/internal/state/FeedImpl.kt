@@ -59,6 +59,7 @@ import io.getstream.feeds.android.network.models.CreatePollRequest
 import io.getstream.feeds.android.network.models.FollowRequest
 import io.getstream.feeds.android.network.models.MarkActivityRequest
 import io.getstream.feeds.android.network.models.RejectFollowRequest
+import io.getstream.feeds.android.network.models.UpdateActivityPartialRequest
 import io.getstream.feeds.android.network.models.UpdateActivityRequest
 import io.getstream.feeds.android.network.models.UpdateBookmarkRequest
 import io.getstream.feeds.android.network.models.UpdateCommentRequest
@@ -188,6 +189,15 @@ internal class FeedImpl(
         request: UpdateActivityRequest,
     ): Result<ActivityData> {
         return activitiesRepository.updateActivity(id, request).onSuccess {
+            subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.unknown, it))
+        }
+    }
+
+    override suspend fun updateActivityPartial(
+        id: String,
+        request: UpdateActivityPartialRequest,
+    ): Result<ActivityData> {
+        return activitiesRepository.updateActivityPartial(id, request).onSuccess {
             subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.unknown, it))
         }
     }
