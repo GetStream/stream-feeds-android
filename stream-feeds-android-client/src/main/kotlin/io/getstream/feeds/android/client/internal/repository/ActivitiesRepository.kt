@@ -31,6 +31,7 @@ import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.network.models.MarkActivityRequest
 import io.getstream.feeds.android.network.models.QueryActivityReactionsRequest
+import io.getstream.feeds.android.network.models.UpdateActivityPartialRequest
 import io.getstream.feeds.android.network.models.UpdateActivityRequest
 
 /**
@@ -94,6 +95,20 @@ internal interface ActivitiesRepository {
     suspend fun updateActivity(
         activityId: String,
         request: UpdateActivityRequest,
+    ): Result<ActivityData>
+
+    /**
+     * Partially updates an existing activity.
+     *
+     * Use 'set' to update specific fields and 'unset' to remove fields.
+     *
+     * @param activityId The ID of the activity to update.
+     * @param request The request containing the fields to set or unset.
+     * @return A [Result] containing the updated [ActivityData] or an error.
+     */
+    suspend fun updateActivityPartial(
+        activityId: String,
+        request: UpdateActivityPartialRequest,
     ): Result<ActivityData>
 
     /**

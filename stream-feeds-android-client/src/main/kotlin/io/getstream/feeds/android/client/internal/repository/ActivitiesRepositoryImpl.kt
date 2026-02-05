@@ -38,6 +38,7 @@ import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.network.models.MarkActivityRequest
 import io.getstream.feeds.android.network.models.QueryActivityReactionsRequest
+import io.getstream.feeds.android.network.models.UpdateActivityPartialRequest
 import io.getstream.feeds.android.network.models.UpdateActivityRequest
 import io.getstream.feeds.android.network.models.UpsertActivitiesRequest
 
@@ -93,6 +94,13 @@ internal class ActivitiesRepositoryImpl(
         request: UpdateActivityRequest,
     ): Result<ActivityData> = runSafely {
         api.updateActivity(activityId, request).activity.toModel()
+    }
+
+    override suspend fun updateActivityPartial(
+        activityId: String,
+        request: UpdateActivityPartialRequest,
+    ): Result<ActivityData> = runSafely {
+        api.updateActivityPartial(activityId, request).activity.toModel()
     }
 
     override suspend fun upsertActivities(

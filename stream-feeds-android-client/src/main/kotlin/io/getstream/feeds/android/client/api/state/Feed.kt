@@ -35,6 +35,7 @@ import io.getstream.feeds.android.network.models.AddReactionRequest
 import io.getstream.feeds.android.network.models.CreatePollRequest
 import io.getstream.feeds.android.network.models.FollowRequest
 import io.getstream.feeds.android.network.models.MarkActivityRequest
+import io.getstream.feeds.android.network.models.UpdateActivityPartialRequest
 import io.getstream.feeds.android.network.models.UpdateActivityRequest
 import io.getstream.feeds.android.network.models.UpdateBookmarkRequest
 import io.getstream.feeds.android.network.models.UpdateCommentRequest
@@ -132,6 +133,22 @@ public interface Feed {
     public suspend fun updateActivity(
         id: String,
         request: UpdateActivityRequest,
+    ): Result<ActivityData>
+
+    /**
+     * Partially updates an existing activity in the feed.
+     *
+     * Use 'set' to update specific fields and 'unset' to remove fields. This allows you to update
+     * only the fields you need without replacing the entire activity.
+     *
+     * @param id The unique identifier of the activity to update.
+     * @param request The request containing the fields to set or unset.
+     * @return A [Result] containing the updated [ActivityData] if successful, or an error if the
+     *   operation fails.
+     */
+    public suspend fun updateActivityPartial(
+        id: String,
+        request: UpdateActivityPartialRequest,
     ): Result<ActivityData>
 
     /**
