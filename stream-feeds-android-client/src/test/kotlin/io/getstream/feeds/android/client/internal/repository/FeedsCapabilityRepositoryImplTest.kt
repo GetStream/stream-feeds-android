@@ -16,7 +16,8 @@
 
 package io.getstream.feeds.android.client.internal.repository
 
-import io.getstream.android.core.api.model.StreamRetryPolicy
+import io.getstream.android.core.api.model.retry.StreamRetryAttemptInfo
+import io.getstream.android.core.api.model.retry.StreamRetryPolicy
 import io.getstream.android.core.api.processing.StreamBatcher
 import io.getstream.android.core.api.processing.StreamRetryProcessor
 import io.getstream.android.core.result.runSafely
@@ -154,12 +155,14 @@ internal class FeedsCapabilityRepositoryImplTest {
     private class TestRetryProcessor : StreamRetryProcessor {
         override suspend fun <T> retry(
             policy: StreamRetryPolicy,
-            block: suspend () -> T,
+            block: suspend (attempt: StreamRetryAttemptInfo) -> T,
         ): Result<T> {
             var lastException: Throwable? = null
 
-            repeat(policy.maxRetries) {
-                val result = runSafely { block() }
+            repeat(policy.maxRetries) { index ->
+                val attemptInfo =
+                    StreamRetryAttemptInfo(attempt = index + 1, currentDelay = 0, policy = policy)
+                val result = runSafely { block(attemptInfo) }
                 if (result.isSuccess) {
                     return result
                 }

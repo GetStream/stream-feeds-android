@@ -16,7 +16,7 @@
 
 package io.getstream.feeds.android.client.internal.repository
 
-import io.getstream.android.core.api.model.StreamRetryPolicy
+import io.getstream.android.core.api.model.retry.StreamRetryPolicy
 import io.getstream.android.core.api.processing.StreamBatcher
 import io.getstream.android.core.api.processing.StreamRetryProcessor
 import io.getstream.android.core.api.subscribe.StreamSubscriptionManager

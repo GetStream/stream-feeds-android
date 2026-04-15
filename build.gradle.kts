@@ -13,6 +13,8 @@ plugins {
 }
 
 streamProject {
+    repositoryName = "stream-feeds-android"
+
     spotless {
         useKtfmt = true
     }
