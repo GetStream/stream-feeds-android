@@ -122,6 +122,8 @@ internal fun ActivityData.update(
     return updated.copy(
         ownBookmarks = ownBookmarks,
         ownReactions = ownReactions,
+        friendReactions = friendReactions,
+        friendReactionCount = friendReactionCount,
         poll = updated.poll?.let { poll?.update(it) ?: it },
         currentFeed = updatedCurrentFeed,
     )
