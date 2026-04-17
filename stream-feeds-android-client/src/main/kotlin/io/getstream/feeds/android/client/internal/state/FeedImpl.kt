@@ -202,10 +202,20 @@ internal class FeedImpl(
         }
     }
 
-    override suspend fun deleteActivity(id: String, hardDelete: Boolean): Result<Unit> {
-        return activitiesRepository.deleteActivity(id, hardDelete).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.ActivityDeleted(FidScope.unknown, id))
-        }
+    override suspend fun deleteActivity(
+        id: String,
+        hardDelete: Boolean,
+        deleteNotificationActivity: Boolean?,
+    ): Result<Unit> {
+        return activitiesRepository
+            .deleteActivity(
+                activityId = id,
+                hardDelete = hardDelete,
+                deleteNotificationActivity = deleteNotificationActivity,
+            )
+            .onSuccess {
+                subscriptionManager.onEvent(StateUpdateEvent.ActivityDeleted(FidScope.unknown, id))
+            }
     }
 
     override suspend fun markActivity(request: MarkActivityRequest): Result<Unit> {
@@ -314,9 +324,17 @@ internal class FeedImpl(
         }
     }
 
-    override suspend fun deleteComment(commentId: String, hardDelete: Boolean?): Result<Unit> {
+    override suspend fun deleteComment(
+        commentId: String,
+        hardDelete: Boolean?,
+        deleteNotificationActivity: Boolean?,
+    ): Result<Unit> {
         return commentsRepository
-            .deleteComment(commentId, hardDelete)
+            .deleteComment(
+                commentId = commentId,
+                hardDelete = hardDelete,
+                deleteNotificationActivity = deleteNotificationActivity,
+            )
             .onSuccess { (comment, activity) ->
                 subscriptionManager.onEvent(
                     StateUpdateEvent.CommentDeleted(FidScope.unknown, comment)
@@ -351,9 +369,16 @@ internal class FeedImpl(
         }
     }
 
-    override suspend fun unfollow(targetFid: FeedId): Result<Unit> {
+    override suspend fun unfollow(
+        targetFid: FeedId,
+        deleteNotificationActivity: Boolean?,
+    ): Result<Unit> {
         return feedsRepository
-            .unfollow(source = fid, target = targetFid)
+            .unfollow(
+                source = fid,
+                target = targetFid,
+                deleteNotificationActivity = deleteNotificationActivity,
+            )
             .onSuccess { subscriptionManager.onEvent(StateUpdateEvent.FollowDeleted(it)) }
             .map {}
     }
@@ -431,9 +456,14 @@ internal class FeedImpl(
     override suspend fun deleteActivityReaction(
         activityId: String,
         type: String,
+        deleteNotificationActivity: Boolean?,
     ): Result<FeedsReactionData> {
         return activitiesRepository
-            .deleteActivityReaction(activityId = activityId, type = type)
+            .deleteActivityReaction(
+                activityId = activityId,
+                type = type,
+                deleteNotificationActivity = deleteNotificationActivity,
+            )
             .onSuccess { (reaction, activity) ->
                 subscriptionManager.onEvent(
                     StateUpdateEvent.ActivityReactionDeleted(FidScope.unknown, activity, reaction)
@@ -464,9 +494,14 @@ internal class FeedImpl(
     override suspend fun deleteCommentReaction(
         commentId: String,
         type: String,
+        deleteNotificationActivity: Boolean?,
     ): Result<FeedsReactionData> {
         return commentsRepository
-            .deleteCommentReaction(commentId = commentId, type = type)
+            .deleteCommentReaction(
+                commentId = commentId,
+                type = type,
+                deleteNotificationActivity = deleteNotificationActivity,
+            )
             .onSuccess { (reaction, comment) ->
                 subscriptionManager.onEvent(
                     StateUpdateEvent.CommentReactionDeleted(FidScope.unknown, comment, reaction)

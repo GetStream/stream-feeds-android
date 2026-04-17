@@ -141,8 +141,8 @@ internal class ActivitiesRepositoryImplTest {
     @Test
     fun `on deleteActivity, delegate to api`() {
         testDelegation(
-            apiFunction = { feedsApi.deleteActivity("id", true) },
-            repositoryCall = { repository.deleteActivity("id", true) },
+            apiFunction = { feedsApi.deleteActivity("id", true, true) },
+            repositoryCall = { repository.deleteActivity("id", true, true) },
             apiResult = DeleteActivityResponse("duration"),
             repositoryResult = Unit,
         )
@@ -271,8 +271,8 @@ internal class ActivitiesRepositoryImplTest {
             DeleteActivityReactionResponse("duration", activityResponse(), feedsReactionResponse())
 
         testDelegation(
-            apiFunction = { feedsApi.deleteActivityReaction("activityId", "type") },
-            repositoryCall = { repository.deleteActivityReaction("activityId", "type") },
+            apiFunction = { feedsApi.deleteActivityReaction("activityId", "type", true) },
+            repositoryCall = { repository.deleteActivityReaction("activityId", "type", true) },
             apiResult = apiResult,
             repositoryResult = apiResult.reaction.toModel() to apiResult.activity.toModel(),
         )

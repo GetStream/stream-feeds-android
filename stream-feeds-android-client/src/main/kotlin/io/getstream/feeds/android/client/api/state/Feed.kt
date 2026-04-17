@@ -157,9 +157,14 @@ public interface Feed {
      * @param id The unique identifier of the activity to delete.
      * @param hardDelete If `true`, the activity will be permanently deleted. If `false`, it will be
      *   soft deleted. (default is `false`)
+     * @param deleteNotificationActivity If `true`, removes the corresponding notification activity.
      * @return A [Result] indicating success or failure of the deletion operation.
      */
-    public suspend fun deleteActivity(id: String, hardDelete: Boolean = false): Result<Unit>
+    public suspend fun deleteActivity(
+        id: String,
+        hardDelete: Boolean = false,
+        deleteNotificationActivity: Boolean? = null,
+    ): Result<Unit>
 
     /**
      * Marks an activity as read or unread.
@@ -289,9 +294,14 @@ public interface Feed {
      * @param commentId The unique identifier of the comment to remove.
      * @param hardDelete If `true`, the comment will be permanently deleted. Otherwise, it will be
      *   soft-deleted.
+     * @param deleteNotificationActivity If `true`, removes the corresponding notification activity.
      * @return A [Result] indicating success or failure of the deletion operation.
      */
-    public suspend fun deleteComment(commentId: String, hardDelete: Boolean? = null): Result<Unit>
+    public suspend fun deleteComment(
+        commentId: String,
+        hardDelete: Boolean? = null,
+        deleteNotificationActivity: Boolean? = null,
+    ): Result<Unit>
 
     /**
      * Queries for feed suggestions that the current user might want to follow.
@@ -322,9 +332,13 @@ public interface Feed {
      * Unfollows another feed.
      *
      * @param targetFid The target feed identifier to unfollow.
+     * @param deleteNotificationActivity If `true`, removes the corresponding notification activity.
      * @return A [Result] indicating success or failure of the unfollow operation.
      */
-    public suspend fun unfollow(targetFid: FeedId): Result<Unit>
+    public suspend fun unfollow(
+        targetFid: FeedId,
+        deleteNotificationActivity: Boolean? = null,
+    ): Result<Unit>
 
     /**
      * Accepts a follow request from another feed.
@@ -415,12 +429,14 @@ public interface Feed {
      *
      * @param activityId The unique identifier of the activity from which to delete the reaction.
      * @param type The type of reaction to delete.
+     * @param deleteNotificationActivity If `true`, removes the corresponding notification activity.
      * @return A [Result] containing the deleted [FeedsReactionData] if successful, or an error if
      *   the operation fails.
      */
     public suspend fun deleteActivityReaction(
         activityId: String,
         type: String,
+        deleteNotificationActivity: Boolean? = null,
     ): Result<FeedsReactionData>
 
     /**
@@ -441,12 +457,14 @@ public interface Feed {
      *
      * @param commentId The unique identifier of the comment from which to delete the reaction.
      * @param type The type of reaction to delete.
+     * @param deleteNotificationActivity If `true`, removes the corresponding notification activity.
      * @return A [Result] containing the deleted [FeedsReactionData] if successful, or an error if
      *   the operation fails.
      */
     public suspend fun deleteCommentReaction(
         commentId: String,
         type: String,
+        deleteNotificationActivity: Boolean? = null,
     ): Result<FeedsReactionData>
 
     /**

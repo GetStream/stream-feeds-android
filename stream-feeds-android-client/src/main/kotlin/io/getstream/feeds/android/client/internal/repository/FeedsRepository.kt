@@ -84,7 +84,11 @@ internal interface FeedsRepository {
 
     suspend fun follow(request: FollowRequest): Result<FollowData>
 
-    suspend fun unfollow(source: FeedId, target: FeedId): Result<FollowData>
+    suspend fun unfollow(
+        source: FeedId,
+        target: FeedId,
+        deleteNotificationActivity: Boolean?,
+    ): Result<FollowData>
 
     suspend fun getOrCreateFollows(request: FollowBatchRequest): Result<BatchFollowData>
 

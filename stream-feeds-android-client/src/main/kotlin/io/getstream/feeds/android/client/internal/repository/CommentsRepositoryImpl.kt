@@ -127,8 +127,9 @@ internal class CommentsRepositoryImpl(
     override suspend fun deleteComment(
         commentId: String,
         hardDelete: Boolean?,
+        deleteNotificationActivity: Boolean?,
     ): Result<Pair<CommentData, ActivityData>> = runSafely {
-        val response = api.deleteComment(commentId, hardDelete)
+        val response = api.deleteComment(commentId, hardDelete, deleteNotificationActivity)
         response.comment.toModel() to response.activity.toModel()
     }
 
@@ -152,8 +153,14 @@ internal class CommentsRepositoryImpl(
     override suspend fun deleteCommentReaction(
         commentId: String,
         type: String,
+        deleteNotificationActivity: Boolean?,
     ): Result<Pair<FeedsReactionData, CommentData>> = runSafely {
-        val response = api.deleteCommentReaction(id = commentId, type = type)
+        val response =
+            api.deleteCommentReaction(
+                id = commentId,
+                type = type,
+                deleteNotificationActivity = deleteNotificationActivity,
+            )
         Pair(response.reaction.toModel(), response.comment.toModel())
     }
 
