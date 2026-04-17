@@ -24,7 +24,9 @@ import io.getstream.android.core.api.authentication.StreamTokenProvider
 import io.getstream.android.core.api.log.StreamLoggerProvider
 import io.getstream.android.core.api.model.StreamUser
 import io.getstream.android.core.api.model.config.StreamClientSerializationConfig
+import io.getstream.android.core.api.model.config.StreamComponentProvider
 import io.getstream.android.core.api.model.config.StreamHttpConfig
+import io.getstream.android.core.api.model.config.StreamSocketConfig
 import io.getstream.android.core.api.model.exceptions.StreamClientException
 import io.getstream.android.core.api.model.value.StreamApiKey
 import io.getstream.android.core.api.model.value.StreamHttpClientInfoHeader
@@ -37,7 +39,6 @@ import io.getstream.android.core.api.processing.StreamSingleFlightProcessor
 import io.getstream.android.core.api.serialization.StreamEventSerialization
 import io.getstream.android.core.api.socket.StreamConnectionIdHolder
 import io.getstream.android.core.api.socket.StreamWebSocketFactory
-import io.getstream.android.core.api.socket.listeners.StreamClientListener
 import io.getstream.android.core.api.socket.monitor.StreamHealthMonitor
 import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.BuildConfig
@@ -90,52 +91,51 @@ internal fun createStreamCoreClient(
     feedsMoshiJsonParser: FeedsMoshiJsonParser,
     logProvider: StreamLoggerProvider,
 ): StreamClient {
-    val clientSubscriptionManager =
-        StreamSubscriptionManager<StreamClientListener>(
-            logger = logProvider.taggedLogger("SCClientSubscriptions"),
-            maxStrongSubscriptions = 250,
-            maxWeakSubscriptions = 250,
-        )
     val singleFlight = StreamSingleFlightProcessor(scope)
-    val tokenManager = StreamTokenManager(user.id, tokenProvider, singleFlight)
-    val serialQueue =
-        StreamSerialProcessingQueue(
-            logger = logProvider.taggedLogger("SCSerialProcessing"),
-            scope = scope,
-        )
-    val retryProcessor = StreamRetryProcessor(logger = logProvider.taggedLogger("SCRetryProcessor"))
-    val connectionIdHolder = StreamConnectionIdHolder()
-    val socketFactory =
-        StreamWebSocketFactory(logger = logProvider.taggedLogger("SCWebSocketFactory"))
-    val healthMonitor =
-        StreamHealthMonitor(logger = logProvider.taggedLogger("SCHealthMonitor"), scope = scope)
-    val batcher =
-        StreamBatcher<String>(
-            scope = scope,
-            batchSize = 10,
-            initialDelayMs = 100L,
-            maxDelayMs = 1_000L,
+
+    val socketConfig =
+        StreamSocketConfig.jwt(url = wsUrl, apiKey = apiKey, clientInfoHeader = clientInfoHeader)
+
+    val components =
+        StreamComponentProvider(
+            logProvider = logProvider,
+            clientSubscriptionManager =
+                StreamSubscriptionManager(
+                    logger = logProvider.taggedLogger("SCClientSubscriptions"),
+                    maxStrongSubscriptions = 250,
+                    maxWeakSubscriptions = 250,
+                ),
+            tokenManager = StreamTokenManager(user.id, tokenProvider, singleFlight),
+            singleFlight = singleFlight,
+            serialQueue =
+                StreamSerialProcessingQueue(
+                    logger = logProvider.taggedLogger("SCSerialProcessing"),
+                    scope = scope,
+                ),
+            connectionIdHolder = StreamConnectionIdHolder(),
+            socketFactory =
+                StreamWebSocketFactory(logger = logProvider.taggedLogger("SCWebSocketFactory")),
+            healthMonitor =
+                StreamHealthMonitor(
+                    logger = logProvider.taggedLogger("SCHealthMonitor"),
+                    scope = scope,
+                ),
+            batcher =
+                StreamBatcher(
+                    scope = scope,
+                    batchSize = 10,
+                    initialDelayMs = 100L,
+                    maxDelayMs = 1_000L,
+                ),
         )
 
     return StreamClient(
         scope = scope,
         context = context,
-        apiKey = apiKey,
         user = user,
-        wsUrl = wsUrl,
-        products = listOf("feeds"),
-        clientInfoHeader = clientInfoHeader,
         tokenProvider = tokenProvider,
-        logProvider = logProvider,
-        clientSubscriptionManager = clientSubscriptionManager,
-        tokenManager = tokenManager,
-        singleFlight = singleFlight,
-        serialQueue = serialQueue,
-        retryProcessor = retryProcessor,
-        connectionIdHolder = connectionIdHolder,
-        socketFactory = socketFactory,
-        healthMonitor = healthMonitor,
-        httpConfig = httpConfig,
+        products = listOf("feeds"),
+        socketConfig = socketConfig,
         serializationConfig =
             StreamClientSerializationConfig.default(
                 object : StreamEventSerialization<WSEvent> {
@@ -146,7 +146,8 @@ internal fun createStreamCoreClient(
                         feedsMoshiJsonParser.fromJson(raw, WSEvent::class.java)
                 }
             ),
-        batcher = batcher,
+        httpConfig = httpConfig,
+        components = components,
     )
 }
 

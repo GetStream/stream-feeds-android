@@ -16,9 +16,9 @@
 
 package io.getstream.feeds.android.client.internal.client.reconnect
 
-import io.getstream.android.core.api.model.StreamRetryPolicy
 import io.getstream.android.core.api.model.connection.StreamConnectionState
 import io.getstream.android.core.api.model.exceptions.StreamClientException
+import io.getstream.android.core.api.model.retry.StreamRetryPolicy
 import io.getstream.android.core.api.processing.StreamRetryProcessor
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
