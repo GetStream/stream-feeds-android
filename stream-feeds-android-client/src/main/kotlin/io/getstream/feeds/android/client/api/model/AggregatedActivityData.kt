@@ -32,6 +32,9 @@ import java.util.Date
  * @property updatedAt The date and time when this aggregation was last updated.
  * @property userCount The number of unique users involved in these activities.
  * @property userCountTruncated Indicates if the user count is truncated.
+ * @property isRead Whether this group has been read. Relevant for notification feeds.
+ * @property isSeen Whether this group has been seen. Relevant for notification feeds.
+ * @property isWatched Whether this group was watched. Relevant for stories.
  */
 public data class AggregatedActivityData(
     public val activities: List<ActivityData>,
@@ -42,6 +45,9 @@ public data class AggregatedActivityData(
     public val updatedAt: Date,
     public val userCount: Int,
     public val userCountTruncated: Boolean,
+    public val isRead: Boolean?,
+    public val isSeen: Boolean?,
+    public val isWatched: Boolean?,
 ) {
 
     /**

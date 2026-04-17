@@ -108,10 +108,9 @@ private fun NotificationsScreen(
         val activities by state.aggregatedActivities.collectAsStateWithLifecycle()
         LazyColumn {
             items(activities) {
-                val isActivityRead = notificationStatus?.readActivities?.contains(it.group) == true
                 NotificationItem(
                     data = it,
-                    isActivityRead = isActivityRead,
+                    isActivityRead = it.isRead == true,
                     onMarkRead = { onMarkAggregatedActivityRead(it) },
                 )
             }

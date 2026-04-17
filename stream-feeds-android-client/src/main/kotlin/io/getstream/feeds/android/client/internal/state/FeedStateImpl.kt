@@ -56,6 +56,7 @@ import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.client.internal.utils.upsertAll
 import io.getstream.feeds.android.network.models.NotificationStatusResponse
+import java.util.Date
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -293,9 +294,11 @@ internal class FeedStateImpl(
                 it.isFollowRequest && it.targetFeed.fid == fid -> {
                     newRequests += it
                 }
+
                 it.isFollowing(fid) -> {
                     newFollowing += it
                 }
+
                 it.isFollowerOf(fid) -> {
                     newFollowers += it
                 }
@@ -366,9 +369,43 @@ internal class FeedStateImpl(
         aggregatedActivities: List<AggregatedActivityData>,
         notificationStatus: NotificationStatusResponse?,
     ) {
+        notificationStatus?.let(::updateReadSeenStatus)
         updateAggregatedActivities(aggregatedActivities, prependNew = true)
         _notificationStatus.update { notificationStatus }
     }
+
+    private fun updateReadSeenStatus(notificationStatus: NotificationStatusResponse) {
+        val lastReadAt = notificationStatus.lastReadAt
+        val lastSeenAt = notificationStatus.lastSeenAt
+        val readIds = notificationStatus.readActivities.orEmpty()
+        val seenIds = notificationStatus.seenActivities.orEmpty()
+
+        updateActivitiesWhere({ true }) { activity ->
+            val isRead = activity.id.isMarked(activity.updatedAt, lastReadAt, readIds)
+            val isSeen = activity.id.isMarked(activity.updatedAt, lastSeenAt, seenIds)
+
+            if (activity.isRead != isRead || activity.isSeen != isSeen) {
+                activity.copy(isRead = isRead, isSeen = isSeen)
+            } else {
+                activity
+            }
+        }
+        _aggregatedActivities.update { current ->
+            current.map { group ->
+                val isRead = group.group.isMarked(group.updatedAt, lastReadAt, readIds)
+                val isSeen = group.group.isMarked(group.updatedAt, lastSeenAt, seenIds)
+
+                if (group.isRead != isRead || group.isSeen != isSeen) {
+                    group.copy(isRead = isRead, isSeen = isSeen)
+                } else {
+                    group
+                }
+            }
+        }
+    }
+
+    private fun String.isMarked(updated: Date, lastMarked: Date?, markedIds: List<String>) =
+        (lastMarked != null && updated.before(lastMarked)) || this in markedIds
 
     override fun onStoriesFeedUpdated(
         activities: List<ActivityData>,

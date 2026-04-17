@@ -67,10 +67,7 @@ class NotificationsViewModel @Inject constructor(loginManager: LoginManager) : V
     fun onMarkAggregatedActivityRead(activity: AggregatedActivityData) {
         feed.withFirstContent(viewModelScope) {
             // Check that the activity is not already read
-            val notificationStatus = state.notificationStatus.value
-            if (notificationStatus?.readActivities?.contains(activity.group) == true) {
-                return@withFirstContent
-            }
+            if (activity.isRead == true) return@withFirstContent
             // Mark the aggregated activity as read
             val request = MarkActivityRequest(markRead = listOf(activity.group))
             markActivity(request)

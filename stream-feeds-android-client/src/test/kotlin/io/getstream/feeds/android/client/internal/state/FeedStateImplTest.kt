@@ -46,6 +46,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
 import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.getstream.feeds.android.network.models.NotificationStatusResponse
 import io.mockk.mockk
+import java.util.Date
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -605,6 +606,8 @@ internal class FeedStateImplTest {
                     activityCount = it,
                     group = "group-$it",
                     userCount = it,
+                    isRead = false,
+                    isSeen = false,
                 )
             }
 
@@ -633,6 +636,77 @@ internal class FeedStateImplTest {
             feedState.aggregatedActivities.value,
         )
         assertEquals(notificationStatus, feedState.notificationStatus.value)
+    }
+
+    @Test
+    fun `onNotificationFeedUpdated, update isRead and isSeen from notification status`() = runTest {
+        val old = activityData("old", updatedAt = 1000)
+        val recent = activityData("recent", updatedAt = 3000)
+        val markedById = activityData("marked-by-id", updatedAt = 5000)
+        setupInitialState(activities = listOf(old, recent, markedById))
+
+        val notificationStatus =
+            NotificationStatusResponse(
+                unread = 0,
+                unseen = 1,
+                lastReadAt = Date(2000),
+                lastSeenAt = Date(4000),
+                readActivities = listOf("marked-by-id"),
+                seenActivities = listOf("marked-by-id"),
+            )
+
+        feedState.onNotificationFeedUpdated(emptyList(), notificationStatus)
+
+        val expected =
+            listOf(
+                activityData("old", updatedAt = 1000, isRead = true, isSeen = true),
+                activityData("recent", updatedAt = 3000, isRead = false, isSeen = true),
+                activityData("marked-by-id", updatedAt = 5000, isRead = true, isSeen = true),
+            )
+        assertEquals(expected, feedState.activities.value)
+    }
+
+    @Test
+    fun `onNotificationFeedUpdated, update isRead and isSeen on aggregated activities`() = runTest {
+        val oldGroup = aggregatedActivityData(group = "group-old", updatedAt = Date(1000))
+        val recentGroup = aggregatedActivityData(group = "group-recent", updatedAt = Date(3000))
+        val markedByGroup = aggregatedActivityData(group = "group-marked", updatedAt = Date(5000))
+        setupInitialState(aggregatedActivities = listOf(oldGroup, recentGroup, markedByGroup))
+
+        val notificationStatus =
+            NotificationStatusResponse(
+                unread = 0,
+                unseen = 1,
+                lastReadAt = Date(2000),
+                lastSeenAt = Date(4000),
+                readActivities = listOf("group-marked"),
+                seenActivities = listOf("group-marked"),
+            )
+
+        feedState.onNotificationFeedUpdated(emptyList(), notificationStatus)
+
+        val expected =
+            listOf(
+                aggregatedActivityData(
+                    group = "group-old",
+                    updatedAt = Date(1000),
+                    isRead = true,
+                    isSeen = true,
+                ),
+                aggregatedActivityData(
+                    group = "group-recent",
+                    updatedAt = Date(3000),
+                    isRead = false,
+                    isSeen = true,
+                ),
+                aggregatedActivityData(
+                    group = "group-marked",
+                    updatedAt = Date(5000),
+                    isRead = true,
+                    isSeen = true,
+                ),
+            )
+        assertEquals(expected, feedState.aggregatedActivities.value)
     }
 
     @Test
