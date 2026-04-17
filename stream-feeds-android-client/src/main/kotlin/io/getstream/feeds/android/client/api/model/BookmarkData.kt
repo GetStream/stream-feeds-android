@@ -48,9 +48,13 @@ import java.util.Date
  */
 public data class BookmarkData(
     val activity: ActivityData,
+    val activityId: String?,
+    val comment: CommentData?,
     val createdAt: Date,
     val custom: Map<String, Any?>?,
     val folder: BookmarkFolderData?,
+    val objectId: String,
+    val objectType: String,
     val updatedAt: Date,
     val user: UserData,
 ) {

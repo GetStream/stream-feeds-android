@@ -17,6 +17,7 @@
 package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.network.models.FeedOwnCapability
+import io.getstream.feeds.android.network.models.Location
 import java.util.Date
 
 /**
@@ -40,6 +41,7 @@ import java.util.Date
  * @property visibility The visibility status of the feed.
  */
 public data class FeedData(
+    public val activityCount: Int,
     public val createdAt: Date,
     public val createdBy: UserData,
     public val custom: Map<String, Any?>?,
@@ -51,8 +53,10 @@ public data class FeedData(
     public val followingCount: Int,
     public val groupId: String,
     public val id: String,
+    public val location: Location?,
     public val memberCount: Int,
     public val ownCapabilities: Set<FeedOwnCapability>,
+    public val ownFollowings: List<FollowData>,
     public val ownFollows: List<FollowData>,
     public val ownMembership: FeedMemberData?,
     public val name: String,

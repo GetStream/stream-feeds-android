@@ -91,12 +91,14 @@ import java.util.Date
  */
 public data class ThreadedCommentData(
     public val attachments: List<Attachment>?,
+    public val bookmarkCount: Int,
     public override val confidenceScore: Float,
     public override val controversyScore: Float?,
     public override val createdAt: Date,
     public val custom: Map<String, Any?>?,
     public val deletedAt: Date?,
     public val downvoteCount: Int,
+    public val editedAt: Date?,
     public val id: String,
     public val latestReactions: List<FeedsReactionData>,
     public val mentionedUsers: List<UserData>,
@@ -128,12 +130,14 @@ public data class ThreadedCommentData(
         comment: CommentData
     ) : this(
         attachments = comment.attachments,
+        bookmarkCount = comment.bookmarkCount,
         confidenceScore = comment.confidenceScore,
         controversyScore = comment.controversyScore,
         createdAt = comment.createdAt,
         custom = comment.custom,
         deletedAt = comment.deletedAt,
         downvoteCount = comment.downvoteCount,
+        editedAt = comment.editedAt,
         id = comment.id,
         latestReactions = comment.latestReactions,
         mentionedUsers = comment.mentionedUsers,

@@ -410,6 +410,7 @@ internal class ActivityListStateImplTest {
         setupInitialActivities(activity1, activity2, activity3)
         val newOwnValues =
             FeedOwnValues(
+                followings = emptyList(),
                 capabilities = setOf(FeedOwnCapability.ReadFeed, FeedOwnCapability.AddActivity),
                 follows = listOf(followData()),
                 membership = feedMemberData(),
@@ -422,6 +423,7 @@ internal class ActivityListStateImplTest {
                 currentFeed =
                     feed1.copy(
                         ownCapabilities = newOwnValues.capabilities,
+                        ownFollowings = newOwnValues.followings,
                         ownFollows = newOwnValues.follows,
                         ownMembership = newOwnValues.membership,
                     )

@@ -199,6 +199,7 @@ internal class ActivityListEventHandlerTest(
                 kotlin.run {
                     val feedOwnValues =
                         FeedOwnValues(
+                            followings = emptyList(),
                             capabilities = setOf(FeedOwnCapability.ReadFeed),
                             follows = listOf(followData()),
                             membership = feedMemberData(),

@@ -27,6 +27,7 @@ internal fun FeedSuggestionResponse.toModel(): FeedSuggestionData =
     FeedSuggestionData(
         feed =
             FeedData(
+                activityCount = activityCount,
                 createdAt = createdAt,
                 createdBy = createdBy.toModel(),
                 custom = custom,
@@ -38,8 +39,10 @@ internal fun FeedSuggestionResponse.toModel(): FeedSuggestionData =
                 followingCount = followingCount,
                 groupId = groupId,
                 id = id,
+                location = location,
                 memberCount = memberCount,
                 ownCapabilities = ownCapabilities?.toSet().orEmpty(),
+                ownFollowings = ownFollowings?.map(FollowResponse::toModel).orEmpty(),
                 ownFollows = ownFollows?.map(FollowResponse::toModel).orEmpty(),
                 ownMembership = ownMembership?.toModel(),
                 name = name,

@@ -83,12 +83,14 @@ import java.util.Date
  */
 public data class CommentData(
     val attachments: List<Attachment>?,
+    val bookmarkCount: Int,
     override val confidenceScore: Float,
     override val controversyScore: Float?,
     override val createdAt: Date,
     val custom: Map<String, Any?>?,
     val deletedAt: Date?,
     val downvoteCount: Int,
+    val editedAt: Date?,
     val id: String,
     val latestReactions: List<FeedsReactionData>,
     val mentionedUsers: List<UserData>,

@@ -42,6 +42,7 @@ internal class StateEventEnricherTest {
         val event = ActivityAdded(FidScope.of(feedId), activityData(currentFeed = feed))
         val ownData =
             FeedOwnValues(
+                followings = emptyList(),
                 capabilities = setOf(FeedOwnCapability.ReadFeed, FeedOwnCapability.AddActivity),
                 follows = listOf(followData()),
                 membership = feedMemberData(),
@@ -51,6 +52,7 @@ internal class StateEventEnricherTest {
                 id = "1",
                 groupId = "user",
                 ownCapabilities = ownData.capabilities,
+                ownFollowings = ownData.followings,
                 ownFollows = ownData.follows,
                 ownMembership = ownData.membership,
             )

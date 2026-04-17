@@ -29,12 +29,14 @@ import io.getstream.feeds.android.network.models.ThreadedCommentResponse
 internal fun ThreadedCommentResponse.toModel(): ThreadedCommentData =
     ThreadedCommentData(
         attachments = attachments,
+        bookmarkCount = bookmarkCount,
         confidenceScore = confidenceScore,
         controversyScore = controversyScore,
         createdAt = createdAt,
         custom = custom,
         deletedAt = deletedAt,
         downvoteCount = downvoteCount,
+        editedAt = editedAt,
         id = id,
         latestReactions = latestReactions?.map { it.toModel() }.orEmpty(),
         mentionedUsers = mentionedUsers.map { it.toModel() },
@@ -82,12 +84,14 @@ internal fun ThreadedCommentData.update(
 ): ThreadedCommentData {
     return this.copy(
         attachments = comment.attachments,
+        bookmarkCount = comment.bookmarkCount,
         confidenceScore = comment.confidenceScore,
         controversyScore = comment.controversyScore,
         createdAt = comment.createdAt,
         custom = comment.custom,
         deletedAt = comment.deletedAt,
         downvoteCount = comment.downvoteCount,
+        editedAt = comment.editedAt,
         id = comment.id,
         latestReactions = comment.latestReactions,
         mentionedUsers = comment.mentionedUsers,

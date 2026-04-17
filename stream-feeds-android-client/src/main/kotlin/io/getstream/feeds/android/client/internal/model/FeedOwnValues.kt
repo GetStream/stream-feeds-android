@@ -22,6 +22,7 @@ import io.getstream.feeds.android.network.models.FeedOwnCapability
 
 internal data class FeedOwnValues(
     val capabilities: Set<FeedOwnCapability>,
+    val followings: List<FollowData>,
     val follows: List<FollowData>,
     val membership: FeedMemberData?,
 )

@@ -25,12 +25,14 @@ import io.getstream.feeds.android.network.models.CommentResponse
 internal fun CommentResponse.toModel(): CommentData =
     CommentData(
         attachments = attachments,
+        bookmarkCount = bookmarkCount,
         confidenceScore = confidenceScore,
         controversyScore = controversyScore,
         createdAt = createdAt,
         custom = custom ?: emptyMap(),
         deletedAt = deletedAt,
         downvoteCount = downvoteCount,
+        editedAt = editedAt,
         id = id,
         latestReactions = latestReactions?.map { it.toModel() }.orEmpty(),
         mentionedUsers = mentionedUsers.map { it.toModel() },
