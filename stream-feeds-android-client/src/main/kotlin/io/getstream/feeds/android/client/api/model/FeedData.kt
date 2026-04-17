@@ -58,5 +58,5 @@ public data class FeedData(
     public val name: String,
     public val pinCount: Int,
     public val updatedAt: Date,
-    public val visibility: String?,
+    public val visibility: FeedVisibility?,
 )

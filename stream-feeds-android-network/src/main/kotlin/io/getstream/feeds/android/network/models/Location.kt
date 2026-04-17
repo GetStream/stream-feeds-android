@@ -25,5 +25,3 @@ public data class Location(
     @Json(name = "lat") public val lat: kotlin.Float,
     @Json(name = "lng") public val lng: kotlin.Float,
 )
-
-public typealias ActivityLocation = Location

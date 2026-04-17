@@ -17,6 +17,7 @@
 package io.getstream.feeds.android.client.internal.model
 
 import io.getstream.feeds.android.client.api.model.CommentData
+import io.getstream.feeds.android.client.api.model.CommentStatus
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.network.models.CommentResponse
 
@@ -42,12 +43,23 @@ internal fun CommentResponse.toModel(): CommentData =
         reactionGroups = reactionGroups?.mapValues { it.value.toModel() }.orEmpty(),
         replyCount = replyCount,
         score = score,
-        status = status,
+        status = status.toModel(),
         text = text,
         updatedAt = updatedAt,
         upvoteCount = upvoteCount,
         user = user.toModel(),
     )
+
+/** Converts a [CommentResponse.Status] to a [CommentStatus]. */
+internal fun CommentResponse.Status.toModel(): CommentStatus =
+    when (this) {
+        CommentResponse.Status.Active -> CommentStatus.Active
+        CommentResponse.Status.Deleted -> CommentStatus.Deleted
+        CommentResponse.Status.Hidden -> CommentStatus.Hidden
+        CommentResponse.Status.Removed -> CommentStatus.Removed
+        CommentResponse.Status.ShadowBlocked -> CommentStatus.ShadowBlocked
+        is CommentResponse.Status.Unknown -> CommentStatus.Unknown(unknownValue)
+    }
 
 /**
  * Updates the comment while preserving own reactions because "own" data from WS events is not

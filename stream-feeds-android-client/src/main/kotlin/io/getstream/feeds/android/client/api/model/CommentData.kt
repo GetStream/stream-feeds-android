@@ -101,9 +101,24 @@ public data class CommentData(
     val reactionGroups: Map<String, ReactionGroupData>,
     val replyCount: Int,
     override val score: Int,
-    val status: String,
+    val status: CommentStatus,
     val text: String?,
     val updatedAt: Date,
     val upvoteCount: Int,
     val user: UserData,
 ) : CommentsSortDataFields
+
+/** Represents the status of a comment. */
+public sealed class CommentStatus(public val value: String) {
+    public object Active : CommentStatus("active")
+
+    public object Deleted : CommentStatus("deleted")
+
+    public object Hidden : CommentStatus("hidden")
+
+    public object Removed : CommentStatus("removed")
+
+    public object ShadowBlocked : CommentStatus("shadow_blocked")
+
+    public data class Unknown(val unknownValue: String) : CommentStatus(unknownValue)
+}

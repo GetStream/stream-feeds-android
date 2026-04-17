@@ -23,10 +23,11 @@ import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
+import io.getstream.feeds.android.client.api.model.RestrictReplies
 import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsert
-import io.getstream.feeds.android.network.models.ActivityLocation
 import io.getstream.feeds.android.network.models.ActivityResponse
+import io.getstream.feeds.android.network.models.Location
 import kotlin.math.max
 
 /** Converts an [ActivityResponse] to an [ActivityData] model. */
@@ -63,7 +64,7 @@ internal fun ActivityResponse.toModel(): ActivityData =
         preview = preview,
         reactionCount = reactionCount,
         reactionGroups = reactionGroups.mapValues { it.value.toModel() },
-        restrictReplies = restrictReplies,
+        restrictReplies = restrictReplies.toModel(),
         score = score,
         searchData = searchData,
         shareCount = shareCount,
@@ -75,7 +76,16 @@ internal fun ActivityResponse.toModel(): ActivityData =
         visibilityTag = visibilityTag,
     )
 
-/** Converts a [ActivityDataVisibility] to a [ActivityDataVisibility]. */
+/** Converts a [ActivityResponse.RestrictReplies] to a [RestrictReplies]. */
+internal fun ActivityResponse.RestrictReplies.toModel(): RestrictReplies =
+    when (this) {
+        ActivityResponse.RestrictReplies.Everyone -> RestrictReplies.Everyone
+        ActivityResponse.RestrictReplies.Nobody -> RestrictReplies.Nobody
+        ActivityResponse.RestrictReplies.PeopleIFollow -> RestrictReplies.PeopleIFollow
+        is ActivityResponse.RestrictReplies.Unknown -> RestrictReplies.Unknown(unknownValue)
+    }
+
+/** Converts a [ActivityResponse.Visibility] to a [ActivityDataVisibility]. */
 internal fun ActivityResponse.Visibility.toModel(): ActivityDataVisibility =
     when (this) {
         ActivityResponse.Visibility.Private -> ActivityDataVisibility.Private
@@ -271,4 +281,4 @@ internal fun ActivityData.updateFeedOwnValues(values: FeedOwnValues): ActivityDa
             )
     )
 
-internal fun ActivityLocation.toCoordinate() = LocationCoordinate(lat.toDouble(), lng.toDouble())
+internal fun Location.toCoordinate() = LocationCoordinate(lat.toDouble(), lng.toDouble())

@@ -16,8 +16,8 @@
 
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.network.models.ActivityLocation
 import io.getstream.feeds.android.network.models.Attachment
+import io.getstream.feeds.android.network.models.Location
 import io.getstream.feeds.android.network.models.NotificationContext
 import java.util.Date
 
@@ -114,7 +114,7 @@ public data class ActivityData(
     val interestTags: List<String>,
     val isWatched: Boolean?,
     val latestReactions: List<FeedsReactionData>,
-    val location: ActivityLocation?,
+    val location: Location?,
     val mentionedUsers: List<UserData>,
     val moderation: Moderation?,
     val moderationAction: String?,
@@ -127,7 +127,7 @@ public data class ActivityData(
     val preview: Boolean,
     val reactionCount: Int,
     val reactionGroups: Map<String, ReactionGroupData>,
-    val restrictReplies: String,
+    val restrictReplies: RestrictReplies,
     val score: Float,
     val searchData: Map<String, Any?>,
     val shareCount: Int,
@@ -138,6 +138,17 @@ public data class ActivityData(
     val visibility: ActivityDataVisibility,
     val visibilityTag: String?,
 )
+
+/** Represents who can reply to an activity. */
+public sealed class RestrictReplies(public val value: String) {
+    public object Everyone : RestrictReplies("everyone")
+
+    public object Nobody : RestrictReplies("nobody")
+
+    public object PeopleIFollow : RestrictReplies("people_i_follow")
+
+    public data class Unknown(val unknownValue: String) : RestrictReplies(unknownValue)
+}
 
 /**
  * Type alias for activity visibility settings. This represents the visibility state of an activity

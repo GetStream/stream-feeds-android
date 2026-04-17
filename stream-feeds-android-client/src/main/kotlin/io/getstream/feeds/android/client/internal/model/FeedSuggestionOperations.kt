@@ -19,6 +19,7 @@ package io.getstream.feeds.android.client.internal.model
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedSuggestionData
+import io.getstream.feeds.android.client.api.model.FeedVisibility
 import io.getstream.feeds.android.network.models.FeedSuggestionResponse
 import io.getstream.feeds.android.network.models.FollowResponse
 
@@ -44,9 +45,20 @@ internal fun FeedSuggestionResponse.toModel(): FeedSuggestionData =
                 name = name,
                 pinCount = pinCount,
                 updatedAt = updatedAt,
-                visibility = visibility,
+                visibility = visibility?.toModel(),
             ),
         algorithmScores = algorithmScores,
         reason = reason,
         recommendationScore = recommendationScore,
     )
+
+/** Converts a [FeedSuggestionResponse.Visibility] to a [FeedVisibility]. */
+internal fun FeedSuggestionResponse.Visibility.toModel(): FeedVisibility =
+    when (this) {
+        FeedSuggestionResponse.Visibility.Followers -> FeedVisibility.Followers
+        FeedSuggestionResponse.Visibility.Members -> FeedVisibility.Members
+        FeedSuggestionResponse.Visibility.Private -> FeedVisibility.Private
+        FeedSuggestionResponse.Visibility.Public -> FeedVisibility.Public
+        FeedSuggestionResponse.Visibility.Visible -> FeedVisibility.Visible
+        is FeedSuggestionResponse.Visibility.Unknown -> FeedVisibility.Unknown(unknownValue)
+    }

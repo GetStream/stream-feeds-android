@@ -24,11 +24,13 @@ import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.BookmarkFolderData
 import io.getstream.feeds.android.client.api.model.CommentData
+import io.getstream.feeds.android.client.api.model.CommentStatus
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FeedMemberStatus
 import io.getstream.feeds.android.client.api.model.FeedSuggestionData
+import io.getstream.feeds.android.client.api.model.FeedVisibility
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.FileUploadConfigData
 import io.getstream.feeds.android.client.api.model.FollowData
@@ -39,6 +41,7 @@ import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollOptionData
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.model.ReactionGroupData
+import io.getstream.feeds.android.client.api.model.RestrictReplies
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.model.UserData
 import io.getstream.feeds.android.client.internal.model.PaginationResult
@@ -105,7 +108,7 @@ internal object TestData {
             reactionGroups = emptyMap(),
             replyCount = 0,
             score = 0,
-            status = "",
+            status = CommentStatus.Active,
             text = text,
             updatedAt = Date(1),
             upvoteCount = 0,
@@ -146,7 +149,7 @@ internal object TestData {
             replies = replies,
             replyCount = replyCount,
             score = 0,
-            status = "",
+            status = CommentStatus.Active,
             text = text,
             updatedAt = Date(1),
             upvoteCount = 0,
@@ -249,7 +252,7 @@ internal object TestData {
             preview = false,
             reactionCount = 0,
             reactionGroups = emptyMap(),
-            restrictReplies = "",
+            restrictReplies = RestrictReplies.Everyone,
             score = 0f,
             searchData = emptyMap(),
             shareCount = 0,
@@ -463,7 +466,7 @@ internal object TestData {
                     name = "Test Feed",
                     pinCount = 0,
                     updatedAt = Date(updatedAt),
-                    visibility = "public",
+                    visibility = FeedVisibility.Public,
                 ),
             status = status,
             targetFeed =
@@ -486,7 +489,7 @@ internal object TestData {
                     name = "Target Feed",
                     pinCount = 0,
                     updatedAt = Date(updatedAt),
-                    visibility = "public",
+                    visibility = FeedVisibility.Public,
                 ),
             updatedAt = Date(updatedAt),
         )
@@ -633,7 +636,7 @@ internal object TestData {
             name = name,
             pinCount = 0,
             updatedAt = Date(1000),
-            visibility = "public",
+            visibility = FeedVisibility.Public,
         )
 
     fun feedSuggestionData(id: String) =

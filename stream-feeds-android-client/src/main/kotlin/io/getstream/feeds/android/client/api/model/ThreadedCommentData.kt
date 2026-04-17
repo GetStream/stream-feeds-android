@@ -111,7 +111,7 @@ public data class ThreadedCommentData(
     public val replies: List<ThreadedCommentData>?,
     public val replyCount: Int,
     public override val score: Int,
-    public val status: String,
+    public val status: CommentStatus,
     public val text: String?,
     public val updatedAt: Date,
     public val upvoteCount: Int,
