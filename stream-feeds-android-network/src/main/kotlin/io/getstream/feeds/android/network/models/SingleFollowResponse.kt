@@ -27,4 +27,5 @@ public data class SingleFollowResponse(
     @Json(name = "duration") public val duration: kotlin.String,
     @Json(name = "follow")
     public val follow: io.getstream.feeds.android.network.models.FollowResponse,
+    @Json(name = "notification_created") public val notificationCreated: kotlin.Boolean? = null,
 )

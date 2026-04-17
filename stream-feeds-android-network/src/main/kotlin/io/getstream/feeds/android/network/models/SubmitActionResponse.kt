@@ -25,6 +25,8 @@ import kotlin.io.*
 /**  */
 public data class SubmitActionResponse(
     @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "appeal_item")
+    public val appealItem: io.getstream.feeds.android.network.models.AppealItemResponse? = null,
     @Json(name = "item")
     public val item: io.getstream.feeds.android.network.models.ReviewQueueItemResponse? = null,
 )

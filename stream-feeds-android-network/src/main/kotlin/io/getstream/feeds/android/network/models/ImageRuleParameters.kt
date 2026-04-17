@@ -25,6 +25,7 @@ import kotlin.io.*
 
 /**  */
 public data class ImageRuleParameters(
+    @Json(name = "min_confidence") public val minConfidence: kotlin.Float? = null,
     @Json(name = "threshold") public val threshold: kotlin.Int? = null,
     @Json(name = "time_window") public val timeWindow: kotlin.String? = null,
     @Json(name = "harm_labels")

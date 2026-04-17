@@ -41,12 +41,21 @@ public data class AutomodSemanticFiltersRule(
         public companion object {
             public fun fromString(s: kotlin.String): Action =
                 when (s) {
+                    "bounce" -> Bounce
+                    "bounce_flag" -> BounceFlag
+                    "bounce_remove" -> BounceRemove
                     "flag" -> Flag
                     "remove" -> Remove
                     "shadow" -> Shadow
                     else -> Unknown(s)
                 }
         }
+
+        public object Bounce : Action("bounce")
+
+        public object BounceFlag : Action("bounce_flag")
+
+        public object BounceRemove : Action("bounce_remove")
 
         public object Flag : Action("flag")
 

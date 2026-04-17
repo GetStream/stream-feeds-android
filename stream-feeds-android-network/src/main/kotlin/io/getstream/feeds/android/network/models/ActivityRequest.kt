@@ -33,12 +33,17 @@ import kotlin.io.*
 public data class ActivityRequest(
     @Json(name = "type") public val type: kotlin.String,
     @Json(name = "feeds") public val feeds: kotlin.collections.List<kotlin.String> = emptyList(),
+    @Json(name = "copy_custom_to_notification")
+    public val copyCustomToNotification: kotlin.Boolean? = null,
+    @Json(name = "create_notification_activity")
+    public val createNotificationActivity: kotlin.Boolean? = null,
     @Json(name = "expires_at") public val expiresAt: kotlin.String? = null,
     @Json(name = "id") public val id: kotlin.String? = null,
     @Json(name = "parent_id") public val parentId: kotlin.String? = null,
     @Json(name = "poll_id") public val pollId: kotlin.String? = null,
     @Json(name = "restrict_replies") public val restrictReplies: RestrictReplies? = null,
     @Json(name = "skip_enrich_url") public val skipEnrichUrl: kotlin.Boolean? = null,
+    @Json(name = "skip_push") public val skipPush: kotlin.Boolean? = null,
     @Json(name = "text") public val text: kotlin.String? = null,
     @Json(name = "visibility") public val visibility: Visibility? = null,
     @Json(name = "visibility_tag") public val visibilityTag: kotlin.String? = null,
@@ -57,7 +62,7 @@ public data class ActivityRequest(
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
     @Json(name = "location")
-    public val location: io.getstream.feeds.android.network.models.ActivityLocation? = null,
+    public val location: io.getstream.feeds.android.network.models.Location? = null,
     @Json(name = "search_data")
     public val searchData: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
 ) {

@@ -26,10 +26,15 @@ import kotlin.io.*
 /**  */
 public data class BookmarkResponse(
     @Json(name = "created_at") public val createdAt: java.util.Date,
+    @Json(name = "object_id") public val objectId: kotlin.String,
+    @Json(name = "object_type") public val objectType: kotlin.String,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
     @Json(name = "activity")
     public val activity: io.getstream.feeds.android.network.models.ActivityResponse,
     @Json(name = "user") public val user: io.getstream.feeds.android.network.models.UserResponse,
+    @Json(name = "activity_id") public val activityId: kotlin.String? = null,
+    @Json(name = "comment")
+    public val comment: io.getstream.feeds.android.network.models.CommentResponse? = null,
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
     @Json(name = "folder")

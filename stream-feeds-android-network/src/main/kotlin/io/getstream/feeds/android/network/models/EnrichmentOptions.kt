@@ -22,8 +22,13 @@ import com.squareup.moshi.Json
 import kotlin.collections.*
 import kotlin.io.*
 
-/**  */
+/**
+ * Options to skip specific enrichments to improve performance. Default is false (enrichments are
+ * included). Setting a field to true skips that enrichment.
+ */
 public data class EnrichmentOptions(
+    @Json(name = "enrich_own_followings") public val enrichOwnFollowings: kotlin.Boolean? = null,
+    @Json(name = "include_score_vars") public val includeScoreVars: kotlin.Boolean? = null,
     @Json(name = "skip_activity") public val skipActivity: kotlin.Boolean? = null,
     @Json(name = "skip_activity_collections")
     public val skipActivityCollections: kotlin.Boolean? = null,

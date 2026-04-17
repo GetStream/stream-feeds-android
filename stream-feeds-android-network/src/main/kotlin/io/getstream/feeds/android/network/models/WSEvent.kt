@@ -79,6 +79,8 @@ public class WSEventAdapter : JsonAdapter<WSEvent>() {
                 io.getstream.feeds.android.network.models.ActivityReactionUpdatedEvent::class.java
             "feeds.activity.removed_from_feed" ->
                 io.getstream.feeds.android.network.models.ActivityRemovedFromFeedEvent::class.java
+            "feeds.activity.restored" ->
+                io.getstream.feeds.android.network.models.ActivityRestoredEvent::class.java
             "feeds.activity.unpinned" ->
                 io.getstream.feeds.android.network.models.ActivityUnpinnedEvent::class.java
             "feeds.activity.updated" ->
@@ -103,6 +105,8 @@ public class WSEventAdapter : JsonAdapter<WSEvent>() {
                 io.getstream.feeds.android.network.models.CommentReactionDeletedEvent::class.java
             "feeds.comment.reaction.updated" ->
                 io.getstream.feeds.android.network.models.CommentReactionUpdatedEvent::class.java
+            "feeds.comment.restored" ->
+                io.getstream.feeds.android.network.models.CommentRestoredEvent::class.java
             "feeds.comment.updated" ->
                 io.getstream.feeds.android.network.models.CommentUpdatedEvent::class.java
             "feeds.feed.created" ->
@@ -115,6 +119,8 @@ public class WSEventAdapter : JsonAdapter<WSEvent>() {
                 io.getstream.feeds.android.network.models.FeedGroupChangedEvent::class.java
             "feeds.feed_group.deleted" ->
                 io.getstream.feeds.android.network.models.FeedGroupDeletedEvent::class.java
+            "feeds.feed_group.restored" ->
+                io.getstream.feeds.android.network.models.FeedGroupRestoredEvent::class.java
             "feeds.feed_member.added" ->
                 io.getstream.feeds.android.network.models.FeedMemberAddedEvent::class.java
             "feeds.feed_member.removed" ->
@@ -153,9 +159,10 @@ public class WSEventAdapter : JsonAdapter<WSEvent>() {
             "user.banned" -> io.getstream.feeds.android.network.models.UserBannedEvent::class.java
             "user.deactivated" ->
                 io.getstream.feeds.android.network.models.UserDeactivatedEvent::class.java
-            "user.muted" -> io.getstream.feeds.android.network.models.UserMutedEvent::class.java
             "user.reactivated" ->
                 io.getstream.feeds.android.network.models.UserReactivatedEvent::class.java
+            "user.unbanned" ->
+                io.getstream.feeds.android.network.models.UserUnbannedEvent::class.java
             "user.updated" -> io.getstream.feeds.android.network.models.UserUpdatedEvent::class.java
             else -> UnsupportedWSEvent::class.java
         }

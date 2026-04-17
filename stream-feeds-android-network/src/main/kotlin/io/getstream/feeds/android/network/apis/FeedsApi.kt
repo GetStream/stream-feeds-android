@@ -111,6 +111,18 @@ public interface FeedsApi {
         deleteActivitiesRequest: io.getstream.feeds.android.network.models.DeleteActivitiesRequest
     ): io.getstream.feeds.android.network.models.DeleteActivitiesResponse
 
+    /**
+     * Track activity metrics Track metric events (views, clicks, impressions) for activities.
+     * Supports batching up to 100 events per request. Each event is independently rate-limited per
+     * user per activity per metric. Server-side calls must include user_id.
+     */
+    @POST("/api/v2/feeds/activities/metrics/track")
+    public suspend fun trackActivityMetrics(
+        @Body
+        trackActivityMetricsRequest:
+            io.getstream.feeds.android.network.models.TrackActivityMetricsRequest
+    ): io.getstream.feeds.android.network.models.TrackActivityMetricsResponse
+
     /** Query activities Query activities based on filters with pagination and sorting options */
     @POST("/api/v2/feeds/activities/query")
     public suspend fun queryActivities(
@@ -227,6 +239,7 @@ public interface FeedsApi {
     public suspend fun deleteActivityReaction(
         @Path("activity_id") activityId: kotlin.String,
         @Path("type") type: kotlin.String,
+        @Query("delete_notification_activity") deleteNotificationActivity: kotlin.Boolean? = null,
     ): io.getstream.feeds.android.network.models.DeleteActivityReactionResponse
 
     /** Delete a single activity Delete a single activity by its ID */
@@ -234,6 +247,7 @@ public interface FeedsApi {
     public suspend fun deleteActivity(
         @Path("id") id: kotlin.String,
         @Query("hard_delete") hardDelete: kotlin.Boolean? = null,
+        @Query("delete_notification_activity") deleteNotificationActivity: kotlin.Boolean? = null,
     ): io.getstream.feeds.android.network.models.DeleteActivityResponse
 
     /** Get activity Returns activity by ID */
@@ -243,9 +257,9 @@ public interface FeedsApi {
     ): io.getstream.feeds.android.network.models.GetActivityResponse
 
     /**
-     * Partially activity update Updates certain fields of the activity. Use 'set' to update
-     * specific fields and 'unset' to remove fields. This allows you to update only the fields you
-     * need without replacing the entire activity. Useful for updating reply restrictions
+     * Partial activity update Updates certain fields of the activity. Use 'set' to update specific
+     * fields and 'unset' to remove fields. This allows you to update only the fields you need
+     * without replacing the entire activity. Useful for updating reply restrictions
      * ('restrict_replies'), mentioned users, or custom data.
      */
     @PATCH("/api/v2/feeds/activities/{id}")
@@ -257,9 +271,9 @@ public interface FeedsApi {
     ): io.getstream.feeds.android.network.models.UpdateActivityPartialResponse
 
     /**
-     * Partially activity update Updates certain fields of the activity. Use 'set' to update
-     * specific fields and 'unset' to remove fields. This allows you to update only the fields you
-     * need without replacing the entire activity. Useful for updating reply restrictions
+     * Partial activity update Updates certain fields of the activity. Use 'set' to update specific
+     * fields and 'unset' to remove fields. This allows you to update only the fields you need
+     * without replacing the entire activity. Useful for updating reply restrictions
      * ('restrict_replies'), mentioned users, or custom data.
      */
     @PATCH("/api/v2/feeds/activities/{id}")
@@ -287,6 +301,28 @@ public interface FeedsApi {
     public suspend fun updateActivity(
         @Path("id") id: kotlin.String
     ): io.getstream.feeds.android.network.models.UpdateActivityResponse
+
+    /**
+     * Restore a soft-deleted activity Restores a soft-deleted activity by its ID. Only the activity
+     * owner can restore their own activities.
+     */
+    @POST("/api/v2/feeds/activities/{id}/restore")
+    public suspend fun restoreActivity(
+        @Path("id") id: kotlin.String,
+        @Query("enrich_own_fields") enrichOwnFields: kotlin.Boolean? = null,
+        @Body
+        restoreActivityRequest: io.getstream.feeds.android.network.models.RestoreActivityRequest,
+    ): io.getstream.feeds.android.network.models.RestoreActivityResponse
+
+    /**
+     * Restore a soft-deleted activity Restores a soft-deleted activity by its ID. Only the activity
+     * owner can restore their own activities.
+     */
+    @POST("/api/v2/feeds/activities/{id}/restore")
+    public suspend fun restoreActivity(
+        @Path("id") id: kotlin.String,
+        @Query("enrich_own_fields") enrichOwnFields: kotlin.Boolean? = null,
+    ): io.getstream.feeds.android.network.models.RestoreActivityResponse
 
     /** Query bookmark folders Query bookmark folders with filter query */
     @POST("/api/v2/feeds/bookmark_folders/query")
@@ -343,12 +379,12 @@ public interface FeedsApi {
     ): io.getstream.feeds.android.network.models.DeleteCollectionsResponse
 
     /**
-     * Read collections Read collections with optional filtering by user ID and collection name. By
-     * default, users can only read their own collections.
+     * Read collections Read collections by their references. By default, users can only read their
+     * own collections.
      */
     @GET("/api/v2/feeds/collections")
     public suspend fun readCollections(
-        @Query("collection_refs") collectionRefs: kotlin.collections.List<kotlin.String>
+        @Query("collection_refs") collectionRefs: kotlin.collections.List<kotlin.String>? = null
     ): io.getstream.feeds.android.network.models.ReadCollectionsResponse
 
     /**
@@ -372,6 +408,18 @@ public interface FeedsApi {
         createCollectionsRequest: io.getstream.feeds.android.network.models.CreateCollectionsRequest
     ): io.getstream.feeds.android.network.models.CreateCollectionsResponse
 
+    /** Query collections Query collections with filter query */
+    @POST("/api/v2/feeds/collections/query")
+    public suspend fun queryCollections(
+        @Body
+        queryCollectionsRequest: io.getstream.feeds.android.network.models.QueryCollectionsRequest
+    ): io.getstream.feeds.android.network.models.QueryCollectionsResponse
+
+    /** Query collections Query collections with filter query */
+    @POST("/api/v2/feeds/collections/query")
+    public suspend fun queryCollections():
+        io.getstream.feeds.android.network.models.QueryCollectionsResponse
+
     /**
      * Get comments for an object Retrieve a threaded list of comments for a specific object (e.g.,
      * activity), with configurable depth, sorting, and pagination
@@ -383,6 +431,7 @@ public interface FeedsApi {
         @Query("depth") depth: kotlin.Int? = null,
         @Query("sort") sort: kotlin.String? = null,
         @Query("replies_limit") repliesLimit: kotlin.Int? = null,
+        @Query("id_around") idAround: kotlin.String? = null,
         @Query("limit") limit: kotlin.Int? = null,
         @Query("prev") prev: kotlin.String? = null,
         @Query("next") next: kotlin.String? = null,
@@ -422,6 +471,43 @@ public interface FeedsApi {
         @Body queryCommentsRequest: io.getstream.feeds.android.network.models.QueryCommentsRequest
     ): io.getstream.feeds.android.network.models.QueryCommentsResponse
 
+    /** Delete a comment bookmark Deletes a bookmark from a comment */
+    @DELETE("/api/v2/feeds/comments/{comment_id}/bookmarks")
+    public suspend fun deleteCommentBookmark(
+        @Path("comment_id") commentId: kotlin.String,
+        @Query("folder_id") folderId: kotlin.String? = null,
+    ): io.getstream.feeds.android.network.models.DeleteCommentBookmarkResponse
+
+    /** Update comment bookmark Updates a bookmark for a comment */
+    @PATCH("/api/v2/feeds/comments/{comment_id}/bookmarks")
+    public suspend fun updateCommentBookmark(
+        @Path("comment_id") commentId: kotlin.String,
+        @Body
+        updateCommentBookmarkRequest:
+            io.getstream.feeds.android.network.models.UpdateCommentBookmarkRequest,
+    ): io.getstream.feeds.android.network.models.UpdateCommentBookmarkResponse
+
+    /** Update comment bookmark Updates a bookmark for a comment */
+    @PATCH("/api/v2/feeds/comments/{comment_id}/bookmarks")
+    public suspend fun updateCommentBookmark(
+        @Path("comment_id") commentId: kotlin.String
+    ): io.getstream.feeds.android.network.models.UpdateCommentBookmarkResponse
+
+    /** Add comment bookmark Adds a bookmark to a comment */
+    @POST("/api/v2/feeds/comments/{comment_id}/bookmarks")
+    public suspend fun addCommentBookmark(
+        @Path("comment_id") commentId: kotlin.String,
+        @Body
+        addCommentBookmarkRequest:
+            io.getstream.feeds.android.network.models.AddCommentBookmarkRequest,
+    ): io.getstream.feeds.android.network.models.AddCommentBookmarkResponse
+
+    /** Add comment bookmark Adds a bookmark to a comment */
+    @POST("/api/v2/feeds/comments/{comment_id}/bookmarks")
+    public suspend fun addCommentBookmark(
+        @Path("comment_id") commentId: kotlin.String
+    ): io.getstream.feeds.android.network.models.AddCommentBookmarkResponse
+
     /**
      * Delete a comment Deletes a comment from an object (e.g., activity) and broadcasts appropriate
      * events
@@ -430,6 +516,7 @@ public interface FeedsApi {
     public suspend fun deleteComment(
         @Path("id") id: kotlin.String,
         @Query("hard_delete") hardDelete: kotlin.Boolean? = null,
+        @Query("delete_notification_activity") deleteNotificationActivity: kotlin.Boolean? = null,
     ): io.getstream.feeds.android.network.models.DeleteCommentResponse
 
     /** Get comment Get a comment by ID */
@@ -456,6 +543,27 @@ public interface FeedsApi {
     public suspend fun updateComment(
         @Path("id") id: kotlin.String
     ): io.getstream.feeds.android.network.models.UpdateCommentResponse
+
+    /**
+     * Partial comment update Updates certain fields of the comment. Use 'set' to update specific
+     * fields and 'unset' to remove fields.
+     */
+    @POST("/api/v2/feeds/comments/{id}/partial")
+    public suspend fun updateCommentPartial(
+        @Path("id") id: kotlin.String,
+        @Body
+        updateCommentPartialRequest:
+            io.getstream.feeds.android.network.models.UpdateCommentPartialRequest,
+    ): io.getstream.feeds.android.network.models.UpdateCommentPartialResponse
+
+    /**
+     * Partial comment update Updates certain fields of the comment. Use 'set' to update specific
+     * fields and 'unset' to remove fields.
+     */
+    @POST("/api/v2/feeds/comments/{id}/partial")
+    public suspend fun updateCommentPartial(
+        @Path("id") id: kotlin.String
+    ): io.getstream.feeds.android.network.models.UpdateCommentPartialResponse
 
     /** Add comment reaction Adds a reaction to a comment */
     @POST("/api/v2/feeds/comments/{id}/reactions")
@@ -486,6 +594,7 @@ public interface FeedsApi {
     public suspend fun deleteCommentReaction(
         @Path("id") id: kotlin.String,
         @Path("type") type: kotlin.String,
+        @Query("delete_notification_activity") deleteNotificationActivity: kotlin.Boolean? = null,
     ): io.getstream.feeds.android.network.models.DeleteCommentReactionResponse
 
     /**
@@ -498,10 +607,30 @@ public interface FeedsApi {
         @Query("depth") depth: kotlin.Int? = null,
         @Query("sort") sort: kotlin.String? = null,
         @Query("replies_limit") repliesLimit: kotlin.Int? = null,
+        @Query("id_around") idAround: kotlin.String? = null,
         @Query("limit") limit: kotlin.Int? = null,
         @Query("prev") prev: kotlin.String? = null,
         @Query("next") next: kotlin.String? = null,
     ): io.getstream.feeds.android.network.models.GetCommentRepliesResponse
+
+    /**
+     * Restore a soft-deleted comment Restores a soft-deleted comment by its ID. The comment and all
+     * its descendants are restored. Requires moderator permissions.
+     */
+    @POST("/api/v2/feeds/comments/{id}/restore")
+    public suspend fun restoreComment(
+        @Path("id") id: kotlin.String,
+        @Body restoreCommentRequest: io.getstream.feeds.android.network.models.RestoreCommentRequest,
+    ): io.getstream.feeds.android.network.models.RestoreCommentResponse
+
+    /**
+     * Restore a soft-deleted comment Restores a soft-deleted comment by its ID. The comment and all
+     * its descendants are restored. Requires moderator permissions.
+     */
+    @POST("/api/v2/feeds/comments/{id}/restore")
+    public suspend fun restoreComment(
+        @Path("id") id: kotlin.String
+    ): io.getstream.feeds.android.network.models.RestoreCommentResponse
 
     /** Delete a single feed Delete a single feed by its ID */
     @DELETE("/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}")
@@ -576,6 +705,7 @@ public interface FeedsApi {
         @Path("feed_group_id") feedGroupId: kotlin.String,
         @Path("feed_id") feedId: kotlin.String,
         @Path("activity_id") activityId: kotlin.String,
+        @Query("enrich_own_fields") enrichOwnFields: kotlin.Boolean? = null,
     ): io.getstream.feeds.android.network.models.UnpinActivityResponse
 
     /**
@@ -663,6 +793,23 @@ public interface FeedsApi {
         @Path("feed_group_id") feedGroupId: kotlin.String,
         @Path("feed_id") feedId: kotlin.String,
     ): io.getstream.feeds.android.network.models.RejectFeedMemberInviteResponse
+
+    /** Query pinned activities Query pinned activities for a feed with filter query */
+    @POST("/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}/pinned_activities/query")
+    public suspend fun queryPinnedActivities(
+        @Path("feed_group_id") feedGroupId: kotlin.String,
+        @Path("feed_id") feedId: kotlin.String,
+        @Body
+        queryPinnedActivitiesRequest:
+            io.getstream.feeds.android.network.models.QueryPinnedActivitiesRequest,
+    ): io.getstream.feeds.android.network.models.QueryPinnedActivitiesResponse
+
+    /** Query pinned activities Query pinned activities for a feed with filter query */
+    @POST("/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}/pinned_activities/query")
+    public suspend fun queryPinnedActivities(
+        @Path("feed_group_id") feedGroupId: kotlin.String,
+        @Path("feed_id") feedId: kotlin.String,
+    ): io.getstream.feeds.android.network.models.QueryPinnedActivitiesResponse
 
     /** Stop watching feed Call this Method to stop receiving feed events */
     @DELETE("/api/v2/feeds/feed_groups/{feed_group_id}/feeds/{feed_id}/watch")
@@ -773,6 +920,9 @@ public interface FeedsApi {
     public suspend fun unfollow(
         @Path("source") source: kotlin.String,
         @Path("target") target: kotlin.String,
+        @Query("delete_notification_activity") deleteNotificationActivity: kotlin.Boolean? = null,
+        @Query("keep_history") keepHistory: kotlin.Boolean? = null,
+        @Query("enrich_own_fields") enrichOwnFields: kotlin.Boolean? = null,
     ): io.getstream.feeds.android.network.models.UnfollowResponse
 
     /**
@@ -796,6 +946,29 @@ public interface FeedsApi {
         @Query("connection_id") connectionId: kotlin.String? = null,
         @Query("json") json: io.getstream.feeds.android.network.models.WSAuthMessage? = null,
     )
+
+    /** Appeal against the moderation decision Appeal against the moderation decision */
+    @POST("/api/v2/moderation/appeal")
+    public suspend fun appeal(
+        @Body appealRequest: io.getstream.feeds.android.network.models.AppealRequest
+    ): io.getstream.feeds.android.network.models.AppealResponse
+
+    /** Get appeal item Retrieve a specific appeal item by its ID */
+    @GET("/api/v2/moderation/appeal/{id}")
+    public suspend fun getAppeal(
+        @Path("id") id: kotlin.String
+    ): io.getstream.feeds.android.network.models.GetAppealResponse
+
+    /** Query Appeals Query Appeals */
+    @POST("/api/v2/moderation/appeals")
+    public suspend fun queryAppeals(
+        @Body queryAppealsRequest: io.getstream.feeds.android.network.models.QueryAppealsRequest
+    ): io.getstream.feeds.android.network.models.QueryAppealsResponse
+
+    /** Query Appeals Query Appeals */
+    @POST("/api/v2/moderation/appeals")
+    public suspend fun queryAppeals():
+        io.getstream.feeds.android.network.models.QueryAppealsResponse
 
     /** Ban Ban a user from a channel or the entire app */
     @POST("/api/v2/moderation/ban")
@@ -1047,6 +1220,84 @@ public interface FeedsApi {
     /** Upload image Uploads image */
     @POST("/api/v2/uploads/image")
     public suspend fun uploadImage(): io.getstream.feeds.android.network.models.ImageUploadResponse
+
+    /** List user groups Lists user groups with cursor-based pagination */
+    @GET("/api/v2/usergroups")
+    public suspend fun listUserGroups(
+        @Query("limit") limit: kotlin.Int? = null,
+        @Query("id_gt") idGt: kotlin.String? = null,
+        @Query("created_at_gt") createdAtGt: kotlin.String? = null,
+        @Query("team_id") teamId: kotlin.String? = null,
+    ): io.getstream.feeds.android.network.models.ListUserGroupsResponse
+
+    /** Create user group Creates a new user group, optionally with initial members */
+    @POST("/api/v2/usergroups")
+    public suspend fun createUserGroup(
+        @Body
+        createUserGroupRequest: io.getstream.feeds.android.network.models.CreateUserGroupRequest
+    ): io.getstream.feeds.android.network.models.CreateUserGroupResponse
+
+    /** Search user groups Searches user groups by name prefix for autocomplete */
+    @GET("/api/v2/usergroups/search")
+    public suspend fun searchUserGroups(
+        @Query("query") query: kotlin.String,
+        @Query("limit") limit: kotlin.Int? = null,
+        @Query("name_gt") nameGt: kotlin.String? = null,
+        @Query("id_gt") idGt: kotlin.String? = null,
+        @Query("team_id") teamId: kotlin.String? = null,
+    ): io.getstream.feeds.android.network.models.SearchUserGroupsResponse
+
+    /** Delete user group Deletes a user group and all its members */
+    @DELETE("/api/v2/usergroups/{id}")
+    public suspend fun deleteUserGroup(
+        @Path("id") id: kotlin.String,
+        @Query("team_id") teamId: kotlin.String? = null,
+    ): io.getstream.feeds.android.network.models.Response
+
+    /** Get user group Gets a user group by ID, including its members */
+    @GET("/api/v2/usergroups/{id}")
+    public suspend fun getUserGroup(
+        @Path("id") id: kotlin.String,
+        @Query("team_id") teamId: kotlin.String? = null,
+    ): io.getstream.feeds.android.network.models.GetUserGroupResponse
+
+    /** Update user group Updates a user group's name and/or description. team_id is immutable. */
+    @PUT("/api/v2/usergroups/{id}")
+    public suspend fun updateUserGroup(
+        @Path("id") id: kotlin.String,
+        @Body
+        updateUserGroupRequest: io.getstream.feeds.android.network.models.UpdateUserGroupRequest,
+    ): io.getstream.feeds.android.network.models.UpdateUserGroupResponse
+
+    /** Update user group Updates a user group's name and/or description. team_id is immutable. */
+    @PUT("/api/v2/usergroups/{id}")
+    public suspend fun updateUserGroup(
+        @Path("id") id: kotlin.String
+    ): io.getstream.feeds.android.network.models.UpdateUserGroupResponse
+
+    /**
+     * Add user group members Adds members to a user group. All user IDs must exist. The operation
+     * is all-or-nothing.
+     */
+    @POST("/api/v2/usergroups/{id}/members")
+    public suspend fun addUserGroupMembers(
+        @Path("id") id: kotlin.String,
+        @Body
+        addUserGroupMembersRequest:
+            io.getstream.feeds.android.network.models.AddUserGroupMembersRequest,
+    ): io.getstream.feeds.android.network.models.AddUserGroupMembersResponse
+
+    /**
+     * Remove user group members Removes members from a user group. Users already not in the group
+     * are silently ignored.
+     */
+    @POST("/api/v2/usergroups/{id}/members/delete")
+    public suspend fun removeUserGroupMembers(
+        @Path("id") id: kotlin.String,
+        @Body
+        removeUserGroupMembersRequest:
+            io.getstream.feeds.android.network.models.RemoveUserGroupMembersRequest,
+    ): io.getstream.feeds.android.network.models.RemoveUserGroupMembersResponse
 
     /** Query users Find and filter users */
     @GET("/api/v2/users")

@@ -27,6 +27,9 @@ import kotlin.io.*
 public data class UnfollowBatchRequest(
     @Json(name = "follows")
     public val follows:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.FollowPair> =
-        emptyList()
+        kotlin.collections.List<io.getstream.feeds.android.network.models.UnfollowPair> =
+        emptyList(),
+    @Json(name = "delete_notification_activity")
+    public val deleteNotificationActivity: kotlin.Boolean? = null,
+    @Json(name = "enrich_own_fields") public val enrichOwnFields: kotlin.Boolean? = null,
 )

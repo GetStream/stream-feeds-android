@@ -20,18 +20,26 @@ package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
 import kotlin.collections.*
+import kotlin.collections.Map
 import kotlin.io.*
 
-/**  */
+/** This event is sent when content is flagged for moderation */
 public data class ModerationFlaggedEvent(
+    @Json(name = "content_type") public val contentType: kotlin.String,
     @Json(name = "created_at") public val createdAt: java.util.Date,
+    @Json(name = "object_id") public val objectId: kotlin.String,
+    @Json(name = "custom")
+    public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
     @Json(name = "type") public val type: kotlin.String,
-    @Json(name = "item") public val item: kotlin.String? = null,
-    @Json(name = "object_id") public val objectId: kotlin.String? = null,
-    @Json(name = "user") public val user: io.getstream.feeds.android.network.models.User? = null,
+    @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
 ) :
+    io.getstream.feeds.android.network.models.WSClientEvent,
     io.getstream.feeds.android.network.models.WSEvent,
     io.getstream.feeds.android.network.models.FeedEvent {
+
+    override fun getWSClientEventType(): kotlin.String {
+        return type
+    }
 
     override fun getWSEventType(): kotlin.String {
         return type

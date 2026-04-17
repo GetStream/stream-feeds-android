@@ -28,5 +28,6 @@ public data class UpsertActivitiesRequest(
     @Json(name = "activities")
     public val activities:
         kotlin.collections.List<io.getstream.feeds.android.network.models.ActivityRequest> =
-        emptyList()
+        emptyList(),
+    @Json(name = "enrich_own_fields") public val enrichOwnFields: kotlin.Boolean? = null,
 )

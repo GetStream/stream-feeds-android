@@ -26,6 +26,9 @@ import kotlin.io.*
 
 /**  */
 public data class QueryActivitiesRequest(
+    @Json(name = "enrich_own_fields") public val enrichOwnFields: kotlin.Boolean? = null,
+    @Json(name = "include_soft_deleted_activities")
+    public val includeSoftDeletedActivities: kotlin.Boolean? = null,
     @Json(name = "limit") public val limit: kotlin.Int? = null,
     @Json(name = "next") public val next: kotlin.String? = null,
     @Json(name = "prev") public val prev: kotlin.String? = null,

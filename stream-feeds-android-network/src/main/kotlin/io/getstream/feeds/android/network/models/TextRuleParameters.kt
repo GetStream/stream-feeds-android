@@ -27,6 +27,8 @@ import kotlin.io.*
 /**  */
 public data class TextRuleParameters(
     @Json(name = "contains_url") public val containsUrl: kotlin.Boolean? = null,
+    @Json(name = "semantic_filter_min_threshold")
+    public val semanticFilterMinThreshold: kotlin.Float? = null,
     @Json(name = "severity") public val severity: kotlin.String? = null,
     @Json(name = "threshold") public val threshold: kotlin.Int? = null,
     @Json(name = "time_window") public val timeWindow: kotlin.String? = null,
@@ -34,6 +36,8 @@ public data class TextRuleParameters(
     public val blocklistMatch: kotlin.collections.List<kotlin.String>? = emptyList(),
     @Json(name = "harm_labels")
     public val harmLabels: kotlin.collections.List<kotlin.String>? = emptyList(),
+    @Json(name = "semantic_filter_names")
+    public val semanticFilterNames: kotlin.collections.List<kotlin.String>? = emptyList(),
     @Json(name = "llm_harm_labels")
     public val llmHarmLabels: kotlin.collections.Map<kotlin.String, kotlin.String>? = emptyMap(),
 )

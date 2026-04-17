@@ -36,7 +36,7 @@ public data class QueryReviewQueueResponse(
         kotlin.collections.Map<
             kotlin.String,
             kotlin.collections.List<
-                io.getstream.feeds.android.network.models.ModerationActionConfig
+                io.getstream.feeds.android.network.models.ModerationActionConfigResponse
             >,
         > =
         emptyMap(),

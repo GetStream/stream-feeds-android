@@ -26,6 +26,13 @@ import kotlin.io.*
 
 /**  */
 public data class UpdateActivityPartialRequest(
+    @Json(name = "copy_custom_to_notification")
+    public val copyCustomToNotification: kotlin.Boolean? = null,
+    @Json(name = "enrich_own_fields") public val enrichOwnFields: kotlin.Boolean? = null,
+    @Json(name = "handle_mention_notifications")
+    public val handleMentionNotifications: kotlin.Boolean? = null,
+    @Json(name = "run_activity_processors")
+    public val runActivityProcessors: kotlin.Boolean? = null,
     @Json(name = "unset") public val unset: kotlin.collections.List<kotlin.String>? = emptyList(),
     @Json(name = "set") public val set: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
 )

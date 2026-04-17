@@ -29,7 +29,8 @@ import kotlin.io.*
 
 /**  */
 public data class RuleBuilderAction(
-    @Json(name = "type") public val type: Type,
+    @Json(name = "skip_inbox") public val skipInbox: kotlin.Boolean? = null,
+    @Json(name = "type") public val type: Type? = null,
     @Json(name = "ban_options")
     public val banOptions: io.getstream.feeds.android.network.models.BanOptions? = null,
     @Json(name = "flag_user_options")
@@ -45,12 +46,21 @@ public data class RuleBuilderAction(
                 when (s) {
                     "ban_user" -> BanUser
                     "block_content" -> BlockContent
+                    "blur" -> Blur
                     "bounce_content" -> BounceContent
                     "bounce_flag_content" -> BounceFlagContent
                     "bounce_remove_content" -> BounceRemoveContent
+                    "call_blur" -> CallBlur
+                    "call_warning" -> CallWarning
+                    "end_call" -> EndCall
                     "flag_content" -> FlagContent
                     "flag_user" -> FlagUser
+                    "kick_user" -> KickUser
+                    "mute_audio" -> MuteAudio
+                    "mute_video" -> MuteVideo
                     "shadow_content" -> ShadowContent
+                    "warning" -> Warning
+                    "webhook_only" -> WebhookOnly
                     else -> Unknown(s)
                 }
         }
@@ -59,17 +69,35 @@ public data class RuleBuilderAction(
 
         public object BlockContent : Type("block_content")
 
+        public object Blur : Type("blur")
+
         public object BounceContent : Type("bounce_content")
 
         public object BounceFlagContent : Type("bounce_flag_content")
 
         public object BounceRemoveContent : Type("bounce_remove_content")
 
+        public object CallBlur : Type("call_blur")
+
+        public object CallWarning : Type("call_warning")
+
+        public object EndCall : Type("end_call")
+
         public object FlagContent : Type("flag_content")
 
         public object FlagUser : Type("flag_user")
 
+        public object KickUser : Type("kick_user")
+
+        public object MuteAudio : Type("mute_audio")
+
+        public object MuteVideo : Type("mute_video")
+
         public object ShadowContent : Type("shadow_content")
+
+        public object Warning : Type("warning")
+
+        public object WebhookOnly : Type("webhook_only")
 
         public data class Unknown(val unknownValue: kotlin.String) : Type(unknownValue)
 

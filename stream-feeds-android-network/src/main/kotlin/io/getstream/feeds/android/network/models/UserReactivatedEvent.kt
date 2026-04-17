@@ -20,16 +20,31 @@ package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
 import kotlin.collections.*
+import kotlin.collections.Map
 import kotlin.io.*
 
-/**  */
+/**
+ * This event is sent when a user gets reactivated. The event contains information about the user
+ * that was reactivated.
+ */
 public data class UserReactivatedEvent(
     @Json(name = "created_at") public val createdAt: java.util.Date,
+    @Json(name = "custom")
+    public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
+    @Json(name = "user")
+    public val user: io.getstream.feeds.android.network.models.UserResponseCommonFields,
     @Json(name = "type") public val type: kotlin.String,
-    @Json(name = "user") public val user: io.getstream.feeds.android.network.models.User? = null,
+    @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
+    @Json(name = "created_by")
+    public val createdBy: io.getstream.feeds.android.network.models.UserResponseCommonFields? = null,
 ) :
+    io.getstream.feeds.android.network.models.WSClientEvent,
     io.getstream.feeds.android.network.models.WSEvent,
     io.getstream.feeds.android.network.models.FeedEvent {
+
+    override fun getWSClientEventType(): kotlin.String {
+        return type
+    }
 
     override fun getWSEventType(): kotlin.String {
         return type

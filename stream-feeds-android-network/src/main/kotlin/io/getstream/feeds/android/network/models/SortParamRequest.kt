@@ -26,4 +26,5 @@ import kotlin.io.*
 public data class SortParamRequest(
     @Json(name = "direction") public val direction: kotlin.Int? = null,
     @Json(name = "field") public val field: kotlin.String? = null,
+    @Json(name = "type") public val type: kotlin.String? = null,
 )

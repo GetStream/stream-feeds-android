@@ -30,4 +30,6 @@ public data class UpsertActivitiesResponse(
     public val activities:
         kotlin.collections.List<io.getstream.feeds.android.network.models.ActivityResponse> =
         emptyList(),
+    @Json(name = "mention_notifications_created")
+    public val mentionNotificationsCreated: kotlin.Int? = null,
 )

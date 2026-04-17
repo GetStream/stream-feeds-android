@@ -26,21 +26,11 @@ import kotlin.io.*
 /**  */
 public data class UpsertPushPreferencesResponse(
     @Json(name = "duration") public val duration: kotlin.String,
-    @Json(name = "user_channel_preferences")
-    public val userChannelPreferences:
-        kotlin.collections.Map<
-            kotlin.String,
-            kotlin.collections.Map<
-                kotlin.String,
-                io.getstream.feeds.android.network.models.ChannelPushPreferences,
-            >,
-        > =
-        emptyMap(),
     @Json(name = "user_preferences")
     public val userPreferences:
         kotlin.collections.Map<
             kotlin.String,
-            io.getstream.feeds.android.network.models.PushPreferences,
+            io.getstream.feeds.android.network.models.PushPreferencesResponse,
         > =
         emptyMap(),
 )

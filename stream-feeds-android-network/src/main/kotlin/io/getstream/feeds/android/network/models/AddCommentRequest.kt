@@ -27,6 +27,8 @@ import kotlin.io.*
 /**  */
 public data class AddCommentRequest(
     @Json(name = "comment") public val comment: kotlin.String? = null,
+    @Json(name = "copy_custom_to_notification")
+    public val copyCustomToNotification: kotlin.Boolean? = null,
     @Json(name = "create_notification_activity")
     public val createNotificationActivity: kotlin.Boolean? = null,
     @Json(name = "id") public val id: kotlin.String? = null,

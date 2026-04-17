@@ -346,7 +346,7 @@ internal object TestData {
             id = id,
             popularity = 0,
             reactionCount = 0,
-            restrictReplies = "",
+            restrictReplies = ActivityResponse.RestrictReplies.Everyone,
             score = 0f,
             shareCount = 0,
             type = "",
@@ -406,6 +406,8 @@ internal object TestData {
     fun bookmarkResponse() =
         BookmarkResponse(
             createdAt = Date(1000),
+            objectId = "activity-1",
+            objectType = "activity",
             updatedAt = Date(1000),
             activity = activityResponse(),
             user = userResponse(),
@@ -667,6 +669,7 @@ internal object TestData {
 
     fun feedResponse(group: String = "user", id: String = "feed-1") =
         FeedResponse(
+            activityCount = 0,
             id = id,
             groupId = group,
             name = "Test Feed",
@@ -781,6 +784,7 @@ internal object TestData {
 
     fun feedSuggestionResponse() =
         FeedSuggestionResponse(
+            activityCount = 0,
             createdAt = Date(1000),
             description = "Test feed description",
             feed = "user:feed-1",
@@ -805,6 +809,7 @@ internal object TestData {
 
     fun commentResponse() =
         CommentResponse(
+            bookmarkCount = 0,
             id = "comment-1",
             createdAt = Date(1000),
             updatedAt = Date(1000),
@@ -817,7 +822,7 @@ internal object TestData {
             reactionCount = 5,
             replyCount = 2,
             score = 10,
-            status = "active",
+            status = CommentResponse.Status.Active,
             upvoteCount = 5,
             custom = emptyMap(),
         )

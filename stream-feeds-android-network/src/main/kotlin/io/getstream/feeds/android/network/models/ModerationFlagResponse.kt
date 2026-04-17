@@ -42,7 +42,8 @@ public data class ModerationFlagResponse(
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
     @Json(name = "moderation_payload")
-    public val moderationPayload: io.getstream.feeds.android.network.models.ModerationPayload? =
+    public val moderationPayload:
+        io.getstream.feeds.android.network.models.ModerationPayloadResponse? =
         null,
     @Json(name = "review_queue_item")
     public val reviewQueueItem: io.getstream.feeds.android.network.models.ReviewQueueItemResponse? =

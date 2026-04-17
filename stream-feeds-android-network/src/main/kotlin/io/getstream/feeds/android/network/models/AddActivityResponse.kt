@@ -27,4 +27,6 @@ public data class AddActivityResponse(
     @Json(name = "duration") public val duration: kotlin.String,
     @Json(name = "activity")
     public val activity: io.getstream.feeds.android.network.models.ActivityResponse,
+    @Json(name = "mention_notifications_created")
+    public val mentionNotificationsCreated: kotlin.Int? = null,
 )

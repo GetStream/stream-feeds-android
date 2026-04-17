@@ -31,6 +31,7 @@ import kotlin.io.*
 /**  */
 public data class FeedsPreferences(
     @Json(name = "comment") public val comment: Comment? = null,
+    @Json(name = "comment_mention") public val commentMention: CommentMention? = null,
     @Json(name = "comment_reaction") public val commentReaction: CommentReaction? = null,
     @Json(name = "comment_reply") public val commentReply: CommentReply? = null,
     @Json(name = "follow") public val follow: Follow? = null,
@@ -69,6 +70,39 @@ public data class FeedsPreferences(
 
             @ToJson
             override fun toJson(writer: JsonWriter, value: Comment?) {
+                writer.value(value?.value)
+            }
+        }
+    }
+
+    /** CommentMention Enum */
+    public sealed class CommentMention(public val value: kotlin.String) {
+        override fun toString(): String = value
+
+        public companion object {
+            public fun fromString(s: kotlin.String): CommentMention =
+                when (s) {
+                    "all" -> All
+                    "none" -> None
+                    else -> Unknown(s)
+                }
+        }
+
+        public object All : CommentMention("all")
+
+        public object None : CommentMention("none")
+
+        public data class Unknown(val unknownValue: kotlin.String) : CommentMention(unknownValue)
+
+        public class CommentMentionAdapter : JsonAdapter<CommentMention>() {
+            @FromJson
+            override fun fromJson(reader: JsonReader): CommentMention? {
+                val s = reader.nextString() ?: return null
+                return CommentMention.fromString(s)
+            }
+
+            @ToJson
+            override fun toJson(writer: JsonWriter, value: CommentMention?) {
                 writer.value(value?.value)
             }
         }

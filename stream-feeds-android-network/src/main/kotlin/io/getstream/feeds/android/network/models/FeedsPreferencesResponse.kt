@@ -26,7 +26,9 @@ import kotlin.io.*
 /**  */
 public data class FeedsPreferencesResponse(
     @Json(name = "comment") public val comment: kotlin.String? = null,
+    @Json(name = "comment_mention") public val commentMention: kotlin.String? = null,
     @Json(name = "comment_reaction") public val commentReaction: kotlin.String? = null,
+    @Json(name = "comment_reply") public val commentReply: kotlin.String? = null,
     @Json(name = "follow") public val follow: kotlin.String? = null,
     @Json(name = "mention") public val mention: kotlin.String? = null,
     @Json(name = "reaction") public val reaction: kotlin.String? = null,

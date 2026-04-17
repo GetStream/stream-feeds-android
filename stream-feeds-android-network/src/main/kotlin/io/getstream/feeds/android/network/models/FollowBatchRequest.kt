@@ -28,5 +28,6 @@ public data class FollowBatchRequest(
     @Json(name = "follows")
     public val follows:
         kotlin.collections.List<io.getstream.feeds.android.network.models.FollowRequest> =
-        emptyList()
+        emptyList(),
+    @Json(name = "enrich_own_fields") public val enrichOwnFields: kotlin.Boolean? = null,
 )
