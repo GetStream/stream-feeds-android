@@ -32,9 +32,11 @@ import java.util.Date
  * - User Association: Tracks which user created the bookmark
  * - Timestamps: Tracks creation and update times
  *
- * @property activity The activity that has been bookmarked. This property contains the full
- *   activity data for the bookmarked item, allowing access to all activity information without
- *   additional lookups.
+ * @property activity The bookmarked activity. When [objectType] is `"activity"`, this contains the
+ *   full activity data. When [objectType] is `"comment"`, this is an empty value.
+ * @property activityId The ID of the bookmarked activity, if applicable.
+ * @property comment The bookmarked comment. Populated when [objectType] is `"comment"`, containing
+ *   the full comment data for the bookmarked item.
  * @property createdAt The date and time when the bookmark was created.
  * @property custom Custom data associated with the bookmark. This property allows for storing
  *   additional metadata or custom fields specific to your application's bookmark functionality. It
@@ -42,6 +44,8 @@ import java.util.Date
  * @property folder The bookmark folder this bookmark belongs to, if any. This property allows for
  *   organizing bookmarks into folders or collections. If the bookmark is not organized into a
  *   folder, this property is `null`.
+ * @property objectId The ID of the bookmarked object (activity or comment).
+ * @property objectType The type of the bookmarked object. Either `"activity"` or `"comment"`.
  * @property updatedAt The date and time when the bookmark was last updated.
  * @property user The user who created the bookmark. This property contains the full user data for
  *   the user who bookmarked the activity.
