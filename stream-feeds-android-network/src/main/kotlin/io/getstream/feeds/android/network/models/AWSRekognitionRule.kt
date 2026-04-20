@@ -25,6 +25,7 @@ import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
 import kotlin.collections.*
+import kotlin.collections.Map
 import kotlin.io.*
 
 /**  */
@@ -32,6 +33,8 @@ public data class AWSRekognitionRule(
     @Json(name = "action") public val action: Action,
     @Json(name = "label") public val label: kotlin.String,
     @Json(name = "min_confidence") public val minConfidence: kotlin.Float,
+    @Json(name = "subclassifications")
+    public val subclassifications: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
 ) {
 
     /** Action Enum */

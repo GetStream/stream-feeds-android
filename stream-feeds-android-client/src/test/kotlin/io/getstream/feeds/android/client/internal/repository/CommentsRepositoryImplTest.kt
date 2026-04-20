@@ -236,9 +236,11 @@ internal class CommentsRepositoryImplTest {
         val apiResult =
             GetCommentsResponse(
                 duration = "duration",
+                sort = "created_at",
                 comments =
                     listOf(
                         ThreadedCommentResponse(
+                            bookmarkCount = 0,
                             confidenceScore = 0.9f,
                             createdAt = java.util.Date(1000),
                             downvoteCount = 0,
@@ -248,7 +250,7 @@ internal class CommentsRepositoryImplTest {
                             reactionCount = 5,
                             replyCount = 0,
                             score = 10,
-                            status = "active",
+                            status = ThreadedCommentResponse.Status.Active,
                             updatedAt = java.util.Date(1000),
                             upvoteCount = 5,
                             mentionedUsers = emptyList(),
@@ -387,9 +389,11 @@ internal class CommentsRepositoryImplTest {
         val apiResult =
             GetCommentRepliesResponse(
                 duration = "duration",
+                sort = "created_at",
                 comments =
                     listOf(
                         ThreadedCommentResponse(
+                            bookmarkCount = 0,
                             confidenceScore = 0.9f,
                             createdAt = java.util.Date(1000),
                             downvoteCount = 0,
@@ -399,7 +403,7 @@ internal class CommentsRepositoryImplTest {
                             reactionCount = 0,
                             replyCount = 0,
                             score = 5,
-                            status = "active",
+                            status = ThreadedCommentResponse.Status.Active,
                             updatedAt = java.util.Date(1000),
                             upvoteCount = 5,
                             mentionedUsers = emptyList(),

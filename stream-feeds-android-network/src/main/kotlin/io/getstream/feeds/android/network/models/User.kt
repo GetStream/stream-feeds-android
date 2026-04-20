@@ -20,31 +20,11 @@ package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
 import kotlin.collections.*
-import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.io.*
 
 /**  */
 public data class User(
-    @Json(name = "banned") public val banned: kotlin.Boolean,
     @Json(name = "id") public val id: kotlin.String,
-    @Json(name = "online") public val online: kotlin.Boolean,
-    @Json(name = "role") public val role: kotlin.String,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-    @Json(name = "teams_role")
-    public val teamsRole: kotlin.collections.Map<kotlin.String, kotlin.String> = emptyMap(),
-    @Json(name = "avg_response_time") public val avgResponseTime: kotlin.Int? = null,
-    @Json(name = "ban_expires") public val banExpires: java.util.Date? = null,
-    @Json(name = "created_at") public val createdAt: java.util.Date? = null,
-    @Json(name = "deactivated_at") public val deactivatedAt: java.util.Date? = null,
-    @Json(name = "deleted_at") public val deletedAt: java.util.Date? = null,
-    @Json(name = "invisible") public val invisible: kotlin.Boolean? = null,
-    @Json(name = "language") public val language: kotlin.String? = null,
-    @Json(name = "last_active") public val lastActive: java.util.Date? = null,
-    @Json(name = "last_engaged_at") public val lastEngagedAt: java.util.Date? = null,
-    @Json(name = "revoke_tokens_issued_before")
-    public val revokeTokensIssuedBefore: java.util.Date? = null,
-    @Json(name = "updated_at") public val updatedAt: java.util.Date? = null,
-    @Json(name = "teams") public val teams: kotlin.collections.List<kotlin.String>? = emptyList(),
+    @Json(name = "data") public val data: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
 )

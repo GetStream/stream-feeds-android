@@ -27,4 +27,7 @@ public data class AddCommentResponse(
     @Json(name = "duration") public val duration: kotlin.String,
     @Json(name = "comment")
     public val comment: io.getstream.feeds.android.network.models.CommentResponse,
+    @Json(name = "mention_notifications_created")
+    public val mentionNotificationsCreated: kotlin.Int? = null,
+    @Json(name = "notification_created") public val notificationCreated: kotlin.Boolean? = null,
 )

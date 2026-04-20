@@ -84,7 +84,9 @@ public data class PushPreferenceInput(
             public fun fromString(s: kotlin.String): ChatLevel =
                 when (s) {
                     "all" -> All
+                    "all_mentions" -> AllMentions
                     "default" -> Default
+                    "direct_mentions" -> DirectMentions
                     "mentions" -> Mentions
                     "none" -> None
                     else -> Unknown(s)
@@ -93,7 +95,11 @@ public data class PushPreferenceInput(
 
         public object All : ChatLevel("all")
 
+        public object AllMentions : ChatLevel("all_mentions")
+
         public object Default : ChatLevel("default")
+
+        public object DirectMentions : ChatLevel("direct_mentions")
 
         public object Mentions : ChatLevel("mentions")
 

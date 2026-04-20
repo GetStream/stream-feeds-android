@@ -27,6 +27,7 @@ import kotlin.io.*
 /**  */
 public data class TextContentParameters(
     @Json(name = "contains_url") public val containsUrl: kotlin.Boolean? = null,
+    @Json(name = "label_operator") public val labelOperator: kotlin.String? = null,
     @Json(name = "severity") public val severity: kotlin.String? = null,
     @Json(name = "blocklist_match")
     public val blocklistMatch: kotlin.collections.List<kotlin.String>? = emptyList(),

@@ -26,9 +26,9 @@ import io.getstream.feeds.android.client.api.model.FeedSuggestionData
 import io.getstream.feeds.android.client.api.state.Feed
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.network.models.FollowBatchRequest
-import io.getstream.feeds.android.network.models.FollowPair
 import io.getstream.feeds.android.network.models.FollowRequest
 import io.getstream.feeds.android.network.models.UnfollowBatchRequest
+import io.getstream.feeds.android.network.models.UnfollowPair
 import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.util.Feeds
@@ -102,8 +102,8 @@ class ProfileViewModel @Inject constructor(loginManager: LoginManager) : ViewMod
         state.withFirstContent(viewModelScope) {
             val followPairs =
                 listOf(
-                    FollowPair(source = feed.fid.rawValue, target = feedId.rawValue),
-                    FollowPair(
+                    UnfollowPair(source = feed.fid.rawValue, target = feedId.rawValue),
+                    UnfollowPair(
                         source = Feeds.stories(client.user.id).rawValue,
                         target = Feeds.story(feedId.id).rawValue,
                     ),

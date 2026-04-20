@@ -39,7 +39,7 @@ public data class ActivityResponse(
     @Json(name = "popularity") public val popularity: kotlin.Int,
     @Json(name = "preview") public val preview: kotlin.Boolean,
     @Json(name = "reaction_count") public val reactionCount: kotlin.Int,
-    @Json(name = "restrict_replies") public val restrictReplies: kotlin.String,
+    @Json(name = "restrict_replies") public val restrictReplies: RestrictReplies,
     @Json(name = "score") public val score: kotlin.Float,
     @Json(name = "share_count") public val shareCount: kotlin.Int,
     @Json(name = "type") public val type: kotlin.String,
@@ -87,7 +87,7 @@ public data class ActivityResponse(
     public val reactionGroups:
         kotlin.collections.Map<
             kotlin.String,
-            io.getstream.feeds.android.network.models.ReactionGroupResponse,
+            io.getstream.feeds.android.network.models.FeedsReactionGroupResponse,
         > =
         emptyMap(),
     @Json(name = "search_data")
@@ -96,14 +96,24 @@ public data class ActivityResponse(
     @Json(name = "deleted_at") public val deletedAt: java.util.Date? = null,
     @Json(name = "edited_at") public val editedAt: java.util.Date? = null,
     @Json(name = "expires_at") public val expiresAt: java.util.Date? = null,
+    @Json(name = "friend_reaction_count") public val friendReactionCount: kotlin.Int? = null,
+    @Json(name = "is_read") public val isRead: kotlin.Boolean? = null,
+    @Json(name = "is_seen") public val isSeen: kotlin.Boolean? = null,
     @Json(name = "is_watched") public val isWatched: kotlin.Boolean? = null,
     @Json(name = "moderation_action") public val moderationAction: kotlin.String? = null,
+    @Json(name = "selector_source") public val selectorSource: kotlin.String? = null,
     @Json(name = "text") public val text: kotlin.String? = null,
     @Json(name = "visibility_tag") public val visibilityTag: kotlin.String? = null,
+    @Json(name = "friend_reactions")
+    public val friendReactions:
+        kotlin.collections.List<io.getstream.feeds.android.network.models.FeedsReactionResponse>? =
+        emptyList(),
     @Json(name = "current_feed")
     public val currentFeed: io.getstream.feeds.android.network.models.FeedResponse? = null,
     @Json(name = "location")
-    public val location: io.getstream.feeds.android.network.models.ActivityLocation? = null,
+    public val location: io.getstream.feeds.android.network.models.Location? = null,
+    @Json(name = "metrics")
+    public val metrics: kotlin.collections.Map<kotlin.String, kotlin.Int>? = emptyMap(),
     @Json(name = "moderation")
     public val moderation: io.getstream.feeds.android.network.models.ModerationV2Response? = null,
     @Json(name = "notification_context")
@@ -113,7 +123,45 @@ public data class ActivityResponse(
     public val parent: io.getstream.feeds.android.network.models.ActivityResponse? = null,
     @Json(name = "poll")
     public val poll: io.getstream.feeds.android.network.models.PollResponseData? = null,
+    @Json(name = "score_vars")
+    public val scoreVars: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
 ) {
+
+    /** RestrictReplies Enum */
+    public sealed class RestrictReplies(public val value: kotlin.String) {
+        override fun toString(): String = value
+
+        public companion object {
+            public fun fromString(s: kotlin.String): RestrictReplies =
+                when (s) {
+                    "everyone" -> Everyone
+                    "nobody" -> Nobody
+                    "people_i_follow" -> PeopleIFollow
+                    else -> Unknown(s)
+                }
+        }
+
+        public object Everyone : RestrictReplies("everyone")
+
+        public object Nobody : RestrictReplies("nobody")
+
+        public object PeopleIFollow : RestrictReplies("people_i_follow")
+
+        public data class Unknown(val unknownValue: kotlin.String) : RestrictReplies(unknownValue)
+
+        public class RestrictRepliesAdapter : JsonAdapter<RestrictReplies>() {
+            @FromJson
+            override fun fromJson(reader: JsonReader): RestrictReplies? {
+                val s = reader.nextString() ?: return null
+                return RestrictReplies.fromString(s)
+            }
+
+            @ToJson
+            override fun toJson(writer: JsonWriter, value: RestrictReplies?) {
+                writer.value(value?.value)
+            }
+        }
+    }
 
     /** Visibility Enum */
     public sealed class Visibility(public val value: kotlin.String) {

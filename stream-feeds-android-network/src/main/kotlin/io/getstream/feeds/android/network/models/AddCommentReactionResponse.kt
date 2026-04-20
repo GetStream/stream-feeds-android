@@ -29,4 +29,5 @@ public data class AddCommentReactionResponse(
     public val comment: io.getstream.feeds.android.network.models.CommentResponse,
     @Json(name = "reaction")
     public val reaction: io.getstream.feeds.android.network.models.FeedsReactionResponse,
+    @Json(name = "notification_created") public val notificationCreated: kotlin.Boolean? = null,
 )

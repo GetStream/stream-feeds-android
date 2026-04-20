@@ -24,6 +24,8 @@ import kotlin.io.*
 
 /**  */
 public data class AggregationConfig(
+    @Json(name = "activities_sort") public val activitiesSort: kotlin.String? = null,
     @Json(name = "format") public val format: kotlin.String? = null,
     @Json(name = "group_size") public val groupSize: kotlin.Int? = null,
+    @Json(name = "score_strategy") public val scoreStrategy: kotlin.String? = null,
 )

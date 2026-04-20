@@ -44,6 +44,10 @@ public data class GetOrCreateFeedRequest(
     public val followersPagination: io.getstream.feeds.android.network.models.PagerRequest? = null,
     @Json(name = "following_pagination")
     public val followingPagination: io.getstream.feeds.android.network.models.PagerRequest? = null,
+    @Json(name = "friend_reactions_options")
+    public val friendReactionsOptions:
+        io.getstream.feeds.android.network.models.FriendReactionsOptions? =
+        null,
     @Json(name = "interest_weights")
     public val interestWeights: kotlin.collections.Map<kotlin.String, kotlin.Float>? = emptyMap(),
     @Json(name = "member_pagination")

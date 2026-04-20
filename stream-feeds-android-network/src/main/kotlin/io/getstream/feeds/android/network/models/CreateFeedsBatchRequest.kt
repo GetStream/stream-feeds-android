@@ -28,5 +28,6 @@ public data class CreateFeedsBatchRequest(
     @Json(name = "feeds")
     public val feeds:
         kotlin.collections.List<io.getstream.feeds.android.network.models.FeedRequest> =
-        emptyList()
+        emptyList(),
+    @Json(name = "enrich_own_fields") public val enrichOwnFields: kotlin.Boolean? = null,
 )

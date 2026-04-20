@@ -24,8 +24,8 @@ import kotlin.collections.List
 import kotlin.io.*
 
 /**
- * Request to get own_follows, own_capabilities, and/or own_membership for multiple feeds. If fields
- * is not specified, all three fields are returned.
+ * Request to get own_follows, own_followings, own_capabilities, and/or own_membership for multiple
+ * feeds. If fields is not specified, all fields are returned.
  */
 public data class OwnBatchRequest(
     @Json(name = "feeds") public val feeds: kotlin.collections.List<kotlin.String> = emptyList(),

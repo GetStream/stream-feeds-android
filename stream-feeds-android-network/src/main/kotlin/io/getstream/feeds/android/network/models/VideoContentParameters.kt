@@ -25,6 +25,7 @@ import kotlin.io.*
 
 /**  */
 public data class VideoContentParameters(
+    @Json(name = "label_operator") public val labelOperator: kotlin.String? = null,
     @Json(name = "harm_labels")
-    public val harmLabels: kotlin.collections.List<kotlin.String>? = emptyList()
+    public val harmLabels: kotlin.collections.List<kotlin.String>? = emptyList(),
 )

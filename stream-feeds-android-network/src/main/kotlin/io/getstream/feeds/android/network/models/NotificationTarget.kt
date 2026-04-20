@@ -21,6 +21,7 @@ package io.getstream.feeds.android.network.models
 import com.squareup.moshi.Json
 import kotlin.collections.*
 import kotlin.collections.List
+import kotlin.collections.Map
 import kotlin.io.*
 
 /**  */
@@ -36,4 +37,10 @@ public data class NotificationTarget(
         emptyList(),
     @Json(name = "comment")
     public val comment: io.getstream.feeds.android.network.models.NotificationComment? = null,
+    @Json(name = "custom")
+    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "parent_activity")
+    public val parentActivity:
+        io.getstream.feeds.android.network.models.NotificationParentActivity? =
+        null,
 )

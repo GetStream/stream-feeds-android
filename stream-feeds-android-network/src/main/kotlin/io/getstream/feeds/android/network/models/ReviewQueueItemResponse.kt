@@ -29,6 +29,7 @@ public data class ReviewQueueItemResponse(
     @Json(name = "created_at") public val createdAt: java.util.Date,
     @Json(name = "entity_id") public val entityId: kotlin.String,
     @Json(name = "entity_type") public val entityType: kotlin.String,
+    @Json(name = "escalated") public val escalated: kotlin.Boolean,
     @Json(name = "flags_count") public val flagsCount: kotlin.Int,
     @Json(name = "id") public val id: kotlin.String,
     @Json(name = "latest_moderator_action") public val latestModeratorAction: kotlin.String,
@@ -42,7 +43,8 @@ public data class ReviewQueueItemResponse(
         kotlin.collections.List<io.getstream.feeds.android.network.models.ActionLogResponse> =
         emptyList(),
     @Json(name = "bans")
-    public val bans: kotlin.collections.List<io.getstream.feeds.android.network.models.Ban> =
+    public val bans:
+        kotlin.collections.List<io.getstream.feeds.android.network.models.BanInfoResponse> =
         emptyList(),
     @Json(name = "flags")
     public val flags:
@@ -53,25 +55,35 @@ public data class ReviewQueueItemResponse(
     @Json(name = "completed_at") public val completedAt: java.util.Date? = null,
     @Json(name = "config_key") public val configKey: kotlin.String? = null,
     @Json(name = "entity_creator_id") public val entityCreatorId: kotlin.String? = null,
+    @Json(name = "escalated_at") public val escalatedAt: java.util.Date? = null,
+    @Json(name = "escalated_by") public val escalatedBy: kotlin.String? = null,
     @Json(name = "reviewed_at") public val reviewedAt: java.util.Date? = null,
     @Json(name = "teams") public val teams: kotlin.collections.List<kotlin.String>? = emptyList(),
     @Json(name = "activity")
     public val activity: io.getstream.feeds.android.network.models.EnrichedActivity? = null,
+    @Json(name = "appeal")
+    public val appeal: io.getstream.feeds.android.network.models.AppealItemResponse? = null,
     @Json(name = "assigned_to")
     public val assignedTo: io.getstream.feeds.android.network.models.UserResponse? = null,
     @Json(name = "entity_creator")
     public val entityCreator: io.getstream.feeds.android.network.models.EntityCreatorResponse? =
+        null,
+    @Json(name = "escalation_metadata")
+    public val escalationMetadata: io.getstream.feeds.android.network.models.EscalationMetadata? =
         null,
     @Json(name = "feeds_v2_activity")
     public val feedsV2Activity: io.getstream.feeds.android.network.models.EnrichedActivity? = null,
     @Json(name = "feeds_v2_reaction")
     public val feedsV2Reaction: io.getstream.feeds.android.network.models.Reaction? = null,
     @Json(name = "feeds_v3_activity")
-    public val feedsV3Activity: io.getstream.feeds.android.network.models.ActivityResponse? = null,
+    public val feedsV3Activity: io.getstream.feeds.android.network.models.FeedsV3ActivityResponse? =
+        null,
     @Json(name = "feeds_v3_comment")
-    public val feedsV3Comment: io.getstream.feeds.android.network.models.CommentResponse? = null,
+    public val feedsV3Comment: io.getstream.feeds.android.network.models.FeedsV3CommentResponse? =
+        null,
     @Json(name = "moderation_payload")
-    public val moderationPayload: io.getstream.feeds.android.network.models.ModerationPayload? =
+    public val moderationPayload:
+        io.getstream.feeds.android.network.models.ModerationPayloadResponse? =
         null,
     @Json(name = "reaction")
     public val reaction: io.getstream.feeds.android.network.models.Reaction? = null,

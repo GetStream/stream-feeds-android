@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.model
 
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
+import io.getstream.feeds.android.client.api.model.FeedVisibility
 import io.getstream.feeds.android.network.models.FeedOwnData
 import io.getstream.feeds.android.network.models.FeedResponse
 import io.getstream.feeds.android.network.models.FollowResponse
@@ -25,6 +26,7 @@ import io.getstream.feeds.android.network.models.FollowResponse
 /** Converts a [FeedResponse] to a [FeedData] model. */
 internal fun FeedResponse.toModel(): FeedData =
     FeedData(
+        activityCount = activityCount,
         createdAt = createdAt,
         createdBy = createdBy.toModel(),
         custom = custom,
@@ -36,15 +38,28 @@ internal fun FeedResponse.toModel(): FeedData =
         followingCount = followingCount,
         groupId = groupId,
         id = id,
+        location = location,
         memberCount = memberCount,
         ownCapabilities = ownCapabilities?.toSet().orEmpty(),
+        ownFollowings = ownFollowings?.map(FollowResponse::toModel).orEmpty(),
         ownFollows = ownFollows?.map(FollowResponse::toModel).orEmpty(),
         ownMembership = ownMembership?.toModel(),
         name = name,
         pinCount = pinCount,
         updatedAt = updatedAt,
-        visibility = visibility,
+        visibility = visibility?.toModel(),
     )
+
+/** Converts a [FeedResponse.Visibility] to a [FeedVisibility]. */
+internal fun FeedResponse.Visibility.toModel(): FeedVisibility =
+    when (this) {
+        FeedResponse.Visibility.Followers -> FeedVisibility.Followers
+        FeedResponse.Visibility.Members -> FeedVisibility.Members
+        FeedResponse.Visibility.Private -> FeedVisibility.Private
+        FeedResponse.Visibility.Public -> FeedVisibility.Public
+        FeedResponse.Visibility.Visible -> FeedVisibility.Visible
+        is FeedResponse.Visibility.Unknown -> FeedVisibility.Unknown(unknownValue)
+    }
 
 /**
  * Extension function to update the feed while preserving "own" data because own data from WS events
@@ -53,16 +68,23 @@ internal fun FeedResponse.toModel(): FeedData =
 internal fun FeedData.update(updated: FeedData): FeedData =
     updated.copy(
         ownCapabilities = this.ownCapabilities,
+        ownFollowings = this.ownFollowings,
         ownFollows = this.ownFollows,
         ownMembership = this.ownMembership,
     )
 
 internal fun FeedData.ownValues(): FeedOwnValues =
-    FeedOwnValues(capabilities = ownCapabilities, follows = ownFollows, membership = ownMembership)
+    FeedOwnValues(
+        capabilities = ownCapabilities,
+        followings = ownFollowings,
+        follows = ownFollows,
+        membership = ownMembership,
+    )
 
 internal fun FeedOwnData.toModel(): FeedOwnValues =
     FeedOwnValues(
         capabilities = ownCapabilities?.toSet().orEmpty(),
+        followings = ownFollowings?.map(FollowResponse::toModel).orEmpty(),
         follows = ownFollows?.map(FollowResponse::toModel).orEmpty(),
         membership = ownMembership?.toModel(),
     )

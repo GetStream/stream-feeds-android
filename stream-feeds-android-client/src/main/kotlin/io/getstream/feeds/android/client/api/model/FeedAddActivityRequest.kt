@@ -17,9 +17,9 @@
 package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
-import io.getstream.feeds.android.network.models.ActivityLocation
 import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.Attachment
+import io.getstream.feeds.android.network.models.Location
 
 public data class FeedAddActivityRequest
 internal constructor(
@@ -37,7 +37,7 @@ internal constructor(
         filterTags: List<String>? = null,
         id: String? = null,
         interestTags: List<String>? = null,
-        location: ActivityLocation? = null,
+        location: Location? = null,
         mentionedUserIds: List<String>? = null,
         parentId: String? = null,
         pollId: String? = null,

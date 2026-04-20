@@ -26,5 +26,7 @@ import kotlin.io.*
 /**  */
 public data class DeleteActivitiesRequest(
     @Json(name = "ids") public val ids: kotlin.collections.List<kotlin.String> = emptyList(),
+    @Json(name = "delete_notification_activity")
+    public val deleteNotificationActivity: kotlin.Boolean? = null,
     @Json(name = "hard_delete") public val hardDelete: kotlin.Boolean? = null,
 )

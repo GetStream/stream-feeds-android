@@ -26,6 +26,8 @@ import kotlin.io.*
 /**  */
 public data class AddCommentReactionRequest(
     @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "copy_custom_to_notification")
+    public val copyCustomToNotification: kotlin.Boolean? = null,
     @Json(name = "create_notification_activity")
     public val createNotificationActivity: kotlin.Boolean? = null,
     @Json(name = "enforce_unique") public val enforceUnique: kotlin.Boolean? = null,

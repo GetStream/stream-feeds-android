@@ -23,7 +23,7 @@ import kotlin.collections.*
 import kotlin.collections.Map
 import kotlin.io.*
 
-/** Emitted when a feed is created. */
+/** Emitted when a feed is updated. */
 public data class FeedUpdatedEvent(
     @Json(name = "created_at") public val createdAt: java.util.Date,
     @Json(name = "fid") public val fid: kotlin.String,

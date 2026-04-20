@@ -24,11 +24,13 @@ import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.BookmarkFolderData
 import io.getstream.feeds.android.client.api.model.CommentData
+import io.getstream.feeds.android.client.api.model.CommentStatus
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FeedMemberStatus
 import io.getstream.feeds.android.client.api.model.FeedSuggestionData
+import io.getstream.feeds.android.client.api.model.FeedVisibility
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.FileUploadConfigData
 import io.getstream.feeds.android.client.api.model.FollowData
@@ -39,6 +41,7 @@ import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.model.PollOptionData
 import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.model.ReactionGroupData
+import io.getstream.feeds.android.client.api.model.RestrictReplies
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.model.UserData
 import io.getstream.feeds.android.client.internal.model.PaginationResult
@@ -89,12 +92,14 @@ internal object TestData {
             id = id,
             parentId = parentId,
             attachments = null,
+            bookmarkCount = 0,
             confidenceScore = 0f,
             controversyScore = null,
             createdAt = createdAt,
             custom = null,
             deletedAt = null,
             downvoteCount = 0,
+            editedAt = null,
             latestReactions = emptyList(),
             mentionedUsers = emptyList(),
             moderation = null,
@@ -105,7 +110,7 @@ internal object TestData {
             reactionGroups = emptyMap(),
             replyCount = 0,
             score = 0,
-            status = "",
+            status = CommentStatus.Active,
             text = text,
             updatedAt = Date(1),
             upvoteCount = 0,
@@ -128,12 +133,14 @@ internal object TestData {
             id = id,
             parentId = parentId,
             attachments = null,
+            bookmarkCount = 0,
             confidenceScore = 0f,
             controversyScore = null,
             createdAt = createdAt,
             custom = null,
             deletedAt = null,
             downvoteCount = 0,
+            editedAt = null,
             latestReactions = latestReactions,
             mentionedUsers = emptyList(),
             meta = null,
@@ -146,7 +153,7 @@ internal object TestData {
             replies = replies,
             replyCount = replyCount,
             score = 0,
-            status = "",
+            status = CommentStatus.Active,
             text = text,
             updatedAt = Date(1),
             upvoteCount = 0,
@@ -231,13 +238,18 @@ internal object TestData {
             expiresAt = null,
             feeds = feeds,
             filterTags = emptyList(),
+            friendReactionCount = null,
+            friendReactions = emptyList(),
             hidden = hidden,
             id = id,
             interestTags = emptyList(),
+            isRead = null,
+            isSeen = null,
             isWatched = null,
             latestReactions = emptyList(),
             location = null,
             mentionedUsers = emptyList(),
+            metrics = emptyMap(),
             moderation = null,
             moderationAction = null,
             notificationContext = null,
@@ -249,9 +261,11 @@ internal object TestData {
             preview = false,
             reactionCount = 0,
             reactionGroups = emptyMap(),
-            restrictReplies = "",
+            restrictReplies = RestrictReplies.Everyone,
             score = 0f,
+            scoreVars = emptyMap(),
             searchData = emptyMap(),
+            selectorSource = null,
             shareCount = 0,
             text = text,
             type = type,
@@ -303,9 +317,13 @@ internal object TestData {
     fun bookmarkData(activity: ActivityData): BookmarkData =
         BookmarkData(
             activity = activity,
+            activityId = activity.id,
+            comment = null,
             createdAt = Date(1000),
             custom = emptyMap(),
             folder = null,
+            objectId = activity.id,
+            objectType = "activity",
             updatedAt = Date(1000),
             user = userData("user-1"),
         )
@@ -318,9 +336,13 @@ internal object TestData {
     ): BookmarkData =
         BookmarkData(
             activity = activityData(activityId),
+            activityId = activityId,
+            comment = null,
             createdAt = Date(createdAt),
             custom = emptyMap(),
             folder = folder,
+            objectId = activityId,
+            objectType = "activity",
             updatedAt = Date(1000),
             user = userData(userId),
         )
@@ -346,7 +368,7 @@ internal object TestData {
             id = id,
             popularity = 0,
             reactionCount = 0,
-            restrictReplies = "",
+            restrictReplies = ActivityResponse.RestrictReplies.Everyone,
             score = 0f,
             shareCount = 0,
             type = "",
@@ -406,6 +428,8 @@ internal object TestData {
     fun bookmarkResponse() =
         BookmarkResponse(
             createdAt = Date(1000),
+            objectId = "activity-1",
+            objectType = "activity",
             updatedAt = Date(1000),
             activity = activityResponse(),
             user = userResponse(),
@@ -443,6 +467,7 @@ internal object TestData {
             requestRejectedAt = requestRejectedAt,
             sourceFeed =
                 FeedData(
+                    activityCount = 0,
                     createdAt = Date(createdAt),
                     createdBy = userData(source.id),
                     custom = emptyMap(),
@@ -454,18 +479,21 @@ internal object TestData {
                     followingCount = 0,
                     groupId = "user",
                     id = source.id,
+                    location = null,
                     memberCount = 0,
                     ownCapabilities = emptySet(),
+                    ownFollowings = emptyList(),
                     ownFollows = emptyList(),
                     ownMembership = null,
                     name = "Test Feed",
                     pinCount = 0,
                     updatedAt = Date(updatedAt),
-                    visibility = "public",
+                    visibility = FeedVisibility.Public,
                 ),
             status = status,
             targetFeed =
                 FeedData(
+                    activityCount = 0,
                     createdAt = Date(createdAt),
                     createdBy = userData(target.id),
                     custom = emptyMap(),
@@ -477,14 +505,16 @@ internal object TestData {
                     followingCount = 0,
                     groupId = "user",
                     id = target.id,
+                    location = null,
                     memberCount = 0,
                     ownCapabilities = emptySet(),
+                    ownFollowings = emptyList(),
                     ownFollows = emptyList(),
                     ownMembership = null,
                     name = "Target Feed",
                     pinCount = 0,
                     updatedAt = Date(updatedAt),
-                    visibility = "public",
+                    visibility = FeedVisibility.Public,
                 ),
             updatedAt = Date(updatedAt),
         )
@@ -609,10 +639,12 @@ internal object TestData {
         description: String = "Test feed description",
         createdAt: Long = 1000,
         ownCapabilities: Set<FeedOwnCapability> = emptySet(),
+        ownFollowings: List<FollowData> = emptyList(),
         ownFollows: List<FollowData> = emptyList(),
         ownMembership: FeedMemberData? = null,
     ): FeedData =
         FeedData(
+            activityCount = 0,
             createdAt = Date(createdAt),
             createdBy = userData(id),
             custom = emptyMap(),
@@ -624,14 +656,16 @@ internal object TestData {
             followingCount = 0,
             groupId = groupId,
             id = id,
+            location = null,
             memberCount = 0,
             ownCapabilities = ownCapabilities,
+            ownFollowings = ownFollowings,
             ownFollows = ownFollows,
             ownMembership = ownMembership,
             name = name,
             pinCount = 0,
             updatedAt = Date(1000),
-            visibility = "public",
+            visibility = FeedVisibility.Public,
         )
 
     fun feedSuggestionData(id: String) =
@@ -667,6 +701,7 @@ internal object TestData {
 
     fun feedResponse(group: String = "user", id: String = "feed-1") =
         FeedResponse(
+            activityCount = 0,
             id = id,
             groupId = group,
             name = "Test Feed",
@@ -781,6 +816,7 @@ internal object TestData {
 
     fun feedSuggestionResponse() =
         FeedSuggestionResponse(
+            activityCount = 0,
             createdAt = Date(1000),
             description = "Test feed description",
             feed = "user:feed-1",
@@ -805,6 +841,7 @@ internal object TestData {
 
     fun commentResponse() =
         CommentResponse(
+            bookmarkCount = 0,
             id = "comment-1",
             createdAt = Date(1000),
             updatedAt = Date(1000),
@@ -817,7 +854,7 @@ internal object TestData {
             reactionCount = 5,
             replyCount = 2,
             score = 10,
-            status = "active",
+            status = CommentResponse.Status.Active,
             upvoteCount = 5,
             custom = emptyMap(),
         )

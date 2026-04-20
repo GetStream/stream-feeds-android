@@ -26,9 +26,13 @@ import io.getstream.feeds.android.network.models.BookmarkResponse
 internal fun BookmarkResponse.toModel(): BookmarkData =
     BookmarkData(
         activity = activity.toModel(),
+        activityId = activityId,
+        comment = comment?.toModel(),
         createdAt = createdAt,
         custom = custom,
         folder = folder?.toModel(),
+        objectId = objectId,
+        objectType = objectType,
         updatedAt = updatedAt,
         user = user.toModel(),
     )

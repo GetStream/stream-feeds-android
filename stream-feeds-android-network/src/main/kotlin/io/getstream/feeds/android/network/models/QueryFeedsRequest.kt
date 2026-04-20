@@ -26,6 +26,7 @@ import kotlin.io.*
 
 /**  */
 public data class QueryFeedsRequest(
+    @Json(name = "enrich_own_fields") public val enrichOwnFields: kotlin.Boolean? = null,
     @Json(name = "limit") public val limit: kotlin.Int? = null,
     @Json(name = "next") public val next: kotlin.String? = null,
     @Json(name = "prev") public val prev: kotlin.String? = null,

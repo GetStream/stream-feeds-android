@@ -20,14 +20,25 @@ package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
 import kotlin.collections.*
+import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.io.*
 
 /**  */
 public data class UpdateCommentRequest(
     @Json(name = "comment") public val comment: kotlin.String? = null,
+    @Json(name = "copy_custom_to_notification")
+    public val copyCustomToNotification: kotlin.Boolean? = null,
+    @Json(name = "handle_mention_notifications")
+    public val handleMentionNotifications: kotlin.Boolean? = null,
     @Json(name = "skip_enrich_url") public val skipEnrichUrl: kotlin.Boolean? = null,
     @Json(name = "skip_push") public val skipPush: kotlin.Boolean? = null,
+    @Json(name = "attachments")
+    public val attachments:
+        kotlin.collections.List<io.getstream.feeds.android.network.models.Attachment>? =
+        emptyList(),
+    @Json(name = "mentioned_user_ids")
+    public val mentionedUserIds: kotlin.collections.List<kotlin.String>? = emptyList(),
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
 )

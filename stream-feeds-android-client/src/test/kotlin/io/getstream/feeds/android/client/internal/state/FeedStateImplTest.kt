@@ -825,6 +825,7 @@ internal class FeedStateImplTest {
 
         val newOwnValues =
             FeedOwnValues(
+                followings = emptyList(),
                 capabilities = setOf(FeedOwnCapability.ReadFeed, FeedOwnCapability.AddActivity),
                 follows = listOf(followData()),
                 membership = feedMemberData(),
@@ -836,6 +837,7 @@ internal class FeedStateImplTest {
                 currentFeed =
                     feed1.copy(
                         ownCapabilities = newOwnValues.capabilities,
+                        ownFollowings = newOwnValues.followings,
                         ownFollows = newOwnValues.follows,
                         ownMembership = newOwnValues.membership,
                     )

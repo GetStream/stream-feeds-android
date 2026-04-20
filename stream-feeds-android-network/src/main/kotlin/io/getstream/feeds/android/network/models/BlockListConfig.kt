@@ -31,4 +31,5 @@ public data class BlockListConfig(
         kotlin.collections.List<io.getstream.feeds.android.network.models.BlockListRule> =
         emptyList(),
     @Json(name = "async") public val async: kotlin.Boolean? = null,
+    @Json(name = "match_substring") public val matchSubstring: kotlin.Boolean? = null,
 )

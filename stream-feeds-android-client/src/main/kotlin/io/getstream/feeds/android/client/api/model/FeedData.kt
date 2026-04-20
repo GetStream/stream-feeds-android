@@ -17,11 +17,13 @@
 package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.network.models.FeedOwnCapability
+import io.getstream.feeds.android.network.models.Location
 import java.util.Date
 
 /**
  * Model representing a feed.
  *
+ * @property activityCount The number of activities in the feed.
  * @property createdAt The date and time when the feed was created.
  * @property createdBy The user who created the feed.
  * @property custom A map of custom attributes associated with the feed.
@@ -33,13 +35,20 @@ import java.util.Date
  * @property followingCount The number of feeds that this feed is following.
  * @property groupId The group identifier for the feed.
  * @property id The unique identifier for the feed.
+ * @property location Geographic location data associated with the feed, if any.
  * @property memberCount The number of members in the feed.
+ * @property ownCapabilities The set of capabilities the current user has on this feed.
+ * @property ownFollowings Follow relationships where the feed owner's feeds follow the current
+ *   user's feeds.
+ * @property ownFollows Follow relationships where the current user's feeds follow this feed.
+ * @property ownMembership The current user's membership data for this feed, if applicable.
  * @property name The name of the feed.
  * @property pinCount The number of pinned items in the feed.
  * @property updatedAt The date and time when the feed was last updated.
  * @property visibility The visibility status of the feed.
  */
 public data class FeedData(
+    public val activityCount: Int,
     public val createdAt: Date,
     public val createdBy: UserData,
     public val custom: Map<String, Any?>?,
@@ -51,12 +60,14 @@ public data class FeedData(
     public val followingCount: Int,
     public val groupId: String,
     public val id: String,
+    public val location: Location?,
     public val memberCount: Int,
     public val ownCapabilities: Set<FeedOwnCapability>,
+    public val ownFollowings: List<FollowData>,
     public val ownFollows: List<FollowData>,
     public val ownMembership: FeedMemberData?,
     public val name: String,
     public val pinCount: Int,
     public val updatedAt: Date,
-    public val visibility: String?,
+    public val visibility: FeedVisibility?,
 )

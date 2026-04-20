@@ -35,4 +35,6 @@ public data class ActivitySelectorConfig(
         emptyList(),
     @Json(name = "filter")
     public val filter: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "params")
+    public val params: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
 )

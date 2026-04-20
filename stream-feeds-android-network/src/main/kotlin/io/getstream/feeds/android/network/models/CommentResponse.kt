@@ -18,7 +18,12 @@
 
 package io.getstream.feeds.android.network.models
 
+import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonReader
+import com.squareup.moshi.JsonWriter
+import com.squareup.moshi.ToJson
 import kotlin.collections.*
 import kotlin.collections.List
 import kotlin.collections.Map
@@ -26,6 +31,7 @@ import kotlin.io.*
 
 /**  */
 public data class CommentResponse(
+    @Json(name = "bookmark_count") public val bookmarkCount: kotlin.Int,
     @Json(name = "confidence_score") public val confidenceScore: kotlin.Float,
     @Json(name = "created_at") public val createdAt: java.util.Date,
     @Json(name = "downvote_count") public val downvoteCount: kotlin.Int,
@@ -35,7 +41,7 @@ public data class CommentResponse(
     @Json(name = "reaction_count") public val reactionCount: kotlin.Int,
     @Json(name = "reply_count") public val replyCount: kotlin.Int,
     @Json(name = "score") public val score: kotlin.Int,
-    @Json(name = "status") public val status: kotlin.String,
+    @Json(name = "status") public val status: Status,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
     @Json(name = "upvote_count") public val upvoteCount: kotlin.Int,
     @Json(name = "mentioned_users")
@@ -49,6 +55,7 @@ public data class CommentResponse(
     @Json(name = "user") public val user: io.getstream.feeds.android.network.models.UserResponse,
     @Json(name = "controversy_score") public val controversyScore: kotlin.Float? = null,
     @Json(name = "deleted_at") public val deletedAt: java.util.Date? = null,
+    @Json(name = "edited_at") public val editedAt: java.util.Date? = null,
     @Json(name = "parent_id") public val parentId: kotlin.String? = null,
     @Json(name = "text") public val text: kotlin.String? = null,
     @Json(name = "attachments")
@@ -67,7 +74,50 @@ public data class CommentResponse(
     public val reactionGroups:
         kotlin.collections.Map<
             kotlin.String,
-            io.getstream.feeds.android.network.models.ReactionGroupResponse,
+            io.getstream.feeds.android.network.models.FeedsReactionGroupResponse,
         >? =
         emptyMap(),
-)
+) {
+
+    /** Status Enum */
+    public sealed class Status(public val value: kotlin.String) {
+        override fun toString(): String = value
+
+        public companion object {
+            public fun fromString(s: kotlin.String): Status =
+                when (s) {
+                    "active" -> Active
+                    "deleted" -> Deleted
+                    "hidden" -> Hidden
+                    "removed" -> Removed
+                    "shadow_blocked" -> ShadowBlocked
+                    else -> Unknown(s)
+                }
+        }
+
+        public object Active : Status("active")
+
+        public object Deleted : Status("deleted")
+
+        public object Hidden : Status("hidden")
+
+        public object Removed : Status("removed")
+
+        public object ShadowBlocked : Status("shadow_blocked")
+
+        public data class Unknown(val unknownValue: kotlin.String) : Status(unknownValue)
+
+        public class StatusAdapter : JsonAdapter<Status>() {
+            @FromJson
+            override fun fromJson(reader: JsonReader): Status? {
+                val s = reader.nextString() ?: return null
+                return Status.fromString(s)
+            }
+
+            @ToJson
+            override fun toJson(writer: JsonWriter, value: Status?) {
+                writer.value(value?.value)
+            }
+        }
+    }
+}

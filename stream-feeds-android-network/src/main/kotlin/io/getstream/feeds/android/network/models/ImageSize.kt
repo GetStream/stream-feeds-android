@@ -18,101 +18,14 @@
 
 package io.getstream.feeds.android.network.models
 
-import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonReader
-import com.squareup.moshi.JsonWriter
-import com.squareup.moshi.ToJson
 import kotlin.collections.*
 import kotlin.io.*
 
 /**  */
 public data class ImageSize(
-    @Json(name = "crop") public val crop: Crop? = null,
+    @Json(name = "crop") public val crop: kotlin.String? = null,
     @Json(name = "height") public val height: kotlin.Int? = null,
-    @Json(name = "resize") public val resize: Resize? = null,
+    @Json(name = "resize") public val resize: kotlin.String? = null,
     @Json(name = "width") public val width: kotlin.Int? = null,
-) {
-
-    /** Crop Enum */
-    public sealed class Crop(public val value: kotlin.String) {
-        override fun toString(): String = value
-
-        public companion object {
-            public fun fromString(s: kotlin.String): Crop =
-                when (s) {
-                    "bottom" -> Bottom
-                    "center" -> Center
-                    "left" -> Left
-                    "right" -> Right
-                    "top" -> Top
-                    else -> Unknown(s)
-                }
-        }
-
-        public object Bottom : Crop("bottom")
-
-        public object Center : Crop("center")
-
-        public object Left : Crop("left")
-
-        public object Right : Crop("right")
-
-        public object Top : Crop("top")
-
-        public data class Unknown(val unknownValue: kotlin.String) : Crop(unknownValue)
-
-        public class CropAdapter : JsonAdapter<Crop>() {
-            @FromJson
-            override fun fromJson(reader: JsonReader): Crop? {
-                val s = reader.nextString() ?: return null
-                return Crop.fromString(s)
-            }
-
-            @ToJson
-            override fun toJson(writer: JsonWriter, value: Crop?) {
-                writer.value(value?.value)
-            }
-        }
-    }
-
-    /** Resize Enum */
-    public sealed class Resize(public val value: kotlin.String) {
-        override fun toString(): String = value
-
-        public companion object {
-            public fun fromString(s: kotlin.String): Resize =
-                when (s) {
-                    "clip" -> Clip
-                    "crop" -> Crop
-                    "fill" -> Fill
-                    "scale" -> Scale
-                    else -> Unknown(s)
-                }
-        }
-
-        public object Clip : Resize("clip")
-
-        public object Crop : Resize("crop")
-
-        public object Fill : Resize("fill")
-
-        public object Scale : Resize("scale")
-
-        public data class Unknown(val unknownValue: kotlin.String) : Resize(unknownValue)
-
-        public class ResizeAdapter : JsonAdapter<Resize>() {
-            @FromJson
-            override fun fromJson(reader: JsonReader): Resize? {
-                val s = reader.nextString() ?: return null
-                return Resize.fromString(s)
-            }
-
-            @ToJson
-            override fun toJson(writer: JsonWriter, value: Resize?) {
-                writer.value(value?.value)
-            }
-        }
-    }
-}
+)

@@ -16,8 +16,8 @@
 
 package io.getstream.feeds.android.client.api.model
 
-import io.getstream.feeds.android.network.models.ActivityLocation
 import io.getstream.feeds.android.network.models.Attachment
+import io.getstream.feeds.android.network.models.Location
 import io.getstream.feeds.android.network.models.NotificationContext
 import java.util.Date
 
@@ -59,17 +59,27 @@ import java.util.Date
  * @property feeds The list of feed IDs where this activity appears. An activity can appear in
  *   multiple feeds simultaneously.
  * @property filterTags Tags used for content filtering and categorization.
+ * @property friendReactionCount The number of reactions from users the current user follows or has
+ *   mutual follows with.
+ * @property friendReactions The reactions from users the current user follows or has mutual follows
+ *   with.
  * @property hidden Whether the activity has been hidden by the current user. Hidden activities may
  *   be filtered from feed views depending on application logic.
  * @property id The unique identifier of the activity.
  * @property interestTags Tags indicating user interests or content categories for recommendation
  *   purposes.
+ * @property isRead Whether the activity has been read by the current user. Relevant for
+ *   notification feeds.
+ * @property isSeen Whether the activity has been seen by the current user. Relevant for
+ *   notification feeds.
  * @property isWatched Whether the activity was watched by the current user. Relevant for stories.
  * @property latestReactions The most recent reactions added to the activity. This property contains
  *   the latest reactions from users, typically limited to the most recent ones.
  * @property location Geographic location data associated with the activity, if any.
  * @property mentionedUsers Users mentioned in the activity. This property contains the list of
  *   users who were mentioned in the activity using @mentions or similar functionality.
+ * @property metrics Activity-level custom metrics (e.g. views, clicks, impressions) tracked via the
+ *   metrics API.
  * @property moderation Moderation state and data for the activity.
  * @property notificationContext Contextual data for notifications related to this activity.
  * @property ownBookmarks All the bookmarks from the current user for this activity.
@@ -84,8 +94,10 @@ import java.util.Date
  *   type (e.g., "like", "love", "laugh") and provides counts and metadata for each reaction type.
  * @property score A relevance or quality score assigned to the activity. This score is typically
  *   used for ranking, sorting, or algorithmic feed placement.
+ * @property scoreVars Variable values used at ranking time. Opt-in via enrichment options.
  * @property searchData Additional data used for search indexing and retrieval. This property
  *   contains metadata that helps with search functionality.
+ * @property selectorSource Which activity selector provided this activity, if applicable.
  * @property shareCount The number of times this activity has been shared.
  * @property text The text content of the activity. This property contains the main text content of
  *   the activity. It may be `null` for activities that only contain media or other content types.
@@ -109,13 +121,18 @@ public data class ActivityData(
     val expiresAt: Date?,
     val feeds: List<FeedId>,
     val filterTags: List<String>,
+    val friendReactionCount: Int?,
+    val friendReactions: List<FeedsReactionData>,
     val hidden: Boolean,
     val id: String,
     val interestTags: List<String>,
+    val isRead: Boolean?,
+    val isSeen: Boolean?,
     val isWatched: Boolean?,
     val latestReactions: List<FeedsReactionData>,
-    val location: ActivityLocation?,
+    val location: Location?,
     val mentionedUsers: List<UserData>,
+    val metrics: Map<String, Int>,
     val moderation: Moderation?,
     val moderationAction: String?,
     val notificationContext: NotificationContext?,
@@ -127,9 +144,11 @@ public data class ActivityData(
     val preview: Boolean,
     val reactionCount: Int,
     val reactionGroups: Map<String, ReactionGroupData>,
-    val restrictReplies: String,
+    val restrictReplies: RestrictReplies,
     val score: Float,
+    val scoreVars: Map<String, Any?>,
     val searchData: Map<String, Any?>,
+    val selectorSource: String?,
     val shareCount: Int,
     val text: String?,
     val type: String,
@@ -138,6 +157,17 @@ public data class ActivityData(
     val visibility: ActivityDataVisibility,
     val visibilityTag: String?,
 )
+
+/** Represents who can reply to an activity. */
+public sealed class RestrictReplies(public val value: String) {
+    public object Everyone : RestrictReplies("everyone")
+
+    public object Nobody : RestrictReplies("nobody")
+
+    public object PeopleIFollow : RestrictReplies("people_i_follow")
+
+    public data class Unknown(val unknownValue: String) : RestrictReplies(unknownValue)
+}
 
 /**
  * Type alias for activity visibility settings. This represents the visibility state of an activity

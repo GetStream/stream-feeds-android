@@ -18,8 +18,11 @@
 
 package io.getstream.feeds.android.network.models
 
+import com.squareup.moshi.Json
 import kotlin.collections.*
 import kotlin.io.*
 
 /**  */
-public class PinActivityRequest()
+public data class PinActivityRequest(
+    @Json(name = "enrich_own_fields") public val enrichOwnFields: kotlin.Boolean? = null
+)

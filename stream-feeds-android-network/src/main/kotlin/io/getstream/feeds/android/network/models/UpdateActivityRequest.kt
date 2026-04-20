@@ -31,12 +31,20 @@ import kotlin.io.*
 
 /**  */
 public data class UpdateActivityRequest(
+    @Json(name = "copy_custom_to_notification")
+    public val copyCustomToNotification: kotlin.Boolean? = null,
+    @Json(name = "enrich_own_fields") public val enrichOwnFields: kotlin.Boolean? = null,
     @Json(name = "expires_at") public val expiresAt: java.util.Date? = null,
+    @Json(name = "handle_mention_notifications")
+    public val handleMentionNotifications: kotlin.Boolean? = null,
     @Json(name = "poll_id") public val pollId: kotlin.String? = null,
     @Json(name = "restrict_replies") public val restrictReplies: RestrictReplies? = null,
+    @Json(name = "run_activity_processors")
+    public val runActivityProcessors: kotlin.Boolean? = null,
     @Json(name = "skip_enrich_url") public val skipEnrichUrl: kotlin.Boolean? = null,
     @Json(name = "text") public val text: kotlin.String? = null,
-    @Json(name = "visibility") public val visibility: kotlin.String? = null,
+    @Json(name = "visibility") public val visibility: Visibility? = null,
+    @Json(name = "visibility_tag") public val visibilityTag: kotlin.String? = null,
     @Json(name = "attachments")
     public val attachments:
         kotlin.collections.List<io.getstream.feeds.android.network.models.Attachment>? =
@@ -48,10 +56,14 @@ public data class UpdateActivityRequest(
     public val filterTags: kotlin.collections.List<kotlin.String>? = emptyList(),
     @Json(name = "interest_tags")
     public val interestTags: kotlin.collections.List<kotlin.String>? = emptyList(),
+    @Json(name = "mentioned_user_ids")
+    public val mentionedUserIds: kotlin.collections.List<kotlin.String>? = emptyList(),
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
     @Json(name = "location")
-    public val location: io.getstream.feeds.android.network.models.ActivityLocation? = null,
+    public val location: io.getstream.feeds.android.network.models.Location? = null,
+    @Json(name = "search_data")
+    public val searchData: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
 ) {
 
     /** RestrictReplies Enum */
@@ -85,6 +97,42 @@ public data class UpdateActivityRequest(
 
             @ToJson
             override fun toJson(writer: JsonWriter, value: RestrictReplies?) {
+                writer.value(value?.value)
+            }
+        }
+    }
+
+    /** Visibility Enum */
+    public sealed class Visibility(public val value: kotlin.String) {
+        override fun toString(): String = value
+
+        public companion object {
+            public fun fromString(s: kotlin.String): Visibility =
+                when (s) {
+                    "private" -> Private
+                    "public" -> Public
+                    "tag" -> Tag
+                    else -> Unknown(s)
+                }
+        }
+
+        public object Private : Visibility("private")
+
+        public object Public : Visibility("public")
+
+        public object Tag : Visibility("tag")
+
+        public data class Unknown(val unknownValue: kotlin.String) : Visibility(unknownValue)
+
+        public class VisibilityAdapter : JsonAdapter<Visibility>() {
+            @FromJson
+            override fun fromJson(reader: JsonReader): Visibility? {
+                val s = reader.nextString() ?: return null
+                return Visibility.fromString(s)
+            }
+
+            @ToJson
+            override fun toJson(writer: JsonWriter, value: Visibility?) {
                 writer.value(value?.value)
             }
         }

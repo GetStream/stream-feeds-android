@@ -49,12 +49,12 @@ import io.getstream.feeds.android.network.models.AcceptFollowRequest
 import io.getstream.feeds.android.network.models.ActivityResponse
 import io.getstream.feeds.android.network.models.FeedSuggestionResponse
 import io.getstream.feeds.android.network.models.FollowBatchRequest
-import io.getstream.feeds.android.network.models.FollowPair
 import io.getstream.feeds.android.network.models.FollowRequest
 import io.getstream.feeds.android.network.models.QueryFeedMembersRequest
 import io.getstream.feeds.android.network.models.QueryFollowsRequest
 import io.getstream.feeds.android.network.models.RejectFollowRequest
 import io.getstream.feeds.android.network.models.UnfollowBatchRequest
+import io.getstream.feeds.android.network.models.UnfollowPair
 import io.getstream.feeds.android.network.models.UnfollowResponse
 import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.network.models.UpdateFeedRequest
@@ -328,7 +328,7 @@ internal class FeedsRepositoryImplTest {
             )
         val apiResult = unfollowBatchResponse(follows = listOf(follow1, follow2))
         val request =
-            UnfollowBatchRequest(follows = listOf(FollowPair("user:user-1", "user:user-2")))
+            UnfollowBatchRequest(follows = listOf(UnfollowPair("user:user-1", "user:user-2")))
 
         testDelegation(
             apiFunction = { feedsApi.getOrCreateUnfollows(request) },

@@ -26,6 +26,7 @@ import kotlin.io.*
 /**  */
 public data class GetCommentsResponse(
     @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "sort") public val sort: kotlin.String,
     @Json(name = "comments")
     public val comments:
         kotlin.collections.List<io.getstream.feeds.android.network.models.ThreadedCommentResponse> =

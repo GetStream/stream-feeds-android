@@ -17,6 +17,7 @@
 package io.getstream.feeds.android.client.internal.model
 
 import io.getstream.feeds.android.client.api.model.CommentData
+import io.getstream.feeds.android.client.api.model.CommentStatus
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.ThreadedCommentData
 import io.getstream.feeds.android.client.api.state.query.CommentsSortDataFields
@@ -28,12 +29,14 @@ import io.getstream.feeds.android.network.models.ThreadedCommentResponse
 internal fun ThreadedCommentResponse.toModel(): ThreadedCommentData =
     ThreadedCommentData(
         attachments = attachments,
+        bookmarkCount = bookmarkCount,
         confidenceScore = confidenceScore,
         controversyScore = controversyScore,
         createdAt = createdAt,
         custom = custom,
         deletedAt = deletedAt,
         downvoteCount = downvoteCount,
+        editedAt = editedAt,
         id = id,
         latestReactions = latestReactions?.map { it.toModel() }.orEmpty(),
         mentionedUsers = mentionedUsers.map { it.toModel() },
@@ -48,12 +51,23 @@ internal fun ThreadedCommentResponse.toModel(): ThreadedCommentData =
         replies = replies?.map { it.toModel() },
         replyCount = replyCount,
         score = score,
-        status = status,
+        status = status.toModel(),
         text = text,
         updatedAt = updatedAt,
         upvoteCount = upvoteCount,
         user = user.toModel(),
     )
+
+/** Converts a [ThreadedCommentResponse.Status] to a [CommentStatus]. */
+internal fun ThreadedCommentResponse.Status.toModel(): CommentStatus =
+    when (this) {
+        ThreadedCommentResponse.Status.Active -> CommentStatus.Active
+        ThreadedCommentResponse.Status.Deleted -> CommentStatus.Deleted
+        ThreadedCommentResponse.Status.Hidden -> CommentStatus.Hidden
+        ThreadedCommentResponse.Status.Removed -> CommentStatus.Removed
+        ThreadedCommentResponse.Status.ShadowBlocked -> CommentStatus.ShadowBlocked
+        is ThreadedCommentResponse.Status.Unknown -> CommentStatus.Unknown(unknownValue)
+    }
 
 /**
  * Sets the comment data for this threaded comment, replacing its properties with those from the
@@ -70,12 +84,14 @@ internal fun ThreadedCommentData.update(
 ): ThreadedCommentData {
     return this.copy(
         attachments = comment.attachments,
+        bookmarkCount = comment.bookmarkCount,
         confidenceScore = comment.confidenceScore,
         controversyScore = comment.controversyScore,
         createdAt = comment.createdAt,
         custom = comment.custom,
         deletedAt = comment.deletedAt,
         downvoteCount = comment.downvoteCount,
+        editedAt = comment.editedAt,
         id = comment.id,
         latestReactions = comment.latestReactions,
         mentionedUsers = comment.mentionedUsers,

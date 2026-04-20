@@ -26,7 +26,7 @@ import com.squareup.moshi.ToJson
 import kotlin.collections.*
 import kotlin.io.*
 
-/** [All possibility of string to use] */
+/** [Represents a feed capability value and enumerates all possible capability strings.] */
 /** FeedOwnCapability Enum */
 public sealed class FeedOwnCapability(public val value: kotlin.String) {
     override fun toString(): String = value

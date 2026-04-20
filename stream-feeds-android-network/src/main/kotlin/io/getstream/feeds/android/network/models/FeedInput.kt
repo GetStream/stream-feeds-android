@@ -42,6 +42,8 @@ public data class FeedInput(
         emptyList(),
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "location")
+    public val location: io.getstream.feeds.android.network.models.Location? = null,
 ) {
 
     /** Visibility Enum */

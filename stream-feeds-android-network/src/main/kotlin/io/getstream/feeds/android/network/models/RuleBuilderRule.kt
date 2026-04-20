@@ -26,8 +26,6 @@ import kotlin.io.*
 /**  */
 public data class RuleBuilderRule(
     @Json(name = "rule_type") public val ruleType: kotlin.String,
-    @Json(name = "action")
-    public val action: io.getstream.feeds.android.network.models.RuleBuilderAction,
     @Json(name = "cooldown_period") public val cooldownPeriod: kotlin.String? = null,
     @Json(name = "id") public val id: kotlin.String? = null,
     @Json(name = "logic") public val logic: kotlin.String? = null,
@@ -41,4 +39,6 @@ public data class RuleBuilderRule(
             io.getstream.feeds.android.network.models.RuleBuilderConditionGroup
         >? =
         emptyList(),
+    @Json(name = "action")
+    public val action: io.getstream.feeds.android.network.models.RuleBuilderAction? = null,
 )

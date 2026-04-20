@@ -32,8 +32,12 @@ import kotlin.io.*
 public data class FollowRequest(
     @Json(name = "source") public val source: kotlin.String,
     @Json(name = "target") public val target: kotlin.String,
+    @Json(name = "activity_copy_limit") public val activityCopyLimit: kotlin.Int? = null,
+    @Json(name = "copy_custom_to_notification")
+    public val copyCustomToNotification: kotlin.Boolean? = null,
     @Json(name = "create_notification_activity")
     public val createNotificationActivity: kotlin.Boolean? = null,
+    @Json(name = "enrich_own_fields") public val enrichOwnFields: kotlin.Boolean? = null,
     @Json(name = "push_preference") public val pushPreference: PushPreference? = null,
     @Json(name = "skip_push") public val skipPush: kotlin.Boolean? = null,
     @Json(name = "custom")

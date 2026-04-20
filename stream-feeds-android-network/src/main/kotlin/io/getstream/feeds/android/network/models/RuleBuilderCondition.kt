@@ -58,6 +58,12 @@ public data class RuleBuilderCondition(
     public val userFlagCountRuleParams:
         io.getstream.feeds.android.network.models.FlagCountRuleParameters? =
         null,
+    @Json(name = "user_identical_content_count_params")
+    public val userIdenticalContentCountParams:
+        io.getstream.feeds.android.network.models.UserIdenticalContentCountParameters? =
+        null,
+    @Json(name = "user_role_params")
+    public val userRoleParams: io.getstream.feeds.android.network.models.UserRoleParameters? = null,
     @Json(name = "user_rule_params")
     public val userRuleParams: io.getstream.feeds.android.network.models.UserRuleParameters? = null,
     @Json(name = "video_content_params")

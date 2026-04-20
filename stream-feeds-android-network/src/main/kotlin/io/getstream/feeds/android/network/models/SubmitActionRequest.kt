@@ -30,34 +30,53 @@ import kotlin.io.*
 /**  */
 public data class SubmitActionRequest(
     @Json(name = "action_type") public val actionType: ActionType,
-    @Json(name = "item_id") public val itemId: kotlin.String,
+    @Json(name = "appeal_id") public val appealId: kotlin.String? = null,
+    @Json(name = "item_id") public val itemId: kotlin.String? = null,
     @Json(name = "ban")
-    public val ban: io.getstream.feeds.android.network.models.BanActionRequest? = null,
+    public val ban: io.getstream.feeds.android.network.models.BanActionRequestPayload? = null,
     @Json(name = "block")
-    public val block: io.getstream.feeds.android.network.models.BlockActionRequest? = null,
+    public val block: io.getstream.feeds.android.network.models.BlockActionRequestPayload? = null,
+    @Json(name = "bypass")
+    public val bypass: io.getstream.feeds.android.network.models.BypassActionRequest? = null,
     @Json(name = "custom")
-    public val custom: io.getstream.feeds.android.network.models.CustomActionRequest? = null,
+    public val custom: io.getstream.feeds.android.network.models.CustomActionRequestPayload? = null,
     @Json(name = "delete_activity")
-    public val deleteActivity: io.getstream.feeds.android.network.models.DeleteActivityRequest? =
+    public val deleteActivity:
+        io.getstream.feeds.android.network.models.DeleteActivityRequestPayload? =
         null,
     @Json(name = "delete_comment")
-    public val deleteComment: io.getstream.feeds.android.network.models.DeleteCommentRequest? =
-        null,
-    @Json(name = "delete_message")
-    public val deleteMessage: io.getstream.feeds.android.network.models.DeleteMessageRequest? =
+    public val deleteComment:
+        io.getstream.feeds.android.network.models.DeleteCommentRequestPayload? =
         null,
     @Json(name = "delete_reaction")
-    public val deleteReaction: io.getstream.feeds.android.network.models.DeleteReactionRequest? =
+    public val deleteReaction:
+        io.getstream.feeds.android.network.models.DeleteReactionRequestPayload? =
         null,
     @Json(name = "delete_user")
-    public val deleteUser: io.getstream.feeds.android.network.models.DeleteUserRequest? = null,
+    public val deleteUser: io.getstream.feeds.android.network.models.DeleteUserRequestPayload? =
+        null,
+    @Json(name = "escalate")
+    public val escalate: io.getstream.feeds.android.network.models.EscalatePayload? = null,
+    @Json(name = "flag")
+    public val flag: io.getstream.feeds.android.network.models.FlagRequest? = null,
     @Json(name = "mark_reviewed")
-    public val markReviewed: io.getstream.feeds.android.network.models.MarkReviewedRequest? = null,
+    public val markReviewed: io.getstream.feeds.android.network.models.MarkReviewedRequestPayload? =
+        null,
+    @Json(name = "reject_appeal")
+    public val rejectAppeal: io.getstream.feeds.android.network.models.RejectAppealRequestPayload? =
+        null,
+    @Json(name = "restore")
+    public val restore: io.getstream.feeds.android.network.models.RestoreActionRequestPayload? =
+        null,
     @Json(name = "shadow_block")
-    public val shadowBlock: io.getstream.feeds.android.network.models.ShadowBlockActionRequest? =
+    public val shadowBlock:
+        io.getstream.feeds.android.network.models.ShadowBlockActionRequestPayload? =
         null,
     @Json(name = "unban")
-    public val unban: io.getstream.feeds.android.network.models.UnbanActionRequest? = null,
+    public val unban: io.getstream.feeds.android.network.models.UnbanActionRequestPayload? = null,
+    @Json(name = "unblock")
+    public val unblock: io.getstream.feeds.android.network.models.UnblockActionRequestPayload? =
+        null,
 ) {
 
     /** ActionType Enum */
@@ -69,15 +88,20 @@ public data class SubmitActionRequest(
                 when (s) {
                     "ban" -> Ban
                     "block" -> Block
+                    "bypass" -> Bypass
                     "custom" -> Custom
+                    "de_escalate" -> DeEscalate
                     "delete_activity" -> DeleteActivity
                     "delete_comment" -> DeleteComment
                     "delete_message" -> DeleteMessage
                     "delete_reaction" -> DeleteReaction
                     "delete_user" -> DeleteUser
                     "end_call" -> EndCall
+                    "escalate" -> Escalate
+                    "flag" -> Flag
                     "kick_user" -> KickUser
                     "mark_reviewed" -> MarkReviewed
+                    "reject_appeal" -> RejectAppeal
                     "restore" -> Restore
                     "shadow_block" -> ShadowBlock
                     "unban" -> Unban
@@ -91,7 +115,11 @@ public data class SubmitActionRequest(
 
         public object Block : ActionType("block")
 
+        public object Bypass : ActionType("bypass")
+
         public object Custom : ActionType("custom")
+
+        public object DeEscalate : ActionType("de_escalate")
 
         public object DeleteActivity : ActionType("delete_activity")
 
@@ -105,9 +133,15 @@ public data class SubmitActionRequest(
 
         public object EndCall : ActionType("end_call")
 
+        public object Escalate : ActionType("escalate")
+
+        public object Flag : ActionType("flag")
+
         public object KickUser : ActionType("kick_user")
 
         public object MarkReviewed : ActionType("mark_reviewed")
+
+        public object RejectAppeal : ActionType("reject_appeal")
 
         public object Restore : ActionType("restore")
 
