@@ -290,8 +290,8 @@ internal class CommentsRepositoryImplTest {
     fun `on deleteComment, delegate to api`() {
         val apiResult = deleteCommentResponse()
         testDelegation(
-            apiFunction = { feedsApi.deleteComment("commentId", true) },
-            repositoryCall = { repository.deleteComment("commentId", true) },
+            apiFunction = { feedsApi.deleteComment("commentId", true, true) },
+            repositoryCall = { repository.deleteComment("commentId", true, true) },
             apiResult = apiResult,
             repositoryResult = apiResult.comment.toModel() to apiResult.activity.toModel(),
         )
@@ -352,8 +352,8 @@ internal class CommentsRepositoryImplTest {
             )
 
         testDelegation(
-            apiFunction = { feedsApi.deleteCommentReaction("commentId", "like") },
-            repositoryCall = { repository.deleteCommentReaction("commentId", "like") },
+            apiFunction = { feedsApi.deleteCommentReaction("commentId", "like", true) },
+            repositoryCall = { repository.deleteCommentReaction("commentId", "like", true) },
             apiResult = apiResult,
             repositoryResult = Pair(apiResult.reaction.toModel(), apiResult.comment.toModel()),
         )

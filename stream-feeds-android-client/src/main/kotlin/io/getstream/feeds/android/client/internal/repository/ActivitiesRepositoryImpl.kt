@@ -76,10 +76,17 @@ internal class ActivitiesRepositoryImpl(
         api.addActivity(newActivityRequest).activity.toModel()
     }
 
-    override suspend fun deleteActivity(activityId: String, hardDelete: Boolean): Result<Unit> =
-        runSafely {
-            api.deleteActivity(activityId, hardDelete)
-        }
+    override suspend fun deleteActivity(
+        activityId: String,
+        hardDelete: Boolean,
+        deleteNotificationActivity: Boolean?,
+    ): Result<Unit> = runSafely {
+        api.deleteActivity(
+            id = activityId,
+            hardDelete = hardDelete,
+            deleteNotificationActivity = deleteNotificationActivity,
+        )
+    }
 
     override suspend fun deleteActivities(
         request: DeleteActivitiesRequest
@@ -152,8 +159,14 @@ internal class ActivitiesRepositoryImpl(
     override suspend fun deleteActivityReaction(
         activityId: String,
         type: String,
+        deleteNotificationActivity: Boolean?,
     ): Result<Pair<FeedsReactionData, ActivityData>> = runSafely {
-        val response = api.deleteActivityReaction(activityId = activityId, type = type)
+        val response =
+            api.deleteActivityReaction(
+                activityId = activityId,
+                type = type,
+                deleteNotificationActivity = deleteNotificationActivity,
+            )
         response.reaction.toModel() to response.activity.toModel()
     }
 

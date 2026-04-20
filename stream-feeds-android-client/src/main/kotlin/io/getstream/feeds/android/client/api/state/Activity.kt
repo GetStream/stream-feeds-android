@@ -123,9 +123,14 @@ public interface Activity {
      * @param commentId The unique identifier of the comment to be deleted.
      * @param hardDelete If true, the comment will be permanently deleted. Otherwise, it will be
      *   soft-deleted.
+     * @param deleteNotificationActivity If `true`, removes the corresponding notification activity.
      * @return A [Result] indicating success or failure of the deletion operation.
      */
-    public suspend fun deleteComment(commentId: String, hardDelete: Boolean? = null): Result<Unit>
+    public suspend fun deleteComment(
+        commentId: String,
+        hardDelete: Boolean? = null,
+        deleteNotificationActivity: Boolean? = null,
+    ): Result<Unit>
 
     /**
      * Updates an existing comment in the activity.
@@ -158,12 +163,14 @@ public interface Activity {
      *
      * @param commentId The unique identifier of the comment from which the reaction is removed.
      * @param type The type of the reaction to be removed.
+     * @param deleteNotificationActivity If `true`, removes the corresponding notification activity.
      * @return A [Result] containing the updated [FeedsReactionData] if successful, or an error if
      *   the operation fails.
      */
     public suspend fun deleteCommentReaction(
         commentId: String,
         type: String,
+        deleteNotificationActivity: Boolean? = null,
     ): Result<FeedsReactionData>
 
     /**

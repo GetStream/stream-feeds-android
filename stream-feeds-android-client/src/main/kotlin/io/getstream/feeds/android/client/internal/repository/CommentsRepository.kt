@@ -89,11 +89,13 @@ internal interface CommentsRepository {
      * @param commentId The unique identifier of the comment to be deleted.
      * @param hardDelete If true, the comment will be permanently deleted. Otherwise, it will be
      *   soft-deleted.
+     * @param deleteNotificationActivity If `true`, removes the corresponding notification activity.
      * @return A [Result] indicating success or failure of the deletion operation.
      */
     suspend fun deleteComment(
         commentId: String,
         hardDelete: Boolean?,
+        deleteNotificationActivity: Boolean?,
     ): Result<Pair<CommentData, ActivityData>>
 
     /**
@@ -133,11 +135,13 @@ internal interface CommentsRepository {
      *
      * @param commentId The unique identifier of the comment from which the reaction is deleted.
      * @param type The type of the reaction to be deleted (e.g., "like", "love", etc.).
+     * @param deleteNotificationActivity If `true`, removes the corresponding notification activity.
      * @return A [Result] indicating success or failure of the deletion operation.
      */
     suspend fun deleteCommentReaction(
         commentId: String,
         type: String,
+        deleteNotificationActivity: Boolean?,
     ): Result<Pair<FeedsReactionData, CommentData>>
 
     /**

@@ -174,7 +174,7 @@ internal class ActivityImplTest {
         val hardDelete = true
         val expectedActivity = activityData(id = "activityId", text = "Updated activity")
         val deleteData = commentData(commentId) to expectedActivity
-        coEvery { commentsRepository.deleteComment(commentId, hardDelete) } returns
+        coEvery { commentsRepository.deleteComment(commentId, hardDelete, any()) } returns
             Result.success(deleteData)
 
         val result = activity.deleteComment(commentId, hardDelete)
@@ -231,7 +231,7 @@ internal class ActivityImplTest {
         val type = "like"
         val reactionData = feedsReactionData(type = type)
         val commentData = commentData(commentId)
-        coEvery { commentsRepository.deleteCommentReaction(commentId, type) } returns
+        coEvery { commentsRepository.deleteCommentReaction(commentId, type, any()) } returns
             Result.success(Pair(reactionData, commentData))
 
         val result = activity.deleteCommentReaction(commentId, type)

@@ -202,8 +202,8 @@ internal class FeedsRepositoryImplTest {
         val unfollowResponse = UnfollowResponse(duration = "duration", follow = followResponseData)
 
         testDelegation(
-            apiFunction = { feedsApi.unfollow("user:user-1", "user:user-2") },
-            repositoryCall = { repository.unfollow(source, target) },
+            apiFunction = { feedsApi.unfollow("user:user-1", "user:user-2", true) },
+            repositoryCall = { repository.unfollow(source, target, true) },
             apiResult = unfollowResponse,
             repositoryResult = unfollowResponse.follow.toModel(),
         )

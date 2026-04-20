@@ -142,9 +142,17 @@ internal class ActivityImpl(
         }
     }
 
-    override suspend fun deleteComment(commentId: String, hardDelete: Boolean?): Result<Unit> {
+    override suspend fun deleteComment(
+        commentId: String,
+        hardDelete: Boolean?,
+        deleteNotificationActivity: Boolean?,
+    ): Result<Unit> {
         return commentsRepository
-            .deleteComment(commentId, hardDelete)
+            .deleteComment(
+                commentId = commentId,
+                hardDelete = hardDelete,
+                deleteNotificationActivity = deleteNotificationActivity,
+            )
             .onSuccess { (comment, activity) ->
                 subscriptionManager.onEvent(
                     StateUpdateEvent.CommentDeleted(FidScope.unknown, comment)
@@ -187,9 +195,10 @@ internal class ActivityImpl(
     override suspend fun deleteCommentReaction(
         commentId: String,
         type: String,
+        deleteNotificationActivity: Boolean?,
     ): Result<FeedsReactionData> {
         return commentsRepository
-            .deleteCommentReaction(commentId, type)
+            .deleteCommentReaction(commentId, type, deleteNotificationActivity)
             .onSuccess { (reaction, comment) ->
                 subscriptionManager.onEvent(
                     StateUpdateEvent.CommentReactionDeleted(FidScope.unknown, comment, reaction)

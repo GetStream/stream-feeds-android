@@ -271,7 +271,7 @@ internal class FeedImplTest {
         // Set up initial state with activity
         setupInitialState(feed, activities = listOf(activity))
 
-        coEvery { activitiesRepository.deleteActivity(activityId, hardDelete) } returns
+        coEvery { activitiesRepository.deleteActivity(activityId, hardDelete, null) } returns
             Result.success(Unit)
 
         val result = feed.deleteActivity(activityId, hardDelete)
@@ -374,7 +374,7 @@ internal class FeedImplTest {
         // Set up initial state with follow
         setupInitialState(feed, following = listOf(follow))
 
-        coEvery { feedsRepository.unfollow(any(), any()) } returns Result.success(follow)
+        coEvery { feedsRepository.unfollow(any(), any(), any()) } returns Result.success(follow)
 
         val result = feed.unfollow(targetFid)
 
@@ -537,7 +537,7 @@ internal class FeedImplTest {
         // Set up initial state with the original activity
         setupInitialState(feed, activities = listOf(originalActivity))
 
-        coEvery { commentsRepository.deleteComment(commentId, hardDelete) } returns
+        coEvery { commentsRepository.deleteComment(commentId, hardDelete, any()) } returns
             Result.success(deleteData)
 
         val result = feed.deleteComment(commentId, hardDelete)
@@ -713,7 +713,7 @@ internal class FeedImplTest {
         setupInitialState(feed, activities = listOf(activityWithReaction))
 
         val updatedActivity = activityData(activityId, text = "Updated activity")
-        coEvery { activitiesRepository.deleteActivityReaction(activityId, type) } returns
+        coEvery { activitiesRepository.deleteActivityReaction(activityId, type, any()) } returns
             Result.success(reaction to updatedActivity)
 
         val result = feed.deleteActivityReaction(activityId, type)
@@ -761,7 +761,7 @@ internal class FeedImplTest {
         val reaction = feedsReactionData()
         val comment = commentData(commentId)
 
-        coEvery { commentsRepository.deleteCommentReaction(commentId, type) } returns
+        coEvery { commentsRepository.deleteCommentReaction(commentId, type, any()) } returns
             Result.success(Pair(reaction, comment))
 
         val result = feed.deleteCommentReaction(commentId, type)

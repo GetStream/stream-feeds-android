@@ -65,9 +65,14 @@ internal interface ActivitiesRepository {
      * @param activityId The ID of the activity to be deleted.
      * @param hardDelete If true, the activity will be permanently deleted; otherwise, it will be
      *   soft-deleted.
+     * @param deleteNotificationActivity If `true`, removes the corresponding notification activity.
      * @return A [Result] indicating success or failure.
      */
-    suspend fun deleteActivity(activityId: String, hardDelete: Boolean): Result<Unit>
+    suspend fun deleteActivity(
+        activityId: String,
+        hardDelete: Boolean,
+        deleteNotificationActivity: Boolean?,
+    ): Result<Unit>
 
     /**
      * Deletes multiple activities based on the provided request.
@@ -176,11 +181,13 @@ internal interface ActivitiesRepository {
      *
      * @param activityId The ID of the activity from which to delete the reaction.
      * @param type The type of the reaction to delete.
+     * @param deleteNotificationActivity If `true`, removes the corresponding notification activity.
      * @return A [Result] containing the deleted [FeedsReactionData] or an error.
      */
     suspend fun deleteActivityReaction(
         activityId: String,
         type: String,
+        deleteNotificationActivity: Boolean?,
     ): Result<Pair<FeedsReactionData, ActivityData>>
 
     /**
