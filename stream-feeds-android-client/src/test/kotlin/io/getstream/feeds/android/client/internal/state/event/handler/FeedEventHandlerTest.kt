@@ -117,6 +117,9 @@ internal class FeedEventHandlerTest(
                     updatedAt = Date(),
                     userCount = 1,
                     userCountTruncated = false,
+                    isRead = null,
+                    isSeen = null,
+                    isWatched = null,
                 )
             )
         private val notificationStatus = NotificationStatusResponse(unread = 0, unseen = 1)

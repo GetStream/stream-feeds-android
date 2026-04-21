@@ -33,5 +33,8 @@ internal fun AggregatedActivityResponse.toModel(): AggregatedActivityData {
         updatedAt = updatedAt,
         userCount = userCount,
         userCountTruncated = userCountTruncated,
+        isRead = isRead,
+        isSeen = isSeen,
+        isWatched = isWatched,
     )
 }

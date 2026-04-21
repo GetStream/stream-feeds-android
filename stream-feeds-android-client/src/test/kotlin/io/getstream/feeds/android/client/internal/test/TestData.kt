@@ -225,6 +225,10 @@ internal object TestData {
         hidden: Boolean = false,
         user: UserData = userData("user-1"),
         currentFeed: FeedData? = null,
+        updatedAt: Long = 1000,
+        isRead: Boolean? = null,
+        isSeen: Boolean? = null,
+        isWatched: Boolean? = null,
     ): ActivityData =
         ActivityData(
             attachments = emptyList(),
@@ -245,9 +249,9 @@ internal object TestData {
             hidden = hidden,
             id = id,
             interestTags = emptyList(),
-            isRead = null,
-            isSeen = null,
-            isWatched = null,
+            isRead = isRead,
+            isSeen = isSeen,
+            isWatched = isWatched,
             latestReactions = emptyList(),
             location = null,
             mentionedUsers = emptyList(),
@@ -271,7 +275,7 @@ internal object TestData {
             shareCount = 0,
             text = text,
             type = type,
-            updatedAt = Date(1000),
+            updatedAt = Date(updatedAt),
             user = user,
             visibility = ActivityDataVisibility.Public,
             visibilityTag = null,
@@ -286,6 +290,9 @@ internal object TestData {
         updatedAt: Date = Date(1000),
         userCount: Int = 1,
         userCountTruncated: Boolean = false,
+        isRead: Boolean? = null,
+        isSeen: Boolean? = null,
+        isWatched: Boolean? = null,
     ): AggregatedActivityData =
         AggregatedActivityData(
             activities = activities,
@@ -296,6 +303,9 @@ internal object TestData {
             updatedAt = updatedAt,
             userCount = userCount,
             userCountTruncated = userCountTruncated,
+            isRead = isRead,
+            isSeen = isSeen,
+            isWatched = isWatched,
         )
 
     fun appData(name: String = "Test App"): AppData =
