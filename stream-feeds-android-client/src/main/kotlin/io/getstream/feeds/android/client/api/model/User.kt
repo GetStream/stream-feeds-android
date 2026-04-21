@@ -24,10 +24,25 @@ package io.getstream.feeds.android.client.api.model
  * @property imageURL The URL of the user's image (optional).
  * @property customData Custom data associated with the user, represented as a map (default empty
  *   map).
+ * @property type The authentication type for this user.
  */
 public data class User(
     public val id: String,
     public val name: String? = null,
     public val imageURL: String? = null,
     public val customData: Map<String, Any> = emptyMap(),
+    public val type: UserType = UserType.Authenticated,
 )
+
+/** Defines the type of user authentication for connecting to Stream. */
+public sealed class UserType {
+
+    /** A user authenticated via your backend with a server-generated token. */
+    public data object Authenticated : UserType()
+
+    /** A temporary guest user. The SDK automatically fetches a token via the guest API. */
+    public data object Guest : UserType()
+
+    /** An anonymous user. Cannot establish a WebSocket connection (REST-only). */
+    public data object Anonymous : UserType()
+}
