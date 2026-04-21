@@ -17,14 +17,13 @@
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.feeds.android.client.api.model.AppData
+import io.getstream.feeds.android.network.models.GetOGResponse
 
 /**
- * An interface for a repository that provides application configuration data.
- *
- * This repository is responsible for fetching the application configuration data, which includes
- * settings like URL enrichment, translation, and file upload configurations.
+ * A repository for common operations that are not specific to a single domain (feeds, comments,
+ * polls, etc.). This includes app configuration, Open Graph metadata, and user queries.
  */
-internal interface AppRepository {
+internal interface CommonRepository {
 
     /**
      * Fetches the application configuration data.
@@ -32,4 +31,13 @@ internal interface AppRepository {
      * @return A [Result] containing the [AppData] if successful, or an error if the request fails.
      */
     suspend fun getApp(): Result<AppData>
+
+    /**
+     * Fetches Open Graph metadata for a URL.
+     *
+     * @param url The URL to fetch OG metadata for.
+     * @return A [Result] containing the [GetOGResponse] if successful, or an error if the request
+     *   fails.
+     */
+    suspend fun getOG(url: String): Result<GetOGResponse>
 }

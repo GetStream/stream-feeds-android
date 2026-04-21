@@ -72,6 +72,7 @@ import io.getstream.feeds.android.network.models.CreateCollectionsRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.network.models.FollowBatchRequest
+import io.getstream.feeds.android.network.models.GetOGResponse
 import io.getstream.feeds.android.network.models.ListDevicesResponse
 import io.getstream.feeds.android.network.models.UnfollowBatchRequest
 import io.getstream.feeds.android.network.models.UpdateCollectionsRequest
@@ -445,6 +446,21 @@ public interface FeedsClient {
      * @return A [Result] containing the [AppData] if successful, or an error if the request fails.
      */
     public suspend fun getApp(): Result<AppData>
+
+    /**
+     * Fetches Open Graph metadata for a URL.
+     *
+     * This is useful for showing URL enrichment to users before an activity or comment is sent. You
+     * can then persist the OG data in `attachments` when sending the activity or comment (set
+     * `skipEnrichUrl` to avoid duplicate previews).
+     *
+     * @param url The URL to fetch OG metadata for.
+     * @return A [Result] containing the [GetOGResponse] if successful, or an error if the request
+     *   fails. Use
+     *   [GetOGResponse.toAttachment][io.getstream.feeds.android.client.api.model.toAttachment] to
+     *   convert the response to an [io.getstream.feeds.android.network.models.Attachment].
+     */
+    public suspend fun getOG(url: String): Result<GetOGResponse>
 
     /**
      * Read collections, filtering by collection references. By default, users can only read their

@@ -53,10 +53,10 @@ import io.getstream.feeds.android.client.internal.http.createHttpConfig
 import io.getstream.feeds.android.client.internal.http.createRetrofit
 import io.getstream.feeds.android.client.internal.logging.createLoggerProvider
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepositoryImpl
-import io.getstream.feeds.android.client.internal.repository.AppRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.CollectionsRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.CommentsRepositoryImpl
+import io.getstream.feeds.android.client.internal.repository.CommonRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.DevicesRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.FeedOwnValuesRepositoryImpl
 import io.getstream.feeds.android.client.internal.repository.FeedsRepositoryImpl
@@ -226,7 +226,7 @@ internal fun createFeedsClient(
         )
 
     val activitiesRepository = ActivitiesRepositoryImpl(feedsApi, uploader)
-    val appRepository = AppRepositoryImpl(feedsApi)
+    val commonRepository = CommonRepositoryImpl(feedsApi)
     val bookmarksRepository = BookmarksRepositoryImpl(feedsApi)
     val commentsRepository = CommentsRepositoryImpl(feedsApi, uploader)
     val devicesRepository = DevicesRepositoryImpl(feedsApi)
@@ -261,7 +261,7 @@ internal fun createFeedsClient(
         apiKey = apiKey,
         user = user,
         activitiesRepository = activitiesRepository,
-        appRepository = appRepository,
+        commonRepository = commonRepository,
         bookmarksRepository = bookmarksRepository,
         commentsRepository = commentsRepository,
         devicesRepository = devicesRepository,

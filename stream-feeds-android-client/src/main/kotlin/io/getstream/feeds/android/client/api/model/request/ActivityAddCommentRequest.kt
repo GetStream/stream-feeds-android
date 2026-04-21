@@ -32,11 +32,14 @@ internal constructor(
      * Creates a request to add a comment to an activity.
      *
      * @param comment The content of the comment to be added.
+     * @param activityId The ID of the activity to comment on.
      * @param attachments Optional list of attachments to include with the comment.
      * @param createNotificationActivity Optional flag to create a notification activity.
      * @param custom Optional custom data to include with the comment.
+     * @param id Optional custom ID for the comment. Must be unique. Auto-generated if not provided.
      * @param mentionedUserIds Optional list of user IDs to mention in the comment.
      * @param parentId Optional ID of the parent comment if this is a reply.
+     * @param skipEnrichUrl Optional flag to skip URL enrichment for the comment.
      */
     public constructor(
         comment: String,
@@ -44,8 +47,10 @@ internal constructor(
         attachments: List<Attachment>? = emptyList(),
         createNotificationActivity: Boolean? = null,
         custom: Map<String, Any?>? = emptyMap(),
+        id: String? = null,
         mentionedUserIds: List<String>? = emptyList(),
         parentId: String? = null,
+        skipEnrichUrl: Boolean? = null,
         attachmentUploads: List<FeedUploadPayload> = emptyList(),
     ) : this(
         AddCommentRequest(
@@ -53,10 +58,12 @@ internal constructor(
             attachments = attachments,
             createNotificationActivity = createNotificationActivity,
             custom = custom,
+            id = id,
             mentionedUserIds = mentionedUserIds,
             objectId = activityId,
             objectType = "activity",
             parentId = parentId,
+            skipEnrichUrl = skipEnrichUrl,
         ),
         attachmentUploads = attachmentUploads,
     )
