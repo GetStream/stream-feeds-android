@@ -33,6 +33,7 @@ import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.User
+import io.getstream.feeds.android.client.api.model.UserType
 import io.getstream.feeds.android.client.api.state.Activity
 import io.getstream.feeds.android.client.api.state.ActivityCommentList
 import io.getstream.feeds.android.client.api.state.ActivityList
@@ -184,6 +185,12 @@ internal class FeedsClientImpl(
     }
 
     override suspend fun connect(): Result<StreamConnectedUser> {
+        if (user.type is UserType.Anonymous) {
+            logger.i { "[connect] Anonymous user — skipping WebSocket connection" }
+            return Result.failure(
+                IllegalStateException("Anonymous users cannot establish a WebSocket connection")
+            )
+        }
         coreClient.subscribe(clientSubscription)
         return coreClient.connect()
     }

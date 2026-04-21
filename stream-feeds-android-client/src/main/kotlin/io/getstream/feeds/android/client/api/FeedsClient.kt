@@ -31,6 +31,7 @@ import io.getstream.feeds.android.client.api.model.FeedsConfig
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
 import io.getstream.feeds.android.client.api.model.User
+import io.getstream.feeds.android.client.api.model.UserType
 import io.getstream.feeds.android.client.api.state.Activity
 import io.getstream.feeds.android.client.api.state.ActivityCommentList
 import io.getstream.feeds.android.client.api.state.ActivityList
@@ -85,10 +86,10 @@ import kotlinx.coroutines.flow.StateFlow
 public interface FeedsClient {
 
     /**
-     * Establishes a connection to the Stream service.
+     * Connects to the Stream service and initializes the WebSocket for real-time updates.
      *
-     * This method sets up authentication and initializes the WebSocket connection for real-time
-     * updates. It should be called before using any other client functionality.
+     * Note: this function returns a failure for anonymous users ([UserType.Anonymous]) as they
+     * cannot establish a WebSocket connection.
      *
      * @return A [Result] indicating success or failure of the connection attempt.
      */
@@ -650,14 +651,15 @@ public interface FeedsClient {
  * @param context The Android [Context] for the client.
  * @param apiKey The API key for the client.
  * @param user The user associated with the client.
- * @param tokenProvider The provider for user tokens, used for refreshing tokens as needed.
+ * @param tokenProvider The provider for user tokens, used for refreshing tokens as needed. Should
+ *   be provided if [User.type] is [UserType.Authenticated].
  * @param config Configuration for the client, such as custom file uploader.
  */
 public fun FeedsClient(
     context: Context,
     apiKey: StreamApiKey,
     user: User,
-    tokenProvider: StreamTokenProvider,
+    tokenProvider: StreamTokenProvider?,
     config: FeedsConfig = FeedsConfig(),
 ): FeedsClient =
     createFeedsClient(

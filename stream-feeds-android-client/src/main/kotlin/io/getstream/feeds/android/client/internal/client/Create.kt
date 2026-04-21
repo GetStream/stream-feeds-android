@@ -46,6 +46,7 @@ import io.getstream.feeds.android.client.api.FeedsClient
 import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.FeedsConfig
 import io.getstream.feeds.android.client.api.model.User
+import io.getstream.feeds.android.client.api.model.UserType
 import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
 import io.getstream.feeds.android.client.internal.file.StreamFeedUploader
 import io.getstream.feeds.android.client.internal.http.FeedsSingleFlightApi
@@ -86,7 +87,8 @@ internal fun createStreamCoreClient(
     user: StreamUser,
     wsUrl: StreamWsUrl,
     clientInfoHeader: StreamHttpClientInfoHeader,
-    tokenProvider: StreamTokenProvider,
+    tokenProvider: StreamTokenProvider?,
+    isAnonymous: Boolean,
     httpConfig: StreamHttpConfig,
     feedsMoshiJsonParser: FeedsMoshiJsonParser,
     logProvider: StreamLoggerProvider,
@@ -94,7 +96,11 @@ internal fun createStreamCoreClient(
     val singleFlight = StreamSingleFlightProcessor(scope)
 
     val socketConfig =
-        StreamSocketConfig.jwt(url = wsUrl, apiKey = apiKey, clientInfoHeader = clientInfoHeader)
+        if (isAnonymous) {
+            StreamSocketConfig.anonymous(wsUrl, apiKey, clientInfoHeader)
+        } else {
+            StreamSocketConfig.jwt(wsUrl, apiKey, clientInfoHeader)
+        }
 
     val components =
         StreamComponentProvider(
@@ -105,7 +111,7 @@ internal fun createStreamCoreClient(
                     maxStrongSubscriptions = 250,
                     maxWeakSubscriptions = 250,
                 ),
-            tokenManager = StreamTokenManager(user.id, tokenProvider, singleFlight),
+            tokenManager = tokenProvider?.let { StreamTokenManager(user.id, it, singleFlight) },
             singleFlight = singleFlight,
             serialQueue =
                 StreamSerialProcessingQueue(
@@ -156,10 +162,9 @@ internal fun createFeedsClient(
     context: Context,
     apiKey: StreamApiKey,
     user: User,
-    tokenProvider: StreamTokenProvider,
+    tokenProvider: StreamTokenProvider?,
     config: FeedsConfig,
 ): FeedsClient {
-
     val logProvider = createLoggerProvider(config.loggingConfig.customLogger)
     val logger = logProvider.taggedLogger("FeedsClient")
 
@@ -196,22 +201,35 @@ internal fun createFeedsClient(
             apiLevel = Build.VERSION.SDK_INT,
             deviceModel = Build.MODEL,
         )
+
     // HTTP Configuration
     val okHttpBuilder = OkHttpClient.Builder()
     val httpConfig = createHttpConfig(okHttpBuilder, logProvider, config)
+    val effectiveTokenProvider =
+        when (user.type) {
+            is UserType.Authenticated -> {
+                requireNotNull(tokenProvider) {
+                    "A tokenProvider must be provided for authenticated users"
+                }
+            }
+
+            is UserType.Guest -> GuestTokenProvider(apiKey, user, clientInfoHeader, endpointConfig)
+            is UserType.Anonymous -> null
+        }
 
     val client =
         createStreamCoreClient(
-            clientScope,
-            context,
-            apiKey,
-            streamUser,
-            StreamWsUrl.fromString(endpointConfig.wsUrl),
-            clientInfoHeader,
-            tokenProvider,
-            httpConfig,
-            FeedsMoshiJsonParser(Serializer.moshi),
-            logProvider,
+            scope = clientScope,
+            context = context,
+            apiKey = apiKey,
+            user = streamUser,
+            wsUrl = StreamWsUrl.fromString(endpointConfig.wsUrl),
+            clientInfoHeader = clientInfoHeader,
+            tokenProvider = effectiveTokenProvider,
+            isAnonymous = user.type is UserType.Anonymous,
+            httpConfig = httpConfig,
+            feedsMoshiJsonParser = FeedsMoshiJsonParser(Serializer.moshi),
+            logProvider = logProvider,
         )
     val okHttpClient = okHttpBuilder.build()
     val retrofit = createRetrofit(endpointConfig, okHttpClient)
