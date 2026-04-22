@@ -17,6 +17,8 @@
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.feeds.android.client.api.model.AppData
+import io.getstream.feeds.android.client.api.model.UserData
+import io.getstream.feeds.android.client.api.state.query.UsersQuery
 import io.getstream.feeds.android.network.models.GetOGResponse
 
 /**
@@ -40,4 +42,13 @@ internal interface CommonRepository {
      *   fails.
      */
     suspend fun getOG(url: String): Result<GetOGResponse>
+
+    /**
+     * Queries users with the given query.
+     *
+     * @param query The query parameters for filtering and sorting users.
+     * @return A [Result] containing a list of [UserData] if successful, or an error if the request
+     *   fails.
+     */
+    suspend fun queryUsers(query: UsersQuery): Result<List<UserData>>
 }

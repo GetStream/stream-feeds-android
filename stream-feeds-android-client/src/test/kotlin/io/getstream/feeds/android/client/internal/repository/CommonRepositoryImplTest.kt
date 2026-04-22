@@ -16,16 +16,22 @@
 
 package io.getstream.feeds.android.client.internal.repository
 
+import io.getstream.feeds.android.client.api.state.query.UsersQuery
+import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.client.internal.repository.RepositoryTestUtils.testDelegation
+import io.getstream.feeds.android.client.internal.state.query.toRequest
 import io.getstream.feeds.android.client.internal.test.TestData.appData
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.AppResponseFields
 import io.getstream.feeds.android.network.models.FileUploadConfig
+import io.getstream.feeds.android.network.models.FullUserResponse
 import io.getstream.feeds.android.network.models.GetApplicationResponse
 import io.getstream.feeds.android.network.models.GetOGResponse
+import io.getstream.feeds.android.network.models.QueryUsersResponse
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import java.util.Date
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -80,6 +86,36 @@ internal class CommonRepositoryImplTest {
             apiFunction = { api.getOG(url) },
             repositoryCall = { repository.getOG(url) },
             apiResult = apiResult,
+        )
+    }
+
+    @Test
+    fun `on queryUsers, delegate to api and map response`() {
+        val query = UsersQuery(limit = 10)
+        val userResponse =
+            FullUserResponse(
+                id = "user-1",
+                banned = false,
+                createdAt = Date(1000),
+                invisible = false,
+                language = "en",
+                online = false,
+                role = "admin",
+                shadowBanned = false,
+                totalUnreadCount = 0,
+                unreadChannels = 0,
+                unreadCount = 0,
+                unreadThreads = 0,
+                updatedAt = Date(1000),
+                name = "Admin User",
+            )
+        val apiResult = QueryUsersResponse(duration = "50ms", users = listOf(userResponse))
+
+        testDelegation(
+            apiFunction = { api.queryUsers(query.toRequest()) },
+            repositoryCall = { repository.queryUsers(query) },
+            apiResult = apiResult,
+            repositoryResult = listOf(userResponse.toModel()),
         )
     }
 }
