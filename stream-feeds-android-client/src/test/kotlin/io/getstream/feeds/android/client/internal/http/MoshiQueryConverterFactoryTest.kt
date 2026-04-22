@@ -73,13 +73,17 @@ internal class MoshiQueryConverterFactoryTest {
     @Test
     @Suppress("UNCHECKED_CAST")
     fun `converter serializes map to JSON`() {
-        val converter = factory.stringConverter(Map::class.java, emptyArray(), retrofit)
-            as retrofit2.Converter<Any, String>
+        val converter =
+            factory.stringConverter(Map::class.java, emptyArray(), retrofit)
+                as retrofit2.Converter<Any, String>
 
         val result = converter.convert(mapOf("name" to "hello", "value" to 42))
 
         assertEquals("{\"name\":\"hello\",\"value\":42}", result)
     }
 
-    private enum class TestEnum { A, B }
+    private enum class TestEnum {
+        A,
+        B,
+    }
 }

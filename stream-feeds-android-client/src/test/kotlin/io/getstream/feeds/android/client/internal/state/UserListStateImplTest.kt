@@ -36,9 +36,41 @@ internal class UserListStateImplTest {
     }
 
     @Test
+    fun `on queryUsers, then replace users and set offset`() = runTest {
+        val users = List(10) { userData("user-$it") }
+
+        state.onQueryUsers(users)
+
+        assertEquals(users, state.users.value)
+        assertTrue(state.canLoadMore)
+        assertEquals(10, state.currentOffset)
+    }
+
+    @Test
+    fun `on queryUsers called twice, then replace users and reset offset`() = runTest {
+        val firstPage = List(10) { userData("user-$it") }
+        val secondPage = List(5) { userData("user-$it") }
+
+        state.onQueryUsers(firstPage)
+        state.onQueryUsers(secondPage)
+
+        assertEquals(secondPage, state.users.value)
+        assertTrue(state.canLoadMore)
+        assertEquals(5, state.currentOffset)
+    }
+
+    @Test
+    fun `on queryUsers with empty result, then canLoadMore false`() = runTest {
+        state.onQueryUsers(emptyList())
+
+        assertFalse(state.canLoadMore)
+        assertEquals(0, state.currentOffset)
+    }
+
+    @Test
     fun `on queryMoreUsers with non-empty result, then update users and canLoadMore true`() =
         runTest {
-            val users = (1..10).map { userData("user-$it") }
+            val users = List(10) { userData("user-$it") }
 
             state.onQueryMoreUsers(users)
 
@@ -57,8 +89,8 @@ internal class UserListStateImplTest {
 
     @Test
     fun `on queryMoreUsers called twice, then merge users and advance offset`() = runTest {
-        val firstPage = (1..10).map { userData("user-$it") }
-        val secondPage = (11..15).map { userData("user-$it") }
+        val firstPage = List(10) { userData("user-$it") }
+        val secondPage = List(5) { userData("user-${10 + it}") }
 
         state.onQueryMoreUsers(firstPage)
         state.onQueryMoreUsers(secondPage)

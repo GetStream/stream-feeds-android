@@ -26,11 +26,7 @@ internal class UsersQueryMappingTest {
 
     @Test
     fun `toRequest maps limit offset and includeDeactivatedUsers`() {
-        val query = UsersQuery(
-            limit = 25,
-            offset = 10,
-            includeDeactivatedUsers = true,
-        )
+        val query = UsersQuery(limit = 25, offset = 10, includeDeactivatedUsers = true)
 
         val payload = query.toRequest()
 

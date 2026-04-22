@@ -45,6 +45,18 @@ internal class UserListImplTest {
     }
 
     @Test
+    fun `on get called twice, then do not advance offset for pagination`() = runTest {
+        val users = List(10) { userData("user-$it") }
+        coEvery { commonRepository.queryUsers(query) } returns Result.success(users)
+
+        userList.get()
+        userList.get()
+
+        assertEquals(users, userList.state.users.value)
+        assertEquals(10, userList.state.currentOffset)
+    }
+
+    @Test
     fun `on queryMoreUsers when canLoadMore, then query with advanced offset`() = runTest {
         setupInitialState(pageSize = 10)
 

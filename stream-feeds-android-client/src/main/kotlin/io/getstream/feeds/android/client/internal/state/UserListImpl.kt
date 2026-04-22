@@ -36,7 +36,7 @@ internal class UserListImpl(
     override val state = UserListStateImpl(query)
 
     override suspend fun get(): Result<List<UserData>> {
-        return queryUsers(query)
+        return commonRepository.queryUsers(query).onSuccess(state::onQueryUsers)
     }
 
     override suspend fun queryMoreUsers(limit: Int?): Result<List<UserData>> {

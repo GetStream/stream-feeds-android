@@ -42,6 +42,12 @@ internal class UserListStateImpl(override val query: UsersQuery) : UserListMutab
     internal var currentOffset: Int = query.offset ?: 0
         private set
 
+    override fun onQueryUsers(users: List<UserData>) {
+        canLoadMore = users.isNotEmpty()
+        currentOffset = (query.offset ?: 0) + users.size
+        _users.update { users }
+    }
+
     override fun onQueryMoreUsers(users: List<UserData>) {
         canLoadMore = users.isNotEmpty()
         currentOffset += users.size
@@ -52,5 +58,7 @@ internal class UserListStateImpl(override val query: UsersQuery) : UserListMutab
 internal interface UserListMutableState : UserListState, UserListStateUpdates
 
 internal interface UserListStateUpdates {
+    fun onQueryUsers(users: List<UserData>)
+
     fun onQueryMoreUsers(users: List<UserData>)
 }
