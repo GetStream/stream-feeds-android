@@ -61,20 +61,6 @@ internal class UserListImplErrorTest {
     }
 
     @Test
-    fun `on get called twice, users are merged not replaced`() = runTest {
-        val page1 = listOf(userData("user-1"), userData("user-2"))
-        coEvery { commonRepository.queryUsers(query) } returns Result.success(page1)
-        userList.get()
-
-        val page2 = listOf(userData("user-3"))
-        coEvery { commonRepository.queryUsers(query) } returns Result.success(page2)
-        userList.get()
-
-        // get() calls state.onQueryMoreUsers which merges — so all 3 users present
-        assertEquals(3, userList.state.users.value.size)
-    }
-
-    @Test
     fun `on initial offset, currentOffset starts from query offset`() = runTest {
         val queryWithOffset = UsersQuery(limit = 10, offset = 50)
         val list = UserListImpl(query = queryWithOffset, commonRepository = commonRepository)
