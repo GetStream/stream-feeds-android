@@ -32,6 +32,7 @@ internal constructor(
         attachments: List<Attachment>? = null,
         attachmentUploads: List<FeedUploadPayload>? = null,
         collectionRefs: List<String>? = null,
+        createNotificationActivity: Boolean? = null,
         custom: Map<String, Any>? = null,
         expiresAt: String? = null,
         filterTags: List<String>? = null,
@@ -52,6 +53,7 @@ internal constructor(
             AddActivityRequest(
                 attachments = attachments,
                 collectionRefs = collectionRefs,
+                createNotificationActivity = createNotificationActivity,
                 custom = custom,
                 expiresAt = expiresAt,
                 filterTags = filterTags,

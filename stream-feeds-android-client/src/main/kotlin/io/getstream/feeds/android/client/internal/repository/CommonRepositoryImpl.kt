@@ -20,14 +20,14 @@ import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.network.apis.FeedsApi
+import io.getstream.feeds.android.network.models.GetOGResponse
 
 /**
- * Default implementation of the [AppRepository]. Uses the [FeedsApi] to fetch application
- * configuration data. Caches the result to avoid multiple network calls for the same data.
+ * Default implementation of [CommonRepository].
  *
- * @property api The API service used to fetch application data.
+ * @property api The API service used to execute requests.
  */
-internal class AppRepositoryImpl(private val api: FeedsApi) : AppRepository {
+internal class CommonRepositoryImpl(private val api: FeedsApi) : CommonRepository {
 
     private var cachedAppData: AppData? = null
 
@@ -37,4 +37,6 @@ internal class AppRepositoryImpl(private val api: FeedsApi) : AppRepository {
         }
         api.getApp().app.toModel().also { cachedAppData = it }
     }
+
+    override suspend fun getOG(url: String): Result<GetOGResponse> = runSafely { api.getOG(url) }
 }

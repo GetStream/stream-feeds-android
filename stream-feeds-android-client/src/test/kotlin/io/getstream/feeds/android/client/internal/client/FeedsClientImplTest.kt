@@ -44,10 +44,10 @@ import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
 import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
-import io.getstream.feeds.android.client.internal.repository.AppRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.repository.CollectionsRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
+import io.getstream.feeds.android.client.internal.repository.CommonRepository
 import io.getstream.feeds.android.client.internal.repository.DevicesRepository
 import io.getstream.feeds.android.client.internal.repository.FeedOwnValuesRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
@@ -88,7 +88,7 @@ internal class FeedsClientImplTest {
     private val apiKey: StreamApiKey = StreamApiKey.fromString("test-api-key")
     private val user: User = User(id = "test-user")
     private val activitiesRepository: ActivitiesRepository = mockk(relaxed = true)
-    private val appRepository: AppRepository = mockk(relaxed = true)
+    private val commonRepository: CommonRepository = mockk(relaxed = true)
     private val bookmarksRepository: BookmarksRepository = mockk(relaxed = true)
     private val commentsRepository: CommentsRepository = mockk(relaxed = true)
     private val devicesRepository: DevicesRepository = mockk(relaxed = true)
@@ -117,7 +117,7 @@ internal class FeedsClientImplTest {
             apiKey = apiKey,
             user = user,
             activitiesRepository = activitiesRepository,
-            appRepository = appRepository,
+            commonRepository = commonRepository,
             bookmarksRepository = bookmarksRepository,
             commentsRepository = commentsRepository,
             devicesRepository = devicesRepository,

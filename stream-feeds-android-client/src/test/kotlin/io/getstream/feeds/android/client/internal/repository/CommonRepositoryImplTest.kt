@@ -16,11 +16,13 @@
 
 package io.getstream.feeds.android.client.internal.repository
 
+import io.getstream.feeds.android.client.internal.repository.RepositoryTestUtils.testDelegation
 import io.getstream.feeds.android.client.internal.test.TestData.appData
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.AppResponseFields
 import io.getstream.feeds.android.network.models.FileUploadConfig
 import io.getstream.feeds.android.network.models.GetApplicationResponse
+import io.getstream.feeds.android.network.models.GetOGResponse
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -28,9 +30,9 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-internal class AppRepositoryImplTest {
+internal class CommonRepositoryImplTest {
     private val api: FeedsApi = mockk(relaxed = true)
-    private val repository: AppRepositoryImpl = AppRepositoryImpl(api)
+    private val repository: CommonRepositoryImpl = CommonRepositoryImpl(api)
 
     @Test
     fun `getApp when called multiple times, fetch from api once and cache result`() = runTest {
@@ -66,5 +68,18 @@ internal class AppRepositoryImplTest {
 
         // Verify API was called exactly once (not three times)
         coVerify(exactly = 1) { api.getApp() }
+    }
+
+    @Test
+    fun `on getOG, delegate to api`() {
+        val url = "https://example.com/article"
+        val apiResult =
+            GetOGResponse(duration = "50ms", title = "Example Article", ogScrapeUrl = url)
+
+        testDelegation(
+            apiFunction = { api.getOG(url) },
+            repositoryCall = { repository.getOG(url) },
+            apiResult = apiResult,
+        )
     }
 }

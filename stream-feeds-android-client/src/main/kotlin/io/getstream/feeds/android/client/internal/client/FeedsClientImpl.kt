@@ -66,10 +66,10 @@ import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
 import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
-import io.getstream.feeds.android.client.internal.repository.AppRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.repository.CollectionsRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
+import io.getstream.feeds.android.client.internal.repository.CommonRepository
 import io.getstream.feeds.android.client.internal.repository.DevicesRepository
 import io.getstream.feeds.android.client.internal.repository.FeedOwnValuesRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
@@ -123,7 +123,7 @@ internal class FeedsClientImpl(
     override val apiKey: StreamApiKey,
     override val user: User,
     private val activitiesRepository: ActivitiesRepository,
-    private val appRepository: AppRepository,
+    private val commonRepository: CommonRepository,
     private val bookmarksRepository: BookmarksRepository,
     private val commentsRepository: CommentsRepository,
     private val devicesRepository: DevicesRepository,
@@ -141,7 +141,7 @@ internal class FeedsClientImpl(
     errorBus: Flow<StreamClientException>,
 ) :
     FeedsClient,
-    AppRepository by appRepository,
+    CommonRepository by commonRepository,
     CollectionsRepository by collectionsRepository,
     DevicesRepository by devicesRepository,
     FilesRepository by filesRepository {
