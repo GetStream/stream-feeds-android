@@ -17,6 +17,7 @@
 package io.getstream.feeds.android.client.internal.model
 
 import io.getstream.feeds.android.client.api.model.UserData
+import io.getstream.feeds.android.network.models.FullUserResponse
 import io.getstream.feeds.android.network.models.UserResponse
 
 /**
@@ -24,6 +25,30 @@ import io.getstream.feeds.android.network.models.UserResponse
  * [io.getstream.feeds.android.client.api.model.UserData] model.
  */
 internal fun UserResponse.toModel(): UserData =
+    UserData(
+        banned = banned,
+        blockedUserIds = blockedUserIds,
+        createdAt = createdAt,
+        custom = custom,
+        deactivatedAt = deactivatedAt,
+        deletedAt = deletedAt,
+        id = id,
+        image = image,
+        language = language,
+        lastActive = lastActive,
+        name = name,
+        online = online,
+        revokeTokensIssuedBefore = revokeTokensIssuedBefore,
+        role = role,
+        teams = teams,
+        updatedAt = updatedAt,
+    )
+
+/**
+ * Converts a [io.getstream.feeds.android.network.models.FullUserResponse] to a
+ * [io.getstream.feeds.android.client.api.model.UserData] model.
+ */
+internal fun FullUserResponse.toModel(): UserData =
     UserData(
         banned = banned,
         blockedUserIds = blockedUserIds,

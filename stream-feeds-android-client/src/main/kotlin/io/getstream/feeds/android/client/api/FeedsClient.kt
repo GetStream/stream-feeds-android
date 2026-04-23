@@ -48,6 +48,7 @@ import io.getstream.feeds.android.client.api.state.MemberList
 import io.getstream.feeds.android.client.api.state.ModerationConfigList
 import io.getstream.feeds.android.client.api.state.PollList
 import io.getstream.feeds.android.client.api.state.PollVoteList
+import io.getstream.feeds.android.client.api.state.UserList
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQuery
@@ -63,6 +64,7 @@ import io.getstream.feeds.android.client.api.state.query.MembersQuery
 import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
+import io.getstream.feeds.android.client.api.state.query.UsersQuery
 import io.getstream.feeds.android.client.internal.client.createFeedsClient
 import io.getstream.feeds.android.client.internal.state.event.handler.defaultOnNewActivity
 import io.getstream.feeds.android.network.models.ActivityFeedbackRequest
@@ -424,6 +426,20 @@ public interface FeedsClient {
      *   moderation configurations.
      */
     public fun moderationConfigList(query: ModerationConfigsQuery): ModerationConfigList
+
+    /**
+     * Creates a user list instance based on the provided query.
+     *
+     * This method creates a [UserList] object that represents a collection of users matching the
+     * specified query. The user list can be used to fetch users, manage user pagination, and
+     * observe the current list of users.
+     *
+     * Use this to search for users, for example when implementing @mention autocomplete.
+     *
+     * @param query The query parameters for filtering, sorting, and paginating users.
+     * @return A [UserList] instance that can be used to interact with the collection of users.
+     */
+    public fun userList(query: UsersQuery): UserList
 
     /**
      * Retrieves the application configuration and settings.

@@ -49,6 +49,7 @@ import io.getstream.feeds.android.client.api.state.MemberList
 import io.getstream.feeds.android.client.api.state.ModerationConfigList
 import io.getstream.feeds.android.client.api.state.PollList
 import io.getstream.feeds.android.client.api.state.PollVoteList
+import io.getstream.feeds.android.client.api.state.UserList
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQuery
@@ -64,6 +65,7 @@ import io.getstream.feeds.android.client.api.state.query.MembersQuery
 import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
+import io.getstream.feeds.android.client.api.state.query.UsersQuery
 import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
@@ -92,6 +94,7 @@ import io.getstream.feeds.android.client.internal.state.MemberListImpl
 import io.getstream.feeds.android.client.internal.state.ModerationConfigListImpl
 import io.getstream.feeds.android.client.internal.state.PollListImpl
 import io.getstream.feeds.android.client.internal.state.PollVoteListImpl
+import io.getstream.feeds.android.client.internal.state.UserListImpl
 import io.getstream.feeds.android.client.internal.state.event.StateEventEnricher
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FollowBatchUpdate
 import io.getstream.feeds.android.client.internal.state.event.handler.OnNewActivity
@@ -360,6 +363,9 @@ internal class FeedsClientImpl(
 
     override fun moderationConfigList(query: ModerationConfigsQuery): ModerationConfigList =
         ModerationConfigListImpl(query = query, moderationRepository = moderationRepository)
+
+    override fun userList(query: UsersQuery): UserList =
+        UserListImpl(query = query, commonRepository = commonRepository)
 
     override suspend fun getOrCreateFollows(request: FollowBatchRequest): Result<BatchFollowData> {
         return feedsRepository.getOrCreateFollows(request).onSuccess {
