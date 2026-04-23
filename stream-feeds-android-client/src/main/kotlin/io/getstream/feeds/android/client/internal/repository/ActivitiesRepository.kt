@@ -83,6 +83,14 @@ internal interface ActivitiesRepository {
     suspend fun deleteActivities(request: DeleteActivitiesRequest): Result<DeleteActivitiesResponse>
 
     /**
+     * Restores a soft-deleted activity.
+     *
+     * @param activityId The ID of the activity to restore.
+     * @return A [Result] containing the restored [ActivityData] or an error.
+     */
+    suspend fun restoreActivity(activityId: String): Result<ActivityData>
+
+    /**
      * Retrieves an activity by its ID.
      *
      * @param activityId The ID of the activity to retrieve.

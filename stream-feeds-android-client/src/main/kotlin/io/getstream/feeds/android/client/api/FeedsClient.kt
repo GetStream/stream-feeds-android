@@ -25,6 +25,7 @@ import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.BatchFollowData
+import io.getstream.feeds.android.client.api.model.BookmarkFolderData
 import io.getstream.feeds.android.client.api.model.CollectionData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedsConfig
@@ -77,6 +78,7 @@ import io.getstream.feeds.android.network.models.FollowBatchRequest
 import io.getstream.feeds.android.network.models.GetOGResponse
 import io.getstream.feeds.android.network.models.ListDevicesResponse
 import io.getstream.feeds.android.network.models.UnfollowBatchRequest
+import io.getstream.feeds.android.network.models.UpdateBookmarkFolderRequest
 import io.getstream.feeds.android.network.models.UpdateCollectionsRequest
 import io.getstream.feeds.android.network.models.UpsertPushPreferencesRequest
 import io.getstream.feeds.android.network.models.UpsertPushPreferencesResponse
@@ -317,6 +319,27 @@ public interface FeedsClient {
      *   bookmark folders.
      */
     public fun bookmarkFolderList(query: BookmarkFoldersQuery): BookmarkFolderList
+
+    /**
+     * Updates a bookmark folder by its ID.
+     *
+     * @param folderId The unique identifier of the bookmark folder to update.
+     * @param request The request containing the updated folder data.
+     * @return A [Result] containing the updated [BookmarkFolderData] if successful, or an error if
+     *   the operation fails.
+     */
+    public suspend fun updateBookmarkFolder(
+        folderId: String,
+        request: UpdateBookmarkFolderRequest,
+    ): Result<BookmarkFolderData>
+
+    /**
+     * Deletes a bookmark folder by its ID. All bookmarks in the folder will also be deleted.
+     *
+     * @param folderId The unique identifier of the bookmark folder to delete.
+     * @return A [Result] indicating success or failure of the deletion operation.
+     */
+    public suspend fun deleteBookmarkFolder(folderId: String): Result<Unit>
 
     /**
      * Creates a comment list instance based on the provided query.

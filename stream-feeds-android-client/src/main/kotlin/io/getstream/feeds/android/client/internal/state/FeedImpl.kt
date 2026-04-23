@@ -65,6 +65,7 @@ import io.getstream.feeds.android.network.models.UpdateBookmarkRequest
 import io.getstream.feeds.android.network.models.UpdateCommentRequest
 import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.network.models.UpdateFeedRequest
+import io.getstream.feeds.android.network.models.UpdateFollowRequest
 
 /**
  * A feed represents a collection of activities and provides methods to interact with them.
@@ -218,6 +219,10 @@ internal class FeedImpl(
             }
     }
 
+    override suspend fun restoreActivity(id: String): Result<ActivityData> {
+        return activitiesRepository.restoreActivity(id)
+    }
+
     override suspend fun markActivity(request: MarkActivityRequest): Result<Unit> {
         return activitiesRepository.markActivity(
             feedGroupId = group,
@@ -366,6 +371,23 @@ internal class FeedImpl(
             )
         return feedsRepository.follow(request).onSuccess {
             subscriptionManager.onEvent(StateUpdateEvent.FollowAdded(it))
+        }
+    }
+
+    override suspend fun updateFollow(
+        targetFid: FeedId,
+        custom: Map<String, Any>?,
+        pushPreference: UpdateFollowRequest.PushPreference?,
+    ): Result<FollowData> {
+        val request =
+            UpdateFollowRequest(
+                source = fid.rawValue,
+                target = targetFid.rawValue,
+                custom = custom,
+                pushPreference = pushPreference,
+            )
+        return feedsRepository.updateFollow(request).onSuccess {
+            subscriptionManager.onEvent(StateUpdateEvent.FollowUpdated(it))
         }
     }
 

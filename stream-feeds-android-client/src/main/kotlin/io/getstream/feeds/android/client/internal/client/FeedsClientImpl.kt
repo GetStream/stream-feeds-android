@@ -29,6 +29,7 @@ import io.getstream.feeds.android.client.api.Moderation
 import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.BatchFollowData
+import io.getstream.feeds.android.client.api.model.BookmarkFolderData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
@@ -96,6 +97,7 @@ import io.getstream.feeds.android.client.internal.state.PollListImpl
 import io.getstream.feeds.android.client.internal.state.PollVoteListImpl
 import io.getstream.feeds.android.client.internal.state.UserListImpl
 import io.getstream.feeds.android.client.internal.state.event.StateEventEnricher
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.FollowBatchUpdate
 import io.getstream.feeds.android.client.internal.state.event.handler.OnNewActivity
 import io.getstream.feeds.android.client.internal.state.event.toModel
@@ -109,6 +111,7 @@ import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.network.models.FollowBatchRequest
 import io.getstream.feeds.android.network.models.UnfollowBatchRequest
+import io.getstream.feeds.android.network.models.UpdateBookmarkFolderRequest
 import io.getstream.feeds.android.network.models.WSEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BufferOverflow
@@ -307,6 +310,21 @@ internal class FeedsClientImpl(
             bookmarksRepository = bookmarksRepository,
             subscriptionManager = stateEventsSubscriptionManager,
         )
+
+    override suspend fun updateBookmarkFolder(
+        folderId: String,
+        request: UpdateBookmarkFolderRequest,
+    ): Result<BookmarkFolderData> {
+        return bookmarksRepository.updateBookmarkFolder(folderId, request).onSuccess {
+            stateEventsSubscriptionManager.onEvent(StateUpdateEvent.BookmarkFolderUpdated(it))
+        }
+    }
+
+    override suspend fun deleteBookmarkFolder(folderId: String): Result<Unit> {
+        return bookmarksRepository.deleteBookmarkFolder(folderId).onSuccess {
+            stateEventsSubscriptionManager.onEvent(StateUpdateEvent.BookmarkFolderDeleted(folderId))
+        }
+    }
 
     override fun commentList(query: CommentsQuery): CommentList =
         CommentListImpl(

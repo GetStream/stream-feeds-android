@@ -70,6 +70,7 @@ import io.getstream.feeds.android.network.models.UpdateBookmarkRequest
 import io.getstream.feeds.android.network.models.UpdateCommentRequest
 import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.network.models.UpdateFeedRequest
+import io.getstream.feeds.android.network.models.UpdateFollowRequest
 import io.mockk.called
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -282,6 +283,20 @@ internal class FeedImplTest {
     }
 
     @Test
+    fun `on restoreActivity, delegate to repository`() = runTest {
+        val feed = createFeed()
+        val activityId = "activity-1"
+        val restoredActivity = activityData(activityId)
+
+        coEvery { activitiesRepository.restoreActivity(activityId) } returns
+            Result.success(restoredActivity)
+
+        val result = feed.restoreActivity(activityId)
+
+        assertEquals(restoredActivity, result.getOrNull())
+    }
+
+    @Test
     fun `on repost, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val parentActivityId = "parent-activity"
@@ -399,6 +414,25 @@ internal class FeedImplTest {
 
         assertEquals(follow, result.getOrNull())
         assertEquals(listOf(follow), feed.state.followers.value)
+    }
+
+    @Test
+    fun `on updateFollow, delegate to repository and fire event`() = runTest {
+        val feed = createFeed()
+        val targetFid = FeedId("user:target")
+        val custom = mapOf("key" to "value")
+        val pushPreference = UpdateFollowRequest.PushPreference.All
+        val follow = followData(sourceFid = "group:id", targetFid = "user:target")
+
+        // Set up initial state with existing follow
+        setupInitialState(feed, following = listOf(follow))
+
+        coEvery { feedsRepository.updateFollow(any()) } returns Result.success(follow)
+
+        val result = feed.updateFollow(targetFid, custom, pushPreference)
+
+        assertEquals(follow, result.getOrNull())
+        verify { stateEventListener.onEvent(StateUpdateEvent.FollowUpdated(follow)) }
     }
 
     @Test

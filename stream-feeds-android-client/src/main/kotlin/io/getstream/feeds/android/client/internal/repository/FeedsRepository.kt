@@ -40,6 +40,7 @@ import io.getstream.feeds.android.network.models.RejectFollowRequest
 import io.getstream.feeds.android.network.models.UnfollowBatchRequest
 import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.network.models.UpdateFeedRequest
+import io.getstream.feeds.android.network.models.UpdateFollowRequest
 
 /**
  * Represents the repository for managing feeds. Performs requests and transforms API models to
@@ -97,6 +98,8 @@ internal interface FeedsRepository {
     suspend fun acceptFollow(request: AcceptFollowRequest): Result<FollowData>
 
     suspend fun rejectFollow(request: RejectFollowRequest): Result<FollowData>
+
+    suspend fun updateFollow(request: UpdateFollowRequest): Result<FollowData>
 
     // END: Follows
 
