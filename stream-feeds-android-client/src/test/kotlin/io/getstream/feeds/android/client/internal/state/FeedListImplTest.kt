@@ -104,6 +104,22 @@ internal class FeedListImplTest {
         coVerify { feedsRepository.queryFeeds(any()) }
     }
 
+    @Test
+    fun `on get called twice, feeds are replaced not merged`() = runTest {
+        val page1 = listOf(feedData(), feedData("feed-2", "user-2"))
+        val page2 = listOf(feedData("feed-3", "user-3"))
+        coEvery { feedsRepository.queryFeeds(query) } returnsMany
+            listOf(
+                Result.success(createPaginationResult(page1)),
+                Result.success(createPaginationResult(page2)),
+            )
+
+        feedList.get()
+        feedList.get()
+
+        assertEquals(1, feedList.state.feeds.value.size)
+    }
+
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialFeeds = listOf(feedData())
         val initialPaginationResult =

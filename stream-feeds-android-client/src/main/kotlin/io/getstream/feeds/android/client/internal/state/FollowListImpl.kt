@@ -56,7 +56,7 @@ internal class FollowListImpl(
         get() = _state
 
     override suspend fun get(): Result<List<FollowData>> {
-        return queryFollows(query)
+        return queryFollows(query, replace = true)
     }
 
     override suspend fun queryMoreFollows(limit: Int?): Result<List<FollowData>> {
@@ -76,11 +76,14 @@ internal class FollowListImpl(
         return queryFollows(nextQuery)
     }
 
-    private suspend fun queryFollows(query: FollowsQuery): Result<List<FollowData>> {
+    private suspend fun queryFollows(
+        query: FollowsQuery,
+        replace: Boolean = false,
+    ): Result<List<FollowData>> {
         return feedsRepository
             .queryFollows(query.toRequest())
             .onSuccess {
-                _state.onQueryMoreFollows(it, QueryConfiguration(query.filter, query.sort))
+                _state.onQueryFollows(it, QueryConfiguration(query.filter, query.sort), replace)
             }
             .map { it.models }
     }

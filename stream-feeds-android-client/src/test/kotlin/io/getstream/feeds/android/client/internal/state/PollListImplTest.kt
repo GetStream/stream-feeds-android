@@ -102,6 +102,22 @@ internal class PollListImplTest {
         coVerify { pollsRepository.queryPolls(any()) }
     }
 
+    @Test
+    fun `on get called twice, polls are replaced not merged`() = runTest {
+        val page1 = listOf(pollData("poll-1", "Test Poll"), pollData("poll-2", "Test Poll 2"))
+        val page2 = listOf(pollData("poll-3", "Test Poll 3"))
+        coEvery { pollsRepository.queryPolls(query) } returnsMany
+            listOf(
+                Result.success(createPaginationResult(page1)),
+                Result.success(createPaginationResult(page2)),
+            )
+
+        pollList.get()
+        pollList.get()
+
+        assertEquals(1, pollList.state.polls.value.size)
+    }
+
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialPolls = listOf(pollData("poll-1", "Test Poll"))
         val initialPaginationResult =

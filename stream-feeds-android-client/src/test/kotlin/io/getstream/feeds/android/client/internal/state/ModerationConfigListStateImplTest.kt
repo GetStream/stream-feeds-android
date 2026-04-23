@@ -38,11 +38,11 @@ internal class ModerationConfigListStateImplTest {
     }
 
     @Test
-    fun `on loadMoreConfigs, then update configs and pagination`() = runTest {
+    fun `on loadConfigs, then update configs and pagination`() = runTest {
         val configs = listOf(moderationConfigData(), moderationConfigData("config-2", "team-2"))
         val paginationResult = defaultPaginationResult(configs)
 
-        moderationConfigListState.onLoadMoreConfigs(paginationResult, queryConfig)
+        moderationConfigListState.onLoadConfigs(paginationResult, queryConfig)
 
         assertEquals(configs, moderationConfigListState.configs.value)
         assertEquals("next-cursor", moderationConfigListState.pagination?.next)

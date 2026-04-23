@@ -38,13 +38,13 @@ internal class FeedListStateImplTest {
     }
 
     @Test
-    fun `on queryMoreFeeds, then update feeds and pagination`() = runTest {
+    fun `on queryFeeds, then update feeds and pagination`() = runTest {
         val feed1 = feedData(id = "feed-1", groupId = "user", name = "First Feed")
         val feed2 = feedData(id = "feed-2", groupId = "user", name = "Second Feed")
         val feeds = listOf(feed1, feed2)
         val paginationResult = defaultPaginationResult(feeds)
 
-        feedListState.onQueryMoreFeeds(paginationResult, defaultQueryConfig)
+        feedListState.onQueryFeeds(paginationResult, defaultQueryConfig)
 
         assertEquals(feeds, feedListState.feeds.value)
         assertEquals("next-cursor", feedListState.pagination?.next)
@@ -57,7 +57,7 @@ internal class FeedListStateImplTest {
         val feed2 = feedData(id = "feed-2", groupId = "user", name = "Second Feed")
         val initialFeeds = listOf(feed1, feed2)
         val paginationResult = defaultPaginationResult(initialFeeds)
-        feedListState.onQueryMoreFeeds(paginationResult, defaultQueryConfig)
+        feedListState.onQueryFeeds(paginationResult, defaultQueryConfig)
 
         val updatedFeed =
             feedData(
@@ -78,7 +78,7 @@ internal class FeedListStateImplTest {
         val feed2 = feedData(id = "feed-2", groupId = "group", name = "F2", createdAt = 2000)
         val initialFeeds = listOf(feed1, feed2)
         val paginationResult = defaultPaginationResult(initialFeeds)
-        feedListState.onQueryMoreFeeds(paginationResult, defaultQueryConfig)
+        feedListState.onQueryFeeds(paginationResult, defaultQueryConfig)
 
         val newFeed = feedData(id = "feed-new", groupId = "group", name = "F1.5", createdAt = 1500)
         feedListState.onFeedUpserted(newFeed)
@@ -95,7 +95,7 @@ internal class FeedListStateImplTest {
         val initialFeeds = listOf(feed1, feed2)
         val paginationResult = defaultPaginationResult(initialFeeds)
         val queryConfig = FeedsQueryConfig(filter = null, sort = FeedsSort.Default)
-        feedListState.onQueryMoreFeeds(paginationResult, queryConfig)
+        feedListState.onQueryFeeds(paginationResult, queryConfig)
 
         feedListState.onFeedRemoved("user:feed-1")
 

@@ -39,12 +39,12 @@ internal class CommentReactionListStateImplTest {
     }
 
     @Test
-    fun `on queryMoreReactions, then update reactions and pagination`() = runTest {
+    fun `on queryReactions, then update reactions and pagination`() = runTest {
         val reactions =
             listOf(feedsReactionData(), feedsReactionData("reaction-2", "comment-1", "user-2"))
         val paginationResult = defaultPaginationResult(reactions)
 
-        commentReactionListState.onQueryMoreReactions(paginationResult, queryConfig)
+        commentReactionListState.onQueryReactions(paginationResult, queryConfig)
 
         assertEquals(reactions, commentReactionListState.reactions.value)
         assertEquals("next-cursor", commentReactionListState.pagination?.next)
@@ -56,7 +56,7 @@ internal class CommentReactionListStateImplTest {
         val initialReactions =
             listOf(feedsReactionData(), feedsReactionData("reaction-2", "comment-1", "user-2"))
         val paginationResult = defaultPaginationResult(initialReactions)
-        commentReactionListState.onQueryMoreReactions(paginationResult, queryConfig)
+        commentReactionListState.onQueryReactions(paginationResult, queryConfig)
 
         commentReactionListState.onReactionRemoved(initialReactions[0])
 
@@ -69,7 +69,7 @@ internal class CommentReactionListStateImplTest {
         val initialReaction =
             feedsReactionData(commentId = "comment-1", userId = "user-1", createdAt = Date(2000))
         val paginationResult = defaultPaginationResult(listOf(initialReaction))
-        commentReactionListState.onQueryMoreReactions(paginationResult, queryConfig)
+        commentReactionListState.onQueryReactions(paginationResult, queryConfig)
 
         val newReaction =
             feedsReactionData(commentId = "comment-1", userId = "user-2", createdAt = Date(3000))
@@ -104,7 +104,7 @@ internal class CommentReactionListStateImplTest {
                 )
 
             val paginationResult = defaultPaginationResult(existingReactions)
-            commentReactionListState.onQueryMoreReactions(paginationResult, queryConfig)
+            commentReactionListState.onQueryReactions(paginationResult, queryConfig)
 
             val newReaction =
                 feedsReactionData(
@@ -126,7 +126,7 @@ internal class CommentReactionListStateImplTest {
             listOf(feedsReactionData(), feedsReactionData("reaction-2", "comment-1", "user-2"))
         val paginationResult = defaultPaginationResult(reactions)
 
-        commentReactionListState.onQueryMoreReactions(paginationResult, queryConfig)
+        commentReactionListState.onQueryReactions(paginationResult, queryConfig)
         commentReactionListState.onCommentRemoved()
 
         assertEquals(emptyList<FeedsReactionData>(), commentReactionListState.reactions.value)

@@ -66,11 +66,16 @@ internal class CommentListStateImpl(
 
     private val comparator = query.sort.toComparator()
 
-    override fun onQueryMoreComments(result: PaginationResult<CommentData>) {
+    override fun onQueryComments(result: PaginationResult<CommentData>, replace: Boolean) {
         _pagination = result.pagination
-        // Merge the new comments with the existing ones (keeping the sort order)
-        _comments.update { current ->
-            current.mergeSorted(result.models, CommentData::id, comparator)
+        if (replace) {
+            // Replace the current comments with the new ones
+            _comments.update { result.models }
+        } else {
+            // Merge the new comments with the existing ones (keeping the sort order)
+            _comments.update { current ->
+                current.mergeSorted(result.models, CommentData::id, comparator)
+            }
         }
     }
 
@@ -116,13 +121,12 @@ internal interface CommentListMutableState : CommentListState, CommentListStateU
 internal interface CommentListStateUpdates {
 
     /**
-     * Handles the result of querying more comments.
+     * Handles the result of querying comments.
      *
-     * @param result The pagination result containing the new comments.
-     * @param filter The filter used for the query, if any.
-     * @param sort The sorting configuration used for the query, if any.
+     * @param result The pagination result containing the comments.
+     * @param replace Whether to replace the current comments or merge with them.
      */
-    fun onQueryMoreComments(result: PaginationResult<CommentData>)
+    fun onQueryComments(result: PaginationResult<CommentData>, replace: Boolean = false)
 
     /**
      * Handles the addition or update of a comment in the list.

@@ -101,6 +101,26 @@ internal class FollowListImplTest {
         coVerify { feedsRepository.queryFollows(any()) }
     }
 
+    @Test
+    fun `on get called twice, follows are replaced not merged`() = runTest {
+        val page1 =
+            listOf(
+                followData(sourceFid = "user:user-1", targetFid = "user:user-2"),
+                followData(sourceFid = "user:user-3", targetFid = "user:user-4"),
+            )
+        val page2 = listOf(followData(sourceFid = "user:user-5", targetFid = "user:user-6"))
+        coEvery { feedsRepository.queryFollows(any()) } returnsMany
+            listOf(
+                Result.success(createPaginationResult(page1)),
+                Result.success(createPaginationResult(page2)),
+            )
+
+        followList.get()
+        followList.get()
+
+        assertEquals(page2, followList.state.follows.value)
+    }
+
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialFollows = listOf(followData())
         val initialPaginationResult =

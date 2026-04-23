@@ -137,7 +137,7 @@ internal class FeedStateImpl(
         _notificationStatus.update { result.notificationStatus }
 
         // Members are managed by the paginated list
-        memberListState.onQueryMoreMembers(result.members, QueryConfiguration(null, null))
+        memberListState.onQueryMembers(result.members, QueryConfiguration(null, null))
     }
 
     override fun onQueryMoreActivities(

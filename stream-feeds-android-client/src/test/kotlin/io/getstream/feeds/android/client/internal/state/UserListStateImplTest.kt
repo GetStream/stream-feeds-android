@@ -36,10 +36,10 @@ internal class UserListStateImplTest {
     }
 
     @Test
-    fun `on queryUsers, then replace users and set offset`() = runTest {
+    fun `on queryUsers with replace, then replace users and set offset`() = runTest {
         val users = List(10) { userData("user-$it") }
 
-        state.onQueryUsers(users)
+        state.onQueryUsers(users, replace = true)
 
         assertEquals(users, state.users.value)
         assertTrue(state.canLoadMore)
@@ -47,12 +47,12 @@ internal class UserListStateImplTest {
     }
 
     @Test
-    fun `on queryUsers called twice, then replace users and reset offset`() = runTest {
+    fun `on queryUsers with replace called twice, then replace users and reset offset`() = runTest {
         val firstPage = List(10) { userData("user-$it") }
         val secondPage = List(5) { userData("user-$it") }
 
-        state.onQueryUsers(firstPage)
-        state.onQueryUsers(secondPage)
+        state.onQueryUsers(firstPage, replace = true)
+        state.onQueryUsers(secondPage, replace = true)
 
         assertEquals(secondPage, state.users.value)
         assertTrue(state.canLoadMore)
@@ -60,8 +60,8 @@ internal class UserListStateImplTest {
     }
 
     @Test
-    fun `on queryUsers with empty result, then canLoadMore false`() = runTest {
-        state.onQueryUsers(emptyList())
+    fun `on queryUsers with replace and empty result, then canLoadMore false`() = runTest {
+        state.onQueryUsers(emptyList(), replace = true)
 
         assertFalse(state.canLoadMore)
         assertEquals(0, state.currentOffset)
@@ -72,7 +72,7 @@ internal class UserListStateImplTest {
         runTest {
             val users = List(10) { userData("user-$it") }
 
-            state.onQueryMoreUsers(users)
+            state.onQueryUsers(users)
 
             assertEquals(users, state.users.value)
             assertTrue(state.canLoadMore)
@@ -81,7 +81,7 @@ internal class UserListStateImplTest {
 
     @Test
     fun `on queryMoreUsers with empty result, then canLoadMore false`() = runTest {
-        state.onQueryMoreUsers(emptyList())
+        state.onQueryUsers(emptyList())
 
         assertFalse(state.canLoadMore)
         assertEquals(0, state.currentOffset)
@@ -92,8 +92,8 @@ internal class UserListStateImplTest {
         val firstPage = List(10) { userData("user-$it") }
         val secondPage = List(5) { userData("user-${10 + it}") }
 
-        state.onQueryMoreUsers(firstPage)
-        state.onQueryMoreUsers(secondPage)
+        state.onQueryUsers(firstPage)
+        state.onQueryUsers(secondPage)
 
         assertEquals(15, state.users.value.size)
         assertTrue(state.canLoadMore)

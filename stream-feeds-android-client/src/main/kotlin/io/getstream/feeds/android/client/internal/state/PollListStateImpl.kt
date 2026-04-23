@@ -63,15 +63,23 @@ internal class PollListStateImpl(
     override val pagination: PaginationData?
         get() = _pagination
 
-    override fun onQueryMorePolls(
+    override fun onQueryPolls(
         result: PaginationResult<PollData>,
         queryConfig: PollsQueryConfig,
+        replace: Boolean,
     ) {
         _pagination = result.pagination
         // Update the query configuration for future queries
         this.queryConfig = queryConfig
-        // Merge the new polls with the existing ones (keeping the sort order)
-        _polls.update { current -> current.mergeSorted(result.models, PollData::id, pollsSorting) }
+        if (replace) {
+            // Replace the polls with the new ones
+            _polls.update { result.models }
+        } else {
+            // Merge the new polls with the existing ones (keeping the sort order)
+            _polls.update { current ->
+                current.mergeSorted(result.models, PollData::id, pollsSorting)
+            }
+        }
     }
 
     override fun onPollDeleted(pollId: String) {
@@ -107,12 +115,17 @@ internal interface PollListMutableState : PollListState, PollListStateUpdates
 internal interface PollListStateUpdates {
 
     /**
-     * Handles when a new list of polls is fetched.
+     * Handles when polls are fetched, either replacing or merging with existing state.
      *
      * @param result The result containing the list of polls.
      * @param queryConfig The configuration used for the query, including sorting options.
+     * @param replace Whether to replace the existing polls or merge them.
      */
-    fun onQueryMorePolls(result: PaginationResult<PollData>, queryConfig: PollsQueryConfig)
+    fun onQueryPolls(
+        result: PaginationResult<PollData>,
+        queryConfig: PollsQueryConfig,
+        replace: Boolean = false,
+    )
 
     /**
      * Called when a poll is deleted.

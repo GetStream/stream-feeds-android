@@ -54,15 +54,20 @@ internal class ModerationConfigListStateImpl(override val query: ModerationConfi
     override val pagination: PaginationData?
         get() = _pagination
 
-    override fun onLoadMoreConfigs(
+    override fun onLoadConfigs(
         result: PaginationResult<ModerationConfigData>,
         queryConfig: ModerationConfigsQueryConfig,
+        replace: Boolean,
     ) {
         _pagination = result.pagination
         this.queryConfig = queryConfig
-        // Merge the new configs with the existing ones (keeping the sort order)
-        _configs.update { current ->
-            current.mergeSorted(result.models, ModerationConfigData::id, configsSorting)
+        if (replace) {
+            _configs.update { result.models }
+        } else {
+            // Merge the new configs with the existing ones (keeping the sort order)
+            _configs.update { current ->
+                current.mergeSorted(result.models, ModerationConfigData::id, configsSorting)
+            }
         }
     }
 }
@@ -72,8 +77,9 @@ internal interface ModerationConfigListMutableState :
 
 internal interface ModerationConfigListStateUpdates {
 
-    fun onLoadMoreConfigs(
+    fun onLoadConfigs(
         result: PaginationResult<ModerationConfigData>,
         queryConfig: ModerationConfigsQueryConfig,
+        replace: Boolean = false,
     )
 }

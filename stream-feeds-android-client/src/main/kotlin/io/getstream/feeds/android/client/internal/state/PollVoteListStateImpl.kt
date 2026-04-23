@@ -58,16 +58,22 @@ internal class PollVoteListStateImpl(override val query: PollVotesQuery) :
         _votes.update { emptyList() }
     }
 
-    override fun onQueryMorePollVotes(
+    override fun onQueryPollVotes(
         result: PaginationResult<PollVoteData>,
         queryConfig: PollVotesQueryConfig,
+        replace: Boolean,
     ) {
         _pagination = result.pagination
         // Update the query configuration for future queries
         this.queryConfig = queryConfig
-        // Merge the new votes with the existing ones (keeping the sort order)
-        _votes.update { current ->
-            current.mergeSorted(result.models, PollVoteData::id, votesSorting)
+        if (replace) {
+            // Replace the current votes with the new ones
+            _votes.update { result.models }
+        } else {
+            // Merge the new votes with the existing ones (keeping the sort order)
+            _votes.update { current ->
+                current.mergeSorted(result.models, PollVoteData::id, votesSorting)
+            }
         }
     }
 
@@ -95,14 +101,17 @@ internal interface PollVoteListStateUpdates {
     fun onPollDeleted()
 
     /**
-     * Handles updates to the poll vote list state when new poll votes are fetched.
+     * Handles the poll vote list query by updating the current state.
      *
-     * @param result The result containing the new poll votes and pagination information.
+     * @param result The result containing the poll votes and pagination information.
      * @param queryConfig The configuration used for the query, including sorting options.
+     * @param replace If true, replaces the current votes; otherwise, merges them with existing
+     *   ones.
      */
-    fun onQueryMorePollVotes(
+    fun onQueryPollVotes(
         result: PaginationResult<PollVoteData>,
         queryConfig: PollVotesQueryConfig,
+        replace: Boolean = false,
     )
 
     /** Handles the removal of a poll vote from the list. */

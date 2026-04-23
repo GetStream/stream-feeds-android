@@ -56,7 +56,7 @@ internal class CommentReactionListImpl(
         get() = _state
 
     override suspend fun get(): Result<List<FeedsReactionData>> {
-        return queryCommentReactions(query)
+        return queryCommentReactions(query, replace = true)
     }
 
     override suspend fun queryMoreReactions(limit: Int?): Result<List<FeedsReactionData>> {
@@ -70,12 +70,17 @@ internal class CommentReactionListImpl(
     }
 
     private suspend fun queryCommentReactions(
-        query: CommentReactionsQuery
+        query: CommentReactionsQuery,
+        replace: Boolean = false,
     ): Result<List<FeedsReactionData>> {
         return commentsRepository
             .queryCommentReactions(query.commentId, query)
             .onSuccess { result ->
-                _state.onQueryMoreReactions(result, QueryConfiguration(query.filter, query.sort))
+                _state.onQueryReactions(
+                    result,
+                    QueryConfiguration(query.filter, query.sort),
+                    replace,
+                )
             }
             .map { it.models }
     }

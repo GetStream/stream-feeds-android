@@ -40,11 +40,11 @@ internal class PollListStateImplTest {
     }
 
     @Test
-    fun `on queryMorePolls, then update polls and pagination`() = runTest {
+    fun `on queryPolls, then update polls and pagination`() = runTest {
         val polls = defaultPolls
         val paginationResult = defaultPaginationResult(polls)
 
-        pollListState.onQueryMorePolls(paginationResult, queryConfig)
+        pollListState.onQueryPolls(paginationResult, queryConfig)
 
         assertEquals(polls, pollListState.polls.value)
         assertEquals("next-cursor", pollListState.pagination?.next)
@@ -169,7 +169,7 @@ internal class PollListStateImplTest {
 
     private fun setupInitialState(polls: List<PollData> = defaultPolls): List<PollData> {
         val paginationResult = defaultPaginationResult(polls)
-        pollListState.onQueryMorePolls(paginationResult, queryConfig)
+        pollListState.onQueryPolls(paginationResult, queryConfig)
         return polls
     }
 

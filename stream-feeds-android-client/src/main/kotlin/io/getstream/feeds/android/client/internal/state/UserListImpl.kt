@@ -36,7 +36,7 @@ internal class UserListImpl(
     override val state = UserListStateImpl(query)
 
     override suspend fun get(): Result<List<UserData>> {
-        return commonRepository.queryUsers(query).onSuccess(state::onQueryUsers)
+        return queryUsers(query, replace = true)
     }
 
     override suspend fun queryMoreUsers(limit: Int?): Result<List<UserData>> {
@@ -54,7 +54,10 @@ internal class UserListImpl(
         return queryUsers(nextQuery)
     }
 
-    private suspend fun queryUsers(query: UsersQuery): Result<List<UserData>> {
-        return commonRepository.queryUsers(query).onSuccess(state::onQueryMoreUsers)
+    private suspend fun queryUsers(
+        query: UsersQuery,
+        replace: Boolean = false,
+    ): Result<List<UserData>> {
+        return commonRepository.queryUsers(query).onSuccess { state.onQueryUsers(it, replace) }
     }
 }

@@ -61,10 +61,14 @@ internal class CommentReplyListStateImpl(
 
     private val comparator = query.sort.toComparator()
 
-    override fun onQueryMoreReplies(result: PaginationResult<ThreadedCommentData>) {
+    override fun onQueryReplies(result: PaginationResult<ThreadedCommentData>, replace: Boolean) {
         _pagination = result.pagination
-        // Merge the new replies with the existing ones (keeping the sort order)
-        _replies.update { current -> current + result.models }
+        if (replace) {
+            _replies.update { result.models }
+        } else {
+            // Merge the new replies with the existing ones (keeping the sort order)
+            _replies.update { current -> current + result.models }
+        }
     }
 
     override fun onCommentRemoved(commentId: String) {
@@ -160,11 +164,14 @@ internal interface CommentReplyListMutableState :
 internal interface CommentReplyListStateUpdates {
 
     /**
-     * Handles the result of a query for replies to a comment.
+     * Handles the result of a query for replies to a comment. When [replace] is true, the current
+     * state is replaced with the new results. When [replace] is false, the new results are appended
+     * to the existing state.
      *
      * @param result The pagination result containing the replies to the comment.
+     * @param replace Whether to replace the current state or append to it.
      */
-    fun onQueryMoreReplies(result: PaginationResult<ThreadedCommentData>)
+    fun onQueryReplies(result: PaginationResult<ThreadedCommentData>, replace: Boolean = false)
 
     /**
      * Handles the removal of a comment reply.

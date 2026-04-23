@@ -56,7 +56,7 @@ internal class MemberListImpl(
         get() = _state
 
     override suspend fun get(): Result<List<FeedMemberData>> {
-        return queryMembers(query)
+        return queryMembers(query, replace = true)
     }
 
     override suspend fun queryMoreMembers(limit: Int?): Result<List<FeedMemberData>> {
@@ -81,7 +81,10 @@ internal class MemberListImpl(
     internal val mutableState: MemberListMutableState
         get() = _state
 
-    private suspend fun queryMembers(query: MembersQuery): Result<List<FeedMemberData>> {
+    private suspend fun queryMembers(
+        query: MembersQuery,
+        replace: Boolean = false,
+    ): Result<List<FeedMemberData>> {
         return feedsRepository
             .queryFeedMembers(
                 feedGroupId = query.fid.group,
@@ -89,7 +92,7 @@ internal class MemberListImpl(
                 request = query.toRequest(),
             )
             .onSuccess {
-                _state.onQueryMoreMembers(it, QueryConfiguration(query.filter, query.sort))
+                _state.onQueryMembers(it, QueryConfiguration(query.filter, query.sort), replace)
             }
             .map { it.models }
     }

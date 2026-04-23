@@ -106,6 +106,22 @@ internal class CommentReplyListImplTest {
         coVerify { commentsRepository.getCommentReplies(any()) }
     }
 
+    @Test
+    fun `on get called twice, replies are replaced not merged`() = runTest {
+        val page1 = listOf(threadedCommentData("reply-1"), threadedCommentData("reply-2"))
+        val page2 = listOf(threadedCommentData("reply-3"))
+        coEvery { commentsRepository.getCommentReplies(query) } returnsMany
+            listOf(
+                Result.success(createPaginationResult(page1)),
+                Result.success(createPaginationResult(page2)),
+            )
+
+        commentReplyList.get()
+        commentReplyList.get()
+
+        assertEquals(1, commentReplyList.state.replies.value.size)
+    }
+
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialReplies = listOf(threadedCommentData("reply-1"))
         val initialPaginationResult =

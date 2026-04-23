@@ -56,7 +56,7 @@ internal class CommentListImpl(
         get() = _state
 
     override suspend fun get(): Result<List<CommentData>> {
-        return queryComments(query)
+        return queryComments(query, replace = true)
     }
 
     override suspend fun queryMoreComments(limit: Int?): Result<List<CommentData>> {
@@ -69,9 +69,13 @@ internal class CommentListImpl(
         return queryComments(nextQuery)
     }
 
-    private suspend fun queryComments(query: CommentsQuery): Result<List<CommentData>> {
-        return commentsRepository.queryComments(query).onSuccess(_state::onQueryMoreComments).map {
-            it.models
-        }
+    private suspend fun queryComments(
+        query: CommentsQuery,
+        replace: Boolean = false,
+    ): Result<List<CommentData>> {
+        return commentsRepository
+            .queryComments(query)
+            .onSuccess { _state.onQueryComments(it, replace) }
+            .map { it.models }
     }
 }

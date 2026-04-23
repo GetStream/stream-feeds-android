@@ -125,6 +125,22 @@ internal class ActivityListImplTest {
         assertEquals(exception, result.exceptionOrNull())
     }
 
+    @Test
+    fun `on get called twice, activities are replaced not merged`() = runTest {
+        val page1 = listOf(activityData("activity-1"), activityData("activity-2"))
+        val page2 = listOf(activityData("activity-3"))
+        coEvery { activitiesRepository.queryActivities(query) } returnsMany
+            listOf(
+                Result.success(createPaginationResult(page1)),
+                Result.success(createPaginationResult(page2)),
+            )
+
+        activityList.get()
+        activityList.get()
+
+        assertEquals(1, activityList.state.activities.value.size)
+    }
+
     // Helper functions to reduce boilerplate
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialActivities = listOf(activityData("activity-1"))

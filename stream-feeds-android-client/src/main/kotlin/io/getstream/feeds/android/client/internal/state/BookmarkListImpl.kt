@@ -55,7 +55,7 @@ internal class BookmarkListImpl(
         get() = _state
 
     override suspend fun get(): Result<List<BookmarkData>> {
-        return queryBookmarks(query)
+        return queryBookmarks(query, replace = true)
     }
 
     override suspend fun queryMoreBookmarks(limit: Int?): Result<List<BookmarkData>> {
@@ -75,11 +75,14 @@ internal class BookmarkListImpl(
         return queryBookmarks(nextQuery)
     }
 
-    private suspend fun queryBookmarks(query: BookmarksQuery): Result<List<BookmarkData>> {
+    private suspend fun queryBookmarks(
+        query: BookmarksQuery,
+        replace: Boolean = false,
+    ): Result<List<BookmarkData>> {
         return bookmarksRepository
             .queryBookmarks(query)
             .onSuccess {
-                _state.onQueryMoreBookmarks(it, QueryConfiguration(query.filter, query.sort))
+                _state.onQueryBookmarks(it, QueryConfiguration(query.filter, query.sort), replace)
             }
             .map { it.models }
     }

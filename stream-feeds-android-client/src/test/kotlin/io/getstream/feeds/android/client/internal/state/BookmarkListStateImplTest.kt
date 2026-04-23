@@ -43,7 +43,7 @@ internal class BookmarkListStateImplTest {
         val bookmarks = listOf(bookmarkData(), bookmarkData("bookmark-2", "user-2"))
         val paginationResult = defaultPaginationResult(bookmarks)
 
-        bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
+        bookmarkListState.onQueryBookmarks(paginationResult, queryConfig)
 
         assertEquals(bookmarks, bookmarkListState.bookmarks.value)
         assertEquals("next-cursor", bookmarkListState.pagination?.next)
@@ -132,7 +132,7 @@ internal class BookmarkListStateImplTest {
 
     private fun setupInitialBookmarks(bookmarks: List<BookmarkData>) {
         val paginationResult = defaultPaginationResult(bookmarks)
-        bookmarkListState.onQueryMoreBookmarks(paginationResult, queryConfig)
+        bookmarkListState.onQueryBookmarks(paginationResult, queryConfig)
     }
 
     companion object {

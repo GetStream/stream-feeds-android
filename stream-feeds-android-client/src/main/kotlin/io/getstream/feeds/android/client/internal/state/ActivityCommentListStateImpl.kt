@@ -65,10 +65,14 @@ internal class ActivityCommentListStateImpl(
         _comments.update { emptyList() }
     }
 
-    override fun onQueryMoreComments(result: PaginationResult<ThreadedCommentData>) {
+    override fun onQueryComments(result: PaginationResult<ThreadedCommentData>, replace: Boolean) {
         _pagination = result.pagination
-        _comments.update { current ->
-            current.mergeSorted(result.models, ThreadedCommentData::id, commentsComparator)
+        if (replace) {
+            _comments.update { result.models }
+        } else {
+            _comments.update { current ->
+                current.mergeSorted(result.models, ThreadedCommentData::id, commentsComparator)
+            }
         }
     }
 
@@ -165,9 +169,10 @@ internal interface ActivityCommentListStateUpdates {
     /**
      * Handles the result of a query for comments.
      *
-     * @param result The pagination result containing the new comments.
+     * @param result The pagination result containing the comments.
+     * @param replace If true, replaces the current state; otherwise, merges with it.
      */
-    fun onQueryMoreComments(result: PaginationResult<ThreadedCommentData>)
+    fun onQueryComments(result: PaginationResult<ThreadedCommentData>, replace: Boolean = false)
 
     /**
      * Handles the removal of a comment.
