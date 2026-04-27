@@ -133,21 +133,21 @@ internal class FeedEventHandlerTest(
             listOf(
                 testParams<FeedStateUpdates>(
                     name = "ActivityAdded matching feed and filter",
-                    event = ActivityAdded(fidScope, activity),
+                    event = ActivityAdded(fidScope, activity, false),
                     verifyBlock = { state ->
-                        state.onActivityAdded(activity, InsertionAction.AddToStart)
+                        state.onActivityAdded(activity, InsertionAction.AddToStart, false)
                     },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityAdded non-matching feed",
-                    event = ActivityAdded(otherFidScope, activity),
+                    event = ActivityAdded(otherFidScope, activity, false),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityAdded non-matching filter",
-                    event = ActivityAdded(fidScope, nonMatchingActivity),
+                    event = ActivityAdded(fidScope, nonMatchingActivity, false),
                     verifyBlock = { state ->
-                        state.onActivityAdded(nonMatchingActivity, InsertionAction.Ignore)
+                        state.onActivityAdded(nonMatchingActivity, InsertionAction.Ignore, false)
                     },
                 ),
                 testParams<FeedStateUpdates>(
@@ -192,17 +192,17 @@ internal class FeedEventHandlerTest(
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityUpdated matching feed and filter",
-                    event = ActivityUpdated(fidScope, activity),
-                    verifyBlock = { state -> state.onActivityUpdated(activity) },
+                    event = ActivityUpdated(fidScope, activity, false),
+                    verifyBlock = { state -> state.onActivityUpdated(activity, false) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityUpdated non-matching feed",
-                    event = ActivityUpdated(otherFidScope, activity),
+                    event = ActivityUpdated(otherFidScope, activity, false),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityUpdated non-matching filter",
-                    event = ActivityUpdated(fidScope, nonMatchingActivity),
+                    event = ActivityUpdated(fidScope, nonMatchingActivity, false),
                     verifyBlock = { state -> state.onActivityRemoved(nonMatchingActivity.id) },
                 ),
                 testParams<FeedStateUpdates>(
@@ -321,12 +321,12 @@ internal class FeedEventHandlerTest(
                 ),
                 testParams<FeedStateUpdates>(
                     name = "FeedUpdated matching feed",
-                    event = FeedUpdated(matchingFeed),
-                    verifyBlock = { state -> state.onFeedUpdated(matchingFeed) },
+                    event = FeedUpdated(matchingFeed, false),
+                    verifyBlock = { state -> state.onFeedUpdated(matchingFeed, false) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "FeedUpdated non-matching feed",
-                    event = FeedUpdated(nonMatchingFeed),
+                    event = FeedUpdated(nonMatchingFeed, false),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 kotlin.run {
@@ -347,32 +347,32 @@ internal class FeedEventHandlerTest(
                 },
                 testParams<FeedStateUpdates>(
                     name = "FollowAdded matching feed",
-                    event = FollowAdded(matchingFollow),
-                    verifyBlock = { state -> state.onFollowAdded(matchingFollow) },
+                    event = FollowAdded(matchingFollow, false),
+                    verifyBlock = { state -> state.onFollowAdded(matchingFollow, false) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "FollowAdded non-matching feed",
-                    event = FollowAdded(nonMatchingFollow),
+                    event = FollowAdded(nonMatchingFollow, false),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "FollowDeleted matching feed",
-                    event = FollowDeleted(matchingFollow),
-                    verifyBlock = { state -> state.onFollowRemoved(matchingFollow) },
+                    event = FollowDeleted(matchingFollow, false),
+                    verifyBlock = { state -> state.onFollowRemoved(matchingFollow, false) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "FollowDeleted non-matching feed",
-                    event = FollowDeleted(nonMatchingFollow),
+                    event = FollowDeleted(nonMatchingFollow, false),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "FollowUpdated matching feed",
-                    event = FollowUpdated(matchingFollow),
-                    verifyBlock = { state -> state.onFollowUpdated(matchingFollow) },
+                    event = FollowUpdated(matchingFollow, false),
+                    verifyBlock = { state -> state.onFollowUpdated(matchingFollow, false) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "FollowUpdated non-matching feed",
-                    event = FollowUpdated(nonMatchingFollow),
+                    event = FollowUpdated(nonMatchingFollow, false),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(

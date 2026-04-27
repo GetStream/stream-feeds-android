@@ -64,14 +64,14 @@ internal class FeedListEventHandlerTest(
                 ),
                 testParams<FeedListStateUpdates>(
                     name = "FeedUpdated with matching filter",
-                    event = FeedUpdated(feedData(id = "feed-1", groupId = "timeline")),
+                    event = FeedUpdated(feedData(id = "feed-1", groupId = "timeline"), false),
                     verifyBlock = { state ->
                         state.onFeedUpserted(feedData(id = "feed-1", groupId = "timeline"))
                     },
                 ),
                 testParams<FeedListStateUpdates>(
                     name = "FeedUpdated with non-matching filter",
-                    event = FeedUpdated(feedData(id = "feed-1", groupId = "notifications")),
+                    event = FeedUpdated(feedData(id = "feed-1", groupId = "notifications"), false),
                     verifyBlock = { state -> state.onFeedRemoved("notifications:feed-1") },
                 ),
             )

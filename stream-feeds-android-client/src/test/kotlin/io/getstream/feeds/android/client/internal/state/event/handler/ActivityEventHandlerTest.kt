@@ -126,12 +126,12 @@ internal class ActivityEventHandlerTest(
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "ActivityUpdated matching activity",
-                    event = ActivityUpdated(fidScope, activity),
+                    event = ActivityUpdated(fidScope, activity, false),
                     verifyBlock = { it.onActivityUpdated(activity) },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "ActivityUpdated non-matching activity",
-                    event = ActivityUpdated(fidScope, activityData("other-activity")),
+                    event = ActivityUpdated(fidScope, activityData("other-activity"), false),
                     verifyBlock = { it wasNot called },
                 ),
                 testParams<ActivityStateUpdates>(

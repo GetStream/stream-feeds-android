@@ -138,7 +138,7 @@ internal class FeedStateImplTest {
         setupInitialState(listOf(initialActivity))
 
         val newActivity = activityData("activity-2")
-        feedState.onActivityAdded(newActivity, InsertionAction.Ignore)
+        feedState.onActivityAdded(newActivity, InsertionAction.Ignore, false)
 
         assertEquals(listOf(initialActivity), feedState.activities.value)
     }
@@ -149,7 +149,7 @@ internal class FeedStateImplTest {
         setupInitialState(listOf(initialActivity))
 
         val newActivity = activityData("activity-2")
-        feedState.onActivityAdded(newActivity, InsertionAction.AddToStart)
+        feedState.onActivityAdded(newActivity, InsertionAction.AddToStart, false)
 
         assertEquals(listOf(newActivity, initialActivity), feedState.activities.value)
     }
@@ -160,7 +160,7 @@ internal class FeedStateImplTest {
         setupInitialState(listOf(initialActivity))
 
         val newActivity = activityData("activity-2")
-        feedState.onActivityAdded(newActivity, InsertionAction.AddToEnd)
+        feedState.onActivityAdded(newActivity, InsertionAction.AddToEnd, false)
 
         assertEquals(listOf(initialActivity, newActivity), feedState.activities.value)
     }
@@ -177,7 +177,7 @@ internal class FeedStateImplTest {
                 currentFeed = null,
                 feeds = listOf(FeedId("feed-1"), FeedId("feed-2")),
             )
-        feedState.onActivityAdded(updatedActivity, InsertionAction.AddToStart)
+        feedState.onActivityAdded(updatedActivity, InsertionAction.AddToStart, false)
 
         val expected = updatedActivity.copy(currentFeed = initialActivity.currentFeed)
         assertEquals(listOf(expected), feedState.activities.value)
@@ -190,7 +190,7 @@ internal class FeedStateImplTest {
         setupInitialState(listOf(initialActivity), listOf(activityPin))
 
         val updatedActivity = activityData("activity-1", text = "Updated activity")
-        feedState.onActivityUpdated(updatedActivity)
+        feedState.onActivityUpdated(updatedActivity, false)
 
         assertEquals(listOf(updatedActivity), feedState.activities.value)
         val expectedPinnedActivity = activityPin.copy(activity = updatedActivity)
@@ -229,7 +229,7 @@ internal class FeedStateImplTest {
                 ownReactions = emptyList(),
                 currentFeed = updatedFeed,
             )
-        feedState.onActivityUpdated(updatedActivity)
+        feedState.onActivityUpdated(updatedActivity, false)
 
         // Verify all "own" properties are preserved
         val expectedPoll = updatedPoll.copy(ownVotes = listOf(ownVote))
@@ -251,7 +251,7 @@ internal class FeedStateImplTest {
 
         val newPoll = pollData("poll-1", "New Poll")
         val updatedActivity = activityData("activity-1", text = "Updated", poll = newPoll)
-        feedState.onActivityUpdated(updatedActivity)
+        feedState.onActivityUpdated(updatedActivity, false)
 
         assertEquals(listOf(updatedActivity), feedState.activities.value)
     }
@@ -447,7 +447,7 @@ internal class FeedStateImplTest {
         setupInitialState(emptyList(), feed = initialFeed)
 
         val updatedFeed = feedData("feed-1", "user", "Updated Feed")
-        feedState.onFeedUpdated(updatedFeed)
+        feedState.onFeedUpdated(updatedFeed, false)
 
         assertEquals(updatedFeed, feedState.feed.value)
     }
@@ -767,7 +767,7 @@ internal class FeedStateImplTest {
         val updatedTargetFeed = feedData(id = "test", groupId = "user").copy(followerCount = 10)
         val follow = followData().copy(targetFeed = updatedTargetFeed)
 
-        feedState.onFollowAdded(follow)
+        feedState.onFollowAdded(follow, false)
 
         val expected = updatedTargetFeed.copy(ownCapabilities = initialFeed.ownCapabilities)
         assertEquals(expected, feedState.feed.value)
@@ -786,7 +786,7 @@ internal class FeedStateImplTest {
         val updatedSourceFeed = feedData(id = "test", groupId = "user").copy(followingCount = 15)
         val follow = followData().copy(sourceFeed = updatedSourceFeed)
 
-        feedState.onFollowAdded(follow)
+        feedState.onFollowAdded(follow, false)
 
         val expected = updatedSourceFeed.copy(ownCapabilities = initialFeed.ownCapabilities)
         assertEquals(expected, feedState.feed.value)
@@ -805,7 +805,7 @@ internal class FeedStateImplTest {
         val updatedTargetFeed = feedData(id = "test", groupId = "user").copy(followerCount = 5)
         val follow = followData().copy(targetFeed = updatedTargetFeed)
 
-        feedState.onFollowRemoved(follow)
+        feedState.onFollowRemoved(follow, false)
 
         val expected = updatedTargetFeed.copy(ownCapabilities = initialFeed.ownCapabilities)
         assertEquals(expected, feedState.feed.value)
@@ -824,7 +824,7 @@ internal class FeedStateImplTest {
         val updatedSourceFeed = feedData(id = "test", groupId = "user").copy(followingCount = 8)
         val follow = followData().copy(sourceFeed = updatedSourceFeed)
 
-        feedState.onFollowRemoved(follow)
+        feedState.onFollowRemoved(follow, false)
 
         val expected = updatedSourceFeed.copy(ownCapabilities = initialFeed.ownCapabilities)
         assertEquals(expected, feedState.feed.value)

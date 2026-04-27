@@ -24,7 +24,7 @@ import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.repository.FeedOwnValuesRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
-import io.getstream.feeds.android.client.internal.repository.cache
+import io.getstream.feeds.android.client.internal.repository.cacheIfEnriched
 import io.getstream.feeds.android.client.internal.state.event.handler.FeedListEventHandler
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
@@ -72,6 +72,7 @@ internal class FeedListImpl(
                 next = next,
                 previous = null,
                 watch = query.watch,
+                enrichOwnFields = query.enrichOwnFields,
             )
         return queryFeeds(nextQuery)
     }
@@ -81,7 +82,7 @@ internal class FeedListImpl(
             .queryFeeds(query)
             .onSuccess {
                 _state.onQueryMoreFeeds(it, QueryConfiguration(query.filter, query.sort))
-                feedOwnValuesRepository.cache(it.models)
+                feedOwnValuesRepository.cacheIfEnriched(it.models, query.enrichOwnFields)
             }
             .map { it.models }
     }

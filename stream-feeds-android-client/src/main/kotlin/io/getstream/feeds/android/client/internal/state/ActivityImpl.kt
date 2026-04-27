@@ -97,7 +97,13 @@ internal class ActivityImpl(
     override suspend fun get(): Result<ActivityData> {
         val activity =
             activitiesRepository.getActivity(activityId).onSuccess {
-                subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.unknown, it))
+                subscriptionManager.onEvent(
+                    StateUpdateEvent.ActivityUpdated(
+                        scope = FidScope.unknown,
+                        activity = it,
+                        feedOwnFieldsEnriched = true,
+                    )
+                )
                 it.currentFeed?.let(feedOwnValuesRepository::cache)
             }
         // Query the comments as well (state will be updated automatically)
@@ -158,7 +164,11 @@ internal class ActivityImpl(
                     StateUpdateEvent.CommentDeleted(FidScope.unknown, comment)
                 )
                 subscriptionManager.onEvent(
-                    StateUpdateEvent.ActivityUpdated(FidScope.unknown, activity)
+                    StateUpdateEvent.ActivityUpdated(
+                        scope = FidScope.unknown,
+                        activity = activity,
+                        feedOwnFieldsEnriched = false,
+                    )
                 )
             }
             .map {}
@@ -218,19 +228,35 @@ internal class ActivityImpl(
     }
 
     override suspend fun pin(enrichOwnFields: Boolean?): Result<Unit> {
+        val enriched = enrichOwnFields == true
         return activitiesRepository
             .pin(activityId = activityId, fid = fid, enrichOwnFields = enrichOwnFields)
             .onSuccess {
-                subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.unknown, it))
+                if (enriched) it.currentFeed?.let(feedOwnValuesRepository::cache)
+                subscriptionManager.onEvent(
+                    StateUpdateEvent.ActivityUpdated(
+                        scope = FidScope.unknown,
+                        activity = it,
+                        feedOwnFieldsEnriched = enriched,
+                    )
+                )
             }
             .map { Unit }
     }
 
     override suspend fun unpin(enrichOwnFields: Boolean?): Result<Unit> {
+        val enriched = enrichOwnFields == true
         return activitiesRepository
             .unpin(activityId = activityId, fid = fid, enrichOwnFields = enrichOwnFields)
             .onSuccess {
-                subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.unknown, it))
+                if (enriched) it.currentFeed?.let(feedOwnValuesRepository::cache)
+                subscriptionManager.onEvent(
+                    StateUpdateEvent.ActivityUpdated(
+                        scope = FidScope.unknown,
+                        activity = it,
+                        feedOwnFieldsEnriched = enriched,
+                    )
+                )
             }
             .map { Unit }
     }

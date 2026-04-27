@@ -53,27 +53,27 @@ internal class FollowListEventHandlerTest(
             listOf(
                 testParams<FollowListStateUpdates>(
                     name = "FollowAdded matching filter",
-                    event = FollowAdded(matchingFollow),
+                    event = FollowAdded(matchingFollow, false),
                     verifyBlock = { state -> state.onFollowUpserted(matchingFollow) },
                 ),
                 testParams<FollowListStateUpdates>(
                     name = "FollowAdded non-matching filter",
-                    event = FollowAdded(nonMatchingFollow),
+                    event = FollowAdded(nonMatchingFollow, false),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FollowListStateUpdates>(
                     name = "FollowDeleted calls onFollowRemoved",
-                    event = FollowDeleted(matchingFollow),
+                    event = FollowDeleted(matchingFollow, false),
                     verifyBlock = { state -> state.onFollowRemoved(matchingFollow) },
                 ),
                 testParams<FollowListStateUpdates>(
                     name = "FollowUpdated matching filter",
-                    event = FollowUpdated(matchingFollow),
+                    event = FollowUpdated(matchingFollow, false),
                     verifyBlock = { state -> state.onFollowUpserted(matchingFollow) },
                 ),
                 testParams<FollowListStateUpdates>(
                     name = "FollowUpdated non-matching filter",
-                    event = FollowUpdated(nonMatchingFollow),
+                    event = FollowUpdated(nonMatchingFollow, false),
                     verifyBlock = { state -> state.onFollowRemoved(nonMatchingFollow) },
                 ),
                 testParams<FollowListStateUpdates>(

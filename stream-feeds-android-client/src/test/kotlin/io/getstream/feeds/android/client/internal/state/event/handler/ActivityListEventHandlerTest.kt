@@ -77,14 +77,16 @@ internal class ActivityListEventHandlerTest(
             listOf(
                 testParams<ActivityListStateUpdates>(
                     name = "ActivityAdded with matching filter",
-                    event = ActivityAdded(fidScope, activityData("activity-1", type = "post")),
+                    event =
+                        ActivityAdded(fidScope, activityData("activity-1", type = "post"), false),
                     verifyBlock = { state ->
                         state.onActivityUpserted(activityData("activity-1", type = "post"))
                     },
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "ActivityAdded with non-matching filter",
-                    event = ActivityAdded(fidScope, activityData("activity-1", type = "story")),
+                    event =
+                        ActivityAdded(fidScope, activityData("activity-1", type = "story"), false),
                     verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<ActivityListStateUpdates>(
@@ -94,14 +96,20 @@ internal class ActivityListEventHandlerTest(
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "ActivityUpdated with matching filter",
-                    event = ActivityUpdated(fidScope, activityData("activity-1", type = "post")),
+                    event =
+                        ActivityUpdated(fidScope, activityData("activity-1", type = "post"), false),
                     verifyBlock = { state ->
                         state.onActivityUpserted(activityData("activity-1", type = "post"))
                     },
                 ),
                 testParams<ActivityListStateUpdates>(
                     name = "ActivityUpdated with non-matching filter",
-                    event = ActivityUpdated(fidScope, activityData("activity-1", type = "story")),
+                    event =
+                        ActivityUpdated(
+                            fidScope,
+                            activityData("activity-1", type = "story"),
+                            false,
+                        ),
                     verifyBlock = { state -> state.onActivityRemoved("activity-1") },
                 ),
                 testParams<ActivityListStateUpdates>(

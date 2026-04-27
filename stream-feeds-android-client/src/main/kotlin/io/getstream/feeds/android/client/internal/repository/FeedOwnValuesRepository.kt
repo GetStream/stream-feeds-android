@@ -52,3 +52,19 @@ internal fun FeedOwnValuesRepository.cache(feed: FeedData) {
 internal fun FeedOwnValuesRepository.cache(feeds: Iterable<FeedData>) {
     cache(feeds.associateBy(FeedData::fid, FeedData::ownValues))
 }
+
+/**
+ * Caches the feed's own values only when the request had `enrich_own_fields = true`. Otherwise the
+ * response carries empty defaults that would clobber previously cached values.
+ */
+internal fun FeedOwnValuesRepository.cacheIfEnriched(feed: FeedData, enrichOwnFields: Boolean?) {
+    if (enrichOwnFields == true) cache(feed)
+}
+
+/** @see cacheIfEnriched */
+internal fun FeedOwnValuesRepository.cacheIfEnriched(
+    feeds: Iterable<FeedData>,
+    enrichOwnFields: Boolean?,
+) {
+    if (enrichOwnFields == true) cache(feeds)
+}

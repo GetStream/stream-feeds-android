@@ -39,7 +39,7 @@ internal class StateEventEnricherTest {
     fun `on enrich ActivityAdded with feed and capabilities exist, enrich feed`() {
         val feedId = FeedId("user:1")
         val feed = feedData(id = "1", groupId = "user", ownCapabilities = emptySet())
-        val event = ActivityAdded(FidScope.of(feedId), activityData(currentFeed = feed))
+        val event = ActivityAdded(FidScope.of(feedId), activityData(currentFeed = feed), false)
         val ownData =
             FeedOwnValues(
                 followings = emptyList(),
@@ -70,7 +70,7 @@ internal class StateEventEnricherTest {
         val feedId = FeedId("user:1")
         val feed = feedData(id = "1", groupId = "user", ownCapabilities = emptySet())
         val activity = activityData().copy(currentFeed = feed)
-        val event = ActivityAdded(FidScope.of(feedId), activity)
+        val event = ActivityAdded(FidScope.of(feedId), activity, false)
 
         every { feedOwnValuesRepository.getOrRequest(feedId) } returns null
 
@@ -83,7 +83,7 @@ internal class StateEventEnricherTest {
     fun `on enrich ActivityAdded when activity no currentFeed, return unchanged event`() {
         val feedId = FeedId("user:1")
         val activity = activityData().copy(currentFeed = null)
-        val event = ActivityAdded(FidScope.of(feedId), activity)
+        val event = ActivityAdded(FidScope.of(feedId), activity, false)
 
         val result = enricher.enrich(event)
 

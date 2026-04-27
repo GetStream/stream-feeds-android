@@ -105,18 +105,23 @@ internal fun ActivityResponse.Visibility.toModel(): ActivityDataVisibility =
  * Extension function to update the activity while preserving own bookmarks, reactions, poll votes,
  * and feed own data because "own" data from WS events is not reliable. Optionally, different
  * instances can be provided to be used instead of the current ones.
+ *
+ * @param feedOwnFieldsEnriched Set to `true` only when the response is known to carry authoritative
+ *   `own_*` fields on `currentFeed` (the request had `enrich_own_fields = true`). Otherwise the
+ *   previous `currentFeed.own_*` values are preserved.
  */
 internal fun ActivityData.update(
     updated: ActivityData,
     ownBookmarks: List<BookmarkData> = this.ownBookmarks,
     ownReactions: List<FeedsReactionData> = this.ownReactions,
+    feedOwnFieldsEnriched: Boolean = false,
 ): ActivityData {
     // currentFeed is missing in WS events when an activity is added to multiple feeds
     val updatedCurrentFeed =
         if (updated.currentFeed == null && updated.feeds.size > 1) {
             this.currentFeed
         } else {
-            updated.currentFeed?.let { this.currentFeed?.update(it) ?: it }
+            updated.currentFeed?.let { this.currentFeed?.update(it, feedOwnFieldsEnriched) ?: it }
         }
 
     return updated.copy(

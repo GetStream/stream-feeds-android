@@ -43,6 +43,7 @@ import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.repository.cache
+import io.getstream.feeds.android.client.internal.repository.cacheIfEnriched
 import io.getstream.feeds.android.client.internal.state.event.FidScope
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.handler.FeedEventHandler
@@ -167,7 +168,18 @@ internal class FeedImpl(
     override suspend fun updateFeed(request: UpdateFeedRequest): Result<FeedData> {
         return feedsRepository
             .updateFeed(feedGroupId = group, feedId = id, request = request)
-            .onSuccess { subscriptionManager.onEvent(StateUpdateEvent.FeedUpdated(it)) }
+            .onSuccess {
+                feedOwnValuesRepository.cacheIfEnriched(
+                    feed = it,
+                    enrichOwnFields = request.enrichOwnFields,
+                )
+                subscriptionManager.onEvent(
+                    StateUpdateEvent.FeedUpdated(
+                        feed = it,
+                        feedOwnFieldsEnriched = request.enrichOwnFields == true,
+                    )
+                )
+            }
     }
 
     override suspend fun deleteFeed(hardDelete: Boolean): Result<Unit> {
@@ -180,8 +192,16 @@ internal class FeedImpl(
         request: FeedAddActivityRequest,
         attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?,
     ): Result<ActivityData> {
+        val enriched = request.request.enrichOwnFields == true
         return activitiesRepository.addActivity(request, attachmentUploadProgress).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.ActivityAdded(FidScope.unknown, it))
+            it.cacheCurrentFeedIfEnriched(enriched)
+            subscriptionManager.onEvent(
+                StateUpdateEvent.ActivityAdded(
+                    scope = FidScope.unknown,
+                    activity = it,
+                    feedOwnFieldsEnriched = enriched,
+                )
+            )
         }
     }
 
@@ -189,8 +209,16 @@ internal class FeedImpl(
         id: String,
         request: UpdateActivityRequest,
     ): Result<ActivityData> {
+        val enriched = request.enrichOwnFields == true
         return activitiesRepository.updateActivity(id, request).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.unknown, it))
+            it.cacheCurrentFeedIfEnriched(enriched)
+            subscriptionManager.onEvent(
+                StateUpdateEvent.ActivityUpdated(
+                    scope = FidScope.unknown,
+                    activity = it,
+                    feedOwnFieldsEnriched = enriched,
+                )
+            )
         }
     }
 
@@ -198,8 +226,16 @@ internal class FeedImpl(
         id: String,
         request: UpdateActivityPartialRequest,
     ): Result<ActivityData> {
+        val enriched = request.enrichOwnFields == true
         return activitiesRepository.updateActivityPartial(id, request).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.unknown, it))
+            it.cacheCurrentFeedIfEnriched(enriched)
+            subscriptionManager.onEvent(
+                StateUpdateEvent.ActivityUpdated(
+                    scope = FidScope.unknown,
+                    activity = it,
+                    feedOwnFieldsEnriched = enriched,
+                )
+            )
         }
     }
 
@@ -243,7 +279,13 @@ internal class FeedImpl(
                 parentId = activityId,
             )
         return activitiesRepository.addActivity(FeedAddActivityRequest(request)).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.ActivityAdded(FidScope.unknown, it))
+            subscriptionManager.onEvent(
+                StateUpdateEvent.ActivityAdded(
+                    scope = FidScope.unknown,
+                    activity = it,
+                    feedOwnFieldsEnriched = false,
+                )
+            )
         }
     }
 
@@ -348,7 +390,11 @@ internal class FeedImpl(
                     StateUpdateEvent.CommentDeleted(FidScope.unknown, comment)
                 )
                 subscriptionManager.onEvent(
-                    StateUpdateEvent.ActivityUpdated(FidScope.unknown, activity)
+                    StateUpdateEvent.ActivityUpdated(
+                        scope = FidScope.unknown,
+                        activity = activity,
+                        feedOwnFieldsEnriched = false,
+                    )
                 )
             }
             .map {}
@@ -375,7 +421,13 @@ internal class FeedImpl(
                 enrichOwnFields = enrichOwnFields,
             )
         return feedsRepository.follow(request).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.FollowAdded(it))
+            cacheFollowOwnValues(it, enrichOwnFields)
+            subscriptionManager.onEvent(
+                StateUpdateEvent.FollowAdded(
+                    follow = it,
+                    feedOwnFieldsEnriched = enrichOwnFields == true,
+                )
+            )
         }
     }
 
@@ -394,7 +446,13 @@ internal class FeedImpl(
                 enrichOwnFields = enrichOwnFields,
             )
         return feedsRepository.updateFollow(request).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.FollowUpdated(it))
+            cacheFollowOwnValues(it, enrichOwnFields)
+            subscriptionManager.onEvent(
+                StateUpdateEvent.FollowUpdated(
+                    follow = it,
+                    feedOwnFieldsEnriched = enrichOwnFields == true,
+                )
+            )
         }
     }
 
@@ -410,7 +468,15 @@ internal class FeedImpl(
                 deleteNotificationActivity = deleteNotificationActivity,
                 enrichOwnFields = enrichOwnFields,
             )
-            .onSuccess { subscriptionManager.onEvent(StateUpdateEvent.FollowDeleted(it)) }
+            .onSuccess {
+                cacheFollowOwnValues(it, enrichOwnFields)
+                subscriptionManager.onEvent(
+                    StateUpdateEvent.FollowDeleted(
+                        follow = it,
+                        feedOwnFieldsEnriched = enrichOwnFields == true,
+                    )
+                )
+            }
             .map {}
     }
 
@@ -422,14 +488,18 @@ internal class FeedImpl(
                 target = fid.rawValue,
             )
         return feedsRepository.acceptFollow(request).onSuccess { follow ->
-            subscriptionManager.onEvent(StateUpdateEvent.FollowAdded(follow))
+            subscriptionManager.onEvent(
+                StateUpdateEvent.FollowAdded(follow = follow, feedOwnFieldsEnriched = false)
+            )
         }
     }
 
     override suspend fun rejectFollow(sourceFid: FeedId): Result<FollowData> {
         val request = RejectFollowRequest(source = sourceFid.rawValue, target = fid.rawValue)
         return feedsRepository.rejectFollow(request).onSuccess { follow ->
-            subscriptionManager.onEvent(StateUpdateEvent.FollowDeleted(follow))
+            subscriptionManager.onEvent(
+                StateUpdateEvent.FollowDeleted(follow = follow, feedOwnFieldsEnriched = false)
+            )
         }
     }
 
@@ -553,8 +623,25 @@ internal class FeedImpl(
                     type = activityType,
                 )
             activitiesRepository.addActivity(FeedAddActivityRequest(request)).onSuccess {
-                subscriptionManager.onEvent(StateUpdateEvent.ActivityAdded(FidScope.unknown, it))
+                subscriptionManager.onEvent(
+                    StateUpdateEvent.ActivityAdded(
+                        scope = FidScope.unknown,
+                        activity = it,
+                        feedOwnFieldsEnriched = false,
+                    )
+                )
             }
         }
+    }
+
+    private fun cacheFollowOwnValues(follow: FollowData, enrichOwnFields: Boolean?) {
+        feedOwnValuesRepository.cacheIfEnriched(
+            listOf(follow.sourceFeed, follow.targetFeed),
+            enrichOwnFields,
+        )
+    }
+
+    private fun ActivityData.cacheCurrentFeedIfEnriched(enriched: Boolean) {
+        if (enriched) currentFeed?.let(feedOwnValuesRepository::cache)
     }
 }

@@ -62,16 +62,25 @@ internal fun FeedResponse.Visibility.toModel(): FeedVisibility =
     }
 
 /**
- * Extension function to update the feed while preserving "own" data because own data from WS events
- * is not reliable.
+ * Extension function to update the feed.
+ *
+ * @param updated The new feed data coming from the server.
+ * @param feedOwnFieldsEnriched Set to `true` only when the response is known to carry authoritative
+ *   `own_*` fields (the request had `enrich_own_fields = true`). Otherwise the previous `own_*`
+ *   values are preserved, since neither WS events nor non-enriched HTTP responses are reliable
+ *   sources for them.
  */
-internal fun FeedData.update(updated: FeedData): FeedData =
-    updated.copy(
-        ownCapabilities = this.ownCapabilities,
-        ownFollowings = this.ownFollowings,
-        ownFollows = this.ownFollows,
-        ownMembership = this.ownMembership,
-    )
+internal fun FeedData.update(updated: FeedData, feedOwnFieldsEnriched: Boolean = false): FeedData =
+    if (feedOwnFieldsEnriched) {
+        updated
+    } else {
+        updated.copy(
+            ownCapabilities = this.ownCapabilities,
+            ownFollowings = this.ownFollowings,
+            ownFollows = this.ownFollows,
+            ownMembership = this.ownMembership,
+        )
+    }
 
 internal fun FeedData.ownValues(): FeedOwnValues =
     FeedOwnValues(

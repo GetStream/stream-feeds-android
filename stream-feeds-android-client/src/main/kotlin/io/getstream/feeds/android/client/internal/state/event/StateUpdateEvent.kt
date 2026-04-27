@@ -84,14 +84,22 @@ import io.getstream.feeds.android.network.models.WSEvent
  */
 internal sealed interface StateUpdateEvent {
 
-    data class ActivityAdded(val scope: FidScope, val activity: ActivityData) : StateUpdateEvent
+    data class ActivityAdded(
+        val scope: FidScope,
+        val activity: ActivityData,
+        val feedOwnFieldsEnriched: Boolean,
+    ) : StateUpdateEvent
 
     data class ActivityDeleted(val scope: FidScope, val activityId: String) : StateUpdateEvent
 
     data class ActivityRemovedFromFeed(val scope: FidScope, val activityId: String) :
         StateUpdateEvent
 
-    data class ActivityUpdated(val scope: FidScope, val activity: ActivityData) : StateUpdateEvent
+    data class ActivityUpdated(
+        val scope: FidScope,
+        val activity: ActivityData,
+        val feedOwnFieldsEnriched: Boolean,
+    ) : StateUpdateEvent
 
     data class ActivityPinned(val scope: FidScope, val pinnedActivity: ActivityPinData) :
         StateUpdateEvent
@@ -147,7 +155,8 @@ internal sealed interface StateUpdateEvent {
 
     data class FeedDeleted(val fid: String) : StateUpdateEvent
 
-    data class FeedUpdated(val feed: FeedData) : StateUpdateEvent
+    data class FeedUpdated(val feed: FeedData, val feedOwnFieldsEnriched: Boolean) :
+        StateUpdateEvent
 
     data class FeedOwnValuesUpdated(val data: Map<FeedId, FeedOwnValues>) : StateUpdateEvent
 
@@ -160,11 +169,14 @@ internal sealed interface StateUpdateEvent {
     data class FeedMemberBatchUpdate(val fid: String, val updates: ModelUpdates<FeedMemberData>) :
         StateUpdateEvent
 
-    data class FollowAdded(val follow: FollowData) : StateUpdateEvent
+    data class FollowAdded(val follow: FollowData, val feedOwnFieldsEnriched: Boolean) :
+        StateUpdateEvent
 
-    data class FollowDeleted(val follow: FollowData) : StateUpdateEvent
+    data class FollowDeleted(val follow: FollowData, val feedOwnFieldsEnriched: Boolean) :
+        StateUpdateEvent
 
-    data class FollowUpdated(val follow: FollowData) : StateUpdateEvent
+    data class FollowUpdated(val follow: FollowData, val feedOwnFieldsEnriched: Boolean) :
+        StateUpdateEvent
 
     data class FollowBatchUpdate(val updates: ModelUpdates<FollowData>) : StateUpdateEvent
 
@@ -194,10 +206,18 @@ internal sealed interface StateUpdateEvent {
 internal fun WSEvent.toModel(): StateUpdateEvent? =
     when (this) {
         is ActivityAddedEvent ->
-            StateUpdateEvent.ActivityAdded(FidScope.of(fid), activity.toModel())
+            StateUpdateEvent.ActivityAdded(
+                scope = FidScope.of(fid),
+                activity = activity.toModel(),
+                feedOwnFieldsEnriched = false,
+            )
 
         is ActivityRestoredEvent ->
-            StateUpdateEvent.ActivityAdded(FidScope.of(fid), activity.toModel())
+            StateUpdateEvent.ActivityAdded(
+                scope = FidScope.of(fid),
+                activity = activity.toModel(),
+                feedOwnFieldsEnriched = false,
+            )
 
         is ActivityDeletedEvent -> StateUpdateEvent.ActivityDeleted(FidScope.of(fid), activity.id)
 
@@ -205,7 +225,11 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
             StateUpdateEvent.ActivityRemovedFromFeed(FidScope.of(fid), activity.id)
 
         is ActivityUpdatedEvent ->
-            StateUpdateEvent.ActivityUpdated(FidScope.of(fid), activity.toModel())
+            StateUpdateEvent.ActivityUpdated(
+                scope = FidScope.of(fid),
+                activity = activity.toModel(),
+                feedOwnFieldsEnriched = false,
+            )
 
         is ActivityPinnedEvent ->
             StateUpdateEvent.ActivityPinned(FidScope.of(fid), pinnedActivity.toModel())
@@ -295,15 +319,19 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
 
         is FeedCreatedEvent -> StateUpdateEvent.FeedAdded(feed.toModel())
 
-        is FeedUpdatedEvent -> StateUpdateEvent.FeedUpdated(feed.toModel())
+        is FeedUpdatedEvent ->
+            StateUpdateEvent.FeedUpdated(feed = feed.toModel(), feedOwnFieldsEnriched = false)
 
         is FeedDeletedEvent -> StateUpdateEvent.FeedDeleted(fid)
 
-        is FollowCreatedEvent -> StateUpdateEvent.FollowAdded(follow.toModel())
+        is FollowCreatedEvent ->
+            StateUpdateEvent.FollowAdded(follow = follow.toModel(), feedOwnFieldsEnriched = false)
 
-        is FollowUpdatedEvent -> StateUpdateEvent.FollowUpdated(follow.toModel())
+        is FollowUpdatedEvent ->
+            StateUpdateEvent.FollowUpdated(follow = follow.toModel(), feedOwnFieldsEnriched = false)
 
-        is FollowDeletedEvent -> StateUpdateEvent.FollowDeleted(follow.toModel())
+        is FollowDeletedEvent ->
+            StateUpdateEvent.FollowDeleted(follow = follow.toModel(), feedOwnFieldsEnriched = false)
 
         is NotificationFeedUpdatedEvent ->
             StateUpdateEvent.NotificationFeedUpdated(

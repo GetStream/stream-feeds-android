@@ -152,14 +152,20 @@ internal class FeedStateImpl(
         }
     }
 
-    override fun onActivityAdded(activity: ActivityData, action: InsertionAction) {
+    override fun onActivityAdded(
+        activity: ActivityData,
+        action: InsertionAction,
+        feedOwnFieldsEnriched: Boolean,
+    ) {
         when (action) {
             InsertionAction.AddToStart -> {
                 _activities.update { current ->
                     current.upsert(
                         element = activity,
                         idSelector = ActivityData::id,
-                        update = { old -> old.update(activity) },
+                        update = { old ->
+                            old.update(activity, feedOwnFieldsEnriched = feedOwnFieldsEnriched)
+                        },
                         prepend = true,
                     )
                 }
@@ -170,7 +176,9 @@ internal class FeedStateImpl(
                     current.upsert(
                         element = activity,
                         idSelector = ActivityData::id,
-                        update = { old -> old.update(activity) },
+                        update = { old ->
+                            old.update(activity, feedOwnFieldsEnriched = feedOwnFieldsEnriched)
+                        },
                         prepend = false,
                     )
                 }
@@ -180,9 +188,9 @@ internal class FeedStateImpl(
         }
     }
 
-    override fun onActivityUpdated(activity: ActivityData) {
+    override fun onActivityUpdated(activity: ActivityData, feedOwnFieldsEnriched: Boolean) {
         updateActivitiesWhere({ it.id == activity.id }) { existingActivity ->
-            existingActivity.update(activity)
+            existingActivity.update(activity, feedOwnFieldsEnriched = feedOwnFieldsEnriched)
         }
     }
 
@@ -260,8 +268,11 @@ internal class FeedStateImpl(
         memberListState.clear()
     }
 
-    override fun onFeedUpdated(feed: FeedData) {
-        _feed.update { feed }
+    override fun onFeedUpdated(feed: FeedData, feedOwnFieldsEnriched: Boolean) {
+        _feed.update { current ->
+            if (current == null) feed
+            else current.update(feed, feedOwnFieldsEnriched = feedOwnFieldsEnriched)
+        }
     }
 
     override fun onFeedOwnValuesUpdated(map: Map<FeedId, FeedOwnValues>) {
@@ -272,16 +283,16 @@ internal class FeedStateImpl(
         }
     }
 
-    override fun onFollowAdded(follow: FollowData) {
-        addFollow(follow)
+    override fun onFollowAdded(follow: FollowData, feedOwnFieldsEnriched: Boolean) {
+        addFollow(follow, feedOwnFieldsEnriched)
     }
 
-    override fun onFollowRemoved(follow: FollowData) {
-        removeFollow(follow)
+    override fun onFollowRemoved(follow: FollowData, feedOwnFieldsEnriched: Boolean) {
+        removeFollow(follow, feedOwnFieldsEnriched)
     }
 
-    override fun onFollowUpdated(follow: FollowData) {
-        updateFollow(follow)
+    override fun onFollowUpdated(follow: FollowData, feedOwnFieldsEnriched: Boolean) {
+        updateFollow(follow, feedOwnFieldsEnriched)
     }
 
     override fun onFollowsUpdated(updates: ModelUpdates<FollowData>) {
@@ -440,7 +451,7 @@ internal class FeedStateImpl(
         }
     }
 
-    private fun addFollow(follow: FollowData) {
+    private fun addFollow(follow: FollowData, feedOwnFieldsEnriched: Boolean) {
         if (follow.isFollowRequest) {
             _followRequests.update { it.upsert(follow, FollowData::id) }
         } else if (follow.isFollowing(fid)) {
@@ -450,18 +461,18 @@ internal class FeedStateImpl(
             _followRequests.update { current -> current.filter { it.id != follow.id } }
         }
 
-        updateFeedOnFollowChanged(follow)
+        updateFeedOnFollowChanged(follow, feedOwnFieldsEnriched)
     }
 
-    private fun removeFollow(follow: FollowData) {
+    private fun removeFollow(follow: FollowData, feedOwnFieldsEnriched: Boolean) {
         _following.update { current -> current.filter { it.id != follow.id } }
         _followers.update { current -> current.filter { it.id != follow.id } }
         _followRequests.update { current -> current.filter { it.id != follow.id } }
 
-        updateFeedOnFollowChanged(follow)
+        updateFeedOnFollowChanged(follow, feedOwnFieldsEnriched)
     }
 
-    private fun updateFeedOnFollowChanged(follow: FollowData) {
+    private fun updateFeedOnFollowChanged(follow: FollowData, feedOwnFieldsEnriched: Boolean) {
         val updated =
             when (fid) {
                 follow.targetFeed.fid -> follow.targetFeed
@@ -469,13 +480,15 @@ internal class FeedStateImpl(
                 else -> null
             }
         if (updated != null) {
-            _feed.update { current -> current?.update(updated) ?: updated }
+            _feed.update { current ->
+                current?.update(updated, feedOwnFieldsEnriched = feedOwnFieldsEnriched) ?: updated
+            }
         }
     }
 
-    private fun updateFollow(follow: FollowData) {
-        removeFollow(follow)
-        addFollow(follow)
+    private fun updateFollow(follow: FollowData, feedOwnFieldsEnriched: Boolean) {
+        removeFollow(follow, feedOwnFieldsEnriched)
+        addFollow(follow, feedOwnFieldsEnriched)
     }
 
     private inline fun updateActivitiesWhere(
@@ -519,10 +532,14 @@ internal interface FeedStateUpdates {
     )
 
     /** Handles updates to the feed state when activity is added. */
-    fun onActivityAdded(activity: ActivityData, action: InsertionAction)
+    fun onActivityAdded(
+        activity: ActivityData,
+        action: InsertionAction,
+        feedOwnFieldsEnriched: Boolean,
+    )
 
     /** Handles updates to the feed state when activity is updated. */
-    fun onActivityUpdated(activity: ActivityData)
+    fun onActivityUpdated(activity: ActivityData, feedOwnFieldsEnriched: Boolean)
 
     /** Handles updates to the feed state when an activity is removed. */
     fun onActivityRemoved(activityId: String)
@@ -562,19 +579,19 @@ internal interface FeedStateUpdates {
     fun onFeedDeleted()
 
     /** Handles updates to the feed state when the feed is updated. */
-    fun onFeedUpdated(feed: FeedData)
+    fun onFeedUpdated(feed: FeedData, feedOwnFieldsEnriched: Boolean)
 
     /** Handles updates to feed own values. */
     fun onFeedOwnValuesUpdated(map: Map<FeedId, FeedOwnValues>)
 
     /** Handles updates to the feed state when a follow is added. */
-    fun onFollowAdded(follow: FollowData)
+    fun onFollowAdded(follow: FollowData, feedOwnFieldsEnriched: Boolean)
 
     /** Handles updates to the feed state when a follow is removed. */
-    fun onFollowRemoved(follow: FollowData)
+    fun onFollowRemoved(follow: FollowData, feedOwnFieldsEnriched: Boolean)
 
     /** Handles updates to the feed state when a follow is updated. */
-    fun onFollowUpdated(follow: FollowData)
+    fun onFollowUpdated(follow: FollowData, feedOwnFieldsEnriched: Boolean)
 
     /** Handles update to the feed state on batch follow updates */
     fun onFollowsUpdated(updates: ModelUpdates<FollowData>)

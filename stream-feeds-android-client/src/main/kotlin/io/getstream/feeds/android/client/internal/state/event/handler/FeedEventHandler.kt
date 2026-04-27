@@ -50,7 +50,11 @@ internal class FeedEventHandler(
                 // We add activities only on strict matches, i.e. we're sure they belong to the feed
                 if (event.scope strictlyMatches query.fid) {
                     val insertionAction = onNewActivity(query, event.activity, currentUserId)
-                    state.onActivityAdded(event.activity, insertionAction)
+                    state.onActivityAdded(
+                        activity = event.activity,
+                        action = insertionAction,
+                        feedOwnFieldsEnriched = event.feedOwnFieldsEnriched,
+                    )
                 }
             }
 
@@ -63,7 +67,7 @@ internal class FeedEventHandler(
             is StateUpdateEvent.ActivityUpdated -> {
                 if (event.scope matches query.fid) {
                     if (event.activity matches query.activityFilter) {
-                        state.onActivityUpdated(event.activity)
+                        state.onActivityUpdated(event.activity, event.feedOwnFieldsEnriched)
                     } else {
                         // We remove elements that used to match the filter but no longer do
                         state.onActivityRemoved(event.activity.id)
@@ -161,7 +165,7 @@ internal class FeedEventHandler(
 
             is StateUpdateEvent.FeedUpdated -> {
                 if (event.feed.fid == query.fid) {
-                    state.onFeedUpdated(event.feed)
+                    state.onFeedUpdated(event.feed, event.feedOwnFieldsEnriched)
                 }
             }
 
@@ -171,19 +175,19 @@ internal class FeedEventHandler(
 
             is StateUpdateEvent.FollowAdded -> {
                 if (event.follow.matchesFeed()) {
-                    state.onFollowAdded(event.follow)
+                    state.onFollowAdded(event.follow, event.feedOwnFieldsEnriched)
                 }
             }
 
             is StateUpdateEvent.FollowDeleted -> {
                 if (event.follow.matchesFeed()) {
-                    state.onFollowRemoved(event.follow)
+                    state.onFollowRemoved(event.follow, event.feedOwnFieldsEnriched)
                 }
             }
 
             is StateUpdateEvent.FollowUpdated -> {
                 if (event.follow.matchesFeed()) {
-                    state.onFollowUpdated(event.follow)
+                    state.onFollowUpdated(event.follow, event.feedOwnFieldsEnriched)
                 }
             }
 

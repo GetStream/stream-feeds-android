@@ -148,7 +148,7 @@ internal class FeedImplTest {
 
         coVerify {
             activitiesRepository.addActivity(request, attachmentUploadProgress)
-            stateEventListener.onEvent(ActivityAdded(FidScope.unknown, activityData))
+            stateEventListener.onEvent(ActivityAdded(FidScope.unknown, activityData, false))
         }
     }
 
@@ -187,7 +187,7 @@ internal class FeedImplTest {
 
         assertEquals(updatedFeedData, result.getOrNull())
         assertEquals(updatedFeedData, feed.state.feed.value)
-        verify { stateEventListener.onEvent(StateUpdateEvent.FeedUpdated(updatedFeedData)) }
+        verify { stateEventListener.onEvent(StateUpdateEvent.FeedUpdated(updatedFeedData, false)) }
     }
 
     @Test
@@ -231,7 +231,7 @@ internal class FeedImplTest {
         assertEquals(listOf(updated), feed.state.activities.value)
         verify {
             stateEventListener.onEvent(
-                StateUpdateEvent.ActivityUpdated(FidScope.unknown, updatedActivity)
+                StateUpdateEvent.ActivityUpdated(FidScope.unknown, updatedActivity, false)
             )
         }
     }
@@ -257,7 +257,7 @@ internal class FeedImplTest {
         assertEquals(listOf(updated), feed.state.activities.value)
         verify {
             stateEventListener.onEvent(
-                StateUpdateEvent.ActivityUpdated(FidScope.unknown, updatedActivity)
+                StateUpdateEvent.ActivityUpdated(FidScope.unknown, updatedActivity, false)
             )
         }
     }
@@ -309,7 +309,9 @@ internal class FeedImplTest {
         val result = feed.repost(parentActivityId, text)
 
         assertEquals(repostActivity, result.getOrNull())
-        verify { stateEventListener.onEvent(ActivityAdded(FidScope.unknown, repostActivity)) }
+        verify {
+            stateEventListener.onEvent(ActivityAdded(FidScope.unknown, repostActivity, false))
+        }
     }
 
     @Test
@@ -395,7 +397,7 @@ internal class FeedImplTest {
 
         assertEquals(Unit, result.getOrNull())
         assertTrue("Following should be removed from state", feed.state.following.value.isEmpty())
-        verify { stateEventListener.onEvent(StateUpdateEvent.FollowDeleted(follow)) }
+        verify { stateEventListener.onEvent(StateUpdateEvent.FollowDeleted(follow, false)) }
     }
 
     @Test
@@ -432,7 +434,7 @@ internal class FeedImplTest {
         val result = feed.updateFollow(targetFid, custom, pushPreference)
 
         assertEquals(follow, result.getOrNull())
-        verify { stateEventListener.onEvent(StateUpdateEvent.FollowUpdated(follow)) }
+        verify { stateEventListener.onEvent(StateUpdateEvent.FollowUpdated(follow, false)) }
     }
 
     @Test
@@ -582,7 +584,7 @@ internal class FeedImplTest {
         verify {
             stateEventListener.onEvent(StateUpdateEvent.CommentDeleted(FidScope.unknown, comment))
             stateEventListener.onEvent(
-                StateUpdateEvent.ActivityUpdated(FidScope.unknown, updatedActivity)
+                StateUpdateEvent.ActivityUpdated(FidScope.unknown, updatedActivity, false)
             )
         }
     }
@@ -833,7 +835,7 @@ internal class FeedImplTest {
                 }
             )
         }
-        verify { stateEventListener.onEvent(ActivityAdded(FidScope.unknown, activity)) }
+        verify { stateEventListener.onEvent(ActivityAdded(FidScope.unknown, activity, false)) }
     }
 
     private fun createFeed(query: FeedQuery = FeedQuery(fid)) =

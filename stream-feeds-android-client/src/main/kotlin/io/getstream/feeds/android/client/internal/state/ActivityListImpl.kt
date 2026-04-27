@@ -24,7 +24,7 @@ import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.FeedOwnValuesRepository
-import io.getstream.feeds.android.client.internal.repository.cache
+import io.getstream.feeds.android.client.internal.repository.cacheIfEnriched
 import io.getstream.feeds.android.client.internal.state.event.handler.ActivityListEventHandler
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
@@ -82,6 +82,7 @@ internal class ActivityListImpl(
                 limit = limit ?: query.limit,
                 next = next,
                 previous = null,
+                enrichOwnFields = query.enrichOwnFields,
             )
         return queryActivities(nextQuery)
     }
@@ -91,7 +92,10 @@ internal class ActivityListImpl(
             .queryActivities(query)
             .onSuccess {
                 _state.onQueryMoreActivities(it, QueryConfiguration(query.filter, query.sort))
-                feedOwnValuesRepository.cache(it.models.mapNotNull(ActivityData::currentFeed))
+                feedOwnValuesRepository.cacheIfEnriched(
+                    it.models.mapNotNull(ActivityData::currentFeed),
+                    query.enrichOwnFields,
+                )
             }
             .map { it.models }
     }

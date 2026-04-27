@@ -128,7 +128,7 @@ internal class ActivityImplTest {
 
         assertEquals(activityData, result.getOrNull())
         assertEquals(activityData, activity.state.activity.value)
-        verify { stateEventListener.onEvent(ActivityUpdated(FidScope.unknown, activityData)) }
+        verify { stateEventListener.onEvent(ActivityUpdated(FidScope.unknown, activityData, true)) }
     }
 
     @Test
@@ -183,7 +183,7 @@ internal class ActivityImplTest {
         assertEquals(expectedActivity, activity.state.activity.value)
         verify {
             stateEventListener.onEvent(CommentDeleted(FidScope.unknown, deleteData.first))
-            stateEventListener.onEvent(ActivityUpdated(FidScope.unknown, expectedActivity))
+            stateEventListener.onEvent(ActivityUpdated(FidScope.unknown, expectedActivity, false))
         }
     }
 
@@ -253,7 +253,9 @@ internal class ActivityImplTest {
 
         assertEquals(Unit, result.getOrNull())
         assertEquals(activityData, activity.state.activity.value)
-        verify { stateEventListener.onEvent(ActivityUpdated(FidScope.unknown, activityData)) }
+        verify {
+            stateEventListener.onEvent(ActivityUpdated(FidScope.unknown, activityData, false))
+        }
     }
 
     @Test
@@ -266,7 +268,9 @@ internal class ActivityImplTest {
 
         assertEquals(Unit, result.getOrNull())
         assertEquals(activityData, activity.state.activity.value)
-        verify { stateEventListener.onEvent(ActivityUpdated(FidScope.unknown, activityData)) }
+        verify {
+            stateEventListener.onEvent(ActivityUpdated(FidScope.unknown, activityData, false))
+        }
     }
 
     @Test
