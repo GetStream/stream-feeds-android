@@ -44,4 +44,5 @@ internal fun FeedsQuery.toRequest(): QueryFeedsRequest =
         watch = watch,
         sort = sort?.map { it.toRequest() },
         filter = filter?.toRequest(),
+        enrichOwnFields = enrichOwnFields,
     )

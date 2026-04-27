@@ -193,16 +193,22 @@ public interface Activity {
     /**
      * Pins an activity in the feed.
      *
+     * @param enrichOwnFields When set to `true`, the pinned activity's `currentFeed` in the
+     *   response is populated with the current user's `own_*` fields (e.g. `ownCapabilities`,
+     *   `ownFollows`, `ownMembership`). When left unset, the API omits those fields.
      * @return A [Result] indicating success or failure of the pinning operation.
      */
-    public suspend fun pin(): Result<Unit>
+    public suspend fun pin(enrichOwnFields: Boolean? = null): Result<Unit>
 
     /**
      * Unpins an activity from the feed.
      *
+     * @param enrichOwnFields When set to `true`, the unpinned activity's `currentFeed` in the
+     *   response is populated with the current user's `own_*` fields (e.g. `ownCapabilities`,
+     *   `ownFollows`, `ownMembership`). When left unset, the API omits those fields.
      * @return A [Result] indicating success or failure of the unpinning operation.
      */
-    public suspend fun unpin(): Result<Unit>
+    public suspend fun unpin(enrichOwnFields: Boolean? = null): Result<Unit>
 
     /**
      * Closes a poll, preventing further votes.

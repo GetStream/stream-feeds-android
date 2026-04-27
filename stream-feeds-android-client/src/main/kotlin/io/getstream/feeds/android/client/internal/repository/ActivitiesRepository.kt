@@ -86,9 +86,15 @@ internal interface ActivitiesRepository {
      * Restores a soft-deleted activity.
      *
      * @param activityId The ID of the activity to restore.
+     * @param enrichOwnFields When set to `true`, the restored activity's `currentFeed` in the
+     *   response is populated with the current user's `own_*` fields. When left unset, the API
+     *   omits those fields.
      * @return A [Result] containing the restored [ActivityData] or an error.
      */
-    suspend fun restoreActivity(activityId: String): Result<ActivityData>
+    suspend fun restoreActivity(
+        activityId: String,
+        enrichOwnFields: Boolean? = null,
+    ): Result<ActivityData>
 
     /**
      * Retrieves an activity by its ID.
@@ -137,18 +143,32 @@ internal interface ActivitiesRepository {
      *
      * @param activityId The ID of the activity to pin.
      * @param fid The ID of the feed where the activity should be pinned.
+     * @param enrichOwnFields When set to `true`, the pinned activity's `currentFeed` in the
+     *   response is populated with the current user's `own_*` fields. When left unset, the API
+     *   omits those fields.
      * @return A [Result] containing the pinned [ActivityData] or an error.
      */
-    suspend fun pin(activityId: String, fid: FeedId): Result<ActivityData>
+    suspend fun pin(
+        activityId: String,
+        fid: FeedId,
+        enrichOwnFields: Boolean? = null,
+    ): Result<ActivityData>
 
     /**
      * Unpins an activity from a feed.
      *
      * @param activityId The ID of the activity to unpin.
      * @param fid The ID of the feed from which the activity should be unpinned.
+     * @param enrichOwnFields When set to `true`, the unpinned activity's `currentFeed` in the
+     *   response is populated with the current user's `own_*` fields. When left unset, the API
+     *   omits those fields.
      * @return A [Result] containing the unpinned [ActivityData] or an error.
      */
-    suspend fun unpin(activityId: String, fid: FeedId): Result<ActivityData>
+    suspend fun unpin(
+        activityId: String,
+        fid: FeedId,
+        enrichOwnFields: Boolean? = null,
+    ): Result<ActivityData>
 
     /**
      * Marks activities in a feed as read or seen.

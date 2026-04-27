@@ -89,6 +89,7 @@ internal interface FeedsRepository {
         source: FeedId,
         target: FeedId,
         deleteNotificationActivity: Boolean?,
+        enrichOwnFields: Boolean? = null,
     ): Result<FollowData>
 
     suspend fun getOrCreateFollows(request: FollowBatchRequest): Result<BatchFollowData>

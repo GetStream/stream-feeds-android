@@ -37,6 +37,7 @@ import io.getstream.feeds.android.network.models.AddReactionRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.network.models.MarkActivityRequest
+import io.getstream.feeds.android.network.models.PinActivityRequest
 import io.getstream.feeds.android.network.models.QueryActivityReactionsRequest
 import io.getstream.feeds.android.network.models.UpdateActivityPartialRequest
 import io.getstream.feeds.android.network.models.UpdateActivityRequest
@@ -92,8 +93,11 @@ internal class ActivitiesRepositoryImpl(
         request: DeleteActivitiesRequest
     ): Result<DeleteActivitiesResponse> = runSafely { api.deleteActivities(request) }
 
-    override suspend fun restoreActivity(activityId: String): Result<ActivityData> = runSafely {
-        api.restoreActivity(id = activityId).activity.toModel()
+    override suspend fun restoreActivity(
+        activityId: String,
+        enrichOwnFields: Boolean?,
+    ): Result<ActivityData> = runSafely {
+        api.restoreActivity(id = activityId, enrichOwnFields = enrichOwnFields).activity.toModel()
     }
 
     override suspend fun getActivity(activityId: String): Result<ActivityData> = runSafely {
@@ -121,14 +125,32 @@ internal class ActivitiesRepositoryImpl(
         api.upsertActivities(request).activities.map { it.toModel() }
     }
 
-    override suspend fun pin(activityId: String, fid: FeedId): Result<ActivityData> = runSafely {
-        api.pinActivity(feedGroupId = fid.group, feedId = fid.id, activityId = activityId)
+    override suspend fun pin(
+        activityId: String,
+        fid: FeedId,
+        enrichOwnFields: Boolean?,
+    ): Result<ActivityData> = runSafely {
+        api.pinActivity(
+                feedGroupId = fid.group,
+                feedId = fid.id,
+                activityId = activityId,
+                pinActivityRequest = PinActivityRequest(enrichOwnFields = enrichOwnFields),
+            )
             .activity
             .toModel()
     }
 
-    override suspend fun unpin(activityId: String, fid: FeedId): Result<ActivityData> = runSafely {
-        api.unpinActivity(feedGroupId = fid.group, feedId = fid.id, activityId = activityId)
+    override suspend fun unpin(
+        activityId: String,
+        fid: FeedId,
+        enrichOwnFields: Boolean?,
+    ): Result<ActivityData> = runSafely {
+        api.unpinActivity(
+                feedGroupId = fid.group,
+                feedId = fid.id,
+                activityId = activityId,
+                enrichOwnFields = enrichOwnFields,
+            )
             .activity
             .toModel()
     }

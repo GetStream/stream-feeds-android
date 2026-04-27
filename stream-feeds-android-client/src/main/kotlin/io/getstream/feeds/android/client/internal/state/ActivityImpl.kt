@@ -217,18 +217,18 @@ internal class ActivityImpl(
         }
     }
 
-    override suspend fun pin(): Result<Unit> {
+    override suspend fun pin(enrichOwnFields: Boolean?): Result<Unit> {
         return activitiesRepository
-            .pin(activityId, fid)
+            .pin(activityId = activityId, fid = fid, enrichOwnFields = enrichOwnFields)
             .onSuccess {
                 subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.unknown, it))
             }
             .map { Unit }
     }
 
-    override suspend fun unpin(): Result<Unit> {
+    override suspend fun unpin(enrichOwnFields: Boolean?): Result<Unit> {
         return activitiesRepository
-            .unpin(activityId, fid)
+            .unpin(activityId = activityId, fid = fid, enrichOwnFields = enrichOwnFields)
             .onSuccess {
                 subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.unknown, it))
             }

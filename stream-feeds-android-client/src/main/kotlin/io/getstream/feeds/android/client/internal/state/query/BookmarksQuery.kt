@@ -39,5 +39,6 @@ internal fun BookmarksQuery.toRequest(): QueryBookmarksRequest {
         limit = limit,
         next = next,
         prev = previous,
+        enrichOwnFields = enrichOwnFields,
     )
 }

@@ -46,6 +46,7 @@ import io.getstream.feeds.android.network.models.DeleteActivityReactionResponse
 import io.getstream.feeds.android.network.models.DeleteActivityResponse
 import io.getstream.feeds.android.network.models.GetActivityResponse
 import io.getstream.feeds.android.network.models.MarkActivityRequest
+import io.getstream.feeds.android.network.models.PinActivityRequest
 import io.getstream.feeds.android.network.models.QueryActivitiesResponse
 import io.getstream.feeds.android.network.models.QueryActivityReactionsRequest
 import io.getstream.feeds.android.network.models.QueryActivityReactionsResponse
@@ -214,7 +215,12 @@ internal class ActivitiesRepositoryImplTest {
 
         testDelegation(
             apiFunction = {
-                feedsApi.pinActivity(feedGroupId = "group", feedId = "feed", activityId = "id")
+                feedsApi.pinActivity(
+                    feedGroupId = "group",
+                    feedId = "feed",
+                    activityId = "id",
+                    pinActivityRequest = PinActivityRequest(),
+                )
             },
             repositoryCall = { repository.pin("id", FeedId("group", "feed")) },
             apiResult = apiResult,

@@ -140,11 +140,13 @@ internal class FeedsRepositoryImpl(private val api: FeedsApi) : FeedsRepository 
         source: FeedId,
         target: FeedId,
         deleteNotificationActivity: Boolean?,
+        enrichOwnFields: Boolean?,
     ): Result<FollowData> = runSafely {
         api.unfollow(
                 source = source.rawValue,
                 target = target.rawValue,
                 deleteNotificationActivity = deleteNotificationActivity,
+                enrichOwnFields = enrichOwnFields,
             )
             .follow
             .toModel()

@@ -48,6 +48,7 @@ internal constructor(
         text: String? = null,
         visibility: AddActivityRequest.Visibility? = null,
         visibilityTag: String? = null,
+        enrichOwnFields: Boolean? = null,
     ) : this(
         request =
             AddActivityRequest(
@@ -71,6 +72,7 @@ internal constructor(
                 visibility = visibility,
                 visibilityTag = visibilityTag,
                 feeds = feeds,
+                enrichOwnFields = enrichOwnFields,
             ),
         attachmentUploads = attachmentUploads.orEmpty(),
     )

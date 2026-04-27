@@ -40,6 +40,9 @@ import io.getstream.feeds.android.client.api.model.BookmarkData
  *   provided in the response of a previous request.
  * @property previous Pagination cursor for fetching the previous page of results. This is typically
  *   provided in the response of a previous request.
+ * @property enrichOwnFields When set to `true`, each bookmarked activity's `current_feed` in the
+ *   response is populated with the current user's `own_*` fields (e.g. `ownCapabilities`,
+ *   `ownFollows`, `ownMembership`). When left unset, the API omits those fields.
  */
 public data class BookmarksQuery(
     public val filter: BookmarksFilter? = null,
@@ -47,6 +50,7 @@ public data class BookmarksQuery(
     public val limit: Int? = null,
     public val next: String? = null,
     public val previous: String? = null,
+    public val enrichOwnFields: Boolean? = null,
 )
 
 /**

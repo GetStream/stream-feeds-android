@@ -219,8 +219,11 @@ internal class FeedImpl(
             }
     }
 
-    override suspend fun restoreActivity(id: String): Result<ActivityData> {
-        return activitiesRepository.restoreActivity(id)
+    override suspend fun restoreActivity(
+        id: String,
+        enrichOwnFields: Boolean?,
+    ): Result<ActivityData> {
+        return activitiesRepository.restoreActivity(id, enrichOwnFields)
     }
 
     override suspend fun markActivity(request: MarkActivityRequest): Result<Unit> {
@@ -360,6 +363,7 @@ internal class FeedImpl(
         createNotificationActivity: Boolean?,
         custom: Map<String, Any>?,
         pushPreference: FollowRequest.PushPreference?,
+        enrichOwnFields: Boolean?,
     ): Result<FollowData> {
         val request =
             FollowRequest(
@@ -368,6 +372,7 @@ internal class FeedImpl(
                 pushPreference = pushPreference,
                 source = fid.rawValue,
                 target = targetFid.rawValue,
+                enrichOwnFields = enrichOwnFields,
             )
         return feedsRepository.follow(request).onSuccess {
             subscriptionManager.onEvent(StateUpdateEvent.FollowAdded(it))
@@ -378,6 +383,7 @@ internal class FeedImpl(
         targetFid: FeedId,
         custom: Map<String, Any>?,
         pushPreference: UpdateFollowRequest.PushPreference?,
+        enrichOwnFields: Boolean?,
     ): Result<FollowData> {
         val request =
             UpdateFollowRequest(
@@ -385,6 +391,7 @@ internal class FeedImpl(
                 target = targetFid.rawValue,
                 custom = custom,
                 pushPreference = pushPreference,
+                enrichOwnFields = enrichOwnFields,
             )
         return feedsRepository.updateFollow(request).onSuccess {
             subscriptionManager.onEvent(StateUpdateEvent.FollowUpdated(it))
@@ -394,12 +401,14 @@ internal class FeedImpl(
     override suspend fun unfollow(
         targetFid: FeedId,
         deleteNotificationActivity: Boolean?,
+        enrichOwnFields: Boolean?,
     ): Result<Unit> {
         return feedsRepository
             .unfollow(
                 source = fid,
                 target = targetFid,
                 deleteNotificationActivity = deleteNotificationActivity,
+                enrichOwnFields = enrichOwnFields,
             )
             .onSuccess { subscriptionManager.onEvent(StateUpdateEvent.FollowDeleted(it)) }
             .map {}

@@ -174,10 +174,16 @@ public interface Feed {
      * Hard-deleted activities cannot be restored.
      *
      * @param id The unique identifier of the activity to restore.
+     * @param enrichOwnFields When set to `true`, the restored activity's `currentFeed` in the
+     *   response is populated with the current user's `own_*` fields (e.g. `ownCapabilities`,
+     *   `ownFollows`, `ownMembership`). When left unset, the API omits those fields.
      * @return A [Result] containing the restored [ActivityData] if successful, or an error if the
      *   operation fails.
      */
-    public suspend fun restoreActivity(id: String): Result<ActivityData>
+    public suspend fun restoreActivity(
+        id: String,
+        enrichOwnFields: Boolean? = null,
+    ): Result<ActivityData>
 
     /**
      * Marks an activity as read or unread.
@@ -333,12 +339,16 @@ public interface Feed {
      * @param createNotificationActivity Whether the action is added to the notification feed.
      * @param custom Additional data for the request.
      * @param pushPreference Push notification preferences for the follow request.
+     * @param enrichOwnFields When set to `true`, the source and target feeds in the response are
+     *   populated with the current user's `own_*` fields (e.g. `ownCapabilities`, `ownFollows`,
+     *   `ownMembership`). When left unset, the API omits those fields.
      */
     public suspend fun follow(
         targetFid: FeedId,
         createNotificationActivity: Boolean? = null,
         custom: Map<String, Any>? = null,
         pushPreference: FollowRequest.PushPreference? = null,
+        enrichOwnFields: Boolean? = null,
     ): Result<FollowData>
 
     /**
@@ -347,6 +357,9 @@ public interface Feed {
      * @param targetFid The target feed identifier of the follow to update.
      * @param custom Additional data for the follow relationship.
      * @param pushPreference Push notification preferences for the follow.
+     * @param enrichOwnFields When set to `true`, the source and target feeds in the response are
+     *   populated with the current user's `own_*` fields (e.g. `ownCapabilities`, `ownFollows`,
+     *   `ownMembership`). When left unset, the API omits those fields.
      * @return A [Result] containing the updated [FollowData] if successful, or an error if the
      *   operation fails.
      */
@@ -354,6 +367,7 @@ public interface Feed {
         targetFid: FeedId,
         custom: Map<String, Any>? = null,
         pushPreference: UpdateFollowRequest.PushPreference? = null,
+        enrichOwnFields: Boolean? = null,
     ): Result<FollowData>
 
     /**
@@ -361,11 +375,15 @@ public interface Feed {
      *
      * @param targetFid The target feed identifier to unfollow.
      * @param deleteNotificationActivity If `true`, removes the corresponding notification activity.
+     * @param enrichOwnFields When set to `true`, the source and target feeds in the response are
+     *   populated with the current user's `own_*` fields (e.g. `ownCapabilities`, `ownFollows`,
+     *   `ownMembership`). When left unset, the API omits those fields.
      * @return A [Result] indicating success or failure of the unfollow operation.
      */
     public suspend fun unfollow(
         targetFid: FeedId,
         deleteNotificationActivity: Boolean? = null,
+        enrichOwnFields: Boolean? = null,
     ): Result<Unit>
 
     /**

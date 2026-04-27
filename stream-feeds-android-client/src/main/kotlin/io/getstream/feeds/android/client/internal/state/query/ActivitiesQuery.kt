@@ -39,4 +39,5 @@ internal fun ActivitiesQuery.toRequest(): QueryActivitiesRequest =
         limit = limit,
         next = next,
         prev = previous,
+        enrichOwnFields = enrichOwnFields,
     )
