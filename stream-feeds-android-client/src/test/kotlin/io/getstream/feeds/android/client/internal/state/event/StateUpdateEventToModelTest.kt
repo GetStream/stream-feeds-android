@@ -23,6 +23,7 @@ import io.getstream.feeds.android.network.models.ActivityPinnedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
 import io.getstream.feeds.android.network.models.ActivityRemovedFromFeedEvent
+import io.getstream.feeds.android.network.models.ActivityRestoredEvent
 import io.getstream.feeds.android.network.models.ActivityUnpinnedEvent
 import io.getstream.feeds.android.network.models.ActivityUpdatedEvent
 import io.getstream.feeds.android.network.models.BookmarkAddedEvent
@@ -34,6 +35,7 @@ import io.getstream.feeds.android.network.models.CommentAddedEvent
 import io.getstream.feeds.android.network.models.CommentDeletedEvent
 import io.getstream.feeds.android.network.models.CommentReactionAddedEvent
 import io.getstream.feeds.android.network.models.CommentReactionDeletedEvent
+import io.getstream.feeds.android.network.models.CommentRestoredEvent
 import io.getstream.feeds.android.network.models.CommentUpdatedEvent
 import io.getstream.feeds.android.network.models.FeedDeletedEvent
 import io.getstream.feeds.android.network.models.FeedMemberAddedEvent
@@ -82,6 +84,7 @@ internal class StateUpdateEventToModelTest(
         fun data(): Collection<Array<Any>> =
             listOf(
                 activityAdded().shouldMapTo<StateUpdateEvent.ActivityAdded>(),
+                activityRestored().shouldMapTo<StateUpdateEvent.ActivityAdded>(),
                 activityDeleted().shouldMapTo<StateUpdateEvent.ActivityDeleted>(),
                 activityRemovedFromFeed().shouldMapTo<StateUpdateEvent.ActivityRemovedFromFeed>(),
                 activityUpdated().shouldMapTo<StateUpdateEvent.ActivityUpdated>(),
@@ -95,6 +98,7 @@ internal class StateUpdateEventToModelTest(
                 bookmarkFolderDeleted().shouldMapTo<StateUpdateEvent.BookmarkFolderDeleted>(),
                 bookmarkFolderUpdated().shouldMapTo<StateUpdateEvent.BookmarkFolderUpdated>(),
                 commentAdded().shouldMapTo<StateUpdateEvent.CommentAdded>(),
+                commentRestored().shouldMapTo<StateUpdateEvent.CommentAdded>(),
                 commentUpdated().shouldMapTo<StateUpdateEvent.CommentUpdated>(),
                 commentDeleted().shouldMapTo<StateUpdateEvent.CommentDeleted>(),
                 commentReactionAdded().shouldMapTo<StateUpdateEvent.CommentReactionUpserted>(),
@@ -126,6 +130,14 @@ internal class StateUpdateEventToModelTest(
                 fid = "group:feed",
                 activity = TestData.activityResponse(),
                 type = "activity.added",
+            )
+
+        private fun activityRestored() =
+            ActivityRestoredEvent(
+                createdAt = Date(1000),
+                fid = "group:feed",
+                activity = TestData.activityResponse(),
+                type = "feeds.activity.restored",
             )
 
         private fun activityDeleted() =
@@ -236,6 +248,14 @@ internal class StateUpdateEventToModelTest(
                 fid = "group:feed",
                 comment = TestData.commentResponse(),
                 type = "comment.updated",
+            )
+
+        private fun commentRestored() =
+            CommentRestoredEvent(
+                createdAt = Date(1000),
+                fid = "group:feed",
+                comment = TestData.commentResponse(),
+                type = "feeds.comment.restored",
             )
 
         private fun commentDeleted() =

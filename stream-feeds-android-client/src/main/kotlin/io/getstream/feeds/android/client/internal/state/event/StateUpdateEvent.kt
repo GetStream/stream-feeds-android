@@ -42,6 +42,7 @@ import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionUpdatedEvent
 import io.getstream.feeds.android.network.models.ActivityRemovedFromFeedEvent
 import io.getstream.feeds.android.network.models.ActivityResponse
+import io.getstream.feeds.android.network.models.ActivityRestoredEvent
 import io.getstream.feeds.android.network.models.ActivityUnpinnedEvent
 import io.getstream.feeds.android.network.models.ActivityUpdatedEvent
 import io.getstream.feeds.android.network.models.AggregatedActivityResponse
@@ -55,6 +56,7 @@ import io.getstream.feeds.android.network.models.CommentDeletedEvent
 import io.getstream.feeds.android.network.models.CommentReactionAddedEvent
 import io.getstream.feeds.android.network.models.CommentReactionDeletedEvent
 import io.getstream.feeds.android.network.models.CommentReactionUpdatedEvent
+import io.getstream.feeds.android.network.models.CommentRestoredEvent
 import io.getstream.feeds.android.network.models.CommentUpdatedEvent
 import io.getstream.feeds.android.network.models.FeedCreatedEvent
 import io.getstream.feeds.android.network.models.FeedDeletedEvent
@@ -194,6 +196,9 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
         is ActivityAddedEvent ->
             StateUpdateEvent.ActivityAdded(FidScope.of(fid), activity.toModel())
 
+        is ActivityRestoredEvent ->
+            StateUpdateEvent.ActivityAdded(FidScope.of(fid), activity.toModel())
+
         is ActivityDeletedEvent -> StateUpdateEvent.ActivityDeleted(FidScope.of(fid), activity.id)
 
         is ActivityRemovedFromFeedEvent ->
@@ -255,6 +260,9 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
             StateUpdateEvent.BookmarkFolderUpdated(bookmarkFolder.toModel())
 
         is CommentAddedEvent -> StateUpdateEvent.CommentAdded(FidScope.of(fid), comment.toModel())
+
+        is CommentRestoredEvent ->
+            StateUpdateEvent.CommentAdded(FidScope.of(fid), comment.toModel())
 
         is CommentUpdatedEvent ->
             StateUpdateEvent.CommentUpdated(FidScope.of(fid), comment.toModel())
