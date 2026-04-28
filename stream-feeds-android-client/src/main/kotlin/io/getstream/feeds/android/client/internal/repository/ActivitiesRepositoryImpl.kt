@@ -92,6 +92,10 @@ internal class ActivitiesRepositoryImpl(
         request: DeleteActivitiesRequest
     ): Result<DeleteActivitiesResponse> = runSafely { api.deleteActivities(request) }
 
+    override suspend fun restoreActivity(activityId: String): Result<ActivityData> = runSafely {
+        api.restoreActivity(id = activityId).activity.toModel()
+    }
+
     override suspend fun getActivity(activityId: String): Result<ActivityData> = runSafely {
         api.getActivity(activityId).activity.toModel()
     }

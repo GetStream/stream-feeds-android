@@ -31,6 +31,8 @@ import io.getstream.feeds.android.network.models.AddBookmarkResponse
 import io.getstream.feeds.android.network.models.DeleteBookmarkResponse
 import io.getstream.feeds.android.network.models.QueryBookmarkFoldersResponse
 import io.getstream.feeds.android.network.models.QueryBookmarksResponse
+import io.getstream.feeds.android.network.models.UpdateBookmarkFolderRequest
+import io.getstream.feeds.android.network.models.UpdateBookmarkFolderResponse
 import io.getstream.feeds.android.network.models.UpdateBookmarkRequest
 import io.getstream.feeds.android.network.models.UpdateBookmarkResponse
 import io.mockk.mockk
@@ -138,6 +140,29 @@ internal class BookmarksRepositoryImplTest {
                     models = listOf(bookmarkFolderResponse().toModel()),
                     pagination = PaginationData(next = "next", previous = "prev"),
                 ),
+        )
+    }
+
+    @Test
+    fun `on updateBookmarkFolder, delegate to api`() = runTest {
+        val request = UpdateBookmarkFolderRequest()
+        val apiResult = UpdateBookmarkFolderResponse("duration", bookmarkFolderResponse())
+
+        testDelegation(
+            apiFunction = { feedsApi.updateBookmarkFolder("folder-1", request) },
+            repositoryCall = { repository.updateBookmarkFolder("folder-1", request) },
+            apiResult = apiResult,
+            repositoryResult = apiResult.bookmarkFolder.toModel(),
+        )
+    }
+
+    @Test
+    fun `on deleteBookmarkFolder, delegate to api`() = runTest {
+        testDelegation(
+            apiFunction = { feedsApi.deleteBookmarkFolder("folder-1") },
+            repositoryCall = { repository.deleteBookmarkFolder("folder-1") },
+            apiResult = Unit,
+            repositoryResult = Unit,
         )
     }
 }

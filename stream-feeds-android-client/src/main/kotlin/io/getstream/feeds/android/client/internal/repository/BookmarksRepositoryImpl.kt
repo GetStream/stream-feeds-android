@@ -27,6 +27,7 @@ import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.client.internal.state.query.toRequest
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.AddBookmarkRequest
+import io.getstream.feeds.android.network.models.UpdateBookmarkFolderRequest
 import io.getstream.feeds.android.network.models.UpdateBookmarkRequest
 
 /**
@@ -75,5 +76,16 @@ internal class BookmarksRepositoryImpl(private val api: FeedsApi) : BookmarksRep
             models = response.bookmarkFolders.map { it.toModel() },
             pagination = PaginationData(response.next, response.prev),
         )
+    }
+
+    override suspend fun updateBookmarkFolder(
+        folderId: String,
+        request: UpdateBookmarkFolderRequest,
+    ): Result<BookmarkFolderData> = runSafely {
+        api.updateBookmarkFolder(folderId, request).bookmarkFolder.toModel()
+    }
+
+    override suspend fun deleteBookmarkFolder(folderId: String): Result<Unit> = runSafely {
+        api.deleteBookmarkFolder(folderId)
     }
 }

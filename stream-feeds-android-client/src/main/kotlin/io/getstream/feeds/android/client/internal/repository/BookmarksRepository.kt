@@ -22,6 +22,7 @@ import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersQuery
 import io.getstream.feeds.android.client.api.state.query.BookmarksQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.network.models.AddBookmarkRequest
+import io.getstream.feeds.android.network.models.UpdateBookmarkFolderRequest
 import io.getstream.feeds.android.network.models.UpdateBookmarkRequest
 
 internal interface BookmarksRepository {
@@ -40,4 +41,11 @@ internal interface BookmarksRepository {
     suspend fun queryBookmarkFolders(
         query: BookmarkFoldersQuery
     ): Result<PaginationResult<BookmarkFolderData>>
+
+    suspend fun updateBookmarkFolder(
+        folderId: String,
+        request: UpdateBookmarkFolderRequest,
+    ): Result<BookmarkFolderData>
+
+    suspend fun deleteBookmarkFolder(folderId: String): Result<Unit>
 }
