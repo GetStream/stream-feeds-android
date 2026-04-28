@@ -1,0 +1,764 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>FeedsClient</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            stream-feeds-android
+                    </a>            </div>
+            <div class="library-version">0.9.0
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":stream-feeds-android-client:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="stream-feeds-android-client::io.getstream.feeds.android.client.api/FeedsClient///PointingToDeclaration//1342813655">
+  <div class="breadcrumbs"><a href="../../index.html">stream-feeds-android-client</a><span class="delimiter">/</span><a href="../index.html">io.getstream.feeds.android.client.api</a><span class="delimiter">/</span><span class="current">FeedsClient</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Feeds</span><wbr><span><span>Client</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">FeedsClient</a></div><p class="paragraph">Single entry point for interacting with the Stream Feeds service.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="1929116841%2FProperties%2F1342813655" anchor-label="apiKey" id="1929116841%2FProperties%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="api-key.html"><span>api</span><wbr><span><span>Key</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1929116841%2FProperties%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="api-key.html">apiKey</a><span class="token operator">: </span><span data-unresolved-link="io.getstream.android.core.api.model.value/StreamApiKey///PointingToDeclaration/">StreamApiKey</span></div><div class="brief "><p class="paragraph">Provides the API key used for authentication and service access.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1655151605%2FProperties%2F1342813655" anchor-label="events" id="1655151605%2FProperties%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="events.html"><span><span>events</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1655151605%2FProperties%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="events.html">events</a><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span><span class="token operator">&lt;</span><a href="../../../stream-feeds-android-network/io.getstream.feeds.android.network.models/-w-s-event/index.html">WSEvent</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Exposes a <span data-unresolved-link="kotlinx.coroutines.flow/Flow///PointingToDeclaration/">Flow</span> of real-time WebSocket events received by the client. Allows you to subscribe to specific event types by filtering the main event stream. It's useful when you only want to handle certain types of events.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1038110728%2FProperties%2F1342813655" anchor-label="moderation" id="1038110728%2FProperties%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="moderation.html"><span><span>moderation</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1038110728%2FProperties%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="moderation.html">moderation</a><span class="token operator">: </span><a href="../-moderation/index.html">Moderation</a></div><div class="brief "><p class="paragraph">Provides an instance of <a href="../-moderation/index.html">Moderation</a> for managing moderation-related operations.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-443470085%2FProperties%2F1342813655" anchor-label="state" id="-443470085%2FProperties%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="state.html"><span><span>state</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-443470085%2FProperties%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="state.html">state</a><span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span><span class="token operator">&lt;</span><span data-unresolved-link="io.getstream.android.core.api.model.connection/StreamConnectionState///PointingToDeclaration/">StreamConnectionState</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Exposes the current connection state of the <a href="index.html">FeedsClient</a> as a <span data-unresolved-link="kotlinx.coroutines.flow/StateFlow///PointingToDeclaration/">StateFlow</span>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-259780608%2FProperties%2F1342813655" anchor-label="uploader" id="-259780608%2FProperties%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="uploader.html"><span><span>uploader</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-259780608%2FProperties%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="uploader.html">uploader</a><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.file/-feed-uploader/index.html">FeedUploader</a></div><div class="brief "><p class="paragraph">Provides an instance of <a href="../../io.getstream.feeds.android.client.api.file/-feed-uploader/index.html">FeedUploader</a> for uploading files.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="663926211%2FProperties%2F1342813655" anchor-label="user" id="663926211%2FProperties%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="user.html"><span><span>user</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="663926211%2FProperties%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="user.html">user</a><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.model/-user/index.html">User</a></div><div class="brief "><p class="paragraph">Provides the user associated with this client.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-752887651%2FFunctions%2F1342813655" anchor-label="activity" id="-752887651%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="activity.html"><span><span>activity</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-752887651%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="activity.html"><span class="token function">activity</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activityId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">fid<span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.model/-feed-id/index.html">FeedId</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state/-activity/index.html">Activity</a></div><div class="brief "><p class="paragraph">Creates an activity instance for the specified activity ID and feed ID.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1191165697%2FFunctions%2F1342813655" anchor-label="activityCommentList" id="1191165697%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="activity-comment-list.html"><span>activity</span><wbr><span>Comment</span><wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1191165697%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="activity-comment-list.html"><span class="token function">activityCommentList</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">query<span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state.query/-activity-comments-query/index.html">ActivityCommentsQuery</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state/-activity-comment-list/index.html">ActivityCommentList</a></div><div class="brief "><p class="paragraph">Creates an activity comment list instance based on the provided query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1592445758%2FFunctions%2F1342813655" anchor-label="activityFeedback" id="1592445758%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="activity-feedback.html"><span>activity</span><wbr><span><span>Feedback</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1592445758%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="activity-feedback.html"><span class="token function">activityFeedback</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activityId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">request<span class="token operator">: </span><a href="../../../stream-feeds-android-network/io.getstream.feeds.android.network.models/-activity-feedback-request/index.html">ActivityFeedbackRequest</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Submits feedback for an activity.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="755414600%2FFunctions%2F1342813655" anchor-label="activityList" id="755414600%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="activity-list.html"><span>activity</span><wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="755414600%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="activity-list.html"><span class="token function">activityList</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">query<span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state.query/-activities-query/index.html">ActivitiesQuery</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state/-activity-list/index.html">ActivityList</a></div><div class="brief "><p class="paragraph">Creates an activity list instance based on the provided query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1763529897%2FFunctions%2F1342813655" anchor-label="activityReactionList" id="1763529897%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="activity-reaction-list.html"><span>activity</span><wbr><span>Reaction</span><wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1763529897%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="activity-reaction-list.html"><span class="token function">activityReactionList</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">query<span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state.query/-activity-reactions-query/index.html">ActivityReactionsQuery</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state/-activity-reaction-list/index.html">ActivityReactionList</a></div><div class="brief "><p class="paragraph">Creates an activity reaction list instance based on the provided query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2130391631%2FFunctions%2F1342813655" anchor-label="addActivity" id="-2130391631%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="add-activity.html"><span>add</span><wbr><span><span>Activity</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2130391631%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="add-activity.html"><span class="token function">addActivity</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../../stream-feeds-android-network/io.getstream.feeds.android.network.models/-add-activity-request/index.html">AddActivityRequest</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="../../io.getstream.feeds.android.client.api.model/-activity-data/index.html">ActivityData</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Adds a new activity to the specified feeds.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1703513169%2FFunctions%2F1342813655" anchor-label="bookmarkFolderList" id="1703513169%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="bookmark-folder-list.html"><span>bookmark</span><wbr><span>Folder</span><wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1703513169%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="bookmark-folder-list.html"><span class="token function">bookmarkFolderList</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">query<span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state.query/-bookmark-folders-query/index.html">BookmarkFoldersQuery</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state/-bookmark-folder-list/index.html">BookmarkFolderList</a></div><div class="brief "><p class="paragraph">Creates a bookmark folder list instance based on the provided query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="467730029%2FFunctions%2F1342813655" anchor-label="bookmarkList" id="467730029%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="bookmark-list.html"><span>bookmark</span><wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="467730029%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="bookmark-list.html"><span class="token function">bookmarkList</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">query<span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state.query/-bookmarks-query/index.html">BookmarksQuery</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state/-bookmark-list/index.html">BookmarkList</a></div><div class="brief "><p class="paragraph">Creates a bookmark list instance based on the provided query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2125758751%2FFunctions%2F1342813655" anchor-label="commentList" id="-2125758751%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="comment-list.html"><span>comment</span><wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2125758751%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="comment-list.html"><span class="token function">commentList</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">query<span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state.query/-comments-query/index.html">CommentsQuery</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state/-comment-list/index.html">CommentList</a></div><div class="brief "><p class="paragraph">Creates a comment list instance based on the provided query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="287101441%2FFunctions%2F1342813655" anchor-label="commentReactionList" id="287101441%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="comment-reaction-list.html"><span>comment</span><wbr><span>Reaction</span><wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="287101441%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="comment-reaction-list.html"><span class="token function">commentReactionList</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">query<span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state.query/-comment-reactions-query/index.html">CommentReactionsQuery</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state/-comment-reaction-list/index.html">CommentReactionList</a></div><div class="brief "><p class="paragraph">Creates a comment reaction list instance based on the provided query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2104215360%2FFunctions%2F1342813655" anchor-label="commentReplyList" id="2104215360%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="comment-reply-list.html"><span>comment</span><wbr><span>Reply</span><wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2104215360%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="comment-reply-list.html"><span class="token function">commentReplyList</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">query<span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state.query/-comment-replies-query/index.html">CommentRepliesQuery</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state/-comment-reply-list/index.html">CommentReplyList</a></div><div class="brief "><p class="paragraph">Creates a comment reply list instance based on the provided query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="58978562%2FFunctions%2F1342813655" anchor-label="connect" id="58978562%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="connect.html"><span><span>connect</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="58978562%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="connect.html"><span class="token function">connect</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><span data-unresolved-link="io.getstream.android.core.api.model.connection/StreamConnectedUser///PointingToDeclaration/">StreamConnectedUser</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Establishes a connection to the Stream service.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-118832175%2FFunctions%2F1342813655" anchor-label="createCollections" id="-118832175%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="create-collections.html"><span>create</span><wbr><span><span>Collections</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-118832175%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="create-collections.html"><span class="token function">createCollections</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../../stream-feeds-android-network/io.getstream.feeds.android.network.models/-create-collections-request/index.html">CreateCollectionsRequest</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../io.getstream.feeds.android.client.api.model/-collection-data/index.html">CollectionData</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Create new collections in a batch operation. Collections are data objects that can be attached to activities for managing shared data across multiple activities.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="5812565%2FFunctions%2F1342813655" anchor-label="createDevice" id="5812565%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="create-device.html"><span>create</span><wbr><span><span>Device</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="5812565%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="create-device.html"><span class="token function">createDevice</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">id<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">pushProvider<span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.model/-push-notifications-provider/index.html">PushNotificationsProvider</a><span class="token punctuation">, </span></span><span class="parameter ">pushProviderName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Creates a new device for push notifications.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1919946977%2FFunctions%2F1342813655" anchor-label="deleteActivities" id="1919946977%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="delete-activities.html"><span>delete</span><wbr><span><span>Activities</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1919946977%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="delete-activities.html"><span class="token function">deleteActivities</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../../stream-feeds-android-network/io.getstream.feeds.android.network.models/-delete-activities-request/index.html">DeleteActivitiesRequest</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="../../../stream-feeds-android-network/io.getstream.feeds.android.network.models/-delete-activities-response/index.html">DeleteActivitiesResponse</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Deletes multiple activities from the specified feeds.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1061242075%2FFunctions%2F1342813655" anchor-label="deleteBookmarkFolder" id="-1061242075%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="delete-bookmark-folder.html"><span>delete</span><wbr><span>Bookmark</span><wbr><span><span>Folder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1061242075%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="delete-bookmark-folder.html"><span class="token function">deleteBookmarkFolder</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">folderId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Deletes a bookmark folder by its ID. All bookmarks in the folder will also be deleted.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1117985140%2FFunctions%2F1342813655" anchor-label="deleteCollections" id="-1117985140%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="delete-collections.html"><span>delete</span><wbr><span><span>Collections</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1117985140%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="delete-collections.html"><span class="token function">deleteCollections</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">refs<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Delete collections in a batch operation. Users can only delete their own collections.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1329146039%2FFunctions%2F1342813655" anchor-label="deleteDevice" id="1329146039%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="delete-device.html"><span>delete</span><wbr><span><span>Device</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1329146039%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="delete-device.html"><span class="token function">deleteDevice</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">id<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Deletes a device by its unique identifier.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="542099933%2FFunctions%2F1342813655" anchor-label="deleteFile" id="542099933%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="delete-file.html"><span>delete</span><wbr><span><span>File</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="542099933%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="delete-file.html"><span class="token function">deleteFile</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">url<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Deletes a previously uploaded file from the CDN.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1797297208%2FFunctions%2F1342813655" anchor-label="deleteImage" id="-1797297208%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="delete-image.html"><span>delete</span><wbr><span><span>Image</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1797297208%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="delete-image.html"><span class="token function">deleteImage</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">url<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Deletes a previously uploaded image from the CDN.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-352809646%2FFunctions%2F1342813655" anchor-label="disconnect" id="-352809646%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="disconnect.html"><span><span>disconnect</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-352809646%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="disconnect.html"><span class="token function">disconnect</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Disconnects the current <a href="index.html">FeedsClient</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1918712355%2FFunctions%2F1342813655" anchor-label="feed" id="-1918712355%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="feed.html"><span><span>feed</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1918712355%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="feed.html"><span class="token function">feed</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">fid<span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.model/-feed-id/index.html">FeedId</a><span class="token punctuation">, </span></span><span class="parameter ">onNewActivity<span class="token operator">: </span><span class="token punctuation">(</span><a href="../../io.getstream.feeds.android.client.api.state.query/-feed-query/index.html">FeedQuery</a><span class="token punctuation">, </span><a href="../../io.getstream.feeds.android.client.api.model/-activity-data/index.html">ActivityData</a><span class="token punctuation">, </span>currentUserId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="../../io.getstream.feeds.android.client.api.state/-insertion-action/index.html">InsertionAction</a><span class="token operator"> = </span>::defaultOnNewActivity</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state/-feed/index.html">Feed</a></div><div class="brief "><p class="paragraph">Creates a feed instance for the specified feed ID.</p></div><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="feed.html"><span class="token function">feed</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">query<span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state.query/-feed-query/index.html">FeedQuery</a><span class="token punctuation">, </span></span><span class="parameter ">onNewActivity<span class="token operator">: </span><span class="token punctuation">(</span><a href="../../io.getstream.feeds.android.client.api.state.query/-feed-query/index.html">FeedQuery</a><span class="token punctuation">, </span><a href="../../io.getstream.feeds.android.client.api.model/-activity-data/index.html">ActivityData</a><span class="token punctuation">, </span>currentUserId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="../../io.getstream.feeds.android.client.api.state/-insertion-action/index.html">InsertionAction</a><span class="token operator"> = </span>::defaultOnNewActivity</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state/-feed/index.html">Feed</a></div><div class="brief "><p class="paragraph">Fetches a feed based on the provided <a href="../../io.getstream.feeds.android.client.api.state.query/-feed-query/index.html">FeedQuery</a>.</p></div><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="feed.html"><span class="token function">feed</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">group<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">id<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">onNewActivity<span class="token operator">: </span><span class="token punctuation">(</span><a href="../../io.getstream.feeds.android.client.api.state.query/-feed-query/index.html">FeedQuery</a><span class="token punctuation">, </span><a href="../../io.getstream.feeds.android.client.api.model/-activity-data/index.html">ActivityData</a><span class="token punctuation">, </span>currentUserId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="../../io.getstream.feeds.android.client.api.state/-insertion-action/index.html">InsertionAction</a><span class="token operator"> = </span>::defaultOnNewActivity</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state/-feed/index.html">Feed</a></div><div class="brief "><p class="paragraph">Creates a feed instance for the specified group and id.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1155319907%2FFunctions%2F1342813655" anchor-label="feedList" id="-1155319907%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="feed-list.html"><span>feed</span><wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1155319907%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="feed-list.html"><span class="token function">feedList</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">query<span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state.query/-feeds-query/index.html">FeedsQuery</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state/-feed-list/index.html">FeedList</a></div><div class="brief "><p class="paragraph">Creates a feed list instance based on the provided query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2023381111%2FFunctions%2F1342813655" anchor-label="followList" id="2023381111%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="follow-list.html"><span>follow</span><wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2023381111%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="follow-list.html"><span class="token function">followList</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">query<span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state.query/-follows-query/index.html">FollowsQuery</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state/-follow-list/index.html">FollowList</a></div><div class="brief "><p class="paragraph">Creates a follow list instance based on the provided query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1390304669%2FFunctions%2F1342813655" anchor-label="getApp" id="-1390304669%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-app.html"><span>get</span><wbr><span><span>App</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1390304669%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="get-app.html"><span class="token function">getApp</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="../../io.getstream.feeds.android.client.api.model/-app-data/index.html">AppData</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Retrieves the application configuration and settings.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1884121926%2FFunctions%2F1342813655" anchor-label="getOG" id="1884121926%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-o-g.html"><span>get</span><wbr><span><span>OG</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1884121926%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="get-o-g.html"><span class="token function">getOG</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">url<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="../../../stream-feeds-android-network/io.getstream.feeds.android.network.models/-get-o-g-response/index.html">GetOGResponse</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Fetches Open Graph metadata for a URL.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-177518993%2FFunctions%2F1342813655" anchor-label="getOrCreateFollows" id="-177518993%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-or-create-follows.html"><span>get</span><wbr><span>Or</span><wbr><span>Create</span><wbr><span><span>Follows</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-177518993%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="get-or-create-follows.html"><span class="token function">getOrCreateFollows</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../../stream-feeds-android-network/io.getstream.feeds.android.network.models/-follow-batch-request/index.html">FollowBatchRequest</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="../../io.getstream.feeds.android.client.api.model/-batch-follow-data/index.html">BatchFollowData</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Creates follow relationships in batch. Differently from <a href="../../io.getstream.feeds.android.client.api.state/-feed/follow.html">Feed.follow</a>, this operation is idempotent: if any of the requested follow relationships already exists, the operation still succeeds and returns the existing data.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="997694031%2FFunctions%2F1342813655" anchor-label="getOrCreateUnfollows" id="997694031%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-or-create-unfollows.html"><span>get</span><wbr><span>Or</span><wbr><span>Create</span><wbr><span><span>Unfollows</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="997694031%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="get-or-create-unfollows.html"><span class="token function">getOrCreateUnfollows</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../../stream-feeds-android-network/io.getstream.feeds.android.network.models/-unfollow-batch-request/index.html">UnfollowBatchRequest</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../io.getstream.feeds.android.client.api.model/-follow-data/index.html">FollowData</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Deletes follow relationships in batch. Differently from <a href="../../io.getstream.feeds.android.client.api.state/-feed/unfollow.html">Feed.unfollow</a>, this operation is idempotent: if any of the requested follow relationships already <strong>does not</strong> exist, the operation still succeeds and returns the ones that were actually deleted.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-603296347%2FFunctions%2F1342813655" anchor-label="memberList" id="-603296347%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="member-list.html"><span>member</span><wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-603296347%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="member-list.html"><span class="token function">memberList</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">query<span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state.query/-members-query/index.html">MembersQuery</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state/-member-list/index.html">MemberList</a></div><div class="brief "><p class="paragraph">Creates a member list instance based on the provided query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="698508617%2FFunctions%2F1342813655" anchor-label="moderationConfigList" id="698508617%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="moderation-config-list.html"><span>moderation</span><wbr><span>Config</span><wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="698508617%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="moderation-config-list.html"><span class="token function">moderationConfigList</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">query<span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state.query/-moderation-configs-query/index.html">ModerationConfigsQuery</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state/-moderation-config-list/index.html">ModerationConfigList</a></div><div class="brief "><p class="paragraph">Creates a moderation configuration list instance based on the provided query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1441156581%2FFunctions%2F1342813655" anchor-label="pollList" id="-1441156581%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="poll-list.html"><span>poll</span><wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1441156581%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="poll-list.html"><span class="token function">pollList</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">query<span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state.query/-polls-query/index.html">PollsQuery</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state/-poll-list/index.html">PollList</a></div><div class="brief "><p class="paragraph">Creates a poll list instance based on the provided query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="989367303%2FFunctions%2F1342813655" anchor-label="pollVoteList" id="989367303%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="poll-vote-list.html"><span>poll</span><wbr><span>Vote</span><wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="989367303%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="poll-vote-list.html"><span class="token function">pollVoteList</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">query<span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state.query/-poll-votes-query/index.html">PollVotesQuery</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state/-poll-vote-list/index.html">PollVoteList</a></div><div class="brief "><p class="paragraph">Creates a poll vote list instance based on the provided query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-616044327%2FFunctions%2F1342813655" anchor-label="queryDevices" id="-616044327%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="query-devices.html"><span>query</span><wbr><span><span>Devices</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-616044327%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="query-devices.html"><span class="token function">queryDevices</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="../../../stream-feeds-android-network/io.getstream.feeds.android.network.models/-list-devices-response/index.html">ListDevicesResponse</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Queries all devices associated with the current user.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1355196535%2FFunctions%2F1342813655" anchor-label="readCollections" id="1355196535%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="read-collections.html"><span>read</span><wbr><span><span>Collections</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1355196535%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="read-collections.html"><span class="token function">readCollections</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">refs<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../io.getstream.feeds.android.client.api.model/-collection-data/index.html">CollectionData</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Read collections, filtering by collection references. By default, users can only read their own collections.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1484556784%2FFunctions%2F1342813655" anchor-label="updateBookmarkFolder" id="1484556784%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="update-bookmark-folder.html"><span>update</span><wbr><span>Bookmark</span><wbr><span><span>Folder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1484556784%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="update-bookmark-folder.html"><span class="token function">updateBookmarkFolder</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">folderId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">request<span class="token operator">: </span><a href="../../../stream-feeds-android-network/io.getstream.feeds.android.network.models/-update-bookmark-folder-request/index.html">UpdateBookmarkFolderRequest</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="../../io.getstream.feeds.android.client.api.model/-bookmark-folder-data/index.html">BookmarkFolderData</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Updates a bookmark folder by its ID.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="498205873%2FFunctions%2F1342813655" anchor-label="updateCollections" id="498205873%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="update-collections.html"><span>update</span><wbr><span><span>Collections</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="498205873%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="update-collections.html"><span class="token function">updateCollections</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../../stream-feeds-android-network/io.getstream.feeds.android.network.models/-update-collections-request/index.html">UpdateCollectionsRequest</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../io.getstream.feeds.android.client.api.model/-collection-data/index.html">CollectionData</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Update existing collections in a batch operation. Only the custom data field is updatable. Users can only update their own collections.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1829862794%2FFunctions%2F1342813655" anchor-label="updatePushNotificationPreferences" id="-1829862794%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="update-push-notification-preferences.html"><span>update</span><wbr><span>Push</span><wbr><span>Notification</span><wbr><span><span>Preferences</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1829862794%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="update-push-notification-preferences.html"><span class="token function">updatePushNotificationPreferences</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">request<span class="token operator">: </span><a href="../../../stream-feeds-android-network/io.getstream.feeds.android.network.models/-upsert-push-preferences-request/index.html">UpsertPushPreferencesRequest</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="../../../stream-feeds-android-network/io.getstream.feeds.android.network.models/-upsert-push-preferences-response/index.html">UpsertPushPreferencesResponse</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Updates the push notification preferences for the current user.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-219506158%2FFunctions%2F1342813655" anchor-label="upsertActivities" id="-219506158%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="upsert-activities.html"><span>upsert</span><wbr><span><span>Activities</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-219506158%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="upsert-activities.html"><span class="token function">upsertActivities</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activities<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../../stream-feeds-android-network/io.getstream.feeds.android.network.models/-activity-request/index.html">ActivityRequest</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-result/index.html">Result</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../io.getstream.feeds.android.client.api.model/-activity-data/index.html">ActivityData</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Upserts (inserts or updates) multiple activities.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="254696195%2FFunctions%2F1342813655" anchor-label="userList" id="254696195%2FFunctions%2F1342813655" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-client:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-client:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="user-list.html"><span>user</span><wbr><span><span>List</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="254696195%2FFunctions%2F1342813655"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-client:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="user-list.html"><span class="token function">userList</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">query<span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state.query/-users-query/index.html">UsersQuery</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../io.getstream.feeds.android.client.api.state/-user-list/index.html">UserList</a></div><div class="brief "><p class="paragraph">Creates a user list instance based on the provided query.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2026 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

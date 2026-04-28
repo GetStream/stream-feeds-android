@@ -1,0 +1,603 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>FeedOwnCapability</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            stream-feeds-android
+                    </a>            </div>
+            <div class="library-version">0.9.0
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":stream-feeds-android-network:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="stream-feeds-android-network::io.getstream.feeds.android.network.models/FeedOwnCapability///PointingToDeclaration//-821120920">
+  <div class="breadcrumbs"><a href="../../index.html">stream-feeds-android-network</a><span class="delimiter">/</span><a href="../index.html">io.getstream.feeds.android.network.models</a><span class="delimiter">/</span><span class="current">FeedOwnCapability</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Feed</span><wbr><span>Own</span><wbr><span><span>Capability</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">sealed </span><span class="token keyword">class </span><a href="index.html">FeedOwnCapability</a></div><p class="paragraph">FeedOwnCapability Enum</p><h4 class="">Inheritors</h4><div class="table"><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-add-activity/index.html">AddActivity</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-add-activity-bookmark/index.html">AddActivityBookmark</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-add-activity-reaction/index.html">AddActivityReaction</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-add-comment/index.html">AddComment</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-add-comment-reaction/index.html">AddCommentReaction</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-create-feed/index.html">CreateFeed</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-delete-any-activity/index.html">DeleteAnyActivity</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-delete-any-comment/index.html">DeleteAnyComment</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-delete-feed/index.html">DeleteFeed</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-delete-own-activity/index.html">DeleteOwnActivity</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-delete-own-activity-bookmark/index.html">DeleteOwnActivityBookmark</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-delete-own-activity-reaction/index.html">DeleteOwnActivityReaction</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-delete-own-comment/index.html">DeleteOwnComment</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-delete-own-comment-reaction/index.html">DeleteOwnCommentReaction</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-follow/index.html">Follow</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-pin-activity/index.html">PinActivity</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-query-feed-members/index.html">QueryFeedMembers</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-query-follows/index.html">QueryFollows</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-read-activities/index.html">ReadActivities</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-read-feed/index.html">ReadFeed</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-unfollow/index.html">Unfollow</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-update-any-activity/index.html">UpdateAnyActivity</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-update-any-comment/index.html">UpdateAnyComment</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-update-feed/index.html">UpdateFeed</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-update-feed-followers/index.html">UpdateFeedFollowers</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-update-feed-members/index.html">UpdateFeedMembers</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-update-own-activity/index.html">UpdateOwnActivity</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-update-own-activity-bookmark/index.html">UpdateOwnActivityBookmark</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-update-own-comment/index.html">UpdateOwnComment</a></div></span></div><div></div></div></div><div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="-unknown/index.html">Unknown</a></div></span></div><div></div></div></div></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="799358428%2FClasslikes%2F-821120920" anchor-label="AddActivity" id="799358428%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-add-activity/index.html"><span>Add</span><wbr><span><span>Activity</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="799358428%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-add-activity/index.html">AddActivity</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1722784186%2FClasslikes%2F-821120920" anchor-label="AddActivityBookmark" id="-1722784186%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-add-activity-bookmark/index.html"><span>Add</span><wbr><span>Activity</span><wbr><span><span>Bookmark</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1722784186%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-add-activity-bookmark/index.html">AddActivityBookmark</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-65431373%2FClasslikes%2F-821120920" anchor-label="AddActivityReaction" id="-65431373%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-add-activity-reaction/index.html"><span>Add</span><wbr><span>Activity</span><wbr><span><span>Reaction</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-65431373%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-add-activity-reaction/index.html">AddActivityReaction</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-564231784%2FClasslikes%2F-821120920" anchor-label="AddComment" id="-564231784%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-add-comment/index.html"><span>Add</span><wbr><span><span>Comment</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-564231784%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-add-comment/index.html">AddComment</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1390321553%2FClasslikes%2F-821120920" anchor-label="AddCommentReaction" id="-1390321553%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-add-comment-reaction/index.html"><span>Add</span><wbr><span>Comment</span><wbr><span><span>Reaction</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1390321553%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-add-comment-reaction/index.html">AddCommentReaction</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-651962400%2FClasslikes%2F-821120920" anchor-label="Companion" id="-651962400%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-651962400%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1842865884%2FClasslikes%2F-821120920" anchor-label="CreateFeed" id="1842865884%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-create-feed/index.html"><span>Create</span><wbr><span><span>Feed</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1842865884%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-create-feed/index.html">CreateFeed</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1787524612%2FClasslikes%2F-821120920" anchor-label="DeleteAnyActivity" id="-1787524612%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-delete-any-activity/index.html"><span>Delete</span><wbr><span>Any</span><wbr><span><span>Activity</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1787524612%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-delete-any-activity/index.html">DeleteAnyActivity</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-647679624%2FClasslikes%2F-821120920" anchor-label="DeleteAnyComment" id="-647679624%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-delete-any-comment/index.html"><span>Delete</span><wbr><span>Any</span><wbr><span><span>Comment</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-647679624%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-delete-any-comment/index.html">DeleteAnyComment</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1270535309%2FClasslikes%2F-821120920" anchor-label="DeleteFeed" id="1270535309%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-delete-feed/index.html"><span>Delete</span><wbr><span><span>Feed</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1270535309%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-delete-feed/index.html">DeleteFeed</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-299176030%2FClasslikes%2F-821120920" anchor-label="DeleteOwnActivity" id="-299176030%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-delete-own-activity/index.html"><span>Delete</span><wbr><span>Own</span><wbr><span><span>Activity</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-299176030%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-delete-own-activity/index.html">DeleteOwnActivity</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="8581644%2FClasslikes%2F-821120920" anchor-label="DeleteOwnActivityBookmark" id="8581644%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-delete-own-activity-bookmark/index.html"><span>Delete</span><wbr><span>Own</span><wbr><span>Activity</span><wbr><span><span>Bookmark</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="8581644%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-delete-own-activity-bookmark/index.html">DeleteOwnActivityBookmark</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1665934457%2FClasslikes%2F-821120920" anchor-label="DeleteOwnActivityReaction" id="1665934457%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-delete-own-activity-reaction/index.html"><span>Delete</span><wbr><span>Own</span><wbr><span>Activity</span><wbr><span><span>Reaction</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1665934457%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-delete-own-activity-reaction/index.html">DeleteOwnActivityReaction</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="924352274%2FClasslikes%2F-821120920" anchor-label="DeleteOwnComment" id="924352274%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-delete-own-comment/index.html"><span>Delete</span><wbr><span>Own</span><wbr><span><span>Comment</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="924352274%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-delete-own-comment/index.html">DeleteOwnComment</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2027207703%2FClasslikes%2F-821120920" anchor-label="DeleteOwnCommentReaction" id="-2027207703%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-delete-own-comment-reaction/index.html"><span>Delete</span><wbr><span>Own</span><wbr><span>Comment</span><wbr><span><span>Reaction</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2027207703%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-delete-own-comment-reaction/index.html">DeleteOwnCommentReaction</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-788316793%2FClasslikes%2F-821120920" anchor-label="FeedOwnCapabilityAdapter" id="-788316793%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-feed-own-capability-adapter/index.html"><span>Feed</span><wbr><span>Own</span><wbr><span>Capability</span><wbr><span><span>Adapter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-788316793%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-feed-own-capability-adapter/index.html">FeedOwnCapabilityAdapter</a> : <span data-unresolved-link="com.squareup.moshi/JsonAdapter///PointingToDeclaration/">JsonAdapter</span><span class="token operator">&lt;</span><a href="index.html">FeedOwnCapability</a><span class="token operator">&gt; </span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-974547387%2FClasslikes%2F-821120920" anchor-label="Follow" id="-974547387%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-follow/index.html"><span><span>Follow</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-974547387%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-follow/index.html">Follow</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1691546472%2FClasslikes%2F-821120920" anchor-label="PinActivity" id="1691546472%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pin-activity/index.html"><span>Pin</span><wbr><span><span>Activity</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1691546472%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-pin-activity/index.html">PinActivity</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-878551485%2FClasslikes%2F-821120920" anchor-label="QueryFeedMembers" id="-878551485%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-query-feed-members/index.html"><span>Query</span><wbr><span>Feed</span><wbr><span><span>Members</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-878551485%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-query-feed-members/index.html">QueryFeedMembers</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-258536100%2FClasslikes%2F-821120920" anchor-label="QueryFollows" id="-258536100%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-query-follows/index.html"><span>Query</span><wbr><span><span>Follows</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-258536100%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-query-follows/index.html">QueryFollows</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1502891245%2FClasslikes%2F-821120920" anchor-label="ReadActivities" id="-1502891245%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-read-activities/index.html"><span>Read</span><wbr><span><span>Activities</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1502891245%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-read-activities/index.html">ReadActivities</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="894448066%2FClasslikes%2F-821120920" anchor-label="ReadFeed" id="894448066%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-read-feed/index.html"><span>Read</span><wbr><span><span>Feed</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="894448066%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-read-feed/index.html">ReadFeed</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="6283084%2FClasslikes%2F-821120920" anchor-label="Unfollow" id="6283084%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-unfollow/index.html"><span><span>Unfollow</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="6283084%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-unfollow/index.html">Unfollow</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="554885922%2FClasslikes%2F-821120920" anchor-label="Unknown" id="554885922%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-unknown/index.html"><span><span>Unknown</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="554885922%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-unknown/index.html">Unknown</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>unknownValue<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1092322842%2FClasslikes%2F-821120920" anchor-label="UpdateAnyActivity" id="1092322842%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-update-any-activity/index.html"><span>Update</span><wbr><span>Any</span><wbr><span><span>Activity</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1092322842%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-update-any-activity/index.html">UpdateAnyActivity</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="553597338%2FClasslikes%2F-821120920" anchor-label="UpdateAnyComment" id="553597338%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-update-any-comment/index.html"><span>Update</span><wbr><span>Any</span><wbr><span><span>Comment</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="553597338%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-update-any-comment/index.html">UpdateAnyComment</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1325523409%2FClasslikes%2F-821120920" anchor-label="UpdateFeed" id="-1325523409%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-update-feed/index.html"><span>Update</span><wbr><span><span>Feed</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1325523409%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-update-feed/index.html">UpdateFeed</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-637430370%2FClasslikes%2F-821120920" anchor-label="UpdateFeedFollowers" id="-637430370%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-update-feed-followers/index.html"><span>Update</span><wbr><span>Feed</span><wbr><span><span>Followers</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-637430370%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-update-feed-followers/index.html">UpdateFeedFollowers</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-261509734%2FClasslikes%2F-821120920" anchor-label="UpdateFeedMembers" id="-261509734%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-update-feed-members/index.html"><span>Update</span><wbr><span>Feed</span><wbr><span><span>Members</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-261509734%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-update-feed-members/index.html">UpdateFeedMembers</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1714295872%2FClasslikes%2F-821120920" anchor-label="UpdateOwnActivity" id="-1714295872%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-update-own-activity/index.html"><span>Update</span><wbr><span>Own</span><wbr><span><span>Activity</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1714295872%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-update-own-activity/index.html">UpdateOwnActivity</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1668476970%2FClasslikes%2F-821120920" anchor-label="UpdateOwnActivityBookmark" id="1668476970%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-update-own-activity-bookmark/index.html"><span>Update</span><wbr><span>Own</span><wbr><span>Activity</span><wbr><span><span>Bookmark</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1668476970%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-update-own-activity-bookmark/index.html">UpdateOwnActivityBookmark</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2125629236%2FClasslikes%2F-821120920" anchor-label="UpdateOwnComment" id="2125629236%2FClasslikes%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-update-own-comment/index.html"><span>Update</span><wbr><span>Own</span><wbr><span><span>Comment</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2125629236%2FClasslikes%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-update-own-comment/index.html">UpdateOwnComment</a> : <a href="index.html">FeedOwnCapability</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="-109505464%2FProperties%2F-821120920" anchor-label="value" id="-109505464%2FProperties%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="value.html"><span><span>value</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-109505464%2FProperties%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="value.html">value</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="2002482293%2FFunctions%2F-821120920" anchor-label="toString" id="2002482293%2FFunctions%2F-821120920" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":stream-feeds-android-network:dokkaHtmlPartial/release" data-filterable-set=":stream-feeds-android-network:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="to-string.html"><span>to</span><wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2002482293%2FFunctions%2F-821120920"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":stream-feeds-android-network:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="to-string.html"><span class="token function">toString</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2026 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

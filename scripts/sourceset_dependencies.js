@@ -1,0 +1,1 @@
+sourceset_dependencies = '{":stream-feeds-android-client:dokkaHtmlPartial/debug":[],":stream-feeds-android-client:dokkaHtmlPartial/main":[],":stream-feeds-android-client:dokkaHtmlPartial/release":[],":stream-feeds-android-network:dokkaHtmlPartial/debug":[],":stream-feeds-android-network:dokkaHtmlPartial/main":[],":stream-feeds-android-network:dokkaHtmlPartial/release":[]}'

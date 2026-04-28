@@ -1,0 +1,17 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+
+module:stream-feeds-android-client
+io.getstream.android.core.network
+io.getstream.android.core.result
+io.getstream.feeds.android.client.api
+io.getstream.feeds.android.client.api.file
+io.getstream.feeds.android.client.api.logging
+io.getstream.feeds.android.client.api.model
+io.getstream.feeds.android.client.api.model.request
+io.getstream.feeds.android.client.api.state
+io.getstream.feeds.android.client.api.state.query
+module:stream-feeds-android-network
+io.getstream.feeds.android.network.apis
+io.getstream.feeds.android.network.infrastructure
+io.getstream.feeds.android.network.models
