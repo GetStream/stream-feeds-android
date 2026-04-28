@@ -58,6 +58,8 @@ import io.getstream.feeds.android.network.models.UnfollowPair
 import io.getstream.feeds.android.network.models.UnfollowResponse
 import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.network.models.UpdateFeedRequest
+import io.getstream.feeds.android.network.models.UpdateFollowRequest
+import io.getstream.feeds.android.network.models.UpdateFollowResponse
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -230,6 +232,24 @@ internal class FeedsRepositoryImplTest {
         testDelegation(
             apiFunction = { feedsApi.rejectFollow(request) },
             repositoryCall = { repository.rejectFollow(request) },
+            apiResult = apiResult,
+            repositoryResult = apiResult.follow.toModel(),
+        )
+    }
+
+    @Test
+    fun `on updateFollow, delegate to api`() = runTest {
+        val request =
+            UpdateFollowRequest(
+                source = "source",
+                target = "target",
+                custom = mapOf("key" to "value"),
+            )
+        val apiResult = UpdateFollowResponse("duration", followResponse())
+
+        testDelegation(
+            apiFunction = { feedsApi.updateFollow(request) },
+            repositoryCall = { repository.updateFollow(request) },
             apiResult = apiResult,
             repositoryResult = apiResult.follow.toModel(),
         )

@@ -49,6 +49,7 @@ import io.getstream.feeds.android.network.models.MarkActivityRequest
 import io.getstream.feeds.android.network.models.QueryActivitiesResponse
 import io.getstream.feeds.android.network.models.QueryActivityReactionsRequest
 import io.getstream.feeds.android.network.models.QueryActivityReactionsResponse
+import io.getstream.feeds.android.network.models.RestoreActivityResponse
 import io.getstream.feeds.android.network.models.UpdateActivityPartialRequest
 import io.getstream.feeds.android.network.models.UpdateActivityPartialResponse
 import io.getstream.feeds.android.network.models.UpdateActivityRequest
@@ -334,6 +335,18 @@ internal class ActivitiesRepositoryImplTest {
             repositoryCall = { repository.activityFeedback("activityId", request) },
             apiResult = Unit,
             repositoryResult = Unit,
+        )
+    }
+
+    @Test
+    fun `on restoreActivity, delegate to api`() {
+        val apiResult = RestoreActivityResponse("duration", activityResponse())
+
+        testDelegation(
+            apiFunction = { feedsApi.restoreActivity("activityId") },
+            repositoryCall = { repository.restoreActivity("activityId") },
+            apiResult = apiResult,
+            repositoryResult = apiResult.activity.toModel(),
         )
     }
 }

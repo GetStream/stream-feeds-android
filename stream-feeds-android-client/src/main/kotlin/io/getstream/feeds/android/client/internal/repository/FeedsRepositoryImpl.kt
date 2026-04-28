@@ -44,6 +44,7 @@ import io.getstream.feeds.android.network.models.RejectFollowRequest
 import io.getstream.feeds.android.network.models.UnfollowBatchRequest
 import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.network.models.UpdateFeedRequest
+import io.getstream.feeds.android.network.models.UpdateFollowRequest
 
 /**
  * Default implementation of the [FeedsRepository] interface.
@@ -173,6 +174,11 @@ internal class FeedsRepositoryImpl(private val api: FeedsApi) : FeedsRepository 
     override suspend fun rejectFollow(request: RejectFollowRequest): Result<FollowData> =
         runSafely {
             api.rejectFollow(request).follow.toModel()
+        }
+
+    override suspend fun updateFollow(request: UpdateFollowRequest): Result<FollowData> =
+        runSafely {
+            api.updateFollow(request).follow.toModel()
         }
 
     override suspend fun updateFeedMembers(

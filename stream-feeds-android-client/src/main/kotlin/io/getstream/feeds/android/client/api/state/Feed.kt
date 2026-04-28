@@ -41,6 +41,7 @@ import io.getstream.feeds.android.network.models.UpdateBookmarkRequest
 import io.getstream.feeds.android.network.models.UpdateCommentRequest
 import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.network.models.UpdateFeedRequest
+import io.getstream.feeds.android.network.models.UpdateFollowRequest
 
 /**
  * A feed represents a collection of activities and provides methods to interact with them.
@@ -165,6 +166,18 @@ public interface Feed {
         hardDelete: Boolean = false,
         deleteNotificationActivity: Boolean? = null,
     ): Result<Unit>
+
+    /**
+     * Restores a soft-deleted activity.
+     *
+     * Only the activity owner can restore their own activities (for client-side requests).
+     * Hard-deleted activities cannot be restored.
+     *
+     * @param id The unique identifier of the activity to restore.
+     * @return A [Result] containing the restored [ActivityData] if successful, or an error if the
+     *   operation fails.
+     */
+    public suspend fun restoreActivity(id: String): Result<ActivityData>
 
     /**
      * Marks an activity as read or unread.
@@ -326,6 +339,21 @@ public interface Feed {
         createNotificationActivity: Boolean? = null,
         custom: Map<String, Any>? = null,
         pushPreference: FollowRequest.PushPreference? = null,
+    ): Result<FollowData>
+
+    /**
+     * Updates a follow relationship with new custom data or push preferences.
+     *
+     * @param targetFid The target feed identifier of the follow to update.
+     * @param custom Additional data for the follow relationship.
+     * @param pushPreference Push notification preferences for the follow.
+     * @return A [Result] containing the updated [FollowData] if successful, or an error if the
+     *   operation fails.
+     */
+    public suspend fun updateFollow(
+        targetFid: FeedId,
+        custom: Map<String, Any>? = null,
+        pushPreference: UpdateFollowRequest.PushPreference? = null,
     ): Result<FollowData>
 
     /**
