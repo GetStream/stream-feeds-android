@@ -55,7 +55,7 @@ internal class ActivityListStateImplTest {
         val activity2 = activityData("activity-2")
 
         val paginationResult = defaultPaginationResult(listOf(activity1, activity2))
-        activityListState.onQueryMoreActivities(paginationResult, queryConfig)
+        activityListState.onQueryActivities(paginationResult, queryConfig)
 
         assertEquals(listOf(activity1, activity2), activityListState.activities.value)
         assertEquals("next-cursor", activityListState.pagination?.next)
@@ -436,7 +436,7 @@ internal class ActivityListStateImplTest {
 
     private fun setupInitialActivities(vararg activities: ActivityData) {
         val paginationResult = defaultPaginationResult(activities.toList())
-        activityListState.onQueryMoreActivities(paginationResult, queryConfig)
+        activityListState.onQueryActivities(paginationResult, queryConfig)
     }
 
     companion object {

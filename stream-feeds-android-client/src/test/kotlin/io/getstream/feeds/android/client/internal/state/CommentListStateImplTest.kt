@@ -34,7 +34,7 @@ internal class CommentListStateImplTest {
     private val state = CommentListStateImpl(query, currentUserId)
 
     @Test
-    fun `onQueryMoreComments, merge comments and update pagination`() {
+    fun `onQueryComments, merge comments and update pagination`() {
         val comment1 = commentData("1", text = "First", createdAt = Date(1))
         val comment2 = commentData("2", text = "Second", createdAt = Date(2))
         val comment3 = commentData("3", text = "Third", createdAt = Date(3))
@@ -43,8 +43,8 @@ internal class CommentListStateImplTest {
         val result2 = PaginationResult(models = listOf(comment2, comment3), pagination = pagination)
         val expected = listOf(comment1, comment2, comment3)
 
-        state.onQueryMoreComments(result1)
-        state.onQueryMoreComments(result2)
+        state.onQueryComments(result1)
+        state.onQueryComments(result2)
 
         assertEquals(expected, state.comments.value)
         assertEquals(pagination, state.pagination)
@@ -139,6 +139,6 @@ internal class CommentListStateImplTest {
 
     private fun setupInitialComments(vararg comments: CommentData) {
         val result = PaginationResult(comments.toList(), PaginationData("next", "previous"))
-        state.onQueryMoreComments(result)
+        state.onQueryComments(result)
     }
 }

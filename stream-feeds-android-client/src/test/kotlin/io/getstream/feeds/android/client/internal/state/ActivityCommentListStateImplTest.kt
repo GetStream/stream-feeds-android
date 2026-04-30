@@ -41,7 +41,7 @@ internal class ActivityCommentListStateImplTest {
     private val state = ActivityCommentListStateImpl(query, currentUserId = "user-1")
 
     @Test
-    fun `onQueryMoreComments when called, then merge comments and update pagination`() {
+    fun `onQueryComments when called, then merge comments and update pagination`() {
         val batch1 =
             listOf(
                 threadedCommentData(id = "c1", createdAt = Date(1)),
@@ -62,8 +62,8 @@ internal class ActivityCommentListStateImplTest {
         val result1 = PaginationResult(models = batch1, pagination = PaginationData("next1"))
         val result2 = PaginationResult(models = batch2, pagination = PaginationData("next2"))
 
-        state.onQueryMoreComments(result1)
-        state.onQueryMoreComments(result2)
+        state.onQueryComments(result1)
+        state.onQueryComments(result2)
 
         assertEquals(result2.pagination, state.pagination)
         assertEquals(expected, state.comments.value)
@@ -333,6 +333,6 @@ internal class ActivityCommentListStateImplTest {
     }
 
     private fun setupInitialState(vararg initialComments: ThreadedCommentData) {
-        state.onQueryMoreComments(defaultPaginationResult(initialComments.toList()))
+        state.onQueryComments(defaultPaginationResult(initialComments.toList()))
     }
 }

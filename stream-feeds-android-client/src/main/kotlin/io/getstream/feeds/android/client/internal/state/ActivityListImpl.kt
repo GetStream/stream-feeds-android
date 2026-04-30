@@ -66,7 +66,7 @@ internal class ActivityListImpl(
         get() = _state
 
     override suspend fun get(): Result<List<ActivityData>> {
-        return queryActivities(query)
+        return queryActivities(query, replace = true)
     }
 
     override suspend fun queryMoreActivities(limit: Int?): Result<List<ActivityData>> {
@@ -86,11 +86,14 @@ internal class ActivityListImpl(
         return queryActivities(nextQuery)
     }
 
-    private suspend fun queryActivities(query: ActivitiesQuery): Result<List<ActivityData>> {
+    private suspend fun queryActivities(
+        query: ActivitiesQuery,
+        replace: Boolean = false,
+    ): Result<List<ActivityData>> {
         return activitiesRepository
             .queryActivities(query)
             .onSuccess {
-                _state.onQueryMoreActivities(it, QueryConfiguration(query.filter, query.sort))
+                _state.onQueryActivities(it, QueryConfiguration(query.filter, query.sort), replace)
                 feedOwnValuesRepository.cache(it.models.mapNotNull(ActivityData::currentFeed))
             }
             .map { it.models }

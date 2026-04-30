@@ -58,7 +58,7 @@ internal class ActivityReactionListImpl(
         get() = _state
 
     override suspend fun get(): Result<List<FeedsReactionData>> {
-        return queryActivityReactions(query)
+        return queryActivityReactions(query, replace = true)
     }
 
     override suspend fun queryMoreReactions(limit: Int?): Result<List<FeedsReactionData>> {
@@ -80,14 +80,16 @@ internal class ActivityReactionListImpl(
     }
 
     private suspend fun queryActivityReactions(
-        query: ActivityReactionsQuery
+        query: ActivityReactionsQuery,
+        replace: Boolean = false,
     ): Result<List<FeedsReactionData>> {
         return activitiesRepository
             .queryActivityReactions(query.activityId, query.toRequest())
             .onSuccess {
-                _state.onQueryMoreActivityReactions(
+                _state.onQueryActivityReactions(
                     result = it,
                     queryConfig = QueryConfiguration(query.filter, query.sort),
+                    replace = replace,
                 )
             }
             .map { it.models }

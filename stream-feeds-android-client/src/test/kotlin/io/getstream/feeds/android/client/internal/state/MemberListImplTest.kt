@@ -105,6 +105,22 @@ internal class MemberListImplTest {
         coVerify { feedsRepository.queryFeedMembers(any(), any(), any()) }
     }
 
+    @Test
+    fun `on get called twice, members are replaced not merged`() = runTest {
+        val page1 = listOf(feedMemberData(), feedMemberData())
+        val page2 = listOf(feedMemberData())
+        coEvery { feedsRepository.queryFeedMembers(any(), any(), any()) } returnsMany
+            listOf(
+                Result.success(createPaginationResult(page1)),
+                Result.success(createPaginationResult(page2)),
+            )
+
+        memberList.get()
+        memberList.get()
+
+        assertEquals(1, memberList.state.members.value.size)
+    }
+
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialMembers = listOf(feedMemberData())
         val initialPaginationResult =

@@ -59,16 +59,20 @@ internal class BookmarkListStateImpl(override val query: BookmarksQuery) :
     override val pagination: PaginationData?
         get() = _pagination
 
-    override fun onQueryMoreBookmarks(
+    override fun onQueryBookmarks(
         result: PaginationResult<BookmarkData>,
         queryConfig: BookmarksQueryConfig,
+        replace: Boolean,
     ) {
         _pagination = result.pagination
-        // Update the query configuration for future queries
         this.queryConfig = queryConfig
-        // Merge the new bookmarks with the existing ones (keeping the sort order)
-        _bookmarks.update { current ->
-            current.mergeSorted(result.models, BookmarkData::id, bookmarksSorting)
+        if (replace) {
+            _bookmarks.update { result.models }
+        } else {
+            // Merge the new bookmarks with the existing ones (keeping the sort order)
+            _bookmarks.update { current ->
+                current.mergeSorted(result.models, BookmarkData::id, bookmarksSorting)
+            }
         }
     }
 
@@ -120,9 +124,10 @@ internal interface BookmarkListMutableState : BookmarkListState, BookmarkListSta
 /** An interface that defines the methods for updating the state of a bookmark list. */
 internal interface BookmarkListStateUpdates {
 
-    fun onQueryMoreBookmarks(
+    fun onQueryBookmarks(
         result: PaginationResult<BookmarkData>,
         queryConfig: BookmarksQueryConfig,
+        replace: Boolean = false,
     )
 
     fun onBookmarkFolderRemoved(folderId: String)

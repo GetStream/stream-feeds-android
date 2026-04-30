@@ -57,7 +57,7 @@ internal class CommentReplyListImpl(
         get() = _state
 
     override suspend fun get(): Result<List<ThreadedCommentData>> {
-        return queryReplies(query)
+        return queryReplies(query, replace = true)
     }
 
     override suspend fun queryMoreReplies(limit: Int?): Result<List<ThreadedCommentData>> {
@@ -71,11 +71,12 @@ internal class CommentReplyListImpl(
     }
 
     private suspend fun queryReplies(
-        query: CommentRepliesQuery
+        query: CommentRepliesQuery,
+        replace: Boolean = false,
     ): Result<List<ThreadedCommentData>> {
         return commentsRepository
             .getCommentReplies(query)
-            .onSuccess { _state.onQueryMoreReplies(it) }
+            .onSuccess { _state.onQueryReplies(it, replace) }
             .map { it.models }
     }
 }

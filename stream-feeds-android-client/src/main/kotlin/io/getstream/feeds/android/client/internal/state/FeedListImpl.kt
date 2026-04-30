@@ -55,7 +55,7 @@ internal class FeedListImpl(
         get() = _state
 
     override suspend fun get(): Result<List<FeedData>> {
-        return queryFeeds(query)
+        return queryFeeds(query, replace = true)
     }
 
     override suspend fun queryMoreFeeds(limit: Int?): Result<List<FeedData>> {
@@ -76,11 +76,14 @@ internal class FeedListImpl(
         return queryFeeds(nextQuery)
     }
 
-    private suspend fun queryFeeds(query: FeedsQuery): Result<List<FeedData>> {
+    private suspend fun queryFeeds(
+        query: FeedsQuery,
+        replace: Boolean = false,
+    ): Result<List<FeedData>> {
         return feedsRepository
             .queryFeeds(query)
             .onSuccess {
-                _state.onQueryMoreFeeds(it, QueryConfiguration(query.filter, query.sort))
+                _state.onQueryFeeds(it, QueryConfiguration(query.filter, query.sort), replace)
                 feedOwnValuesRepository.cache(it.models)
             }
             .map { it.models }

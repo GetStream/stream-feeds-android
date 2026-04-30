@@ -47,7 +47,7 @@ internal class ActivityReactionListStateImplTest {
             )
         val paginationResult = defaultPaginationResult(reactions)
 
-        activityReactionListState.onQueryMoreActivityReactions(paginationResult, queryConfig)
+        activityReactionListState.onQueryActivityReactions(paginationResult, queryConfig)
 
         assertEquals(reactions, activityReactionListState.reactions.value)
         assertEquals("next-cursor", activityReactionListState.pagination?.next)
@@ -62,7 +62,7 @@ internal class ActivityReactionListStateImplTest {
                 feedsReactionData(activityId = "activity-1", userId = "user-2"),
             )
         val paginationResult = defaultPaginationResult(initialReactions)
-        activityReactionListState.onQueryMoreActivityReactions(paginationResult, queryConfig)
+        activityReactionListState.onQueryActivityReactions(paginationResult, queryConfig)
 
         activityReactionListState.onReactionRemoved(initialReactions[0])
 
@@ -78,7 +78,7 @@ internal class ActivityReactionListStateImplTest {
             feedsReactionData(activityId = "activity-1", userId = "user-3", createdAt = Date(3000))
         val initialReactions = listOf(newerReaction, olderReaction) // newest first
         val paginationResult = defaultPaginationResult(initialReactions)
-        activityReactionListState.onQueryMoreActivityReactions(paginationResult, queryConfig)
+        activityReactionListState.onQueryActivityReactions(paginationResult, queryConfig)
 
         val middleReaction =
             feedsReactionData(activityId = "activity-1", userId = "user-2", createdAt = Date(2000))
@@ -115,7 +115,7 @@ internal class ActivityReactionListStateImplTest {
                 )
 
             val paginationResult = defaultPaginationResult(existingReactions)
-            activityReactionListState.onQueryMoreActivityReactions(paginationResult, queryConfig)
+            activityReactionListState.onQueryActivityReactions(paginationResult, queryConfig)
 
             val newReaction =
                 feedsReactionData(
@@ -140,7 +140,7 @@ internal class ActivityReactionListStateImplTest {
             )
         val paginationResult = defaultPaginationResult(reactions)
 
-        activityReactionListState.onQueryMoreActivityReactions(paginationResult, queryConfig)
+        activityReactionListState.onQueryActivityReactions(paginationResult, queryConfig)
         activityReactionListState.onActivityRemoved()
 
         assertEquals(emptyList<FeedsReactionData>(), activityReactionListState.reactions.value)

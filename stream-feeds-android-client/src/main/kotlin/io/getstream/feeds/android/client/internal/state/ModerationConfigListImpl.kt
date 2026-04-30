@@ -41,7 +41,7 @@ internal class ModerationConfigListImpl(
         get() = _state
 
     override suspend fun get(): Result<List<ModerationConfigData>> {
-        return queryConfigs(query)
+        return queryConfigs(query, replace = true)
     }
 
     override suspend fun queryMoreConfigs(limit: Int?): Result<List<ModerationConfigData>> {
@@ -62,12 +62,13 @@ internal class ModerationConfigListImpl(
     }
 
     private suspend fun queryConfigs(
-        query: ModerationConfigsQuery
+        query: ModerationConfigsQuery,
+        replace: Boolean = false,
     ): Result<List<ModerationConfigData>> {
         return moderationRepository
             .queryModerationConfigs(query)
             .onSuccess {
-                _state.onLoadMoreConfigs(it, QueryConfiguration(query.filter, query.sort))
+                _state.onLoadConfigs(it, QueryConfiguration(query.filter, query.sort), replace)
             }
             .map { it.models }
     }

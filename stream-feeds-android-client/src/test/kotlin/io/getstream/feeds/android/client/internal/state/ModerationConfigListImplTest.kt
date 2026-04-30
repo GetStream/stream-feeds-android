@@ -111,6 +111,24 @@ internal class ModerationConfigListImplTest {
         coVerify { moderationRepository.queryModerationConfigs(any<ModerationConfigsQuery>()) }
     }
 
+    @Test
+    fun `on get called twice, configs are replaced not merged`() = runTest {
+        val page1 =
+            listOf(moderationConfigData(), moderationConfigData(key = "config-2", team = "team-2"))
+        val page2 = listOf(moderationConfigData(key = "config-3", team = "team-3"))
+        val pagination = PaginationData(next = null, previous = null)
+        coEvery { moderationRepository.queryModerationConfigs(query) } returnsMany
+            listOf(
+                Result.success(PaginationResult(models = page1, pagination = pagination)),
+                Result.success(PaginationResult(models = page2, pagination = pagination)),
+            )
+
+        moderationConfigList.get()
+        moderationConfigList.get()
+
+        assertEquals(page2, moderationConfigList.state.configs.value)
+    }
+
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialConfigs = listOf(moderationConfigData())
         val initialPaginationResult =

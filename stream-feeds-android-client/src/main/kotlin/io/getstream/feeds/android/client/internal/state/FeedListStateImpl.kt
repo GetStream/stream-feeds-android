@@ -57,15 +57,21 @@ internal class FeedListStateImpl(override val query: FeedsQuery) : FeedListMutab
     override val pagination: PaginationData?
         get() = _pagination
 
-    override fun onQueryMoreFeeds(
+    override fun onQueryFeeds(
         result: PaginationResult<FeedData>,
         queryConfig: FeedsQueryConfig,
+        replace: Boolean,
     ) {
         _pagination = result.pagination
         this.queryConfig = queryConfig
-        // Merge the new feeds with the existing ones (keeping the sort order)
-        _feeds.update { current ->
-            current.mergeSorted(result.models, { it.fid.rawValue }, feedsSorting)
+        if (replace) {
+            // Replace the feeds list with the new results
+            _feeds.update { result.models }
+        } else {
+            // Merge the new feeds with the existing ones (keeping the sort order)
+            _feeds.update { current ->
+                current.mergeSorted(result.models, { it.fid.rawValue }, feedsSorting)
+            }
         }
     }
 
@@ -94,8 +100,15 @@ internal interface FeedListMutableState : FeedListState, FeedListStateUpdates
  */
 internal interface FeedListStateUpdates {
 
-    /** Handles the result of a query for more feeds. */
-    fun onQueryMoreFeeds(result: PaginationResult<FeedData>, queryConfig: FeedsQueryConfig)
+    /**
+     * Handles the result of a query for feeds. When [replace] is true, replaces the current state;
+     * otherwise merges.
+     */
+    fun onQueryFeeds(
+        result: PaginationResult<FeedData>,
+        queryConfig: FeedsQueryConfig,
+        replace: Boolean = false,
+    )
 
     /** Handles the removal of a feed by its ID. */
     fun onFeedRemoved(feedId: String)

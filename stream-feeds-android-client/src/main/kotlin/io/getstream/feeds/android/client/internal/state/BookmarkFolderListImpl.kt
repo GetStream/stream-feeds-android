@@ -56,7 +56,7 @@ internal class BookmarkFolderListImpl(
         get() = _state
 
     override suspend fun get(): Result<List<BookmarkFolderData>> {
-        return queryBookmarkFolders(query)
+        return queryBookmarkFolders(query, replace = true)
     }
 
     override suspend fun queryMoreBookmarkFolders(limit: Int?): Result<List<BookmarkFolderData>> {
@@ -77,12 +77,17 @@ internal class BookmarkFolderListImpl(
     }
 
     private suspend fun queryBookmarkFolders(
-        query: BookmarkFoldersQuery
+        query: BookmarkFoldersQuery,
+        replace: Boolean = false,
     ): Result<List<BookmarkFolderData>> {
         return bookmarksRepository
             .queryBookmarkFolders(query)
             .onSuccess {
-                _state.onQueryMoreBookmarkFolders(it, QueryConfiguration(query.filter, query.sort))
+                _state.onQueryBookmarkFolders(
+                    it,
+                    QueryConfiguration(query.filter, query.sort),
+                    replace,
+                )
             }
             .map { it.models }
     }

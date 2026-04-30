@@ -104,6 +104,23 @@ internal class CommentReactionListImplTest {
         coVerify { commentsRepository.queryCommentReactions(any(), any()) }
     }
 
+    @Test
+    fun `on get called twice, reactions are replaced not merged`() = runTest {
+        val page1 =
+            listOf(feedsReactionData(userId = "user-1"), feedsReactionData(userId = "user-2"))
+        val page2 = listOf(feedsReactionData(userId = "user-3"))
+        coEvery { commentsRepository.queryCommentReactions(query.commentId, query) } returnsMany
+            listOf(
+                Result.success(createPaginationResult(page1)),
+                Result.success(createPaginationResult(page2)),
+            )
+
+        commentReactionList.get()
+        commentReactionList.get()
+
+        assertEquals(page2, commentReactionList.state.reactions.value)
+    }
+
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialReactions = listOf(feedsReactionData())
         val initialPaginationResult =

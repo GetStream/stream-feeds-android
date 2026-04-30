@@ -58,15 +58,20 @@ internal class MemberListStateImpl(override val query: MembersQuery) : MemberLis
     override val pagination: PaginationData?
         get() = _pagination
 
-    override fun onQueryMoreMembers(
+    override fun onQueryMembers(
         result: PaginationResult<FeedMemberData>,
         queryConfig: MembersQueryConfig,
+        replace: Boolean,
     ) {
         _pagination = result.pagination
         this.queryConfig = queryConfig
-        // Merge the new members with the existing ones (keeping the sort order)
-        _members.update { current ->
-            current.mergeSorted(result.models, FeedMemberData::id, membersSorting)
+        if (replace) {
+            _members.update { result.models }
+        } else {
+            // Merge the new members with the existing ones (keeping the sort order)
+            _members.update { current ->
+                current.mergeSorted(result.models, FeedMemberData::id, membersSorting)
+            }
         }
     }
 
@@ -107,10 +112,11 @@ internal interface MemberListMutableState : MemberListState, MemberListStateUpda
  */
 internal interface MemberListStateUpdates {
 
-    /** Handles the result of a query for more members. */
-    fun onQueryMoreMembers(
+    /** Handles the result of a query for members. When [replace] is true, replaces the state. */
+    fun onQueryMembers(
         result: PaginationResult<FeedMemberData>,
         queryConfig: MembersQueryConfig,
+        replace: Boolean = false,
     )
 
     /** Handles the removal of a member by their ID. */

@@ -43,7 +43,7 @@ internal class FollowListStateImplTest {
         val follows = listOf(followData(), followData("user-2", "user-3"))
         val paginationResult = defaultPaginationResult(follows)
 
-        followListState.onQueryMoreFollows(paginationResult, queryConfig)
+        followListState.onQueryFollows(paginationResult, queryConfig)
 
         assertEquals(follows, followListState.follows.value)
         assertEquals("next-cursor", followListState.pagination?.next)
@@ -54,7 +54,7 @@ internal class FollowListStateImplTest {
     fun `on followUpserted, then update specific follow`() = runTest {
         val initialFollows = listOf(followData(), followData("user-2", "user-3"))
         val paginationResult = defaultPaginationResult(initialFollows)
-        followListState.onQueryMoreFollows(paginationResult, queryConfig)
+        followListState.onQueryFollows(paginationResult, queryConfig)
 
         val updatedFollow =
             followData(sourceFid = "user:user-1", targetFid = "user:user-2", createdAt = 1000)
@@ -71,7 +71,7 @@ internal class FollowListStateImplTest {
         val follow2 = followData("user-2", "user-3", createdAt = 1000)
         val initialFollows = listOf(follow1, follow2)
         val paginationResult = defaultPaginationResult(initialFollows)
-        followListState.onQueryMoreFollows(paginationResult, queryConfig)
+        followListState.onQueryFollows(paginationResult, queryConfig)
 
         val newFollow = followData("user-4", "user-5", createdAt = 1500)
         followListState.onFollowUpserted(newFollow)
@@ -85,7 +85,7 @@ internal class FollowListStateImplTest {
     fun `on followRemoved, then remove specific follow`() = runTest {
         val initialFollows = listOf(followData(), followData("user-2", "user-3"))
         val paginationResult = defaultPaginationResult(initialFollows)
-        followListState.onQueryMoreFollows(paginationResult, queryConfig)
+        followListState.onQueryFollows(paginationResult, queryConfig)
 
         followListState.onFollowRemoved(initialFollows[0])
 
@@ -101,7 +101,7 @@ internal class FollowListStateImplTest {
             val follow3 = followData("user-3", "user-4", createdAt = 1000)
             val initialFollows = listOf(follow1, follow2, follow3)
             val paginationResult = defaultPaginationResult(initialFollows)
-            followListState.onQueryMoreFollows(paginationResult, queryConfig)
+            followListState.onQueryFollows(paginationResult, queryConfig)
 
             val newFollow = followData("user-5", "user-6", createdAt = 2500)
             val updatedFollow2 = follow2.copy(pushPreference = "disabled")

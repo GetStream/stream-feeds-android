@@ -61,7 +61,7 @@ internal class ActivityCommentListImpl(
         get() = _state
 
     override suspend fun get(): Result<List<ThreadedCommentData>> {
-        return queryComments(query)
+        return queryComments(query, replace = true)
     }
 
     override suspend fun queryMoreComments(limit: Int?): Result<List<ThreadedCommentData>> {
@@ -75,11 +75,12 @@ internal class ActivityCommentListImpl(
     }
 
     private suspend fun queryComments(
-        query: ActivityCommentsQuery
+        query: ActivityCommentsQuery,
+        replace: Boolean = false,
     ): Result<List<ThreadedCommentData>> {
         return commentsRepository
             .getComments(query)
-            .onSuccess { _state.onQueryMoreComments(it) }
+            .onSuccess { _state.onQueryComments(it, replace) }
             .map { it.models }
     }
 }

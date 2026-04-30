@@ -104,6 +104,22 @@ internal class ActivityReactionListImplTest {
         coVerify { activitiesRepository.queryActivityReactions(any(), any()) }
     }
 
+    @Test
+    fun `on get called twice, reactions are replaced not merged`() = runTest {
+        val page1 = listOf(feedsReactionData(), feedsReactionData())
+        val page2 = listOf(feedsReactionData())
+        coEvery { activitiesRepository.queryActivityReactions(query.activityId, any()) } returnsMany
+            listOf(
+                Result.success(createPaginationResult(page1)),
+                Result.success(createPaginationResult(page2)),
+            )
+
+        activityReactionList.get()
+        activityReactionList.get()
+
+        assertEquals(1, activityReactionList.state.reactions.value.size)
+    }
+
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialReactions = listOf(feedsReactionData())
         val initialPaginationResult =

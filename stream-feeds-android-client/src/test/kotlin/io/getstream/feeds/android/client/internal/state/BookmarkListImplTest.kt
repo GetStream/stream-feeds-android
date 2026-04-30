@@ -104,6 +104,22 @@ internal class BookmarkListImplTest {
         coVerify { bookmarksRepository.queryBookmarks(any()) }
     }
 
+    @Test
+    fun `on get called twice, bookmarks are replaced not merged`() = runTest {
+        val page1 = listOf(bookmarkData("bookmark-1"), bookmarkData("bookmark-2"))
+        val page2 = listOf(bookmarkData("bookmark-3"))
+        coEvery { bookmarksRepository.queryBookmarks(query) } returnsMany
+            listOf(
+                Result.success(createPaginationResult(page1)),
+                Result.success(createPaginationResult(page2)),
+            )
+
+        bookmarkList.get()
+        bookmarkList.get()
+
+        assertEquals(1, bookmarkList.state.bookmarks.value.size)
+    }
+
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialBookmarks = listOf(bookmarkData("bookmark-1"))
         val initialPaginationResult =

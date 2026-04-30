@@ -62,16 +62,21 @@ internal class CommentReactionListStateImpl(override val query: CommentReactions
         _reactions.update { emptyList() }
     }
 
-    override fun onQueryMoreReactions(
+    override fun onQueryReactions(
         result: PaginationResult<FeedsReactionData>,
         queryConfig: CommentReactionsQueryConfig,
+        replace: Boolean,
     ) {
         _pagination = result.pagination
         // Update the query configuration for future queries
         this.queryConfig = queryConfig
-        // Merge the new reactions with the existing ones (keeping the sort order)
-        _reactions.update { current ->
-            current.mergeSorted(result.models, FeedsReactionData::id, reactionsSorting)
+        if (replace) {
+            _reactions.update { result.models }
+        } else {
+            // Merge the new reactions with the existing ones (keeping the sort order)
+            _reactions.update { current ->
+                current.mergeSorted(result.models, FeedsReactionData::id, reactionsSorting)
+            }
         }
     }
 
@@ -95,14 +100,16 @@ internal interface CommentReactionListStateUpdates {
     fun onCommentRemoved()
 
     /**
-     * Handles the successful loading of reactions.
+     * Handles the loading of reactions, either replacing the existing state or merging with it.
      *
      * @param result The result containing the loaded reactions and pagination data.
      * @param queryConfig The query configuration used for the request.
+     * @param replace Whether to replace the existing reactions or merge with them.
      */
-    fun onQueryMoreReactions(
+    fun onQueryReactions(
         result: PaginationResult<FeedsReactionData>,
         queryConfig: CommentReactionsQueryConfig,
+        replace: Boolean = false,
     )
 
     /**

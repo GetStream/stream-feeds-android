@@ -64,16 +64,20 @@ internal class ActivityReactionListStateImpl(override val query: ActivityReactio
         _reactions.update { emptyList() }
     }
 
-    override fun onQueryMoreActivityReactions(
+    override fun onQueryActivityReactions(
         result: PaginationResult<FeedsReactionData>,
         queryConfig: ActivityReactionsQueryConfig,
+        replace: Boolean,
     ) {
         _pagination = result.pagination
-        // Update the query configuration for future queries
         this.queryConfig = queryConfig
-        // Merge the new reactions with the existing ones (keeping the sort order)
-        _reactions.update { current ->
-            current.mergeSorted(result.models, FeedsReactionData::id, reactionsSorting)
+        if (replace) {
+            _reactions.update { result.models }
+        } else {
+            // Merge the new reactions with the existing ones (keeping the sort order)
+            _reactions.update { current ->
+                current.mergeSorted(result.models, FeedsReactionData::id, reactionsSorting)
+            }
         }
     }
 
@@ -110,10 +114,12 @@ internal interface ActivityReactionListStateUpdates {
      * @param result The result of the pagination query containing the reactions.
      * @param queryConfig The configuration used for the query, including filters and sorting
      *   options.
+     * @param replace Whether to replace existing reactions or merge them with the new ones.
      */
-    fun onQueryMoreActivityReactions(
+    fun onQueryActivityReactions(
         result: PaginationResult<FeedsReactionData>,
         queryConfig: ActivityReactionsQueryConfig,
+        replace: Boolean = false,
     )
 
     /**

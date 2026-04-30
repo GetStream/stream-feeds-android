@@ -81,16 +81,20 @@ internal class ActivityListStateImpl(
     override val pagination: PaginationData?
         get() = _pagination
 
-    override fun onQueryMoreActivities(
+    override fun onQueryActivities(
         result: PaginationResult<ActivityData>,
         queryConfig: ActivitiesQueryConfig,
+        replace: Boolean,
     ) {
         _pagination = result.pagination
-        // Update the query configuration for future queries
         this.queryConfig = queryConfig
-        // Merge the new activities with the existing ones (keeping the sort order)
-        _activities.update { current ->
-            current.mergeSorted(result.models, ActivityData::id, activitiesSorting)
+        if (replace) {
+            _activities.update { result.models }
+        } else {
+            // Merge the new activities with the existing ones (keeping the sort order)
+            _activities.update { current ->
+                current.mergeSorted(result.models, ActivityData::id, activitiesSorting)
+            }
         }
     }
 
@@ -243,14 +247,17 @@ internal interface ActivityListMutableState : ActivityListState, ActivityListSta
 internal interface ActivityListStateUpdates {
 
     /**
-     * Called when more activities are queried and received.
+     * Called when activities are queried and received.
      *
-     * @param result The result containing the new activities and pagination information.
+     * @param result The result containing the activities and pagination information.
      * @param queryConfig The configuration used for the query, including sorting and filtering.
+     * @param replace If true, replaces the current activities; if false, merges with the existing
+     *   ones keeping the sort order.
      */
-    fun onQueryMoreActivities(
+    fun onQueryActivities(
         result: PaginationResult<ActivityData>,
         queryConfig: ActivitiesQueryConfig,
+        replace: Boolean = false,
     )
 
     /**

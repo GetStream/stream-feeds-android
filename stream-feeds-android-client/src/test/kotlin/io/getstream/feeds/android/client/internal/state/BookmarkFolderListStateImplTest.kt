@@ -42,7 +42,7 @@ internal class BookmarkFolderListStateImplTest {
         val folders = listOf(bookmarkFolderData(), bookmarkFolderData("folder-2", "Test Folder 2"))
         val paginationResult = defaultPaginationResult(folders)
 
-        bookmarkFolderListState.onQueryMoreBookmarkFolders(paginationResult, queryConfig)
+        bookmarkFolderListState.onQueryBookmarkFolders(paginationResult, queryConfig)
 
         assertEquals(folders, bookmarkFolderListState.folders.value)
         assertEquals("next-cursor", bookmarkFolderListState.pagination?.next)
@@ -54,7 +54,7 @@ internal class BookmarkFolderListStateImplTest {
         val initialFolders =
             listOf(bookmarkFolderData(), bookmarkFolderData("folder-2", "Test Folder 2"))
         val paginationResult = defaultPaginationResult(initialFolders)
-        bookmarkFolderListState.onQueryMoreBookmarkFolders(paginationResult, queryConfig)
+        bookmarkFolderListState.onQueryBookmarkFolders(paginationResult, queryConfig)
 
         val updatedFolder = bookmarkFolderData("folder-1", "Updated Folder")
         bookmarkFolderListState.onBookmarkFolderUpdated(updatedFolder)
@@ -69,7 +69,7 @@ internal class BookmarkFolderListStateImplTest {
         val initialFolders =
             listOf(bookmarkFolderData(), bookmarkFolderData("folder-2", "Test Folder 2"))
         val paginationResult = defaultPaginationResult(initialFolders)
-        bookmarkFolderListState.onQueryMoreBookmarkFolders(paginationResult, queryConfig)
+        bookmarkFolderListState.onQueryBookmarkFolders(paginationResult, queryConfig)
 
         bookmarkFolderListState.onBookmarkFolderRemoved(initialFolders[0].id)
 

@@ -37,7 +37,7 @@ internal class CommentReplyListStateImplTest {
     private val state = CommentReplyListStateImpl(query = query, currentUserId = currentUserId)
 
     @Test
-    fun `on onQueryMoreReplies, update state with new replies and pagination`() = runTest {
+    fun `on onQueryReplies, update state with new replies and pagination`() = runTest {
         val replies =
             listOf(
                 threadedCommentData("reply-1", text = "First reply"),
@@ -46,14 +46,14 @@ internal class CommentReplyListStateImplTest {
         val pagination = PaginationData(next = "next-cursor", previous = null)
         val result = PaginationResult(models = replies, pagination = pagination)
 
-        state.onQueryMoreReplies(result)
+        state.onQueryReplies(result)
 
         assertEquals(replies, state.replies.value)
         assertEquals(pagination, state.pagination)
     }
 
     @Test
-    fun `on onQueryMoreReplies with existing replies, merge new replies`() = runTest {
+    fun `on onQueryReplies with existing replies, merge new replies`() = runTest {
         val initialReply = threadedCommentData("reply-1", text = "First reply")
         setupInitialReplies(initialReply)
 
@@ -61,7 +61,7 @@ internal class CommentReplyListStateImplTest {
         val newPagination = PaginationData(next = "next-cursor-2", previous = "next-cursor")
         val newResult = PaginationResult(models = listOf(newReply), pagination = newPagination)
 
-        state.onQueryMoreReplies(newResult)
+        state.onQueryReplies(newResult)
 
         val expectedReplies = listOf(initialReply, newReply)
         assertEquals(expectedReplies, state.replies.value)
@@ -316,6 +316,6 @@ internal class CommentReplyListStateImplTest {
     private fun setupInitialReplies(vararg replies: ThreadedCommentData) {
         val result =
             PaginationResult(models = replies.toList(), pagination = PaginationData("next"))
-        state.onQueryMoreReplies(result)
+        state.onQueryReplies(result)
     }
 }

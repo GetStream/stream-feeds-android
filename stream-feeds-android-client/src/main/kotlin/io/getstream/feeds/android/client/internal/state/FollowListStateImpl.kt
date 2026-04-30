@@ -58,15 +58,21 @@ internal class FollowListStateImpl(override val query: FollowsQuery) : FollowLis
     override val pagination: PaginationData?
         get() = _pagination
 
-    override fun onQueryMoreFollows(
+    override fun onQueryFollows(
         result: PaginationResult<FollowData>,
         queryConfig: FollowsQueryConfig,
+        replace: Boolean,
     ) {
         _pagination = result.pagination
         this.queryConfig = queryConfig
-        // Merge the new follows with the existing ones (keeping the sort order)
-        _follows.update { current ->
-            current.mergeSorted(result.models, FollowData::id, followsSorting)
+        if (replace) {
+            // Replace the follows list with the new results
+            _follows.update { result.models }
+        } else {
+            // Merge the new follows with the existing ones (keeping the sort order)
+            _follows.update { current ->
+                current.mergeSorted(result.models, FollowData::id, followsSorting)
+            }
         }
     }
 
@@ -96,8 +102,15 @@ internal interface FollowListMutableState : FollowListState, FollowListStateUpda
 /** An interface for handling updates to the follow list state. */
 internal interface FollowListStateUpdates {
 
-    /** Handles the result of a query for more follows. */
-    fun onQueryMoreFollows(result: PaginationResult<FollowData>, queryConfig: FollowsQueryConfig)
+    /**
+     * Handles the result of a query for follows. When [replace] is true, replaces the state;
+     * otherwise merges with existing state.
+     */
+    fun onQueryFollows(
+        result: PaginationResult<FollowData>,
+        queryConfig: FollowsQueryConfig,
+        replace: Boolean = false,
+    )
 
     /** Handles the addition or update of a follow. */
     fun onFollowUpserted(follow: FollowData)

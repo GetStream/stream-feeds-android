@@ -45,7 +45,7 @@ internal class MemberListStateImplTest {
         val members = listOf(feedMemberData(), feedMemberData("user-2"))
         val paginationResult = defaultPaginationResult(members)
 
-        memberListState.onQueryMoreMembers(paginationResult, queryConfig)
+        memberListState.onQueryMembers(paginationResult, queryConfig)
 
         assertEquals(members, memberListState.members.value)
         assertEquals("next-cursor", memberListState.pagination?.next)
@@ -153,7 +153,7 @@ internal class MemberListStateImplTest {
     }
 
     private fun setupInitialState(members: List<FeedMemberData>) {
-        memberListState.onQueryMoreMembers(defaultPaginationResult(members), queryConfig)
+        memberListState.onQueryMembers(defaultPaginationResult(members), queryConfig)
     }
 
     companion object {

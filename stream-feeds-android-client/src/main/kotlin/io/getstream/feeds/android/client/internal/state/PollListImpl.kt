@@ -57,7 +57,7 @@ internal class PollListImpl(
     }
 
     override suspend fun get(): Result<List<PollData>> {
-        return queryPolls(query)
+        return queryPolls(query, replace = true)
     }
 
     override suspend fun queryMorePolls(limit: Int?): Result<List<PollData>> {
@@ -77,10 +77,15 @@ internal class PollListImpl(
         return queryPolls(nextQuery)
     }
 
-    private suspend fun queryPolls(query: PollsQuery): Result<List<PollData>> {
+    private suspend fun queryPolls(
+        query: PollsQuery,
+        replace: Boolean = false,
+    ): Result<List<PollData>> {
         return pollsRepository
             .queryPolls(query)
-            .onSuccess { _state.onQueryMorePolls(it, QueryConfiguration(query.filter, query.sort)) }
+            .onSuccess {
+                _state.onQueryPolls(it, QueryConfiguration(query.filter, query.sort), replace)
+            }
             .map { it.models }
     }
 }

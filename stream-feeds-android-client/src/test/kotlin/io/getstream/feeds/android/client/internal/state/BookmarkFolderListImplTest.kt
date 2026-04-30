@@ -104,6 +104,22 @@ internal class BookmarkFolderListImplTest {
         coVerify { bookmarksRepository.queryBookmarkFolders(any()) }
     }
 
+    @Test
+    fun `on get called twice, folders are replaced not merged`() = runTest {
+        val page1 = listOf(bookmarkFolderData("folder-1"), bookmarkFolderData("folder-2"))
+        val page2 = listOf(bookmarkFolderData("folder-3"))
+        coEvery { bookmarksRepository.queryBookmarkFolders(query) } returnsMany
+            listOf(
+                Result.success(createPaginationResult(page1)),
+                Result.success(createPaginationResult(page2)),
+            )
+
+        bookmarkFolderList.get()
+        bookmarkFolderList.get()
+
+        assertEquals(1, bookmarkFolderList.state.folders.value.size)
+    }
+
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialFolders = listOf(bookmarkFolderData("folder-1"))
         val initialPaginationResult =
