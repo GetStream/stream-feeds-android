@@ -21,11 +21,42 @@ import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.Attachment
 import io.getstream.feeds.android.network.models.Location
 
+/**
+ * Request payload for adding a new activity to one or more feeds.
+ *
+ * @property request The activity request sent to the server.
+ * @property attachmentUploads Local files to upload and attach to the activity.
+ */
 public data class FeedAddActivityRequest
 internal constructor(
     val request: AddActivityRequest,
     val attachmentUploads: List<FeedUploadPayload> = emptyList(),
 ) {
+    /**
+     * Builds a [FeedAddActivityRequest] from individual activity fields.
+     *
+     * @param type The activity type (for example `"post"`).
+     * @param feeds The IDs of the feeds the activity should be added to.
+     * @param attachments Already-uploaded attachments to attach to the activity.
+     * @param attachmentUploads Local files to upload and attach to the activity.
+     * @param collectionRefs References to collection entries associated with the activity.
+     * @param createNotificationActivity Whether the server should create a notification activity.
+     * @param custom Custom data to attach to the activity.
+     * @param expiresAt Optional expiration timestamp for the activity.
+     * @param filterTags Tags used for filtering the activity.
+     * @param id Optional client-provided activity ID.
+     * @param interestTags Tags used to drive interest-based ranking.
+     * @param location Optional geographic location associated with the activity.
+     * @param mentionedUserIds IDs of users mentioned in the activity.
+     * @param parentId The ID of the parent activity, when this is a reply.
+     * @param pollId The ID of an associated poll, when applicable.
+     * @param restrictReplies The reply-restriction policy for the activity.
+     * @param searchData Additional data indexed for search.
+     * @param skipEnrichUrl Whether to skip URL enrichment when processing the activity text.
+     * @param text The textual content of the activity.
+     * @param visibility The visibility policy for the activity.
+     * @param visibilityTag The visibility tag used when [visibility] is tag-based.
+     */
     public constructor(
         type: String,
         feeds: List<String> = emptyList(),

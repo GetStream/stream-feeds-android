@@ -21,6 +21,7 @@ import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import kotlinx.coroutines.flow.StateFlow
 
+/** Observable state of the poll votes returned by a [PollVotesQuery]. */
 public interface PollVoteListState {
 
     /** The query used to fetch the poll votes. */
