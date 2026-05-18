@@ -16,12 +16,6 @@ public final class io/getstream/feeds/android/client/BuildConfig {
 	public fun <init> ()V
 }
 
-public final class io/getstream/feeds/android/client/GKt {
-	public static final field tag Ljava/lang/String;
-	public static final fun gol (Ljava/lang/Object;[Ljava/lang/Object;)V
-	public static final fun trace (Ljava/lang/String;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
-}
-
 public abstract interface class io/getstream/feeds/android/client/api/FeedsClient {
 	public abstract fun activity (Ljava/lang/String;Lio/getstream/feeds/android/client/api/model/FeedId;)Lio/getstream/feeds/android/client/api/state/Activity;
 	public abstract fun activityCommentList (Lio/getstream/feeds/android/client/api/state/query/ActivityCommentsQuery;)Lio/getstream/feeds/android/client/api/state/ActivityCommentList;
