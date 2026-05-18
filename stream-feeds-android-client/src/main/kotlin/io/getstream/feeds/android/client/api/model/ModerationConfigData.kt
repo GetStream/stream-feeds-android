@@ -26,6 +26,25 @@ import io.getstream.feeds.android.network.models.BlockListConfig
 import io.getstream.feeds.android.network.models.VelocityFilterConfig
 import java.util.Date
 
+/**
+ * A moderation configuration: the set of policies that apply to entities matched by [key] within a
+ * [team]. Each non-null sub-config enables a moderation feature.
+ *
+ * @property aiImageConfig Image moderation configuration.
+ * @property aiTextConfig Text moderation configuration.
+ * @property aiVideoConfig Video moderation configuration.
+ * @property async When `true`, moderation runs asynchronously and does not block the originating
+ *   call.
+ * @property automodPlatformCircumventionConfig Platform-circumvention automod configuration.
+ * @property automodSemanticFiltersConfig Semantic-filter automod configuration.
+ * @property automodToxicityConfig Toxicity automod configuration.
+ * @property blockListConfig Word-blocklist configuration.
+ * @property createdAt When this configuration was created.
+ * @property key Identifier for this configuration, unique within a team.
+ * @property team Team this configuration belongs to. Empty for the default, app-wide config.
+ * @property updatedAt When this configuration was last updated.
+ * @property velocityFilterConfig Velocity-filter (anti-spam) configuration.
+ */
 public data class ModerationConfigData(
     public val aiImageConfig: AIImageConfig?,
     public val aiTextConfig: AITextConfig?,
@@ -41,6 +60,7 @@ public data class ModerationConfigData(
     public val updatedAt: Date,
     public val velocityFilterConfig: VelocityFilterConfig?,
 ) {
+    /** Alias for [key]. */
     public val id: String
         get() = key
 }
