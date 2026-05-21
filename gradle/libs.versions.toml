@@ -8,6 +8,7 @@ firebaseBom = "33.16.0"
 hilt = "2.57"
 hiltNavigationCompose = "1.2.0"
 kotlin = "2.2.0"
+kotlinBinaryValidator = "0.16.3"
 kotlinxCoroutines = "1.10.2"
 kotlinpoet = "2.2.0"
 ksp = "2.2.0-2.0.2"
@@ -98,6 +99,7 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 arturbosch-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "kotlinBinaryValidator" }
 stream-project = { id = "io.getstream.project", version.ref = "streamConventions" }
 stream-android-library = { id = "io.getstream.android.library", version.ref = "streamConventions" }
 stream-android-application = { id = "io.getstream.android.application", version.ref = "streamConventions" }

@@ -30,9 +30,12 @@ public interface FeedUploadContext : UploadContext
  */
 public data object EmptyFeedUploadContext : FeedUploadContext
 
+/** An [UploadPayload] for feed uploads. */
 public typealias FeedUploadPayload = UploadPayload<FeedUploadContext>
 
+/** Builds a [FeedUploadPayload] with no extra context attached. */
 public fun FeedUploadPayload(file: File, type: FileType): FeedUploadPayload =
     FeedUploadPayload(file, type, EmptyFeedUploadContext)
 
+/** An [Uploader] for feed uploads. */
 public typealias FeedUploader = Uploader<FeedUploadContext>

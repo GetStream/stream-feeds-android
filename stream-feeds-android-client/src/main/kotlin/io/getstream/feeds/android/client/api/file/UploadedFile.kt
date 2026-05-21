@@ -16,4 +16,11 @@
 
 package io.getstream.feeds.android.client.api.file
 
+/**
+ * Represents a file that has been uploaded to the CDN.
+ *
+ * @property fileUrl The remote URL of the uploaded file.
+ * @property thumbnailUrl The remote URL of the generated thumbnail, when available (typically for
+ *   image and video uploads).
+ */
 public data class UploadedFile(val fileUrl: String, val thumbnailUrl: String?)

@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.arturbosch.detekt) apply true
+    alias(libs.plugins.binary.compatibility.validator)
     id("com.google.gms.google-services") version "4.4.3" apply false
 }
 
@@ -33,4 +34,15 @@ detekt {
     toolVersion = "1.23.8"
     config.setFrom(file("config/detekt/detekt.yml"))
     buildUponDefaultConfig = true
+}
+
+apiValidation {
+    ignoredProjects += listOf(
+        "stream-feeds-android-sample",
+        "stream-feeds-android-metrics",
+    )
+
+    nonPublicMarkers += listOf(
+        "io.getstream.android.core.annotations.StreamInternalApi",
+    )
 }
