@@ -15,7 +15,6 @@ jobs:
     permissions:
       contents: read
     uses: GetStream/stream-build-conventions-android/.github/workflows/sdk-size-updates.yml@8c5fbade4ee9c06a0a979bcb0866e64669254f73
-      contents: read
     with:
       modules: "stream-feeds-android-client"
       metrics-project: "stream-feeds-android-metrics"
