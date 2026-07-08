@@ -16,6 +16,7 @@ on:
 concurrency:
   group: release
   cancel-in-progress: false
+
 jobs:
   pre_release_check:
     permissions:
