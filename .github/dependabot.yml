@@ -25,7 +25,6 @@ updates:
       - dependency-name: "io.getstream.android.test"
       - dependency-name: "io.getstream.java.library"
       - dependency-name: "io.getstream.java.platform"
-      - dependency-name: "io.getstream.publish"
     groups:
       stream-conventions:
         patterns:
