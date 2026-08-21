@@ -159,7 +159,6 @@ internal fun createFeedsClient(
     tokenProvider: StreamTokenProvider,
     config: FeedsConfig,
 ): FeedsClient {
-
     val logProvider = createLoggerProvider(config.loggingConfig.customLogger)
     val logger = logProvider.taggedLogger("FeedsClient")
 

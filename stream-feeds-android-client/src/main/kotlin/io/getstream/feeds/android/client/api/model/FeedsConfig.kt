@@ -27,8 +27,13 @@ import io.getstream.feeds.android.client.api.logging.LoggingConfig
  * @param customUploader Optional [FeedUploader] implementation for overriding the default CDN.
  * @param loggingConfig Configuration for logging within the FeedsClient. See [LoggingConfig] for
  *   more details.
+ * @param customHeaders Extra headers sent with every API request, over HTTP only and not on the
+ *   WebSocket. Headers controlled by the SDK or its HTTP stack cannot be overridden and are ignored
+ *   with a warning. Building the client rejects a name or value that is not valid HTTP, or two
+ *   names differing only in case, which HTTP treats as one header.
  */
 public class FeedsConfig(
     public val customUploader: FeedUploader? = null,
     public val loggingConfig: LoggingConfig = LoggingConfig(),
+    public val customHeaders: Map<String, String> = emptyMap(),
 )

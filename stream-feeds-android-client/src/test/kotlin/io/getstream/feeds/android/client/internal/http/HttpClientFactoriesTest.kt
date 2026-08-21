@@ -24,6 +24,7 @@ import io.mockk.mockk
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -34,18 +35,47 @@ internal class HttpClientFactoriesTest {
     @Test
     fun `on createHttpConfig, then return StreamHttpConfig with correct configuration`() {
         val okHttpBuilder = OkHttpClient.Builder()
-        val config =
-            FeedsConfig(loggingConfig = LoggingConfig(httpLoggingLevel = HttpLoggingLevel.Basic))
-
         val result =
             createHttpConfig(
                 okHttpBuilder = okHttpBuilder,
                 logProvider = mockk(relaxed = true),
-                config = config,
+                config =
+                    FeedsConfig(
+                        loggingConfig = LoggingConfig(httpLoggingLevel = HttpLoggingLevel.Basic)
+                    ),
             )
 
         assertEquals(okHttpBuilder, result.httpBuilder)
         assertTrue(result.automaticInterceptors)
+        assertEquals(1, result.configuredInterceptors.size)
+        assertTrue(result.configuredInterceptors.first() is HttpLoggingInterceptor)
+    }
+
+    @Test
+    fun `on createHttpConfig with custom headers, then add the custom headers interceptor first`() {
+        val result =
+            createHttpConfig(
+                okHttpBuilder = OkHttpClient.Builder(),
+                logProvider = mockk(relaxed = true),
+                config = FeedsConfig(customHeaders = mapOf("x-stream-ext" to "version=1.2.3")),
+            )
+
+        // The custom headers interceptor is private, so assert by position: it precedes logging.
+        val interceptors = result.configuredInterceptors.toList()
+        assertEquals(2, interceptors.size)
+        assertFalse(interceptors[0] is HttpLoggingInterceptor)
+        assertTrue(interceptors[1] is HttpLoggingInterceptor)
+    }
+
+    @Test
+    fun `on createHttpConfig with only reserved headers, then add no custom headers interceptor`() {
+        val result =
+            createHttpConfig(
+                okHttpBuilder = OkHttpClient.Builder(),
+                logProvider = mockk(relaxed = true),
+                config = FeedsConfig(customHeaders = mapOf("Authorization" to "spoofed")),
+            )
+
         assertEquals(1, result.configuredInterceptors.size)
         assertTrue(result.configuredInterceptors.first() is HttpLoggingInterceptor)
     }

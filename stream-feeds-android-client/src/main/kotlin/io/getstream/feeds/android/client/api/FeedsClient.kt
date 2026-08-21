@@ -706,7 +706,8 @@ public interface FeedsClient {
  * @param apiKey The API key for the client.
  * @param user The user associated with the client.
  * @param tokenProvider The provider for user tokens, used for refreshing tokens as needed.
- * @param config Configuration for the client, such as custom file uploader.
+ * @param config Configuration for the client, such as a custom file uploader, logging, or extra
+ *   headers to send with every HTTP request. See [FeedsConfig].
  */
 public fun FeedsClient(
     context: Context,
