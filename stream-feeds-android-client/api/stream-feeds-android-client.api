@@ -865,8 +865,9 @@ public final class io/getstream/feeds/android/client/api/model/FeedVisibility$Vi
 
 public final class io/getstream/feeds/android/client/api/model/FeedsConfig {
 	public fun <init> ()V
-	public fun <init> (Lio/getstream/feeds/android/client/api/file/Uploader;Lio/getstream/feeds/android/client/api/logging/LoggingConfig;)V
-	public synthetic fun <init> (Lio/getstream/feeds/android/client/api/file/Uploader;Lio/getstream/feeds/android/client/api/logging/LoggingConfig;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lio/getstream/feeds/android/client/api/file/Uploader;Lio/getstream/feeds/android/client/api/logging/LoggingConfig;Ljava/util/Map;)V
+	public synthetic fun <init> (Lio/getstream/feeds/android/client/api/file/Uploader;Lio/getstream/feeds/android/client/api/logging/LoggingConfig;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getCustomHeaders ()Ljava/util/Map;
 	public final fun getCustomUploader ()Lio/getstream/feeds/android/client/api/file/Uploader;
 	public final fun getLoggingConfig ()Lio/getstream/feeds/android/client/api/logging/LoggingConfig;
 }

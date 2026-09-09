@@ -36,8 +36,12 @@ internal fun createHttpConfig(
     StreamHttpConfig(
         httpBuilder = okHttpBuilder,
         automaticInterceptors = true,
+        // Before the logging interceptor, so the custom headers appear in the logs.
         configuredInterceptors =
-            setOf(createLoggingInterceptor(logProvider, config.loggingConfig.httpLoggingLevel)),
+            setOfNotNull(
+                createCustomHeadersInterceptor(config.customHeaders, logProvider),
+                createLoggingInterceptor(logProvider, config.loggingConfig.httpLoggingLevel),
+            ),
     )
 
 internal fun createRetrofit(endpointConfig: EndpointConfig, okHttpClient: OkHttpClient): Retrofit =
