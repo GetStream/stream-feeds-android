@@ -22,6 +22,8 @@ import io.getstream.android.core.api.model.connection.StreamConnectedUser
 import io.getstream.android.core.api.model.connection.StreamConnectionState
 import io.getstream.android.core.api.model.exceptions.StreamClientException
 import io.getstream.android.core.api.model.value.StreamApiKey
+import io.getstream.android.core.api.processing.StreamAggregatedEvent
+import io.getstream.android.core.api.socket.listeners.StreamClientListener
 import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.Moderation
 import io.getstream.feeds.android.client.api.file.FeedUploader
@@ -62,9 +64,11 @@ import io.getstream.feeds.android.network.models.ActivityRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
+import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import java.util.Date
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -436,4 +440,51 @@ internal class FeedsClientImplTest {
 
         assertEquals(query, result.query)
     }
+
+    @Test
+    fun `on aggregated event, then dispatch every event it contains`() = runTest {
+        val listener = captureClientListener()
+
+        listener.onEvent(
+            StreamAggregatedEvent(listOf(wsEvent("activity.added"), wsEvent("activity.deleted")))
+        )
+
+        // One dispatch per contained event, exactly as if they had arrived separately.
+        verify(exactly = 2) { feedsEventsSubscriptionManager.forEach(any()) }
+    }
+
+    @Test
+    fun `on aggregated event holding a foreign payload, then still dispatch the WSEvents`() =
+        runTest {
+            val listener = captureClientListener()
+
+            // A non-WSEvent entry must not stop the rest of the batch.
+            listener.onEvent(
+                StreamAggregatedEvent(listOf("not-an-event", wsEvent("activity.added")))
+            )
+
+            verify(exactly = 1) { feedsEventsSubscriptionManager.forEach(any()) }
+        }
+
+    @Test
+    fun `on single event, then dispatch it once`() = runTest {
+        val listener = captureClientListener()
+
+        listener.onEvent(wsEvent("activity.added"))
+
+        verify(exactly = 1) { feedsEventsSubscriptionManager.forEach(any()) }
+    }
+
+    private suspend fun captureClientListener(): StreamClientListener {
+        val listener = slot<StreamClientListener>()
+        every { coreClient.subscribe(capture(listener)) } returns Result.success(mockk())
+        coEvery { coreClient.connect() } returns Result.success(mockk())
+        feedsClient.connect()
+        return listener.captured
+    }
+
+    private fun wsEvent(type: String): WSEvent =
+        object : WSEvent {
+            override fun getWSEventType(): String = type
+        }
 }
