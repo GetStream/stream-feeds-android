@@ -22,6 +22,7 @@ import io.getstream.android.core.api.model.connection.StreamConnectedUser
 import io.getstream.android.core.api.model.connection.StreamConnectionState
 import io.getstream.android.core.api.model.exceptions.StreamClientException
 import io.getstream.android.core.api.model.value.StreamApiKey
+import io.getstream.android.core.api.processing.StreamAggregatedEvent
 import io.getstream.android.core.api.socket.listeners.StreamClientListener
 import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.FeedsClient
@@ -168,6 +169,18 @@ internal class FeedsClientImpl(
         object : StreamClientListener {
 
             override fun onEvent(event: Any) {
+                when (event) {
+                    // Core aggregates events into one dispatch when the socket spikes. Arrival
+                    // order is preserved, so replaying them one by one matches normal traffic.
+                    is StreamAggregatedEvent<*> -> {
+                        logger.v { "[onEvent] Received ${event.events.size} aggregated events" }
+                        event.events.forEach(::handleEvent)
+                    }
+                    else -> handleEvent(event)
+                }
+            }
+
+            private fun handleEvent(event: Any?) {
                 if (event is WSEvent) {
                     logger.v { "[onEvent] Received event from core: $event" }
                     _events.tryEmit(event)

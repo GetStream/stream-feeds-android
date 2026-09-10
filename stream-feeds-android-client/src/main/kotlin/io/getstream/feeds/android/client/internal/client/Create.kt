@@ -32,7 +32,6 @@ import io.getstream.android.core.api.model.value.StreamApiKey
 import io.getstream.android.core.api.model.value.StreamHttpClientInfoHeader
 import io.getstream.android.core.api.model.value.StreamUserId
 import io.getstream.android.core.api.model.value.StreamWsUrl
-import io.getstream.android.core.api.processing.StreamBatcher
 import io.getstream.android.core.api.processing.StreamRetryProcessor
 import io.getstream.android.core.api.processing.StreamSerialProcessingQueue
 import io.getstream.android.core.api.processing.StreamSingleFlightProcessor
@@ -120,13 +119,8 @@ internal fun createStreamCoreClient(
                     logger = logProvider.taggedLogger("SCHealthMonitor"),
                     scope = scope,
                 ),
-            batcher =
-                StreamBatcher(
-                    scope = scope,
-                    batchSize = 10,
-                    initialDelayMs = 100L,
-                    maxDelayMs = 1_000L,
-                ),
+            // eventAggregator is left unset: core builds one from the event parser it already
+            // holds, at the aggregation defaults on socketConfig.
         )
 
     return StreamClient(
