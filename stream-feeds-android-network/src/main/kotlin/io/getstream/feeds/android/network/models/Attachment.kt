@@ -48,9 +48,9 @@ public data class Attachment(
     @Json(name = "type") public val type: kotlin.String? = null,
     @Json(name = "actions")
     public val actions: kotlin.collections.List<io.getstream.feeds.android.network.models.Action>? =
-        emptyList(),
+        null,
     @Json(name = "fields")
     public val fields: kotlin.collections.List<io.getstream.feeds.android.network.models.Field>? =
-        emptyList(),
+        null,
     @Json(name = "giphy") public val giphy: io.getstream.feeds.android.network.models.Images? = null,
 )

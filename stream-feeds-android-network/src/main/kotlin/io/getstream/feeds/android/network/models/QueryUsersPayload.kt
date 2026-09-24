@@ -36,5 +36,5 @@ public data class QueryUsersPayload(
     @Json(name = "sort")
     public val sort:
         kotlin.collections.List<io.getstream.feeds.android.network.models.SortParamRequest>? =
-        emptyList(),
+        null,
 )

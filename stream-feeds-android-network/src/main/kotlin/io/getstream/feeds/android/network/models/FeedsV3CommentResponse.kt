@@ -53,9 +53,8 @@ public data class FeedsV3CommentResponse(
     @Json(name = "attachments")
     public val attachments:
         kotlin.collections.List<io.getstream.feeds.android.network.models.Attachment>? =
-        emptyList(),
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+        null,
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
     @Json(name = "moderation")
     public val moderation: io.getstream.feeds.android.network.models.ModerationV2Response? = null,
 )

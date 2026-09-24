@@ -28,5 +28,5 @@ public data class UpdateBlockListRequest(
     @Json(name = "is_leet_check_enabled") public val isLeetCheckEnabled: kotlin.Boolean? = null,
     @Json(name = "is_plural_check_enabled") public val isPluralCheckEnabled: kotlin.Boolean? = null,
     @Json(name = "team") public val team: kotlin.String? = null,
-    @Json(name = "words") public val words: kotlin.collections.List<kotlin.String>? = emptyList(),
+    @Json(name = "words") public val words: kotlin.collections.List<kotlin.String>? = null,
 )

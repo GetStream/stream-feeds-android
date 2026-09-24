@@ -37,7 +37,7 @@ public data class UpdateFeedMembersRequest(
     @Json(name = "members")
     public val members:
         kotlin.collections.List<io.getstream.feeds.android.network.models.FeedMemberRequest>? =
-        emptyList(),
+        null,
 ) {
 
     /** Operation Enum */

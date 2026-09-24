@@ -33,7 +33,7 @@ public data class PollVoteRemovedFeedEvent(
     public val poll: io.getstream.feeds.android.network.models.PollResponseData,
     @Json(name = "poll_vote")
     public val pollVote: io.getstream.feeds.android.network.models.PollVoteResponseData,
-    @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "type") public val type: kotlin.String = "feeds.poll.vote_removed",
     @Json(name = "feed_visibility") public val feedVisibility: kotlin.String? = null,
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
 ) :

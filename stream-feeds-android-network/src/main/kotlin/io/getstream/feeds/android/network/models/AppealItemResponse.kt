@@ -34,7 +34,7 @@ public data class AppealItemResponse(
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
     @Json(name = "decision_reason") public val decisionReason: kotlin.String? = null,
     @Json(name = "attachments")
-    public val attachments: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val attachments: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "entity_content")
     public val entityContent: io.getstream.feeds.android.network.models.ModerationPayload? = null,
     @Json(name = "user")

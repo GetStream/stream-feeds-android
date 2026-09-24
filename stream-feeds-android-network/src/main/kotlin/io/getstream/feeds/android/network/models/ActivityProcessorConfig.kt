@@ -27,6 +27,5 @@ import kotlin.io.*
 public data class ActivityProcessorConfig(
     @Json(name = "type") public val type: kotlin.String,
     @Json(name = "openai_key") public val openaiKey: kotlin.String? = null,
-    @Json(name = "config")
-    public val config: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "config") public val config: kotlin.collections.Map<kotlin.String, Any?>? = null,
 )

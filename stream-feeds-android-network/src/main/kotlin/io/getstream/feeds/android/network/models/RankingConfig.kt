@@ -28,12 +28,12 @@ public data class RankingConfig(
     @Json(name = "score") public val score: kotlin.String? = null,
     @Json(name = "type") public val type: kotlin.String? = null,
     @Json(name = "defaults")
-    public val defaults: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    public val defaults: kotlin.collections.Map<kotlin.String, Any?>? = null,
     @Json(name = "functions")
     public val functions:
         kotlin.collections.Map<
             kotlin.String,
             io.getstream.feeds.android.network.models.DecayFunctionConfig,
         >? =
-        emptyMap(),
+        null,
 )

@@ -44,9 +44,8 @@ public data class CreatePollRequest(
     @Json(name = "options")
     public val options:
         kotlin.collections.List<io.getstream.feeds.android.network.models.PollOptionInput>? =
-        emptyList(),
-    @Json(name = "Custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+        null,
+    @Json(name = "Custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
 ) {
 
     /** VotingVisibility Enum */

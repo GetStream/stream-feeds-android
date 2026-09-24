@@ -33,7 +33,7 @@ public data class UserUpdatedEvent(
     public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
     @Json(name = "user")
     public val user: io.getstream.feeds.android.network.models.UserResponsePrivacyFields,
-    @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "type") public val type: kotlin.String = "user.updated",
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
 ) :
     io.getstream.feeds.android.network.models.WSClientEvent,

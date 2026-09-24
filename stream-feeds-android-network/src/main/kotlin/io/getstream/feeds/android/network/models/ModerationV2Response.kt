@@ -31,9 +31,8 @@ public data class ModerationV2Response(
     @Json(name = "platform_circumvented") public val platformCircumvented: kotlin.Boolean? = null,
     @Json(name = "semantic_filter_matched") public val semanticFilterMatched: kotlin.String? = null,
     @Json(name = "blocklists_matched")
-    public val blocklistsMatched: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val blocklistsMatched: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "image_harms")
-    public val imageHarms: kotlin.collections.List<kotlin.String>? = emptyList(),
-    @Json(name = "text_harms")
-    public val textHarms: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val imageHarms: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "text_harms") public val textHarms: kotlin.collections.List<kotlin.String>? = null,
 )

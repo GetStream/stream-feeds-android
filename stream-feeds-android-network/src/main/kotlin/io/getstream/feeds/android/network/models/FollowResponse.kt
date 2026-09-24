@@ -41,8 +41,7 @@ public data class FollowResponse(
     public val targetFeed: io.getstream.feeds.android.network.models.FeedResponse,
     @Json(name = "request_accepted_at") public val requestAcceptedAt: java.util.Date? = null,
     @Json(name = "request_rejected_at") public val requestRejectedAt: java.util.Date? = null,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
 ) {
 
     /** PushPreference Enum */

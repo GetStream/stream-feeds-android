@@ -36,8 +36,7 @@ public data class EnrichedCollectionResponse(
     @Json(name = "created_at") public val createdAt: java.util.Date? = null,
     @Json(name = "updated_at") public val updatedAt: java.util.Date? = null,
     @Json(name = "user_id") public val userId: kotlin.String? = null,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
 ) {
 
     /** Status Enum */

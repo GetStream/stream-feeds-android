@@ -33,7 +33,7 @@ public data class UserReactivatedEvent(
     public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
     @Json(name = "user")
     public val user: io.getstream.feeds.android.network.models.UserResponseCommonFields,
-    @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "type") public val type: kotlin.String = "user.reactivated",
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
     @Json(name = "created_by")
     public val createdBy: io.getstream.feeds.android.network.models.UserResponseCommonFields? = null,

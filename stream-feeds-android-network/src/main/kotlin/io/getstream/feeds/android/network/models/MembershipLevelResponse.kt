@@ -33,6 +33,5 @@ public data class MembershipLevelResponse(
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
     @Json(name = "tags") public val tags: kotlin.collections.List<kotlin.String> = emptyList(),
     @Json(name = "description") public val description: kotlin.String? = null,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
 )

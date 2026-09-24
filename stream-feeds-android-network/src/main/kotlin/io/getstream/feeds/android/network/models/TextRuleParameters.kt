@@ -33,11 +33,11 @@ public data class TextRuleParameters(
     @Json(name = "threshold") public val threshold: kotlin.Int? = null,
     @Json(name = "time_window") public val timeWindow: kotlin.String? = null,
     @Json(name = "blocklist_match")
-    public val blocklistMatch: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val blocklistMatch: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "harm_labels")
-    public val harmLabels: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val harmLabels: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "semantic_filter_names")
-    public val semanticFilterNames: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val semanticFilterNames: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "llm_harm_labels")
-    public val llmHarmLabels: kotlin.collections.Map<kotlin.String, kotlin.String>? = emptyMap(),
+    public val llmHarmLabels: kotlin.collections.Map<kotlin.String, kotlin.String>? = null,
 )

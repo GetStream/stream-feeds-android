@@ -29,5 +29,5 @@ import kotlin.io.*
  */
 public data class OwnBatchRequest(
     @Json(name = "feeds") public val feeds: kotlin.collections.List<kotlin.String> = emptyList(),
-    @Json(name = "fields") public val fields: kotlin.collections.List<kotlin.String>? = emptyList(),
+    @Json(name = "fields") public val fields: kotlin.collections.List<kotlin.String>? = null,
 )

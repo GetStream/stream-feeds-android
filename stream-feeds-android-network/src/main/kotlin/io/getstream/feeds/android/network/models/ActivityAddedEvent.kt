@@ -31,7 +31,7 @@ public data class ActivityAddedEvent(
     public val activity: io.getstream.feeds.android.network.models.ActivityResponse,
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-    @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "type") public val type: kotlin.String = "feeds.activity.added",
     @Json(name = "feed_visibility") public val feedVisibility: kotlin.String? = null,
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
     @Json(name = "user")

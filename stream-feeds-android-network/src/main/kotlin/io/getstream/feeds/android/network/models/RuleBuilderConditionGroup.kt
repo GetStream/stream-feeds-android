@@ -29,5 +29,5 @@ public data class RuleBuilderConditionGroup(
     @Json(name = "conditions")
     public val conditions:
         kotlin.collections.List<io.getstream.feeds.android.network.models.RuleBuilderCondition>? =
-        emptyList(),
+        null,
 )

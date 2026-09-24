@@ -30,17 +30,15 @@ public data class ActivityMarkEvent(
     @Json(name = "fid") public val fid: kotlin.String,
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-    @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "type") public val type: kotlin.String = "feeds.activity.marked",
     @Json(name = "feed_visibility") public val feedVisibility: kotlin.String? = null,
     @Json(name = "mark_all_read") public val markAllRead: kotlin.Boolean? = null,
     @Json(name = "mark_all_seen") public val markAllSeen: kotlin.Boolean? = null,
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
-    @Json(name = "mark_read")
-    public val markRead: kotlin.collections.List<kotlin.String>? = emptyList(),
-    @Json(name = "mark_seen")
-    public val markSeen: kotlin.collections.List<kotlin.String>? = emptyList(),
+    @Json(name = "mark_read") public val markRead: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "mark_seen") public val markSeen: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "mark_watched")
-    public val markWatched: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val markWatched: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "user")
     public val user: io.getstream.feeds.android.network.models.UserResponseCommonFields? = null,
 ) :

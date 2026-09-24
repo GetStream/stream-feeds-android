@@ -31,7 +31,7 @@ public data class PollUpdatedFeedEvent(
     public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
     @Json(name = "poll")
     public val poll: io.getstream.feeds.android.network.models.PollResponseData,
-    @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "type") public val type: kotlin.String = "feeds.poll.updated",
     @Json(name = "feed_visibility") public val feedVisibility: kotlin.String? = null,
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
 ) :
