@@ -26,6 +26,5 @@ import kotlin.io.*
 /** Configuration for custom moderation action */
 public data class CustomActionRequestPayload(
     @Json(name = "id") public val id: kotlin.String? = null,
-    @Json(name = "options")
-    public val options: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "options") public val options: kotlin.collections.Map<kotlin.String, Any?>? = null,
 )

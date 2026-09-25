@@ -34,11 +34,10 @@ public data class NotificationTarget(
     @Json(name = "attachments")
     public val attachments:
         kotlin.collections.List<io.getstream.feeds.android.network.models.Attachment>? =
-        emptyList(),
+        null,
     @Json(name = "comment")
     public val comment: io.getstream.feeds.android.network.models.NotificationComment? = null,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
     @Json(name = "parent_activity")
     public val parentActivity:
         io.getstream.feeds.android.network.models.NotificationParentActivity? =

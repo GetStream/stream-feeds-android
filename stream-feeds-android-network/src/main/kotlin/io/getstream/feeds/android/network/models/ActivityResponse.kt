@@ -107,13 +107,13 @@ public data class ActivityResponse(
     @Json(name = "friend_reactions")
     public val friendReactions:
         kotlin.collections.List<io.getstream.feeds.android.network.models.FeedsReactionResponse>? =
-        emptyList(),
+        null,
     @Json(name = "current_feed")
     public val currentFeed: io.getstream.feeds.android.network.models.FeedResponse? = null,
     @Json(name = "location")
     public val location: io.getstream.feeds.android.network.models.Location? = null,
     @Json(name = "metrics")
-    public val metrics: kotlin.collections.Map<kotlin.String, kotlin.Int>? = emptyMap(),
+    public val metrics: kotlin.collections.Map<kotlin.String, kotlin.Int>? = null,
     @Json(name = "moderation")
     public val moderation: io.getstream.feeds.android.network.models.ModerationV2Response? = null,
     @Json(name = "notification_context")
@@ -124,7 +124,7 @@ public data class ActivityResponse(
     @Json(name = "poll")
     public val poll: io.getstream.feeds.android.network.models.PollResponseData? = null,
     @Json(name = "score_vars")
-    public val scoreVars: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    public val scoreVars: kotlin.collections.Map<kotlin.String, Any?>? = null,
 ) {
 
     /** RestrictReplies Enum */

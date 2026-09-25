@@ -35,8 +35,7 @@ public data class BookmarkResponse(
     @Json(name = "activity_id") public val activityId: kotlin.String? = null,
     @Json(name = "comment")
     public val comment: io.getstream.feeds.android.network.models.CommentResponse? = null,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
     @Json(name = "folder")
     public val folder: io.getstream.feeds.android.network.models.BookmarkFolderResponse? = null,
 )

@@ -29,5 +29,5 @@ public data class RuleBuilderConfig(
     @Json(name = "rules")
     public val rules:
         kotlin.collections.List<io.getstream.feeds.android.network.models.RuleBuilderRule>? =
-        emptyList(),
+        null,
 )

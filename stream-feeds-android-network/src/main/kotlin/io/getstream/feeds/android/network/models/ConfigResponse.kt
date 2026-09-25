@@ -36,13 +36,13 @@ public data class ConfigResponse(
     @Json(name = "ai_image_label_definitions")
     public val aiImageLabelDefinitions:
         kotlin.collections.List<io.getstream.feeds.android.network.models.AIImageLabelDefinition>? =
-        emptyList(),
+        null,
     @Json(name = "ai_image_config")
     public val aiImageConfig: io.getstream.feeds.android.network.models.AIImageConfig? = null,
     @Json(name = "ai_image_subclassifications")
     public val aiImageSubclassifications:
         kotlin.collections.Map<kotlin.String, kotlin.collections.List<kotlin.String>>? =
-        emptyMap(),
+        null,
     @Json(name = "ai_text_config")
     public val aiTextConfig: io.getstream.feeds.android.network.models.AITextConfig? = null,
     @Json(name = "ai_video_config")

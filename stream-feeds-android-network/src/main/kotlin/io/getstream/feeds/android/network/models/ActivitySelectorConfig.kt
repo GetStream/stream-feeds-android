@@ -32,9 +32,7 @@ public data class ActivitySelectorConfig(
     @Json(name = "type") public val type: kotlin.String? = null,
     @Json(name = "sort")
     public val sort: kotlin.collections.List<io.getstream.feeds.android.network.models.SortParam>? =
-        emptyList(),
-    @Json(name = "filter")
-    public val filter: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
-    @Json(name = "params")
-    public val params: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+        null,
+    @Json(name = "filter") public val filter: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "params") public val params: kotlin.collections.Map<kotlin.String, Any?>? = null,
 )

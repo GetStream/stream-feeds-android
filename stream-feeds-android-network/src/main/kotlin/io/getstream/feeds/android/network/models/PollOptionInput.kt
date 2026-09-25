@@ -26,6 +26,5 @@ import kotlin.io.*
 /**  */
 public data class PollOptionInput(
     @Json(name = "text") public val text: kotlin.String? = null,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
 )

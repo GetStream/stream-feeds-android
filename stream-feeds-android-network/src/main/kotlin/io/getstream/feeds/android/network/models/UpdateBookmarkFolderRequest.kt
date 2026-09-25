@@ -26,6 +26,5 @@ import kotlin.io.*
 /**  */
 public data class UpdateBookmarkFolderRequest(
     @Json(name = "name") public val name: kotlin.String? = null,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
 )

@@ -31,5 +31,5 @@ public data class ImageUploadResponse(
     @Json(name = "upload_sizes")
     public val uploadSizes:
         kotlin.collections.List<io.getstream.feeds.android.network.models.ImageSize>? =
-        emptyList(),
+        null,
 )

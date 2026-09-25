@@ -41,7 +41,7 @@ import io.getstream.feeds.android.network.models.CreatePollRequest.VotingVisibil
 import io.getstream.feeds.android.network.models.CreatePollRequest.VotingVisibility.Public
 import io.getstream.feeds.android.network.models.MarkActivityRequest
 import io.getstream.feeds.android.network.models.PollOptionInput
-import io.getstream.feeds.android.network.models.UpdateActivityRequest
+import io.getstream.feeds.android.network.models.UpdateActivityPartialRequest
 import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.util.Feeds
@@ -171,7 +171,10 @@ constructor(private val application: Application, loginManager: LoginManager) : 
     fun onEditActivity(activityId: String, text: String) {
         viewState.withFirstContent(viewModelScope) {
             timeline
-                .updateActivity(activityId, UpdateActivityRequest(text = text))
+                .updateActivityPartial(
+                    activityId,
+                    UpdateActivityPartialRequest(set = mapOf("text" to text)),
+                )
                 .logResult(TAG, "Updating activity: $activityId with text: $text")
                 .notifyOnFailure { "Failed to edit activity" }
         }

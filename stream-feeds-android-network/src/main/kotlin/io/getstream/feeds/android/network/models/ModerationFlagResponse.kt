@@ -38,9 +38,8 @@ public data class ModerationFlagResponse(
     @Json(name = "entity_creator_id") public val entityCreatorId: kotlin.String? = null,
     @Json(name = "reason") public val reason: kotlin.String? = null,
     @Json(name = "review_queue_item_id") public val reviewQueueItemId: kotlin.String? = null,
-    @Json(name = "labels") public val labels: kotlin.collections.List<kotlin.String>? = emptyList(),
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "labels") public val labels: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
     @Json(name = "moderation_payload")
     public val moderationPayload:
         io.getstream.feeds.android.network.models.ModerationPayloadResponse? =

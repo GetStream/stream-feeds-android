@@ -33,7 +33,7 @@ public data class CommentAddedEvent(
     public val comment: io.getstream.feeds.android.network.models.CommentResponse,
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-    @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "type") public val type: kotlin.String = "feeds.comment.added",
     @Json(name = "feed_visibility") public val feedVisibility: kotlin.String? = null,
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
     @Json(name = "user")

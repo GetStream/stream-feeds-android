@@ -58,7 +58,7 @@ public data class ReviewQueueItemResponse(
     @Json(name = "escalated_at") public val escalatedAt: java.util.Date? = null,
     @Json(name = "escalated_by") public val escalatedBy: kotlin.String? = null,
     @Json(name = "reviewed_at") public val reviewedAt: java.util.Date? = null,
-    @Json(name = "teams") public val teams: kotlin.collections.List<kotlin.String>? = emptyList(),
+    @Json(name = "teams") public val teams: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "activity")
     public val activity: io.getstream.feeds.android.network.models.EnrichedActivity? = null,
     @Json(name = "appeal")

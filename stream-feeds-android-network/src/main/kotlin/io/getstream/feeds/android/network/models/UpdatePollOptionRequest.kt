@@ -27,6 +27,5 @@ import kotlin.io.*
 public data class UpdatePollOptionRequest(
     @Json(name = "id") public val id: kotlin.String,
     @Json(name = "text") public val text: kotlin.String,
-    @Json(name = "Custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "Custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
 )

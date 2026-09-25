@@ -30,9 +30,9 @@ public data class TextContentParameters(
     @Json(name = "label_operator") public val labelOperator: kotlin.String? = null,
     @Json(name = "severity") public val severity: kotlin.String? = null,
     @Json(name = "blocklist_match")
-    public val blocklistMatch: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val blocklistMatch: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "harm_labels")
-    public val harmLabels: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val harmLabels: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "llm_harm_labels")
-    public val llmHarmLabels: kotlin.collections.Map<kotlin.String, kotlin.String>? = emptyMap(),
+    public val llmHarmLabels: kotlin.collections.Map<kotlin.String, kotlin.String>? = null,
 )

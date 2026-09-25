@@ -29,7 +29,7 @@ public data class HealthCheckEvent(
     @Json(name = "created_at") public val createdAt: java.util.Date,
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-    @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "type") public val type: kotlin.String = "health.check",
     @Json(name = "cid") public val cid: kotlin.String? = null,
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
     @Json(name = "me")

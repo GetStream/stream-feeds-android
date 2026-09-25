@@ -33,6 +33,6 @@ public data class UpdateActivityPartialRequest(
     public val handleMentionNotifications: kotlin.Boolean? = null,
     @Json(name = "run_activity_processors")
     public val runActivityProcessors: kotlin.Boolean? = null,
-    @Json(name = "unset") public val unset: kotlin.collections.List<kotlin.String>? = emptyList(),
-    @Json(name = "set") public val set: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "unset") public val unset: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "set") public val set: kotlin.collections.Map<kotlin.String, Any?>? = null,
 )

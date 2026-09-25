@@ -30,7 +30,7 @@ public data class ModerationMarkReviewedEvent(
     public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
     @Json(name = "item")
     public val item: io.getstream.feeds.android.network.models.ReviewQueueItemResponse,
-    @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "type") public val type: kotlin.String = "moderation.mark_reviewed",
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
 ) :
     io.getstream.feeds.android.network.models.WSEvent,

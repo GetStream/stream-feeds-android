@@ -28,6 +28,5 @@ public data class WSAuthMessage(
     @Json(name = "token") public val token: kotlin.String,
     @Json(name = "user_details")
     public val userDetails: io.getstream.feeds.android.network.models.ConnectUserDetailsRequest,
-    @Json(name = "products")
-    public val products: kotlin.collections.List<kotlin.String>? = emptyList(),
+    @Json(name = "products") public val products: kotlin.collections.List<kotlin.String>? = null,
 )

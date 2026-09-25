@@ -37,8 +37,7 @@ public data class FeedMemberResponse(
     @Json(name = "user") public val user: io.getstream.feeds.android.network.models.UserResponse,
     @Json(name = "invite_accepted_at") public val inviteAcceptedAt: java.util.Date? = null,
     @Json(name = "invite_rejected_at") public val inviteRejectedAt: java.util.Date? = null,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
     @Json(name = "membership_level")
     public val membershipLevel: io.getstream.feeds.android.network.models.MembershipLevelResponse? =
         null,

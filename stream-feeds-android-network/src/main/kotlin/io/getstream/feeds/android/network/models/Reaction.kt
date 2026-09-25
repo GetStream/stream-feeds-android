@@ -36,27 +36,27 @@ public data class Reaction(
     @Json(name = "parent") public val parent: kotlin.String? = null,
     @Json(name = "score") public val score: kotlin.Float? = null,
     @Json(name = "target_feeds")
-    public val targetFeeds: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val targetFeeds: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "children_counts")
-    public val childrenCounts: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
-    @Json(name = "data") public val data: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    public val childrenCounts: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "data") public val data: kotlin.collections.Map<kotlin.String, Any?>? = null,
     @Json(name = "latest_children")
     public val latestChildren:
         kotlin.collections.Map<
             kotlin.String,
             kotlin.collections.List<io.getstream.feeds.android.network.models.Reaction>,
         >? =
-        emptyMap(),
+        null,
     @Json(name = "moderation")
-    public val moderation: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    public val moderation: kotlin.collections.Map<kotlin.String, Any?>? = null,
     @Json(name = "own_children")
     public val ownChildren:
         kotlin.collections.Map<
             kotlin.String,
             kotlin.collections.List<io.getstream.feeds.android.network.models.Reaction>,
         >? =
-        emptyMap(),
+        null,
     @Json(name = "target_feeds_extra_data")
-    public val targetFeedsExtraData: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    public val targetFeedsExtraData: kotlin.collections.Map<kotlin.String, Any?>? = null,
     @Json(name = "user") public val user: io.getstream.feeds.android.network.models.User? = null,
 )

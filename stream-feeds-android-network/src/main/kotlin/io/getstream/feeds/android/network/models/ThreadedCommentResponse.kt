@@ -61,19 +61,18 @@ public data class ThreadedCommentResponse(
     @Json(name = "attachments")
     public val attachments:
         kotlin.collections.List<io.getstream.feeds.android.network.models.Attachment>? =
-        emptyList(),
+        null,
     @Json(name = "latest_reactions")
     public val latestReactions:
         kotlin.collections.List<io.getstream.feeds.android.network.models.FeedsReactionResponse>? =
-        emptyList(),
+        null,
     @Json(name = "replies")
     public val replies:
         kotlin.collections.List<
             io.getstream.feeds.android.network.models.ThreadedCommentResponse
         >? =
-        emptyList(),
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+        null,
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
     @Json(name = "meta")
     public val meta: io.getstream.feeds.android.network.models.RepliesMeta? = null,
     @Json(name = "moderation")
@@ -84,7 +83,7 @@ public data class ThreadedCommentResponse(
             kotlin.String,
             io.getstream.feeds.android.network.models.FeedsReactionGroupResponse,
         >? =
-        emptyMap(),
+        null,
 ) {
 
     /** Status Enum */

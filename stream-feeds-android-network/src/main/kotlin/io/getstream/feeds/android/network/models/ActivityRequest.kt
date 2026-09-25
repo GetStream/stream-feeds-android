@@ -50,21 +50,20 @@ public data class ActivityRequest(
     @Json(name = "attachments")
     public val attachments:
         kotlin.collections.List<io.getstream.feeds.android.network.models.Attachment>? =
-        emptyList(),
+        null,
     @Json(name = "collection_refs")
-    public val collectionRefs: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val collectionRefs: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "filter_tags")
-    public val filterTags: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val filterTags: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "interest_tags")
-    public val interestTags: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val interestTags: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "mentioned_user_ids")
-    public val mentionedUserIds: kotlin.collections.List<kotlin.String>? = emptyList(),
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    public val mentionedUserIds: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
     @Json(name = "location")
     public val location: io.getstream.feeds.android.network.models.Location? = null,
     @Json(name = "search_data")
-    public val searchData: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    public val searchData: kotlin.collections.Map<kotlin.String, Any?>? = null,
 ) {
 
     /** RestrictReplies Enum */

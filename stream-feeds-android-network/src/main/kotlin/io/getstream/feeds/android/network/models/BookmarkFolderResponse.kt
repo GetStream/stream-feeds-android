@@ -30,6 +30,5 @@ public data class BookmarkFolderResponse(
     @Json(name = "name") public val name: kotlin.String,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
     @Json(name = "user") public val user: io.getstream.feeds.android.network.models.UserResponse,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
 )
