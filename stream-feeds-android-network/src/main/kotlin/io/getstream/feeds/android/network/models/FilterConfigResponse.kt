@@ -28,7 +28,7 @@ public data class FilterConfigResponse(
     @Json(name = "llm_labels")
     public val llmLabels: kotlin.collections.List<kotlin.String> = emptyList(),
     @Json(name = "ai_text_labels")
-    public val aiTextLabels: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val aiTextLabels: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "config_keys")
-    public val configKeys: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val configKeys: kotlin.collections.List<kotlin.String>? = null,
 )

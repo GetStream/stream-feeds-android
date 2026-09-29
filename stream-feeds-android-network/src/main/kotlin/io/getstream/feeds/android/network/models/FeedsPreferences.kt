@@ -38,8 +38,7 @@ public data class FeedsPreferences(
     @Json(name = "mention") public val mention: Mention? = null,
     @Json(name = "reaction") public val reaction: Reaction? = null,
     @Json(name = "custom_activity_types")
-    public val customActivityTypes: kotlin.collections.Map<kotlin.String, kotlin.String>? =
-        emptyMap(),
+    public val customActivityTypes: kotlin.collections.Map<kotlin.String, kotlin.String>? = null,
 ) {
 
     /** Comment Enum */

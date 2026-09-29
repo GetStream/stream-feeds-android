@@ -26,9 +26,8 @@ import kotlin.io.*
 
 /**  */
 public data class ModerationPayload(
-    @Json(name = "images") public val images: kotlin.collections.List<kotlin.String>? = emptyList(),
-    @Json(name = "texts") public val texts: kotlin.collections.List<kotlin.String>? = emptyList(),
-    @Json(name = "videos") public val videos: kotlin.collections.List<kotlin.String>? = emptyList(),
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "images") public val images: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "texts") public val texts: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "videos") public val videos: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
 )

@@ -31,9 +31,8 @@ public data class UpdateFeedRequest(
     @Json(name = "enrich_own_fields") public val enrichOwnFields: kotlin.Boolean? = null,
     @Json(name = "name") public val name: kotlin.String? = null,
     @Json(name = "filter_tags")
-    public val filterTags: kotlin.collections.List<kotlin.String>? = emptyList(),
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    public val filterTags: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
     @Json(name = "location")
     public val location: io.getstream.feeds.android.network.models.Location? = null,
 )

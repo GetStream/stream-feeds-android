@@ -33,6 +33,5 @@ public data class LLMConfig(
     @Json(name = "app_context") public val appContext: kotlin.String? = null,
     @Json(name = "async") public val async: kotlin.Boolean? = null,
     @Json(name = "severity_descriptions")
-    public val severityDescriptions: kotlin.collections.Map<kotlin.String, kotlin.String>? =
-        emptyMap(),
+    public val severityDescriptions: kotlin.collections.Map<kotlin.String, kotlin.String>? = null,
 )

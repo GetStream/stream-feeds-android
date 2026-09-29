@@ -32,6 +32,5 @@ public data class AddCommentReactionRequest(
     public val createNotificationActivity: kotlin.Boolean? = null,
     @Json(name = "enforce_unique") public val enforceUnique: kotlin.Boolean? = null,
     @Json(name = "skip_push") public val skipPush: kotlin.Boolean? = null,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
 )

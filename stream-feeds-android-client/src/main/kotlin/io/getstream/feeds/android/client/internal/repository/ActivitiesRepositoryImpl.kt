@@ -68,10 +68,15 @@ internal class ActivitiesRepositoryImpl(
                 files = request.attachmentUploads,
                 attachmentUploadProgress = attachmentUploadProgress,
             )
+        // Without uploads, send the caller's attachments as given: null stays omitted, [] stays [].
         val newActivityRequest =
-            request.request.copy(
-                attachments = request.request.attachments.orEmpty() + uploadedAttachments
-            )
+            if (uploadedAttachments.isEmpty()) {
+                request.request
+            } else {
+                request.request.copy(
+                    attachments = request.request.attachments.orEmpty() + uploadedAttachments
+                )
+            }
 
         api.addActivity(newActivityRequest).activity.toModel()
     }

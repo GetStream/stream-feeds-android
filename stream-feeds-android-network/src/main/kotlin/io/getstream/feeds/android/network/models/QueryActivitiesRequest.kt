@@ -35,7 +35,6 @@ public data class QueryActivitiesRequest(
     @Json(name = "sort")
     public val sort:
         kotlin.collections.List<io.getstream.feeds.android.network.models.SortParamRequest>? =
-        emptyList(),
-    @Json(name = "filter")
-    public val filter: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+        null,
+    @Json(name = "filter") public val filter: kotlin.collections.Map<kotlin.String, Any?>? = null,
 )

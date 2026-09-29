@@ -29,9 +29,9 @@ public data class MuteResponse(
     @Json(name = "mutes")
     public val mutes:
         kotlin.collections.List<io.getstream.feeds.android.network.models.UserMuteResponse>? =
-        emptyList(),
+        null,
     @Json(name = "non_existing_users")
-    public val nonExistingUsers: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val nonExistingUsers: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "own_user")
     public val ownUser: io.getstream.feeds.android.network.models.OwnUserResponse? = null,
 )

@@ -40,9 +40,8 @@ public data class AddCommentRequest(
     @Json(name = "attachments")
     public val attachments:
         kotlin.collections.List<io.getstream.feeds.android.network.models.Attachment>? =
-        emptyList(),
+        null,
     @Json(name = "mentioned_user_ids")
-    public val mentionedUserIds: kotlin.collections.List<kotlin.String>? = emptyList(),
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    public val mentionedUserIds: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
 )

@@ -123,6 +123,25 @@ internal class ActivitiesRepositoryImplTest {
     }
 
     @Test
+    fun `on addActivity without uploads, keep unset attachments unset`() = runTest {
+        val request = AddActivityRequest(type = "post", text = "Nice post")
+
+        repository.addActivity(FeedAddActivityRequest(request = request))
+
+        coVerify { feedsApi.addActivity(request) }
+    }
+
+    @Test
+    fun `on addActivity without uploads, keep explicitly empty attachments`() = runTest {
+        val request =
+            AddActivityRequest(type = "post", text = "Nice post", attachments = emptyList())
+
+        repository.addActivity(FeedAddActivityRequest(request = request))
+
+        coVerify { feedsApi.addActivity(request) }
+    }
+
+    @Test
     fun `addActivity on upload error return failure`() = runTest {
         val attachmentUploads = listOf(FeedUploadPayload(File("some file"), FileType.Image))
         val request =

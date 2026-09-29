@@ -30,19 +30,19 @@ public data class StoriesFeedUpdatedEvent(
     @Json(name = "fid") public val fid: kotlin.String,
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-    @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "type") public val type: kotlin.String = "feeds.stories_feed.updated",
     @Json(name = "feed_visibility") public val feedVisibility: kotlin.String? = null,
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
     @Json(name = "activities")
     public val activities:
         kotlin.collections.List<io.getstream.feeds.android.network.models.ActivityResponse>? =
-        emptyList(),
+        null,
     @Json(name = "aggregated_activities")
     public val aggregatedActivities:
         kotlin.collections.List<
             io.getstream.feeds.android.network.models.AggregatedActivityResponse
         >? =
-        emptyList(),
+        null,
     @Json(name = "user")
     public val user: io.getstream.feeds.android.network.models.UserResponseCommonFields? = null,
 ) :

@@ -62,7 +62,7 @@ public data class FullUserResponse(
     @Json(name = "revoke_tokens_issued_before")
     public val revokeTokensIssuedBefore: java.util.Date? = null,
     @Json(name = "latest_hidden_channels")
-    public val latestHiddenChannels: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val latestHiddenChannels: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "teams_role")
-    public val teamsRole: kotlin.collections.Map<kotlin.String, kotlin.String>? = emptyMap(),
+    public val teamsRole: kotlin.collections.Map<kotlin.String, kotlin.String>? = null,
 )

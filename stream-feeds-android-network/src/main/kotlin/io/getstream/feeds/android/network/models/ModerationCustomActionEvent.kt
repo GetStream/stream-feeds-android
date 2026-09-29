@@ -31,10 +31,10 @@ public data class ModerationCustomActionEvent(
     public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
     @Json(name = "review_queue_item")
     public val reviewQueueItem: io.getstream.feeds.android.network.models.ReviewQueueItemResponse,
-    @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "type") public val type: kotlin.String = "moderation.custom_action",
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
     @Json(name = "action_options")
-    public val actionOptions: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    public val actionOptions: kotlin.collections.Map<kotlin.String, Any?>? = null,
 ) :
     io.getstream.feeds.android.network.models.WSClientEvent,
     io.getstream.feeds.android.network.models.WSEvent,

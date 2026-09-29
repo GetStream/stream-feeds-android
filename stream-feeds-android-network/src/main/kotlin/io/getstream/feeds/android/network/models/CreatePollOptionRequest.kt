@@ -26,6 +26,5 @@ import kotlin.io.*
 /**  */
 public data class CreatePollOptionRequest(
     @Json(name = "text") public val text: kotlin.String,
-    @Json(name = "Custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "Custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
 )

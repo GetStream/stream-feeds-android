@@ -48,21 +48,20 @@ public data class FeedResponse(
     @Json(name = "deleted_at") public val deletedAt: java.util.Date? = null,
     @Json(name = "visibility") public val visibility: Visibility? = null,
     @Json(name = "filter_tags")
-    public val filterTags: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val filterTags: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "own_capabilities")
     public val ownCapabilities:
         kotlin.collections.List<io.getstream.feeds.android.network.models.FeedOwnCapability>? =
-        emptyList(),
+        null,
     @Json(name = "own_followings")
     public val ownFollowings:
         kotlin.collections.List<io.getstream.feeds.android.network.models.FollowResponse>? =
-        emptyList(),
+        null,
     @Json(name = "own_follows")
     public val ownFollows:
         kotlin.collections.List<io.getstream.feeds.android.network.models.FollowResponse>? =
-        emptyList(),
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+        null,
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
     @Json(name = "location")
     public val location: io.getstream.feeds.android.network.models.Location? = null,
     @Json(name = "own_membership")

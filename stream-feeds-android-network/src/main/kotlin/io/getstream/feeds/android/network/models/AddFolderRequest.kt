@@ -26,6 +26,5 @@ import kotlin.io.*
 /**  */
 public data class AddFolderRequest(
     @Json(name = "name") public val name: kotlin.String,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
 )

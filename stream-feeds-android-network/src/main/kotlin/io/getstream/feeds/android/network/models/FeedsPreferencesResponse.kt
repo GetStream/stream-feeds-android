@@ -33,6 +33,5 @@ public data class FeedsPreferencesResponse(
     @Json(name = "mention") public val mention: kotlin.String? = null,
     @Json(name = "reaction") public val reaction: kotlin.String? = null,
     @Json(name = "custom_activity_types")
-    public val customActivityTypes: kotlin.collections.Map<kotlin.String, kotlin.String>? =
-        emptyMap(),
+    public val customActivityTypes: kotlin.collections.Map<kotlin.String, kotlin.String>? = null,
 )

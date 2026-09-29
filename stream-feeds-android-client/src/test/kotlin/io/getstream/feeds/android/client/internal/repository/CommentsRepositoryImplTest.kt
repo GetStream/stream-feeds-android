@@ -110,6 +110,35 @@ internal class CommentsRepositoryImplTest {
     }
 
     @Test
+    fun `on addComment without uploads, keep unset attachments unset`() = runTest {
+        val request =
+            AddCommentRequest(
+                comment = "Nice comment",
+                objectId = "activityId",
+                objectType = "activity",
+            )
+
+        repository.addComment(ActivityAddCommentRequest(request = request))
+
+        coVerify { feedsApi.addComment(request) }
+    }
+
+    @Test
+    fun `on addComment without uploads, keep explicitly empty attachments`() = runTest {
+        val request =
+            AddCommentRequest(
+                comment = "Nice comment",
+                objectId = "activityId",
+                objectType = "activity",
+                attachments = emptyList(),
+            )
+
+        repository.addComment(ActivityAddCommentRequest(request = request))
+
+        coVerify { feedsApi.addComment(request) }
+    }
+
+    @Test
     fun `addComment on error return failure`() = runTest {
         val attachmentUploads = listOf(FeedUploadPayload(File("some file"), FileType.Image))
         val request =

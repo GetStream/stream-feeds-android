@@ -29,7 +29,7 @@ public data class ImageUploadRequest(
     @Json(name = "upload_sizes")
     public val uploadSizes:
         kotlin.collections.List<io.getstream.feeds.android.network.models.ImageSize>? =
-        emptyList(),
+        null,
     @Json(name = "user")
     public val user: io.getstream.feeds.android.network.models.OnlyUserID? = null,
 )

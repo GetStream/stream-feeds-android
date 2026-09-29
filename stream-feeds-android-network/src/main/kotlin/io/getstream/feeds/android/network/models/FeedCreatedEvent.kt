@@ -37,7 +37,7 @@ public data class FeedCreatedEvent(
     @Json(name = "feed") public val feed: io.getstream.feeds.android.network.models.FeedResponse,
     @Json(name = "user")
     public val user: io.getstream.feeds.android.network.models.UserResponseCommonFields,
-    @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "type") public val type: kotlin.String = "feeds.feed.created",
     @Json(name = "feed_visibility") public val feedVisibility: kotlin.String? = null,
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
 ) :

@@ -28,5 +28,5 @@ public data class VideoRuleParameters(
     @Json(name = "threshold") public val threshold: kotlin.Int? = null,
     @Json(name = "time_window") public val timeWindow: kotlin.String? = null,
     @Json(name = "harm_labels")
-    public val harmLabels: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val harmLabels: kotlin.collections.List<kotlin.String>? = null,
 )

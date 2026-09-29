@@ -89,7 +89,7 @@ public data class FeedsV3ActivityResponse(
     @Json(name = "text") public val text: kotlin.String? = null,
     @Json(name = "visibility_tag") public val visibilityTag: kotlin.String? = null,
     @Json(name = "metrics")
-    public val metrics: kotlin.collections.Map<kotlin.String, kotlin.Int>? = emptyMap(),
+    public val metrics: kotlin.collections.Map<kotlin.String, kotlin.Int>? = null,
     @Json(name = "moderation")
     public val moderation: io.getstream.feeds.android.network.models.ModerationV2Response? = null,
 )

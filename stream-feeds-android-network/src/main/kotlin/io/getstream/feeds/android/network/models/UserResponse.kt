@@ -47,5 +47,5 @@ public data class UserResponse(
     @Json(name = "revoke_tokens_issued_before")
     public val revokeTokensIssuedBefore: java.util.Date? = null,
     @Json(name = "teams_role")
-    public val teamsRole: kotlin.collections.Map<kotlin.String, kotlin.String>? = emptyMap(),
+    public val teamsRole: kotlin.collections.Map<kotlin.String, kotlin.String>? = null,
 )

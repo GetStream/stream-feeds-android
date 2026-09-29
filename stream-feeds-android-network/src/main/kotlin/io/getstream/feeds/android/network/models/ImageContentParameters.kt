@@ -28,5 +28,5 @@ public data class ImageContentParameters(
     @Json(name = "label_operator") public val labelOperator: kotlin.String? = null,
     @Json(name = "min_confidence") public val minConfidence: kotlin.Float? = null,
     @Json(name = "harm_labels")
-    public val harmLabels: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val harmLabels: kotlin.collections.List<kotlin.String>? = null,
 )

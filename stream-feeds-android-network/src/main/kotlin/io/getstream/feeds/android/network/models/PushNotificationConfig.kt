@@ -26,6 +26,5 @@ import kotlin.io.*
 /**  */
 public data class PushNotificationConfig(
     @Json(name = "enable_push") public val enablePush: kotlin.Boolean? = null,
-    @Json(name = "push_types")
-    public val pushTypes: kotlin.collections.List<kotlin.String>? = emptyList(),
+    @Json(name = "push_types") public val pushTypes: kotlin.collections.List<kotlin.String>? = null,
 )

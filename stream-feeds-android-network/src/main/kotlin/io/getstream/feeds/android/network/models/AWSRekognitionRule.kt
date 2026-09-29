@@ -34,7 +34,7 @@ public data class AWSRekognitionRule(
     @Json(name = "label") public val label: kotlin.String,
     @Json(name = "min_confidence") public val minConfidence: kotlin.Float,
     @Json(name = "subclassifications")
-    public val subclassifications: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    public val subclassifications: kotlin.collections.Map<kotlin.String, Any?>? = null,
 ) {
 
     /** Action Enum */

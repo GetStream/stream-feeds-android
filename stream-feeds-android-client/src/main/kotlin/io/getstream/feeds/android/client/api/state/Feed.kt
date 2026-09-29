@@ -126,6 +126,11 @@ public interface Feed {
     /**
      * Updates an existing activity in the feed.
      *
+     * This is a full update: the activity is replaced with the data in [request], and any field
+     * left unset is cleared, except `feeds`, which is kept. For example, updating only the text
+     * also removes the activity's attachments and custom data. To change specific fields and keep
+     * the rest, use [updateActivityPartial].
+     *
      * @param id The unique identifier of the activity to update.
      * @param request The request containing the updated activity data.
      * @return A [Result] containing the updated [ActivityData] if successful, or an error if the

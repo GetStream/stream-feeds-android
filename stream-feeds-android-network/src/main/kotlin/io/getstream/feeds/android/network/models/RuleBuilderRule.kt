@@ -32,13 +32,13 @@ public data class RuleBuilderRule(
     @Json(name = "conditions")
     public val conditions:
         kotlin.collections.List<io.getstream.feeds.android.network.models.RuleBuilderCondition>? =
-        emptyList(),
+        null,
     @Json(name = "groups")
     public val groups:
         kotlin.collections.List<
             io.getstream.feeds.android.network.models.RuleBuilderConditionGroup
         >? =
-        emptyList(),
+        null,
     @Json(name = "action")
     public val action: io.getstream.feeds.android.network.models.RuleBuilderAction? = null,
 )

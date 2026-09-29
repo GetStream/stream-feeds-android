@@ -30,7 +30,7 @@ public data class NotificationStatusResponse(
     @Json(name = "last_read_at") public val lastReadAt: java.util.Date? = null,
     @Json(name = "last_seen_at") public val lastSeenAt: java.util.Date? = null,
     @Json(name = "read_activities")
-    public val readActivities: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val readActivities: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "seen_activities")
-    public val seenActivities: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val seenActivities: kotlin.collections.List<kotlin.String>? = null,
 )

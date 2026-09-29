@@ -33,7 +33,7 @@ public data class UserUnbannedEvent(
     public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
     @Json(name = "user")
     public val user: io.getstream.feeds.android.network.models.UserResponseCommonFields,
-    @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "type") public val type: kotlin.String = "user.unbanned",
     @Json(name = "channel_id") public val channelId: kotlin.String? = null,
     @Json(name = "channel_member_count") public val channelMemberCount: kotlin.Int? = null,
     @Json(name = "channel_message_count") public val channelMessageCount: kotlin.Int? = null,
@@ -43,7 +43,7 @@ public data class UserUnbannedEvent(
     @Json(name = "shadow") public val shadow: kotlin.Boolean? = null,
     @Json(name = "team") public val team: kotlin.String? = null,
     @Json(name = "channel_custom")
-    public val channelCustom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    public val channelCustom: kotlin.collections.Map<kotlin.String, Any?>? = null,
     @Json(name = "created_by")
     public val createdBy: io.getstream.feeds.android.network.models.UserResponseCommonFields? = null,
 ) :

@@ -58,15 +58,14 @@ public data class OwnUserResponse(
     @Json(name = "revoke_tokens_issued_before")
     public val revokeTokensIssuedBefore: java.util.Date? = null,
     @Json(name = "blocked_user_ids")
-    public val blockedUserIds: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val blockedUserIds: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "latest_hidden_channels")
-    public val latestHiddenChannels: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val latestHiddenChannels: kotlin.collections.List<kotlin.String>? = null,
     @Json(name = "push_preferences")
     public val pushPreferences: io.getstream.feeds.android.network.models.PushPreferencesResponse? =
         null,
     @Json(name = "teams_role")
-    public val teamsRole: kotlin.collections.Map<kotlin.String, kotlin.String>? = emptyMap(),
+    public val teamsRole: kotlin.collections.Map<kotlin.String, kotlin.String>? = null,
     @Json(name = "total_unread_count_by_team")
-    public val totalUnreadCountByTeam: kotlin.collections.Map<kotlin.String, kotlin.Int>? =
-        emptyMap(),
+    public val totalUnreadCountByTeam: kotlin.collections.Map<kotlin.String, kotlin.Int>? = null,
 )

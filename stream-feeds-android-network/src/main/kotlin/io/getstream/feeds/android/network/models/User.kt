@@ -26,5 +26,5 @@ import kotlin.io.*
 /**  */
 public data class User(
     @Json(name = "id") public val id: kotlin.String,
-    @Json(name = "data") public val data: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "data") public val data: kotlin.collections.Map<kotlin.String, Any?>? = null,
 )

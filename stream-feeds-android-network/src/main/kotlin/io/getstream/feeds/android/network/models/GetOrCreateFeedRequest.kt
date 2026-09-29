@@ -37,9 +37,8 @@ public data class GetOrCreateFeedRequest(
     public val enrichmentOptions: io.getstream.feeds.android.network.models.EnrichmentOptions? =
         null,
     @Json(name = "external_ranking")
-    public val externalRanking: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
-    @Json(name = "filter")
-    public val filter: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    public val externalRanking: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "filter") public val filter: kotlin.collections.Map<kotlin.String, Any?>? = null,
     @Json(name = "followers_pagination")
     public val followersPagination: io.getstream.feeds.android.network.models.PagerRequest? = null,
     @Json(name = "following_pagination")
@@ -49,7 +48,7 @@ public data class GetOrCreateFeedRequest(
         io.getstream.feeds.android.network.models.FriendReactionsOptions? =
         null,
     @Json(name = "interest_weights")
-    public val interestWeights: kotlin.collections.Map<kotlin.String, kotlin.Float>? = emptyMap(),
+    public val interestWeights: kotlin.collections.Map<kotlin.String, kotlin.Float>? = null,
     @Json(name = "member_pagination")
     public val memberPagination: io.getstream.feeds.android.network.models.PagerRequest? = null,
 )

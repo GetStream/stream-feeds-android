@@ -29,5 +29,5 @@ public data class AppealRequest(
     @Json(name = "entity_id") public val entityId: kotlin.String,
     @Json(name = "entity_type") public val entityType: kotlin.String,
     @Json(name = "attachments")
-    public val attachments: kotlin.collections.List<kotlin.String>? = emptyList(),
+    public val attachments: kotlin.collections.List<kotlin.String>? = null,
 )

@@ -32,5 +32,5 @@ public data class NotificationParentActivity(
     @Json(name = "attachments")
     public val attachments:
         kotlin.collections.List<io.getstream.feeds.android.network.models.Attachment>? =
-        emptyList(),
+        null,
 )

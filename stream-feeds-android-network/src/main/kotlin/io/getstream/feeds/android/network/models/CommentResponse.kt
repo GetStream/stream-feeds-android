@@ -61,13 +61,12 @@ public data class CommentResponse(
     @Json(name = "attachments")
     public val attachments:
         kotlin.collections.List<io.getstream.feeds.android.network.models.Attachment>? =
-        emptyList(),
+        null,
     @Json(name = "latest_reactions")
     public val latestReactions:
         kotlin.collections.List<io.getstream.feeds.android.network.models.FeedsReactionResponse>? =
-        emptyList(),
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+        null,
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
     @Json(name = "moderation")
     public val moderation: io.getstream.feeds.android.network.models.ModerationV2Response? = null,
     @Json(name = "reaction_groups")
@@ -76,7 +75,7 @@ public data class CommentResponse(
             kotlin.String,
             io.getstream.feeds.android.network.models.FeedsReactionGroupResponse,
         >? =
-        emptyMap(),
+        null,
 ) {
 
     /** Status Enum */

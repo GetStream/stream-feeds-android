@@ -29,7 +29,7 @@ public data class AppUpdatedEvent(
     @Json(name = "app") public val app: io.getstream.feeds.android.network.models.AppEventResponse,
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-    @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "type") public val type: kotlin.String = "app.updated",
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
 ) :
     io.getstream.feeds.android.network.models.WSEvent,

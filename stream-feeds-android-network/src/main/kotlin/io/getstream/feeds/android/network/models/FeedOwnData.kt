@@ -28,15 +28,15 @@ public data class FeedOwnData(
     @Json(name = "own_capabilities")
     public val ownCapabilities:
         kotlin.collections.List<io.getstream.feeds.android.network.models.FeedOwnCapability>? =
-        emptyList(),
+        null,
     @Json(name = "own_followings")
     public val ownFollowings:
         kotlin.collections.List<io.getstream.feeds.android.network.models.FollowResponse>? =
-        emptyList(),
+        null,
     @Json(name = "own_follows")
     public val ownFollows:
         kotlin.collections.List<io.getstream.feeds.android.network.models.FollowResponse>? =
-        emptyList(),
+        null,
     @Json(name = "own_membership")
     public val ownMembership: io.getstream.feeds.android.network.models.FeedMemberResponse? = null,
 )

@@ -30,7 +30,7 @@ public data class BookmarkFolderUpdatedEvent(
     public val bookmarkFolder: io.getstream.feeds.android.network.models.BookmarkFolderResponse,
     @Json(name = "custom")
     public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-    @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "type") public val type: kotlin.String = "feeds.bookmark_folder.updated",
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
     @Json(name = "user")
     public val user: io.getstream.feeds.android.network.models.UserResponseCommonFields? = null,

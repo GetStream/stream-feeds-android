@@ -29,6 +29,5 @@ public data class CreateUserGroupRequest(
     @Json(name = "description") public val description: kotlin.String? = null,
     @Json(name = "id") public val id: kotlin.String? = null,
     @Json(name = "team_id") public val teamId: kotlin.String? = null,
-    @Json(name = "member_ids")
-    public val memberIds: kotlin.collections.List<kotlin.String>? = emptyList(),
+    @Json(name = "member_ids") public val memberIds: kotlin.collections.List<kotlin.String>? = null,
 )

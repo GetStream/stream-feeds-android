@@ -35,5 +35,5 @@ public data class UserGroupResponse(
     @Json(name = "members")
     public val members:
         kotlin.collections.List<io.getstream.feeds.android.network.models.UserGroupMember>? =
-        emptyList(),
+        null,
 )

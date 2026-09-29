@@ -30,6 +30,5 @@ public data class UserRequest(
     @Json(name = "invisible") public val invisible: kotlin.Boolean? = null,
     @Json(name = "language") public val language: kotlin.String? = null,
     @Json(name = "name") public val name: kotlin.String? = null,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
 )

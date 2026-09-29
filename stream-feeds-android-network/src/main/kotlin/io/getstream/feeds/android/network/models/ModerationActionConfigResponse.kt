@@ -31,6 +31,5 @@ public data class ModerationActionConfigResponse(
     @Json(name = "icon") public val icon: kotlin.String,
     @Json(name = "order") public val order: kotlin.Int,
     @Json(name = "queue_type") public val queueType: kotlin.String? = null,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
 )

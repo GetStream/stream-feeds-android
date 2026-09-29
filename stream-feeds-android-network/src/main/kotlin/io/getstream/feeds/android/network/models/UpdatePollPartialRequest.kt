@@ -26,6 +26,6 @@ import kotlin.io.*
 
 /**  */
 public data class UpdatePollPartialRequest(
-    @Json(name = "unset") public val unset: kotlin.collections.List<kotlin.String>? = emptyList(),
-    @Json(name = "set") public val set: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "unset") public val unset: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "set") public val set: kotlin.collections.Map<kotlin.String, Any?>? = null,
 )

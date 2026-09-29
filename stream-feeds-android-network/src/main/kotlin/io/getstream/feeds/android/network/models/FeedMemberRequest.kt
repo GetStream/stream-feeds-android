@@ -29,6 +29,5 @@ public data class FeedMemberRequest(
     @Json(name = "invite") public val invite: kotlin.Boolean? = null,
     @Json(name = "membership_level") public val membershipLevel: kotlin.String? = null,
     @Json(name = "role") public val role: kotlin.String? = null,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?>? = emptyMap(),
+    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
 )
