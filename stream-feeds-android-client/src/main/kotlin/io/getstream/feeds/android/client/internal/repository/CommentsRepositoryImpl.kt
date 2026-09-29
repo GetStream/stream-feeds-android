@@ -119,6 +119,8 @@ internal class CommentsRepositoryImpl(
                 files = request.attachmentUploads,
                 attachmentUploadProgress = attachmentUploadProgress,
             )
+        // Without uploads, send the caller's attachments as given: null stays omitted, [] stays [].
+        if (uploadedAttachments.isEmpty()) return request.request
         return request.request.copy(
             attachments = request.request.attachments.orEmpty() + uploadedAttachments
         )
