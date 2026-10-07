@@ -20,6 +20,7 @@ import io.getstream.android.core.api.StreamClient
 import io.getstream.android.core.api.log.StreamLogger
 import io.getstream.android.core.api.model.connection.StreamConnectedUser
 import io.getstream.android.core.api.model.connection.StreamConnectionState
+import io.getstream.android.core.api.model.event.StreamClientWsEvent
 import io.getstream.android.core.api.model.exceptions.StreamClientException
 import io.getstream.android.core.api.model.value.StreamApiKey
 import io.getstream.android.core.api.processing.StreamAggregatedEvent
@@ -473,6 +474,26 @@ internal class FeedsClientImplTest {
         listener.onEvent(wsEvent("activity.added"))
 
         verify(exactly = 1) { feedsEventsSubscriptionManager.forEach(any()) }
+    }
+
+    @Test
+    fun `on core event, then ignore it without logging an error`() = runTest {
+        val listener = captureClientListener()
+
+        listener.onEvent(object : StreamClientWsEvent {})
+
+        verify(exactly = 0) { feedsEventsSubscriptionManager.forEach(any()) }
+        verify(exactly = 0) { logger.e(any<() -> String>()) }
+    }
+
+    @Test
+    fun `on unknown event, then log an error`() = runTest {
+        val listener = captureClientListener()
+
+        listener.onEvent("not-an-event")
+
+        verify(exactly = 0) { feedsEventsSubscriptionManager.forEach(any()) }
+        verify(exactly = 1) { logger.e(any<() -> String>()) }
     }
 
     private suspend fun captureClientListener(): StreamClientListener {

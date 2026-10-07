@@ -20,6 +20,7 @@ import io.getstream.android.core.api.StreamClient
 import io.getstream.android.core.api.log.StreamLogger
 import io.getstream.android.core.api.model.connection.StreamConnectedUser
 import io.getstream.android.core.api.model.connection.StreamConnectionState
+import io.getstream.android.core.api.model.event.StreamClientWsEvent
 import io.getstream.android.core.api.model.exceptions.StreamClientException
 import io.getstream.android.core.api.model.value.StreamApiKey
 import io.getstream.android.core.api.processing.StreamAggregatedEvent
@@ -190,6 +191,10 @@ internal class FeedsClientImpl(
                             listener.onEvent(stateEvent)
                         }
                     }
+                } else if (event is StreamClientWsEvent) {
+                    // Core forwards its own lifecycle events (e.g. connection.ok) to listeners.
+                    // Connection state is exposed separately, so there is nothing to do here.
+                    logger.v { "[onEvent] Ignoring core event: $event" }
                 } else {
                     logger.e { "[onEvent] Received non-WSEvent: $event" }
                 }
