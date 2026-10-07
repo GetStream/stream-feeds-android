@@ -86,7 +86,7 @@ jobs:
           TAG=$(gh release list -R "$GITHUB_REPOSITORY" --limit 1 --json tagName -q '.[0].tagName')
 
           cat > card.md <<EOF
-          > [!WARNING]
+          > [!IMPORTANT]
           > **\`$TAG\` is published to the Stream Maven repository, not Maven Central.**
           > Add the repository once and keep \`mavenCentral()\` — earlier versions still resolve from there.
           >
