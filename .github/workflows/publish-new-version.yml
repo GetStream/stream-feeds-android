@@ -65,3 +65,44 @@ jobs:
       stream-repo-bucket: ${{ secrets.STREAM_REPO_BUCKET }}
       stream-repo-access-key-id: ${{ secrets.STREAM_REPO_ACCESS_KEY_ID }}
       stream-repo-secret-access-key: ${{ secrets.STREAM_REPO_SECRET_ACCESS_KEY }}
+
+  # Customers need one line of setup to see a version that is not on Central,
+  # so say so at the top of the release, above the generated "What's Changed".
+  # A separate job because the release is created inside the reusable workflow.
+  release-notes-header:
+    needs: publish
+    if: ${{ inputs.publish-targets == 'streamRepo' }}
+    name: Add the Stream repository card to the release
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Prepend the card
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # The release concurrency group means the newest release is this run's.
+          TAG=$(gh release list -R "$GITHUB_REPOSITORY" --limit 1 --json tagName -q '.[0].tagName')
+
+          cat > card.md <<EOF
+          > [!IMPORTANT]
+          > **\`$TAG\` is published to the Stream Maven repository, not Maven Central.**
+          > Add the repository once and keep \`mavenCentral()\` — earlier versions still resolve from there.
+          >
+          > \`\`\`kotlin
+          > // settings.gradle.kts
+          > dependencyResolutionManagement {
+          >     repositories {
+          >         google()
+          >         mavenCentral()
+          >         maven("https://stream-io-repo.com")
+          >     }
+          > }
+          > \`\`\`
+
+          EOF
+
+          gh release view "$TAG" -R "$GITHUB_REPOSITORY" --json body -q .body > notes.md
+          cat card.md notes.md > body.md
+          gh release edit "$TAG" -R "$GITHUB_REPOSITORY" --notes-file body.md
