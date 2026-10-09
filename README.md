@@ -76,7 +76,21 @@ The Android SDK can be added to your project with Gradle. If you are starting a 
 the latest release. Releases and changes are published on the
 [GitHub releases page](https://github.com/GetStream/stream-feeds-android/releases).
 
-To add the SDK, open your `build.gradle` or `build.gradle.kts` file and add:
+Releases are published to the [Stream Maven repository](https://browse.stream-io-repo.com/releases/stream-feeds-android). Add it to your `settings.gradle.kts`:
+
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://stream-io-repo.com")
+    }
+}
+```
+
+Earlier versions remain available from Maven Central.
+
+To add the SDK, open your module's `build.gradle` or `build.gradle.kts` file and add:
 
 ```kotlin
 dependencies {
