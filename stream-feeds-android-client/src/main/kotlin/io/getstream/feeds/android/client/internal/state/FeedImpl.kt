@@ -180,9 +180,13 @@ internal class FeedImpl(
         request: FeedAddActivityRequest,
         attachmentUploadProgress: ((FeedUploadPayload, Double) -> Unit)?,
     ): Result<ActivityData> {
-        return activitiesRepository.addActivity(request, attachmentUploadProgress).onSuccess {
-            subscriptionManager.onEvent(StateUpdateEvent.ActivityAdded(FidScope.unknown, it))
-        }
+        val feeds = request.request.feeds.ifEmpty { listOf(fid.rawValue) }
+        val requestWithFeeds = request.copy(request = request.request.copy(feeds = feeds))
+        return activitiesRepository
+            .addActivity(requestWithFeeds, attachmentUploadProgress)
+            .onSuccess {
+                subscriptionManager.onEvent(StateUpdateEvent.ActivityAdded(FidScope.unknown, it))
+            }
     }
 
     override suspend fun updateActivity(
