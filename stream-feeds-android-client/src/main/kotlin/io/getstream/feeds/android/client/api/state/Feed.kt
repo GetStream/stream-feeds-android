@@ -112,7 +112,10 @@ public interface Feed {
     public suspend fun deleteFeed(hardDelete: Boolean = false): Result<Unit>
 
     /**
-     * Adds a new activity to the feed.
+     * Adds a new activity to this feed, or to the feeds given in [request].
+     *
+     * When [request] has no feeds, the activity is added to this feed. Otherwise it is added to the
+     * given feeds only; include this feed's ID there to add it here as well.
      *
      * @param request The request containing the activity data to add.
      * @return A [Result] containing the added [ActivityData] if successful, or an error if the

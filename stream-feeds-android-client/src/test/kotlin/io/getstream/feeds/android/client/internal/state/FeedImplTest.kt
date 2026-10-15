@@ -146,8 +146,26 @@ internal class FeedImplTest {
 
         feed.addActivity(request, attachmentUploadProgress)
 
+        val expectedRequest =
+            FeedAddActivityRequest(type = "post", text = "Nice post", feeds = listOf(fid.rawValue))
         coVerify {
-            activitiesRepository.addActivity(request, attachmentUploadProgress)
+            activitiesRepository.addActivity(expectedRequest, attachmentUploadProgress)
+            stateEventListener.onEvent(ActivityAdded(FidScope.unknown, activityData))
+        }
+    }
+
+    @Test
+    fun `on addActivity with feeds, send the given feeds unchanged`() = runTest {
+        val feed = createFeed()
+        val request = FeedAddActivityRequest(type = "post", feeds = listOf("user:1", "stock:apple"))
+        val activityData = mockk<ActivityData>(relaxed = true)
+        coEvery { activitiesRepository.addActivity(any(), any()) } returns
+            Result.success(activityData)
+
+        feed.addActivity(request)
+
+        coVerify {
+            activitiesRepository.addActivity(request, null)
             stateEventListener.onEvent(ActivityAdded(FidScope.unknown, activityData))
         }
     }

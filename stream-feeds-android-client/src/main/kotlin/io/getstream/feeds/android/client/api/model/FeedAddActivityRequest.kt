@@ -36,7 +36,9 @@ internal constructor(
      * Builds a [FeedAddActivityRequest] from individual activity fields.
      *
      * @param type The activity type (for example `"post"`).
-     * @param feeds The IDs of the feeds the activity should be added to.
+     * @param feeds The IDs of the feeds the activity should be added to. When empty,
+     *   [io.getstream.feeds.android.client.api.state.Feed.addActivity] adds it to the feed it is
+     *   called on.
      * @param attachments Already-uploaded attachments to attach to the activity.
      * @param attachmentUploads Local files to upload and attach to the activity.
      * @param collectionRefs References to collection entries associated with the activity.
