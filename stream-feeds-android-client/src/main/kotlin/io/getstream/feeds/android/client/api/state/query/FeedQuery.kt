@@ -39,6 +39,9 @@ import io.getstream.feeds.android.network.models.EnrichmentOptions
  * @param view Overwrite the default ranking or aggregation logic for this feed (for example: good
  *   for split testing).
  * @param watch If true, subscribes to web-socket events for this feed.
+ * @param language Includes the translations to this language code, for example `fr`, in
+ *   [io.getstream.feeds.android.client.api.model.ActivityData.translations]. By default no
+ *   translations are included.
  */
 public data class FeedQuery(
     public val fid: FeedId,
@@ -55,6 +58,7 @@ public data class FeedQuery(
     public val memberLimit: Int? = null,
     public val view: String? = null,
     public val watch: Boolean = true,
+    public val language: String? = null,
 ) {
 
     /**
@@ -75,6 +79,9 @@ public data class FeedQuery(
      * @param view Overwrite the default ranking or aggregation logic for this feed (for example:
      *   good for split testing).
      * @param watch If true, subscribes to web-socket events for this feed.
+     * @param language Includes the translations to this language code, for example `fr`, in
+     *   [io.getstream.feeds.android.client.api.model.ActivityData.translations]. By default no
+     *   translations are included.
      */
     public constructor(
         group: String,
@@ -91,6 +98,7 @@ public data class FeedQuery(
         memberLimit: Int? = null,
         view: String? = null,
         watch: Boolean = true,
+        language: String? = null,
     ) : this(
         fid = FeedId(group = group, id = id),
         activityFilter = activityFilter,
@@ -105,5 +113,6 @@ public data class FeedQuery(
         memberLimit = memberLimit,
         view = view,
         watch = watch,
+        language = language,
     )
 }

@@ -76,6 +76,7 @@ internal class ActivityImplTest {
         ActivityImpl(
             activityId = "activityId",
             fid = fid,
+            language = "fr",
             currentUserId = "currentUserId",
             activitiesRepository = activitiesRepository,
             commentsRepository = commentsRepository,
@@ -119,7 +120,7 @@ internal class ActivityImplTest {
     fun `on get, delegate to repository and update state`() = runTest {
         val activityData = activityData("activityId")
         val commentsResult = defaultPaginationResult(listOf(commentData("comment1")))
-        coEvery { activitiesRepository.getActivity("activityId") } returns
+        coEvery { activitiesRepository.getActivity("activityId", "fr") } returns
             Result.success(activityData)
         coEvery { activityCommentListImpl.get() } returns
             Result.success(commentsResult.models.map(::ThreadedCommentData))
@@ -160,7 +161,7 @@ internal class ActivityImplTest {
     fun `on getComment, delegate to repository and update state`() = runTest {
         val commentId = "comment1"
         val comment = commentData(commentId)
-        coEvery { commentsRepository.getComment(commentId) } returns Result.success(comment)
+        coEvery { commentsRepository.getComment(commentId, "fr") } returns Result.success(comment)
 
         val result = activity.getComment(commentId)
 
@@ -242,6 +243,31 @@ internal class ActivityImplTest {
                 CommentReactionDeleted(FidScope.unknown, commentData, reactionData)
             )
         }
+    }
+
+    @Test
+    fun `on translate, delegate to repository and update state`() = runTest {
+        val activityData = activityData("activityId").copy(translations = mapOf("de" to "Hallo"))
+        coEvery { activitiesRepository.translateActivity("activityId", "de") } returns
+            Result.success(activityData)
+
+        val result = activity.translate("de")
+
+        assertEquals(activityData, result.getOrNull())
+        assertEquals(activityData, activity.state.activity.value)
+        verify { stateEventListener.onEvent(ActivityUpdated(FidScope.unknown, activityData)) }
+    }
+
+    @Test
+    fun `on translateComment, delegate to repository and update state`() = runTest {
+        val comment = commentData("comment1").copy(translations = mapOf("de" to "Hallo"))
+        coEvery { commentsRepository.translateComment("comment1", "de") } returns
+            Result.success(comment)
+
+        val result = activity.translateComment("comment1", "de")
+
+        assertEquals(comment, result.getOrNull())
+        verify { stateEventListener.onEvent(CommentUpdated(FidScope.unknown, comment)) }
     }
 
     @Test
@@ -486,7 +512,7 @@ internal class ActivityImplTest {
 
     private suspend fun setupActivityWithPoll(poll: PollData = pollData("poll-1")) {
         val activityWithPoll = activityData("activityId", poll = poll)
-        coEvery { activitiesRepository.getActivity("activityId") } returns
+        coEvery { activitiesRepository.getActivity("activityId", "fr") } returns
             Result.success(activityWithPoll)
         coEvery { activityCommentListImpl.get() } returns Result.success(emptyList())
         activity.get()

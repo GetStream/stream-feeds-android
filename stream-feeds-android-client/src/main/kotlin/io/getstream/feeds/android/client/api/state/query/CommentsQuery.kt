@@ -61,6 +61,9 @@ import java.util.Date
  * @property previous Pagination cursor for fetching the previous page of results. This is typically
  *   provided in the response of a previous request.
  * @property sort Optional sorting criteria for the comments. See [CommentsSort].
+ * @property language Includes the translations to this language code, for example `fr`, in
+ *   [io.getstream.feeds.android.client.api.model.CommentData.translations]. By default no
+ *   translations are included.
  */
 public data class CommentsQuery(
     public val filter: CommentsFilter? = null,
@@ -68,6 +71,7 @@ public data class CommentsQuery(
     public val next: String? = null,
     public val previous: String? = null,
     public val sort: CommentsSort? = null,
+    public val language: String? = null,
 )
 
 /**

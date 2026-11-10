@@ -17,6 +17,7 @@
 package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.client.api.state.query.CommentsSortDataFields
+import io.getstream.feeds.android.client.internal.model.translationOf
 import io.getstream.feeds.android.network.models.Attachment
 import java.util.Date
 
@@ -62,6 +63,10 @@ import java.util.Date
  * @property moderation Moderation state for the comment.
  * @property objectId The ID of the object this comment belongs to (e.g., activity ID).
  * @property objectType The type of object this comment belongs to (e.g., "activity").
+ * @property originalLanguage The language code of the original [text]. Only set when the comment is
+ *   loaded with a language, such as
+ *   [io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery.language], and the
+ *   comment has translations.
  * @property ownReactions All the reactions from the current user.
  * @property parentId The ID of the parent comment, if this is a reply. If this comment is a reply
  *   to another comment, this property contains the ID of the parent comment. For top-level
@@ -79,6 +84,10 @@ import java.util.Date
  * @property status The current status of the comment.
  * @property text The text content of the comment. This property contains the main text content of
  *   the comment. It may be `null` for comments that only contain attachments or other media.
+ * @property translations Translations of [text], keyed by language code. Only filled when the
+ *   comment is loaded with a language, such as
+ *   [io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery.language], and the
+ *   comment was translated to it.
  * @property updatedAt The date and time when the comment was last updated.
  * @property upvoteCount The number of upvotes received by the comment.
  * @property user The user who created the comment.
@@ -99,6 +108,7 @@ public data class CommentData(
     val moderation: Moderation?,
     val objectId: String,
     val objectType: String,
+    val originalLanguage: String?,
     val ownReactions: List<FeedsReactionData>,
     val parentId: String?,
     val reactionCount: Int,
@@ -107,10 +117,21 @@ public data class CommentData(
     override val score: Int,
     val status: CommentStatus,
     val text: String?,
+    val translations: Map<String, String>,
     val updatedAt: Date,
     val upvoteCount: Int,
     val user: UserData,
-) : CommentsSortDataFields
+) : CommentsSortDataFields {
+    /**
+     * Returns the translation of [text] to the given language.
+     *
+     * @param language The language code of the translation, for example `fr`.
+     * @return The translation, or `null` when there is none, when [language] is the original
+     *   language, or when the translation equals [text].
+     */
+    public fun getTranslation(language: String): String? =
+        translationOf(text, translations, originalLanguage, language)
+}
 
 /** Represents the status of a comment. */
 public sealed class CommentStatus(public val value: String) {

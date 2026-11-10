@@ -17,6 +17,7 @@
 package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.client.api.state.query.CommentsSortDataFields
+import io.getstream.feeds.android.client.internal.model.translationOf
 import io.getstream.feeds.android.network.models.Attachment
 import io.getstream.feeds.android.network.models.RepliesMeta
 import java.util.Date
@@ -67,6 +68,10 @@ import java.util.Date
  * @property moderation Moderation state for the comment.
  * @property objectId The ID of the object this comment belongs to (e.g., activity ID).
  * @property objectType The type of object this comment belongs to (e.g., "activity").
+ * @property originalLanguage The language code of the original [text]. Only set when the comment is
+ *   loaded with a language, such as
+ *   [io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery.language], and the
+ *   comment has translations.
  * @property ownReactions All the reactions from the current user.
  * @property parentId The ID of the parent comment, if this is a reply. If this comment is a reply
  *   to another comment, this property contains the ID of the parent comment. For top-level
@@ -87,6 +92,10 @@ import java.util.Date
  * @property status The current status of the comment (e.g., "active", "deleted", "moderated").
  * @property text The text content of the comment. This property contains the main text content of
  *   the comment. It may be `null` for comments that only contain attachments or other media.
+ * @property translations Translations of [text], keyed by language code. Only filled when the
+ *   comment is loaded with a language, such as
+ *   [io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery.language], and the
+ *   comment was translated to it.
  * @property updatedAt The date and time when the comment was last updated.
  * @property upvoteCount The number of upvotes received by the comment.
  * * @property user The user who created the comment.
@@ -108,6 +117,7 @@ public data class ThreadedCommentData(
     public val moderation: Moderation?,
     public val objectId: String,
     public val objectType: String,
+    public val originalLanguage: String?,
     public val ownReactions: List<FeedsReactionData>,
     public val parentId: String?,
     public val reactionCount: Int,
@@ -117,6 +127,7 @@ public data class ThreadedCommentData(
     public override val score: Int,
     public val status: CommentStatus,
     public val text: String?,
+    public val translations: Map<String, String>,
     public val updatedAt: Date,
     public val upvoteCount: Int,
     public val user: UserData,
@@ -147,6 +158,7 @@ public data class ThreadedCommentData(
         moderation = comment.moderation,
         objectId = comment.objectId,
         objectType = comment.objectType,
+        originalLanguage = comment.originalLanguage,
         ownReactions = comment.ownReactions,
         parentId = comment.parentId,
         reactionCount = comment.reactionCount,
@@ -156,8 +168,19 @@ public data class ThreadedCommentData(
         score = comment.score,
         status = comment.status,
         text = comment.text,
+        translations = comment.translations,
         updatedAt = comment.updatedAt,
         upvoteCount = comment.upvoteCount,
         user = comment.user,
     )
+
+    /**
+     * Returns the translation of [text] to the given language.
+     *
+     * @param language The language code of the translation, for example `fr`.
+     * @return The translation, or `null` when there is none, when [language] is the original
+     *   language, or when the translation equals [text].
+     */
+    public fun getTranslation(language: String): String? =
+        translationOf(text, translations, originalLanguage, language)
 }

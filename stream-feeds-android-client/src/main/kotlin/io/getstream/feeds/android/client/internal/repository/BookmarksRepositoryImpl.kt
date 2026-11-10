@@ -42,7 +42,8 @@ internal class BookmarksRepositoryImpl(private val api: FeedsApi) : BookmarksRep
     override suspend fun queryBookmarks(
         query: BookmarksQuery
     ): Result<PaginationResult<BookmarkData>> = runSafely {
-        val response = api.queryBookmarks(queryBookmarksRequest = query.toRequest())
+        val response =
+            api.queryBookmarks(language = query.language, queryBookmarksRequest = query.toRequest())
         PaginationResult(
             models = response.bookmarks.map { it.toModel() },
             pagination = PaginationData(response.next, response.prev),

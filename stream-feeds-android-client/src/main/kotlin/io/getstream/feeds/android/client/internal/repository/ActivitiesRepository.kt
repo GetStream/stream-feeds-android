@@ -94,9 +94,19 @@ internal interface ActivitiesRepository {
      * Retrieves an activity by its ID.
      *
      * @param activityId The ID of the activity to retrieve.
+     * @param language The language code of the translations to include, if any.
      * @return A [Result] containing the [ActivityData] or an error.
      */
-    suspend fun getActivity(activityId: String): Result<ActivityData>
+    suspend fun getActivity(activityId: String, language: String?): Result<ActivityData>
+
+    /**
+     * Translates the text of an activity and stores the translation.
+     *
+     * @param activityId The ID of the activity to translate.
+     * @param language The language code to translate to.
+     * @return A [Result] containing the translated [ActivityData] or an error.
+     */
+    suspend fun translateActivity(activityId: String, language: String): Result<ActivityData>
 
     /**
      * Updates an existing activity.
