@@ -23,6 +23,6 @@ import com.squareup.moshi.Json
 /**  */
 @com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class LabelThresholds(
-    @Json(name = "block") public val block: Float? = null,
-    @Json(name = "flag") public val flag: Float? = null,
+    @Json(name = "block") public val block: Double? = null,
+    @Json(name = "flag") public val flag: Double? = null,
 )

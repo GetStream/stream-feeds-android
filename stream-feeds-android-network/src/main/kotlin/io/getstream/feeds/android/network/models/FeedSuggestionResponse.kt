@@ -39,7 +39,7 @@ public data class FeedSuggestionResponse(
     public val createdBy: io.getstream.feeds.android.network.models.UserResponse,
     @Json(name = "deleted_at") public val deletedAt: java.util.Date? = null,
     @Json(name = "reason") public val reason: String? = null,
-    @Json(name = "recommendation_score") public val recommendationScore: Float? = null,
+    @Json(name = "recommendation_score") public val recommendationScore: Double? = null,
     @Json(name = "visibility")
     public val visibility: io.getstream.feeds.android.network.models.FeedVisibility? = null,
     @Json(name = "filter_tags") public val filterTags: List<String>? = null,
@@ -51,7 +51,7 @@ public data class FeedSuggestionResponse(
         null,
     @Json(name = "own_follows")
     public val ownFollows: List<io.getstream.feeds.android.network.models.FollowResponse>? = null,
-    @Json(name = "algorithm_scores") public val algorithmScores: Map<String, Float>? = null,
+    @Json(name = "algorithm_scores") public val algorithmScores: Map<String, Double>? = null,
     @Json(name = "custom") public val custom: Map<String, Any?>? = null,
     @Json(name = "location")
     public val location: io.getstream.feeds.android.network.models.Location? = null,

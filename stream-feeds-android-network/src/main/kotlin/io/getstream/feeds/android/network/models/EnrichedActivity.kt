@@ -25,7 +25,7 @@ import com.squareup.moshi.Json
 public data class EnrichedActivity(
     @Json(name = "foreign_id") public val foreignId: String? = null,
     @Json(name = "id") public val id: String? = null,
-    @Json(name = "score") public val score: Float? = null,
+    @Json(name = "score") public val score: Double? = null,
     @Json(name = "time") public val time: String? = null,
     @Json(name = "verb") public val verb: String? = null,
     @Json(name = "to") public val to: List<String>? = null,

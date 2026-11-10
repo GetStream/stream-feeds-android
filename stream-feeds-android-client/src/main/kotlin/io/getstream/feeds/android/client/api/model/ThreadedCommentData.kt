@@ -94,8 +94,8 @@ import java.util.Date
 public data class ThreadedCommentData(
     public val attachments: List<Attachment>?,
     public val bookmarkCount: Int,
-    public override val confidenceScore: Float,
-    public override val controversyScore: Float?,
+    public override val confidenceScore: Double,
+    public override val controversyScore: Double?,
     public override val createdAt: Date,
     public val custom: Map<String, Any?>?,
     public val deletedAt: Date?,

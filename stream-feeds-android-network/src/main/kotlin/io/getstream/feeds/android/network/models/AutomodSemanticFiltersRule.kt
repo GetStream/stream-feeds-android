@@ -26,5 +26,5 @@ public data class AutomodSemanticFiltersRule(
     @Json(name = "action")
     public val action: io.getstream.feeds.android.network.models.ModerationAction,
     @Json(name = "name") public val name: String,
-    @Json(name = "threshold") public val threshold: Float,
+    @Json(name = "threshold") public val threshold: Double,
 )

@@ -60,7 +60,7 @@ internal fun CommentsSort?.toComparator(): Comparator<CommentsSortDataFields> =
             compareByDescending(CommentsSortDataFields::confidenceScore)
                 .thenByDescending(CommentsSortDataFields::createdAt)
 
-        CommentsSort.Controversial -> compareByDescending { it.controversyScore ?: -1f }
+        CommentsSort.Controversial -> compareByDescending { it.controversyScore ?: -1.0 }
         CommentsSort.First -> compareBy(CommentsSortDataFields::createdAt)
         CommentsSort.Last,
         null -> compareByDescending(CommentsSortDataFields::createdAt)

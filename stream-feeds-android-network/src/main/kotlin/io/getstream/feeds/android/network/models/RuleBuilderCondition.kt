@@ -23,7 +23,7 @@ import com.squareup.moshi.Json
 /**  */
 @com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class RuleBuilderCondition(
-    @Json(name = "confidence") public val confidence: Float? = null,
+    @Json(name = "confidence") public val confidence: Double? = null,
     @Json(name = "type") public val type: String? = null,
     @Json(name = "app_channel_count_params")
     public val appChannelCountParams:

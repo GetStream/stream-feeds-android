@@ -41,7 +41,7 @@ public data class AggregatedActivityData(
     public val activityCount: Int,
     public val createdAt: Date,
     public val group: String,
-    public val score: Float,
+    public val score: Double,
     public val updatedAt: Date,
     public val userCount: Int,
     public val userCountTruncated: Boolean,

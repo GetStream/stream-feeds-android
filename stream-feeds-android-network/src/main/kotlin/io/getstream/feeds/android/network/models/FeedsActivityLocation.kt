@@ -23,6 +23,6 @@ import com.squareup.moshi.Json
 /**  */
 @com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class FeedsActivityLocation(
-    @Json(name = "lat") public val lat: Float,
-    @Json(name = "lng") public val lng: Float,
+    @Json(name = "lat") public val lat: Double,
+    @Json(name = "lng") public val lng: Double,
 )

@@ -26,6 +26,6 @@ public data class AWSRekognitionRule(
     @Json(name = "action")
     public val action: io.getstream.feeds.android.network.models.ModerationAction,
     @Json(name = "label") public val label: String,
-    @Json(name = "min_confidence") public val minConfidence: Float,
+    @Json(name = "min_confidence") public val minConfidence: Double,
     @Json(name = "subclassifications") public val subclassifications: Map<String, Any?>? = null,
 )

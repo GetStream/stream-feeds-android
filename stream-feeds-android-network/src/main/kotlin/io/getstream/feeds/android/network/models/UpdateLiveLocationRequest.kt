@@ -25,6 +25,6 @@ import com.squareup.moshi.Json
 public data class UpdateLiveLocationRequest(
     @Json(name = "message_id") public val messageId: String,
     @Json(name = "end_at") public val endAt: java.util.Date? = null,
-    @Json(name = "latitude") public val latitude: Float? = null,
-    @Json(name = "longitude") public val longitude: Float? = null,
+    @Json(name = "latitude") public val latitude: Double? = null,
+    @Json(name = "longitude") public val longitude: Double? = null,
 )

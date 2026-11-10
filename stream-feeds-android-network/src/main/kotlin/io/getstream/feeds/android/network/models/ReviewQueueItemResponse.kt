@@ -48,7 +48,7 @@ public data class ReviewQueueItemResponse(
     @Json(name = "media_display")
     public val mediaDisplay: io.getstream.feeds.android.network.models.MediaDisplayResponse,
     @Json(name = "completed_at") public val completedAt: java.util.Date? = null,
-    @Json(name = "confidence_score") public val confidenceScore: Float? = null,
+    @Json(name = "confidence_score") public val confidenceScore: Double? = null,
     @Json(name = "config_key") public val configKey: String? = null,
     @Json(name = "country_code") public val countryCode: String? = null,
     @Json(name = "entity_creator_id") public val entityCreatorId: String? = null,

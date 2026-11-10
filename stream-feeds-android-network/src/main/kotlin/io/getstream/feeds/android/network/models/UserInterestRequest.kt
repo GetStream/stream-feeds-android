@@ -24,5 +24,5 @@ import com.squareup.moshi.Json
 @com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UserInterestRequest(
     @Json(name = "tag") public val tag: String,
-    @Json(name = "weight") public val weight: Float? = null,
+    @Json(name = "weight") public val weight: Double? = null,
 )

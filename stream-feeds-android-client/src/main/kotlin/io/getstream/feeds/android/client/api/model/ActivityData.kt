@@ -145,7 +145,7 @@ public data class ActivityData(
     val reactionCount: Int,
     val reactionGroups: Map<String, ReactionGroupData>,
     val restrictReplies: RestrictReplies,
-    val score: Float,
+    val score: Double,
     val scoreVars: Map<String, Any?>,
     val searchData: Map<String, Any?>,
     val selectorSource: String?,
