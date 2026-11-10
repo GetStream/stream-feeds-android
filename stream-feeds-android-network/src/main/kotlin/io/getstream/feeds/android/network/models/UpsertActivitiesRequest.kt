@@ -19,15 +19,12 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UpsertActivitiesRequest(
     @Json(name = "activities")
-    public val activities:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.ActivityRequest> =
+    public val activities: List<io.getstream.feeds.android.network.models.ActivityRequest> =
         emptyList(),
-    @Json(name = "enrich_own_fields") public val enrichOwnFields: kotlin.Boolean? = null,
+    @Json(name = "enrich_own_fields") public val enrichOwnFields: Boolean? = null,
 )

@@ -19,18 +19,20 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UpsertPushPreferencesResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "duration") public val duration: String,
+    @Json(name = "user_channel_preferences")
+    public val userChannelPreferences:
+        Map<
+            String,
+            Map<String, io.getstream.feeds.android.network.models.ChannelPushPreferencesResponse>,
+        > =
+        emptyMap(),
     @Json(name = "user_preferences")
     public val userPreferences:
-        kotlin.collections.Map<
-            kotlin.String,
-            io.getstream.feeds.android.network.models.PushPreferencesResponse,
-        > =
+        Map<String, io.getstream.feeds.android.network.models.PushPreferencesResponse> =
         emptyMap(),
 )

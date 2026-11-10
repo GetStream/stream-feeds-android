@@ -19,12 +19,14 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /** A single metric event to track for an activity */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class TrackActivityMetricsEvent(
-    @Json(name = "activity_id") public val activityId: kotlin.String,
-    @Json(name = "metric") public val metric: kotlin.String,
-    @Json(name = "delta") public val delta: kotlin.Int? = null,
+    @Json(name = "activity_id") public val activityId: String,
+    @Json(name = "metric") public val metric: String,
+    @Json(name = "delta") public val delta: Int? = null,
+    @Json(name = "dwell_ms") public val dwellMs: Int? = null,
+    @Json(name = "position") public val position: Int? = null,
+    @Json(name = "request_id") public val requestId: String? = null,
 )

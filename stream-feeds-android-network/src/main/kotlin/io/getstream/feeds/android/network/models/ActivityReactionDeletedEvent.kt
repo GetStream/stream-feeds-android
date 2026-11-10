@@ -19,22 +19,20 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /** Emitted when a reaction is deleted from an activity. */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class ActivityReactionDeletedEvent(
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "fid") public val fid: kotlin.String,
+    @Json(name = "fid") public val fid: String,
     @Json(name = "activity")
     public val activity: io.getstream.feeds.android.network.models.ActivityResponse,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
+    @Json(name = "custom") public val custom: Map<String, Any?> = emptyMap(),
     @Json(name = "reaction")
     public val reaction: io.getstream.feeds.android.network.models.FeedsReactionResponse,
-    @Json(name = "type") public val type: kotlin.String = "feeds.activity.reaction.deleted",
-    @Json(name = "feed_visibility") public val feedVisibility: kotlin.String? = null,
+    @Json(name = "type") public val type: String = "feeds.activity.reaction.deleted",
+    @Json(name = "feed_visibility")
+    public val feedVisibility: io.getstream.feeds.android.network.models.FeedVisibility? = null,
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
     @Json(name = "user")
     public val user: io.getstream.feeds.android.network.models.UserResponseCommonFields? = null,
@@ -43,11 +41,11 @@ public data class ActivityReactionDeletedEvent(
     io.getstream.feeds.android.network.models.WSEvent,
     io.getstream.feeds.android.network.models.FeedEvent {
 
-    override fun getWSClientEventType(): kotlin.String {
+    override fun getWSClientEventType(): String {
         return type
     }
 
-    override fun getWSEventType(): kotlin.String {
+    override fun getWSEventType(): String {
         return type
     }
 }

@@ -19,19 +19,18 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class LLMConfig(
-    @Json(name = "enabled") public val enabled: kotlin.Boolean,
+    @Json(name = "enabled") public val enabled: Boolean,
     @Json(name = "rules")
-    public val rules: kotlin.collections.List<io.getstream.feeds.android.network.models.LLMRule> =
-        emptyList(),
-    @Json(name = "app_context") public val appContext: kotlin.String? = null,
-    @Json(name = "async") public val async: kotlin.Boolean? = null,
+    public val rules: List<io.getstream.feeds.android.network.models.LLMRule> = emptyList(),
+    @Json(name = "app_context") public val appContext: String? = null,
+    @Json(name = "async") public val async: Boolean? = null,
+    @Json(name = "custom_keys_context_description")
+    public val customKeysContextDescription: String? = null,
+    @Json(name = "context_custom_keys") public val contextCustomKeys: List<String>? = null,
     @Json(name = "severity_descriptions")
-    public val severityDescriptions: kotlin.collections.Map<kotlin.String, kotlin.String>? = null,
+    public val severityDescriptions: Map<String, String>? = null,
 )

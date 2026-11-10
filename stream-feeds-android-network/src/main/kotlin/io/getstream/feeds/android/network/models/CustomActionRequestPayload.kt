@@ -19,12 +19,10 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /** Configuration for custom moderation action */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class CustomActionRequestPayload(
-    @Json(name = "id") public val id: kotlin.String? = null,
-    @Json(name = "options") public val options: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "id") public val id: String? = null,
+    @Json(name = "options") public val options: Map<String, Any?>? = null,
 )

@@ -24,14 +24,13 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class SubmitActionRequest(
     @Json(name = "action_type") public val actionType: ActionType,
-    @Json(name = "appeal_id") public val appealId: kotlin.String? = null,
-    @Json(name = "item_id") public val itemId: kotlin.String? = null,
+    @Json(name = "appeal_id") public val appealId: String? = null,
+    @Json(name = "item_id") public val itemId: String? = null,
     @Json(name = "ban")
     public val ban: io.getstream.feeds.android.network.models.BanActionRequestPayload? = null,
     @Json(name = "block")
@@ -48,12 +47,31 @@ public data class SubmitActionRequest(
     public val deleteComment:
         io.getstream.feeds.android.network.models.DeleteCommentRequestPayload? =
         null,
+    @Json(name = "delete_message")
+    public val deleteMessage:
+        io.getstream.feeds.android.network.models.DeleteMessageRequestPayload? =
+        null,
+    @Json(name = "delete_poll")
+    public val deletePoll: io.getstream.feeds.android.network.models.DeletePollRequestPayload? =
+        null,
+    @Json(name = "delete_poll_answer")
+    public val deletePollAnswer:
+        io.getstream.feeds.android.network.models.DeletePollAnswerRequestPayload? =
+        null,
+    @Json(name = "delete_poll_option")
+    public val deletePollOption:
+        io.getstream.feeds.android.network.models.DeletePollOptionRequestPayload? =
+        null,
     @Json(name = "delete_reaction")
     public val deleteReaction:
         io.getstream.feeds.android.network.models.DeleteReactionRequestPayload? =
         null,
     @Json(name = "delete_user")
     public val deleteUser: io.getstream.feeds.android.network.models.DeleteUserRequestPayload? =
+        null,
+    @Json(name = "delete_user_messages")
+    public val deleteUserMessages:
+        io.getstream.feeds.android.network.models.DeleteUserMessagesRequestPayload? =
         null,
     @Json(name = "escalate")
     public val escalate: io.getstream.feeds.android.network.models.EscalatePayload? = null,
@@ -80,11 +98,11 @@ public data class SubmitActionRequest(
 ) {
 
     /** ActionType Enum */
-    public sealed class ActionType(public val value: kotlin.String) {
+    public sealed class ActionType(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): ActionType =
+            public fun fromString(s: String): ActionType =
                 when (s) {
                     "ban" -> Ban
                     "block" -> Block
@@ -94,8 +112,12 @@ public data class SubmitActionRequest(
                     "delete_activity" -> DeleteActivity
                     "delete_comment" -> DeleteComment
                     "delete_message" -> DeleteMessage
+                    "delete_poll" -> DeletePoll
+                    "delete_poll_answer" -> DeletePollAnswer
+                    "delete_poll_option" -> DeletePollOption
                     "delete_reaction" -> DeleteReaction
                     "delete_user" -> DeleteUser
+                    "delete_user_messages" -> DeleteUserMessages
                     "end_call" -> EndCall
                     "escalate" -> Escalate
                     "flag" -> Flag
@@ -127,9 +149,17 @@ public data class SubmitActionRequest(
 
         public object DeleteMessage : ActionType("delete_message")
 
+        public object DeletePoll : ActionType("delete_poll")
+
+        public object DeletePollAnswer : ActionType("delete_poll_answer")
+
+        public object DeletePollOption : ActionType("delete_poll_option")
+
         public object DeleteReaction : ActionType("delete_reaction")
 
         public object DeleteUser : ActionType("delete_user")
+
+        public object DeleteUserMessages : ActionType("delete_user_messages")
 
         public object EndCall : ActionType("end_call")
 
@@ -153,7 +183,7 @@ public data class SubmitActionRequest(
 
         public object Unmask : ActionType("unmask")
 
-        public data class Unknown(val unknownValue: kotlin.String) : ActionType(unknownValue)
+        public data class Unknown(val unknownValue: String) : ActionType(unknownValue)
 
         public class ActionTypeAdapter : JsonAdapter<ActionType>() {
             @FromJson

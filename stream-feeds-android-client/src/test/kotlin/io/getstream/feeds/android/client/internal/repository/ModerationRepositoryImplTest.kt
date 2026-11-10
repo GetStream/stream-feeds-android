@@ -23,14 +23,14 @@ import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.repository.RepositoryTestUtils.testDelegation
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.BanRequest
-import io.getstream.feeds.android.network.models.BanResponse
 import io.getstream.feeds.android.network.models.BlockUsersRequest
 import io.getstream.feeds.android.network.models.BlockUsersResponse
 import io.getstream.feeds.android.network.models.DeleteModerationConfigResponse
+import io.getstream.feeds.android.network.models.FlagItemResponse
 import io.getstream.feeds.android.network.models.FlagRequest
-import io.getstream.feeds.android.network.models.FlagResponse
 import io.getstream.feeds.android.network.models.GetBlockedUsersResponse
 import io.getstream.feeds.android.network.models.GetConfigResponse
+import io.getstream.feeds.android.network.models.ModerationBanResponse
 import io.getstream.feeds.android.network.models.MuteRequest
 import io.getstream.feeds.android.network.models.MuteResponse
 import io.getstream.feeds.android.network.models.QueryModerationConfigsRequest
@@ -79,7 +79,7 @@ internal class ModerationRepositoryImplTest {
     @Test
     fun `on ban, then delegate to api`() = runTest {
         val banRequest = BanRequest(targetUserId = "user-123", timeout = 3600)
-        val banResponse = BanResponse(duration = "100ms")
+        val banResponse = ModerationBanResponse(duration = "100ms")
 
         testDelegation(
             apiFunction = { api.ban(banRequest) },
@@ -144,7 +144,7 @@ internal class ModerationRepositoryImplTest {
     @Test
     fun `on flag, then delegate to api`() = runTest {
         val flagRequest = FlagRequest(entityId = "message-123", entityType = "message")
-        val flagResponse = FlagResponse(duration = "15ms", itemId = "flag-123")
+        val flagResponse = FlagItemResponse(duration = "15ms", itemId = "flag-123")
 
         testDelegation(
             apiFunction = { api.flag(flagRequest) },

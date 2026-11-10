@@ -19,20 +19,23 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UpsertConfigRequest(
-    @Json(name = "key") public val key: kotlin.String,
-    @Json(name = "async") public val async: kotlin.Boolean? = null,
-    @Json(name = "team") public val team: kotlin.String? = null,
+    @Json(name = "key") public val key: String,
+    @Json(name = "async") public val async: Boolean? = null,
+    @Json(name = "team") public val team: String? = null,
+    @Json(name = "ai_audio_config")
+    public val aiAudioConfig: io.getstream.feeds.android.network.models.AIAudioConfigRequest? =
+        null,
     @Json(name = "ai_image_config")
     public val aiImageConfig: io.getstream.feeds.android.network.models.AIImageConfig? = null,
     @Json(name = "ai_text_config")
     public val aiTextConfig: io.getstream.feeds.android.network.models.AITextConfig? = null,
     @Json(name = "ai_video_config")
-    public val aiVideoConfig: io.getstream.feeds.android.network.models.AIVideoConfig? = null,
+    public val aiVideoConfig: io.getstream.feeds.android.network.models.AIVideoConfigRequest? =
+        null,
     @Json(name = "automod_platform_circumvention_config")
     public val automodPlatformCircumventionConfig:
         io.getstream.feeds.android.network.models.AutomodPlatformCircumventionConfig? =
@@ -52,9 +55,16 @@ public data class UpsertConfigRequest(
     public val blockListConfig: io.getstream.feeds.android.network.models.BlockListConfig? = null,
     @Json(name = "bodyguard_config")
     public val bodyguardConfig: io.getstream.feeds.android.network.models.AITextConfig? = null,
+    @Json(name = "engine")
+    public val engine: io.getstream.feeds.android.network.models.ModerationEngineConfigRequest? =
+        null,
+    @Json(name = "flood_config")
+    public val floodConfig: io.getstream.feeds.android.network.models.FloodConfig? = null,
     @Json(name = "google_vision_config")
     public val googleVisionConfig: io.getstream.feeds.android.network.models.GoogleVisionConfig? =
         null,
+    @Json(name = "intent_config")
+    public val intentConfig: io.getstream.feeds.android.network.models.IntentConfigRequest? = null,
     @Json(name = "llm_config")
     public val llmConfig: io.getstream.feeds.android.network.models.LLMConfig? = null,
     @Json(name = "rule_builder_config")
@@ -63,5 +73,8 @@ public data class UpsertConfigRequest(
     @Json(name = "velocity_filter_config")
     public val velocityFilterConfig:
         io.getstream.feeds.android.network.models.VelocityFilterConfig? =
+        null,
+    @Json(name = "video_call_rule_config")
+    public val videoCallRuleConfig: io.getstream.feeds.android.network.models.VideoCallRuleConfig? =
         null,
 )

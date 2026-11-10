@@ -19,14 +19,11 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class CreateCollectionsRequest(
     @Json(name = "collections")
-    public val collections:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.CollectionRequest> =
+    public val collections: List<io.getstream.feeds.android.network.models.CollectionRequest> =
         emptyList()
 )

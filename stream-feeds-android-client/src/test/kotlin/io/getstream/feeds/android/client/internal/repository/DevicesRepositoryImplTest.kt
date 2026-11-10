@@ -23,6 +23,7 @@ import io.getstream.feeds.android.network.models.DeviceResponse
 import io.getstream.feeds.android.network.models.ListDevicesResponse
 import io.getstream.feeds.android.network.models.PushPreferenceInput
 import io.getstream.feeds.android.network.models.PushPreferenceInput.FeedsLevel
+import io.getstream.feeds.android.network.models.PushProviderName
 import io.getstream.feeds.android.network.models.Response
 import io.getstream.feeds.android.network.models.UpsertPushPreferencesRequest
 import io.getstream.feeds.android.network.models.UpsertPushPreferencesResponse
@@ -51,7 +52,7 @@ internal class DevicesRepositoryImplTest {
                         DeviceResponse(
                             createdAt = Date(),
                             id = "device-1",
-                            pushProvider = "firebase",
+                            pushProvider = PushProviderName.Firebase,
                             userId = "user-1",
                         )
                     ),
@@ -93,7 +94,7 @@ internal class DevicesRepositoryImplTest {
             val expectedRequest =
                 CreateDeviceRequest(
                     id = deviceId,
-                    pushProvider = CreateDeviceRequest.PushProvider.Firebase,
+                    pushProvider = PushProviderName.Firebase,
                     pushProviderName = pushProviderName,
                 )
 
@@ -124,7 +125,7 @@ internal class DevicesRepositoryImplTest {
         val expectedRequest =
             CreateDeviceRequest(
                 id = deviceId,
-                pushProvider = CreateDeviceRequest.PushProvider.Firebase,
+                pushProvider = PushProviderName.Firebase,
                 pushProviderName = pushProviderName,
             )
 
@@ -200,7 +201,7 @@ internal class DevicesRepositoryImplTest {
         val expectedRequest =
             CreateDeviceRequest(
                 id = deviceId,
-                pushProvider = CreateDeviceRequest.PushProvider.Huawei,
+                pushProvider = PushProviderName.Huawei,
                 pushProviderName = pushProviderName,
             )
 
@@ -227,7 +228,7 @@ internal class DevicesRepositoryImplTest {
         val expectedRequest =
             CreateDeviceRequest(
                 id = deviceId,
-                pushProvider = CreateDeviceRequest.PushProvider.Xiaomi,
+                pushProvider = PushProviderName.Xiaomi,
                 pushProviderName = pushProviderName,
             )
 

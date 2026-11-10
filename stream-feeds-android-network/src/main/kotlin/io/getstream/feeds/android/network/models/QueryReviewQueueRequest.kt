@@ -19,23 +19,20 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class QueryReviewQueueRequest(
-    @Json(name = "limit") public val limit: kotlin.Int? = null,
-    @Json(name = "lock_count") public val lockCount: kotlin.Int? = null,
-    @Json(name = "lock_duration") public val lockDuration: kotlin.Int? = null,
-    @Json(name = "lock_items") public val lockItems: kotlin.Boolean? = null,
-    @Json(name = "next") public val next: kotlin.String? = null,
-    @Json(name = "prev") public val prev: kotlin.String? = null,
-    @Json(name = "stats_only") public val statsOnly: kotlin.Boolean? = null,
+    @Json(name = "exclude_default_action_config")
+    public val excludeDefaultActionConfig: Boolean? = null,
+    @Json(name = "limit") public val limit: Int? = null,
+    @Json(name = "lock_count") public val lockCount: Int? = null,
+    @Json(name = "lock_duration") public val lockDuration: Int? = null,
+    @Json(name = "lock_items") public val lockItems: Boolean? = null,
+    @Json(name = "next") public val next: String? = null,
+    @Json(name = "prev") public val prev: String? = null,
+    @Json(name = "stats_only") public val statsOnly: Boolean? = null,
     @Json(name = "sort")
-    public val sort:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.SortParamRequest>? =
-        null,
-    @Json(name = "filter") public val filter: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    public val sort: List<io.getstream.feeds.android.network.models.SortParamRequest>? = null,
+    @Json(name = "filter") public val filter: Map<String, Any?>? = null,
 )

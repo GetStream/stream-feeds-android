@@ -57,7 +57,7 @@ internal class CommentsRepositoryImpl(
     override suspend fun queryComments(
         query: CommentsQuery
     ): Result<PaginationResult<CommentData>> = runSafely {
-        val response = api.queryComments(query.toRequest())
+        val response = api.queryComments(queryCommentsRequest = query.toRequest())
         PaginationResult(
             models = response.comments.map { it.toModel() },
             pagination = PaginationData(response.next, response.prev),

@@ -19,19 +19,14 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**
  * Batch request to track metric events for activities. Rate-limited per user/IP per activity per
  * metric.
  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class TrackActivityMetricsRequest(
     @Json(name = "events")
-    public val events:
-        kotlin.collections.List<
-            io.getstream.feeds.android.network.models.TrackActivityMetricsEvent
-        > =
+    public val events: List<io.getstream.feeds.android.network.models.TrackActivityMetricsEvent> =
         emptyList()
 )

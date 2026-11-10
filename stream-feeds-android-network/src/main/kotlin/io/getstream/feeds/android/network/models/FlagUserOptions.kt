@@ -19,8 +19,7 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
-public data class FlagUserOptions(@Json(name = "reason") public val reason: kotlin.String? = null)
+@com.squareup.moshi.JsonClass(generateAdapter = true)
+public data class FlagUserOptions(@Json(name = "reason") public val reason: String? = null)

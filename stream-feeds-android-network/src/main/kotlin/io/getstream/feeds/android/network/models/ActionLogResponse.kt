@@ -19,23 +19,19 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class ActionLogResponse(
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "id") public val id: kotlin.String,
-    @Json(name = "reason") public val reason: kotlin.String,
-    @Json(name = "target_user_id") public val targetUserId: kotlin.String,
-    @Json(name = "type") public val type: kotlin.String,
-    @Json(name = "user_id") public val userId: kotlin.String,
-    @Json(name = "ai_providers")
-    public val aiProviders: kotlin.collections.List<kotlin.String> = emptyList(),
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
+    @Json(name = "id") public val id: String,
+    @Json(name = "reason") public val reason: String,
+    @Json(name = "reporter_type") public val reporterType: String,
+    @Json(name = "target_user_id") public val targetUserId: String,
+    @Json(name = "type") public val type: String,
+    @Json(name = "user_id") public val userId: String,
+    @Json(name = "ai_providers") public val aiProviders: List<String> = emptyList(),
+    @Json(name = "custom") public val custom: Map<String, Any?> = emptyMap(),
     @Json(name = "review_queue_item")
     public val reviewQueueItem: io.getstream.feeds.android.network.models.ReviewQueueItemResponse? =
         null,

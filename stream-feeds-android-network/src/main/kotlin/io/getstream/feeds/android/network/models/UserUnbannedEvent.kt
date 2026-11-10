@@ -19,43 +19,39 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**
  * This event is sent when a user gets unbanned. The event contains information about the user that
  * was unbanned.
  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UserUnbannedEvent(
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
+    @Json(name = "custom") public val custom: Map<String, Any?> = emptyMap(),
     @Json(name = "user")
     public val user: io.getstream.feeds.android.network.models.UserResponseCommonFields,
-    @Json(name = "type") public val type: kotlin.String = "user.unbanned",
-    @Json(name = "channel_id") public val channelId: kotlin.String? = null,
-    @Json(name = "channel_member_count") public val channelMemberCount: kotlin.Int? = null,
-    @Json(name = "channel_message_count") public val channelMessageCount: kotlin.Int? = null,
-    @Json(name = "channel_type") public val channelType: kotlin.String? = null,
-    @Json(name = "cid") public val cid: kotlin.String? = null,
+    @Json(name = "type") public val type: String = "user.unbanned",
+    @Json(name = "channel_id") public val channelId: String? = null,
+    @Json(name = "channel_member_count") public val channelMemberCount: Int? = null,
+    @Json(name = "channel_message_count") public val channelMessageCount: Int? = null,
+    @Json(name = "channel_type") public val channelType: String? = null,
+    @Json(name = "cid") public val cid: String? = null,
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
-    @Json(name = "shadow") public val shadow: kotlin.Boolean? = null,
-    @Json(name = "team") public val team: kotlin.String? = null,
-    @Json(name = "channel_custom")
-    public val channelCustom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "shadow") public val shadow: Boolean? = null,
+    @Json(name = "team") public val team: String? = null,
+    @Json(name = "channel_custom") public val channelCustom: Map<String, Any?>? = null,
     @Json(name = "created_by")
     public val createdBy: io.getstream.feeds.android.network.models.UserResponseCommonFields? = null,
 ) :
-    io.getstream.feeds.android.network.models.WSEvent,
     io.getstream.feeds.android.network.models.WSClientEvent,
+    io.getstream.feeds.android.network.models.WSEvent,
     io.getstream.feeds.android.network.models.FeedEvent {
 
-    override fun getWSEventType(): kotlin.String {
+    override fun getWSClientEventType(): String {
         return type
     }
 
-    override fun getWSClientEventType(): kotlin.String {
+    override fun getWSEventType(): String {
         return type
     }
 }

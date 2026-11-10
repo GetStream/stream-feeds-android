@@ -19,16 +19,16 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class FilterConfigResponse(
-    @Json(name = "llm_labels")
-    public val llmLabels: kotlin.collections.List<kotlin.String> = emptyList(),
-    @Json(name = "ai_text_labels")
-    public val aiTextLabels: kotlin.collections.List<kotlin.String>? = null,
-    @Json(name = "config_keys")
-    public val configKeys: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "llm_labels") public val llmLabels: List<String> = emptyList(),
+    @Json(name = "ai_image_labels") public val aiImageLabels: List<String>? = null,
+    @Json(name = "ai_image_ocr_labels") public val aiImageOcrLabels: List<String>? = null,
+    @Json(name = "ai_text_labels") public val aiTextLabels: List<String>? = null,
+    @Json(name = "config_keys") public val configKeys: List<String>? = null,
+    @Json(name = "filterable_custom_keys") public val filterableCustomKeys: List<String>? = null,
+    @Json(name = "rule_names") public val ruleNames: List<String>? = null,
+    @Json(name = "ai_image_taxonomy") public val aiImageTaxonomy: Map<String, List<String>>? = null,
 )

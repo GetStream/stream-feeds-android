@@ -19,18 +19,15 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /** Emitted when a bookmark folder is updated. */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class BookmarkFolderUpdatedEvent(
     @Json(name = "created_at") public val createdAt: java.util.Date,
     @Json(name = "bookmark_folder")
     public val bookmarkFolder: io.getstream.feeds.android.network.models.BookmarkFolderResponse,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-    @Json(name = "type") public val type: kotlin.String = "feeds.bookmark_folder.updated",
+    @Json(name = "custom") public val custom: Map<String, Any?> = emptyMap(),
+    @Json(name = "type") public val type: String = "feeds.bookmark_folder.updated",
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
     @Json(name = "user")
     public val user: io.getstream.feeds.android.network.models.UserResponseCommonFields? = null,
@@ -39,11 +36,11 @@ public data class BookmarkFolderUpdatedEvent(
     io.getstream.feeds.android.network.models.WSEvent,
     io.getstream.feeds.android.network.models.FeedEvent {
 
-    override fun getWSClientEventType(): kotlin.String {
+    override fun getWSClientEventType(): String {
         return type
     }
 
-    override fun getWSEventType(): kotlin.String {
+    override fun getWSEventType(): String {
         return type
     }
 }

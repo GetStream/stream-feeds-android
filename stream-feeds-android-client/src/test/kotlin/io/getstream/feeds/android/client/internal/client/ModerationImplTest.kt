@@ -18,14 +18,14 @@ package io.getstream.feeds.android.client.internal.client
 
 import io.getstream.feeds.android.client.internal.repository.ModerationRepository
 import io.getstream.feeds.android.network.models.BanRequest
-import io.getstream.feeds.android.network.models.BanResponse
 import io.getstream.feeds.android.network.models.BlockUsersRequest
 import io.getstream.feeds.android.network.models.BlockUsersResponse
 import io.getstream.feeds.android.network.models.DeleteModerationConfigResponse
+import io.getstream.feeds.android.network.models.FlagItemResponse
 import io.getstream.feeds.android.network.models.FlagRequest
-import io.getstream.feeds.android.network.models.FlagResponse
 import io.getstream.feeds.android.network.models.GetBlockedUsersResponse
 import io.getstream.feeds.android.network.models.GetConfigResponse
+import io.getstream.feeds.android.network.models.ModerationBanResponse
 import io.getstream.feeds.android.network.models.MuteRequest
 import io.getstream.feeds.android.network.models.MuteResponse
 import io.getstream.feeds.android.network.models.QueryModerationConfigsRequest
@@ -52,7 +52,7 @@ internal class ModerationImplTest {
     fun `ban when given request, then delegates to repository`() = runTest {
         val banRequest =
             BanRequest(targetUserId = "user-123", reason = "Violation of terms", timeout = 3600)
-        val banResponse = BanResponse(duration = "100ms")
+        val banResponse = ModerationBanResponse(duration = "100ms")
         coEvery { moderationRepository.ban(banRequest) } returns Result.success(banResponse)
 
         val result = moderation.ban(banRequest)
@@ -171,7 +171,7 @@ internal class ModerationImplTest {
     @Test
     fun `flag when given request, then delegates to repository`() = runTest {
         val flagRequest = FlagRequest(entityId = "message-123", entityType = "message")
-        val flagResponse = FlagResponse(duration = "15ms", itemId = "flag-123")
+        val flagResponse = FlagItemResponse(duration = "15ms", itemId = "flag-123")
         coEvery { moderationRepository.flag(flagRequest) } returns Result.success(flagResponse)
 
         val result = moderation.flag(flagRequest)

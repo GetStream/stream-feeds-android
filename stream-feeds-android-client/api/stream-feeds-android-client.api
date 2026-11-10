@@ -635,8 +635,8 @@ public final class io/getstream/feeds/android/client/api/model/CommentStatus$Unk
 }
 
 public final class io/getstream/feeds/android/client/api/model/FeedAddActivityRequest {
-	public fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/util/List;Lio/getstream/feeds/android/network/models/Location;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Lio/getstream/feeds/android/network/models/AddActivityRequest$RestrictReplies;Ljava/util/Map;Ljava/lang/Boolean;Ljava/lang/String;Lio/getstream/feeds/android/network/models/AddActivityRequest$Visibility;Ljava/lang/String;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/util/List;Lio/getstream/feeds/android/network/models/Location;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Lio/getstream/feeds/android/network/models/AddActivityRequest$RestrictReplies;Ljava/util/Map;Ljava/lang/Boolean;Ljava/lang/String;Lio/getstream/feeds/android/network/models/AddActivityRequest$Visibility;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/util/List;Lio/getstream/feeds/android/network/models/Location;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Lio/getstream/feeds/android/network/models/RestrictReplies;Ljava/util/Map;Ljava/lang/Boolean;Ljava/lang/String;Lio/getstream/feeds/android/network/models/ActivityVisibility;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/util/List;Lio/getstream/feeds/android/network/models/Location;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Lio/getstream/feeds/android/network/models/RestrictReplies;Ljava/util/Map;Ljava/lang/Boolean;Ljava/lang/String;Lio/getstream/feeds/android/network/models/ActivityVisibility;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lio/getstream/feeds/android/network/models/AddActivityRequest;
 	public final fun component2 ()Ljava/util/List;
 	public fun equals (Ljava/lang/Object;)Z
@@ -1013,26 +1013,26 @@ public final class io/getstream/feeds/android/client/api/model/Moderation {
 }
 
 public final class io/getstream/feeds/android/client/api/model/ModerationConfigData {
-	public fun <init> (Lio/getstream/feeds/android/network/models/AIImageConfig;Lio/getstream/feeds/android/network/models/AITextConfig;Lio/getstream/feeds/android/network/models/AIVideoConfig;ZLio/getstream/feeds/android/network/models/AutomodPlatformCircumventionConfig;Lio/getstream/feeds/android/network/models/AutomodSemanticFiltersConfig;Lio/getstream/feeds/android/network/models/AutomodToxicityConfig;Lio/getstream/feeds/android/network/models/BlockListConfig;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/VelocityFilterConfig;)V
+	public fun <init> (Lio/getstream/feeds/android/network/models/AIImageConfig;Lio/getstream/feeds/android/network/models/AITextConfig;Lio/getstream/feeds/android/network/models/AIVideoConfigResponse;ZLio/getstream/feeds/android/network/models/AutomodPlatformCircumventionConfig;Lio/getstream/feeds/android/network/models/AutomodSemanticFiltersConfig;Lio/getstream/feeds/android/network/models/AutomodToxicityConfig;Lio/getstream/feeds/android/network/models/BlockListConfig;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/VelocityFilterConfig;)V
 	public final fun component1 ()Lio/getstream/feeds/android/network/models/AIImageConfig;
 	public final fun component10 ()Ljava/lang/String;
 	public final fun component11 ()Ljava/lang/String;
 	public final fun component12 ()Ljava/util/Date;
 	public final fun component13 ()Lio/getstream/feeds/android/network/models/VelocityFilterConfig;
 	public final fun component2 ()Lio/getstream/feeds/android/network/models/AITextConfig;
-	public final fun component3 ()Lio/getstream/feeds/android/network/models/AIVideoConfig;
+	public final fun component3 ()Lio/getstream/feeds/android/network/models/AIVideoConfigResponse;
 	public final fun component4 ()Z
 	public final fun component5 ()Lio/getstream/feeds/android/network/models/AutomodPlatformCircumventionConfig;
 	public final fun component6 ()Lio/getstream/feeds/android/network/models/AutomodSemanticFiltersConfig;
 	public final fun component7 ()Lio/getstream/feeds/android/network/models/AutomodToxicityConfig;
 	public final fun component8 ()Lio/getstream/feeds/android/network/models/BlockListConfig;
 	public final fun component9 ()Ljava/util/Date;
-	public final fun copy (Lio/getstream/feeds/android/network/models/AIImageConfig;Lio/getstream/feeds/android/network/models/AITextConfig;Lio/getstream/feeds/android/network/models/AIVideoConfig;ZLio/getstream/feeds/android/network/models/AutomodPlatformCircumventionConfig;Lio/getstream/feeds/android/network/models/AutomodSemanticFiltersConfig;Lio/getstream/feeds/android/network/models/AutomodToxicityConfig;Lio/getstream/feeds/android/network/models/BlockListConfig;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/VelocityFilterConfig;)Lio/getstream/feeds/android/client/api/model/ModerationConfigData;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/client/api/model/ModerationConfigData;Lio/getstream/feeds/android/network/models/AIImageConfig;Lio/getstream/feeds/android/network/models/AITextConfig;Lio/getstream/feeds/android/network/models/AIVideoConfig;ZLio/getstream/feeds/android/network/models/AutomodPlatformCircumventionConfig;Lio/getstream/feeds/android/network/models/AutomodSemanticFiltersConfig;Lio/getstream/feeds/android/network/models/AutomodToxicityConfig;Lio/getstream/feeds/android/network/models/BlockListConfig;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/VelocityFilterConfig;ILjava/lang/Object;)Lio/getstream/feeds/android/client/api/model/ModerationConfigData;
+	public final fun copy (Lio/getstream/feeds/android/network/models/AIImageConfig;Lio/getstream/feeds/android/network/models/AITextConfig;Lio/getstream/feeds/android/network/models/AIVideoConfigResponse;ZLio/getstream/feeds/android/network/models/AutomodPlatformCircumventionConfig;Lio/getstream/feeds/android/network/models/AutomodSemanticFiltersConfig;Lio/getstream/feeds/android/network/models/AutomodToxicityConfig;Lio/getstream/feeds/android/network/models/BlockListConfig;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/VelocityFilterConfig;)Lio/getstream/feeds/android/client/api/model/ModerationConfigData;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/client/api/model/ModerationConfigData;Lio/getstream/feeds/android/network/models/AIImageConfig;Lio/getstream/feeds/android/network/models/AITextConfig;Lio/getstream/feeds/android/network/models/AIVideoConfigResponse;ZLio/getstream/feeds/android/network/models/AutomodPlatformCircumventionConfig;Lio/getstream/feeds/android/network/models/AutomodSemanticFiltersConfig;Lio/getstream/feeds/android/network/models/AutomodToxicityConfig;Lio/getstream/feeds/android/network/models/BlockListConfig;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/VelocityFilterConfig;ILjava/lang/Object;)Lio/getstream/feeds/android/client/api/model/ModerationConfigData;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAiImageConfig ()Lio/getstream/feeds/android/network/models/AIImageConfig;
 	public final fun getAiTextConfig ()Lio/getstream/feeds/android/network/models/AITextConfig;
-	public final fun getAiVideoConfig ()Lio/getstream/feeds/android/network/models/AIVideoConfig;
+	public final fun getAiVideoConfig ()Lio/getstream/feeds/android/network/models/AIVideoConfigResponse;
 	public final fun getAsync ()Z
 	public final fun getAutomodPlatformCircumventionConfig ()Lio/getstream/feeds/android/network/models/AutomodPlatformCircumventionConfig;
 	public final fun getAutomodSemanticFiltersConfig ()Lio/getstream/feeds/android/network/models/AutomodSemanticFiltersConfig;
@@ -1299,15 +1299,14 @@ public final class io/getstream/feeds/android/client/api/model/User {
 }
 
 public final class io/getstream/feeds/android/client/api/model/UserData {
-	public fun <init> (ZLjava/util/List;Ljava/util/Date;Ljava/util/Map;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;ZLjava/util/Date;Ljava/lang/String;Ljava/util/List;Ljava/util/Date;)V
+	public fun <init> (ZLjava/util/List;Ljava/util/Date;Ljava/util/Map;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;ZLjava/lang/String;Ljava/util/List;Ljava/util/Date;)V
 	public final fun component1 ()Z
 	public final fun component10 ()Ljava/util/Date;
 	public final fun component11 ()Ljava/lang/String;
 	public final fun component12 ()Z
-	public final fun component13 ()Ljava/util/Date;
-	public final fun component14 ()Ljava/lang/String;
-	public final fun component15 ()Ljava/util/List;
-	public final fun component16 ()Ljava/util/Date;
+	public final fun component13 ()Ljava/lang/String;
+	public final fun component14 ()Ljava/util/List;
+	public final fun component15 ()Ljava/util/Date;
 	public final fun component2 ()Ljava/util/List;
 	public final fun component3 ()Ljava/util/Date;
 	public final fun component4 ()Ljava/util/Map;
@@ -1316,8 +1315,8 @@ public final class io/getstream/feeds/android/client/api/model/UserData {
 	public final fun component7 ()Ljava/lang/String;
 	public final fun component8 ()Ljava/lang/String;
 	public final fun component9 ()Ljava/lang/String;
-	public final fun copy (ZLjava/util/List;Ljava/util/Date;Ljava/util/Map;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;ZLjava/util/Date;Ljava/lang/String;Ljava/util/List;Ljava/util/Date;)Lio/getstream/feeds/android/client/api/model/UserData;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/client/api/model/UserData;ZLjava/util/List;Ljava/util/Date;Ljava/util/Map;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;ZLjava/util/Date;Ljava/lang/String;Ljava/util/List;Ljava/util/Date;ILjava/lang/Object;)Lio/getstream/feeds/android/client/api/model/UserData;
+	public final fun copy (ZLjava/util/List;Ljava/util/Date;Ljava/util/Map;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;ZLjava/lang/String;Ljava/util/List;Ljava/util/Date;)Lio/getstream/feeds/android/client/api/model/UserData;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/client/api/model/UserData;ZLjava/util/List;Ljava/util/Date;Ljava/util/Map;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;ZLjava/lang/String;Ljava/util/List;Ljava/util/Date;ILjava/lang/Object;)Lio/getstream/feeds/android/client/api/model/UserData;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getBanned ()Z
 	public final fun getBlockedUserIds ()Ljava/util/List;
@@ -1331,7 +1330,6 @@ public final class io/getstream/feeds/android/client/api/model/UserData {
 	public final fun getLastActive ()Ljava/util/Date;
 	public final fun getName ()Ljava/lang/String;
 	public final fun getOnline ()Z
-	public final fun getRevokeTokensIssuedBefore ()Ljava/util/Date;
 	public final fun getRole ()Ljava/lang/String;
 	public final fun getTeams ()Ljava/util/List;
 	public final fun getUpdatedAt ()Ljava/util/Date;
@@ -1365,20 +1363,15 @@ public abstract interface class io/getstream/feeds/android/client/api/state/Acti
 	public static synthetic fun deleteComment-BWLJW6A$default (Lio/getstream/feeds/android/client/api/state/Activity;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun deleteCommentReaction-BWLJW6A (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun deleteCommentReaction-BWLJW6A$default (Lio/getstream/feeds/android/client/api/state/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public abstract fun deletePoll-gIAlu-s (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun deletePoll-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/Activity;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public abstract fun deletePollOption-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun deletePollOption-0E7RQCE$default (Lio/getstream/feeds/android/client/api/state/Activity;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public abstract fun deletePollVote-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun deletePollVote-0E7RQCE$default (Lio/getstream/feeds/android/client/api/state/Activity;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public abstract fun deletePoll-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun deletePollOption-gIAlu-s (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun deletePollVote-gIAlu-s (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun get-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getActivityId ()Ljava/lang/String;
 	public abstract fun getComment-gIAlu-s (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getFid ()Lio/getstream/feeds/android/client/api/model/FeedId;
-	public abstract fun getPoll-gIAlu-s (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun getPoll-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/Activity;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public abstract fun getPollOption-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun getPollOption-0E7RQCE$default (Lio/getstream/feeds/android/client/api/state/Activity;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public abstract fun getPoll-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getPollOption-gIAlu-s (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getState ()Lio/getstream/feeds/android/client/api/state/ActivityState;
 	public abstract fun pin-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun queryComments-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -1396,11 +1389,6 @@ public final class io/getstream/feeds/android/client/api/state/Activity$DefaultI
 	public static synthetic fun addCommentsBatch-0E7RQCE$default (Lio/getstream/feeds/android/client/api/state/Activity;Ljava/util/List;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun deleteComment-BWLJW6A$default (Lio/getstream/feeds/android/client/api/state/Activity;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun deleteCommentReaction-BWLJW6A$default (Lio/getstream/feeds/android/client/api/state/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun deletePoll-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/Activity;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun deletePollOption-0E7RQCE$default (Lio/getstream/feeds/android/client/api/state/Activity;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun deletePollVote-0E7RQCE$default (Lio/getstream/feeds/android/client/api/state/Activity;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun getPoll-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/Activity;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun getPollOption-0E7RQCE$default (Lio/getstream/feeds/android/client/api/state/Activity;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun queryMoreComments-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/Activity;Ljava/lang/Integer;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
@@ -1619,8 +1607,8 @@ public abstract interface class io/getstream/feeds/android/client/api/state/Feed
 	public static synthetic fun deleteCommentReaction-BWLJW6A$default (Lio/getstream/feeds/android/client/api/state/Feed;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun deleteFeed-gIAlu-s (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun deleteFeed-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/Feed;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public abstract fun follow-yxL6bBk (Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FollowRequest$PushPreference;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun follow-yxL6bBk$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FollowRequest$PushPreference;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public abstract fun follow-yxL6bBk (Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FollowPushPreference;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun follow-yxL6bBk$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FollowPushPreference;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun getComment-gIAlu-s (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getFid ()Lio/getstream/feeds/android/client/api/model/FeedId;
 	public abstract fun getOrCreate-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -1645,8 +1633,8 @@ public abstract interface class io/getstream/feeds/android/client/api/state/Feed
 	public abstract fun updateComment-0E7RQCE (Ljava/lang/String;Lio/getstream/feeds/android/network/models/UpdateCommentRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun updateFeed-gIAlu-s (Lio/getstream/feeds/android/network/models/UpdateFeedRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun updateFeedMembers-gIAlu-s (Lio/getstream/feeds/android/network/models/UpdateFeedMembersRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun updateFollow-BWLJW6A (Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/util/Map;Lio/getstream/feeds/android/network/models/UpdateFollowRequest$PushPreference;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun updateFollow-BWLJW6A$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/util/Map;Lio/getstream/feeds/android/network/models/UpdateFollowRequest$PushPreference;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public abstract fun updateFollow-BWLJW6A (Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FollowPushPreference;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun updateFollow-BWLJW6A$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FollowPushPreference;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class io/getstream/feeds/android/client/api/state/Feed$DefaultImpls {
@@ -1660,11 +1648,11 @@ public final class io/getstream/feeds/android/client/api/state/Feed$DefaultImpls
 	public static synthetic fun deleteComment-BWLJW6A$default (Lio/getstream/feeds/android/client/api/state/Feed;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun deleteCommentReaction-BWLJW6A$default (Lio/getstream/feeds/android/client/api/state/Feed;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun deleteFeed-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/Feed;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun follow-yxL6bBk$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FollowRequest$PushPreference;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun follow-yxL6bBk$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FollowPushPreference;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun queryMoreActivities-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/Feed;Ljava/lang/Integer;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun queryMoreFeedMembers-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/Feed;Ljava/lang/Integer;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun unfollow-0E7RQCE$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun updateFollow-BWLJW6A$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/util/Map;Lio/getstream/feeds/android/network/models/UpdateFollowRequest$PushPreference;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun updateFollow-BWLJW6A$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FollowPushPreference;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public abstract interface class io/getstream/feeds/android/client/api/state/FeedList {
@@ -2754,17 +2742,16 @@ public final class io/getstream/feeds/android/client/api/state/query/PollVotesFi
 }
 
 public final class io/getstream/feeds/android/client/api/state/query/PollVotesQuery {
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/getstream/android/core/api/filter/Filter;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/getstream/android/core/api/filter/Filter;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Lio/getstream/android/core/api/filter/Filter;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/String;Lio/getstream/android/core/api/filter/Filter;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/lang/String;
-	public final fun component3 ()Lio/getstream/android/core/api/filter/Filter;
-	public final fun component4 ()Ljava/lang/Integer;
+	public final fun component2 ()Lio/getstream/android/core/api/filter/Filter;
+	public final fun component3 ()Ljava/lang/Integer;
+	public final fun component4 ()Ljava/lang/String;
 	public final fun component5 ()Ljava/lang/String;
-	public final fun component6 ()Ljava/lang/String;
-	public final fun component7 ()Ljava/util/List;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Lio/getstream/android/core/api/filter/Filter;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lio/getstream/feeds/android/client/api/state/query/PollVotesQuery;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/client/api/state/query/PollVotesQuery;Ljava/lang/String;Ljava/lang/String;Lio/getstream/android/core/api/filter/Filter;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/getstream/feeds/android/client/api/state/query/PollVotesQuery;
+	public final fun component6 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Lio/getstream/android/core/api/filter/Filter;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lio/getstream/feeds/android/client/api/state/query/PollVotesQuery;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/client/api/state/query/PollVotesQuery;Ljava/lang/String;Lio/getstream/android/core/api/filter/Filter;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/getstream/feeds/android/client/api/state/query/PollVotesQuery;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getFilter ()Lio/getstream/android/core/api/filter/Filter;
 	public final fun getLimit ()Ljava/lang/Integer;
@@ -2772,7 +2759,6 @@ public final class io/getstream/feeds/android/client/api/state/query/PollVotesQu
 	public final fun getPollId ()Ljava/lang/String;
 	public final fun getPrevious ()Ljava/lang/String;
 	public final fun getSort ()Ljava/util/List;
-	public final fun getUserId ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }

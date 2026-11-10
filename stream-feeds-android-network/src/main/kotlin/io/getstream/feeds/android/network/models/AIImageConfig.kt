@@ -19,20 +19,18 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class AIImageConfig(
-    @Json(name = "enabled") public val enabled: kotlin.Boolean,
+    @Json(name = "enabled") public val enabled: Boolean,
     @Json(name = "ocr_rules")
-    public val ocrRules:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.OCRRule> =
-        emptyList(),
+    public val ocrRules: List<io.getstream.feeds.android.network.models.OCRRule> = emptyList(),
     @Json(name = "rules")
-    public val rules:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.AWSRekognitionRule> =
+    public val rules: List<io.getstream.feeds.android.network.models.AWSRekognitionRule> =
         emptyList(),
-    @Json(name = "async") public val async: kotlin.Boolean? = null,
+    @Json(name = "async") public val async: Boolean? = null,
+    @Json(name = "ocr_severity_rules")
+    public val ocrSeverityRules: List<io.getstream.feeds.android.network.models.BodyguardRule>? =
+        null,
 )

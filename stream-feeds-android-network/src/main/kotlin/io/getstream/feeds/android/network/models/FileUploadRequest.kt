@@ -19,12 +19,11 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class FileUploadRequest(
-    @Json(name = "file") public val file: kotlin.String? = null,
+    @Json(name = "file") public val file: String? = null,
     @Json(name = "user")
     public val user: io.getstream.feeds.android.network.models.OnlyUserID? = null,
 )

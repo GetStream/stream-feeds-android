@@ -64,8 +64,8 @@ internal class PollsRepositoryImplTest {
         val apiResult = PollResponse("duration", pollResponseData())
 
         testDelegation(
-            apiFunction = { feedsApi.getPoll("pollId", "userId") },
-            repositoryCall = { repository.getPoll("pollId", "userId") },
+            apiFunction = { feedsApi.getPoll("pollId") },
+            repositoryCall = { repository.getPoll("pollId") },
             apiResult = apiResult,
             repositoryResult = apiResult.poll.toModel(),
         )
@@ -87,8 +87,8 @@ internal class PollsRepositoryImplTest {
     @Test
     fun `on deletePoll, delegate to api`() {
         testDelegation(
-            apiFunction = { feedsApi.deletePoll("pollId", "userId") },
-            repositoryCall = { repository.deletePoll("pollId", "userId") },
+            apiFunction = { feedsApi.deletePoll("pollId") },
+            repositoryCall = { repository.deletePoll("pollId") },
             apiResult = Unit,
         )
     }
@@ -143,8 +143,8 @@ internal class PollsRepositoryImplTest {
     @Test
     fun `on deletePollOption, delegate to api`() {
         testDelegation(
-            apiFunction = { feedsApi.deletePollOption("pollId", "optionId", "userId") },
-            repositoryCall = { repository.deletePollOption("pollId", "optionId", "userId") },
+            apiFunction = { feedsApi.deletePollOption("pollId", "optionId") },
+            repositoryCall = { repository.deletePollOption("pollId", "optionId") },
             apiResult = Unit,
         )
     }
@@ -162,8 +162,8 @@ internal class PollsRepositoryImplTest {
             )
 
         testDelegation(
-            apiFunction = { feedsApi.getPollOption("pollId", "optionId", "userId") },
-            repositoryCall = { repository.getPollOption("pollId", "optionId", "userId") },
+            apiFunction = { feedsApi.getPollOption("pollId", "optionId") },
+            repositoryCall = { repository.getPollOption("pollId", "optionId") },
             apiResult = apiResult,
             repositoryResult = apiResult.pollOption.toModel(),
         )
@@ -202,9 +202,7 @@ internal class PollsRepositoryImplTest {
             )
 
         testDelegation(
-            apiFunction = {
-                feedsApi.queryPolls(userId = null, queryPollsRequest = query.toRequest())
-            },
+            apiFunction = { feedsApi.queryPolls(queryPollsRequest = query.toRequest()) },
             repositoryCall = { repository.queryPolls(query) },
             apiResult = apiResult,
             repositoryResult =
@@ -230,7 +228,7 @@ internal class PollsRepositoryImplTest {
 
     @Test
     fun `on queryPollVotes, delegate to api and transform result`() = runTest {
-        val query = PollVotesQuery(pollId = "pollId", userId = "userId", limit = 10)
+        val query = PollVotesQuery(pollId = "pollId", limit = 10)
         val apiResult =
             PollVotesResponse(
                 duration = "duration",
@@ -243,7 +241,6 @@ internal class PollsRepositoryImplTest {
             apiFunction = {
                 feedsApi.queryPollVotes(
                     pollId = query.pollId,
-                    userId = query.userId,
                     queryPollVotesRequest = query.toRequest(),
                 )
             },
@@ -262,10 +259,8 @@ internal class PollsRepositoryImplTest {
         val apiResult = PollVoteResponse("duration", pollResponseData(), pollVoteResponseData())
 
         testDelegation(
-            apiFunction = { feedsApi.deletePollVote("activityId", "pollId", "voteId", "userId") },
-            repositoryCall = {
-                repository.deletePollVote("activityId", "pollId", "voteId", "userId")
-            },
+            apiFunction = { feedsApi.deletePollVote("activityId", "pollId", "voteId") },
+            repositoryCall = { repository.deletePollVote("activityId", "pollId", "voteId") },
             apiResult = apiResult,
             repositoryResult = apiResult.vote?.toModel() to apiResult.poll?.toModel(),
         )

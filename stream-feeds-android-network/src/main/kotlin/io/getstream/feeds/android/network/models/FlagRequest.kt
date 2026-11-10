@@ -19,17 +19,15 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class FlagRequest(
-    @Json(name = "entity_id") public val entityId: kotlin.String,
-    @Json(name = "entity_type") public val entityType: kotlin.String,
-    @Json(name = "entity_creator_id") public val entityCreatorId: kotlin.String? = null,
-    @Json(name = "reason") public val reason: kotlin.String? = null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "entity_id") public val entityId: String,
+    @Json(name = "entity_type") public val entityType: String,
+    @Json(name = "entity_creator_id") public val entityCreatorId: String? = null,
+    @Json(name = "reason") public val reason: String? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
     @Json(name = "moderation_payload")
     public val moderationPayload: io.getstream.feeds.android.network.models.ModerationPayload? =
         null,

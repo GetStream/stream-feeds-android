@@ -19,12 +19,11 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UpdateBookmarkFolderResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "duration") public val duration: String,
     @Json(name = "bookmark_folder")
     public val bookmarkFolder: io.getstream.feeds.android.network.models.BookmarkFolderResponse,
 )

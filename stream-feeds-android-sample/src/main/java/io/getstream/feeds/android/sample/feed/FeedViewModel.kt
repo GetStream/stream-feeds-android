@@ -37,11 +37,11 @@ import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.network.models.ActivityFeedbackRequest
 import io.getstream.feeds.android.network.models.AddReactionRequest
 import io.getstream.feeds.android.network.models.CreatePollRequest
-import io.getstream.feeds.android.network.models.CreatePollRequest.VotingVisibility.Anonymous
-import io.getstream.feeds.android.network.models.CreatePollRequest.VotingVisibility.Public
 import io.getstream.feeds.android.network.models.MarkActivityRequest
 import io.getstream.feeds.android.network.models.PollOptionInput
 import io.getstream.feeds.android.network.models.UpdateActivityPartialRequest
+import io.getstream.feeds.android.network.models.VotingVisibility.Anonymous
+import io.getstream.feeds.android.network.models.VotingVisibility.Public
 import io.getstream.feeds.android.sample.login.LoginManager
 import io.getstream.feeds.android.sample.util.AsyncResource
 import io.getstream.feeds.android.sample.util.Feeds

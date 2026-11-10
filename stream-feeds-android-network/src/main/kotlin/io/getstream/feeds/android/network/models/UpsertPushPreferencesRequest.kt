@@ -19,14 +19,11 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UpsertPushPreferencesRequest(
     @Json(name = "preferences")
-    public val preferences:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.PushPreferenceInput> =
+    public val preferences: List<io.getstream.feeds.android.network.models.PushPreferenceInput> =
         emptyList()
 )

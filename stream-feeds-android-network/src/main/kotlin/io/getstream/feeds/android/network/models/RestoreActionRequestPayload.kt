@@ -19,10 +19,14 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
-/** Configuration for restore action */
+/**
+ * Configuration for restore action. State-aware: reverses whichever of a delete, a block, or a
+ * shadow block currently applies to the content (including both a delete and a block/shadow block
+ * at once).
+ */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class RestoreActionRequestPayload(
-    @Json(name = "decision_reason") public val decisionReason: kotlin.String? = null
+    @Json(name = "decision_reason") public val decisionReason: String? = null,
+    @Json(name = "reason") public val reason: String? = null,
 )

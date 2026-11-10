@@ -18,62 +18,19 @@
 
 package io.getstream.feeds.android.network.models
 
-import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonReader
-import com.squareup.moshi.JsonWriter
-import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.io.*
 
 /** Configuration for ban moderation action */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class BanActionRequestPayload(
-    @Json(name = "ban_from_future_channels")
-    public val banFromFutureChannels: kotlin.Boolean? = null,
-    @Json(name = "channel_ban_only") public val channelBanOnly: kotlin.Boolean? = null,
-    @Json(name = "channel_cid") public val channelCid: kotlin.String? = null,
-    @Json(name = "delete_messages") public val deleteMessages: DeleteMessages? = null,
-    @Json(name = "ip_ban") public val ipBan: kotlin.Boolean? = null,
-    @Json(name = "reason") public val reason: kotlin.String? = null,
-    @Json(name = "shadow") public val shadow: kotlin.Boolean? = null,
-    @Json(name = "target_user_id") public val targetUserId: kotlin.String? = null,
-    @Json(name = "timeout") public val timeout: kotlin.Int? = null,
-) {
-
-    /** DeleteMessages Enum */
-    public sealed class DeleteMessages(public val value: kotlin.String) {
-        override fun toString(): String = value
-
-        public companion object {
-            public fun fromString(s: kotlin.String): DeleteMessages =
-                when (s) {
-                    "hard" -> Hard
-                    "pruning" -> Pruning
-                    "soft" -> Soft
-                    else -> Unknown(s)
-                }
-        }
-
-        public object Hard : DeleteMessages("hard")
-
-        public object Pruning : DeleteMessages("pruning")
-
-        public object Soft : DeleteMessages("soft")
-
-        public data class Unknown(val unknownValue: kotlin.String) : DeleteMessages(unknownValue)
-
-        public class DeleteMessagesAdapter : JsonAdapter<DeleteMessages>() {
-            @FromJson
-            override fun fromJson(reader: JsonReader): DeleteMessages? {
-                val s = reader.nextString() ?: return null
-                return DeleteMessages.fromString(s)
-            }
-
-            @ToJson
-            override fun toJson(writer: JsonWriter, value: DeleteMessages?) {
-                writer.value(value?.value)
-            }
-        }
-    }
-}
+    @Json(name = "ban_from_future_channels") public val banFromFutureChannels: Boolean? = null,
+    @Json(name = "channel_ban_only") public val channelBanOnly: Boolean? = null,
+    @Json(name = "channel_cid") public val channelCid: String? = null,
+    @Json(name = "delete_messages")
+    public val deleteMessages: io.getstream.feeds.android.network.models.DeleteMessages? = null,
+    @Json(name = "ip_ban") public val ipBan: Boolean? = null,
+    @Json(name = "reason") public val reason: String? = null,
+    @Json(name = "shadow") public val shadow: Boolean? = null,
+    @Json(name = "target_user_id") public val targetUserId: String? = null,
+    @Json(name = "timeout") public val timeout: Int? = null,
+)

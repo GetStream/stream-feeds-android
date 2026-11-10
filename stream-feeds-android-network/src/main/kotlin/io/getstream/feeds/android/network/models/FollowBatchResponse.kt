@@ -19,19 +19,14 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class FollowBatchResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "duration") public val duration: String,
     @Json(name = "created")
-    public val created:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.FollowResponse> =
+    public val created: List<io.getstream.feeds.android.network.models.FollowResponse> =
         emptyList(),
     @Json(name = "follows")
-    public val follows:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.FollowResponse> =
-        emptyList(),
+    public val follows: List<io.getstream.feeds.android.network.models.FollowResponse> = emptyList(),
 )

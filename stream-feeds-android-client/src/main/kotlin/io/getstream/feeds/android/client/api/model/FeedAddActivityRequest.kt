@@ -17,9 +17,11 @@
 package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
+import io.getstream.feeds.android.network.models.ActivityVisibility
 import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.Attachment
 import io.getstream.feeds.android.network.models.Location
+import io.getstream.feeds.android.network.models.RestrictReplies as NetworkRestrictReplies
 
 /**
  * Request payload for adding a new activity to one or more feeds.
@@ -75,11 +77,11 @@ internal constructor(
         mentionedUserIds: List<String>? = null,
         parentId: String? = null,
         pollId: String? = null,
-        restrictReplies: AddActivityRequest.RestrictReplies? = null,
+        restrictReplies: NetworkRestrictReplies? = null,
         searchData: Map<String, Any>? = null,
         skipEnrichUrl: Boolean? = null,
         text: String? = null,
-        visibility: AddActivityRequest.Visibility? = null,
+        visibility: ActivityVisibility? = null,
         visibilityTag: String? = null,
     ) : this(
         request =

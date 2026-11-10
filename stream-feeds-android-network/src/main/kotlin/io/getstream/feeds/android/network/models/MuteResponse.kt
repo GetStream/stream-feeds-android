@@ -19,19 +19,14 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class MuteResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "duration") public val duration: String,
     @Json(name = "mutes")
-    public val mutes:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.UserMuteResponse>? =
-        null,
-    @Json(name = "non_existing_users")
-    public val nonExistingUsers: kotlin.collections.List<kotlin.String>? = null,
+    public val mutes: List<io.getstream.feeds.android.network.models.UserMuteResponse>? = null,
+    @Json(name = "non_existing_users") public val nonExistingUsers: List<String>? = null,
     @Json(name = "own_user")
     public val ownUser: io.getstream.feeds.android.network.models.OwnUserResponse? = null,
 )

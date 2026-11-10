@@ -19,38 +19,32 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /** An attachment is a message object that represents a file uploaded by a user. */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class Attachment(
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-    @Json(name = "asset_url") public val assetUrl: kotlin.String? = null,
-    @Json(name = "author_icon") public val authorIcon: kotlin.String? = null,
-    @Json(name = "author_link") public val authorLink: kotlin.String? = null,
-    @Json(name = "author_name") public val authorName: kotlin.String? = null,
-    @Json(name = "color") public val color: kotlin.String? = null,
-    @Json(name = "fallback") public val fallback: kotlin.String? = null,
-    @Json(name = "footer") public val footer: kotlin.String? = null,
-    @Json(name = "footer_icon") public val footerIcon: kotlin.String? = null,
-    @Json(name = "image_url") public val imageUrl: kotlin.String? = null,
-    @Json(name = "og_scrape_url") public val ogScrapeUrl: kotlin.String? = null,
-    @Json(name = "original_height") public val originalHeight: kotlin.Int? = null,
-    @Json(name = "original_width") public val originalWidth: kotlin.Int? = null,
-    @Json(name = "pretext") public val pretext: kotlin.String? = null,
-    @Json(name = "text") public val text: kotlin.String? = null,
-    @Json(name = "thumb_url") public val thumbUrl: kotlin.String? = null,
-    @Json(name = "title") public val title: kotlin.String? = null,
-    @Json(name = "title_link") public val titleLink: kotlin.String? = null,
-    @Json(name = "type") public val type: kotlin.String? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?> = emptyMap(),
+    @Json(name = "asset_url") public val assetUrl: String? = null,
+    @Json(name = "author_icon") public val authorIcon: String? = null,
+    @Json(name = "author_link") public val authorLink: String? = null,
+    @Json(name = "author_name") public val authorName: String? = null,
+    @Json(name = "color") public val color: String? = null,
+    @Json(name = "fallback") public val fallback: String? = null,
+    @Json(name = "footer") public val footer: String? = null,
+    @Json(name = "footer_icon") public val footerIcon: String? = null,
+    @Json(name = "image_url") public val imageUrl: String? = null,
+    @Json(name = "og_scrape_url") public val ogScrapeUrl: String? = null,
+    @Json(name = "original_height") public val originalHeight: Int? = null,
+    @Json(name = "original_width") public val originalWidth: Int? = null,
+    @Json(name = "pretext") public val pretext: String? = null,
+    @Json(name = "text") public val text: String? = null,
+    @Json(name = "thumb_url") public val thumbUrl: String? = null,
+    @Json(name = "title") public val title: String? = null,
+    @Json(name = "title_link") public val titleLink: String? = null,
+    @Json(name = "type") public val type: String? = null,
     @Json(name = "actions")
-    public val actions: kotlin.collections.List<io.getstream.feeds.android.network.models.Action>? =
-        null,
+    public val actions: List<io.getstream.feeds.android.network.models.Action>? = null,
     @Json(name = "fields")
-    public val fields: kotlin.collections.List<io.getstream.feeds.android.network.models.Field>? =
-        null,
+    public val fields: List<io.getstream.feeds.android.network.models.Field>? = null,
     @Json(name = "giphy") public val giphy: io.getstream.feeds.android.network.models.Images? = null,
 )

@@ -18,22 +18,17 @@
 
 package io.getstream.feeds.android.network.models
 
-import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonReader
-import com.squareup.moshi.JsonWriter
-import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class FollowResponse(
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "follower_role") public val followerRole: kotlin.String,
-    @Json(name = "push_preference") public val pushPreference: PushPreference,
-    @Json(name = "status") public val status: Status,
+    @Json(name = "follower_role") public val followerRole: String,
+    @Json(name = "push_preference")
+    public val pushPreference: io.getstream.feeds.android.network.models.FollowPushPreference,
+    @Json(name = "status")
+    public val status: io.getstream.feeds.android.network.models.FollowStatus,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
     @Json(name = "source_feed")
     public val sourceFeed: io.getstream.feeds.android.network.models.FeedResponse,
@@ -41,75 +36,5 @@ public data class FollowResponse(
     public val targetFeed: io.getstream.feeds.android.network.models.FeedResponse,
     @Json(name = "request_accepted_at") public val requestAcceptedAt: java.util.Date? = null,
     @Json(name = "request_rejected_at") public val requestRejectedAt: java.util.Date? = null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
-) {
-
-    /** PushPreference Enum */
-    public sealed class PushPreference(public val value: kotlin.String) {
-        override fun toString(): String = value
-
-        public companion object {
-            public fun fromString(s: kotlin.String): PushPreference =
-                when (s) {
-                    "all" -> All
-                    "none" -> None
-                    else -> Unknown(s)
-                }
-        }
-
-        public object All : PushPreference("all")
-
-        public object None : PushPreference("none")
-
-        public data class Unknown(val unknownValue: kotlin.String) : PushPreference(unknownValue)
-
-        public class PushPreferenceAdapter : JsonAdapter<PushPreference>() {
-            @FromJson
-            override fun fromJson(reader: JsonReader): PushPreference? {
-                val s = reader.nextString() ?: return null
-                return PushPreference.fromString(s)
-            }
-
-            @ToJson
-            override fun toJson(writer: JsonWriter, value: PushPreference?) {
-                writer.value(value?.value)
-            }
-        }
-    }
-
-    /** Status Enum */
-    public sealed class Status(public val value: kotlin.String) {
-        override fun toString(): String = value
-
-        public companion object {
-            public fun fromString(s: kotlin.String): Status =
-                when (s) {
-                    "accepted" -> Accepted
-                    "pending" -> Pending
-                    "rejected" -> Rejected
-                    else -> Unknown(s)
-                }
-        }
-
-        public object Accepted : Status("accepted")
-
-        public object Pending : Status("pending")
-
-        public object Rejected : Status("rejected")
-
-        public data class Unknown(val unknownValue: kotlin.String) : Status(unknownValue)
-
-        public class StatusAdapter : JsonAdapter<Status>() {
-            @FromJson
-            override fun fromJson(reader: JsonReader): Status? {
-                val s = reader.nextString() ?: return null
-                return Status.fromString(s)
-            }
-
-            @ToJson
-            override fun toJson(writer: JsonWriter, value: Status?) {
-                writer.value(value?.value)
-            }
-        }
-    }
-}
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
+)

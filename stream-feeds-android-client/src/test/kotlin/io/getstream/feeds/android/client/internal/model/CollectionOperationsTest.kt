@@ -19,6 +19,7 @@ package io.getstream.feeds.android.client.internal.model
 import io.getstream.feeds.android.client.api.model.CollectionData
 import io.getstream.feeds.android.client.api.model.CollectionStatus
 import io.getstream.feeds.android.network.models.CollectionResponse
+import io.getstream.feeds.android.network.models.CollectionStatus as NetworkCollectionStatus
 import io.getstream.feeds.android.network.models.EnrichedCollectionResponse
 import java.util.Date
 import org.junit.Assert.assertEquals
@@ -68,7 +69,7 @@ internal class CollectionOperationsTest {
             EnrichedCollectionResponse(
                 id = "enriched-789",
                 name = "products",
-                status = EnrichedCollectionResponse.Status.Unknown("abcd"),
+                status = NetworkCollectionStatus.Unknown("abcd"),
                 createdAt = createdAt,
                 updatedAt = updatedAt,
                 userId = "user-123",

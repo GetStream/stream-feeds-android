@@ -19,19 +19,15 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class FileUploadConfig(
-    @Json(name = "size_limit") public val sizeLimit: kotlin.Int,
+    @Json(name = "size_limit") public val sizeLimit: Int,
     @Json(name = "allowed_file_extensions")
-    public val allowedFileExtensions: kotlin.collections.List<kotlin.String> = emptyList(),
-    @Json(name = "allowed_mime_types")
-    public val allowedMimeTypes: kotlin.collections.List<kotlin.String> = emptyList(),
+    public val allowedFileExtensions: List<String> = emptyList(),
+    @Json(name = "allowed_mime_types") public val allowedMimeTypes: List<String> = emptyList(),
     @Json(name = "blocked_file_extensions")
-    public val blockedFileExtensions: kotlin.collections.List<kotlin.String> = emptyList(),
-    @Json(name = "blocked_mime_types")
-    public val blockedMimeTypes: kotlin.collections.List<kotlin.String> = emptyList(),
+    public val blockedFileExtensions: List<String> = emptyList(),
+    @Json(name = "blocked_mime_types") public val blockedMimeTypes: List<String> = emptyList(),
 )

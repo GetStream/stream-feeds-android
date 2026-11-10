@@ -19,13 +19,12 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class ImageSize(
-    @Json(name = "crop") public val crop: kotlin.String? = null,
-    @Json(name = "height") public val height: kotlin.Int? = null,
-    @Json(name = "resize") public val resize: kotlin.String? = null,
-    @Json(name = "width") public val width: kotlin.Int? = null,
+    @Json(name = "crop") public val crop: String? = null,
+    @Json(name = "height") public val height: Int? = null,
+    @Json(name = "resize") public val resize: String? = null,
+    @Json(name = "width") public val width: Int? = null,
 )

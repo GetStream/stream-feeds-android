@@ -24,25 +24,24 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class ActivityFeedbackEventPayload(
     @Json(name = "action") public val action: Action,
-    @Json(name = "activity_id") public val activityId: kotlin.String,
+    @Json(name = "activity_id") public val activityId: String,
     @Json(name = "created_at") public val createdAt: java.util.Date,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
-    @Json(name = "value") public val value: kotlin.String,
+    @Json(name = "value") public val value: String,
     @Json(name = "user") public val user: io.getstream.feeds.android.network.models.UserResponse,
 ) {
 
     /** Action Enum */
-    public sealed class Action(public val value: kotlin.String) {
+    public sealed class Action(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): Action =
+            public fun fromString(s: String): Action =
                 when (s) {
                     "hide" -> Hide
                     "show_less" -> ShowLess
@@ -57,7 +56,7 @@ public data class ActivityFeedbackEventPayload(
 
         public object ShowMore : Action("show_more")
 
-        public data class Unknown(val unknownValue: kotlin.String) : Action(unknownValue)
+        public data class Unknown(val unknownValue: String) : Action(unknownValue)
 
         public class ActionAdapter : JsonAdapter<Action>() {
             @FromJson

@@ -19,10 +19,9 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UserMuteResponse(
     @Json(name = "created_at") public val createdAt: java.util.Date,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,

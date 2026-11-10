@@ -19,17 +19,14 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class BlockListConfig(
-    @Json(name = "enabled") public val enabled: kotlin.Boolean,
+    @Json(name = "enabled") public val enabled: Boolean,
     @Json(name = "rules")
-    public val rules:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.BlockListRule> =
-        emptyList(),
-    @Json(name = "async") public val async: kotlin.Boolean? = null,
-    @Json(name = "match_substring") public val matchSubstring: kotlin.Boolean? = null,
+    public val rules: List<io.getstream.feeds.android.network.models.BlockListRule> = emptyList(),
+    @Json(name = "async") public val async: Boolean? = null,
+    @Json(name = "explicit_urls_only") public val explicitUrlsOnly: Boolean? = null,
+    @Json(name = "match_substring") public val matchSubstring: Boolean? = null,
 )

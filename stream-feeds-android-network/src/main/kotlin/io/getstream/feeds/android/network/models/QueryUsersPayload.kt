@@ -19,22 +19,19 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class QueryUsersPayload(
-    @Json(name = "filter_conditions")
-    public val filterConditions: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-    @Json(name = "include_deactivated_users")
-    public val includeDeactivatedUsers: kotlin.Boolean? = null,
-    @Json(name = "limit") public val limit: kotlin.Int? = null,
-    @Json(name = "offset") public val offset: kotlin.Int? = null,
-    @Json(name = "presence") public val presence: kotlin.Boolean? = null,
+    @Json(name = "filter_conditions") public val filterConditions: Map<String, Any?> = emptyMap(),
+    @Json(name = "id_gt") public val idGt: String? = null,
+    @Json(name = "id_gte") public val idGte: String? = null,
+    @Json(name = "id_lt") public val idLt: String? = null,
+    @Json(name = "id_lte") public val idLte: String? = null,
+    @Json(name = "include_deactivated_users") public val includeDeactivatedUsers: Boolean? = null,
+    @Json(name = "limit") public val limit: Int? = null,
+    @Json(name = "offset") public val offset: Int? = null,
+    @Json(name = "presence") public val presence: Boolean? = null,
     @Json(name = "sort")
-    public val sort:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.SortParamRequest>? =
-        null,
+    public val sort: List<io.getstream.feeds.android.network.models.SortParamRequest>? = null,
 )

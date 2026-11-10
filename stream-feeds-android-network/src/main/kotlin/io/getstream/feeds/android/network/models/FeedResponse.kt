@@ -18,95 +18,40 @@
 
 package io.getstream.feeds.android.network.models
 
-import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonReader
-import com.squareup.moshi.JsonWriter
-import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class FeedResponse(
-    @Json(name = "activity_count") public val activityCount: kotlin.Int,
+    @Json(name = "activity_count") public val activityCount: Int,
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "description") public val description: kotlin.String,
-    @Json(name = "feed") public val feed: kotlin.String,
-    @Json(name = "follower_count") public val followerCount: kotlin.Int,
-    @Json(name = "following_count") public val followingCount: kotlin.Int,
-    @Json(name = "group_id") public val groupId: kotlin.String,
-    @Json(name = "id") public val id: kotlin.String,
-    @Json(name = "member_count") public val memberCount: kotlin.Int,
-    @Json(name = "name") public val name: kotlin.String,
-    @Json(name = "pin_count") public val pinCount: kotlin.Int,
+    @Json(name = "description") public val description: String,
+    @Json(name = "feed") public val feed: String,
+    @Json(name = "follower_count") public val followerCount: Int,
+    @Json(name = "following_count") public val followingCount: Int,
+    @Json(name = "group_id") public val groupId: String,
+    @Json(name = "id") public val id: String,
+    @Json(name = "member_count") public val memberCount: Int,
+    @Json(name = "name") public val name: String,
+    @Json(name = "pin_count") public val pinCount: Int,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
     @Json(name = "created_by")
     public val createdBy: io.getstream.feeds.android.network.models.UserResponse,
     @Json(name = "deleted_at") public val deletedAt: java.util.Date? = null,
-    @Json(name = "visibility") public val visibility: Visibility? = null,
-    @Json(name = "filter_tags")
-    public val filterTags: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "visibility")
+    public val visibility: io.getstream.feeds.android.network.models.FeedVisibility? = null,
+    @Json(name = "filter_tags") public val filterTags: List<String>? = null,
     @Json(name = "own_capabilities")
-    public val ownCapabilities:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.FeedOwnCapability>? =
+    public val ownCapabilities: List<io.getstream.feeds.android.network.models.FeedOwnCapability>? =
         null,
     @Json(name = "own_followings")
-    public val ownFollowings:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.FollowResponse>? =
+    public val ownFollowings: List<io.getstream.feeds.android.network.models.FollowResponse>? =
         null,
     @Json(name = "own_follows")
-    public val ownFollows:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.FollowResponse>? =
-        null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    public val ownFollows: List<io.getstream.feeds.android.network.models.FollowResponse>? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
     @Json(name = "location")
     public val location: io.getstream.feeds.android.network.models.Location? = null,
     @Json(name = "own_membership")
     public val ownMembership: io.getstream.feeds.android.network.models.FeedMemberResponse? = null,
-) {
-
-    /** Visibility Enum */
-    public sealed class Visibility(public val value: kotlin.String) {
-        override fun toString(): String = value
-
-        public companion object {
-            public fun fromString(s: kotlin.String): Visibility =
-                when (s) {
-                    "followers" -> Followers
-                    "members" -> Members
-                    "private" -> Private
-                    "public" -> Public
-                    "visible" -> Visible
-                    else -> Unknown(s)
-                }
-        }
-
-        public object Followers : Visibility("followers")
-
-        public object Members : Visibility("members")
-
-        public object Private : Visibility("private")
-
-        public object Public : Visibility("public")
-
-        public object Visible : Visibility("visible")
-
-        public data class Unknown(val unknownValue: kotlin.String) : Visibility(unknownValue)
-
-        public class VisibilityAdapter : JsonAdapter<Visibility>() {
-            @FromJson
-            override fun fromJson(reader: JsonReader): Visibility? {
-                val s = reader.nextString() ?: return null
-                return Visibility.fromString(s)
-            }
-
-            @ToJson
-            override fun toJson(writer: JsonWriter, value: Visibility?) {
-                writer.value(value?.value)
-            }
-        }
-    }
-}
+)

@@ -19,19 +19,19 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class PollVoteResponseData(
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "id") public val id: kotlin.String,
-    @Json(name = "option_id") public val optionId: kotlin.String,
-    @Json(name = "poll_id") public val pollId: kotlin.String,
+    @Json(name = "id") public val id: String,
+    @Json(name = "option_id") public val optionId: String,
+    @Json(name = "poll_id") public val pollId: String,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
-    @Json(name = "answer_text") public val answerText: kotlin.String? = null,
-    @Json(name = "is_answer") public val isAnswer: kotlin.Boolean? = null,
-    @Json(name = "user_id") public val userId: kotlin.String? = null,
+    @Json(name = "answer_text") public val answerText: String? = null,
+    @Json(name = "is_answer") public val isAnswer: Boolean? = null,
+    @Json(name = "user_id") public val userId: String? = null,
+    @Json(name = "answer_text_i18n") public val answerTextI18n: Map<String, String>? = null,
     @Json(name = "user")
     public val user: io.getstream.feeds.android.network.models.UserResponse? = null,
 )

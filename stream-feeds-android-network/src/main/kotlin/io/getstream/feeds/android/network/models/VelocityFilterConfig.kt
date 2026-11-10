@@ -19,22 +19,17 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class VelocityFilterConfig(
-    @Json(name = "advanced_filters") public val advancedFilters: kotlin.Boolean,
-    @Json(name = "cascading_actions") public val cascadingActions: kotlin.Boolean,
-    @Json(name = "cids_per_user") public val cidsPerUser: kotlin.Int,
-    @Json(name = "enabled") public val enabled: kotlin.Boolean,
-    @Json(name = "first_message_only") public val firstMessageOnly: kotlin.Boolean,
+    @Json(name = "advanced_filters") public val advancedFilters: Boolean,
+    @Json(name = "cascading_actions") public val cascadingActions: Boolean,
+    @Json(name = "cids_per_user") public val cidsPerUser: Int,
+    @Json(name = "enabled") public val enabled: Boolean,
+    @Json(name = "first_message_only") public val firstMessageOnly: Boolean,
     @Json(name = "rules")
-    public val rules:
-        kotlin.collections.List<
-            io.getstream.feeds.android.network.models.VelocityFilterConfigRule
-        > =
+    public val rules: List<io.getstream.feeds.android.network.models.VelocityFilterConfigRule> =
         emptyList(),
-    @Json(name = "async") public val async: kotlin.Boolean? = null,
+    @Json(name = "async") public val async: Boolean? = null,
 )

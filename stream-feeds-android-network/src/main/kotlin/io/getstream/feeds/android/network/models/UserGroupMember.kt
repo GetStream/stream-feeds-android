@@ -19,14 +19,13 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UserGroupMember(
-    @Json(name = "app_pk") public val appPk: kotlin.Int,
+    @Json(name = "app_pk") public val appPk: Int,
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "group_id") public val groupId: kotlin.String,
-    @Json(name = "is_admin") public val isAdmin: kotlin.Boolean,
-    @Json(name = "user_id") public val userId: kotlin.String,
+    @Json(name = "group_id") public val groupId: String,
+    @Json(name = "is_admin") public val isAdmin: Boolean,
+    @Json(name = "user_id") public val userId: String,
 )
