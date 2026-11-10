@@ -31,7 +31,7 @@ public data class Reaction(
     @Json(name = "deleted_at") public val deletedAt: java.util.Date? = null,
     @Json(name = "id") public val id: String? = null,
     @Json(name = "parent") public val parent: String? = null,
-    @Json(name = "score") public val score: Float? = null,
+    @Json(name = "score") public val score: Double? = null,
     @Json(name = "target_feeds") public val targetFeeds: List<String>? = null,
     @Json(name = "children_counts") public val childrenCounts: Map<String, Any?>? = null,
     @Json(name = "data") public val data: Map<String, Any?>? = null,

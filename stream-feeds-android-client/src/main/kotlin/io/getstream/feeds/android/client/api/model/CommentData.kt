@@ -86,8 +86,8 @@ import java.util.Date
 public data class CommentData(
     val attachments: List<Attachment>?,
     val bookmarkCount: Int,
-    override val confidenceScore: Float,
-    override val controversyScore: Float?,
+    override val confidenceScore: Double,
+    override val controversyScore: Double?,
     override val createdAt: Date,
     val custom: Map<String, Any?>?,
     val deletedAt: Date?,

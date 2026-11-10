@@ -293,4 +293,4 @@ internal fun ActivityData.updateFeedOwnValues(values: FeedOwnValues): ActivityDa
             )
     )
 
-internal fun Location.toCoordinate() = LocationCoordinate(lat.toDouble(), lng.toDouble())
+internal fun Location.toCoordinate() = LocationCoordinate(lat, lng)

@@ -211,7 +211,7 @@ public sealed interface CommentsSort {
 
 internal interface CommentsSortDataFields {
     val createdAt: Date
-    val confidenceScore: Float
-    val controversyScore: Float?
+    val confidenceScore: Double
+    val controversyScore: Double?
     val score: Int
 }

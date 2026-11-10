@@ -26,7 +26,7 @@ public data class AggregatedActivityResponse(
     @Json(name = "activity_count") public val activityCount: Int,
     @Json(name = "created_at") public val createdAt: java.util.Date,
     @Json(name = "group") public val group: String,
-    @Json(name = "score") public val score: Float,
+    @Json(name = "score") public val score: Double,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
     @Json(name = "user_count") public val userCount: Int,
     @Json(name = "user_count_truncated") public val userCountTruncated: Boolean,
