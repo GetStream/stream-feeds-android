@@ -214,8 +214,10 @@ public interface FeedsClient {
      *
      * @param activityId The unique identifier of the activity.
      * @param fid The feed identifier where the activity belongs.
+     * @param language Includes the translations to this language code, for example `fr`, in the
+     *   activity and its comments. By default no translations are included.
      */
-    public fun activity(activityId: String, fid: FeedId): Activity
+    public fun activity(activityId: String, fid: FeedId, language: String? = null): Activity
 
     /**
      * Creates an activity list instance based on the provided query.

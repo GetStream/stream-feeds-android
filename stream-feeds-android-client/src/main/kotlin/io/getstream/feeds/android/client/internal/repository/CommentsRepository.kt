@@ -102,10 +102,21 @@ internal interface CommentsRepository {
      * Retrieves a specific comment by its identifier.
      *
      * @param commentId The unique identifier of the comment to retrieve.
+     * @param language The language code of the translations to include, if any.
      * @return A [Result] containing the [CommentData] if successful, or an error if the operation
      *   fails.
      */
-    suspend fun getComment(commentId: String): Result<CommentData>
+    suspend fun getComment(commentId: String, language: String?): Result<CommentData>
+
+    /**
+     * Translates the text of a comment and stores the translation.
+     *
+     * @param commentId The unique identifier of the comment to translate.
+     * @param language The language code to translate to.
+     * @return A [Result] containing the translated [CommentData] if successful, or an error if the
+     *   operation fails.
+     */
+    suspend fun translateComment(commentId: String, language: String): Result<CommentData>
 
     /**
      * Updates an existing comment.

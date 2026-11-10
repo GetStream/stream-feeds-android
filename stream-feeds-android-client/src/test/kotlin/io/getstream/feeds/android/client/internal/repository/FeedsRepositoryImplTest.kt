@@ -70,7 +70,7 @@ internal class FeedsRepositoryImplTest {
 
     @Test
     fun `on getOrCreateFeed, delegate to api`() = runTest {
-        val query = FeedQuery(group = "user", id = "user-1")
+        val query = FeedQuery(group = "user", id = "user-1", language = "fr")
         val request = query.toRequest()
         val apiResult =
             getOrCreateFeedResponse(
@@ -84,7 +84,12 @@ internal class FeedsRepositoryImplTest {
 
         testDelegation(
             apiFunction = {
-                feedsApi.getOrCreateFeed("user", "user-1", getOrCreateFeedRequest = request)
+                feedsApi.getOrCreateFeed(
+                    feedGroupId = "user",
+                    feedId = "user-1",
+                    language = "fr",
+                    getOrCreateFeedRequest = request,
+                )
             },
             repositoryCall = { repository.getOrCreateFeed(query) },
             apiResult = apiResult,

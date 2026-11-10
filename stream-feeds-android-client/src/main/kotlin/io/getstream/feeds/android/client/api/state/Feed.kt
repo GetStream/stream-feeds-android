@@ -293,6 +293,26 @@ public interface Feed {
     ): Result<CommentData>
 
     /**
+     * Translates the text of an activity and stores the translation.
+     *
+     * @param activityId The unique identifier of the activity to translate.
+     * @param language The language code to translate to, for example `fr`.
+     * @return A [Result] containing the [ActivityData] with the translation in
+     *   [ActivityData.translations] if successful, or an error if the operation fails.
+     */
+    public suspend fun translateActivity(activityId: String, language: String): Result<ActivityData>
+
+    /**
+     * Translates the text of a comment and stores the translation.
+     *
+     * @param commentId The unique identifier of the comment to translate.
+     * @param language The language code to translate to, for example `fr`.
+     * @return A [Result] containing the [CommentData] with the translation in
+     *   [CommentData.translations] if successful, or an error if the operation fails.
+     */
+    public suspend fun translateComment(commentId: String, language: String): Result<CommentData>
+
+    /**
      * Updates an existing comment with the provided request data.
      *
      * This method allows you to modify the content and properties of an existing comment. You can
