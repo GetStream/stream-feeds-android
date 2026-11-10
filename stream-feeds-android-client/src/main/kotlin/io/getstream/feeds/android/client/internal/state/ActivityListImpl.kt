@@ -82,6 +82,7 @@ internal class ActivityListImpl(
                 limit = limit ?: query.limit,
                 next = next,
                 previous = null,
+                language = query.language,
             )
         return queryActivities(nextQuery)
     }

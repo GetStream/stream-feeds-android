@@ -252,10 +252,11 @@ internal class FeedsClientImpl(
             subscriptionManager = stateEventsSubscriptionManager,
         )
 
-    override fun activity(activityId: String, fid: FeedId): Activity =
+    override fun activity(activityId: String, fid: FeedId, language: String?): Activity =
         ActivityImpl(
             activityId = activityId,
             fid = fid,
+            language = language,
             currentUserId = user.id,
             activitiesRepository = activitiesRepository,
             commentsRepository = commentsRepository,
@@ -269,6 +270,7 @@ internal class FeedsClientImpl(
                             objectId = activityId,
                             objectType = "activity",
                             depth = 3,
+                            language = language,
                         ),
                     currentUserId = user.id,
                     commentsRepository = commentsRepository,

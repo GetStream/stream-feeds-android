@@ -35,7 +35,7 @@ internal class BookmarkListImplTest {
     private val bookmarksRepository: BookmarksRepository = mockk()
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener> =
         mockk(relaxed = true)
-    private val query = BookmarksQuery(limit = 10)
+    private val query = BookmarksQuery(limit = 10, language = "fr")
 
     private val bookmarkList =
         BookmarkListImpl(
@@ -74,7 +74,11 @@ internal class BookmarkListImplTest {
         val result = bookmarkList.queryMoreBookmarks()
 
         assertEquals(moreBookmarks, result.getOrNull())
-        coVerify { bookmarksRepository.queryBookmarks(any()) }
+        coVerify {
+            bookmarksRepository.queryBookmarks(
+                match { it.next == "next-cursor" && it.language == "fr" }
+            )
+        }
     }
 
     @Test

@@ -38,6 +38,7 @@ import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.network.models.MarkActivityRequest
 import io.getstream.feeds.android.network.models.QueryActivityReactionsRequest
+import io.getstream.feeds.android.network.models.TranslateActivityRequest
 import io.getstream.feeds.android.network.models.UpdateActivityPartialRequest
 import io.getstream.feeds.android.network.models.UpdateActivityRequest
 import io.getstream.feeds.android.network.models.UpsertActivitiesRequest
@@ -101,8 +102,16 @@ internal class ActivitiesRepositoryImpl(
         api.restoreActivity(id = activityId).activity.toModel()
     }
 
-    override suspend fun getActivity(activityId: String): Result<ActivityData> = runSafely {
-        api.getActivity(activityId).activity.toModel()
+    override suspend fun getActivity(activityId: String, language: String?): Result<ActivityData> =
+        runSafely {
+            api.getActivity(id = activityId, language = language).activity.toModel()
+        }
+
+    override suspend fun translateActivity(
+        activityId: String,
+        language: String,
+    ): Result<ActivityData> = runSafely {
+        api.translateActivity(activityId, TranslateActivityRequest(language)).activity.toModel()
     }
 
     override suspend fun updateActivity(
@@ -150,7 +159,8 @@ internal class ActivitiesRepositoryImpl(
         query: ActivitiesQuery
     ): Result<PaginationResult<ActivityData>> = runSafely {
         val request = query.toRequest()
-        val response = api.queryActivities(queryActivitiesRequest = request)
+        val response =
+            api.queryActivities(language = query.language, queryActivitiesRequest = request)
         PaginationResult(
             models = response.activities.map { it.toModel() },
             pagination = PaginationData(next = response.next, previous = response.prev),

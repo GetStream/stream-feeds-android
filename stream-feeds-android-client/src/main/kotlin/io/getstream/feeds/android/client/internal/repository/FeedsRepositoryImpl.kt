@@ -62,6 +62,7 @@ internal class FeedsRepositoryImpl(private val api: FeedsApi) : FeedsRepository 
             api.getOrCreateFeed(
                 feedGroupId = fid.group,
                 feedId = fid.id,
+                language = query.language,
                 getOrCreateFeedRequest = request,
             )
         val rawFollowers = response.followers.map { it.toModel() }

@@ -37,6 +37,7 @@ import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.AddCommentReactionRequest
 import io.getstream.feeds.android.network.models.AddCommentRequest
 import io.getstream.feeds.android.network.models.AddCommentsBatchRequest
+import io.getstream.feeds.android.network.models.TranslateCommentRequest
 import io.getstream.feeds.android.network.models.UpdateCommentRequest
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -57,7 +58,8 @@ internal class CommentsRepositoryImpl(
     override suspend fun queryComments(
         query: CommentsQuery
     ): Result<PaginationResult<CommentData>> = runSafely {
-        val response = api.queryComments(queryCommentsRequest = query.toRequest())
+        val response =
+            api.queryComments(language = query.language, queryCommentsRequest = query.toRequest())
         PaginationResult(
             models = response.comments.map { it.toModel() },
             pagination = PaginationData(response.next, response.prev),
@@ -73,6 +75,7 @@ internal class CommentsRepositoryImpl(
                 objectType = query.objectType,
                 depth = query.depth,
                 sort = query.sort?.toRequest()?.value,
+                language = query.language,
                 limit = query.limit,
                 next = query.next,
                 prev = query.previous,
@@ -135,8 +138,16 @@ internal class CommentsRepositoryImpl(
         response.comment.toModel() to response.activity.toModel()
     }
 
-    override suspend fun getComment(commentId: String): Result<CommentData> = runSafely {
-        api.getComment(commentId).comment.toModel()
+    override suspend fun getComment(commentId: String, language: String?): Result<CommentData> =
+        runSafely {
+            api.getComment(id = commentId, language = language).comment.toModel()
+        }
+
+    override suspend fun translateComment(
+        commentId: String,
+        language: String,
+    ): Result<CommentData> = runSafely {
+        api.translateComment(commentId, TranslateCommentRequest(language)).comment.toModel()
     }
 
     override suspend fun updateComment(
@@ -184,6 +195,7 @@ internal class CommentsRepositoryImpl(
             api.getCommentReplies(
                 id = query.commentId,
                 depth = query.depth,
+                language = query.language,
                 limit = query.limit,
                 next = query.next,
                 prev = query.previous,

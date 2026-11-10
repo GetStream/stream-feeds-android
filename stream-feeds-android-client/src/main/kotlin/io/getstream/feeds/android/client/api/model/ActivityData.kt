@@ -16,6 +16,7 @@
 
 package io.getstream.feeds.android.client.api.model
 
+import io.getstream.feeds.android.client.internal.model.translationOf
 import io.getstream.feeds.android.network.models.Attachment
 import io.getstream.feeds.android.network.models.Location
 import io.getstream.feeds.android.network.models.NotificationContext
@@ -82,6 +83,10 @@ import java.util.Date
  *   metrics API.
  * @property moderation Moderation state and data for the activity.
  * @property notificationContext Contextual data for notifications related to this activity.
+ * @property originalLanguage The language code of the original [text]. Only set when the activity
+ *   is loaded with a language, such as
+ *   [io.getstream.feeds.android.client.api.state.query.FeedQuery.language], and the activity has
+ *   translations.
  * @property ownBookmarks All the bookmarks from the current user for this activity.
  * @property ownReactions All the reactions from the current user for this activity.
  * @property parent The parent activity, if this is a child activity. This supports hierarchical
@@ -101,6 +106,10 @@ import java.util.Date
  * @property shareCount The number of times this activity has been shared.
  * @property text The text content of the activity. This property contains the main text content of
  *   the activity. It may be `null` for activities that only contain media or other content types.
+ * @property translations Translations of [text], keyed by language code. Only filled when the
+ *   activity is loaded with a language, such as
+ *   [io.getstream.feeds.android.client.api.state.query.FeedQuery.language], and the activity was
+ *   translated to it.
  * @property type The type or category of the activity (e.g., "post", "share", "like").
  * @property updatedAt The date and time when the activity was last updated.
  * @property user The user who created the activity.
@@ -136,6 +145,7 @@ public data class ActivityData(
     val moderation: Moderation?,
     val moderationAction: String?,
     val notificationContext: NotificationContext?,
+    val originalLanguage: String?,
     val ownBookmarks: List<BookmarkData>,
     val ownReactions: List<FeedsReactionData>,
     val parent: ActivityData?,
@@ -151,12 +161,23 @@ public data class ActivityData(
     val selectorSource: String?,
     val shareCount: Int,
     val text: String?,
+    val translations: Map<String, String>,
     val type: String,
     val updatedAt: Date,
     val user: UserData,
     val visibility: ActivityDataVisibility,
     val visibilityTag: String?,
-)
+) {
+    /**
+     * Returns the translation of [text] to the given language.
+     *
+     * @param language The language code of the translation, for example `fr`.
+     * @return The translation, or `null` when there is none, when [language] is the original
+     *   language, or when the translation equals [text].
+     */
+    public fun getTranslation(language: String): String? =
+        translationOf(text, translations, originalLanguage, language)
+}
 
 /** Represents who can reply to an activity. */
 public sealed class RestrictReplies(public val value: String) {

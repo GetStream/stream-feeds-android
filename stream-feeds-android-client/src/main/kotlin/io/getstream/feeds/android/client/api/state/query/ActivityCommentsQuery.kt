@@ -59,6 +59,9 @@ package io.getstream.feeds.android.client.api.state.query
  * - `>20`: May impact performance
  *
  * @property sort The sorting criteria for comments.
+ * @property language Includes the translations to this language code, for example `fr`, in
+ *   [io.getstream.feeds.android.client.api.model.ThreadedCommentData.translations]. By default no
+ *   translations are included.
  */
 public data class ActivityCommentsQuery(
     public val objectId: String,
@@ -69,4 +72,5 @@ public data class ActivityCommentsQuery(
     public val previous: String? = null,
     public val repliesLimit: Int? = null,
     public val sort: CommentsSort? = null,
+    public val language: String? = null,
 )

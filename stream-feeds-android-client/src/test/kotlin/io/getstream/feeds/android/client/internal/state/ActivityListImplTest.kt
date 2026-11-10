@@ -37,7 +37,7 @@ internal class ActivityListImplTest {
     private val feedOwnValuesRepository: FeedOwnValuesRepository = mockk(relaxed = true)
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener> =
         mockk(relaxed = true)
-    private val query = ActivitiesQuery(limit = 10)
+    private val query = ActivitiesQuery(limit = 10, language = "fr")
     private val currentUserId = "user-123"
 
     private val activityList =
@@ -171,5 +171,6 @@ internal class ActivityListImplTest {
             limit = limit,
             next = next,
             previous = null,
+            language = query.language,
         )
 }
