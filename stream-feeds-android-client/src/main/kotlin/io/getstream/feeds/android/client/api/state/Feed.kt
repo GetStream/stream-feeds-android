@@ -106,9 +106,14 @@ public interface Feed {
      *
      * @param hardDelete If `true`, the feed will be permanently deleted. If `false`, it will be
      *   soft deleted. (default is `false`).
+     * @param purgeUserActivities If `true`, also deletes the feed owner's activities from every
+     *   feed they were added to. Requires [hardDelete]. If `null`, they are kept.
      * @return A [Result] indicating success or failure of the deletion operation.
      */
-    public suspend fun deleteFeed(hardDelete: Boolean = false): Result<Unit>
+    public suspend fun deleteFeed(
+        hardDelete: Boolean = false,
+        purgeUserActivities: Boolean? = null,
+    ): Result<Unit>
 
     /**
      * Adds a new activity to this feed, or to the feeds given in [request].
@@ -360,12 +365,21 @@ public interface Feed {
      * @param createNotificationActivity Whether the action is added to the notification feed.
      * @param custom Additional data for the request.
      * @param pushPreference Push notification preferences for the follow request.
+     * @param activityCopyLimit The maximum number of the target feed's existing activities to copy
+     *   into this feed (0 to 1000). If `null`, all of them are copied.
+     * @param enrichOwnFields If `true`, enriches the source and target feeds with the current
+     *   user's own fields. If `null`, they are not enriched.
+     * @param skipPush If `true`, no push notification is sent for the follow. If `null`, it is
+     *   sent.
      */
     public suspend fun follow(
         targetFid: FeedId,
         createNotificationActivity: Boolean? = null,
         custom: Map<String, Any>? = null,
         pushPreference: FollowPushPreference? = null,
+        activityCopyLimit: Int? = null,
+        enrichOwnFields: Boolean? = null,
+        skipPush: Boolean? = null,
     ): Result<FollowData>
 
     /**
@@ -388,11 +402,14 @@ public interface Feed {
      *
      * @param targetFid The target feed identifier to unfollow.
      * @param deleteNotificationActivity If `true`, removes the corresponding notification activity.
+     * @param keepHistory If `true`, activities from the unfollowed feed stay in this feed's
+     *   timeline. If `null`, they are removed.
      * @return A [Result] indicating success or failure of the unfollow operation.
      */
     public suspend fun unfollow(
         targetFid: FeedId,
         deleteNotificationActivity: Boolean? = null,
+        keepHistory: Boolean? = null,
     ): Result<Unit>
 
     /**
