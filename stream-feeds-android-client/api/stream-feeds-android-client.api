@@ -1624,10 +1624,10 @@ public abstract interface class io/getstream/feeds/android/client/api/state/Feed
 	public static synthetic fun deleteComment-BWLJW6A$default (Lio/getstream/feeds/android/client/api/state/Feed;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun deleteCommentReaction-BWLJW6A (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun deleteCommentReaction-BWLJW6A$default (Lio/getstream/feeds/android/client/api/state/Feed;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public abstract fun deleteFeed-gIAlu-s (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun deleteFeed-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/Feed;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public abstract fun follow-yxL6bBk (Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FollowPushPreference;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun follow-yxL6bBk$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FollowPushPreference;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public abstract fun deleteFeed-0E7RQCE (ZLjava/lang/Boolean;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun deleteFeed-0E7RQCE$default (Lio/getstream/feeds/android/client/api/state/Feed;ZLjava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public abstract fun follow-eH_QyT8 (Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FollowPushPreference;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun follow-eH_QyT8$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FollowPushPreference;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun getComment-gIAlu-s (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getFid ()Lio/getstream/feeds/android/client/api/model/FeedId;
 	public abstract fun getOrCreate-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -1646,8 +1646,8 @@ public abstract interface class io/getstream/feeds/android/client/api/state/Feed
 	public abstract fun stopWatching-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun translateActivity-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun translateComment-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun unfollow-0E7RQCE (Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun unfollow-0E7RQCE$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public abstract fun unfollow-BWLJW6A (Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun unfollow-BWLJW6A$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun updateActivity-0E7RQCE (Ljava/lang/String;Lio/getstream/feeds/android/network/models/UpdateActivityRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun updateActivityPartial-0E7RQCE (Ljava/lang/String;Lio/getstream/feeds/android/network/models/UpdateActivityPartialRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun updateBookmark-0E7RQCE (Ljava/lang/String;Lio/getstream/feeds/android/network/models/UpdateBookmarkRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -1668,11 +1668,11 @@ public final class io/getstream/feeds/android/client/api/state/Feed$DefaultImpls
 	public static synthetic fun deleteBookmark-0E7RQCE$default (Lio/getstream/feeds/android/client/api/state/Feed;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun deleteComment-BWLJW6A$default (Lio/getstream/feeds/android/client/api/state/Feed;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun deleteCommentReaction-BWLJW6A$default (Lio/getstream/feeds/android/client/api/state/Feed;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun deleteFeed-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/Feed;ZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun follow-yxL6bBk$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FollowPushPreference;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun deleteFeed-0E7RQCE$default (Lio/getstream/feeds/android/client/api/state/Feed;ZLjava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun follow-eH_QyT8$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FollowPushPreference;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun queryMoreActivities-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/Feed;Ljava/lang/Integer;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun queryMoreFeedMembers-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/Feed;Ljava/lang/Integer;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun unfollow-0E7RQCE$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun unfollow-BWLJW6A$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun updateFollow-BWLJW6A$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FollowPushPreference;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 

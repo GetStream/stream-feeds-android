@@ -122,8 +122,8 @@ internal class FeedsRepositoryImplTest {
     @Test
     fun `on deleteFeed, delegate to api`() = runTest {
         testDelegation(
-            apiFunction = { feedsApi.deleteFeed("user", "user-1", true) },
-            repositoryCall = { repository.deleteFeed("user", "user-1", true) },
+            apiFunction = { feedsApi.deleteFeed("user", "user-1", true, true) },
+            repositoryCall = { repository.deleteFeed("user", "user-1", true, true) },
             apiResult = Unit,
         )
     }
@@ -209,8 +209,15 @@ internal class FeedsRepositoryImplTest {
         val unfollowResponse = UnfollowResponse(duration = "duration", follow = followResponseData)
 
         testDelegation(
-            apiFunction = { feedsApi.unfollow("user:user-1", "user:user-2", true) },
-            repositoryCall = { repository.unfollow(source, target, true) },
+            apiFunction = {
+                feedsApi.unfollow(
+                    source = "user:user-1",
+                    target = "user:user-2",
+                    deleteNotificationActivity = true,
+                    keepHistory = true,
+                )
+            },
+            repositoryCall = { repository.unfollow(source, target, true, true) },
             apiResult = unfollowResponse,
             repositoryResult = unfollowResponse.follow.toModel(),
         )
