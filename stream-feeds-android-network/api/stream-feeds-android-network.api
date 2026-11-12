@@ -599,18 +599,18 @@ public final class io/getstream/feeds/android/network/models/APIErrorJsonAdapter
 }
 
 public final class io/getstream/feeds/android/network/models/AWSRekognitionRule {
-	public fun <init> (Lio/getstream/feeds/android/network/models/ModerationAction;Ljava/lang/String;FLjava/util/Map;)V
-	public synthetic fun <init> (Lio/getstream/feeds/android/network/models/ModerationAction;Ljava/lang/String;FLjava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lio/getstream/feeds/android/network/models/ModerationAction;Ljava/lang/String;DLjava/util/Map;)V
+	public synthetic fun <init> (Lio/getstream/feeds/android/network/models/ModerationAction;Ljava/lang/String;DLjava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lio/getstream/feeds/android/network/models/ModerationAction;
 	public final fun component2 ()Ljava/lang/String;
-	public final fun component3 ()F
+	public final fun component3 ()D
 	public final fun component4 ()Ljava/util/Map;
-	public final fun copy (Lio/getstream/feeds/android/network/models/ModerationAction;Ljava/lang/String;FLjava/util/Map;)Lio/getstream/feeds/android/network/models/AWSRekognitionRule;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/AWSRekognitionRule;Lio/getstream/feeds/android/network/models/ModerationAction;Ljava/lang/String;FLjava/util/Map;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/AWSRekognitionRule;
+	public final fun copy (Lio/getstream/feeds/android/network/models/ModerationAction;Ljava/lang/String;DLjava/util/Map;)Lio/getstream/feeds/android/network/models/AWSRekognitionRule;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/AWSRekognitionRule;Lio/getstream/feeds/android/network/models/ModerationAction;Ljava/lang/String;DLjava/util/Map;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/AWSRekognitionRule;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAction ()Lio/getstream/feeds/android/network/models/ModerationAction;
 	public final fun getLabel ()Ljava/lang/String;
-	public final fun getMinConfidence ()F
+	public final fun getMinConfidence ()D
 	public final fun getSubclassifications ()Ljava/util/Map;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -1406,10 +1406,10 @@ public final class io/getstream/feeds/android/network/models/ActivityRequestJson
 }
 
 public final class io/getstream/feeds/android/network/models/ActivityResponse {
-	public fun <init> (IILjava/util/Date;ZLjava/lang/String;IZILio/getstream/feeds/android/network/models/RestrictReplies;FILjava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ActivityVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/util/Date;Ljava/util/Date;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/FeedResponse;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Location;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Lio/getstream/feeds/android/network/models/NotificationContext;Lio/getstream/feeds/android/network/models/ActivityResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Ljava/util/Map;)V
-	public synthetic fun <init> (IILjava/util/Date;ZLjava/lang/String;IZILio/getstream/feeds/android/network/models/RestrictReplies;FILjava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ActivityVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/util/Date;Ljava/util/Date;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/FeedResponse;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Location;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Lio/getstream/feeds/android/network/models/NotificationContext;Lio/getstream/feeds/android/network/models/ActivityResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Ljava/util/Map;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (IILjava/util/Date;ZLjava/lang/String;IZILio/getstream/feeds/android/network/models/RestrictReplies;DILjava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ActivityVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/util/Date;Ljava/util/Date;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/FeedResponse;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Location;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Lio/getstream/feeds/android/network/models/NotificationContext;Lio/getstream/feeds/android/network/models/ActivityResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Ljava/util/Map;)V
+	public synthetic fun <init> (IILjava/util/Date;ZLjava/lang/String;IZILio/getstream/feeds/android/network/models/RestrictReplies;DILjava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ActivityVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/util/Date;Ljava/util/Date;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/FeedResponse;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Location;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Lio/getstream/feeds/android/network/models/NotificationContext;Lio/getstream/feeds/android/network/models/ActivityResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Ljava/util/Map;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()I
-	public final fun component10 ()F
+	public final fun component10 ()D
 	public final fun component11 ()I
 	public final fun component12 ()Ljava/lang/String;
 	public final fun component13 ()Ljava/util/Date;
@@ -1461,8 +1461,8 @@ public final class io/getstream/feeds/android/network/models/ActivityResponse {
 	public final fun component7 ()Z
 	public final fun component8 ()I
 	public final fun component9 ()Lio/getstream/feeds/android/network/models/RestrictReplies;
-	public final fun copy (IILjava/util/Date;ZLjava/lang/String;IZILio/getstream/feeds/android/network/models/RestrictReplies;FILjava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ActivityVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/util/Date;Ljava/util/Date;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/FeedResponse;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Location;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Lio/getstream/feeds/android/network/models/NotificationContext;Lio/getstream/feeds/android/network/models/ActivityResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Ljava/util/Map;)Lio/getstream/feeds/android/network/models/ActivityResponse;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ActivityResponse;IILjava/util/Date;ZLjava/lang/String;IZILio/getstream/feeds/android/network/models/RestrictReplies;FILjava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ActivityVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/util/Date;Ljava/util/Date;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/FeedResponse;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Location;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Lio/getstream/feeds/android/network/models/NotificationContext;Lio/getstream/feeds/android/network/models/ActivityResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Ljava/util/Map;IILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ActivityResponse;
+	public final fun copy (IILjava/util/Date;ZLjava/lang/String;IZILio/getstream/feeds/android/network/models/RestrictReplies;DILjava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ActivityVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/util/Date;Ljava/util/Date;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/FeedResponse;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Location;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Lio/getstream/feeds/android/network/models/NotificationContext;Lio/getstream/feeds/android/network/models/ActivityResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Ljava/util/Map;)Lio/getstream/feeds/android/network/models/ActivityResponse;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ActivityResponse;IILjava/util/Date;ZLjava/lang/String;IZILio/getstream/feeds/android/network/models/RestrictReplies;DILjava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ActivityVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/util/Date;Ljava/util/Date;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/FeedResponse;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Location;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Lio/getstream/feeds/android/network/models/NotificationContext;Lio/getstream/feeds/android/network/models/ActivityResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Ljava/util/Map;IILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ActivityResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAttachments ()Ljava/util/List;
 	public final fun getBookmarkCount ()I
@@ -1502,7 +1502,7 @@ public final class io/getstream/feeds/android/network/models/ActivityResponse {
 	public final fun getReactionGroups ()Ljava/util/Map;
 	public final fun getReasons ()Ljava/util/List;
 	public final fun getRestrictReplies ()Lio/getstream/feeds/android/network/models/RestrictReplies;
-	public final fun getScore ()F
+	public final fun getScore ()D
 	public final fun getScoreVars ()Ljava/util/Map;
 	public final fun getSearchData ()Ljava/util/Map;
 	public final fun getSelectorSource ()Ljava/lang/String;
@@ -2301,27 +2301,27 @@ public final class io/getstream/feeds/android/network/models/AddUserGroupMembers
 }
 
 public final class io/getstream/feeds/android/network/models/AggregatedActivityResponse {
-	public fun <init> (ILjava/util/Date;Ljava/lang/String;FLjava/util/Date;IZLjava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;)V
-	public synthetic fun <init> (ILjava/util/Date;Ljava/lang/String;FLjava/util/Date;IZLjava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (ILjava/util/Date;Ljava/lang/String;DLjava/util/Date;IZLjava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;)V
+	public synthetic fun <init> (ILjava/util/Date;Ljava/lang/String;DLjava/util/Date;IZLjava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()I
 	public final fun component10 ()Ljava/lang/Boolean;
 	public final fun component11 ()Ljava/lang/Boolean;
 	public final fun component2 ()Ljava/util/Date;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun component4 ()F
+	public final fun component4 ()D
 	public final fun component5 ()Ljava/util/Date;
 	public final fun component6 ()I
 	public final fun component7 ()Z
 	public final fun component8 ()Ljava/util/List;
 	public final fun component9 ()Ljava/lang/Boolean;
-	public final fun copy (ILjava/util/Date;Ljava/lang/String;FLjava/util/Date;IZLjava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;)Lio/getstream/feeds/android/network/models/AggregatedActivityResponse;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/AggregatedActivityResponse;ILjava/util/Date;Ljava/lang/String;FLjava/util/Date;IZLjava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/AggregatedActivityResponse;
+	public final fun copy (ILjava/util/Date;Ljava/lang/String;DLjava/util/Date;IZLjava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;)Lio/getstream/feeds/android/network/models/AggregatedActivityResponse;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/AggregatedActivityResponse;ILjava/util/Date;Ljava/lang/String;DLjava/util/Date;IZLjava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/AggregatedActivityResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getActivities ()Ljava/util/List;
 	public final fun getActivityCount ()I
 	public final fun getCreatedAt ()Ljava/util/Date;
 	public final fun getGroup ()Ljava/lang/String;
-	public final fun getScore ()F
+	public final fun getScore ()D
 	public final fun getUpdatedAt ()Ljava/util/Date;
 	public final fun getUserCount ()I
 	public final fun getUserCountTruncated ()Z
@@ -2763,16 +2763,16 @@ public final class io/getstream/feeds/android/network/models/AutomodPlatformCirc
 }
 
 public final class io/getstream/feeds/android/network/models/AutomodRule {
-	public fun <init> (Lio/getstream/feeds/android/network/models/ModerationAction;Ljava/lang/String;F)V
+	public fun <init> (Lio/getstream/feeds/android/network/models/ModerationAction;Ljava/lang/String;D)V
 	public final fun component1 ()Lio/getstream/feeds/android/network/models/ModerationAction;
 	public final fun component2 ()Ljava/lang/String;
-	public final fun component3 ()F
-	public final fun copy (Lio/getstream/feeds/android/network/models/ModerationAction;Ljava/lang/String;F)Lio/getstream/feeds/android/network/models/AutomodRule;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/AutomodRule;Lio/getstream/feeds/android/network/models/ModerationAction;Ljava/lang/String;FILjava/lang/Object;)Lio/getstream/feeds/android/network/models/AutomodRule;
+	public final fun component3 ()D
+	public final fun copy (Lio/getstream/feeds/android/network/models/ModerationAction;Ljava/lang/String;D)Lio/getstream/feeds/android/network/models/AutomodRule;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/AutomodRule;Lio/getstream/feeds/android/network/models/ModerationAction;Ljava/lang/String;DILjava/lang/Object;)Lio/getstream/feeds/android/network/models/AutomodRule;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAction ()Lio/getstream/feeds/android/network/models/ModerationAction;
 	public final fun getLabel ()Ljava/lang/String;
-	public final fun getThreshold ()F
+	public final fun getThreshold ()D
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -2812,16 +2812,16 @@ public final class io/getstream/feeds/android/network/models/AutomodSemanticFilt
 }
 
 public final class io/getstream/feeds/android/network/models/AutomodSemanticFiltersRule {
-	public fun <init> (Lio/getstream/feeds/android/network/models/ModerationAction;Ljava/lang/String;F)V
+	public fun <init> (Lio/getstream/feeds/android/network/models/ModerationAction;Ljava/lang/String;D)V
 	public final fun component1 ()Lio/getstream/feeds/android/network/models/ModerationAction;
 	public final fun component2 ()Ljava/lang/String;
-	public final fun component3 ()F
-	public final fun copy (Lio/getstream/feeds/android/network/models/ModerationAction;Ljava/lang/String;F)Lio/getstream/feeds/android/network/models/AutomodSemanticFiltersRule;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/AutomodSemanticFiltersRule;Lio/getstream/feeds/android/network/models/ModerationAction;Ljava/lang/String;FILjava/lang/Object;)Lio/getstream/feeds/android/network/models/AutomodSemanticFiltersRule;
+	public final fun component3 ()D
+	public final fun copy (Lio/getstream/feeds/android/network/models/ModerationAction;Ljava/lang/String;D)Lio/getstream/feeds/android/network/models/AutomodSemanticFiltersRule;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/AutomodSemanticFiltersRule;Lio/getstream/feeds/android/network/models/ModerationAction;Ljava/lang/String;DILjava/lang/Object;)Lio/getstream/feeds/android/network/models/AutomodSemanticFiltersRule;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAction ()Lio/getstream/feeds/android/network/models/ModerationAction;
 	public final fun getName ()Ljava/lang/String;
-	public final fun getThreshold ()F
+	public final fun getThreshold ()D
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -5766,27 +5766,27 @@ public final class io/getstream/feeds/android/network/models/ChatReminderRespons
 }
 
 public final class io/getstream/feeds/android/network/models/ChatSharedLocationResponseData {
-	public fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;FFLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChatMessageResponse;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;FFLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChatMessageResponse;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;DDLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChatMessageResponse;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;DDLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChatMessageResponse;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component10 ()Lio/getstream/feeds/android/network/models/ChatMessageResponse;
 	public final fun component2 ()Ljava/util/Date;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun component4 ()F
-	public final fun component5 ()F
+	public final fun component4 ()D
+	public final fun component5 ()D
 	public final fun component6 ()Ljava/lang/String;
 	public final fun component7 ()Ljava/util/Date;
 	public final fun component8 ()Ljava/lang/String;
 	public final fun component9 ()Ljava/util/Date;
-	public final fun copy (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;FFLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChatMessageResponse;)Lio/getstream/feeds/android/network/models/ChatSharedLocationResponseData;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ChatSharedLocationResponseData;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;FFLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChatMessageResponse;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ChatSharedLocationResponseData;
+	public final fun copy (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;DDLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChatMessageResponse;)Lio/getstream/feeds/android/network/models/ChatSharedLocationResponseData;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ChatSharedLocationResponseData;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;DDLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChatMessageResponse;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ChatSharedLocationResponseData;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getChannelCid ()Ljava/lang/String;
 	public final fun getCreatedAt ()Ljava/util/Date;
 	public final fun getCreatedByDeviceId ()Ljava/lang/String;
 	public final fun getEndAt ()Ljava/util/Date;
-	public final fun getLatitude ()F
-	public final fun getLongitude ()F
+	public final fun getLatitude ()D
+	public final fun getLongitude ()D
 	public final fun getMessage ()Lio/getstream/feeds/android/network/models/ChatMessageResponse;
 	public final fun getMessageId ()Ljava/lang/String;
 	public final fun getUpdatedAt ()Ljava/util/Date;
@@ -6264,8 +6264,8 @@ public final class io/getstream/feeds/android/network/models/CommentReactionUpda
 }
 
 public final class io/getstream/feeds/android/network/models/CommentResponse {
-	public fun <init> (IFLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Float;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;)V
-	public synthetic fun <init> (IFLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Float;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (IDLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Double;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;)V
+	public synthetic fun <init> (IDLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Double;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()I
 	public final fun component10 ()I
 	public final fun component11 ()I
@@ -6275,9 +6275,9 @@ public final class io/getstream/feeds/android/network/models/CommentResponse {
 	public final fun component15 ()Ljava/util/List;
 	public final fun component16 ()Ljava/util/List;
 	public final fun component17 ()Lio/getstream/feeds/android/network/models/UserResponse;
-	public final fun component18 ()Ljava/lang/Float;
+	public final fun component18 ()Ljava/lang/Double;
 	public final fun component19 ()Ljava/util/Date;
-	public final fun component2 ()F
+	public final fun component2 ()D
 	public final fun component20 ()Ljava/util/Date;
 	public final fun component21 ()Ljava/lang/String;
 	public final fun component22 ()Ljava/lang/String;
@@ -6294,13 +6294,13 @@ public final class io/getstream/feeds/android/network/models/CommentResponse {
 	public final fun component7 ()Ljava/lang/String;
 	public final fun component8 ()Ljava/lang/String;
 	public final fun component9 ()I
-	public final fun copy (IFLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Float;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;)Lio/getstream/feeds/android/network/models/CommentResponse;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/CommentResponse;IFLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Float;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/CommentResponse;
+	public final fun copy (IDLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Double;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;)Lio/getstream/feeds/android/network/models/CommentResponse;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/CommentResponse;IDLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Double;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/CommentResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAttachments ()Ljava/util/List;
 	public final fun getBookmarkCount ()I
-	public final fun getConfidenceScore ()F
-	public final fun getControversyScore ()Ljava/lang/Float;
+	public final fun getConfidenceScore ()D
+	public final fun getControversyScore ()Ljava/lang/Double;
 	public final fun getCreatedAt ()Ljava/util/Date;
 	public final fun getCustom ()Ljava/util/Map;
 	public final fun getDeletedAt ()Ljava/util/Date;
@@ -8075,23 +8075,23 @@ public final class io/getstream/feeds/android/network/models/DraftResponseJsonAd
 
 public final class io/getstream/feeds/android/network/models/EnrichedActivity {
 	public fun <init> ()V
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Float;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lio/getstream/feeds/android/network/models/Data;Lio/getstream/feeds/android/network/models/Data;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Data;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Data;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Float;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lio/getstream/feeds/android/network/models/Data;Lio/getstream/feeds/android/network/models/Data;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Data;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Data;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lio/getstream/feeds/android/network/models/Data;Lio/getstream/feeds/android/network/models/Data;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Data;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Data;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lio/getstream/feeds/android/network/models/Data;Lio/getstream/feeds/android/network/models/Data;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Data;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Data;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component10 ()Lio/getstream/feeds/android/network/models/Data;
 	public final fun component11 ()Ljava/util/Map;
 	public final fun component12 ()Ljava/util/Map;
 	public final fun component13 ()Lio/getstream/feeds/android/network/models/Data;
 	public final fun component2 ()Ljava/lang/String;
-	public final fun component3 ()Ljava/lang/Float;
+	public final fun component3 ()Ljava/lang/Double;
 	public final fun component4 ()Ljava/lang/String;
 	public final fun component5 ()Ljava/lang/String;
 	public final fun component6 ()Ljava/util/List;
 	public final fun component7 ()Lio/getstream/feeds/android/network/models/Data;
 	public final fun component8 ()Lio/getstream/feeds/android/network/models/Data;
 	public final fun component9 ()Ljava/util/Map;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Float;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lio/getstream/feeds/android/network/models/Data;Lio/getstream/feeds/android/network/models/Data;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Data;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Data;)Lio/getstream/feeds/android/network/models/EnrichedActivity;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/EnrichedActivity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Float;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lio/getstream/feeds/android/network/models/Data;Lio/getstream/feeds/android/network/models/Data;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Data;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Data;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/EnrichedActivity;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lio/getstream/feeds/android/network/models/Data;Lio/getstream/feeds/android/network/models/Data;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Data;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Data;)Lio/getstream/feeds/android/network/models/EnrichedActivity;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/EnrichedActivity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lio/getstream/feeds/android/network/models/Data;Lio/getstream/feeds/android/network/models/Data;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Data;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Data;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/EnrichedActivity;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getActor ()Lio/getstream/feeds/android/network/models/Data;
 	public final fun getForeignId ()Ljava/lang/String;
@@ -8101,7 +8101,7 @@ public final class io/getstream/feeds/android/network/models/EnrichedActivity {
 	public final fun getOrigin ()Lio/getstream/feeds/android/network/models/Data;
 	public final fun getOwnReactions ()Ljava/util/Map;
 	public final fun getReactionCounts ()Ljava/util/Map;
-	public final fun getScore ()Ljava/lang/Float;
+	public final fun getScore ()Ljava/lang/Double;
 	public final fun getTarget ()Lio/getstream/feeds/android/network/models/Data;
 	public final fun getTime ()Ljava/lang/String;
 	public final fun getTo ()Ljava/util/List;
@@ -9139,8 +9139,8 @@ public final class io/getstream/feeds/android/network/models/FeedResponseJsonAda
 }
 
 public final class io/getstream/feeds/android/network/models/FeedSuggestionResponse {
-	public fun <init> (ILjava/util/Date;Ljava/lang/String;Ljava/lang/String;IILjava/lang/String;Ljava/lang/String;ILjava/lang/String;ILjava/util/Date;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/lang/String;Ljava/lang/Float;Lio/getstream/feeds/android/network/models/FeedVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Location;Lio/getstream/feeds/android/network/models/FeedMemberResponse;)V
-	public synthetic fun <init> (ILjava/util/Date;Ljava/lang/String;Ljava/lang/String;IILjava/lang/String;Ljava/lang/String;ILjava/lang/String;ILjava/util/Date;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/lang/String;Ljava/lang/Float;Lio/getstream/feeds/android/network/models/FeedVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Location;Lio/getstream/feeds/android/network/models/FeedMemberResponse;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (ILjava/util/Date;Ljava/lang/String;Ljava/lang/String;IILjava/lang/String;Ljava/lang/String;ILjava/lang/String;ILjava/util/Date;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/lang/String;Ljava/lang/Double;Lio/getstream/feeds/android/network/models/FeedVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Location;Lio/getstream/feeds/android/network/models/FeedMemberResponse;)V
+	public synthetic fun <init> (ILjava/util/Date;Ljava/lang/String;Ljava/lang/String;IILjava/lang/String;Ljava/lang/String;ILjava/lang/String;ILjava/util/Date;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/lang/String;Ljava/lang/Double;Lio/getstream/feeds/android/network/models/FeedVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Location;Lio/getstream/feeds/android/network/models/FeedMemberResponse;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()I
 	public final fun component10 ()Ljava/lang/String;
 	public final fun component11 ()I
@@ -9148,7 +9148,7 @@ public final class io/getstream/feeds/android/network/models/FeedSuggestionRespo
 	public final fun component13 ()Lio/getstream/feeds/android/network/models/UserResponse;
 	public final fun component14 ()Ljava/util/Date;
 	public final fun component15 ()Ljava/lang/String;
-	public final fun component16 ()Ljava/lang/Float;
+	public final fun component16 ()Ljava/lang/Double;
 	public final fun component17 ()Lio/getstream/feeds/android/network/models/FeedVisibility;
 	public final fun component18 ()Ljava/util/List;
 	public final fun component19 ()Ljava/util/List;
@@ -9166,8 +9166,8 @@ public final class io/getstream/feeds/android/network/models/FeedSuggestionRespo
 	public final fun component7 ()Ljava/lang/String;
 	public final fun component8 ()Ljava/lang/String;
 	public final fun component9 ()I
-	public final fun copy (ILjava/util/Date;Ljava/lang/String;Ljava/lang/String;IILjava/lang/String;Ljava/lang/String;ILjava/lang/String;ILjava/util/Date;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/lang/String;Ljava/lang/Float;Lio/getstream/feeds/android/network/models/FeedVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Location;Lio/getstream/feeds/android/network/models/FeedMemberResponse;)Lio/getstream/feeds/android/network/models/FeedSuggestionResponse;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/FeedSuggestionResponse;ILjava/util/Date;Ljava/lang/String;Ljava/lang/String;IILjava/lang/String;Ljava/lang/String;ILjava/lang/String;ILjava/util/Date;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/lang/String;Ljava/lang/Float;Lio/getstream/feeds/android/network/models/FeedVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Location;Lio/getstream/feeds/android/network/models/FeedMemberResponse;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/FeedSuggestionResponse;
+	public final fun copy (ILjava/util/Date;Ljava/lang/String;Ljava/lang/String;IILjava/lang/String;Ljava/lang/String;ILjava/lang/String;ILjava/util/Date;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/lang/String;Ljava/lang/Double;Lio/getstream/feeds/android/network/models/FeedVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Location;Lio/getstream/feeds/android/network/models/FeedMemberResponse;)Lio/getstream/feeds/android/network/models/FeedSuggestionResponse;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/FeedSuggestionResponse;ILjava/util/Date;Ljava/lang/String;Ljava/lang/String;IILjava/lang/String;Ljava/lang/String;ILjava/lang/String;ILjava/util/Date;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/lang/String;Ljava/lang/Double;Lio/getstream/feeds/android/network/models/FeedVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/Location;Lio/getstream/feeds/android/network/models/FeedMemberResponse;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/FeedSuggestionResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getActivityCount ()I
 	public final fun getAlgorithmScores ()Ljava/util/Map;
@@ -9191,7 +9191,7 @@ public final class io/getstream/feeds/android/network/models/FeedSuggestionRespo
 	public final fun getOwnMembership ()Lio/getstream/feeds/android/network/models/FeedMemberResponse;
 	public final fun getPinCount ()I
 	public final fun getReason ()Ljava/lang/String;
-	public final fun getRecommendationScore ()Ljava/lang/Float;
+	public final fun getRecommendationScore ()Ljava/lang/Double;
 	public final fun getUpdatedAt ()Ljava/util/Date;
 	public final fun getVisibility ()Lio/getstream/feeds/android/network/models/FeedVisibility;
 	public fun hashCode ()I
@@ -9295,14 +9295,14 @@ public final class io/getstream/feeds/android/network/models/FeedVisibility$Visi
 }
 
 public final class io/getstream/feeds/android/network/models/FeedsActivityLocation {
-	public fun <init> (FF)V
-	public final fun component1 ()F
-	public final fun component2 ()F
-	public final fun copy (FF)Lio/getstream/feeds/android/network/models/FeedsActivityLocation;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/FeedsActivityLocation;FFILjava/lang/Object;)Lio/getstream/feeds/android/network/models/FeedsActivityLocation;
+	public fun <init> (DD)V
+	public final fun component1 ()D
+	public final fun component2 ()D
+	public final fun copy (DD)Lio/getstream/feeds/android/network/models/FeedsActivityLocation;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/FeedsActivityLocation;DDILjava/lang/Object;)Lio/getstream/feeds/android/network/models/FeedsActivityLocation;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getLat ()F
-	public final fun getLng ()F
+	public final fun getLat ()D
+	public final fun getLng ()D
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -10003,10 +10003,10 @@ public final class io/getstream/feeds/android/network/models/FeedsShareResponseJ
 }
 
 public final class io/getstream/feeds/android/network/models/FeedsV3ActivityResponse {
-	public fun <init> (IILjava/util/Date;ZLjava/lang/String;IZILio/getstream/feeds/android/network/models/RestrictReplies;FILjava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ActivityVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/util/Date;Ljava/util/Date;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/FeedsFeedResponse;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FeedsActivityLocation;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Lio/getstream/feeds/android/network/models/FeedsNotificationContext;Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Ljava/util/Map;)V
-	public synthetic fun <init> (IILjava/util/Date;ZLjava/lang/String;IZILio/getstream/feeds/android/network/models/RestrictReplies;FILjava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ActivityVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/util/Date;Ljava/util/Date;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/FeedsFeedResponse;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FeedsActivityLocation;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Lio/getstream/feeds/android/network/models/FeedsNotificationContext;Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Ljava/util/Map;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (IILjava/util/Date;ZLjava/lang/String;IZILio/getstream/feeds/android/network/models/RestrictReplies;DILjava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ActivityVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/util/Date;Ljava/util/Date;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/FeedsFeedResponse;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FeedsActivityLocation;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Lio/getstream/feeds/android/network/models/FeedsNotificationContext;Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Ljava/util/Map;)V
+	public synthetic fun <init> (IILjava/util/Date;ZLjava/lang/String;IZILio/getstream/feeds/android/network/models/RestrictReplies;DILjava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ActivityVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/util/Date;Ljava/util/Date;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/FeedsFeedResponse;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FeedsActivityLocation;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Lio/getstream/feeds/android/network/models/FeedsNotificationContext;Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Ljava/util/Map;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()I
-	public final fun component10 ()F
+	public final fun component10 ()D
 	public final fun component11 ()I
 	public final fun component12 ()Ljava/lang/String;
 	public final fun component13 ()Ljava/util/Date;
@@ -10055,8 +10055,8 @@ public final class io/getstream/feeds/android/network/models/FeedsV3ActivityResp
 	public final fun component7 ()Z
 	public final fun component8 ()I
 	public final fun component9 ()Lio/getstream/feeds/android/network/models/RestrictReplies;
-	public final fun copy (IILjava/util/Date;ZLjava/lang/String;IZILio/getstream/feeds/android/network/models/RestrictReplies;FILjava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ActivityVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/util/Date;Ljava/util/Date;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/FeedsFeedResponse;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FeedsActivityLocation;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Lio/getstream/feeds/android/network/models/FeedsNotificationContext;Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Ljava/util/Map;)Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;IILjava/util/Date;ZLjava/lang/String;IZILio/getstream/feeds/android/network/models/RestrictReplies;FILjava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ActivityVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/util/Date;Ljava/util/Date;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/FeedsFeedResponse;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FeedsActivityLocation;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Lio/getstream/feeds/android/network/models/FeedsNotificationContext;Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Ljava/util/Map;IILjava/lang/Object;)Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;
+	public final fun copy (IILjava/util/Date;ZLjava/lang/String;IZILio/getstream/feeds/android/network/models/RestrictReplies;DILjava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ActivityVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/util/Date;Ljava/util/Date;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/FeedsFeedResponse;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FeedsActivityLocation;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Lio/getstream/feeds/android/network/models/FeedsNotificationContext;Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Ljava/util/Map;)Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;IILjava/util/Date;ZLjava/lang/String;IZILio/getstream/feeds/android/network/models/RestrictReplies;DILjava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ActivityVisibility;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/util/Date;Ljava/util/Date;Ljava/util/Date;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/FeedsFeedResponse;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FeedsActivityLocation;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Lio/getstream/feeds/android/network/models/FeedsNotificationContext;Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Ljava/util/Map;IILjava/lang/Object;)Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAttachments ()Ljava/util/List;
 	public final fun getBookmarkCount ()I
@@ -10094,7 +10094,7 @@ public final class io/getstream/feeds/android/network/models/FeedsV3ActivityResp
 	public final fun getReactionCount ()I
 	public final fun getReactionGroups ()Ljava/util/Map;
 	public final fun getRestrictReplies ()Lio/getstream/feeds/android/network/models/RestrictReplies;
-	public final fun getScore ()F
+	public final fun getScore ()D
 	public final fun getScoreVars ()Ljava/util/Map;
 	public final fun getSearchData ()Ljava/util/Map;
 	public final fun getSelectorSource ()Ljava/lang/String;
@@ -10122,8 +10122,8 @@ public final class io/getstream/feeds/android/network/models/FeedsV3ActivityResp
 }
 
 public final class io/getstream/feeds/android/network/models/FeedsV3CommentResponse {
-	public fun <init> (IFLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Float;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;)V
-	public synthetic fun <init> (IFLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Float;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (IDLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Double;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;)V
+	public synthetic fun <init> (IDLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Double;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()I
 	public final fun component10 ()I
 	public final fun component11 ()I
@@ -10133,9 +10133,9 @@ public final class io/getstream/feeds/android/network/models/FeedsV3CommentRespo
 	public final fun component15 ()Ljava/util/List;
 	public final fun component16 ()Ljava/util/List;
 	public final fun component17 ()Lio/getstream/feeds/android/network/models/UserResponse;
-	public final fun component18 ()Ljava/lang/Float;
+	public final fun component18 ()Ljava/lang/Double;
 	public final fun component19 ()Ljava/util/Date;
-	public final fun component2 ()F
+	public final fun component2 ()D
 	public final fun component20 ()Ljava/util/Date;
 	public final fun component21 ()Ljava/lang/String;
 	public final fun component22 ()Ljava/lang/String;
@@ -10152,13 +10152,13 @@ public final class io/getstream/feeds/android/network/models/FeedsV3CommentRespo
 	public final fun component7 ()Ljava/lang/String;
 	public final fun component8 ()Ljava/lang/String;
 	public final fun component9 ()I
-	public final fun copy (IFLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Float;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;)Lio/getstream/feeds/android/network/models/FeedsV3CommentResponse;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/FeedsV3CommentResponse;IFLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Float;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/FeedsV3CommentResponse;
+	public final fun copy (IDLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Double;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;)Lio/getstream/feeds/android/network/models/FeedsV3CommentResponse;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/FeedsV3CommentResponse;IDLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Double;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/FeedsV3CommentResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAttachments ()Ljava/util/List;
 	public final fun getBookmarkCount ()I
-	public final fun getConfidenceScore ()F
-	public final fun getControversyScore ()Ljava/lang/Float;
+	public final fun getConfidenceScore ()D
+	public final fun getControversyScore ()Ljava/lang/Double;
 	public final fun getCreatedAt ()Ljava/util/Date;
 	public final fun getCustom ()Ljava/util/Map;
 	public final fun getDeletedAt ()Ljava/util/Date;
@@ -11786,17 +11786,17 @@ public final class io/getstream/feeds/android/network/models/IPFlagCountRulePara
 
 public final class io/getstream/feeds/android/network/models/ImageContentParameters {
 	public fun <init> ()V
-	public fun <init> (Ljava/lang/String;Ljava/lang/Float;Ljava/util/List;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Float;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/Double;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Double;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/lang/Float;
+	public final fun component2 ()Ljava/lang/Double;
 	public final fun component3 ()Ljava/util/List;
-	public final fun copy (Ljava/lang/String;Ljava/lang/Float;Ljava/util/List;)Lio/getstream/feeds/android/network/models/ImageContentParameters;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ImageContentParameters;Ljava/lang/String;Ljava/lang/Float;Ljava/util/List;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ImageContentParameters;
+	public final fun copy (Ljava/lang/String;Ljava/lang/Double;Ljava/util/List;)Lio/getstream/feeds/android/network/models/ImageContentParameters;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ImageContentParameters;Ljava/lang/String;Ljava/lang/Double;Ljava/util/List;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ImageContentParameters;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getHarmLabels ()Ljava/util/List;
 	public final fun getLabelOperator ()Ljava/lang/String;
-	public final fun getMinConfidence ()Ljava/lang/Float;
+	public final fun getMinConfidence ()Ljava/lang/Double;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -11840,17 +11840,17 @@ public final class io/getstream/feeds/android/network/models/ImageDataJsonAdapte
 
 public final class io/getstream/feeds/android/network/models/ImageRuleParameters {
 	public fun <init> ()V
-	public fun <init> (Ljava/lang/Float;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;)V
-	public synthetic fun <init> (Ljava/lang/Float;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/lang/Float;
+	public fun <init> (Ljava/lang/Double;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/Double;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Double;
 	public final fun component2 ()Ljava/lang/Integer;
 	public final fun component3 ()Ljava/lang/String;
 	public final fun component4 ()Ljava/util/List;
-	public final fun copy (Ljava/lang/Float;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;)Lio/getstream/feeds/android/network/models/ImageRuleParameters;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ImageRuleParameters;Ljava/lang/Float;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ImageRuleParameters;
+	public final fun copy (Ljava/lang/Double;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;)Lio/getstream/feeds/android/network/models/ImageRuleParameters;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ImageRuleParameters;Ljava/lang/Double;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ImageRuleParameters;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getHarmLabels ()Ljava/util/List;
-	public final fun getMinConfidence ()Ljava/lang/Float;
+	public final fun getMinConfidence ()Ljava/lang/Double;
 	public final fun getThreshold ()Ljava/lang/Integer;
 	public final fun getTimeWindow ()Ljava/lang/String;
 	public fun hashCode ()I
@@ -12093,18 +12093,18 @@ public final class io/getstream/feeds/android/network/models/IntentTopicResponse
 }
 
 public final class io/getstream/feeds/android/network/models/InterestTagResponse {
-	public fun <init> (ILjava/lang/String;Ljava/lang/String;F)V
+	public fun <init> (ILjava/lang/String;Ljava/lang/String;D)V
 	public final fun component1 ()I
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun component4 ()F
-	public final fun copy (ILjava/lang/String;Ljava/lang/String;F)Lio/getstream/feeds/android/network/models/InterestTagResponse;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/InterestTagResponse;ILjava/lang/String;Ljava/lang/String;FILjava/lang/Object;)Lio/getstream/feeds/android/network/models/InterestTagResponse;
+	public final fun component4 ()D
+	public final fun copy (ILjava/lang/String;Ljava/lang/String;D)Lio/getstream/feeds/android/network/models/InterestTagResponse;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/InterestTagResponse;ILjava/lang/String;Ljava/lang/String;DILjava/lang/Object;)Lio/getstream/feeds/android/network/models/InterestTagResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getCount ()I
 	public final fun getSource ()Ljava/lang/String;
 	public final fun getTag ()Ljava/lang/String;
-	public final fun getWeight ()F
+	public final fun getWeight ()D
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -12146,17 +12146,17 @@ public final class io/getstream/feeds/android/network/models/KeyframeOCRRulePara
 
 public final class io/getstream/feeds/android/network/models/KeyframeRuleParameters {
 	public fun <init> ()V
-	public fun <init> (Ljava/lang/Float;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;)V
-	public synthetic fun <init> (Ljava/lang/Float;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/lang/Float;
+	public fun <init> (Ljava/lang/Double;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/Double;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Double;
 	public final fun component2 ()Ljava/lang/Integer;
 	public final fun component3 ()Ljava/lang/String;
 	public final fun component4 ()Ljava/util/List;
-	public final fun copy (Ljava/lang/Float;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;)Lio/getstream/feeds/android/network/models/KeyframeRuleParameters;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/KeyframeRuleParameters;Ljava/lang/Float;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/KeyframeRuleParameters;
+	public final fun copy (Ljava/lang/Double;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;)Lio/getstream/feeds/android/network/models/KeyframeRuleParameters;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/KeyframeRuleParameters;Ljava/lang/Double;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/KeyframeRuleParameters;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getHarmLabels ()Ljava/util/List;
-	public final fun getMinConfidence ()Ljava/lang/Float;
+	public final fun getMinConfidence ()Ljava/lang/Double;
 	public final fun getThreshold ()Ljava/lang/Integer;
 	public final fun getTimeWindow ()Ljava/lang/String;
 	public fun hashCode ()I
@@ -12292,15 +12292,15 @@ public final class io/getstream/feeds/android/network/models/LLMRuleJsonAdapter 
 
 public final class io/getstream/feeds/android/network/models/LabelThresholds {
 	public fun <init> ()V
-	public fun <init> (Ljava/lang/Float;Ljava/lang/Float;)V
-	public synthetic fun <init> (Ljava/lang/Float;Ljava/lang/Float;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/lang/Float;
-	public final fun component2 ()Ljava/lang/Float;
-	public final fun copy (Ljava/lang/Float;Ljava/lang/Float;)Lio/getstream/feeds/android/network/models/LabelThresholds;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/LabelThresholds;Ljava/lang/Float;Ljava/lang/Float;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/LabelThresholds;
+	public fun <init> (Ljava/lang/Double;Ljava/lang/Double;)V
+	public synthetic fun <init> (Ljava/lang/Double;Ljava/lang/Double;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Double;
+	public final fun component2 ()Ljava/lang/Double;
+	public final fun copy (Ljava/lang/Double;Ljava/lang/Double;)Lio/getstream/feeds/android/network/models/LabelThresholds;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/LabelThresholds;Ljava/lang/Double;Ljava/lang/Double;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/LabelThresholds;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getBlock ()Ljava/lang/Float;
-	public final fun getFlag ()Ljava/lang/Float;
+	public final fun getBlock ()Ljava/lang/Double;
+	public final fun getFlag ()Ljava/lang/Double;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -12434,14 +12434,14 @@ public final class io/getstream/feeds/android/network/models/ListUserGroupsRespo
 }
 
 public final class io/getstream/feeds/android/network/models/Location {
-	public fun <init> (FF)V
-	public final fun component1 ()F
-	public final fun component2 ()F
-	public final fun copy (FF)Lio/getstream/feeds/android/network/models/Location;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/Location;FFILjava/lang/Object;)Lio/getstream/feeds/android/network/models/Location;
+	public fun <init> (DD)V
+	public final fun component1 ()D
+	public final fun component2 ()D
+	public final fun copy (DD)Lio/getstream/feeds/android/network/models/Location;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/Location;DDILjava/lang/Object;)Lio/getstream/feeds/android/network/models/Location;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getLat ()F
-	public final fun getLng ()F
+	public final fun getLat ()D
+	public final fun getLng ()D
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -16082,18 +16082,18 @@ public final class io/getstream/feeds/android/network/models/QuietHoursRuleRespo
 
 public final class io/getstream/feeds/android/network/models/RankingConfig {
 	public fun <init> ()V
-	public fun <init> (Ljava/lang/Float;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/util/Map;)V
-	public synthetic fun <init> (Ljava/lang/Float;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/lang/Float;
+	public fun <init> (Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/util/Map;)V
+	public synthetic fun <init> (Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Double;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
 	public final fun component4 ()Ljava/util/Map;
 	public final fun component5 ()Ljava/util/Map;
-	public final fun copy (Ljava/lang/Float;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/util/Map;)Lio/getstream/feeds/android/network/models/RankingConfig;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/RankingConfig;Ljava/lang/Float;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/util/Map;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/RankingConfig;
+	public final fun copy (Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/util/Map;)Lio/getstream/feeds/android/network/models/RankingConfig;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/RankingConfig;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/util/Map;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/RankingConfig;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDefaults ()Ljava/util/Map;
-	public final fun getExcludeBelow ()Ljava/lang/Float;
+	public final fun getExcludeBelow ()Ljava/lang/Double;
 	public final fun getFunctions ()Ljava/util/Map;
 	public final fun getScore ()Ljava/lang/String;
 	public final fun getType ()Ljava/lang/String;
@@ -16111,8 +16111,8 @@ public final class io/getstream/feeds/android/network/models/RankingConfigJsonAd
 }
 
 public final class io/getstream/feeds/android/network/models/Reaction {
-	public fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Float;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/User;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Float;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/User;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Double;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/User;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Double;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/User;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component10 ()Ljava/util/List;
 	public final fun component11 ()Ljava/util/Map;
@@ -16129,9 +16129,9 @@ public final class io/getstream/feeds/android/network/models/Reaction {
 	public final fun component6 ()Ljava/util/Date;
 	public final fun component7 ()Ljava/lang/String;
 	public final fun component8 ()Ljava/lang/String;
-	public final fun component9 ()Ljava/lang/Float;
-	public final fun copy (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Float;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/User;)Lio/getstream/feeds/android/network/models/Reaction;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/Reaction;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Float;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/User;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/Reaction;
+	public final fun component9 ()Ljava/lang/Double;
+	public final fun copy (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Double;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/User;)Lio/getstream/feeds/android/network/models/Reaction;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/Reaction;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Double;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/User;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/Reaction;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getActivityId ()Ljava/lang/String;
 	public final fun getChildrenCounts ()Ljava/util/Map;
@@ -16144,7 +16144,7 @@ public final class io/getstream/feeds/android/network/models/Reaction {
 	public final fun getModeration ()Ljava/util/Map;
 	public final fun getOwnChildren ()Ljava/util/Map;
 	public final fun getParent ()Ljava/lang/String;
-	public final fun getScore ()Ljava/lang/Float;
+	public final fun getScore ()Ljava/lang/Double;
 	public final fun getTargetFeeds ()Ljava/util/List;
 	public final fun getTargetFeedsExtraData ()Ljava/util/Map;
 	public final fun getUpdatedAt ()Ljava/util/Date;
@@ -16681,8 +16681,8 @@ public final class io/getstream/feeds/android/network/models/RevealMediaResponse
 }
 
 public final class io/getstream/feeds/android/network/models/ReviewQueueItemResponse {
-	public fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/MediaDisplayResponse;Ljava/util/Date;Ljava/lang/Float;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/EnrichedActivity;Lio/getstream/feeds/android/network/models/AppealItemResponse;Lio/getstream/feeds/android/network/models/UserResponse;Lio/getstream/feeds/android/network/models/ModerationCallResponse;Lio/getstream/feeds/android/network/models/EntityCreatorResponse;Lio/getstream/feeds/android/network/models/EscalationMetadata;Lio/getstream/feeds/android/network/models/EnrichedActivity;Lio/getstream/feeds/android/network/models/Reaction;Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;Lio/getstream/feeds/android/network/models/FeedsV3CommentResponse;Lio/getstream/feeds/android/network/models/ChatMessageResponse;Lio/getstream/feeds/android/network/models/ModerationPayloadResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Lio/getstream/feeds/android/network/models/Reaction;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/MediaDisplayResponse;Ljava/util/Date;Ljava/lang/Float;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/EnrichedActivity;Lio/getstream/feeds/android/network/models/AppealItemResponse;Lio/getstream/feeds/android/network/models/UserResponse;Lio/getstream/feeds/android/network/models/ModerationCallResponse;Lio/getstream/feeds/android/network/models/EntityCreatorResponse;Lio/getstream/feeds/android/network/models/EscalationMetadata;Lio/getstream/feeds/android/network/models/EnrichedActivity;Lio/getstream/feeds/android/network/models/Reaction;Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;Lio/getstream/feeds/android/network/models/FeedsV3CommentResponse;Lio/getstream/feeds/android/network/models/ChatMessageResponse;Lio/getstream/feeds/android/network/models/ModerationPayloadResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Lio/getstream/feeds/android/network/models/Reaction;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/MediaDisplayResponse;Ljava/util/Date;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/EnrichedActivity;Lio/getstream/feeds/android/network/models/AppealItemResponse;Lio/getstream/feeds/android/network/models/UserResponse;Lio/getstream/feeds/android/network/models/ModerationCallResponse;Lio/getstream/feeds/android/network/models/EntityCreatorResponse;Lio/getstream/feeds/android/network/models/EscalationMetadata;Lio/getstream/feeds/android/network/models/EnrichedActivity;Lio/getstream/feeds/android/network/models/Reaction;Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;Lio/getstream/feeds/android/network/models/FeedsV3CommentResponse;Lio/getstream/feeds/android/network/models/ChatMessageResponse;Lio/getstream/feeds/android/network/models/ModerationPayloadResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Lio/getstream/feeds/android/network/models/Reaction;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/MediaDisplayResponse;Ljava/util/Date;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/EnrichedActivity;Lio/getstream/feeds/android/network/models/AppealItemResponse;Lio/getstream/feeds/android/network/models/UserResponse;Lio/getstream/feeds/android/network/models/ModerationCallResponse;Lio/getstream/feeds/android/network/models/EntityCreatorResponse;Lio/getstream/feeds/android/network/models/EscalationMetadata;Lio/getstream/feeds/android/network/models/EnrichedActivity;Lio/getstream/feeds/android/network/models/Reaction;Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;Lio/getstream/feeds/android/network/models/FeedsV3CommentResponse;Lio/getstream/feeds/android/network/models/ChatMessageResponse;Lio/getstream/feeds/android/network/models/ModerationPayloadResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Lio/getstream/feeds/android/network/models/Reaction;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component10 ()Ljava/lang/String;
 	public final fun component11 ()I
@@ -16695,7 +16695,7 @@ public final class io/getstream/feeds/android/network/models/ReviewQueueItemResp
 	public final fun component18 ()Lio/getstream/feeds/android/network/models/MediaDisplayResponse;
 	public final fun component19 ()Ljava/util/Date;
 	public final fun component2 ()Ljava/util/Date;
-	public final fun component20 ()Ljava/lang/Float;
+	public final fun component20 ()Ljava/lang/Double;
 	public final fun component21 ()Ljava/lang/String;
 	public final fun component22 ()Ljava/lang/String;
 	public final fun component23 ()Ljava/lang/String;
@@ -16726,8 +16726,8 @@ public final class io/getstream/feeds/android/network/models/ReviewQueueItemResp
 	public final fun component7 ()Ljava/lang/String;
 	public final fun component8 ()Ljava/lang/String;
 	public final fun component9 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/MediaDisplayResponse;Ljava/util/Date;Ljava/lang/Float;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/EnrichedActivity;Lio/getstream/feeds/android/network/models/AppealItemResponse;Lio/getstream/feeds/android/network/models/UserResponse;Lio/getstream/feeds/android/network/models/ModerationCallResponse;Lio/getstream/feeds/android/network/models/EntityCreatorResponse;Lio/getstream/feeds/android/network/models/EscalationMetadata;Lio/getstream/feeds/android/network/models/EnrichedActivity;Lio/getstream/feeds/android/network/models/Reaction;Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;Lio/getstream/feeds/android/network/models/FeedsV3CommentResponse;Lio/getstream/feeds/android/network/models/ChatMessageResponse;Lio/getstream/feeds/android/network/models/ModerationPayloadResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Lio/getstream/feeds/android/network/models/Reaction;)Lio/getstream/feeds/android/network/models/ReviewQueueItemResponse;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ReviewQueueItemResponse;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/MediaDisplayResponse;Ljava/util/Date;Ljava/lang/Float;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/EnrichedActivity;Lio/getstream/feeds/android/network/models/AppealItemResponse;Lio/getstream/feeds/android/network/models/UserResponse;Lio/getstream/feeds/android/network/models/ModerationCallResponse;Lio/getstream/feeds/android/network/models/EntityCreatorResponse;Lio/getstream/feeds/android/network/models/EscalationMetadata;Lio/getstream/feeds/android/network/models/EnrichedActivity;Lio/getstream/feeds/android/network/models/Reaction;Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;Lio/getstream/feeds/android/network/models/FeedsV3CommentResponse;Lio/getstream/feeds/android/network/models/ChatMessageResponse;Lio/getstream/feeds/android/network/models/ModerationPayloadResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Lio/getstream/feeds/android/network/models/Reaction;IILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ReviewQueueItemResponse;
+	public final fun copy (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/MediaDisplayResponse;Ljava/util/Date;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/EnrichedActivity;Lio/getstream/feeds/android/network/models/AppealItemResponse;Lio/getstream/feeds/android/network/models/UserResponse;Lio/getstream/feeds/android/network/models/ModerationCallResponse;Lio/getstream/feeds/android/network/models/EntityCreatorResponse;Lio/getstream/feeds/android/network/models/EscalationMetadata;Lio/getstream/feeds/android/network/models/EnrichedActivity;Lio/getstream/feeds/android/network/models/Reaction;Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;Lio/getstream/feeds/android/network/models/FeedsV3CommentResponse;Lio/getstream/feeds/android/network/models/ChatMessageResponse;Lio/getstream/feeds/android/network/models/ModerationPayloadResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Lio/getstream/feeds/android/network/models/Reaction;)Lio/getstream/feeds/android/network/models/ReviewQueueItemResponse;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ReviewQueueItemResponse;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/MediaDisplayResponse;Ljava/util/Date;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/EnrichedActivity;Lio/getstream/feeds/android/network/models/AppealItemResponse;Lio/getstream/feeds/android/network/models/UserResponse;Lio/getstream/feeds/android/network/models/ModerationCallResponse;Lio/getstream/feeds/android/network/models/EntityCreatorResponse;Lio/getstream/feeds/android/network/models/EscalationMetadata;Lio/getstream/feeds/android/network/models/EnrichedActivity;Lio/getstream/feeds/android/network/models/Reaction;Lio/getstream/feeds/android/network/models/FeedsV3ActivityResponse;Lio/getstream/feeds/android/network/models/FeedsV3CommentResponse;Lio/getstream/feeds/android/network/models/ChatMessageResponse;Lio/getstream/feeds/android/network/models/ModerationPayloadResponse;Lio/getstream/feeds/android/network/models/PollResponseData;Lio/getstream/feeds/android/network/models/Reaction;IILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ReviewQueueItemResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getActions ()Ljava/util/List;
 	public final fun getActivity ()Lio/getstream/feeds/android/network/models/EnrichedActivity;
@@ -16737,7 +16737,7 @@ public final class io/getstream/feeds/android/network/models/ReviewQueueItemResp
 	public final fun getBans ()Ljava/util/List;
 	public final fun getCall ()Lio/getstream/feeds/android/network/models/ModerationCallResponse;
 	public final fun getCompletedAt ()Ljava/util/Date;
-	public final fun getConfidenceScore ()Ljava/lang/Float;
+	public final fun getConfidenceScore ()Ljava/lang/Double;
 	public final fun getConfigKey ()Ljava/lang/String;
 	public final fun getCountryCode ()Ljava/lang/String;
 	public final fun getCountryCodes ()Ljava/util/List;
@@ -16946,9 +16946,9 @@ public final class io/getstream/feeds/android/network/models/RuleBuilderActionJs
 
 public final class io/getstream/feeds/android/network/models/RuleBuilderCondition {
 	public fun <init> ()V
-	public fun <init> (Ljava/lang/Float;Ljava/lang/String;Lio/getstream/feeds/android/network/models/AppChannelCountParameters;Lio/getstream/feeds/android/network/models/AppMessageCountParameters;Lio/getstream/feeds/android/network/models/CallCustomPropertyParameters;Lio/getstream/feeds/android/network/models/CallTypeRuleParameters;Lio/getstream/feeds/android/network/models/CallViolationCountParameters;Lio/getstream/feeds/android/network/models/ChannelMessageCountRuleParameters;Lio/getstream/feeds/android/network/models/ClosedCaptionRuleParameters;Lio/getstream/feeds/android/network/models/ContentCountRuleParameters;Lio/getstream/feeds/android/network/models/ContentCountryCodeParameters;Lio/getstream/feeds/android/network/models/ContentCustomPropertyCountParameters;Lio/getstream/feeds/android/network/models/ContentCustomPropertyParameters;Lio/getstream/feeds/android/network/models/FlagCountRuleParameters;Lio/getstream/feeds/android/network/models/FloodIdenticalRuleParameters;Lio/getstream/feeds/android/network/models/FloodSimilarRuleParameters;Lio/getstream/feeds/android/network/models/ImageContentParameters;Lio/getstream/feeds/android/network/models/ImageRuleParameters;Lio/getstream/feeds/android/network/models/IntentRuleParameters;Lio/getstream/feeds/android/network/models/IPContentCountRuleParameters;Lio/getstream/feeds/android/network/models/IPFlagCountRuleParameters;Lio/getstream/feeds/android/network/models/KeyframeOCRRuleParameters;Lio/getstream/feeds/android/network/models/KeyframeRuleParameters;Lio/getstream/feeds/android/network/models/OCRContentParameters;Lio/getstream/feeds/android/network/models/TextContentParameters;Lio/getstream/feeds/android/network/models/TextRuleParameters;Lio/getstream/feeds/android/network/models/UserChannelBanCountRuleParameters;Lio/getstream/feeds/android/network/models/UserChannelCountRuleParameters;Lio/getstream/feeds/android/network/models/UserCreatedWithinParameters;Lio/getstream/feeds/android/network/models/UserCustomPropertyParameters;Lio/getstream/feeds/android/network/models/FlagCountRuleParameters;Lio/getstream/feeds/android/network/models/UserIdenticalContentCountParameters;Lio/getstream/feeds/android/network/models/UserIdenticalImageCountParameters;Lio/getstream/feeds/android/network/models/UserReactionCountRuleParameters;Lio/getstream/feeds/android/network/models/UserRoleParameters;Lio/getstream/feeds/android/network/models/UserRuleParameters;Lio/getstream/feeds/android/network/models/VideoContentParameters;Lio/getstream/feeds/android/network/models/VideoRuleParameters;)V
-	public synthetic fun <init> (Ljava/lang/Float;Ljava/lang/String;Lio/getstream/feeds/android/network/models/AppChannelCountParameters;Lio/getstream/feeds/android/network/models/AppMessageCountParameters;Lio/getstream/feeds/android/network/models/CallCustomPropertyParameters;Lio/getstream/feeds/android/network/models/CallTypeRuleParameters;Lio/getstream/feeds/android/network/models/CallViolationCountParameters;Lio/getstream/feeds/android/network/models/ChannelMessageCountRuleParameters;Lio/getstream/feeds/android/network/models/ClosedCaptionRuleParameters;Lio/getstream/feeds/android/network/models/ContentCountRuleParameters;Lio/getstream/feeds/android/network/models/ContentCountryCodeParameters;Lio/getstream/feeds/android/network/models/ContentCustomPropertyCountParameters;Lio/getstream/feeds/android/network/models/ContentCustomPropertyParameters;Lio/getstream/feeds/android/network/models/FlagCountRuleParameters;Lio/getstream/feeds/android/network/models/FloodIdenticalRuleParameters;Lio/getstream/feeds/android/network/models/FloodSimilarRuleParameters;Lio/getstream/feeds/android/network/models/ImageContentParameters;Lio/getstream/feeds/android/network/models/ImageRuleParameters;Lio/getstream/feeds/android/network/models/IntentRuleParameters;Lio/getstream/feeds/android/network/models/IPContentCountRuleParameters;Lio/getstream/feeds/android/network/models/IPFlagCountRuleParameters;Lio/getstream/feeds/android/network/models/KeyframeOCRRuleParameters;Lio/getstream/feeds/android/network/models/KeyframeRuleParameters;Lio/getstream/feeds/android/network/models/OCRContentParameters;Lio/getstream/feeds/android/network/models/TextContentParameters;Lio/getstream/feeds/android/network/models/TextRuleParameters;Lio/getstream/feeds/android/network/models/UserChannelBanCountRuleParameters;Lio/getstream/feeds/android/network/models/UserChannelCountRuleParameters;Lio/getstream/feeds/android/network/models/UserCreatedWithinParameters;Lio/getstream/feeds/android/network/models/UserCustomPropertyParameters;Lio/getstream/feeds/android/network/models/FlagCountRuleParameters;Lio/getstream/feeds/android/network/models/UserIdenticalContentCountParameters;Lio/getstream/feeds/android/network/models/UserIdenticalImageCountParameters;Lio/getstream/feeds/android/network/models/UserReactionCountRuleParameters;Lio/getstream/feeds/android/network/models/UserRoleParameters;Lio/getstream/feeds/android/network/models/UserRuleParameters;Lio/getstream/feeds/android/network/models/VideoContentParameters;Lio/getstream/feeds/android/network/models/VideoRuleParameters;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun component1 ()Ljava/lang/Float;
+	public fun <init> (Ljava/lang/Double;Ljava/lang/String;Lio/getstream/feeds/android/network/models/AppChannelCountParameters;Lio/getstream/feeds/android/network/models/AppMessageCountParameters;Lio/getstream/feeds/android/network/models/CallCustomPropertyParameters;Lio/getstream/feeds/android/network/models/CallTypeRuleParameters;Lio/getstream/feeds/android/network/models/CallViolationCountParameters;Lio/getstream/feeds/android/network/models/ChannelMessageCountRuleParameters;Lio/getstream/feeds/android/network/models/ClosedCaptionRuleParameters;Lio/getstream/feeds/android/network/models/ContentCountRuleParameters;Lio/getstream/feeds/android/network/models/ContentCountryCodeParameters;Lio/getstream/feeds/android/network/models/ContentCustomPropertyCountParameters;Lio/getstream/feeds/android/network/models/ContentCustomPropertyParameters;Lio/getstream/feeds/android/network/models/FlagCountRuleParameters;Lio/getstream/feeds/android/network/models/FloodIdenticalRuleParameters;Lio/getstream/feeds/android/network/models/FloodSimilarRuleParameters;Lio/getstream/feeds/android/network/models/ImageContentParameters;Lio/getstream/feeds/android/network/models/ImageRuleParameters;Lio/getstream/feeds/android/network/models/IntentRuleParameters;Lio/getstream/feeds/android/network/models/IPContentCountRuleParameters;Lio/getstream/feeds/android/network/models/IPFlagCountRuleParameters;Lio/getstream/feeds/android/network/models/KeyframeOCRRuleParameters;Lio/getstream/feeds/android/network/models/KeyframeRuleParameters;Lio/getstream/feeds/android/network/models/OCRContentParameters;Lio/getstream/feeds/android/network/models/TextContentParameters;Lio/getstream/feeds/android/network/models/TextRuleParameters;Lio/getstream/feeds/android/network/models/UserChannelBanCountRuleParameters;Lio/getstream/feeds/android/network/models/UserChannelCountRuleParameters;Lio/getstream/feeds/android/network/models/UserCreatedWithinParameters;Lio/getstream/feeds/android/network/models/UserCustomPropertyParameters;Lio/getstream/feeds/android/network/models/FlagCountRuleParameters;Lio/getstream/feeds/android/network/models/UserIdenticalContentCountParameters;Lio/getstream/feeds/android/network/models/UserIdenticalImageCountParameters;Lio/getstream/feeds/android/network/models/UserReactionCountRuleParameters;Lio/getstream/feeds/android/network/models/UserRoleParameters;Lio/getstream/feeds/android/network/models/UserRuleParameters;Lio/getstream/feeds/android/network/models/VideoContentParameters;Lio/getstream/feeds/android/network/models/VideoRuleParameters;)V
+	public synthetic fun <init> (Ljava/lang/Double;Ljava/lang/String;Lio/getstream/feeds/android/network/models/AppChannelCountParameters;Lio/getstream/feeds/android/network/models/AppMessageCountParameters;Lio/getstream/feeds/android/network/models/CallCustomPropertyParameters;Lio/getstream/feeds/android/network/models/CallTypeRuleParameters;Lio/getstream/feeds/android/network/models/CallViolationCountParameters;Lio/getstream/feeds/android/network/models/ChannelMessageCountRuleParameters;Lio/getstream/feeds/android/network/models/ClosedCaptionRuleParameters;Lio/getstream/feeds/android/network/models/ContentCountRuleParameters;Lio/getstream/feeds/android/network/models/ContentCountryCodeParameters;Lio/getstream/feeds/android/network/models/ContentCustomPropertyCountParameters;Lio/getstream/feeds/android/network/models/ContentCustomPropertyParameters;Lio/getstream/feeds/android/network/models/FlagCountRuleParameters;Lio/getstream/feeds/android/network/models/FloodIdenticalRuleParameters;Lio/getstream/feeds/android/network/models/FloodSimilarRuleParameters;Lio/getstream/feeds/android/network/models/ImageContentParameters;Lio/getstream/feeds/android/network/models/ImageRuleParameters;Lio/getstream/feeds/android/network/models/IntentRuleParameters;Lio/getstream/feeds/android/network/models/IPContentCountRuleParameters;Lio/getstream/feeds/android/network/models/IPFlagCountRuleParameters;Lio/getstream/feeds/android/network/models/KeyframeOCRRuleParameters;Lio/getstream/feeds/android/network/models/KeyframeRuleParameters;Lio/getstream/feeds/android/network/models/OCRContentParameters;Lio/getstream/feeds/android/network/models/TextContentParameters;Lio/getstream/feeds/android/network/models/TextRuleParameters;Lio/getstream/feeds/android/network/models/UserChannelBanCountRuleParameters;Lio/getstream/feeds/android/network/models/UserChannelCountRuleParameters;Lio/getstream/feeds/android/network/models/UserCreatedWithinParameters;Lio/getstream/feeds/android/network/models/UserCustomPropertyParameters;Lio/getstream/feeds/android/network/models/FlagCountRuleParameters;Lio/getstream/feeds/android/network/models/UserIdenticalContentCountParameters;Lio/getstream/feeds/android/network/models/UserIdenticalImageCountParameters;Lio/getstream/feeds/android/network/models/UserReactionCountRuleParameters;Lio/getstream/feeds/android/network/models/UserRoleParameters;Lio/getstream/feeds/android/network/models/UserRuleParameters;Lio/getstream/feeds/android/network/models/VideoContentParameters;Lio/getstream/feeds/android/network/models/VideoRuleParameters;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Double;
 	public final fun component10 ()Lio/getstream/feeds/android/network/models/ContentCountRuleParameters;
 	public final fun component11 ()Lio/getstream/feeds/android/network/models/ContentCountryCodeParameters;
 	public final fun component12 ()Lio/getstream/feeds/android/network/models/ContentCustomPropertyCountParameters;
@@ -16986,8 +16986,8 @@ public final class io/getstream/feeds/android/network/models/RuleBuilderConditio
 	public final fun component7 ()Lio/getstream/feeds/android/network/models/CallViolationCountParameters;
 	public final fun component8 ()Lio/getstream/feeds/android/network/models/ChannelMessageCountRuleParameters;
 	public final fun component9 ()Lio/getstream/feeds/android/network/models/ClosedCaptionRuleParameters;
-	public final fun copy (Ljava/lang/Float;Ljava/lang/String;Lio/getstream/feeds/android/network/models/AppChannelCountParameters;Lio/getstream/feeds/android/network/models/AppMessageCountParameters;Lio/getstream/feeds/android/network/models/CallCustomPropertyParameters;Lio/getstream/feeds/android/network/models/CallTypeRuleParameters;Lio/getstream/feeds/android/network/models/CallViolationCountParameters;Lio/getstream/feeds/android/network/models/ChannelMessageCountRuleParameters;Lio/getstream/feeds/android/network/models/ClosedCaptionRuleParameters;Lio/getstream/feeds/android/network/models/ContentCountRuleParameters;Lio/getstream/feeds/android/network/models/ContentCountryCodeParameters;Lio/getstream/feeds/android/network/models/ContentCustomPropertyCountParameters;Lio/getstream/feeds/android/network/models/ContentCustomPropertyParameters;Lio/getstream/feeds/android/network/models/FlagCountRuleParameters;Lio/getstream/feeds/android/network/models/FloodIdenticalRuleParameters;Lio/getstream/feeds/android/network/models/FloodSimilarRuleParameters;Lio/getstream/feeds/android/network/models/ImageContentParameters;Lio/getstream/feeds/android/network/models/ImageRuleParameters;Lio/getstream/feeds/android/network/models/IntentRuleParameters;Lio/getstream/feeds/android/network/models/IPContentCountRuleParameters;Lio/getstream/feeds/android/network/models/IPFlagCountRuleParameters;Lio/getstream/feeds/android/network/models/KeyframeOCRRuleParameters;Lio/getstream/feeds/android/network/models/KeyframeRuleParameters;Lio/getstream/feeds/android/network/models/OCRContentParameters;Lio/getstream/feeds/android/network/models/TextContentParameters;Lio/getstream/feeds/android/network/models/TextRuleParameters;Lio/getstream/feeds/android/network/models/UserChannelBanCountRuleParameters;Lio/getstream/feeds/android/network/models/UserChannelCountRuleParameters;Lio/getstream/feeds/android/network/models/UserCreatedWithinParameters;Lio/getstream/feeds/android/network/models/UserCustomPropertyParameters;Lio/getstream/feeds/android/network/models/FlagCountRuleParameters;Lio/getstream/feeds/android/network/models/UserIdenticalContentCountParameters;Lio/getstream/feeds/android/network/models/UserIdenticalImageCountParameters;Lio/getstream/feeds/android/network/models/UserReactionCountRuleParameters;Lio/getstream/feeds/android/network/models/UserRoleParameters;Lio/getstream/feeds/android/network/models/UserRuleParameters;Lio/getstream/feeds/android/network/models/VideoContentParameters;Lio/getstream/feeds/android/network/models/VideoRuleParameters;)Lio/getstream/feeds/android/network/models/RuleBuilderCondition;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/RuleBuilderCondition;Ljava/lang/Float;Ljava/lang/String;Lio/getstream/feeds/android/network/models/AppChannelCountParameters;Lio/getstream/feeds/android/network/models/AppMessageCountParameters;Lio/getstream/feeds/android/network/models/CallCustomPropertyParameters;Lio/getstream/feeds/android/network/models/CallTypeRuleParameters;Lio/getstream/feeds/android/network/models/CallViolationCountParameters;Lio/getstream/feeds/android/network/models/ChannelMessageCountRuleParameters;Lio/getstream/feeds/android/network/models/ClosedCaptionRuleParameters;Lio/getstream/feeds/android/network/models/ContentCountRuleParameters;Lio/getstream/feeds/android/network/models/ContentCountryCodeParameters;Lio/getstream/feeds/android/network/models/ContentCustomPropertyCountParameters;Lio/getstream/feeds/android/network/models/ContentCustomPropertyParameters;Lio/getstream/feeds/android/network/models/FlagCountRuleParameters;Lio/getstream/feeds/android/network/models/FloodIdenticalRuleParameters;Lio/getstream/feeds/android/network/models/FloodSimilarRuleParameters;Lio/getstream/feeds/android/network/models/ImageContentParameters;Lio/getstream/feeds/android/network/models/ImageRuleParameters;Lio/getstream/feeds/android/network/models/IntentRuleParameters;Lio/getstream/feeds/android/network/models/IPContentCountRuleParameters;Lio/getstream/feeds/android/network/models/IPFlagCountRuleParameters;Lio/getstream/feeds/android/network/models/KeyframeOCRRuleParameters;Lio/getstream/feeds/android/network/models/KeyframeRuleParameters;Lio/getstream/feeds/android/network/models/OCRContentParameters;Lio/getstream/feeds/android/network/models/TextContentParameters;Lio/getstream/feeds/android/network/models/TextRuleParameters;Lio/getstream/feeds/android/network/models/UserChannelBanCountRuleParameters;Lio/getstream/feeds/android/network/models/UserChannelCountRuleParameters;Lio/getstream/feeds/android/network/models/UserCreatedWithinParameters;Lio/getstream/feeds/android/network/models/UserCustomPropertyParameters;Lio/getstream/feeds/android/network/models/FlagCountRuleParameters;Lio/getstream/feeds/android/network/models/UserIdenticalContentCountParameters;Lio/getstream/feeds/android/network/models/UserIdenticalImageCountParameters;Lio/getstream/feeds/android/network/models/UserReactionCountRuleParameters;Lio/getstream/feeds/android/network/models/UserRoleParameters;Lio/getstream/feeds/android/network/models/UserRuleParameters;Lio/getstream/feeds/android/network/models/VideoContentParameters;Lio/getstream/feeds/android/network/models/VideoRuleParameters;IILjava/lang/Object;)Lio/getstream/feeds/android/network/models/RuleBuilderCondition;
+	public final fun copy (Ljava/lang/Double;Ljava/lang/String;Lio/getstream/feeds/android/network/models/AppChannelCountParameters;Lio/getstream/feeds/android/network/models/AppMessageCountParameters;Lio/getstream/feeds/android/network/models/CallCustomPropertyParameters;Lio/getstream/feeds/android/network/models/CallTypeRuleParameters;Lio/getstream/feeds/android/network/models/CallViolationCountParameters;Lio/getstream/feeds/android/network/models/ChannelMessageCountRuleParameters;Lio/getstream/feeds/android/network/models/ClosedCaptionRuleParameters;Lio/getstream/feeds/android/network/models/ContentCountRuleParameters;Lio/getstream/feeds/android/network/models/ContentCountryCodeParameters;Lio/getstream/feeds/android/network/models/ContentCustomPropertyCountParameters;Lio/getstream/feeds/android/network/models/ContentCustomPropertyParameters;Lio/getstream/feeds/android/network/models/FlagCountRuleParameters;Lio/getstream/feeds/android/network/models/FloodIdenticalRuleParameters;Lio/getstream/feeds/android/network/models/FloodSimilarRuleParameters;Lio/getstream/feeds/android/network/models/ImageContentParameters;Lio/getstream/feeds/android/network/models/ImageRuleParameters;Lio/getstream/feeds/android/network/models/IntentRuleParameters;Lio/getstream/feeds/android/network/models/IPContentCountRuleParameters;Lio/getstream/feeds/android/network/models/IPFlagCountRuleParameters;Lio/getstream/feeds/android/network/models/KeyframeOCRRuleParameters;Lio/getstream/feeds/android/network/models/KeyframeRuleParameters;Lio/getstream/feeds/android/network/models/OCRContentParameters;Lio/getstream/feeds/android/network/models/TextContentParameters;Lio/getstream/feeds/android/network/models/TextRuleParameters;Lio/getstream/feeds/android/network/models/UserChannelBanCountRuleParameters;Lio/getstream/feeds/android/network/models/UserChannelCountRuleParameters;Lio/getstream/feeds/android/network/models/UserCreatedWithinParameters;Lio/getstream/feeds/android/network/models/UserCustomPropertyParameters;Lio/getstream/feeds/android/network/models/FlagCountRuleParameters;Lio/getstream/feeds/android/network/models/UserIdenticalContentCountParameters;Lio/getstream/feeds/android/network/models/UserIdenticalImageCountParameters;Lio/getstream/feeds/android/network/models/UserReactionCountRuleParameters;Lio/getstream/feeds/android/network/models/UserRoleParameters;Lio/getstream/feeds/android/network/models/UserRuleParameters;Lio/getstream/feeds/android/network/models/VideoContentParameters;Lio/getstream/feeds/android/network/models/VideoRuleParameters;)Lio/getstream/feeds/android/network/models/RuleBuilderCondition;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/RuleBuilderCondition;Ljava/lang/Double;Ljava/lang/String;Lio/getstream/feeds/android/network/models/AppChannelCountParameters;Lio/getstream/feeds/android/network/models/AppMessageCountParameters;Lio/getstream/feeds/android/network/models/CallCustomPropertyParameters;Lio/getstream/feeds/android/network/models/CallTypeRuleParameters;Lio/getstream/feeds/android/network/models/CallViolationCountParameters;Lio/getstream/feeds/android/network/models/ChannelMessageCountRuleParameters;Lio/getstream/feeds/android/network/models/ClosedCaptionRuleParameters;Lio/getstream/feeds/android/network/models/ContentCountRuleParameters;Lio/getstream/feeds/android/network/models/ContentCountryCodeParameters;Lio/getstream/feeds/android/network/models/ContentCustomPropertyCountParameters;Lio/getstream/feeds/android/network/models/ContentCustomPropertyParameters;Lio/getstream/feeds/android/network/models/FlagCountRuleParameters;Lio/getstream/feeds/android/network/models/FloodIdenticalRuleParameters;Lio/getstream/feeds/android/network/models/FloodSimilarRuleParameters;Lio/getstream/feeds/android/network/models/ImageContentParameters;Lio/getstream/feeds/android/network/models/ImageRuleParameters;Lio/getstream/feeds/android/network/models/IntentRuleParameters;Lio/getstream/feeds/android/network/models/IPContentCountRuleParameters;Lio/getstream/feeds/android/network/models/IPFlagCountRuleParameters;Lio/getstream/feeds/android/network/models/KeyframeOCRRuleParameters;Lio/getstream/feeds/android/network/models/KeyframeRuleParameters;Lio/getstream/feeds/android/network/models/OCRContentParameters;Lio/getstream/feeds/android/network/models/TextContentParameters;Lio/getstream/feeds/android/network/models/TextRuleParameters;Lio/getstream/feeds/android/network/models/UserChannelBanCountRuleParameters;Lio/getstream/feeds/android/network/models/UserChannelCountRuleParameters;Lio/getstream/feeds/android/network/models/UserCreatedWithinParameters;Lio/getstream/feeds/android/network/models/UserCustomPropertyParameters;Lio/getstream/feeds/android/network/models/FlagCountRuleParameters;Lio/getstream/feeds/android/network/models/UserIdenticalContentCountParameters;Lio/getstream/feeds/android/network/models/UserIdenticalImageCountParameters;Lio/getstream/feeds/android/network/models/UserReactionCountRuleParameters;Lio/getstream/feeds/android/network/models/UserRoleParameters;Lio/getstream/feeds/android/network/models/UserRuleParameters;Lio/getstream/feeds/android/network/models/VideoContentParameters;Lio/getstream/feeds/android/network/models/VideoRuleParameters;IILjava/lang/Object;)Lio/getstream/feeds/android/network/models/RuleBuilderCondition;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAppChannelCountParams ()Lio/getstream/feeds/android/network/models/AppChannelCountParameters;
 	public final fun getAppMessageCountParams ()Lio/getstream/feeds/android/network/models/AppMessageCountParameters;
@@ -16996,7 +16996,7 @@ public final class io/getstream/feeds/android/network/models/RuleBuilderConditio
 	public final fun getCallViolationCountParams ()Lio/getstream/feeds/android/network/models/CallViolationCountParameters;
 	public final fun getChannelMessageCountRuleParams ()Lio/getstream/feeds/android/network/models/ChannelMessageCountRuleParameters;
 	public final fun getClosedCaptionRuleParams ()Lio/getstream/feeds/android/network/models/ClosedCaptionRuleParameters;
-	public final fun getConfidence ()Ljava/lang/Float;
+	public final fun getConfidence ()Ljava/lang/Double;
 	public final fun getContentCountRuleParams ()Lio/getstream/feeds/android/network/models/ContentCountRuleParameters;
 	public final fun getContentCountryCodeParams ()Lio/getstream/feeds/android/network/models/ContentCountryCodeParameters;
 	public final fun getContentCustomPropertyCountParams ()Lio/getstream/feeds/android/network/models/ContentCustomPropertyCountParameters;
@@ -17304,8 +17304,8 @@ public final class io/getstream/feeds/android/network/models/ShareResponseJsonAd
 }
 
 public final class io/getstream/feeds/android/network/models/SharedLocationResponse {
-	public fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;FFLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChannelResponse;Lio/getstream/feeds/android/network/models/MessageResponse;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;FFLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChannelResponse;Lio/getstream/feeds/android/network/models/MessageResponse;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;DDLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChannelResponse;Lio/getstream/feeds/android/network/models/MessageResponse;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;DDLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChannelResponse;Lio/getstream/feeds/android/network/models/MessageResponse;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component10 ()Ljava/util/Date;
 	public final fun component11 ()Lio/getstream/feeds/android/network/models/ChannelResponse;
@@ -17313,13 +17313,13 @@ public final class io/getstream/feeds/android/network/models/SharedLocationRespo
 	public final fun component2 ()Ljava/util/Date;
 	public final fun component3 ()Ljava/lang/String;
 	public final fun component4 ()Ljava/lang/String;
-	public final fun component5 ()F
-	public final fun component6 ()F
+	public final fun component5 ()D
+	public final fun component6 ()D
 	public final fun component7 ()Ljava/lang/String;
 	public final fun component8 ()Ljava/util/Date;
 	public final fun component9 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;FFLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChannelResponse;Lio/getstream/feeds/android/network/models/MessageResponse;)Lio/getstream/feeds/android/network/models/SharedLocationResponse;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/SharedLocationResponse;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;FFLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChannelResponse;Lio/getstream/feeds/android/network/models/MessageResponse;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/SharedLocationResponse;
+	public final fun copy (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;DDLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChannelResponse;Lio/getstream/feeds/android/network/models/MessageResponse;)Lio/getstream/feeds/android/network/models/SharedLocationResponse;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/SharedLocationResponse;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;DDLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChannelResponse;Lio/getstream/feeds/android/network/models/MessageResponse;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/SharedLocationResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getChannel ()Lio/getstream/feeds/android/network/models/ChannelResponse;
 	public final fun getChannelCid ()Ljava/lang/String;
@@ -17327,8 +17327,8 @@ public final class io/getstream/feeds/android/network/models/SharedLocationRespo
 	public final fun getCreatedByDeviceId ()Ljava/lang/String;
 	public final fun getDuration ()Ljava/lang/String;
 	public final fun getEndAt ()Ljava/util/Date;
-	public final fun getLatitude ()F
-	public final fun getLongitude ()F
+	public final fun getLatitude ()D
+	public final fun getLongitude ()D
 	public final fun getMessage ()Lio/getstream/feeds/android/network/models/MessageResponse;
 	public final fun getMessageId ()Ljava/lang/String;
 	public final fun getUpdatedAt ()Ljava/util/Date;
@@ -17338,29 +17338,29 @@ public final class io/getstream/feeds/android/network/models/SharedLocationRespo
 }
 
 public final class io/getstream/feeds/android/network/models/SharedLocationResponseData {
-	public fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;FFLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChannelResponse;Lio/getstream/feeds/android/network/models/MessageResponse;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;FFLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChannelResponse;Lio/getstream/feeds/android/network/models/MessageResponse;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;DDLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChannelResponse;Lio/getstream/feeds/android/network/models/MessageResponse;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;DDLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChannelResponse;Lio/getstream/feeds/android/network/models/MessageResponse;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component10 ()Lio/getstream/feeds/android/network/models/ChannelResponse;
 	public final fun component11 ()Lio/getstream/feeds/android/network/models/MessageResponse;
 	public final fun component2 ()Ljava/util/Date;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun component4 ()F
-	public final fun component5 ()F
+	public final fun component4 ()D
+	public final fun component5 ()D
 	public final fun component6 ()Ljava/lang/String;
 	public final fun component7 ()Ljava/util/Date;
 	public final fun component8 ()Ljava/lang/String;
 	public final fun component9 ()Ljava/util/Date;
-	public final fun copy (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;FFLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChannelResponse;Lio/getstream/feeds/android/network/models/MessageResponse;)Lio/getstream/feeds/android/network/models/SharedLocationResponseData;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/SharedLocationResponseData;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;FFLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChannelResponse;Lio/getstream/feeds/android/network/models/MessageResponse;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/SharedLocationResponseData;
+	public final fun copy (Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;DDLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChannelResponse;Lio/getstream/feeds/android/network/models/MessageResponse;)Lio/getstream/feeds/android/network/models/SharedLocationResponseData;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/SharedLocationResponseData;Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;DDLjava/lang/String;Ljava/util/Date;Ljava/lang/String;Ljava/util/Date;Lio/getstream/feeds/android/network/models/ChannelResponse;Lio/getstream/feeds/android/network/models/MessageResponse;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/SharedLocationResponseData;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getChannel ()Lio/getstream/feeds/android/network/models/ChannelResponse;
 	public final fun getChannelCid ()Ljava/lang/String;
 	public final fun getCreatedAt ()Ljava/util/Date;
 	public final fun getCreatedByDeviceId ()Ljava/lang/String;
 	public final fun getEndAt ()Ljava/util/Date;
-	public final fun getLatitude ()F
-	public final fun getLongitude ()F
+	public final fun getLatitude ()D
+	public final fun getLongitude ()D
 	public final fun getMessage ()Lio/getstream/feeds/android/network/models/MessageResponse;
 	public final fun getMessageId ()Ljava/lang/String;
 	public final fun getUpdatedAt ()Ljava/util/Date;
@@ -17852,10 +17852,10 @@ public final class io/getstream/feeds/android/network/models/TextContentParamete
 
 public final class io/getstream/feeds/android/network/models/TextRuleParameters {
 	public fun <init> ()V
-	public fun <init> (Ljava/lang/Boolean;Ljava/lang/Float;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;)V
-	public synthetic fun <init> (Ljava/lang/Boolean;Ljava/lang/Float;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/Boolean;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;)V
+	public synthetic fun <init> (Ljava/lang/Boolean;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/Boolean;
-	public final fun component2 ()Ljava/lang/Float;
+	public final fun component2 ()Ljava/lang/Double;
 	public final fun component3 ()Ljava/lang/String;
 	public final fun component4 ()Ljava/lang/Integer;
 	public final fun component5 ()Ljava/lang/String;
@@ -17863,14 +17863,14 @@ public final class io/getstream/feeds/android/network/models/TextRuleParameters 
 	public final fun component7 ()Ljava/util/List;
 	public final fun component8 ()Ljava/util/List;
 	public final fun component9 ()Ljava/util/Map;
-	public final fun copy (Ljava/lang/Boolean;Ljava/lang/Float;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;)Lio/getstream/feeds/android/network/models/TextRuleParameters;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/TextRuleParameters;Ljava/lang/Boolean;Ljava/lang/Float;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/TextRuleParameters;
+	public final fun copy (Ljava/lang/Boolean;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;)Lio/getstream/feeds/android/network/models/TextRuleParameters;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/TextRuleParameters;Ljava/lang/Boolean;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/TextRuleParameters;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getBlocklistMatch ()Ljava/util/List;
 	public final fun getContainsUrl ()Ljava/lang/Boolean;
 	public final fun getHarmLabels ()Ljava/util/List;
 	public final fun getLlmHarmLabels ()Ljava/util/Map;
-	public final fun getSemanticFilterMinThreshold ()Ljava/lang/Float;
+	public final fun getSemanticFilterMinThreshold ()Ljava/lang/Double;
 	public final fun getSemanticFilterNames ()Ljava/util/List;
 	public final fun getSeverity ()Ljava/lang/String;
 	public final fun getThreshold ()Ljava/lang/Integer;
@@ -17889,8 +17889,8 @@ public final class io/getstream/feeds/android/network/models/TextRuleParametersJ
 }
 
 public final class io/getstream/feeds/android/network/models/ThreadedCommentResponse {
-	public fun <init> (IFLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Float;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/RepliesMeta;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;)V
-	public synthetic fun <init> (IFLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Float;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/RepliesMeta;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (IDLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Double;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/RepliesMeta;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;)V
+	public synthetic fun <init> (IDLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Double;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/RepliesMeta;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()I
 	public final fun component10 ()I
 	public final fun component11 ()I
@@ -17900,9 +17900,9 @@ public final class io/getstream/feeds/android/network/models/ThreadedCommentResp
 	public final fun component15 ()Ljava/util/List;
 	public final fun component16 ()Ljava/util/List;
 	public final fun component17 ()Lio/getstream/feeds/android/network/models/UserResponse;
-	public final fun component18 ()Ljava/lang/Float;
+	public final fun component18 ()Ljava/lang/Double;
 	public final fun component19 ()Ljava/util/Date;
-	public final fun component2 ()F
+	public final fun component2 ()D
 	public final fun component20 ()Ljava/util/Date;
 	public final fun component21 ()Ljava/lang/String;
 	public final fun component22 ()Ljava/lang/String;
@@ -17921,13 +17921,13 @@ public final class io/getstream/feeds/android/network/models/ThreadedCommentResp
 	public final fun component7 ()Ljava/lang/String;
 	public final fun component8 ()Ljava/lang/String;
 	public final fun component9 ()I
-	public final fun copy (IFLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Float;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/RepliesMeta;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;)Lio/getstream/feeds/android/network/models/ThreadedCommentResponse;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ThreadedCommentResponse;IFLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Float;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/RepliesMeta;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ThreadedCommentResponse;
+	public final fun copy (IDLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Double;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/RepliesMeta;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;)Lio/getstream/feeds/android/network/models/ThreadedCommentResponse;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ThreadedCommentResponse;IDLjava/util/Date;IZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;IIILio/getstream/feeds/android/network/models/CommentStatus;Ljava/util/Date;ILjava/util/List;Ljava/util/List;Lio/getstream/feeds/android/network/models/UserResponse;Ljava/lang/Double;Ljava/util/Date;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/Map;Lio/getstream/feeds/android/network/models/RepliesMeta;Lio/getstream/feeds/android/network/models/ModerationV2Response;Ljava/util/Map;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ThreadedCommentResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAttachments ()Ljava/util/List;
 	public final fun getBookmarkCount ()I
-	public final fun getConfidenceScore ()F
-	public final fun getControversyScore ()Ljava/lang/Float;
+	public final fun getConfidenceScore ()D
+	public final fun getControversyScore ()Ljava/lang/Double;
 	public final fun getCreatedAt ()Ljava/util/Date;
 	public final fun getCustom ()Ljava/util/Map;
 	public final fun getDeletedAt ()Ljava/util/Date;
@@ -19229,18 +19229,18 @@ public final class io/getstream/feeds/android/network/models/UpdateFollowRespons
 }
 
 public final class io/getstream/feeds/android/network/models/UpdateLiveLocationRequest {
-	public fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/Float;Ljava/lang/Float;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/Float;Ljava/lang/Float;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/Double;Ljava/lang/Double;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/util/Date;Ljava/lang/Double;Ljava/lang/Double;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/util/Date;
-	public final fun component3 ()Ljava/lang/Float;
-	public final fun component4 ()Ljava/lang/Float;
-	public final fun copy (Ljava/lang/String;Ljava/util/Date;Ljava/lang/Float;Ljava/lang/Float;)Lio/getstream/feeds/android/network/models/UpdateLiveLocationRequest;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/UpdateLiveLocationRequest;Ljava/lang/String;Ljava/util/Date;Ljava/lang/Float;Ljava/lang/Float;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/UpdateLiveLocationRequest;
+	public final fun component3 ()Ljava/lang/Double;
+	public final fun component4 ()Ljava/lang/Double;
+	public final fun copy (Ljava/lang/String;Ljava/util/Date;Ljava/lang/Double;Ljava/lang/Double;)Lio/getstream/feeds/android/network/models/UpdateLiveLocationRequest;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/UpdateLiveLocationRequest;Ljava/lang/String;Ljava/util/Date;Ljava/lang/Double;Ljava/lang/Double;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/UpdateLiveLocationRequest;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getEndAt ()Ljava/util/Date;
-	public final fun getLatitude ()Ljava/lang/Float;
-	public final fun getLongitude ()Ljava/lang/Float;
+	public final fun getLatitude ()Ljava/lang/Double;
+	public final fun getLongitude ()Ljava/lang/Double;
 	public final fun getMessageId ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -20197,15 +20197,15 @@ public final class io/getstream/feeds/android/network/models/UserIdenticalImageC
 }
 
 public final class io/getstream/feeds/android/network/models/UserInterestRequest {
-	public fun <init> (Ljava/lang/String;Ljava/lang/Float;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Float;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/Double;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Double;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/lang/Float;
-	public final fun copy (Ljava/lang/String;Ljava/lang/Float;)Lio/getstream/feeds/android/network/models/UserInterestRequest;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/UserInterestRequest;Ljava/lang/String;Ljava/lang/Float;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/UserInterestRequest;
+	public final fun component2 ()Ljava/lang/Double;
+	public final fun copy (Ljava/lang/String;Ljava/lang/Double;)Lio/getstream/feeds/android/network/models/UserInterestRequest;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/UserInterestRequest;Ljava/lang/String;Ljava/lang/Double;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/UserInterestRequest;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getTag ()Ljava/lang/String;
-	public final fun getWeight ()Ljava/lang/Float;
+	public final fun getWeight ()Ljava/lang/Double;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }

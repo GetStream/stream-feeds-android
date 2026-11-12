@@ -272,7 +272,7 @@ internal class CommentsRepositoryImplTest {
                     listOf(
                         ThreadedCommentResponse(
                             bookmarkCount = 0,
-                            confidenceScore = 0.9f,
+                            confidenceScore = 0.9,
                             createdAt = java.util.Date(1000),
                             downvoteCount = 0,
                             id = "comment-1",
@@ -428,7 +428,7 @@ internal class CommentsRepositoryImplTest {
                     listOf(
                         ThreadedCommentResponse(
                             bookmarkCount = 0,
-                            confidenceScore = 0.9f,
+                            confidenceScore = 0.9,
                             createdAt = java.util.Date(1000),
                             downvoteCount = 0,
                             id = "reply-1",

@@ -26,5 +26,5 @@ public data class AutomodRule(
     @Json(name = "action")
     public val action: io.getstream.feeds.android.network.models.ModerationAction,
     @Json(name = "label") public val label: String,
-    @Json(name = "threshold") public val threshold: Float,
+    @Json(name = "threshold") public val threshold: Double,
 )

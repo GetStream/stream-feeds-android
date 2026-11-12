@@ -25,7 +25,7 @@ import com.squareup.moshi.Json
 public data class TextRuleParameters(
     @Json(name = "contains_url") public val containsUrl: Boolean? = null,
     @Json(name = "semantic_filter_min_threshold")
-    public val semanticFilterMinThreshold: Float? = null,
+    public val semanticFilterMinThreshold: Double? = null,
     @Json(name = "severity") public val severity: String? = null,
     @Json(name = "threshold") public val threshold: Int? = null,
     @Json(name = "time_window") public val timeWindow: String? = null,
