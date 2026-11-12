@@ -19,19 +19,16 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UpdateCommentPartialRequest(
     @Json(name = "copy_custom_to_notification")
-    public val copyCustomToNotification: kotlin.Boolean? = null,
+    public val copyCustomToNotification: Boolean? = null,
     @Json(name = "handle_mention_notifications")
-    public val handleMentionNotifications: kotlin.Boolean? = null,
-    @Json(name = "skip_enrich_url") public val skipEnrichUrl: kotlin.Boolean? = null,
-    @Json(name = "skip_push") public val skipPush: kotlin.Boolean? = null,
-    @Json(name = "unset") public val unset: kotlin.collections.List<kotlin.String>? = null,
-    @Json(name = "set") public val set: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    public val handleMentionNotifications: Boolean? = null,
+    @Json(name = "skip_enrich_url") public val skipEnrichUrl: Boolean? = null,
+    @Json(name = "skip_push") public val skipPush: Boolean? = null,
+    @Json(name = "unset") public val unset: List<String>? = null,
+    @Json(name = "set") public val set: Map<String, Any?>? = null,
 )

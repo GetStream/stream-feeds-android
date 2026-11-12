@@ -19,10 +19,9 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /** Configuration for rejecting an appeal */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class RejectAppealRequestPayload(
-    @Json(name = "decision_reason") public val decisionReason: kotlin.String
+    @Json(name = "decision_reason") public val decisionReason: String
 )

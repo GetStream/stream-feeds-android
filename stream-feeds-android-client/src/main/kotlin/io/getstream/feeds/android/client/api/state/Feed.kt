@@ -33,7 +33,7 @@ import io.getstream.feeds.android.network.models.AddBookmarkRequest
 import io.getstream.feeds.android.network.models.AddCommentReactionRequest
 import io.getstream.feeds.android.network.models.AddReactionRequest
 import io.getstream.feeds.android.network.models.CreatePollRequest
-import io.getstream.feeds.android.network.models.FollowRequest
+import io.getstream.feeds.android.network.models.FollowPushPreference
 import io.getstream.feeds.android.network.models.MarkActivityRequest
 import io.getstream.feeds.android.network.models.UpdateActivityPartialRequest
 import io.getstream.feeds.android.network.models.UpdateActivityRequest
@@ -41,7 +41,6 @@ import io.getstream.feeds.android.network.models.UpdateBookmarkRequest
 import io.getstream.feeds.android.network.models.UpdateCommentRequest
 import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.network.models.UpdateFeedRequest
-import io.getstream.feeds.android.network.models.UpdateFollowRequest
 
 /**
  * A feed represents a collection of activities and provides methods to interact with them.
@@ -346,7 +345,7 @@ public interface Feed {
         targetFid: FeedId,
         createNotificationActivity: Boolean? = null,
         custom: Map<String, Any>? = null,
-        pushPreference: FollowRequest.PushPreference? = null,
+        pushPreference: FollowPushPreference? = null,
     ): Result<FollowData>
 
     /**
@@ -361,7 +360,7 @@ public interface Feed {
     public suspend fun updateFollow(
         targetFid: FeedId,
         custom: Map<String, Any>? = null,
-        pushPreference: UpdateFollowRequest.PushPreference? = null,
+        pushPreference: FollowPushPreference? = null,
     ): Result<FollowData>
 
     /**

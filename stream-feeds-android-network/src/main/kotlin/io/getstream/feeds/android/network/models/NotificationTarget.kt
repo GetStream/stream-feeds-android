@@ -19,25 +19,20 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class NotificationTarget(
-    @Json(name = "id") public val id: kotlin.String,
-    @Json(name = "name") public val name: kotlin.String? = null,
-    @Json(name = "text") public val text: kotlin.String? = null,
-    @Json(name = "type") public val type: kotlin.String? = null,
-    @Json(name = "user_id") public val userId: kotlin.String? = null,
+    @Json(name = "id") public val id: String,
+    @Json(name = "name") public val name: String? = null,
+    @Json(name = "text") public val text: String? = null,
+    @Json(name = "type") public val type: String? = null,
+    @Json(name = "user_id") public val userId: String? = null,
     @Json(name = "attachments")
-    public val attachments:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.Attachment>? =
-        null,
+    public val attachments: List<io.getstream.feeds.android.network.models.Attachment>? = null,
     @Json(name = "comment")
     public val comment: io.getstream.feeds.android.network.models.NotificationComment? = null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
     @Json(name = "parent_activity")
     public val parentActivity:
         io.getstream.feeds.android.network.models.NotificationParentActivity? =

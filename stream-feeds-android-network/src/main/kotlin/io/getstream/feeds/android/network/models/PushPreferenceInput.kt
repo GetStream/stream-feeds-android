@@ -24,64 +24,32 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class PushPreferenceInput(
-    @Json(name = "call_level") public val callLevel: CallLevel? = null,
-    @Json(name = "channel_cid") public val channelCid: kotlin.String? = null,
+    @Json(name = "channel_cid") public val channelCid: String? = null,
     @Json(name = "chat_level") public val chatLevel: ChatLevel? = null,
     @Json(name = "disabled_until") public val disabledUntil: java.util.Date? = null,
     @Json(name = "feeds_level") public val feedsLevel: FeedsLevel? = null,
-    @Json(name = "remove_disable") public val removeDisable: kotlin.Boolean? = null,
-    @Json(name = "user_id") public val userId: kotlin.String? = null,
+    @Json(name = "remove_disable") public val removeDisable: Boolean? = null,
+    @Json(name = "remove_schedule") public val removeSchedule: Boolean? = null,
+    @Json(name = "user_id") public val userId: String? = null,
+    @Json(name = "chat_preferences")
+    public val chatPreferences: io.getstream.feeds.android.network.models.ChatPreferencesInput? =
+        null,
     @Json(name = "feeds_preferences")
     public val feedsPreferences: io.getstream.feeds.android.network.models.FeedsPreferences? = null,
+    @Json(name = "schedule")
+    public val schedule: io.getstream.feeds.android.network.models.PushScheduleInput? = null,
 ) {
 
-    /** CallLevel Enum */
-    public sealed class CallLevel(public val value: kotlin.String) {
-        override fun toString(): String = value
-
-        public companion object {
-            public fun fromString(s: kotlin.String): CallLevel =
-                when (s) {
-                    "all" -> All
-                    "default" -> Default
-                    "none" -> None
-                    else -> Unknown(s)
-                }
-        }
-
-        public object All : CallLevel("all")
-
-        public object Default : CallLevel("default")
-
-        public object None : CallLevel("none")
-
-        public data class Unknown(val unknownValue: kotlin.String) : CallLevel(unknownValue)
-
-        public class CallLevelAdapter : JsonAdapter<CallLevel>() {
-            @FromJson
-            override fun fromJson(reader: JsonReader): CallLevel? {
-                val s = reader.nextString() ?: return null
-                return CallLevel.fromString(s)
-            }
-
-            @ToJson
-            override fun toJson(writer: JsonWriter, value: CallLevel?) {
-                writer.value(value?.value)
-            }
-        }
-    }
-
     /** ChatLevel Enum */
-    public sealed class ChatLevel(public val value: kotlin.String) {
+    public sealed class ChatLevel(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): ChatLevel =
+            public fun fromString(s: String): ChatLevel =
                 when (s) {
                     "all" -> All
                     "all_mentions" -> AllMentions
@@ -105,7 +73,7 @@ public data class PushPreferenceInput(
 
         public object None : ChatLevel("none")
 
-        public data class Unknown(val unknownValue: kotlin.String) : ChatLevel(unknownValue)
+        public data class Unknown(val unknownValue: String) : ChatLevel(unknownValue)
 
         public class ChatLevelAdapter : JsonAdapter<ChatLevel>() {
             @FromJson
@@ -122,11 +90,11 @@ public data class PushPreferenceInput(
     }
 
     /** FeedsLevel Enum */
-    public sealed class FeedsLevel(public val value: kotlin.String) {
+    public sealed class FeedsLevel(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): FeedsLevel =
+            public fun fromString(s: String): FeedsLevel =
                 when (s) {
                     "all" -> All
                     "default" -> Default
@@ -141,7 +109,7 @@ public data class PushPreferenceInput(
 
         public object None : FeedsLevel("none")
 
-        public data class Unknown(val unknownValue: kotlin.String) : FeedsLevel(unknownValue)
+        public data class Unknown(val unknownValue: String) : FeedsLevel(unknownValue)
 
         public class FeedsLevelAdapter : JsonAdapter<FeedsLevel>() {
             @FromJson

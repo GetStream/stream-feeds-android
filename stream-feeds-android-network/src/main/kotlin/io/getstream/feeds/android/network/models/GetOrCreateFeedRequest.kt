@@ -19,26 +19,25 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
-/** Client request */
+/**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class GetOrCreateFeedRequest(
-    @Json(name = "id_around") public val idAround: kotlin.String? = null,
-    @Json(name = "limit") public val limit: kotlin.Int? = null,
-    @Json(name = "next") public val next: kotlin.String? = null,
-    @Json(name = "prev") public val prev: kotlin.String? = null,
-    @Json(name = "view") public val view: kotlin.String? = null,
-    @Json(name = "watch") public val watch: kotlin.Boolean? = null,
+    @Json(name = "id_around") public val idAround: String? = null,
+    @Json(name = "limit") public val limit: Int? = null,
+    @Json(name = "next") public val next: String? = null,
+    @Json(name = "overwrite_interest_weights") public val overwriteInterestWeights: Boolean? = null,
+    @Json(name = "prev") public val prev: String? = null,
+    @Json(name = "view") public val view: String? = null,
+    @Json(name = "watch") public val watch: Boolean? = null,
+    @Json(name = "discard_actors") public val discardActors: List<String>? = null,
     @Json(name = "data")
     public val data: io.getstream.feeds.android.network.models.FeedInput? = null,
     @Json(name = "enrichment_options")
     public val enrichmentOptions: io.getstream.feeds.android.network.models.EnrichmentOptions? =
         null,
-    @Json(name = "external_ranking")
-    public val externalRanking: kotlin.collections.Map<kotlin.String, Any?>? = null,
-    @Json(name = "filter") public val filter: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "external_ranking") public val externalRanking: Map<String, Any?>? = null,
+    @Json(name = "filter") public val filter: Map<String, Any?>? = null,
     @Json(name = "followers_pagination")
     public val followersPagination: io.getstream.feeds.android.network.models.PagerRequest? = null,
     @Json(name = "following_pagination")
@@ -47,8 +46,9 @@ public data class GetOrCreateFeedRequest(
     public val friendReactionsOptions:
         io.getstream.feeds.android.network.models.FriendReactionsOptions? =
         null,
-    @Json(name = "interest_weights")
-    public val interestWeights: kotlin.collections.Map<kotlin.String, kotlin.Float>? = null,
+    @Json(name = "interest_weights") public val interestWeights: Map<String, Float>? = null,
     @Json(name = "member_pagination")
     public val memberPagination: io.getstream.feeds.android.network.models.PagerRequest? = null,
+    @Json(name = "viewer_location")
+    public val viewerLocation: io.getstream.feeds.android.network.models.Location? = null,
 )

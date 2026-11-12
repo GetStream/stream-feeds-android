@@ -19,13 +19,12 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UpdateLiveLocationRequest(
-    @Json(name = "message_id") public val messageId: kotlin.String,
+    @Json(name = "message_id") public val messageId: String,
     @Json(name = "end_at") public val endAt: java.util.Date? = null,
-    @Json(name = "latitude") public val latitude: kotlin.Float? = null,
-    @Json(name = "longitude") public val longitude: kotlin.Float? = null,
+    @Json(name = "latitude") public val latitude: Float? = null,
+    @Json(name = "longitude") public val longitude: Float? = null,
 )

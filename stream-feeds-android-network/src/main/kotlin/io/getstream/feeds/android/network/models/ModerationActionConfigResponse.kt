@@ -19,17 +19,16 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /** Configuration for a moderation action */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class ModerationActionConfigResponse(
-    @Json(name = "action") public val action: kotlin.String,
-    @Json(name = "description") public val description: kotlin.String,
-    @Json(name = "entity_type") public val entityType: kotlin.String,
-    @Json(name = "icon") public val icon: kotlin.String,
-    @Json(name = "order") public val order: kotlin.Int,
-    @Json(name = "queue_type") public val queueType: kotlin.String? = null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "action") public val action: String,
+    @Json(name = "description") public val description: String,
+    @Json(name = "entity_type") public val entityType: String,
+    @Json(name = "icon") public val icon: String,
+    @Json(name = "order") public val order: Int,
+    @Json(name = "id") public val id: String? = null,
+    @Json(name = "queue_type") public val queueType: String? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
 )

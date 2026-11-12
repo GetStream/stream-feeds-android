@@ -19,12 +19,11 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class NotificationConfig(
-    @Json(name = "deduplication_window") public val deduplicationWindow: kotlin.String? = null,
-    @Json(name = "track_read") public val trackRead: kotlin.Boolean? = null,
-    @Json(name = "track_seen") public val trackSeen: kotlin.Boolean? = null,
+    @Json(name = "deduplication_window") public val deduplicationWindow: String? = null,
+    @Json(name = "track_read") public val trackRead: Boolean? = null,
+    @Json(name = "track_seen") public val trackSeen: Boolean? = null,
 )

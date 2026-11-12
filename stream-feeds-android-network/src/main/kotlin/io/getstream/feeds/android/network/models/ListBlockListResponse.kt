@@ -19,15 +19,13 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /** Basic response information */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class ListBlockListResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "duration") public val duration: String,
     @Json(name = "blocklists")
-    public val blocklists:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.BlockListResponse> =
+    public val blocklists: List<io.getstream.feeds.android.network.models.BlockListResponse> =
         emptyList(),
+    @Json(name = "next_cursor") public val nextCursor: String? = null,
 )

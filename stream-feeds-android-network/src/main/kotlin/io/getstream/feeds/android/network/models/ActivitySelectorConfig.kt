@@ -19,20 +19,17 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class ActivitySelectorConfig(
     @Json(name = "cutoff_time") public val cutoffTime: java.util.Date,
-    @Json(name = "cutoff_window") public val cutoffWindow: kotlin.String? = null,
-    @Json(name = "min_popularity") public val minPopularity: kotlin.Int? = null,
-    @Json(name = "type") public val type: kotlin.String? = null,
+    @Json(name = "cutoff_window") public val cutoffWindow: String? = null,
+    @Json(name = "min_popularity") public val minPopularity: Int? = null,
+    @Json(name = "type")
+    public val type: io.getstream.feeds.android.network.models.ActivitySelectorType? = null,
     @Json(name = "sort")
-    public val sort: kotlin.collections.List<io.getstream.feeds.android.network.models.SortParam>? =
-        null,
-    @Json(name = "filter") public val filter: kotlin.collections.Map<kotlin.String, Any?>? = null,
-    @Json(name = "params") public val params: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    public val sort: List<io.getstream.feeds.android.network.models.SortParam>? = null,
+    @Json(name = "filter") public val filter: Map<String, Any?>? = null,
+    @Json(name = "params") public val params: Map<String, Any?>? = null,
 )

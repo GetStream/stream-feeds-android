@@ -18,64 +18,21 @@
 
 package io.getstream.feeds.android.network.models
 
-import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonReader
-import com.squareup.moshi.JsonWriter
-import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class FeedMemberResponse(
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "role") public val role: kotlin.String,
-    @Json(name = "status") public val status: Status,
+    @Json(name = "role") public val role: String,
+    @Json(name = "status")
+    public val status: io.getstream.feeds.android.network.models.FeedMemberStatus,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
     @Json(name = "user") public val user: io.getstream.feeds.android.network.models.UserResponse,
     @Json(name = "invite_accepted_at") public val inviteAcceptedAt: java.util.Date? = null,
     @Json(name = "invite_rejected_at") public val inviteRejectedAt: java.util.Date? = null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
     @Json(name = "membership_level")
     public val membershipLevel: io.getstream.feeds.android.network.models.MembershipLevelResponse? =
         null,
-) {
-
-    /** Status Enum */
-    public sealed class Status(public val value: kotlin.String) {
-        override fun toString(): String = value
-
-        public companion object {
-            public fun fromString(s: kotlin.String): Status =
-                when (s) {
-                    "member" -> Member
-                    "pending" -> Pending
-                    "rejected" -> Rejected
-                    else -> Unknown(s)
-                }
-        }
-
-        public object Member : Status("member")
-
-        public object Pending : Status("pending")
-
-        public object Rejected : Status("rejected")
-
-        public data class Unknown(val unknownValue: kotlin.String) : Status(unknownValue)
-
-        public class StatusAdapter : JsonAdapter<Status>() {
-            @FromJson
-            override fun fromJson(reader: JsonReader): Status? {
-                val s = reader.nextString() ?: return null
-                return Status.fromString(s)
-            }
-
-            @ToJson
-            override fun toJson(writer: JsonWriter, value: Status?) {
-                writer.value(value?.value)
-            }
-        }
-    }
-}
+)

@@ -19,42 +19,49 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class FeedsV3CommentResponse(
-    @Json(name = "confidence_score") public val confidenceScore: kotlin.Float,
+    @Json(name = "bookmark_count") public val bookmarkCount: Int,
+    @Json(name = "confidence_score") public val confidenceScore: Float,
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "downvote_count") public val downvoteCount: kotlin.Int,
-    @Json(name = "id") public val id: kotlin.String,
-    @Json(name = "object_id") public val objectId: kotlin.String,
-    @Json(name = "object_type") public val objectType: kotlin.String,
-    @Json(name = "reaction_count") public val reactionCount: kotlin.Int,
-    @Json(name = "reply_count") public val replyCount: kotlin.Int,
-    @Json(name = "score") public val score: kotlin.Int,
-    @Json(name = "status") public val status: kotlin.String,
+    @Json(name = "downvote_count") public val downvoteCount: Int,
+    @Json(name = "hidden") public val hidden: Boolean,
+    @Json(name = "id") public val id: String,
+    @Json(name = "object_id") public val objectId: String,
+    @Json(name = "object_type") public val objectType: String,
+    @Json(name = "reaction_count") public val reactionCount: Int,
+    @Json(name = "reply_count") public val replyCount: Int,
+    @Json(name = "score") public val score: Int,
+    @Json(name = "status")
+    public val status: io.getstream.feeds.android.network.models.CommentStatus,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
-    @Json(name = "upvote_count") public val upvoteCount: kotlin.Int,
+    @Json(name = "upvote_count") public val upvoteCount: Int,
     @Json(name = "mentioned_users")
-    public val mentionedUsers:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.UserResponse> =
+    public val mentionedUsers: List<io.getstream.feeds.android.network.models.UserResponse> =
         emptyList(),
     @Json(name = "own_reactions")
-    public val ownReactions: kotlin.collections.List<Any?> = emptyList(),
+    public val ownReactions: List<io.getstream.feeds.android.network.models.FeedsReactionResponse> =
+        emptyList(),
     @Json(name = "user") public val user: io.getstream.feeds.android.network.models.UserResponse,
-    @Json(name = "controversy_score") public val controversyScore: kotlin.Float? = null,
+    @Json(name = "controversy_score") public val controversyScore: Float? = null,
     @Json(name = "deleted_at") public val deletedAt: java.util.Date? = null,
     @Json(name = "edited_at") public val editedAt: java.util.Date? = null,
-    @Json(name = "parent_id") public val parentId: kotlin.String? = null,
-    @Json(name = "text") public val text: kotlin.String? = null,
+    @Json(name = "parent_id") public val parentId: String? = null,
+    @Json(name = "text") public val text: String? = null,
     @Json(name = "attachments")
-    public val attachments:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.Attachment>? =
+    public val attachments: List<io.getstream.feeds.android.network.models.Attachment>? = null,
+    @Json(name = "latest_reactions")
+    public val latestReactions:
+        List<io.getstream.feeds.android.network.models.FeedsReactionResponse>? =
         null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
+    @Json(name = "i18n") public val i18n: Map<String, String>? = null,
     @Json(name = "moderation")
     public val moderation: io.getstream.feeds.android.network.models.ModerationV2Response? = null,
+    @Json(name = "reaction_groups")
+    public val reactionGroups:
+        Map<String, io.getstream.feeds.android.network.models.FeedsReactionGroupResponse>? =
+        null,
 )

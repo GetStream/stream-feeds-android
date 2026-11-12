@@ -18,8 +18,5 @@
 
 package io.getstream.feeds.android.network.models
 
-import kotlin.collections.*
-import kotlin.io.*
-
 /**  */
 public class AcceptFeedMemberInviteRequest()

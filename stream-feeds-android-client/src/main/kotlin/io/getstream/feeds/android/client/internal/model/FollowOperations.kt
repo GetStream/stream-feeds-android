@@ -20,6 +20,7 @@ import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.FollowStatus
 import io.getstream.feeds.android.network.models.FollowResponse
+import io.getstream.feeds.android.network.models.FollowStatus as NetworkFollowStatus
 
 internal val FollowData.isFollower: Boolean
     get() = status == FollowStatus.Accepted
@@ -51,28 +52,19 @@ internal fun FollowResponse.toModel(): FollowData =
         requestAcceptedAt = requestAcceptedAt,
         requestRejectedAt = requestRejectedAt,
         sourceFeed = sourceFeed.toModel(),
-        status =
-            when (status) {
-                FollowResponse.Status.Accepted -> FollowStatus.Accepted
-                FollowResponse.Status.Pending -> FollowStatus.Pending
-                FollowResponse.Status.Rejected -> FollowStatus.Rejected
-                is FollowResponse.Status.Unknown ->
-                    FollowStatus.Unknown(
-                        unknownValue = (status as FollowResponse.Status.Unknown).unknownValue
-                    )
-            },
+        status = status.toModel(),
         targetFeed = targetFeed.toModel(),
         updatedAt = updatedAt,
     )
 
 /**
- * Converts a [io.getstream.feeds.android.network.models.FollowResponse.Status] to a
- * [io.getstream.feeds.android.client.api.model.FollowStatus] representation.
+ * Converts a [NetworkFollowStatus] to a [io.getstream.feeds.android.client.api.model.FollowStatus]
+ * representation.
  */
-internal fun FollowResponse.Status.toModel(): FollowStatus =
+internal fun NetworkFollowStatus.toModel(): FollowStatus =
     when (this) {
-        FollowResponse.Status.Accepted -> FollowStatus.Accepted
-        FollowResponse.Status.Pending -> FollowStatus.Pending
-        FollowResponse.Status.Rejected -> FollowStatus.Rejected
-        is FollowResponse.Status.Unknown -> FollowStatus.Unknown(unknownValue)
+        NetworkFollowStatus.Accepted -> FollowStatus.Accepted
+        NetworkFollowStatus.Pending -> FollowStatus.Pending
+        NetworkFollowStatus.Rejected -> FollowStatus.Rejected
+        is NetworkFollowStatus.Unknown -> FollowStatus.Unknown(unknownValue)
     }

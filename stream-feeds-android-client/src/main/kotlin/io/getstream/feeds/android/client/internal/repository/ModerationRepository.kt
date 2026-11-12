@@ -20,14 +20,14 @@ import io.getstream.feeds.android.client.api.model.ModerationConfigData
 import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.network.models.BanRequest
-import io.getstream.feeds.android.network.models.BanResponse
 import io.getstream.feeds.android.network.models.BlockUsersRequest
 import io.getstream.feeds.android.network.models.BlockUsersResponse
 import io.getstream.feeds.android.network.models.DeleteModerationConfigResponse
+import io.getstream.feeds.android.network.models.FlagItemResponse
 import io.getstream.feeds.android.network.models.FlagRequest
-import io.getstream.feeds.android.network.models.FlagResponse
 import io.getstream.feeds.android.network.models.GetBlockedUsersResponse
 import io.getstream.feeds.android.network.models.GetConfigResponse
+import io.getstream.feeds.android.network.models.ModerationBanResponse
 import io.getstream.feeds.android.network.models.MuteRequest
 import io.getstream.feeds.android.network.models.MuteResponse
 import io.getstream.feeds.android.network.models.QueryModerationConfigsRequest
@@ -63,10 +63,10 @@ internal interface ModerationRepository {
      *
      * @param banRequest The ban request containing details about the user to ban and ban
      *   parameters.
-     * @return A [Result] containing a [BanResponse] if the ban is successful, or an error if the
-     *   ban fails.
+     * @return A [Result] containing a [ModerationBanResponse] if the ban is successful, or an error
+     *   if the ban fails.
      */
-    suspend fun ban(banRequest: BanRequest): Result<BanResponse>
+    suspend fun ban(banRequest: BanRequest): Result<ModerationBanResponse>
 
     /**
      * Mutes one or more users.
@@ -107,10 +107,10 @@ internal interface ModerationRepository {
      * Flags content for moderation review.
      *
      * @param flagRequest The flag request containing details about the content to flag.
-     * @return A [Result] containing a [FlagResponse] if the flagging is successful, or an error if
-     *   the operation fails.
+     * @return A [Result] containing a [FlagItemResponse] if the flagging is successful, or an error
+     *   if the operation fails.
      */
-    suspend fun flag(flagRequest: FlagRequest): Result<FlagResponse>
+    suspend fun flag(flagRequest: FlagRequest): Result<FlagItemResponse>
 
     /**
      * Submits a moderation action.

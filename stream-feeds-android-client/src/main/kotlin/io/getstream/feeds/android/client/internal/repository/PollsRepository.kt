@@ -50,17 +50,15 @@ internal interface PollsRepository {
      * Deletes a poll by its ID.
      *
      * @param pollId The ID of the poll to delete.
-     * @param userId Optional user ID for authorization.
      */
-    suspend fun deletePoll(pollId: String, userId: String?): Result<Unit>
+    suspend fun deletePoll(pollId: String): Result<Unit>
 
     /**
      * Retrieves a poll by its ID.
      *
      * @param pollId The ID of the poll to retrieve.
-     * @param userId Optional user ID for authorization.
      */
-    suspend fun getPoll(pollId: String, userId: String?): Result<PollData>
+    suspend fun getPoll(pollId: String): Result<PollData>
 
     /**
      * Updates a poll partially by its ID.
@@ -96,22 +94,16 @@ internal interface PollsRepository {
      *
      * @param pollId The ID of the poll from which the option will be deleted.
      * @param optionId The ID of the option to delete.
-     * @param userId Optional user ID for authorization.
      */
-    suspend fun deletePollOption(pollId: String, optionId: String, userId: String?): Result<Unit>
+    suspend fun deletePollOption(pollId: String, optionId: String): Result<Unit>
 
     /**
      * Retrieves a poll option by its ID.
      *
      * @param pollId The ID of the poll containing the option.
      * @param optionId The ID of the option to retrieve.
-     * @param userId Optional user ID for authorization.
      */
-    suspend fun getPollOption(
-        pollId: String,
-        optionId: String,
-        userId: String?,
-    ): Result<PollOptionData>
+    suspend fun getPollOption(pollId: String, optionId: String): Result<PollOptionData>
 
     /**
      * Updates a poll option.
@@ -157,12 +149,10 @@ internal interface PollsRepository {
      * @param activityId The ID of the activity associated with the poll vote.
      * @param pollId The ID of the poll from which the vote will be deleted.
      * @param voteId The ID of the vote to delete.
-     * @param userId Optional user ID for authorization.
      */
     suspend fun deletePollVote(
         activityId: String,
         pollId: String,
         voteId: String,
-        userId: String? = null,
     ): Result<Pair<PollVoteData?, PollData?>>
 }

@@ -19,16 +19,14 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class CollectionResponse(
-    @Json(name = "id") public val id: kotlin.String,
-    @Json(name = "name") public val name: kotlin.String,
+    @Json(name = "id") public val id: String,
+    @Json(name = "name") public val name: String,
     @Json(name = "created_at") public val createdAt: java.util.Date? = null,
     @Json(name = "updated_at") public val updatedAt: java.util.Date? = null,
-    @Json(name = "user_id") public val userId: kotlin.String? = null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "user_id") public val userId: String? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
 )

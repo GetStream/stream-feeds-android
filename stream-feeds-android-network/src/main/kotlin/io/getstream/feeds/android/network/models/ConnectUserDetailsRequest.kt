@@ -19,16 +19,14 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class ConnectUserDetailsRequest(
-    @Json(name = "id") public val id: kotlin.String,
-    @Json(name = "image") public val image: kotlin.String? = null,
-    @Json(name = "invisible") public val invisible: kotlin.Boolean? = null,
-    @Json(name = "language") public val language: kotlin.String? = null,
-    @Json(name = "name") public val name: kotlin.String? = null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "id") public val id: String,
+    @Json(name = "image") public val image: String? = null,
+    @Json(name = "invisible") public val invisible: Boolean? = null,
+    @Json(name = "language") public val language: String? = null,
+    @Json(name = "name") public val name: String? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
 )

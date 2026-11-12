@@ -19,31 +19,32 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class FeedGroup(
-    @Json(name = "aggregation_version") public val aggregationVersion: kotlin.Int,
-    @Json(name = "app_pk") public val appPk: kotlin.Int,
+    @Json(name = "aggregation_version") public val aggregationVersion: Int,
+    @Json(name = "app_pk") public val appPk: Int,
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "default_visibility") public val defaultVisibility: kotlin.String,
-    @Json(name = "group_id") public val groupId: kotlin.String,
+    @Json(name = "default_follower_role") public val defaultFollowerRole: String,
+    @Json(name = "default_visibility")
+    public val defaultVisibility: io.getstream.feeds.android.network.models.FeedVisibility,
+    @Json(name = "group_id") public val groupId: String,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
     @Json(name = "activity_processors")
     public val activityProcessors:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.ActivityProcessorConfig> =
+        List<io.getstream.feeds.android.network.models.ActivityProcessorConfig> =
         emptyList(),
     @Json(name = "activity_selectors")
     public val activitySelectors:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.ActivitySelectorConfig> =
+        List<io.getstream.feeds.android.network.models.ActivitySelectorConfig> =
         emptyList(),
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
+    @Json(name = "custom") public val custom: Map<String, Any?> = emptyMap(),
     @Json(name = "deleted_at") public val deletedAt: java.util.Date? = null,
     @Json(name = "last_feed_get_at") public val lastFeedGetAt: java.util.Date? = null,
+    @Json(name = "activity_filter")
+    public val activityFilter: io.getstream.feeds.android.network.models.ActivityFilterConfig? =
+        null,
     @Json(name = "aggregation")
     public val aggregation: io.getstream.feeds.android.network.models.AggregationConfig? = null,
     @Json(name = "notification")

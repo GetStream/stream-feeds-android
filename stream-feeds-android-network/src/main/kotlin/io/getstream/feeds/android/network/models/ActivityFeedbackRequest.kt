@@ -19,12 +19,11 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /** Request to provide feedback on an activity */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class ActivityFeedbackRequest(
-    @Json(name = "hide") public val hide: kotlin.Boolean? = null,
-    @Json(name = "show_less") public val showLess: kotlin.Boolean? = null,
-    @Json(name = "show_more") public val showMore: kotlin.Boolean? = null,
+    @Json(name = "hide") public val hide: Boolean? = null,
+    @Json(name = "show_less") public val showLess: Boolean? = null,
+    @Json(name = "show_more") public val showMore: Boolean? = null,
 )

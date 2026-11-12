@@ -19,17 +19,13 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UnfollowBatchRequest(
     @Json(name = "follows")
-    public val follows:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.UnfollowPair> =
-        emptyList(),
+    public val follows: List<io.getstream.feeds.android.network.models.UnfollowPair> = emptyList(),
     @Json(name = "delete_notification_activity")
-    public val deleteNotificationActivity: kotlin.Boolean? = null,
-    @Json(name = "enrich_own_fields") public val enrichOwnFields: kotlin.Boolean? = null,
+    public val deleteNotificationActivity: Boolean? = null,
+    @Json(name = "enrich_own_fields") public val enrichOwnFields: Boolean? = null,
 )

@@ -19,19 +19,16 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class MembershipLevelResponse(
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "id") public val id: kotlin.String,
-    @Json(name = "name") public val name: kotlin.String,
-    @Json(name = "priority") public val priority: kotlin.Int,
+    @Json(name = "id") public val id: String,
+    @Json(name = "name") public val name: String,
+    @Json(name = "priority") public val priority: Int,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
-    @Json(name = "tags") public val tags: kotlin.collections.List<kotlin.String> = emptyList(),
-    @Json(name = "description") public val description: kotlin.String? = null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "tags") public val tags: List<String> = emptyList(),
+    @Json(name = "description") public val description: String? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
 )

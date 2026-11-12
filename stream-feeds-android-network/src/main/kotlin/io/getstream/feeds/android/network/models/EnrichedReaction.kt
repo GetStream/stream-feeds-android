@@ -19,40 +19,27 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class EnrichedReaction(
-    @Json(name = "activity_id") public val activityId: kotlin.String,
-    @Json(name = "kind") public val kind: kotlin.String,
-    @Json(name = "user_id") public val userId: kotlin.String,
-    @Json(name = "id") public val id: kotlin.String? = null,
-    @Json(name = "parent") public val parent: kotlin.String? = null,
-    @Json(name = "target_feeds")
-    public val targetFeeds: kotlin.collections.List<kotlin.String>? = null,
-    @Json(name = "children_counts")
-    public val childrenCounts: kotlin.collections.Map<kotlin.String, kotlin.Int>? = null,
-    @Json(name = "created_at")
-    public val createdAt: io.getstream.feeds.android.network.models.Time? = null,
-    @Json(name = "data") public val data: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "activity_id") public val activityId: String,
+    @Json(name = "kind") public val kind: String,
+    @Json(name = "user_id") public val userId: String,
+    @Json(name = "created_at") public val createdAt: String? = null,
+    @Json(name = "id") public val id: String? = null,
+    @Json(name = "parent") public val parent: String? = null,
+    @Json(name = "updated_at") public val updatedAt: String? = null,
+    @Json(name = "target_feeds") public val targetFeeds: List<String>? = null,
+    @Json(name = "children_counts") public val childrenCounts: Map<String, Int>? = null,
+    @Json(name = "data") public val data: Map<String, Any?>? = null,
     @Json(name = "latest_children")
     public val latestChildren:
-        kotlin.collections.Map<
-            kotlin.String,
-            kotlin.collections.List<io.getstream.feeds.android.network.models.EnrichedReaction>,
-        >? =
+        Map<String, List<io.getstream.feeds.android.network.models.EnrichedReaction>>? =
         null,
     @Json(name = "own_children")
     public val ownChildren:
-        kotlin.collections.Map<
-            kotlin.String,
-            kotlin.collections.List<io.getstream.feeds.android.network.models.EnrichedReaction>,
-        >? =
+        Map<String, List<io.getstream.feeds.android.network.models.EnrichedReaction>>? =
         null,
-    @Json(name = "updated_at")
-    public val updatedAt: io.getstream.feeds.android.network.models.Time? = null,
     @Json(name = "user") public val user: io.getstream.feeds.android.network.models.Data? = null,
 )

@@ -19,12 +19,11 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /** Configuration for escalation action */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class EscalatePayload(
-    @Json(name = "notes") public val notes: kotlin.String? = null,
-    @Json(name = "priority") public val priority: kotlin.String? = null,
-    @Json(name = "reason") public val reason: kotlin.String? = null,
+    @Json(name = "notes") public val notes: String? = null,
+    @Json(name = "priority") public val priority: String? = null,
+    @Json(name = "reason") public val reason: String? = null,
 )

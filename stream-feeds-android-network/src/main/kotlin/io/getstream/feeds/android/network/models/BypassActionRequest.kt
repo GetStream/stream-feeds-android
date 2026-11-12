@@ -19,10 +19,7 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
-public data class BypassActionRequest(
-    @Json(name = "enabled") public val enabled: kotlin.Boolean? = null
-)
+@com.squareup.moshi.JsonClass(generateAdapter = true)
+public data class BypassActionRequest(@Json(name = "enabled") public val enabled: Boolean? = null)

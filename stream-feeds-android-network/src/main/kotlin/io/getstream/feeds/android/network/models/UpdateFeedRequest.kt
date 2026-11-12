@@ -19,20 +19,16 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UpdateFeedRequest(
-    @Json(name = "clear_location") public val clearLocation: kotlin.Boolean? = null,
-    @Json(name = "description") public val description: kotlin.String? = null,
-    @Json(name = "enrich_own_fields") public val enrichOwnFields: kotlin.Boolean? = null,
-    @Json(name = "name") public val name: kotlin.String? = null,
-    @Json(name = "filter_tags")
-    public val filterTags: kotlin.collections.List<kotlin.String>? = null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "clear_location") public val clearLocation: Boolean? = null,
+    @Json(name = "description") public val description: String? = null,
+    @Json(name = "enrich_own_fields") public val enrichOwnFields: Boolean? = null,
+    @Json(name = "name") public val name: String? = null,
+    @Json(name = "filter_tags") public val filterTags: List<String>? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
     @Json(name = "location")
     public val location: io.getstream.feeds.android.network.models.Location? = null,
 )

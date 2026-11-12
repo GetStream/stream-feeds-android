@@ -19,18 +19,13 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class AutomodSemanticFiltersConfig(
-    @Json(name = "enabled") public val enabled: kotlin.Boolean,
+    @Json(name = "enabled") public val enabled: Boolean,
     @Json(name = "rules")
-    public val rules:
-        kotlin.collections.List<
-            io.getstream.feeds.android.network.models.AutomodSemanticFiltersRule
-        > =
+    public val rules: List<io.getstream.feeds.android.network.models.AutomodSemanticFiltersRule> =
         emptyList(),
-    @Json(name = "async") public val async: kotlin.Boolean? = null,
+    @Json(name = "async") public val async: Boolean? = null,
 )

@@ -19,14 +19,14 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class AddActivityResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "duration") public val duration: String,
     @Json(name = "activity")
     public val activity: io.getstream.feeds.android.network.models.ActivityResponse,
     @Json(name = "mention_notifications_created")
-    public val mentionNotificationsCreated: kotlin.Int? = null,
+    public val mentionNotificationsCreated: Int? = null,
+    @Json(name = "skipped_existing") public val skippedExisting: List<String>? = null,
 )

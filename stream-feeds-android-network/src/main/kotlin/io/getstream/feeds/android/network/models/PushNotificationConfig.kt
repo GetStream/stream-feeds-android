@@ -19,12 +19,10 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class PushNotificationConfig(
-    @Json(name = "enable_push") public val enablePush: kotlin.Boolean? = null,
-    @Json(name = "push_types") public val pushTypes: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "enable_push") public val enablePush: Boolean? = null,
+    @Json(name = "push_types") public val pushTypes: List<String>? = null,
 )

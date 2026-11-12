@@ -19,64 +19,24 @@
 package io.getstream.feeds.android.network.infrastructure
 
 import com.squareup.moshi.Moshi
-import io.getstream.feeds.android.network.models.WSEventAdapter
 
 public object Serializer {
     @JvmStatic
     public val moshiBuilder: Moshi.Builder =
         Moshi.Builder()
             .add(
-                io.getstream.feeds.android.network.models.AWSRekognitionRule.Action.ActionAdapter()
-            )
-            .add(
                 io.getstream.feeds.android.network.models.ActivityFeedbackEventPayload.Action
                     .ActionAdapter()
             )
             .add(
-                io.getstream.feeds.android.network.models.ActivityRequest.RestrictReplies
-                    .RestrictRepliesAdapter()
+                io.getstream.feeds.android.network.models.ActivitySelectorType
+                    .ActivitySelectorTypeAdapter()
             )
             .add(
-                io.getstream.feeds.android.network.models.ActivityRequest.Visibility
-                    .VisibilityAdapter()
+                io.getstream.feeds.android.network.models.ActivityVisibility
+                    .ActivityVisibilityAdapter()
             )
-            .add(
-                io.getstream.feeds.android.network.models.ActivityResponse.RestrictReplies
-                    .RestrictRepliesAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.ActivityResponse.Visibility
-                    .VisibilityAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.AddActivityRequest.RestrictReplies
-                    .RestrictRepliesAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.AddActivityRequest.Visibility
-                    .VisibilityAdapter()
-            )
-            .add(io.getstream.feeds.android.network.models.AutomodRule.Action.ActionAdapter())
-            .add(
-                io.getstream.feeds.android.network.models.AutomodSemanticFiltersRule.Action
-                    .ActionAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.BanActionRequestPayload.DeleteMessages
-                    .DeleteMessagesAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.BanOptions.DeleteMessages
-                    .DeleteMessagesAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.BanRequest.DeleteMessages
-                    .DeleteMessagesAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.BlockListOptions.Behavior
-                    .BehaviorAdapter()
-            )
+            .add(io.getstream.feeds.android.network.models.AutomodMode.AutomodModeAdapter())
             .add(io.getstream.feeds.android.network.models.BlockListRule.Action.ActionAdapter())
             .add(io.getstream.feeds.android.network.models.BodyguardRule.Action.ActionAdapter())
             .add(
@@ -87,41 +47,68 @@ public object Serializer {
                 io.getstream.feeds.android.network.models.BodyguardSeverityRule.Severity
                     .SeverityAdapter()
             )
-            .add(io.getstream.feeds.android.network.models.CommentResponse.Status.StatusAdapter())
+            .add(
+                io.getstream.feeds.android.network.models.BulkActionAppealsRequest.ActionType
+                    .ActionTypeAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.ChangeFeedVisibilityRequest
+                    .PendingFollowsAction
+                    .PendingFollowsActionAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.ChannelModerationBehavior
+                    .ChannelModerationBehaviorAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.ChannelOwnCapability
+                    .ChannelOwnCapabilityAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.ChatPreferencesInput.ChannelMentions
+                    .ChannelMentionsAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.ChatPreferencesInput.DefaultPreference
+                    .DefaultPreferenceAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.ChatPreferencesInput.DirectMentions
+                    .DirectMentionsAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.ChatPreferencesInput.GroupMentions
+                    .GroupMentionsAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.ChatPreferencesInput.HereMentions
+                    .HereMentionsAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.ChatPreferencesInput.RoleMentions
+                    .RoleMentionsAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.ChatPreferencesInput.ThreadReplies
+                    .ThreadRepliesAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.CollectionStatus.CollectionStatusAdapter()
+            )
+            .add(io.getstream.feeds.android.network.models.CommentStatus.CommentStatusAdapter())
             .add(
                 io.getstream.feeds.android.network.models.CreateBlockListRequest.Type.TypeAdapter()
             )
+            .add(io.getstream.feeds.android.network.models.CreateQueueRequest.Type.TypeAdapter())
+            .add(io.getstream.feeds.android.network.models.DeleteMessages.DeleteMessagesAdapter())
             .add(
-                io.getstream.feeds.android.network.models.CreateDeviceRequest.PushProvider
-                    .PushProviderAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.CreatePollRequest.VotingVisibility
-                    .VotingVisibilityAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.EnrichedCollectionResponse.Status
-                    .StatusAdapter()
-            )
-            .add(io.getstream.feeds.android.network.models.FeedInput.Visibility.VisibilityAdapter())
-            .add(
-                io.getstream.feeds.android.network.models.FeedMemberResponse.Status.StatusAdapter()
+                io.getstream.feeds.android.network.models.FeedMemberStatus.FeedMemberStatusAdapter()
             )
             .add(
                 io.getstream.feeds.android.network.models.FeedOwnCapability
                     .FeedOwnCapabilityAdapter()
             )
-            .add(
-                io.getstream.feeds.android.network.models.FeedRequest.Visibility.VisibilityAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.FeedResponse.Visibility
-                    .VisibilityAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.FeedSuggestionResponse.Visibility
-                    .VisibilityAdapter()
-            )
+            .add(io.getstream.feeds.android.network.models.FeedVisibility.FeedVisibilityAdapter())
             .add(
                 io.getstream.feeds.android.network.models.FeedsPreferences.Comment.CommentAdapter()
             )
@@ -146,23 +133,40 @@ public object Serializer {
                     .ReactionAdapter()
             )
             .add(
-                io.getstream.feeds.android.network.models.FollowRequest.PushPreference
-                    .PushPreferenceAdapter()
+                io.getstream.feeds.android.network.models.FollowPushPreference
+                    .FollowPushPreferenceAdapter()
             )
+            .add(io.getstream.feeds.android.network.models.FollowStatus.FollowStatusAdapter())
             .add(
-                io.getstream.feeds.android.network.models.FollowResponse.PushPreference
-                    .PushPreferenceAdapter()
-            )
-            .add(io.getstream.feeds.android.network.models.FollowResponse.Status.StatusAdapter())
-            .add(
-                io.getstream.feeds.android.network.models.FriendReactionsOptions.Type.TypeAdapter()
+                io.getstream.feeds.android.network.models.FriendReactionType
+                    .FriendReactionTypeAdapter()
             )
             .add(io.getstream.feeds.android.network.models.LLMRule.Action.ActionAdapter())
-            .add(io.getstream.feeds.android.network.models.OCRRule.Action.ActionAdapter())
+            .add(io.getstream.feeds.android.network.models.MediaDisplayResponse.Mode.ModeAdapter())
             .add(
-                io.getstream.feeds.android.network.models.PushPreferenceInput.CallLevel
-                    .CallLevelAdapter()
+                io.getstream.feeds.android.network.models.ModerationAction.ModerationActionAdapter()
             )
+            .add(
+                io.getstream.feeds.android.network.models.ModerationEngineConfigRequest.Model
+                    .ModelAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.ModerationEngineConfigRequest.Provider
+                    .ProviderAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.ModerationEngineConfigRequest.Strictness
+                    .StrictnessAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.ModerationEngineConfigResponse.Provider
+                    .ProviderAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.ModerationEngineConfigResponse.Strictness
+                    .StrictnessAdapter()
+            )
+            .add(io.getstream.feeds.android.network.models.PushLevel.PushLevelAdapter())
             .add(
                 io.getstream.feeds.android.network.models.PushPreferenceInput.ChatLevel
                     .ChatLevelAdapter()
@@ -171,35 +175,20 @@ public object Serializer {
                 io.getstream.feeds.android.network.models.PushPreferenceInput.FeedsLevel
                     .FeedsLevelAdapter()
             )
+            .add(
+                io.getstream.feeds.android.network.models.PushProviderName.PushProviderNameAdapter()
+            )
             .add(io.getstream.feeds.android.network.models.QueryCommentsRequest.Sort.SortAdapter())
+            .add(io.getstream.feeds.android.network.models.RestrictReplies.RestrictRepliesAdapter())
             .add(io.getstream.feeds.android.network.models.RuleBuilderAction.Type.TypeAdapter())
+            .add(io.getstream.feeds.android.network.models.SortParamType.SortParamTypeAdapter())
             .add(
                 io.getstream.feeds.android.network.models.SubmitActionRequest.ActionType
                     .ActionTypeAdapter()
             )
             .add(
-                io.getstream.feeds.android.network.models.ThreadedCommentResponse.Status
-                    .StatusAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.UpdateActivityRequest.RestrictReplies
-                    .RestrictRepliesAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.UpdateActivityRequest.Visibility
-                    .VisibilityAdapter()
-            )
-            .add(
                 io.getstream.feeds.android.network.models.UpdateFeedMembersRequest.Operation
                     .OperationAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.UpdateFollowRequest.PushPreference
-                    .PushPreferenceAdapter()
-            )
-            .add(
-                io.getstream.feeds.android.network.models.UpdatePollRequest.VotingVisibility
-                    .VotingVisibilityAdapter()
             )
             .add(
                 io.getstream.feeds.android.network.models.VelocityFilterConfigRule.Action
@@ -209,13 +198,16 @@ public object Serializer {
                 io.getstream.feeds.android.network.models.VelocityFilterConfigRule.CascadingAction
                     .CascadingActionAdapter()
             )
+            .add(
+                io.getstream.feeds.android.network.models.VotingVisibility.VotingVisibilityAdapter()
+            )
             .add(io.getstream.feeds.android.network.infrastructure.BigDecimalAdapter())
             .add(io.getstream.feeds.android.network.infrastructure.BigIntegerAdapter())
             .add(io.getstream.feeds.android.network.infrastructure.ByteArrayAdapter())
             .add(io.getstream.feeds.android.network.infrastructure.URIAdapter())
             .add(io.getstream.feeds.android.network.infrastructure.UUIDAdapter())
             .add(io.getstream.feeds.android.network.infrastructure.JavaUtilDateTimeAdapter())
-            .add(WSEventAdapter())
+            .add(io.getstream.feeds.android.network.models.WSEventAdapter())
             .addLast(com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory())
 
     @JvmStatic public val moshi: Moshi by lazy { moshiBuilder.build() }

@@ -19,15 +19,13 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /** Request body for creating a user group */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class CreateUserGroupRequest(
-    @Json(name = "name") public val name: kotlin.String,
-    @Json(name = "description") public val description: kotlin.String? = null,
-    @Json(name = "id") public val id: kotlin.String? = null,
-    @Json(name = "team_id") public val teamId: kotlin.String? = null,
-    @Json(name = "member_ids") public val memberIds: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "name") public val name: String,
+    @Json(name = "description") public val description: String? = null,
+    @Json(name = "id") public val id: String? = null,
+    @Json(name = "team_id") public val teamId: String? = null,
+    @Json(name = "member_ids") public val memberIds: List<String>? = null,
 )

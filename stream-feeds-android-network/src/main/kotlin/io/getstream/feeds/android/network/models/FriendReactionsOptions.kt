@@ -18,55 +18,16 @@
 
 package io.getstream.feeds.android.network.models
 
-import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonReader
-import com.squareup.moshi.JsonWriter
-import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.io.*
 
 /**
  * Options to control fetching reactions from friends (users you follow or have mutual follows
  * with).
  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class FriendReactionsOptions(
-    @Json(name = "enabled") public val enabled: kotlin.Boolean? = null,
-    @Json(name = "limit") public val limit: kotlin.Int? = null,
-    @Json(name = "type") public val type: Type? = null,
-) {
-
-    /** Type Enum */
-    public sealed class Type(public val value: kotlin.String) {
-        override fun toString(): String = value
-
-        public companion object {
-            public fun fromString(s: kotlin.String): Type =
-                when (s) {
-                    "following" -> Following
-                    "mutual" -> Mutual
-                    else -> Unknown(s)
-                }
-        }
-
-        public object Following : Type("following")
-
-        public object Mutual : Type("mutual")
-
-        public data class Unknown(val unknownValue: kotlin.String) : Type(unknownValue)
-
-        public class TypeAdapter : JsonAdapter<Type>() {
-            @FromJson
-            override fun fromJson(reader: JsonReader): Type? {
-                val s = reader.nextString() ?: return null
-                return Type.fromString(s)
-            }
-
-            @ToJson
-            override fun toJson(writer: JsonWriter, value: Type?) {
-                writer.value(value?.value)
-            }
-        }
-    }
-}
+    @Json(name = "enabled") public val enabled: Boolean? = null,
+    @Json(name = "limit") public val limit: Int? = null,
+    @Json(name = "type")
+    public val type: io.getstream.feeds.android.network.models.FriendReactionType? = null,
+)

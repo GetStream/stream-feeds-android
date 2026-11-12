@@ -21,7 +21,8 @@ package io.getstream.feeds.android.network.models
 import com.squareup.moshi.Json
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class Location(
-    @Json(name = "lat") public val lat: kotlin.Float,
-    @Json(name = "lng") public val lng: kotlin.Float,
+    @Json(name = "lat") public val lat: Float,
+    @Json(name = "lng") public val lng: Float,
 )

@@ -19,14 +19,13 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class Action(
-    @Json(name = "name") public val name: kotlin.String,
-    @Json(name = "text") public val text: kotlin.String,
-    @Json(name = "type") public val type: kotlin.String,
-    @Json(name = "style") public val style: kotlin.String? = null,
-    @Json(name = "value") public val value: kotlin.String? = null,
+    @Json(name = "name") public val name: String,
+    @Json(name = "text") public val text: String,
+    @Json(name = "type") public val type: String,
+    @Json(name = "style") public val style: String? = null,
+    @Json(name = "value") public val value: String? = null,
 )

@@ -55,6 +55,10 @@ public class JavaUtilDateTimeAdapter {
     private val dateFormat =
         SimpleDateFormat(DATE_FORMAT, Locale.US).apply { timeZone = TimeZone.getTimeZone("UTC") }
 
+    // Guards the non-thread-safe SimpleDateFormat: Moshi caches one adapter instance in the
+    // process-wide Serializer.moshi singleton and calls it concurrently.
+    private val dateFormatLock = Any()
+
     /**
      * Converts a [Date] object to its JSON string representation.
      *
@@ -67,7 +71,7 @@ public class JavaUtilDateTimeAdapter {
      */
     @ToJson
     public fun toJson(value: Date): String {
-        return dateFormat.format(value)
+        return synchronized(dateFormatLock) { dateFormat.format(value) }
     }
 
     /**

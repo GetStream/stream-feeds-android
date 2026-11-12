@@ -19,14 +19,16 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UpdateBlockListRequest(
-    @Json(name = "is_leet_check_enabled") public val isLeetCheckEnabled: kotlin.Boolean? = null,
-    @Json(name = "is_plural_check_enabled") public val isPluralCheckEnabled: kotlin.Boolean? = null,
-    @Json(name = "team") public val team: kotlin.String? = null,
-    @Json(name = "words") public val words: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "is_confusable_folding_enabled")
+    public val isConfusableFoldingEnabled: Boolean? = null,
+    @Json(name = "is_leet_check_enabled") public val isLeetCheckEnabled: Boolean? = null,
+    @Json(name = "is_plural_check_enabled") public val isPluralCheckEnabled: Boolean? = null,
+    @Json(name = "is_substring_matching_enabled")
+    public val isSubstringMatchingEnabled: Boolean? = null,
+    @Json(name = "team") public val team: String? = null,
+    @Json(name = "words") public val words: List<String>? = null,
 )

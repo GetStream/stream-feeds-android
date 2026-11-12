@@ -72,11 +72,7 @@ constructor(loginManager: LoginManager, savedStateHandle: SavedStateHandle) : Vi
 
     private fun getPollVoteList(client: FeedsClient): PollVoteList {
         val query =
-            PollVotesQuery(
-                pollId = pollId,
-                userId = client.user.id,
-                filter = PollVotesFilterField.isAnswer.equal(true),
-            )
+            PollVotesQuery(pollId = pollId, filter = PollVotesFilterField.isAnswer.equal(true))
         return client.pollVoteList(query)
     }
 

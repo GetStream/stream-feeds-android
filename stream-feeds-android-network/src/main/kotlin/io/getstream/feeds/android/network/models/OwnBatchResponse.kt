@@ -19,18 +19,11 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class OwnBatchResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "duration") public val duration: String,
     @Json(name = "data")
-    public val data:
-        kotlin.collections.Map<
-            kotlin.String,
-            io.getstream.feeds.android.network.models.FeedOwnData,
-        > =
-        emptyMap(),
+    public val data: Map<String, io.getstream.feeds.android.network.models.FeedOwnData> = emptyMap(),
 )

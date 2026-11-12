@@ -19,19 +19,13 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UpdateUsersResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
-    @Json(name = "membership_deletion_task_id") public val membershipDeletionTaskId: kotlin.String,
+    @Json(name = "duration") public val duration: String,
+    @Json(name = "membership_deletion_task_id") public val membershipDeletionTaskId: String,
     @Json(name = "users")
-    public val users:
-        kotlin.collections.Map<
-            kotlin.String,
-            io.getstream.feeds.android.network.models.FullUserResponse,
-        > =
+    public val users: Map<String, io.getstream.feeds.android.network.models.FullUserResponse> =
         emptyMap(),
 )

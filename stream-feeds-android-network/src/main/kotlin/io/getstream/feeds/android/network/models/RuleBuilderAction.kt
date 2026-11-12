@@ -24,25 +24,27 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class RuleBuilderAction(
-    @Json(name = "skip_inbox") public val skipInbox: kotlin.Boolean? = null,
+    @Json(name = "reason") public val reason: String? = null,
+    @Json(name = "skip_inbox") public val skipInbox: Boolean? = null,
     @Json(name = "type") public val type: Type? = null,
     @Json(name = "ban_options")
     public val banOptions: io.getstream.feeds.android.network.models.BanOptions? = null,
+    @Json(name = "call_options")
+    public val callOptions: io.getstream.feeds.android.network.models.CallActionOptions? = null,
     @Json(name = "flag_user_options")
     public val flagUserOptions: io.getstream.feeds.android.network.models.FlagUserOptions? = null,
 ) {
 
     /** Type Enum */
-    public sealed class Type(public val value: kotlin.String) {
+    public sealed class Type(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): Type =
+            public fun fromString(s: String): Type =
                 when (s) {
                     "ban_user" -> BanUser
                     "block_content" -> BlockContent
@@ -99,7 +101,7 @@ public data class RuleBuilderAction(
 
         public object WebhookOnly : Type("webhook_only")
 
-        public data class Unknown(val unknownValue: kotlin.String) : Type(unknownValue)
+        public data class Unknown(val unknownValue: String) : Type(unknownValue)
 
         public class TypeAdapter : JsonAdapter<Type>() {
             @FromJson

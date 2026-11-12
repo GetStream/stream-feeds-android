@@ -19,10 +19,7 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
-public data class UserRuleParameters(
-    @Json(name = "max_age") public val maxAge: kotlin.String? = null
-)
+@com.squareup.moshi.JsonClass(generateAdapter = true)
+public data class UserRuleParameters(@Json(name = "max_age") public val maxAge: String? = null)

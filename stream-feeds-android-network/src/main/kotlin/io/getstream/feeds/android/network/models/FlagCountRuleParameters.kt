@@ -19,10 +19,9 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class FlagCountRuleParameters(
-    @Json(name = "threshold") public val threshold: kotlin.Int? = null
+    @Json(name = "threshold") public val threshold: Int? = null
 )

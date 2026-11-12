@@ -19,25 +19,23 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class RuleBuilderRule(
-    @Json(name = "rule_type") public val ruleType: kotlin.String,
-    @Json(name = "cooldown_period") public val cooldownPeriod: kotlin.String? = null,
-    @Json(name = "id") public val id: kotlin.String? = null,
-    @Json(name = "logic") public val logic: kotlin.String? = null,
+    @Json(name = "rule_type") public val ruleType: String,
+    @Json(name = "cooldown_period") public val cooldownPeriod: String? = null,
+    @Json(name = "id") public val id: String? = null,
+    @Json(name = "logic") public val logic: String? = null,
+    @Json(name = "action_sequences")
+    public val actionSequences:
+        List<io.getstream.feeds.android.network.models.CallRuleActionSequence>? =
+        null,
     @Json(name = "conditions")
-    public val conditions:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.RuleBuilderCondition>? =
+    public val conditions: List<io.getstream.feeds.android.network.models.RuleBuilderCondition>? =
         null,
     @Json(name = "groups")
-    public val groups:
-        kotlin.collections.List<
-            io.getstream.feeds.android.network.models.RuleBuilderConditionGroup
-        >? =
+    public val groups: List<io.getstream.feeds.android.network.models.RuleBuilderConditionGroup>? =
         null,
     @Json(name = "action")
     public val action: io.getstream.feeds.android.network.models.RuleBuilderAction? = null,

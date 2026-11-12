@@ -18,62 +18,23 @@
 
 package io.getstream.feeds.android.network.models
 
-import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonReader
-import com.squareup.moshi.JsonWriter
-import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UpdateFollowRequest(
-    @Json(name = "source") public val source: kotlin.String,
-    @Json(name = "target") public val target: kotlin.String,
-    @Json(name = "activity_copy_limit") public val activityCopyLimit: kotlin.Int? = null,
+    @Json(name = "source") public val source: String,
+    @Json(name = "target") public val target: String,
+    @Json(name = "activity_copy_limit") public val activityCopyLimit: Int? = null,
     @Json(name = "copy_custom_to_notification")
-    public val copyCustomToNotification: kotlin.Boolean? = null,
+    public val copyCustomToNotification: Boolean? = null,
     @Json(name = "create_notification_activity")
-    public val createNotificationActivity: kotlin.Boolean? = null,
-    @Json(name = "enrich_own_fields") public val enrichOwnFields: kotlin.Boolean? = null,
-    @Json(name = "follower_role") public val followerRole: kotlin.String? = null,
-    @Json(name = "push_preference") public val pushPreference: PushPreference? = null,
-    @Json(name = "skip_push") public val skipPush: kotlin.Boolean? = null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
-) {
-
-    /** PushPreference Enum */
-    public sealed class PushPreference(public val value: kotlin.String) {
-        override fun toString(): String = value
-
-        public companion object {
-            public fun fromString(s: kotlin.String): PushPreference =
-                when (s) {
-                    "all" -> All
-                    "none" -> None
-                    else -> Unknown(s)
-                }
-        }
-
-        public object All : PushPreference("all")
-
-        public object None : PushPreference("none")
-
-        public data class Unknown(val unknownValue: kotlin.String) : PushPreference(unknownValue)
-
-        public class PushPreferenceAdapter : JsonAdapter<PushPreference>() {
-            @FromJson
-            override fun fromJson(reader: JsonReader): PushPreference? {
-                val s = reader.nextString() ?: return null
-                return PushPreference.fromString(s)
-            }
-
-            @ToJson
-            override fun toJson(writer: JsonWriter, value: PushPreference?) {
-                writer.value(value?.value)
-            }
-        }
-    }
-}
+    public val createNotificationActivity: Boolean? = null,
+    @Json(name = "enrich_own_fields") public val enrichOwnFields: Boolean? = null,
+    @Json(name = "follower_role") public val followerRole: String? = null,
+    @Json(name = "push_preference")
+    public val pushPreference: io.getstream.feeds.android.network.models.FollowPushPreference? =
+        null,
+    @Json(name = "skip_push") public val skipPush: Boolean? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
+)

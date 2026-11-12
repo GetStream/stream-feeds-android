@@ -19,14 +19,14 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /** Configuration for mark reviewed action */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class MarkReviewedRequestPayload(
     @Json(name = "content_to_mark_as_reviewed_limit")
-    public val contentToMarkAsReviewedLimit: kotlin.Int? = null,
-    @Json(name = "decision_reason") public val decisionReason: kotlin.String? = null,
+    public val contentToMarkAsReviewedLimit: Int? = null,
+    @Json(name = "decision_reason") public val decisionReason: String? = null,
     @Json(name = "disable_marking_content_as_reviewed")
-    public val disableMarkingContentAsReviewed: kotlin.Boolean? = null,
+    public val disableMarkingContentAsReviewed: Boolean? = null,
+    @Json(name = "reason") public val reason: String? = null,
 )

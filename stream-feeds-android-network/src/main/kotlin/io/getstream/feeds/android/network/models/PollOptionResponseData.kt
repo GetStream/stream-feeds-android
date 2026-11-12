@@ -19,14 +19,12 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class PollOptionResponseData(
-    @Json(name = "id") public val id: kotlin.String,
-    @Json(name = "text") public val text: kotlin.String,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
+    @Json(name = "id") public val id: String,
+    @Json(name = "text") public val text: String,
+    @Json(name = "custom") public val custom: Map<String, Any?> = emptyMap(),
+    @Json(name = "text_i18n") public val textI18n: Map<String, String>? = null,
 )

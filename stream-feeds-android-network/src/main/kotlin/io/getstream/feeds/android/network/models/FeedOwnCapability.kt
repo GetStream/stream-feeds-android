@@ -23,16 +23,14 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.io.*
 
 /** [Represents a feed capability value and enumerates all possible capability strings.] */
 /** FeedOwnCapability Enum */
-public sealed class FeedOwnCapability(public val value: kotlin.String) {
+public sealed class FeedOwnCapability(public val value: String) {
     override fun toString(): String = value
 
     public companion object {
-        public fun fromString(s: kotlin.String): FeedOwnCapability =
+        public fun fromString(s: String): FeedOwnCapability =
             when (s) {
                 "add-activity" -> AddActivity
                 "add-activity-bookmark" -> AddActivityBookmark
@@ -125,7 +123,7 @@ public sealed class FeedOwnCapability(public val value: kotlin.String) {
 
     public object UpdateOwnComment : FeedOwnCapability("update-own-comment")
 
-    public data class Unknown(val unknownValue: kotlin.String) : FeedOwnCapability(unknownValue)
+    public data class Unknown(val unknownValue: String) : FeedOwnCapability(unknownValue)
 
     public class FeedOwnCapabilityAdapter : JsonAdapter<FeedOwnCapability>() {
         @FromJson

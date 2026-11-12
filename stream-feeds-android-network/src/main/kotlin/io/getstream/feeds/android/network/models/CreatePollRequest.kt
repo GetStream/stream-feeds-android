@@ -18,66 +18,24 @@
 
 package io.getstream.feeds.android.network.models
 
-import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonReader
-import com.squareup.moshi.JsonWriter
-import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /** Contains all information needed to create a new poll */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class CreatePollRequest(
-    @Json(name = "name") public val name: kotlin.String,
-    @Json(name = "allow_answers") public val allowAnswers: kotlin.Boolean? = null,
+    @Json(name = "name") public val name: String,
+    @Json(name = "allow_answers") public val allowAnswers: Boolean? = null,
     @Json(name = "allow_user_suggested_options")
-    public val allowUserSuggestedOptions: kotlin.Boolean? = null,
-    @Json(name = "description") public val description: kotlin.String? = null,
-    @Json(name = "enforce_unique_vote") public val enforceUniqueVote: kotlin.Boolean? = null,
-    @Json(name = "id") public val id: kotlin.String? = null,
-    @Json(name = "is_closed") public val isClosed: kotlin.Boolean? = null,
-    @Json(name = "max_votes_allowed") public val maxVotesAllowed: kotlin.Int? = null,
-    @Json(name = "voting_visibility") public val votingVisibility: VotingVisibility? = null,
+    public val allowUserSuggestedOptions: Boolean? = null,
+    @Json(name = "description") public val description: String? = null,
+    @Json(name = "enforce_unique_vote") public val enforceUniqueVote: Boolean? = null,
+    @Json(name = "id") public val id: String? = null,
+    @Json(name = "is_closed") public val isClosed: Boolean? = null,
+    @Json(name = "max_votes_allowed") public val maxVotesAllowed: Int? = null,
+    @Json(name = "team") public val team: String? = null,
+    @Json(name = "voting_visibility")
+    public val votingVisibility: io.getstream.feeds.android.network.models.VotingVisibility? = null,
     @Json(name = "options")
-    public val options:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.PollOptionInput>? =
-        null,
-    @Json(name = "Custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
-) {
-
-    /** VotingVisibility Enum */
-    public sealed class VotingVisibility(public val value: kotlin.String) {
-        override fun toString(): String = value
-
-        public companion object {
-            public fun fromString(s: kotlin.String): VotingVisibility =
-                when (s) {
-                    "anonymous" -> Anonymous
-                    "public" -> Public
-                    else -> Unknown(s)
-                }
-        }
-
-        public object Anonymous : VotingVisibility("anonymous")
-
-        public object Public : VotingVisibility("public")
-
-        public data class Unknown(val unknownValue: kotlin.String) : VotingVisibility(unknownValue)
-
-        public class VotingVisibilityAdapter : JsonAdapter<VotingVisibility>() {
-            @FromJson
-            override fun fromJson(reader: JsonReader): VotingVisibility? {
-                val s = reader.nextString() ?: return null
-                return VotingVisibility.fromString(s)
-            }
-
-            @ToJson
-            override fun toJson(writer: JsonWriter, value: VotingVisibility?) {
-                writer.value(value?.value)
-            }
-        }
-    }
-}
+    public val options: List<io.getstream.feeds.android.network.models.PollOptionInput>? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
+)

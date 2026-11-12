@@ -19,13 +19,12 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class AIImageLabelDefinition(
-    @Json(name = "description") public val description: kotlin.String,
-    @Json(name = "group") public val group: kotlin.String,
-    @Json(name = "key") public val key: kotlin.String,
-    @Json(name = "label") public val label: kotlin.String,
+    @Json(name = "description") public val description: String,
+    @Json(name = "group") public val group: String,
+    @Json(name = "key") public val key: String,
+    @Json(name = "label") public val label: String,
 )

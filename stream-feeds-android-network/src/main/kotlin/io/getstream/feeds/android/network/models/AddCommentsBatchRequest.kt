@@ -19,14 +19,11 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class AddCommentsBatchRequest(
     @Json(name = "comments")
-    public val comments:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.AddCommentRequest> =
+    public val comments: List<io.getstream.feeds.android.network.models.AddCommentRequest> =
         emptyList()
 )

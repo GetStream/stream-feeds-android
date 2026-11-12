@@ -19,18 +19,14 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class NotificationStatusResponse(
-    @Json(name = "unread") public val unread: kotlin.Int,
-    @Json(name = "unseen") public val unseen: kotlin.Int,
+    @Json(name = "unread") public val unread: Int,
+    @Json(name = "unseen") public val unseen: Int,
     @Json(name = "last_read_at") public val lastReadAt: java.util.Date? = null,
     @Json(name = "last_seen_at") public val lastSeenAt: java.util.Date? = null,
-    @Json(name = "read_activities")
-    public val readActivities: kotlin.collections.List<kotlin.String>? = null,
-    @Json(name = "seen_activities")
-    public val seenActivities: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "read_activities") public val readActivities: List<String>? = null,
+    @Json(name = "seen_activities") public val seenActivities: List<String>? = null,
 )

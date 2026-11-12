@@ -40,6 +40,7 @@ import io.getstream.feeds.android.network.models.AddCommentReactionResponse
 import io.getstream.feeds.android.network.models.AddCommentRequest
 import io.getstream.feeds.android.network.models.AddCommentsBatchRequest
 import io.getstream.feeds.android.network.models.Attachment
+import io.getstream.feeds.android.network.models.CommentStatus
 import io.getstream.feeds.android.network.models.DeleteCommentReactionResponse
 import io.getstream.feeds.android.network.models.GetCommentRepliesResponse
 import io.getstream.feeds.android.network.models.GetCommentResponse
@@ -242,7 +243,7 @@ internal class CommentsRepositoryImplTest {
             )
 
         testDelegation(
-            apiFunction = { feedsApi.queryComments(query.toRequest()) },
+            apiFunction = { feedsApi.queryComments(queryCommentsRequest = query.toRequest()) },
             repositoryCall = { repository.queryComments(query) },
             apiResult = apiResult,
             repositoryResult =
@@ -264,6 +265,7 @@ internal class CommentsRepositoryImplTest {
             )
         val apiResult =
             GetCommentsResponse(
+                commentCount = 1,
                 duration = "duration",
                 sort = "created_at",
                 comments =
@@ -279,7 +281,8 @@ internal class CommentsRepositoryImplTest {
                             reactionCount = 5,
                             replyCount = 0,
                             score = 10,
-                            status = ThreadedCommentResponse.Status.Active,
+                            hidden = false,
+                            status = CommentStatus.Active,
                             updatedAt = java.util.Date(1000),
                             upvoteCount = 5,
                             mentionedUsers = emptyList(),
@@ -357,7 +360,9 @@ internal class CommentsRepositoryImplTest {
         val reactionResponse = feedsReactionResponse().copy(commentId = "commentId")
         val apiResult =
             AddCommentReactionResponse(
+                counterDelta = 1,
                 duration = "duration",
+                outcome = "added",
                 reaction = reactionResponse,
                 comment = commentResponse(),
             )
@@ -432,7 +437,8 @@ internal class CommentsRepositoryImplTest {
                             reactionCount = 0,
                             replyCount = 0,
                             score = 5,
-                            status = ThreadedCommentResponse.Status.Active,
+                            hidden = false,
+                            status = CommentStatus.Active,
                             updatedAt = java.util.Date(1000),
                             upvoteCount = 5,
                             mentionedUsers = emptyList(),

@@ -19,29 +19,23 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class AddCommentRequest(
-    @Json(name = "comment") public val comment: kotlin.String? = null,
+    @Json(name = "comment") public val comment: String? = null,
     @Json(name = "copy_custom_to_notification")
-    public val copyCustomToNotification: kotlin.Boolean? = null,
+    public val copyCustomToNotification: Boolean? = null,
     @Json(name = "create_notification_activity")
-    public val createNotificationActivity: kotlin.Boolean? = null,
-    @Json(name = "id") public val id: kotlin.String? = null,
-    @Json(name = "object_id") public val objectId: kotlin.String? = null,
-    @Json(name = "object_type") public val objectType: kotlin.String? = null,
-    @Json(name = "parent_id") public val parentId: kotlin.String? = null,
-    @Json(name = "skip_enrich_url") public val skipEnrichUrl: kotlin.Boolean? = null,
-    @Json(name = "skip_push") public val skipPush: kotlin.Boolean? = null,
+    public val createNotificationActivity: Boolean? = null,
+    @Json(name = "id") public val id: String? = null,
+    @Json(name = "object_id") public val objectId: String? = null,
+    @Json(name = "object_type") public val objectType: String? = null,
+    @Json(name = "parent_id") public val parentId: String? = null,
+    @Json(name = "skip_enrich_url") public val skipEnrichUrl: Boolean? = null,
+    @Json(name = "skip_push") public val skipPush: Boolean? = null,
     @Json(name = "attachments")
-    public val attachments:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.Attachment>? =
-        null,
-    @Json(name = "mentioned_user_ids")
-    public val mentionedUserIds: kotlin.collections.List<kotlin.String>? = null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    public val attachments: List<io.getstream.feeds.android.network.models.Attachment>? = null,
+    @Json(name = "mentioned_user_ids") public val mentionedUserIds: List<String>? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
 )

@@ -19,10 +19,12 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
-/** Configuration for unblock action */
+/**
+ * Deprecated: Use restore instead, which now also reverses a block or shadow block. Configuration
+ * for unblock action.
+ */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UnblockActionRequestPayload(
-    @Json(name = "decision_reason") public val decisionReason: kotlin.String? = null
+    @Json(name = "decision_reason") public val decisionReason: String? = null
 )
