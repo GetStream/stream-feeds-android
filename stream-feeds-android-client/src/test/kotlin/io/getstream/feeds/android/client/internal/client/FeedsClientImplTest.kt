@@ -61,12 +61,14 @@ import io.getstream.feeds.android.client.internal.state.event.StateEventEnricher
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
+import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
 import io.getstream.feeds.android.network.models.ActivityRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -332,6 +334,19 @@ internal class FeedsClientImplTest {
 
         assertEquals(activityId, result.activityId)
         assertEquals(feedId, result.fid)
+    }
+
+    @Test
+    fun `activity when called with language, load the activity and its comments in it`() = runTest {
+        coEvery { activitiesRepository.getActivity("activity-1", "fr") } returns
+            Result.success(activityData("activity-1"))
+        coEvery { commentsRepository.getComments(any()) } returns
+            Result.success(defaultPaginationResult(emptyList()))
+
+        feedsClient.activity("activity-1", FeedId("user", "test-user"), language = "fr").get()
+
+        coVerify { activitiesRepository.getActivity("activity-1", "fr") }
+        coVerify { commentsRepository.getComments(match { it.language == "fr" }) }
     }
 
     @Test

@@ -95,7 +95,7 @@ internal class BookmarksRepositoryImplTest {
 
     @Test
     fun `on queryBookmarks, delegate to api`() = runTest {
-        val query = BookmarksQuery()
+        val query = BookmarksQuery(language = "fr")
         val request = query.toRequest()
 
         val apiResult =
@@ -107,7 +107,9 @@ internal class BookmarksRepositoryImplTest {
             )
 
         testDelegation(
-            apiFunction = { feedsApi.queryBookmarks(queryBookmarksRequest = request) },
+            apiFunction = {
+                feedsApi.queryBookmarks(language = "fr", queryBookmarksRequest = request)
+            },
             repositoryCall = { repository.queryBookmarks(query) },
             apiResult = apiResult,
             repositoryResult =

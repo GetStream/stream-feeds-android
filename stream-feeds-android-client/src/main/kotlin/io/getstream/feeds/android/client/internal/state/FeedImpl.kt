@@ -270,6 +270,7 @@ internal class FeedImpl(
                 memberLimit = 0,
                 view = null,
                 watch = query.watch,
+                language = query.language,
             )
         return feedsRepository
             .getOrCreateFeed(query)
@@ -311,7 +312,7 @@ internal class FeedImpl(
     }
 
     override suspend fun getComment(commentId: String): Result<CommentData> {
-        return commentsRepository.getComment(commentId).onSuccess {
+        return commentsRepository.getComment(commentId, query.language).onSuccess {
             subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(FidScope.unknown, it))
         }
     }
@@ -322,6 +323,24 @@ internal class FeedImpl(
     ): Result<CommentData> {
         return commentsRepository.addComment(request, attachmentUploadProgress).onSuccess {
             subscriptionManager.onEvent(StateUpdateEvent.CommentAdded(FidScope.unknown, it))
+        }
+    }
+
+    override suspend fun translateActivity(
+        activityId: String,
+        language: String,
+    ): Result<ActivityData> {
+        return activitiesRepository.translateActivity(activityId, language).onSuccess {
+            subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.unknown, it))
+        }
+    }
+
+    override suspend fun translateComment(
+        commentId: String,
+        language: String,
+    ): Result<CommentData> {
+        return commentsRepository.translateComment(commentId, language).onSuccess {
+            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(FidScope.unknown, it))
         }
     }
 

@@ -50,6 +50,8 @@ import io.getstream.feeds.android.network.models.QueryActivitiesResponse
 import io.getstream.feeds.android.network.models.QueryActivityReactionsRequest
 import io.getstream.feeds.android.network.models.QueryActivityReactionsResponse
 import io.getstream.feeds.android.network.models.RestoreActivityResponse
+import io.getstream.feeds.android.network.models.TranslateActivityRequest
+import io.getstream.feeds.android.network.models.TranslateActivityResponse
 import io.getstream.feeds.android.network.models.UpdateActivityPartialRequest
 import io.getstream.feeds.android.network.models.UpdateActivityPartialResponse
 import io.getstream.feeds.android.network.models.UpdateActivityRequest
@@ -184,8 +186,20 @@ internal class ActivitiesRepositoryImplTest {
         val apiResult = GetActivityResponse("duration", activityResponse())
 
         testDelegation(
-            apiFunction = { feedsApi.getActivity("id") },
-            repositoryCall = { repository.getActivity("id") },
+            apiFunction = { feedsApi.getActivity(id = "id", language = "fr") },
+            repositoryCall = { repository.getActivity("id", "fr") },
+            apiResult = apiResult,
+            repositoryResult = apiResult.activity.toModel(),
+        )
+    }
+
+    @Test
+    fun `on translateActivity, delegate to api`() {
+        val apiResult = TranslateActivityResponse("duration", activityResponse())
+
+        testDelegation(
+            apiFunction = { feedsApi.translateActivity("id", TranslateActivityRequest("fr")) },
+            repositoryCall = { repository.translateActivity("id", "fr") },
             apiResult = apiResult,
             repositoryResult = apiResult.activity.toModel(),
         )
@@ -332,7 +346,7 @@ internal class ActivitiesRepositoryImplTest {
 
     @Test
     fun `on queryActivities, delegate to api and transform result`() {
-        val query = ActivitiesQuery(limit = 10)
+        val query = ActivitiesQuery(limit = 10, language = "fr")
         val apiResult =
             QueryActivitiesResponse(
                 duration = "duration",
@@ -342,7 +356,12 @@ internal class ActivitiesRepositoryImplTest {
             )
 
         testDelegation(
-            apiFunction = { feedsApi.queryActivities(queryActivitiesRequest = query.toRequest()) },
+            apiFunction = {
+                feedsApi.queryActivities(
+                    language = "fr",
+                    queryActivitiesRequest = query.toRequest(),
+                )
+            },
             repositoryCall = { repository.queryActivities(query) },
             apiResult = apiResult,
             repositoryResult =

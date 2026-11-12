@@ -40,6 +40,7 @@ internal fun CommentResponse.toModel(): CommentData =
         moderation = moderation?.toModel(),
         objectId = objectId,
         objectType = objectType,
+        originalLanguage = i18n.originalLanguage(),
         ownReactions = ownReactions.map { it.toModel() },
         parentId = parentId,
         reactionCount = reactionCount,
@@ -48,6 +49,7 @@ internal fun CommentResponse.toModel(): CommentData =
         score = score,
         status = status.toModel(),
         text = text,
+        translations = i18n.translations(),
         updatedAt = updatedAt,
         upvoteCount = upvoteCount,
         user = user.toModel(),
@@ -66,12 +68,21 @@ internal fun NetworkCommentStatus.toModel(): CommentStatus =
 
 /**
  * Updates the comment while preserving own reactions because "own" data from WS events is not
- * reliable.
+ * reliable. Translations are preserved while the text is unchanged, because WS events never carry
+ * them.
  */
 internal fun CommentData.update(
     updated: CommentData,
     ownReactions: List<FeedsReactionData> = this.ownReactions,
-): CommentData = updated.copy(ownReactions = ownReactions)
+): CommentData {
+    val keepTranslations =
+        keepsTranslations(text, updated.text, updated.translations, updated.originalLanguage)
+    return updated.copy(
+        originalLanguage = if (keepTranslations) originalLanguage else updated.originalLanguage,
+        ownReactions = ownReactions,
+        translations = if (keepTranslations) translations else updated.translations,
+    )
+}
 
 /**
  * Removes a reaction from the comment, updating the latest reactions, reaction groups, reaction
