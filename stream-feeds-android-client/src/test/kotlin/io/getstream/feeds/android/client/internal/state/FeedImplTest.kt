@@ -419,6 +419,42 @@ internal class FeedImplTest {
     }
 
     @Test
+    fun `on deleteFeed without options, send no purge argument`() = runTest {
+        val feed = createFeed()
+        coEvery { feedsRepository.deleteFeed("group", "id", false, null) } returns
+            Result.success(Unit)
+
+        val result = feed.deleteFeed()
+
+        assertEquals(Unit, result.getOrNull())
+    }
+
+    @Test
+    fun `on follow without options, send only source and target`() = runTest {
+        val feed = createFeed()
+        val follow = followData(sourceFid = "group:id", targetFid = "user:target")
+        val request = FollowRequest(source = "group:id", target = "user:target")
+        coEvery { feedsRepository.follow(request) } returns Result.success(follow)
+
+        val result = feed.follow(FeedId("user:target"))
+
+        assertEquals(follow, result.getOrNull())
+    }
+
+    @Test
+    fun `on unfollow without options, send no optional arguments`() = runTest {
+        val feed = createFeed()
+        val targetFid = FeedId("user:target")
+        val follow = followData("group:id", "user:target")
+        coEvery { feedsRepository.unfollow(FeedId("group:id"), targetFid, null, null) } returns
+            Result.success(follow)
+
+        val result = feed.unfollow(targetFid)
+
+        assertEquals(Unit, result.getOrNull())
+    }
+
+    @Test
     fun `on unfollow, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val targetFid = FeedId("user:target")

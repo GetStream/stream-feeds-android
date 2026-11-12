@@ -107,7 +107,7 @@ public interface Feed {
      * @param hardDelete If `true`, the feed will be permanently deleted. If `false`, it will be
      *   soft deleted. (default is `false`).
      * @param purgeUserActivities If `true`, also deletes the feed owner's activities from every
-     *   feed they were added to. Requires [hardDelete].
+     *   feed they were added to. Requires [hardDelete]. If `null`, they are kept.
      * @return A [Result] indicating success or failure of the deletion operation.
      */
     public suspend fun deleteFeed(
@@ -368,8 +368,9 @@ public interface Feed {
      * @param activityCopyLimit The maximum number of the target feed's existing activities to copy
      *   into this feed (0 to 1000). If `null`, all of them are copied.
      * @param enrichOwnFields If `true`, enriches the source and target feeds with the current
-     *   user's own fields.
-     * @param skipPush If `true`, no push notification is sent for the follow.
+     *   user's own fields. If `null`, they are not enriched.
+     * @param skipPush If `true`, no push notification is sent for the follow. If `null`, it is
+     *   sent.
      */
     public suspend fun follow(
         targetFid: FeedId,
@@ -402,7 +403,7 @@ public interface Feed {
      * @param targetFid The target feed identifier to unfollow.
      * @param deleteNotificationActivity If `true`, removes the corresponding notification activity.
      * @param keepHistory If `true`, activities from the unfollowed feed stay in this feed's
-     *   timeline.
+     *   timeline. If `null`, they are removed.
      * @return A [Result] indicating success or failure of the unfollow operation.
      */
     public suspend fun unfollow(
