@@ -28,6 +28,8 @@ public data class ModerationQueueResponse(
     @Json(name = "description") public val description: String,
     @Json(name = "id") public val id: String,
     @Json(name = "item_count") public val itemCount: Int,
+    @Json(name = "item_count_capped") public val itemCountCapped: Boolean,
+    @Json(name = "item_count_pending") public val itemCountPending: Boolean,
     @Json(name = "name") public val name: String,
     @Json(name = "type") public val type: String,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,

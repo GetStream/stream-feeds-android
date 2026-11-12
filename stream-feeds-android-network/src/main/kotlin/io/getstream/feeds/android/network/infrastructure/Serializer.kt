@@ -155,8 +155,16 @@ public object Serializer {
                     .ProviderAdapter()
             )
             .add(
+                io.getstream.feeds.android.network.models.ModerationEngineConfigRequest.Strictness
+                    .StrictnessAdapter()
+            )
+            .add(
                 io.getstream.feeds.android.network.models.ModerationEngineConfigResponse.Provider
                     .ProviderAdapter()
+            )
+            .add(
+                io.getstream.feeds.android.network.models.ModerationEngineConfigResponse.Strictness
+                    .StrictnessAdapter()
             )
             .add(io.getstream.feeds.android.network.models.PushLevel.PushLevelAdapter())
             .add(

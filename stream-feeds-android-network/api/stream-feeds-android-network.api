@@ -28,6 +28,8 @@ public abstract interface class io/getstream/feeds/android/network/apis/FeedsApi
 	public abstract fun changeFeedVisibility (Ljava/lang/String;Ljava/lang/String;Lio/getstream/feeds/android/network/models/ChangeFeedVisibilityRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun commentFeedback (Ljava/lang/String;Lio/getstream/feeds/android/network/models/CommentFeedbackRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun commentFeedback (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun countReviewQueue (Lio/getstream/feeds/android/network/models/CountReviewQueueRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun countReviewQueue (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun createBlockList (Lio/getstream/feeds/android/network/models/CreateBlockListRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun createCollections (Lio/getstream/feeds/android/network/models/CreateCollectionsRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun createDevice (Lio/getstream/feeds/android/network/models/CreateDeviceRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -122,8 +124,8 @@ public abstract interface class io/getstream/feeds/android/network/apis/FeedsApi
 	public abstract fun listQueues (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun listUserGroups (Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun listUserGroups$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public abstract fun longPoll (Ljava/lang/String;Ljava/lang/Boolean;Lio/getstream/feeds/android/network/models/WSAuthMessage;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun longPoll$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Ljava/lang/String;Ljava/lang/Boolean;Lio/getstream/feeds/android/network/models/WSAuthMessage;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public abstract fun longPoll (Ljava/lang/String;Ljava/lang/Boolean;Lio/getstream/feeds/android/network/infrastructure/JsonQuery;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun longPoll$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Ljava/lang/String;Ljava/lang/Boolean;Lio/getstream/feeds/android/network/infrastructure/JsonQuery;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun markActivity (Ljava/lang/String;Ljava/lang/String;Lio/getstream/feeds/android/network/models/MarkActivityRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun markActivity (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun mute (Lio/getstream/feeds/android/network/models/MuteRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -175,8 +177,8 @@ public abstract interface class io/getstream/feeds/android/network/apis/FeedsApi
 	public abstract fun queryPolls (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun queryReviewQueue (Lio/getstream/feeds/android/network/models/QueryReviewQueueRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun queryReviewQueue (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun queryUsers (Lio/getstream/feeds/android/network/models/QueryUsersPayload;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public static synthetic fun queryUsers$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Lio/getstream/feeds/android/network/models/QueryUsersPayload;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public abstract fun queryUsers (Ljava/lang/String;Lio/getstream/feeds/android/network/infrastructure/JsonQuery;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun queryUsers$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Ljava/lang/String;Lio/getstream/feeds/android/network/infrastructure/JsonQuery;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun readCollections (Ljava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun readCollections$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Ljava/util/List;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun rejectFeedMemberInvite (Ljava/lang/String;Ljava/lang/String;Lio/getstream/feeds/android/network/models/RejectFeedMemberInviteRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -283,7 +285,7 @@ public final class io/getstream/feeds/android/network/apis/FeedsApi$DefaultImpls
 	public static synthetic fun listBlockLists$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun listConfigVersions$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun listUserGroups$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun longPoll$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Ljava/lang/String;Ljava/lang/Boolean;Lio/getstream/feeds/android/network/models/WSAuthMessage;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun longPoll$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Ljava/lang/String;Ljava/lang/Boolean;Lio/getstream/feeds/android/network/infrastructure/JsonQuery;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun ownBatch$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Ljava/lang/String;Lio/getstream/feeds/android/network/models/OwnBatchRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun queryActivities$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Ljava/lang/String;Ljava/lang/Boolean;Lio/getstream/feeds/android/network/models/QueryActivitiesRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun queryActivities$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
@@ -295,7 +297,7 @@ public final class io/getstream/feeds/android/network/apis/FeedsApi$DefaultImpls
 	public static synthetic fun queryFeeds$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Ljava/lang/String;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun queryPinnedActivities$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lio/getstream/feeds/android/network/models/QueryPinnedActivitiesRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun queryPinnedActivities$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun queryUsers$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Lio/getstream/feeds/android/network/models/QueryUsersPayload;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun queryUsers$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Ljava/lang/String;Lio/getstream/feeds/android/network/infrastructure/JsonQuery;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun readCollections$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Ljava/util/List;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun restoreActivity$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Ljava/lang/String;Ljava/lang/Boolean;Lio/getstream/feeds/android/network/models/RestoreActivityRequest;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun restoreActivity$default (Lio/getstream/feeds/android/network/apis/FeedsApi;Ljava/lang/String;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
@@ -332,7 +334,19 @@ public final class io/getstream/feeds/android/network/infrastructure/JavaUtilDat
 	public final fun toJson (Ljava/util/Date;)Ljava/lang/String;
 }
 
-public final class io/getstream/feeds/android/network/infrastructure/MoshiQueryConverterFactory : retrofit2/Converter$Factory {
+public final class io/getstream/feeds/android/network/infrastructure/JsonQuery {
+	public fun <init> (Ljava/lang/Object;)V
+	public final fun component1 ()Ljava/lang/Object;
+	public final fun copy (Ljava/lang/Object;)Lio/getstream/feeds/android/network/infrastructure/JsonQuery;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/infrastructure/JsonQuery;Ljava/lang/Object;ILjava/lang/Object;)Lio/getstream/feeds/android/network/infrastructure/JsonQuery;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getValue ()Ljava/lang/Object;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/getstream/feeds/android/network/infrastructure/QueryConverterFactory : retrofit2/Converter$Factory {
+	public static final field RFC_3339_PATTERN Ljava/lang/String;
 	public fun <init> (Lcom/squareup/moshi/Moshi;)V
 	public fun stringConverter (Ljava/lang/reflect/Type;[Ljava/lang/annotation/Annotation;Lretrofit2/Retrofit;)Lretrofit2/Converter;
 }
@@ -5792,18 +5806,20 @@ public final class io/getstream/feeds/android/network/models/ChatSharedLocationR
 
 public final class io/getstream/feeds/android/network/models/ClosedCaptionRuleParameters {
 	public fun <init> ()V
-	public fun <init> (Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/Map;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/Integer;
 	public final fun component3 ()Ljava/lang/String;
 	public final fun component4 ()Ljava/util/List;
-	public final fun component5 ()Ljava/util/Map;
-	public final fun copy (Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/Map;)Lio/getstream/feeds/android/network/models/ClosedCaptionRuleParameters;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ClosedCaptionRuleParameters;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/Map;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ClosedCaptionRuleParameters;
+	public final fun component5 ()Ljava/util/List;
+	public final fun component6 ()Ljava/util/Map;
+	public final fun copy (Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;)Lio/getstream/feeds/android/network/models/ClosedCaptionRuleParameters;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ClosedCaptionRuleParameters;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/Map;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ClosedCaptionRuleParameters;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getHarmLabels ()Ljava/util/List;
 	public final fun getLlmHarmLabels ()Ljava/util/Map;
+	public final fun getSeverities ()Ljava/util/List;
 	public final fun getSeverity ()Ljava/lang/String;
 	public final fun getThreshold ()Ljava/lang/Integer;
 	public final fun getTimeWindow ()Ljava/lang/String;
@@ -6722,6 +6738,57 @@ public final class io/getstream/feeds/android/network/models/ContentCustomProper
 	public fun fromJson (Lcom/squareup/moshi/JsonReader;)Lio/getstream/feeds/android/network/models/ContentCustomPropertyParameters;
 	public synthetic fun fromJson (Lcom/squareup/moshi/JsonReader;)Ljava/lang/Object;
 	public fun toJson (Lcom/squareup/moshi/JsonWriter;Lio/getstream/feeds/android/network/models/ContentCustomPropertyParameters;)V
+	public synthetic fun toJson (Lcom/squareup/moshi/JsonWriter;Ljava/lang/Object;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/getstream/feeds/android/network/models/CountReviewQueueRequest {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/Map;)V
+	public synthetic fun <init> (Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/Map;
+	public final fun copy (Ljava/util/Map;)Lio/getstream/feeds/android/network/models/CountReviewQueueRequest;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/CountReviewQueueRequest;Ljava/util/Map;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/CountReviewQueueRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFilter ()Ljava/util/Map;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/getstream/feeds/android/network/models/CountReviewQueueRequestJsonAdapter : com/squareup/moshi/JsonAdapter {
+	public fun <init> (Lcom/squareup/moshi/Moshi;)V
+	public fun fromJson (Lcom/squareup/moshi/JsonReader;)Lio/getstream/feeds/android/network/models/CountReviewQueueRequest;
+	public synthetic fun fromJson (Lcom/squareup/moshi/JsonReader;)Ljava/lang/Object;
+	public fun toJson (Lcom/squareup/moshi/JsonWriter;Lio/getstream/feeds/android/network/models/CountReviewQueueRequest;)V
+	public synthetic fun toJson (Lcom/squareup/moshi/JsonWriter;Ljava/lang/Object;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/getstream/feeds/android/network/models/CountReviewQueueResponse {
+	public fun <init> (ZLjava/lang/String;ZILjava/util/Date;)V
+	public synthetic fun <init> (ZLjava/lang/String;ZILjava/util/Date;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Z
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Z
+	public final fun component4 ()I
+	public final fun component5 ()Ljava/util/Date;
+	public final fun copy (ZLjava/lang/String;ZILjava/util/Date;)Lio/getstream/feeds/android/network/models/CountReviewQueueResponse;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/CountReviewQueueResponse;ZLjava/lang/String;ZILjava/util/Date;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/CountReviewQueueResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCapped ()Z
+	public final fun getComputedAt ()Ljava/util/Date;
+	public final fun getDuration ()Ljava/lang/String;
+	public final fun getPending ()Z
+	public final fun getTotal ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/getstream/feeds/android/network/models/CountReviewQueueResponseJsonAdapter : com/squareup/moshi/JsonAdapter {
+	public fun <init> (Lcom/squareup/moshi/Moshi;)V
+	public fun fromJson (Lcom/squareup/moshi/JsonReader;)Lio/getstream/feeds/android/network/models/CountReviewQueueResponse;
+	public synthetic fun fromJson (Lcom/squareup/moshi/JsonReader;)Ljava/lang/Object;
+	public fun toJson (Lcom/squareup/moshi/JsonWriter;Lio/getstream/feeds/android/network/models/CountReviewQueueResponse;)V
 	public synthetic fun toJson (Lcom/squareup/moshi/JsonWriter;Ljava/lang/Object;)V
 	public fun toString ()Ljava/lang/String;
 }
@@ -12873,17 +12940,19 @@ public final class io/getstream/feeds/android/network/models/ModerationCustomAct
 
 public final class io/getstream/feeds/android/network/models/ModerationEngineConfigRequest {
 	public fun <init> ()V
-	public fun <init> (Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Model;Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Provider;Ljava/lang/String;)V
-	public synthetic fun <init> (Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Model;Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Provider;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Model;Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Provider;Ljava/lang/String;Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness;)V
+	public synthetic fun <init> (Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Model;Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Provider;Ljava/lang/String;Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Model;
 	public final fun component2 ()Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Provider;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Model;Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Provider;Ljava/lang/String;)Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest;Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Model;Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Provider;Ljava/lang/String;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest;
+	public final fun component4 ()Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness;
+	public final fun copy (Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Model;Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Provider;Ljava/lang/String;Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness;)Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest;Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Model;Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Provider;Ljava/lang/String;Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getModel ()Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Model;
 	public final fun getProvider ()Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Provider;
 	public final fun getReasoningEffort ()Ljava/lang/String;
+	public final fun getStrictness ()Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -12917,6 +12986,14 @@ public final class io/getstream/feeds/android/network/models/ModerationEngineCon
 	public synthetic fun fromJson (Lcom/squareup/moshi/JsonReader;)Ljava/lang/Object;
 	public fun toJson (Lcom/squareup/moshi/JsonWriter;Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Model;)V
 	public synthetic fun toJson (Lcom/squareup/moshi/JsonWriter;Ljava/lang/Object;)V
+}
+
+public final class io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Model$StreamElephant1 : io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Model {
+	public static final field INSTANCE Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Model$StreamElephant1;
+}
+
+public final class io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Model$StreamMammoth1 : io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Model {
+	public static final field INSTANCE Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Model$StreamMammoth1;
 }
 
 public final class io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Model$Unknown : io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Model {
@@ -12957,11 +13034,57 @@ public final class io/getstream/feeds/android/network/models/ModerationEngineCon
 	public synthetic fun toJson (Lcom/squareup/moshi/JsonWriter;Ljava/lang/Object;)V
 }
 
+public final class io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Provider$Stream : io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Provider {
+	public static final field INSTANCE Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Provider$Stream;
+}
+
 public final class io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Provider$Unknown : io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Provider {
 	public fun <init> (Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun copy (Ljava/lang/String;)Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Provider$Unknown;
 	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Provider$Unknown;Ljava/lang/String;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Provider$Unknown;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getUnknownValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness {
+	public static final field Companion Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getValue ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness$Balanced : io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness {
+	public static final field INSTANCE Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness$Balanced;
+}
+
+public final class io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness$Companion {
+	public final fun fromString (Ljava/lang/String;)Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness;
+}
+
+public final class io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness$Relaxed : io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness {
+	public static final field INSTANCE Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness$Relaxed;
+}
+
+public final class io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness$Strict : io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness {
+	public static final field INSTANCE Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness$Strict;
+}
+
+public final class io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness$StrictnessAdapter : com/squareup/moshi/JsonAdapter {
+	public fun <init> ()V
+	public fun fromJson (Lcom/squareup/moshi/JsonReader;)Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness;
+	public synthetic fun fromJson (Lcom/squareup/moshi/JsonReader;)Ljava/lang/Object;
+	public fun toJson (Lcom/squareup/moshi/JsonWriter;Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness;)V
+	public synthetic fun toJson (Lcom/squareup/moshi/JsonWriter;Ljava/lang/Object;)V
+}
+
+public final class io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness$Unknown : io/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness$Unknown;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness$Unknown;Ljava/lang/String;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ModerationEngineConfigRequest$Strictness$Unknown;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getUnknownValue ()Ljava/lang/String;
 	public fun hashCode ()I
@@ -12979,17 +13102,19 @@ public final class io/getstream/feeds/android/network/models/ModerationEngineCon
 
 public final class io/getstream/feeds/android/network/models/ModerationEngineConfigResponse {
 	public fun <init> ()V
-	public fun <init> (Ljava/lang/String;Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Provider;Ljava/lang/String;)V
-	public synthetic fun <init> (Ljava/lang/String;Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Provider;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Provider;Ljava/lang/String;Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness;)V
+	public synthetic fun <init> (Ljava/lang/String;Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Provider;Ljava/lang/String;Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Provider;
 	public final fun component3 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Provider;Ljava/lang/String;)Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse;Ljava/lang/String;Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Provider;Ljava/lang/String;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse;
+	public final fun component4 ()Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness;
+	public final fun copy (Ljava/lang/String;Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Provider;Ljava/lang/String;Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness;)Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse;Ljava/lang/String;Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Provider;Ljava/lang/String;Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getModel ()Ljava/lang/String;
 	public final fun getProvider ()Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Provider;
 	public final fun getReasoningEffort ()Ljava/lang/String;
+	public final fun getStrictness ()Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -13021,11 +13146,57 @@ public final class io/getstream/feeds/android/network/models/ModerationEngineCon
 	public synthetic fun toJson (Lcom/squareup/moshi/JsonWriter;Ljava/lang/Object;)V
 }
 
+public final class io/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Provider$Stream : io/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Provider {
+	public static final field INSTANCE Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Provider$Stream;
+}
+
 public final class io/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Provider$Unknown : io/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Provider {
 	public fun <init> (Ljava/lang/String;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun copy (Ljava/lang/String;)Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Provider$Unknown;
 	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Provider$Unknown;Ljava/lang/String;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Provider$Unknown;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getUnknownValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class io/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness {
+	public static final field Companion Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getValue ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness$Balanced : io/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness {
+	public static final field INSTANCE Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness$Balanced;
+}
+
+public final class io/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness$Companion {
+	public final fun fromString (Ljava/lang/String;)Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness;
+}
+
+public final class io/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness$Relaxed : io/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness {
+	public static final field INSTANCE Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness$Relaxed;
+}
+
+public final class io/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness$Strict : io/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness {
+	public static final field INSTANCE Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness$Strict;
+}
+
+public final class io/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness$StrictnessAdapter : com/squareup/moshi/JsonAdapter {
+	public fun <init> ()V
+	public fun fromJson (Lcom/squareup/moshi/JsonReader;)Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness;
+	public synthetic fun fromJson (Lcom/squareup/moshi/JsonReader;)Ljava/lang/Object;
+	public fun toJson (Lcom/squareup/moshi/JsonWriter;Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness;)V
+	public synthetic fun toJson (Lcom/squareup/moshi/JsonWriter;Ljava/lang/Object;)V
+}
+
+public final class io/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness$Unknown : io/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness$Unknown;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness$Unknown;Ljava/lang/String;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ModerationEngineConfigResponse$Strictness$Unknown;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getUnknownValue ()Ljava/lang/String;
 	public fun hashCode ()I
@@ -13245,20 +13416,22 @@ public final class io/getstream/feeds/android/network/models/ModerationPayloadRe
 }
 
 public final class io/getstream/feeds/android/network/models/ModerationQueueResponse {
-	public fun <init> (Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/Map;)V
-	public synthetic fun <init> (Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZZLjava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/Map;)V
+	public synthetic fun <init> (Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZZLjava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/util/Date;
-	public final fun component10 ()Ljava/util/Map;
+	public final fun component10 ()Ljava/util/Date;
+	public final fun component11 ()Ljava/util/List;
+	public final fun component12 ()Ljava/util/Map;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
 	public final fun component4 ()Ljava/lang/String;
 	public final fun component5 ()I
-	public final fun component6 ()Ljava/lang/String;
-	public final fun component7 ()Ljava/lang/String;
-	public final fun component8 ()Ljava/util/Date;
-	public final fun component9 ()Ljava/util/List;
-	public final fun copy (Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/Map;)Lio/getstream/feeds/android/network/models/ModerationQueueResponse;
-	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ModerationQueueResponse;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/Map;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ModerationQueueResponse;
+	public final fun component6 ()Z
+	public final fun component7 ()Z
+	public final fun component8 ()Ljava/lang/String;
+	public final fun component9 ()Ljava/lang/String;
+	public final fun copy (Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZZLjava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/Map;)Lio/getstream/feeds/android/network/models/ModerationQueueResponse;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/network/models/ModerationQueueResponse;Ljava/util/Date;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZZLjava/lang/String;Ljava/lang/String;Ljava/util/Date;Ljava/util/List;Ljava/util/Map;ILjava/lang/Object;)Lio/getstream/feeds/android/network/models/ModerationQueueResponse;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getCreatedAt ()Ljava/util/Date;
 	public final fun getCreatedBy ()Ljava/lang/String;
@@ -13266,6 +13439,8 @@ public final class io/getstream/feeds/android/network/models/ModerationQueueResp
 	public final fun getFilters ()Ljava/util/Map;
 	public final fun getId ()Ljava/lang/String;
 	public final fun getItemCount ()I
+	public final fun getItemCountCapped ()Z
+	public final fun getItemCountPending ()Z
 	public final fun getName ()Ljava/lang/String;
 	public final fun getSort ()Ljava/util/List;
 	public final fun getType ()Ljava/lang/String;

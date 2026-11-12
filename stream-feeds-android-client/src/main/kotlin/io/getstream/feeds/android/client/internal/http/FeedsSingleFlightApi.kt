@@ -19,6 +19,7 @@ package io.getstream.feeds.android.client.internal.http
 import io.getstream.android.core.api.model.StreamTypedKey.Companion.asStreamTypedKey
 import io.getstream.android.core.api.processing.StreamSingleFlightProcessor
 import io.getstream.feeds.android.network.apis.FeedsApi
+import io.getstream.feeds.android.network.infrastructure.JsonQuery
 import io.getstream.feeds.android.network.models.AcceptFeedMemberInviteRequest
 import io.getstream.feeds.android.network.models.AcceptFeedMemberInviteResponse
 import io.getstream.feeds.android.network.models.AcceptFollowRequest
@@ -61,6 +62,8 @@ import io.getstream.feeds.android.network.models.ChangeFeedVisibilityRequest
 import io.getstream.feeds.android.network.models.ChangeFeedVisibilityResponse
 import io.getstream.feeds.android.network.models.CommentFeedbackRequest
 import io.getstream.feeds.android.network.models.CommentFeedbackResponse
+import io.getstream.feeds.android.network.models.CountReviewQueueRequest
+import io.getstream.feeds.android.network.models.CountReviewQueueResponse
 import io.getstream.feeds.android.network.models.CreateBlockListRequest
 import io.getstream.feeds.android.network.models.CreateBlockListResponse
 import io.getstream.feeds.android.network.models.CreateCollectionsRequest
@@ -1250,7 +1253,7 @@ internal class FeedsSingleFlightApi(
     override suspend fun longPoll(
         connectionId: String?,
         close: Boolean?,
-        json: WSAuthMessage?,
+        json: JsonQuery<WSAuthMessage>?,
     ): Unit =
         singleFlight("longPoll", connectionId, close, json) {
             delegate.longPoll(connectionId, close, json)
@@ -1427,6 +1430,16 @@ internal class FeedsSingleFlightApi(
 
     override suspend fun queryReviewQueue(): QueryReviewQueueResponse =
         singleFlight("queryReviewQueue") { delegate.queryReviewQueue() }
+
+    override suspend fun countReviewQueue(
+        countReviewQueueRequest: CountReviewQueueRequest
+    ): CountReviewQueueResponse =
+        singleFlight("countReviewQueue", countReviewQueueRequest) {
+            delegate.countReviewQueue(countReviewQueueRequest)
+        }
+
+    override suspend fun countReviewQueue(): CountReviewQueueResponse =
+        singleFlight("countReviewQueue") { delegate.countReviewQueue() }
 
     override suspend fun submitAction(
         submitActionRequest: SubmitActionRequest
@@ -1621,8 +1634,13 @@ internal class FeedsSingleFlightApi(
             delegate.removeUserGroupMembers(id, removeUserGroupMembersRequest)
         }
 
-    override suspend fun queryUsers(payload: QueryUsersPayload?): QueryUsersResponse =
-        singleFlight("queryUsers", payload) { delegate.queryUsers(payload) }
+    override suspend fun queryUsers(
+        connectionId: String?,
+        payload: JsonQuery<QueryUsersPayload>?,
+    ): QueryUsersResponse =
+        singleFlight("queryUsers", connectionId, payload) {
+            delegate.queryUsers(connectionId, payload)
+        }
 
     override suspend fun updateUsersPartial(
         updateUsersPartialRequest: UpdateUsersPartialRequest

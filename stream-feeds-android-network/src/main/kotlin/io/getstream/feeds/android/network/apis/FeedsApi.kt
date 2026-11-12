@@ -1169,7 +1169,12 @@ public interface FeedsApi {
     public suspend fun longPoll(
         @Query("connection_id") connectionId: String? = null,
         @Query("close") close: Boolean? = null,
-        @Query("json") json: io.getstream.feeds.android.network.models.WSAuthMessage? = null,
+        @Query("json")
+        json:
+            io.getstream.feeds.android.network.infrastructure.JsonQuery<
+                io.getstream.feeds.android.network.models.WSAuthMessage
+            >? =
+            null,
     )
 
     /**
@@ -1461,6 +1466,26 @@ public interface FeedsApi {
         io.getstream.feeds.android.network.models.QueryReviewQueueResponse
 
     /**
+     * Count review queue items Count the review queue items matching a filter, so a moderation
+     * dashboard can show a total for a queue or view. Counts are kept up to date in the background
+     * while they are being requested.
+     */
+    @POST("/api/v2/moderation/review_queue/count")
+    public suspend fun countReviewQueue(
+        @Body
+        countReviewQueueRequest: io.getstream.feeds.android.network.models.CountReviewQueueRequest
+    ): io.getstream.feeds.android.network.models.CountReviewQueueResponse
+
+    /**
+     * Count review queue items Count the review queue items matching a filter, so a moderation
+     * dashboard can show a total for a queue or view. Counts are kept up to date in the background
+     * while they are being requested.
+     */
+    @POST("/api/v2/moderation/review_queue/count")
+    public suspend fun countReviewQueue():
+        io.getstream.feeds.android.network.models.CountReviewQueueResponse
+
+    /**
      * Submit moderation action Take action on flagged content, such as marking content as safe,
      * deleting content, banning users, or executing custom moderation actions. Supports various
      * action types with configurable parameters.
@@ -1727,8 +1752,13 @@ public interface FeedsApi {
     /** Query users Find and filter users */
     @GET("/api/v2/users")
     public suspend fun queryUsers(
+        @Query("connection_id") connectionId: String? = null,
         @Query("payload")
-        payload: io.getstream.feeds.android.network.models.QueryUsersPayload? = null
+        payload:
+            io.getstream.feeds.android.network.infrastructure.JsonQuery<
+                io.getstream.feeds.android.network.models.QueryUsersPayload
+            >? =
+            null,
     ): io.getstream.feeds.android.network.models.QueryUsersResponse
 
     /** Partially update user Updates certain fields of the user */

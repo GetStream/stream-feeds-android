@@ -31,6 +31,7 @@ public data class ModerationEngineConfigRequest(
     @Json(name = "model") public val model: Model? = null,
     @Json(name = "provider") public val provider: Provider? = null,
     @Json(name = "reasoning_effort") public val reasoningEffort: String? = null,
+    @Json(name = "strictness") public val strictness: Strictness? = null,
 ) {
 
     /** Model Enum */
@@ -43,6 +44,8 @@ public data class ModerationEngineConfigRequest(
                     "gpt-4o" -> Gpt4o
                     "gpt-4o-mini" -> Gpt4oMini
                     "gpt-6-luna" -> Gpt6Luna
+                    "stream-elephant-1" -> StreamElephant1
+                    "stream-mammoth-1" -> StreamMammoth1
                     else -> Unknown(s)
                 }
         }
@@ -52,6 +55,10 @@ public data class ModerationEngineConfigRequest(
         public object Gpt4oMini : Model("gpt-4o-mini")
 
         public object Gpt6Luna : Model("gpt-6-luna")
+
+        public object StreamElephant1 : Model("stream-elephant-1")
+
+        public object StreamMammoth1 : Model("stream-mammoth-1")
 
         public data class Unknown(val unknownValue: String) : Model(unknownValue)
 
@@ -78,6 +85,7 @@ public data class ModerationEngineConfigRequest(
                 when (s) {
                     "llm" -> Llm
                     "nlp" -> Nlp
+                    "stream" -> Stream
                     else -> Unknown(s)
                 }
         }
@@ -85,6 +93,8 @@ public data class ModerationEngineConfigRequest(
         public object Llm : Provider("llm")
 
         public object Nlp : Provider("nlp")
+
+        public object Stream : Provider("stream")
 
         public data class Unknown(val unknownValue: String) : Provider(unknownValue)
 
@@ -97,6 +107,42 @@ public data class ModerationEngineConfigRequest(
 
             @ToJson
             override fun toJson(writer: JsonWriter, value: Provider?) {
+                writer.value(value?.value)
+            }
+        }
+    }
+
+    /** Strictness Enum */
+    public sealed class Strictness(public val value: String) {
+        override fun toString(): String = value
+
+        public companion object {
+            public fun fromString(s: String): Strictness =
+                when (s) {
+                    "balanced" -> Balanced
+                    "relaxed" -> Relaxed
+                    "strict" -> Strict
+                    else -> Unknown(s)
+                }
+        }
+
+        public object Balanced : Strictness("balanced")
+
+        public object Relaxed : Strictness("relaxed")
+
+        public object Strict : Strictness("strict")
+
+        public data class Unknown(val unknownValue: String) : Strictness(unknownValue)
+
+        public class StrictnessAdapter : JsonAdapter<Strictness>() {
+            @FromJson
+            override fun fromJson(reader: JsonReader): Strictness? {
+                val s = reader.nextString() ?: return null
+                return Strictness.fromString(s)
+            }
+
+            @ToJson
+            override fun toJson(writer: JsonWriter, value: Strictness?) {
                 writer.value(value?.value)
             }
         }

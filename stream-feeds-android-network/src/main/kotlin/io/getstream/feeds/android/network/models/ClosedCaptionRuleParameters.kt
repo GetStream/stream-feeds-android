@@ -27,5 +27,6 @@ public data class ClosedCaptionRuleParameters(
     @Json(name = "threshold") public val threshold: Int? = null,
     @Json(name = "time_window") public val timeWindow: String? = null,
     @Json(name = "harm_labels") public val harmLabels: List<String>? = null,
+    @Json(name = "severities") public val severities: List<String>? = null,
     @Json(name = "llm_harm_labels") public val llmHarmLabels: Map<String, String>? = null,
 )
