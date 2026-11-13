@@ -25,6 +25,7 @@ import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.model.update
 import io.getstream.feeds.android.client.internal.model.upsertReaction
+import io.getstream.feeds.android.client.internal.state.query.matches
 import io.getstream.feeds.android.client.internal.state.query.toComparator
 import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.updateIf
@@ -90,6 +91,19 @@ internal class CommentListStateImpl(
         }
     }
 
+    override fun onCommentUpdated(comment: CommentData) {
+        _comments.update { current ->
+            // Events miss per-user fields such as `hidden`, so the filter is checked against the
+            // comment merged with the one already in the list.
+            val merged = current.firstOrNull { it.id == comment.id }?.update(comment) ?: comment
+            if (merged matches query.filter) {
+                current.upsertSorted(merged, CommentData::id, comparator)
+            } else {
+                current.filter { it.id != comment.id }
+            }
+        }
+    }
+
     override fun onCommentRemoved(commentId: String) {
         _comments.update { current -> current.filter { it.id != commentId } }
     }
@@ -134,6 +148,14 @@ internal interface CommentListStateUpdates {
      * @param comment The comment data.
      */
     fun onCommentUpserted(comment: CommentData)
+
+    /**
+     * Handles an update to a comment. The comment is merged with the one in the list, then kept or
+     * added if it matches the query filter, and removed otherwise.
+     *
+     * @param comment The updated comment data.
+     */
+    fun onCommentUpdated(comment: CommentData)
 
     /**
      * Handles the removal of a comment from the list.

@@ -36,6 +36,7 @@ internal fun ThreadedCommentResponse.toModel(): ThreadedCommentData =
         deletedAt = deletedAt,
         downvoteCount = downvoteCount,
         editedAt = editedAt,
+        hidden = hidden,
         id = id,
         latestReactions = latestReactions?.map { it.toModel() }.orEmpty(),
         mentionedUsers = mentionedUsers.map { it.toModel() },

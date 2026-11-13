@@ -57,6 +57,7 @@ internal fun ActivityResponse.toModel(): ActivityData =
         isSeen = isSeen,
         isWatched = isWatched,
         latestReactions = latestReactions.map { it.toModel() },
+        latestShares = latestShares?.map { it.toModel() }.orEmpty(),
         location = location,
         mentionedUsers = mentionedUsers.map { it.toModel() },
         metrics = metrics.orEmpty(),
@@ -69,9 +70,11 @@ internal fun ActivityResponse.toModel(): ActivityData =
         parent = parent?.toModel(),
         poll = poll?.toModel(),
         popularity = popularity,
+        position = position,
         preview = preview,
         reactionCount = reactionCount,
         reactionGroups = reactionGroups.mapValues { it.value.toModel() },
+        reasons = reasons.orEmpty(),
         restrictReplies = restrictReplies.toModel(),
         score = score,
         scoreVars = scoreVars.orEmpty(),
@@ -79,6 +82,7 @@ internal fun ActivityResponse.toModel(): ActivityData =
         selectorSource = selectorSource,
         shareCount = shareCount,
         text = text,
+        topLevelCommentCount = topLevelCommentCount,
         translations = i18n.translations(),
         type = type,
         updatedAt = updatedAt,
@@ -109,7 +113,9 @@ internal fun ActivityVisibility.toModel(): ActivityDataVisibility =
  * Extension function to update the activity while preserving own bookmarks, reactions, poll votes,
  * and feed own data because "own" data from WS events is not reliable. Optionally, different
  * instances can be provided to be used instead of the current ones. Translations are preserved
- * while the text is unchanged, because WS events never carry them.
+ * while the text is unchanged, because WS events never carry them. Position, reasons and the
+ * top-level comment count are preserved when the update does not carry them, because they are only
+ * returned by some reads.
  */
 internal fun ActivityData.update(
     updated: ActivityData,
@@ -134,6 +140,9 @@ internal fun ActivityData.update(
         ownReactions = ownReactions,
         friendReactions = friendReactions,
         friendReactionCount = friendReactionCount,
+        position = updated.position ?: position,
+        reasons = updated.reasons.ifEmpty { reasons },
+        topLevelCommentCount = updated.topLevelCommentCount ?: topLevelCommentCount,
         poll = updated.poll?.let { poll?.update(it) ?: it },
         currentFeed = updatedCurrentFeed,
     )

@@ -52,7 +52,7 @@ internal class CommonRepositoryImplTest {
                 name = "Test App",
                 fileUploadConfig = fileUploadConfig,
                 imageUploadConfig = imageUploadConfig,
-                id = 0,
+                id = 1,
                 placement = "placement",
             )
         val apiResponse = GetApplicationResponse(duration = "100ms", app = appResponseFields)

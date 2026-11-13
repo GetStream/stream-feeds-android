@@ -28,6 +28,7 @@ internal fun AppResponseFields.toModel(): AppData =
         asyncUrlEnrichEnabled = asyncUrlEnrichEnabled,
         autoTranslationEnabled = autoTranslationEnabled,
         fileUploadConfig = fileUploadConfig.toModel(),
+        id = id,
         imageUploadConfig = imageUploadConfig.toModel(),
         name = name,
     )
