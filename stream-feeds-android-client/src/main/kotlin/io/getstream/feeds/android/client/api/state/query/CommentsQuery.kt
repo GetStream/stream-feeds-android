@@ -139,6 +139,14 @@ public data class CommentsFilterField(
         public val status: CommentsFilterField = CommentsFilterField("status", CommentData::status)
 
         /**
+         * Filter by whether the current user hid the comment. Comments the user hid are only
+         * returned with this filter.
+         *
+         * Supported operators: `equal`
+         */
+        public val hidden: CommentsFilterField = CommentsFilterField("hidden", CommentData::hidden)
+
+        /**
          * Filter by upvote count.
          *
          * Supported operators: `greater`, `greaterOrEqual`, `less`, `lessOrEqual`

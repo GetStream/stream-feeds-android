@@ -22,6 +22,7 @@ package io.getstream.feeds.android.client.api.model
  * @property asyncUrlEnrichEnabled Whether async URL enrichment is enabled.
  * @property autoTranslationEnabled Whether auto translation is enabled.
  * @property fileUploadConfig Configuration for file uploads.
+ * @property id The numeric identifier of the application.
  * @property imageUploadConfig Configuration for image uploads.
  * @property name Name of the application.
  */
@@ -29,6 +30,7 @@ public data class AppData(
     val asyncUrlEnrichEnabled: Boolean,
     val autoTranslationEnabled: Boolean,
     val fileUploadConfig: FileUploadConfigData,
+    val id: Int,
     val imageUploadConfig: FileUploadConfigData,
     val name: String,
 )

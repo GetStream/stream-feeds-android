@@ -16,8 +16,10 @@
 
 package io.getstream.feeds.android.client.internal.state
 
+import io.getstream.android.core.api.filter.equal
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.PaginationData
+import io.getstream.feeds.android.client.api.state.query.CommentsFilterField
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentsSort
 import io.getstream.feeds.android.client.internal.model.PaginationResult
@@ -32,6 +34,8 @@ internal class CommentListStateImplTest {
     private val query = CommentsQuery(null, sort = CommentsSort.First)
     private val currentUserId = "user-id"
     private val state = CommentListStateImpl(query, currentUserId)
+    private val queryWithFilter =
+        CommentsQuery(CommentsFilterField.objectId.equal("activity-1"), sort = CommentsSort.First)
 
     @Test
     fun `onQueryComments, merge comments and update pagination`() {
@@ -74,6 +78,44 @@ internal class CommentListStateImplTest {
 
         val expectedComment = updatedComment.copy(ownReactions = listOf(ownReaction))
         assertEquals(listOf(expectedComment), state.comments.value)
+    }
+
+    @Test
+    fun `on onCommentUpdated, add a comment that matches the filter`() {
+        val filtered = CommentListStateImpl(queryWithFilter, currentUserId)
+        val comment = commentData("1", objectId = "activity-1")
+
+        filtered.onCommentUpdated(comment)
+
+        assertEquals(listOf(comment), filtered.comments.value)
+    }
+
+    @Test
+    fun `on onCommentUpdated, remove a comment that no longer matches the filter`() {
+        val filtered = CommentListStateImpl(queryWithFilter, currentUserId)
+        val comment = commentData("1", objectId = "activity-1")
+        filtered.onQueryComments(
+            PaginationResult(listOf(comment), PaginationData("next", "previous"))
+        )
+
+        filtered.onCommentUpdated(comment.copy(objectId = "activity-2"))
+
+        assertEquals(emptyList<CommentData>(), filtered.comments.value)
+    }
+
+    @Test
+    fun `on onCommentUpdated, keep a hidden comment when the event does not carry hidden`() {
+        val hiddenQuery =
+            CommentsQuery(CommentsFilterField.hidden.equal(true), sort = CommentsSort.First)
+        val filtered = CommentListStateImpl(hiddenQuery, currentUserId)
+        val hidden = commentData("1").copy(hidden = true)
+        filtered.onQueryComments(
+            PaginationResult(listOf(hidden), PaginationData("next", "previous"))
+        )
+
+        filtered.onCommentUpdated(commentData("1", text = "Edited"))
+
+        assertEquals(listOf(hidden.copy(text = "Edited")), filtered.comments.value)
     }
 
     @Test
