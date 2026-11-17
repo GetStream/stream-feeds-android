@@ -35,7 +35,7 @@ internal class PollVoteListImplTest {
     private val pollsRepository: PollsRepository = mockk()
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener> =
         mockk(relaxed = true)
-    private val query = PollVotesQuery(pollId = "poll-1", userId = "user-1", limit = 10)
+    private val query = PollVotesQuery(pollId = "poll-1", limit = 10)
 
     private val pollVoteList =
         PollVoteListImpl(

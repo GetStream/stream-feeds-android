@@ -19,21 +19,16 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /** Basic response information */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UpdateFeedMembersResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "duration") public val duration: String,
     @Json(name = "added")
-    public val added:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.FeedMemberResponse> =
+    public val added: List<io.getstream.feeds.android.network.models.FeedMemberResponse> =
         emptyList(),
-    @Json(name = "removed_ids")
-    public val removedIds: kotlin.collections.List<kotlin.String> = emptyList(),
+    @Json(name = "removed_ids") public val removedIds: List<String> = emptyList(),
     @Json(name = "updated")
-    public val updated:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.FeedMemberResponse> =
+    public val updated: List<io.getstream.feeds.android.network.models.FeedMemberResponse> =
         emptyList(),
 )

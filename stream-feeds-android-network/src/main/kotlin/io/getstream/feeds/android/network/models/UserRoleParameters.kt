@@ -19,11 +19,10 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UserRoleParameters(
-    @Json(name = "operator") public val operator: kotlin.String? = null,
-    @Json(name = "role") public val role: kotlin.String? = null,
+    @Json(name = "operator") public val operator: String? = null,
+    @Json(name = "role") public val role: String? = null,
 )

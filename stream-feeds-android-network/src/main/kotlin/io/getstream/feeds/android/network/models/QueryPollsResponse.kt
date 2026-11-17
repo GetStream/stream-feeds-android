@@ -19,17 +19,14 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class QueryPollsResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "duration") public val duration: String,
     @Json(name = "polls")
-    public val polls:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.PollResponseData> =
+    public val polls: List<io.getstream.feeds.android.network.models.PollResponseData> =
         emptyList(),
-    @Json(name = "next") public val next: kotlin.String? = null,
-    @Json(name = "prev") public val prev: kotlin.String? = null,
+    @Json(name = "next") public val next: String? = null,
+    @Json(name = "prev") public val prev: String? = null,
 )

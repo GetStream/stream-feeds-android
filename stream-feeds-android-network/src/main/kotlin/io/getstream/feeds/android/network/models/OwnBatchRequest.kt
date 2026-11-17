@@ -19,15 +19,13 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**
  * Request to get own_follows, own_followings, own_capabilities, and/or own_membership for multiple
  * feeds. If fields is not specified, all fields are returned.
  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class OwnBatchRequest(
-    @Json(name = "feeds") public val feeds: kotlin.collections.List<kotlin.String> = emptyList(),
-    @Json(name = "fields") public val fields: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "feeds") public val feeds: List<String> = emptyList(),
+    @Json(name = "fields") public val fields: List<String>? = null,
 )

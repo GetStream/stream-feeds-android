@@ -19,15 +19,13 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class NotificationTrigger(
-    @Json(name = "text") public val text: kotlin.String,
-    @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "text") public val text: String,
+    @Json(name = "type") public val type: String,
     @Json(name = "comment")
     public val comment: io.getstream.feeds.android.network.models.NotificationComment? = null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
 )

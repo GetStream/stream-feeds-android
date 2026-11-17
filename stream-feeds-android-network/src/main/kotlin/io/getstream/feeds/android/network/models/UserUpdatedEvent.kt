@@ -19,32 +19,29 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**
  * This event is sent when a user gets updated. The event contains information about the updated
  * user.
  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UserUpdatedEvent(
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
+    @Json(name = "custom") public val custom: Map<String, Any?> = emptyMap(),
     @Json(name = "user")
     public val user: io.getstream.feeds.android.network.models.UserResponsePrivacyFields,
-    @Json(name = "type") public val type: kotlin.String = "user.updated",
+    @Json(name = "type") public val type: String = "user.updated",
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
 ) :
     io.getstream.feeds.android.network.models.WSClientEvent,
     io.getstream.feeds.android.network.models.WSEvent,
     io.getstream.feeds.android.network.models.FeedEvent {
 
-    override fun getWSClientEventType(): kotlin.String {
+    override fun getWSClientEventType(): String {
         return type
     }
 
-    override fun getWSEventType(): kotlin.String {
+    override fun getWSEventType(): String {
         return type
     }
 }

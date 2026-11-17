@@ -19,15 +19,21 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class AddReactionResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "counter_delta") public val counterDelta: Int,
+    @Json(name = "duration") public val duration: String,
+    @Json(name = "outcome") public val outcome: String,
     @Json(name = "activity")
     public val activity: io.getstream.feeds.android.network.models.ActivityResponse,
     @Json(name = "reaction")
     public val reaction: io.getstream.feeds.android.network.models.FeedsReactionResponse,
-    @Json(name = "notification_created") public val notificationCreated: kotlin.Boolean? = null,
+    @Json(name = "notification_accepted") public val notificationAccepted: Boolean? = null,
+    @Json(name = "notification_created") public val notificationCreated: Boolean? = null,
+    @Json(name = "notification_task_id") public val notificationTaskId: String? = null,
+    @Json(name = "previous_reaction_type") public val previousReactionType: String? = null,
+    @Json(name = "reference_activity")
+    public val referenceActivity: io.getstream.feeds.android.network.models.ActivityResponse? = null,
 )

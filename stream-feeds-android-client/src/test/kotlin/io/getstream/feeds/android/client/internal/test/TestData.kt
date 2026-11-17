@@ -48,17 +48,22 @@ import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.network.models.AcceptFeedMemberInviteResponse
 import io.getstream.feeds.android.network.models.AcceptFollowResponse
 import io.getstream.feeds.android.network.models.ActivityResponse
+import io.getstream.feeds.android.network.models.ActivityVisibility
 import io.getstream.feeds.android.network.models.BookmarkFolderResponse
 import io.getstream.feeds.android.network.models.BookmarkResponse
 import io.getstream.feeds.android.network.models.CommentResponse
+import io.getstream.feeds.android.network.models.CommentStatus as NetworkCommentStatus
 import io.getstream.feeds.android.network.models.DeleteCommentResponse
 import io.getstream.feeds.android.network.models.FeedMemberResponse
+import io.getstream.feeds.android.network.models.FeedMemberStatus as NetworkFeedMemberStatus
 import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.getstream.feeds.android.network.models.FeedResponse
 import io.getstream.feeds.android.network.models.FeedSuggestionResponse
 import io.getstream.feeds.android.network.models.FeedsReactionResponse
 import io.getstream.feeds.android.network.models.FollowBatchResponse
+import io.getstream.feeds.android.network.models.FollowPushPreference
 import io.getstream.feeds.android.network.models.FollowResponse
+import io.getstream.feeds.android.network.models.FollowStatus as NetworkFollowStatus
 import io.getstream.feeds.android.network.models.GetFollowSuggestionsResponse
 import io.getstream.feeds.android.network.models.GetOrCreateFeedResponse
 import io.getstream.feeds.android.network.models.PinActivityResponse
@@ -70,12 +75,14 @@ import io.getstream.feeds.android.network.models.QueryFeedsResponse
 import io.getstream.feeds.android.network.models.QueryFollowsResponse
 import io.getstream.feeds.android.network.models.RejectFeedMemberInviteResponse
 import io.getstream.feeds.android.network.models.RejectFollowResponse
+import io.getstream.feeds.android.network.models.RestrictReplies as NetworkRestrictReplies
 import io.getstream.feeds.android.network.models.SingleFollowResponse
 import io.getstream.feeds.android.network.models.UnfollowBatchResponse
 import io.getstream.feeds.android.network.models.UnpinActivityResponse
 import io.getstream.feeds.android.network.models.UpdateFeedMembersResponse
 import io.getstream.feeds.android.network.models.UpdateFeedResponse
 import io.getstream.feeds.android.network.models.UserResponse
+import io.getstream.feeds.android.network.models.VotingVisibility
 import java.util.Date
 
 internal object TestData {
@@ -204,7 +211,6 @@ internal object TestData {
             lastActive = null,
             name = null,
             online = false,
-            revokeTokensIssuedBefore = null,
             role = "user",
             teams = emptyList(),
             updatedAt = Date(1000),
@@ -380,12 +386,12 @@ internal object TestData {
             id = id,
             popularity = 0,
             reactionCount = 0,
-            restrictReplies = ActivityResponse.RestrictReplies.Everyone,
+            restrictReplies = NetworkRestrictReplies.Everyone,
             score = 0f,
             shareCount = 0,
             type = "",
             updatedAt = Date(1000),
-            visibility = ActivityResponse.Visibility.Public,
+            visibility = ActivityVisibility.Public,
             user = userResponse(),
             hidden = false,
             preview = false,
@@ -626,7 +632,7 @@ internal object TestData {
             name = name,
             updatedAt = Date(1000),
             voteCount = 0,
-            votingVisibility = "public",
+            votingVisibility = VotingVisibility.Public,
             latestAnswers = emptyList(),
             options = emptyList(),
             ownVotes = emptyList(),
@@ -738,8 +744,8 @@ internal object TestData {
             updatedAt = Date(1000),
             sourceFeed = source,
             targetFeed = target,
-            status = FollowResponse.Status.Accepted,
-            pushPreference = FollowResponse.PushPreference.All,
+            status = NetworkFollowStatus.Accepted,
+            pushPreference = FollowPushPreference.All,
             followerRole = "user",
             custom = emptyMap(),
         )
@@ -750,7 +756,7 @@ internal object TestData {
             updatedAt = Date(1000),
             user = userResponse(),
             role = "member",
-            status = FeedMemberResponse.Status.Member,
+            status = NetworkFeedMemberStatus.Member,
             custom = emptyMap(),
         )
 
@@ -866,7 +872,8 @@ internal object TestData {
             reactionCount = 5,
             replyCount = 2,
             score = 10,
-            status = CommentResponse.Status.Active,
+            hidden = false,
+            status = NetworkCommentStatus.Active,
             upvoteCount = 5,
             custom = emptyMap(),
         )

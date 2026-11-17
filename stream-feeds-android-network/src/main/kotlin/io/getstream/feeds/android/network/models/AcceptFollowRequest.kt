@@ -19,12 +19,11 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class AcceptFollowRequest(
-    @Json(name = "source") public val source: kotlin.String,
-    @Json(name = "target") public val target: kotlin.String,
-    @Json(name = "follower_role") public val followerRole: kotlin.String? = null,
+    @Json(name = "source") public val source: String,
+    @Json(name = "target") public val target: String,
+    @Json(name = "follower_role") public val followerRole: String? = null,
 )

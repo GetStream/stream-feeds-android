@@ -19,31 +19,29 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class PollClosedFeedEvent(
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "fid") public val fid: kotlin.String,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
+    @Json(name = "fid") public val fid: String,
+    @Json(name = "custom") public val custom: Map<String, Any?> = emptyMap(),
     @Json(name = "poll")
     public val poll: io.getstream.feeds.android.network.models.PollResponseData,
-    @Json(name = "type") public val type: kotlin.String = "feeds.poll.closed",
-    @Json(name = "feed_visibility") public val feedVisibility: kotlin.String? = null,
+    @Json(name = "type") public val type: String = "feeds.poll.closed",
+    @Json(name = "feed_visibility")
+    public val feedVisibility: io.getstream.feeds.android.network.models.FeedVisibility? = null,
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
 ) :
     io.getstream.feeds.android.network.models.WSClientEvent,
     io.getstream.feeds.android.network.models.WSEvent,
     io.getstream.feeds.android.network.models.FeedEvent {
 
-    override fun getWSClientEventType(): kotlin.String {
+    override fun getWSClientEventType(): String {
         return type
     }
 
-    override fun getWSEventType(): kotlin.String {
+    override fun getWSEventType(): String {
         return type
     }
 }

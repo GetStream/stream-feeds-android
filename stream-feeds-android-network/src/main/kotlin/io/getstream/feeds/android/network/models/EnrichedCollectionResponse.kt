@@ -18,57 +18,17 @@
 
 package io.getstream.feeds.android.network.models
 
-import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonReader
-import com.squareup.moshi.JsonWriter
-import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class EnrichedCollectionResponse(
-    @Json(name = "id") public val id: kotlin.String,
-    @Json(name = "name") public val name: kotlin.String,
-    @Json(name = "status") public val status: Status,
+    @Json(name = "id") public val id: String,
+    @Json(name = "name") public val name: String,
+    @Json(name = "status")
+    public val status: io.getstream.feeds.android.network.models.CollectionStatus,
     @Json(name = "created_at") public val createdAt: java.util.Date? = null,
     @Json(name = "updated_at") public val updatedAt: java.util.Date? = null,
-    @Json(name = "user_id") public val userId: kotlin.String? = null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
-) {
-
-    /** Status Enum */
-    public sealed class Status(public val value: kotlin.String) {
-        override fun toString(): String = value
-
-        public companion object {
-            public fun fromString(s: kotlin.String): Status =
-                when (s) {
-                    "notfound" -> Notfound
-                    "ok" -> Ok
-                    else -> Unknown(s)
-                }
-        }
-
-        public object Notfound : Status("notfound")
-
-        public object Ok : Status("ok")
-
-        public data class Unknown(val unknownValue: kotlin.String) : Status(unknownValue)
-
-        public class StatusAdapter : JsonAdapter<Status>() {
-            @FromJson
-            override fun fromJson(reader: JsonReader): Status? {
-                val s = reader.nextString() ?: return null
-                return Status.fromString(s)
-            }
-
-            @ToJson
-            override fun toJson(writer: JsonWriter, value: Status?) {
-                writer.value(value?.value)
-            }
-        }
-    }
-}
+    @Json(name = "user_id") public val userId: String? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
+)

@@ -19,12 +19,11 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class SortParam(
-    @Json(name = "direction") public val direction: kotlin.Int,
-    @Json(name = "field") public val field: kotlin.String,
-    @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "direction") public val direction: Int,
+    @Json(name = "field") public val field: String,
+    @Json(name = "type") public val type: String,
 )

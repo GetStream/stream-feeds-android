@@ -19,6 +19,7 @@ package io.getstream.feeds.android.client.internal.model
 import io.getstream.feeds.android.client.api.model.CollectionData
 import io.getstream.feeds.android.client.api.model.CollectionStatus
 import io.getstream.feeds.android.network.models.CollectionResponse
+import io.getstream.feeds.android.network.models.CollectionStatus as NetworkCollectionStatus
 import io.getstream.feeds.android.network.models.EnrichedCollectionResponse
 
 internal fun EnrichedCollectionResponse.toModel(): CollectionData =
@@ -43,9 +44,9 @@ internal fun CollectionResponse.toModel(): CollectionData =
         custom = custom,
     )
 
-private fun EnrichedCollectionResponse.Status.toModel(): CollectionStatus =
+private fun NetworkCollectionStatus.toModel(): CollectionStatus =
     when (this) {
-        EnrichedCollectionResponse.Status.Notfound -> CollectionStatus.NotFound
-        EnrichedCollectionResponse.Status.Ok -> CollectionStatus.Ok
-        is EnrichedCollectionResponse.Status.Unknown -> CollectionStatus.Unknown(unknownValue)
+        NetworkCollectionStatus.Notfound -> CollectionStatus.NotFound
+        NetworkCollectionStatus.Ok -> CollectionStatus.Ok
+        is NetworkCollectionStatus.Unknown -> CollectionStatus.Unknown(unknownValue)
     }

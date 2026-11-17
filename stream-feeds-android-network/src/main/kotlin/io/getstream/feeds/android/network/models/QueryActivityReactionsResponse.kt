@@ -19,17 +19,14 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /** Basic response information */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class QueryActivityReactionsResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "duration") public val duration: String,
     @Json(name = "reactions")
-    public val reactions:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.FeedsReactionResponse> =
+    public val reactions: List<io.getstream.feeds.android.network.models.FeedsReactionResponse> =
         emptyList(),
-    @Json(name = "next") public val next: kotlin.String? = null,
-    @Json(name = "prev") public val prev: kotlin.String? = null,
+    @Json(name = "next") public val next: String? = null,
+    @Json(name = "prev") public val prev: String? = null,
 )

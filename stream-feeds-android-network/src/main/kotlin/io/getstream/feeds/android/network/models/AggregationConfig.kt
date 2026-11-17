@@ -19,13 +19,12 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class AggregationConfig(
-    @Json(name = "activities_sort") public val activitiesSort: kotlin.String? = null,
-    @Json(name = "format") public val format: kotlin.String? = null,
-    @Json(name = "group_size") public val groupSize: kotlin.Int? = null,
-    @Json(name = "score_strategy") public val scoreStrategy: kotlin.String? = null,
+    @Json(name = "activities_sort") public val activitiesSort: String? = null,
+    @Json(name = "format") public val format: String? = null,
+    @Json(name = "group_size") public val groupSize: Int? = null,
+    @Json(name = "score_strategy") public val scoreStrategy: String? = null,
 )

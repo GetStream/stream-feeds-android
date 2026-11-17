@@ -19,13 +19,12 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /** Configuration for activity deletion action */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class DeleteActivityRequestPayload(
-    @Json(name = "entity_id") public val entityId: kotlin.String? = null,
-    @Json(name = "entity_type") public val entityType: kotlin.String? = null,
-    @Json(name = "hard_delete") public val hardDelete: kotlin.Boolean? = null,
-    @Json(name = "reason") public val reason: kotlin.String? = null,
+    @Json(name = "entity_id") public val entityId: String? = null,
+    @Json(name = "entity_type") public val entityType: String? = null,
+    @Json(name = "hard_delete") public val hardDelete: Boolean? = null,
+    @Json(name = "reason") public val reason: String? = null,
 )

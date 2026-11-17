@@ -19,17 +19,16 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /** Configuration for user deletion action */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class DeleteUserRequestPayload(
     @Json(name = "delete_conversation_channels")
-    public val deleteConversationChannels: kotlin.Boolean? = null,
-    @Json(name = "delete_feeds_content") public val deleteFeedsContent: kotlin.Boolean? = null,
-    @Json(name = "entity_id") public val entityId: kotlin.String? = null,
-    @Json(name = "entity_type") public val entityType: kotlin.String? = null,
-    @Json(name = "hard_delete") public val hardDelete: kotlin.Boolean? = null,
-    @Json(name = "mark_messages_deleted") public val markMessagesDeleted: kotlin.Boolean? = null,
-    @Json(name = "reason") public val reason: kotlin.String? = null,
+    public val deleteConversationChannels: Boolean? = null,
+    @Json(name = "delete_feeds_content") public val deleteFeedsContent: Boolean? = null,
+    @Json(name = "entity_id") public val entityId: String? = null,
+    @Json(name = "entity_type") public val entityType: String? = null,
+    @Json(name = "hard_delete") public val hardDelete: Boolean? = null,
+    @Json(name = "mark_messages_deleted") public val markMessagesDeleted: Boolean? = null,
+    @Json(name = "reason") public val reason: String? = null,
 )

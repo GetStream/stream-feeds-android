@@ -18,59 +18,15 @@
 
 package io.getstream.feeds.android.network.models
 
-import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonReader
-import com.squareup.moshi.JsonWriter
-import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.io.*
 
 /** Create device request */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class CreateDeviceRequest(
-    @Json(name = "id") public val id: kotlin.String,
-    @Json(name = "push_provider") public val pushProvider: PushProvider,
-    @Json(name = "push_provider_name") public val pushProviderName: kotlin.String? = null,
-    @Json(name = "voip_token") public val voipToken: kotlin.Boolean? = null,
-) {
-
-    /** PushProvider Enum */
-    public sealed class PushProvider(public val value: kotlin.String) {
-        override fun toString(): String = value
-
-        public companion object {
-            public fun fromString(s: kotlin.String): PushProvider =
-                when (s) {
-                    "apn" -> Apn
-                    "firebase" -> Firebase
-                    "huawei" -> Huawei
-                    "xiaomi" -> Xiaomi
-                    else -> Unknown(s)
-                }
-        }
-
-        public object Apn : PushProvider("apn")
-
-        public object Firebase : PushProvider("firebase")
-
-        public object Huawei : PushProvider("huawei")
-
-        public object Xiaomi : PushProvider("xiaomi")
-
-        public data class Unknown(val unknownValue: kotlin.String) : PushProvider(unknownValue)
-
-        public class PushProviderAdapter : JsonAdapter<PushProvider>() {
-            @FromJson
-            override fun fromJson(reader: JsonReader): PushProvider? {
-                val s = reader.nextString() ?: return null
-                return PushProvider.fromString(s)
-            }
-
-            @ToJson
-            override fun toJson(writer: JsonWriter, value: PushProvider?) {
-                writer.value(value?.value)
-            }
-        }
-    }
-}
+    @Json(name = "id") public val id: String,
+    @Json(name = "push_provider")
+    public val pushProvider: io.getstream.feeds.android.network.models.PushProviderName,
+    @Json(name = "hardware_id") public val hardwareId: String? = null,
+    @Json(name = "push_provider_name") public val pushProviderName: String? = null,
+    @Json(name = "voip_token") public val voipToken: Boolean? = null,
+)

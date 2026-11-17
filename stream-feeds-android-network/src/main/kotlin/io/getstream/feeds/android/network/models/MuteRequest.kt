@@ -19,13 +19,10 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class MuteRequest(
-    @Json(name = "target_ids")
-    public val targetIds: kotlin.collections.List<kotlin.String> = emptyList(),
-    @Json(name = "timeout") public val timeout: kotlin.Int? = null,
+    @Json(name = "target_ids") public val targetIds: List<String> = emptyList(),
+    @Json(name = "timeout") public val timeout: Int? = null,
 )

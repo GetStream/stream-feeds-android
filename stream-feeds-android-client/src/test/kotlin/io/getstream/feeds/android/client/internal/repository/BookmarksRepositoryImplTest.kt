@@ -107,7 +107,7 @@ internal class BookmarksRepositoryImplTest {
             )
 
         testDelegation(
-            apiFunction = { feedsApi.queryBookmarks(request) },
+            apiFunction = { feedsApi.queryBookmarks(queryBookmarksRequest = request) },
             repositoryCall = { repository.queryBookmarks(query) },
             apiResult = apiResult,
             repositoryResult =

@@ -24,33 +24,32 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class VelocityFilterConfigRule(
     @Json(name = "action") public val action: Action,
-    @Json(name = "ban_duration") public val banDuration: kotlin.Int,
+    @Json(name = "ban_duration") public val banDuration: Int,
     @Json(name = "cascading_action") public val cascadingAction: CascadingAction,
-    @Json(name = "cascading_threshold") public val cascadingThreshold: kotlin.Int,
-    @Json(name = "check_message_context") public val checkMessageContext: kotlin.Boolean,
-    @Json(name = "fast_spam_threshold") public val fastSpamThreshold: kotlin.Int,
-    @Json(name = "fast_spam_ttl") public val fastSpamTtl: kotlin.Int,
-    @Json(name = "ip_ban") public val ipBan: kotlin.Boolean,
-    @Json(name = "probation_period") public val probationPeriod: kotlin.Int,
-    @Json(name = "shadow_ban") public val shadowBan: kotlin.Boolean,
-    @Json(name = "slow_spam_threshold") public val slowSpamThreshold: kotlin.Int,
-    @Json(name = "slow_spam_ttl") public val slowSpamTtl: kotlin.Int,
-    @Json(name = "url_only") public val urlOnly: kotlin.Boolean,
-    @Json(name = "slow_spam_ban_duration") public val slowSpamBanDuration: kotlin.Int? = null,
+    @Json(name = "cascading_threshold") public val cascadingThreshold: Int,
+    @Json(name = "check_message_context") public val checkMessageContext: Boolean,
+    @Json(name = "fast_spam_threshold") public val fastSpamThreshold: Int,
+    @Json(name = "fast_spam_ttl") public val fastSpamTtl: Int,
+    @Json(name = "ip_ban") public val ipBan: Boolean,
+    @Json(name = "probation_period") public val probationPeriod: Int,
+    @Json(name = "shadow_ban") public val shadowBan: Boolean,
+    @Json(name = "slow_spam_threshold") public val slowSpamThreshold: Int,
+    @Json(name = "slow_spam_ttl") public val slowSpamTtl: Int,
+    @Json(name = "url_only") public val urlOnly: Boolean,
+    @Json(name = "slow_spam_ban_duration") public val slowSpamBanDuration: Int? = null,
 ) {
 
     /** Action Enum */
-    public sealed class Action(public val value: kotlin.String) {
+    public sealed class Action(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): Action =
+            public fun fromString(s: String): Action =
                 when (s) {
                     "ban" -> Ban
                     "flag" -> Flag
@@ -68,7 +67,7 @@ public data class VelocityFilterConfigRule(
 
         public object Shadow : Action("shadow")
 
-        public data class Unknown(val unknownValue: kotlin.String) : Action(unknownValue)
+        public data class Unknown(val unknownValue: String) : Action(unknownValue)
 
         public class ActionAdapter : JsonAdapter<Action>() {
             @FromJson
@@ -85,11 +84,11 @@ public data class VelocityFilterConfigRule(
     }
 
     /** CascadingAction Enum */
-    public sealed class CascadingAction(public val value: kotlin.String) {
+    public sealed class CascadingAction(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): CascadingAction =
+            public fun fromString(s: String): CascadingAction =
                 when (s) {
                     "ban" -> Ban
                     "flag" -> Flag
@@ -107,7 +106,7 @@ public data class VelocityFilterConfigRule(
 
         public object Shadow : CascadingAction("shadow")
 
-        public data class Unknown(val unknownValue: kotlin.String) : CascadingAction(unknownValue)
+        public data class Unknown(val unknownValue: String) : CascadingAction(unknownValue)
 
         public class CascadingActionAdapter : JsonAdapter<CascadingAction>() {
             @FromJson

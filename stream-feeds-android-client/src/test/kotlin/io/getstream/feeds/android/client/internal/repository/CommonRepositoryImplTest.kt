@@ -22,6 +22,7 @@ import io.getstream.feeds.android.client.internal.repository.RepositoryTestUtils
 import io.getstream.feeds.android.client.internal.state.query.toRequest
 import io.getstream.feeds.android.client.internal.test.TestData.appData
 import io.getstream.feeds.android.network.apis.FeedsApi
+import io.getstream.feeds.android.network.infrastructure.JsonQuery
 import io.getstream.feeds.android.network.models.AppResponseFields
 import io.getstream.feeds.android.network.models.FileUploadConfig
 import io.getstream.feeds.android.network.models.FullUserResponse
@@ -112,7 +113,7 @@ internal class CommonRepositoryImplTest {
         val apiResult = QueryUsersResponse(duration = "50ms", users = listOf(userResponse))
 
         testDelegation(
-            apiFunction = { api.queryUsers(query.toRequest()) },
+            apiFunction = { api.queryUsers(payload = JsonQuery(query.toRequest())) },
             repositoryCall = { repository.queryUsers(query) },
             apiResult = apiResult,
             repositoryResult = listOf(userResponse.toModel()),

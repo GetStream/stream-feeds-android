@@ -19,17 +19,13 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class SharedLocationsResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "duration") public val duration: String,
     @Json(name = "active_live_locations")
     public val activeLiveLocations:
-        kotlin.collections.List<
-            io.getstream.feeds.android.network.models.SharedLocationResponseData
-        > =
+        List<io.getstream.feeds.android.network.models.SharedLocationResponseData> =
         emptyList(),
 )

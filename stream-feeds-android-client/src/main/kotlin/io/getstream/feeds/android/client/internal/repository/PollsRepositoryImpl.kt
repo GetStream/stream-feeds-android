@@ -52,12 +52,12 @@ internal class PollsRepositoryImpl(private val api: FeedsApi) : PollsRepository 
         api.createPoll(request).poll.toModel()
     }
 
-    override suspend fun deletePoll(pollId: String, userId: String?): Result<Unit> = runSafely {
-        api.deletePoll(pollId = pollId, userId = userId)
+    override suspend fun deletePoll(pollId: String): Result<Unit> = runSafely {
+        api.deletePoll(pollId = pollId)
     }
 
-    override suspend fun getPoll(pollId: String, userId: String?): Result<PollData> = runSafely {
-        api.getPoll(pollId = pollId, userId = userId).poll.toModel()
+    override suspend fun getPoll(pollId: String): Result<PollData> = runSafely {
+        api.getPoll(pollId = pollId).poll.toModel()
     }
 
     override suspend fun updatePollPartial(
@@ -76,23 +76,15 @@ internal class PollsRepositoryImpl(private val api: FeedsApi) : PollsRepository 
         api.createPollOption(pollId, request).pollOption.toModel()
     }
 
-    override suspend fun deletePollOption(
-        pollId: String,
-        optionId: String,
-        userId: String?,
-    ): Result<Unit> = runSafely {
-        api.deletePollOption(pollId = pollId, optionId = optionId, userId = userId)
-    }
+    override suspend fun deletePollOption(pollId: String, optionId: String): Result<Unit> =
+        runSafely {
+            api.deletePollOption(pollId = pollId, optionId = optionId)
+        }
 
-    override suspend fun getPollOption(
-        pollId: String,
-        optionId: String,
-        userId: String?,
-    ): Result<PollOptionData> = runSafely {
-        api.getPollOption(pollId = pollId, optionId = optionId, userId = userId)
-            .pollOption
-            .toModel()
-    }
+    override suspend fun getPollOption(pollId: String, optionId: String): Result<PollOptionData> =
+        runSafely {
+            api.getPollOption(pollId = pollId, optionId = optionId).pollOption.toModel()
+        }
 
     override suspend fun updatePollOption(
         pollId: String,
@@ -103,7 +95,7 @@ internal class PollsRepositoryImpl(private val api: FeedsApi) : PollsRepository 
 
     override suspend fun queryPolls(query: PollsQuery): Result<PaginationResult<PollData>> =
         runSafely {
-            val response = api.queryPolls(userId = null, queryPollsRequest = query.toRequest())
+            val response = api.queryPolls(queryPollsRequest = query.toRequest())
             PaginationResult(
                 models = response.polls.map { it.toModel() },
                 pagination = PaginationData(response.next, response.prev),
@@ -128,11 +120,7 @@ internal class PollsRepositoryImpl(private val api: FeedsApi) : PollsRepository 
         query: PollVotesQuery
     ): Result<PaginationResult<PollVoteData>> = runSafely {
         val response =
-            api.queryPollVotes(
-                pollId = query.pollId,
-                userId = query.userId,
-                queryPollVotesRequest = query.toRequest(),
-            )
+            api.queryPollVotes(pollId = query.pollId, queryPollVotesRequest = query.toRequest())
         PaginationResult(
             models = response.votes.map { it.toModel() },
             pagination = PaginationData(response.next, response.prev),
@@ -143,15 +131,8 @@ internal class PollsRepositoryImpl(private val api: FeedsApi) : PollsRepository 
         activityId: String,
         pollId: String,
         voteId: String,
-        userId: String?,
     ): Result<Pair<PollVoteData?, PollData?>> = runSafely {
-        val response =
-            api.deletePollVote(
-                activityId = activityId,
-                pollId = pollId,
-                voteId = voteId,
-                userId = userId,
-            )
+        val response = api.deletePollVote(activityId = activityId, pollId = pollId, voteId = voteId)
         response.vote?.toModel() to response.poll?.toModel()
     }
 }

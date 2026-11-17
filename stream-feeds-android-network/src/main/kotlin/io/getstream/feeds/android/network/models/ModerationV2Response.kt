@@ -19,20 +19,16 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class ModerationV2Response(
-    @Json(name = "action") public val action: kotlin.String,
-    @Json(name = "original_text") public val originalText: kotlin.String,
-    @Json(name = "blocklist_matched") public val blocklistMatched: kotlin.String? = null,
-    @Json(name = "platform_circumvented") public val platformCircumvented: kotlin.Boolean? = null,
-    @Json(name = "semantic_filter_matched") public val semanticFilterMatched: kotlin.String? = null,
-    @Json(name = "blocklists_matched")
-    public val blocklistsMatched: kotlin.collections.List<kotlin.String>? = null,
-    @Json(name = "image_harms")
-    public val imageHarms: kotlin.collections.List<kotlin.String>? = null,
-    @Json(name = "text_harms") public val textHarms: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "action") public val action: String,
+    @Json(name = "original_text") public val originalText: String,
+    @Json(name = "blocklist_matched") public val blocklistMatched: String? = null,
+    @Json(name = "platform_circumvented") public val platformCircumvented: Boolean? = null,
+    @Json(name = "semantic_filter_matched") public val semanticFilterMatched: String? = null,
+    @Json(name = "blocklists_matched") public val blocklistsMatched: List<String>? = null,
+    @Json(name = "image_harms") public val imageHarms: List<String>? = null,
+    @Json(name = "text_harms") public val textHarms: List<String>? = null,
 )

@@ -19,19 +19,17 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class FeedsPreferencesResponse(
-    @Json(name = "comment") public val comment: kotlin.String? = null,
-    @Json(name = "comment_mention") public val commentMention: kotlin.String? = null,
-    @Json(name = "comment_reaction") public val commentReaction: kotlin.String? = null,
-    @Json(name = "comment_reply") public val commentReply: kotlin.String? = null,
-    @Json(name = "follow") public val follow: kotlin.String? = null,
-    @Json(name = "mention") public val mention: kotlin.String? = null,
-    @Json(name = "reaction") public val reaction: kotlin.String? = null,
+    @Json(name = "comment") public val comment: String? = null,
+    @Json(name = "comment_mention") public val commentMention: String? = null,
+    @Json(name = "comment_reaction") public val commentReaction: String? = null,
+    @Json(name = "comment_reply") public val commentReply: String? = null,
+    @Json(name = "follow") public val follow: String? = null,
+    @Json(name = "mention") public val mention: String? = null,
+    @Json(name = "reaction") public val reaction: String? = null,
     @Json(name = "custom_activity_types")
-    public val customActivityTypes: kotlin.collections.Map<kotlin.String, kotlin.String>? = null,
+    public val customActivityTypes: Map<String, String>? = null,
 )

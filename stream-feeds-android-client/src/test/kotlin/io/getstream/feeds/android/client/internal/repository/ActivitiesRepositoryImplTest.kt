@@ -275,7 +275,14 @@ internal class ActivitiesRepositoryImplTest {
     @Test
     fun `on addActivityReaction, delegate to api`() {
         val request = AddReactionRequest("type")
-        val apiResult = AddReactionResponse("duration", activityResponse(), feedsReactionResponse())
+        val apiResult =
+            AddReactionResponse(
+                counterDelta = 1,
+                duration = "duration",
+                outcome = "added",
+                activity = activityResponse(),
+                reaction = feedsReactionResponse(),
+            )
 
         testDelegation(
             apiFunction = { feedsApi.addActivityReaction("activityId", request) },
@@ -335,7 +342,7 @@ internal class ActivitiesRepositoryImplTest {
             )
 
         testDelegation(
-            apiFunction = { feedsApi.queryActivities(query.toRequest()) },
+            apiFunction = { feedsApi.queryActivities(queryActivitiesRequest = query.toRequest()) },
             repositoryCall = { repository.queryActivities(query) },
             apiResult = apiResult,
             repositoryResult =

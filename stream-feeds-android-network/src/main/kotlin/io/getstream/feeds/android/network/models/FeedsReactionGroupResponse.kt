@@ -19,12 +19,11 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class FeedsReactionGroupResponse(
-    @Json(name = "count") public val count: kotlin.Int,
+    @Json(name = "count") public val count: Int,
     @Json(name = "first_reaction_at") public val firstReactionAt: java.util.Date,
     @Json(name = "last_reaction_at") public val lastReactionAt: java.util.Date,
 )

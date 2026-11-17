@@ -150,7 +150,7 @@ internal class ActivitiesRepositoryImpl(
         query: ActivitiesQuery
     ): Result<PaginationResult<ActivityData>> = runSafely {
         val request = query.toRequest()
-        val response = api.queryActivities(request)
+        val response = api.queryActivities(queryActivitiesRequest = request)
         PaginationResult(
             models = response.activities.map { it.toModel() },
             pagination = PaginationData(next = response.next, previous = response.prev),

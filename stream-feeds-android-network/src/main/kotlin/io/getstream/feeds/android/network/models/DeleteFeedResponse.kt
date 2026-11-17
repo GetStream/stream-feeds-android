@@ -19,11 +19,10 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class DeleteFeedResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
-    @Json(name = "task_id") public val taskId: kotlin.String,
+    @Json(name = "duration") public val duration: String,
+    @Json(name = "task_id") public val taskId: String,
 )

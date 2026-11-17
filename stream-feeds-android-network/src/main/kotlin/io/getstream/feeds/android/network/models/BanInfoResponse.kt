@@ -19,15 +19,17 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /** Ban information */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class BanInfoResponse(
     @Json(name = "created_at") public val createdAt: java.util.Date,
+    @Json(name = "channel_cid") public val channelCid: String? = null,
     @Json(name = "expires") public val expires: java.util.Date? = null,
-    @Json(name = "reason") public val reason: kotlin.String? = null,
-    @Json(name = "shadow") public val shadow: kotlin.Boolean? = null,
+    @Json(name = "reason") public val reason: String? = null,
+    @Json(name = "shadow") public val shadow: Boolean? = null,
+    @Json(name = "channel")
+    public val channel: io.getstream.feeds.android.network.models.ChannelMetadata? = null,
     @Json(name = "created_by")
     public val createdBy: io.getstream.feeds.android.network.models.UserResponse? = null,
     @Json(name = "user")

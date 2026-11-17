@@ -24,26 +24,28 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /** Block list contains restricted words */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class CreateBlockListRequest(
-    @Json(name = "name") public val name: kotlin.String,
-    @Json(name = "words") public val words: kotlin.collections.List<kotlin.String> = emptyList(),
-    @Json(name = "is_leet_check_enabled") public val isLeetCheckEnabled: kotlin.Boolean? = null,
-    @Json(name = "is_plural_check_enabled") public val isPluralCheckEnabled: kotlin.Boolean? = null,
-    @Json(name = "team") public val team: kotlin.String? = null,
+    @Json(name = "name") public val name: String,
+    @Json(name = "words") public val words: List<String> = emptyList(),
+    @Json(name = "is_confusable_folding_enabled")
+    public val isConfusableFoldingEnabled: Boolean? = null,
+    @Json(name = "is_leet_check_enabled") public val isLeetCheckEnabled: Boolean? = null,
+    @Json(name = "is_plural_check_enabled") public val isPluralCheckEnabled: Boolean? = null,
+    @Json(name = "is_substring_matching_enabled")
+    public val isSubstringMatchingEnabled: Boolean? = null,
+    @Json(name = "team") public val team: String? = null,
     @Json(name = "type") public val type: Type? = null,
 ) {
 
     /** Type Enum */
-    public sealed class Type(public val value: kotlin.String) {
+    public sealed class Type(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): Type =
+            public fun fromString(s: String): Type =
                 when (s) {
                     "domain" -> Domain
                     "domain_allowlist" -> DomainAllowlist
@@ -51,6 +53,7 @@ public data class CreateBlockListRequest(
                     "email_allowlist" -> EmailAllowlist
                     "regex" -> Regex
                     "word" -> Word
+                    "word_allowlist" -> WordAllowlist
                     else -> Unknown(s)
                 }
         }
@@ -67,7 +70,9 @@ public data class CreateBlockListRequest(
 
         public object Word : Type("word")
 
-        public data class Unknown(val unknownValue: kotlin.String) : Type(unknownValue)
+        public object WordAllowlist : Type("word_allowlist")
+
+        public data class Unknown(val unknownValue: String) : Type(unknownValue)
 
         public class TypeAdapter : JsonAdapter<Type>() {
             @FromJson

@@ -19,15 +19,20 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class ModerationPayload(
-    @Json(name = "images") public val images: kotlin.collections.List<kotlin.String>? = null,
-    @Json(name = "texts") public val texts: kotlin.collections.List<kotlin.String>? = null,
-    @Json(name = "videos") public val videos: kotlin.collections.List<kotlin.String>? = null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "country_code") public val countryCode: String? = null,
+    @Json(name = "audios") public val audios: List<String>? = null,
+    @Json(name = "country_codes") public val countryCodes: List<String>? = null,
+    @Json(name = "image_ordered_keys") public val imageOrderedKeys: List<String>? = null,
+    @Json(name = "images") public val images: List<String>? = null,
+    @Json(name = "other_media") public val otherMedia: List<String>? = null,
+    @Json(name = "text_ordered_keys") public val textOrderedKeys: List<String>? = null,
+    @Json(name = "texts") public val texts: List<String>? = null,
+    @Json(name = "videos") public val videos: List<String>? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
+    @Json(name = "image_ids") public val imageIds: Map<String, String>? = null,
+    @Json(name = "text_ids") public val textIds: Map<String, String>? = null,
 )

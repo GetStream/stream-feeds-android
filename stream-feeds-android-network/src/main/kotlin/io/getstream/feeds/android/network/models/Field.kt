@@ -19,12 +19,11 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class Field(
-    @Json(name = "short") public val short: kotlin.Boolean,
-    @Json(name = "title") public val title: kotlin.String,
-    @Json(name = "value") public val value: kotlin.String,
+    @Json(name = "short") public val short: Boolean,
+    @Json(name = "title") public val title: String,
+    @Json(name = "value") public val value: String,
 )

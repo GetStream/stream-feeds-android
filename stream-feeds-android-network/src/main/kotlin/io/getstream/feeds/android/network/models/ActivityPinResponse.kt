@@ -19,13 +19,12 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class ActivityPinResponse(
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "feed") public val feed: kotlin.String,
+    @Json(name = "feed") public val feed: String,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
     @Json(name = "activity")
     public val activity: io.getstream.feeds.android.network.models.ActivityResponse,

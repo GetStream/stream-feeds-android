@@ -25,7 +25,7 @@ import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
 
 public interface WSEvent {
-    public fun getWSEventType(): kotlin.String
+    public fun getWSEventType(): String
 }
 
 public class WSEventAdapter : JsonAdapter<WSEvent>() {
@@ -61,6 +61,9 @@ public class WSEventAdapter : JsonAdapter<WSEvent>() {
     private fun getSubclass(type: String): Class<out WSEvent> {
         return when (type) {
             "app.updated" -> io.getstream.feeds.android.network.models.AppUpdatedEvent::class.java
+            "connection.error" ->
+                io.getstream.feeds.android.network.models.ConnectionErrorEvent::class.java
+            "connection.ok" -> io.getstream.feeds.android.network.models.ConnectedEvent::class.java
             "feeds.activity.added" ->
                 io.getstream.feeds.android.network.models.ActivityAddedEvent::class.java
             "feeds.activity.deleted" ->
@@ -99,6 +102,8 @@ public class WSEventAdapter : JsonAdapter<WSEvent>() {
                 io.getstream.feeds.android.network.models.CommentAddedEvent::class.java
             "feeds.comment.deleted" ->
                 io.getstream.feeds.android.network.models.CommentDeletedEvent::class.java
+            "feeds.comment.feedback" ->
+                io.getstream.feeds.android.network.models.CommentFeedbackEvent::class.java
             "feeds.comment.reaction.added" ->
                 io.getstream.feeds.android.network.models.CommentReactionAddedEvent::class.java
             "feeds.comment.reaction.deleted" ->
@@ -159,6 +164,7 @@ public class WSEventAdapter : JsonAdapter<WSEvent>() {
             "user.banned" -> io.getstream.feeds.android.network.models.UserBannedEvent::class.java
             "user.deactivated" ->
                 io.getstream.feeds.android.network.models.UserDeactivatedEvent::class.java
+            "user.deleted" -> io.getstream.feeds.android.network.models.UserDeletedEvent::class.java
             "user.reactivated" ->
                 io.getstream.feeds.android.network.models.UserReactivatedEvent::class.java
             "user.unbanned" ->
@@ -170,7 +176,7 @@ public class WSEventAdapter : JsonAdapter<WSEvent>() {
 }
 
 public class UnsupportedWSEvent(public val type: String) : WSEvent {
-    override fun getWSEventType(): kotlin.String {
+    override fun getWSEventType(): String {
         return type
     }
 }

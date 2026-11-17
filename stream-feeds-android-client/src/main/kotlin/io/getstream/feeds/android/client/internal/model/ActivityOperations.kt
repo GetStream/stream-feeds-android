@@ -27,7 +27,9 @@ import io.getstream.feeds.android.client.api.model.RestrictReplies
 import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.network.models.ActivityResponse
+import io.getstream.feeds.android.network.models.ActivityVisibility
 import io.getstream.feeds.android.network.models.Location
+import io.getstream.feeds.android.network.models.RestrictReplies as NetworkRestrictReplies
 import kotlin.math.max
 
 /** Converts an [ActivityResponse] to an [ActivityData] model. */
@@ -83,22 +85,22 @@ internal fun ActivityResponse.toModel(): ActivityData =
         visibilityTag = visibilityTag,
     )
 
-/** Converts a [ActivityResponse.RestrictReplies] to a [RestrictReplies]. */
-internal fun ActivityResponse.RestrictReplies.toModel(): RestrictReplies =
+/** Converts a [NetworkRestrictReplies] to a [RestrictReplies]. */
+internal fun NetworkRestrictReplies.toModel(): RestrictReplies =
     when (this) {
-        ActivityResponse.RestrictReplies.Everyone -> RestrictReplies.Everyone
-        ActivityResponse.RestrictReplies.Nobody -> RestrictReplies.Nobody
-        ActivityResponse.RestrictReplies.PeopleIFollow -> RestrictReplies.PeopleIFollow
-        is ActivityResponse.RestrictReplies.Unknown -> RestrictReplies.Unknown(unknownValue)
+        NetworkRestrictReplies.Everyone -> RestrictReplies.Everyone
+        NetworkRestrictReplies.Nobody -> RestrictReplies.Nobody
+        NetworkRestrictReplies.PeopleIFollow -> RestrictReplies.PeopleIFollow
+        is NetworkRestrictReplies.Unknown -> RestrictReplies.Unknown(unknownValue)
     }
 
-/** Converts a [ActivityResponse.Visibility] to a [ActivityDataVisibility]. */
-internal fun ActivityResponse.Visibility.toModel(): ActivityDataVisibility =
+/** Converts a [ActivityVisibility] to a [ActivityDataVisibility]. */
+internal fun ActivityVisibility.toModel(): ActivityDataVisibility =
     when (this) {
-        ActivityResponse.Visibility.Private -> ActivityDataVisibility.Private
-        ActivityResponse.Visibility.Public -> ActivityDataVisibility.Public
-        ActivityResponse.Visibility.Tag -> ActivityDataVisibility.Tag
-        is ActivityResponse.Visibility.Unknown -> ActivityDataVisibility.Unknown(unknownValue)
+        ActivityVisibility.Private -> ActivityDataVisibility.Private
+        ActivityVisibility.Public -> ActivityDataVisibility.Public
+        ActivityVisibility.Tag -> ActivityDataVisibility.Tag
+        is ActivityVisibility.Unknown -> ActivityDataVisibility.Unknown(unknownValue)
     }
 
 /**

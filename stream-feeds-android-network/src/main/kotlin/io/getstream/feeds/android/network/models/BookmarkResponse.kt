@@ -19,23 +19,21 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class BookmarkResponse(
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "object_id") public val objectId: kotlin.String,
-    @Json(name = "object_type") public val objectType: kotlin.String,
+    @Json(name = "object_id") public val objectId: String,
+    @Json(name = "object_type") public val objectType: String,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
     @Json(name = "activity")
     public val activity: io.getstream.feeds.android.network.models.ActivityResponse,
     @Json(name = "user") public val user: io.getstream.feeds.android.network.models.UserResponse,
-    @Json(name = "activity_id") public val activityId: kotlin.String? = null,
+    @Json(name = "activity_id") public val activityId: String? = null,
     @Json(name = "comment")
     public val comment: io.getstream.feeds.android.network.models.CommentResponse? = null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
     @Json(name = "folder")
     public val folder: io.getstream.feeds.android.network.models.BookmarkFolderResponse? = null,
 )

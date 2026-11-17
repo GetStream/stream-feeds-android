@@ -19,11 +19,10 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /** Response for activity feedback submission */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class ActivityFeedbackResponse(
-    @Json(name = "activity_id") public val activityId: kotlin.String,
-    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "activity_id") public val activityId: String,
+    @Json(name = "duration") public val duration: String,
 )

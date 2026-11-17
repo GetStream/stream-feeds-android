@@ -19,25 +19,19 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UpdateCommentRequest(
-    @Json(name = "comment") public val comment: kotlin.String? = null,
+    @Json(name = "comment") public val comment: String? = null,
     @Json(name = "copy_custom_to_notification")
-    public val copyCustomToNotification: kotlin.Boolean? = null,
+    public val copyCustomToNotification: Boolean? = null,
     @Json(name = "handle_mention_notifications")
-    public val handleMentionNotifications: kotlin.Boolean? = null,
-    @Json(name = "skip_enrich_url") public val skipEnrichUrl: kotlin.Boolean? = null,
-    @Json(name = "skip_push") public val skipPush: kotlin.Boolean? = null,
+    public val handleMentionNotifications: Boolean? = null,
+    @Json(name = "skip_enrich_url") public val skipEnrichUrl: Boolean? = null,
+    @Json(name = "skip_push") public val skipPush: Boolean? = null,
     @Json(name = "attachments")
-    public val attachments:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.Attachment>? =
-        null,
-    @Json(name = "mentioned_user_ids")
-    public val mentionedUserIds: kotlin.collections.List<kotlin.String>? = null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    public val attachments: List<io.getstream.feeds.android.network.models.Attachment>? = null,
+    @Json(name = "mentioned_user_ids") public val mentionedUserIds: List<String>? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
 )

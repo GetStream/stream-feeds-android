@@ -24,27 +24,24 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class QueryCommentsRequest(
-    @Json(name = "filter")
-    public val filter: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-    @Json(name = "id_around") public val idAround: kotlin.String? = null,
-    @Json(name = "limit") public val limit: kotlin.Int? = null,
-    @Json(name = "next") public val next: kotlin.String? = null,
-    @Json(name = "prev") public val prev: kotlin.String? = null,
+    @Json(name = "filter") public val filter: Map<String, Any?> = emptyMap(),
+    @Json(name = "id_around") public val idAround: String? = null,
+    @Json(name = "limit") public val limit: Int? = null,
+    @Json(name = "next") public val next: String? = null,
+    @Json(name = "prev") public val prev: String? = null,
     @Json(name = "sort") public val sort: Sort? = null,
 ) {
 
     /** Sort Enum */
-    public sealed class Sort(public val value: kotlin.String) {
+    public sealed class Sort(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): Sort =
+            public fun fromString(s: String): Sort =
                 when (s) {
                     "best" -> Best
                     "controversial" -> Controversial
@@ -65,7 +62,7 @@ public data class QueryCommentsRequest(
 
         public object Top : Sort("top")
 
-        public data class Unknown(val unknownValue: kotlin.String) : Sort(unknownValue)
+        public data class Unknown(val unknownValue: String) : Sort(unknownValue)
 
         public class SortAdapter : JsonAdapter<Sort>() {
             @FromJson

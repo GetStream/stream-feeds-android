@@ -21,6 +21,7 @@ import io.getstream.feeds.android.client.api.model.PushNotificationsProvider
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.CreateDeviceRequest
 import io.getstream.feeds.android.network.models.ListDevicesResponse
+import io.getstream.feeds.android.network.models.PushProviderName
 import io.getstream.feeds.android.network.models.UpsertPushPreferencesRequest
 import io.getstream.feeds.android.network.models.UpsertPushPreferencesResponse
 
@@ -42,8 +43,8 @@ internal class DevicesRepositoryImpl(private val api: FeedsApi) : DevicesReposit
         pushProviderName: String,
     ): Result<Unit> = runSafely {
         check(id.isNotBlank()) { "Device id must not be empty when trying to set device." }
-        val requestPushProvider = CreateDeviceRequest.PushProvider.fromString(pushProvider.value)
-        check(requestPushProvider !is CreateDeviceRequest.PushProvider.Unknown) {
+        val requestPushProvider = PushProviderName.fromString(pushProvider.value)
+        check(requestPushProvider !is PushProviderName.Unknown) {
             "Invalid push provider value: $pushProvider"
         }
         val request =

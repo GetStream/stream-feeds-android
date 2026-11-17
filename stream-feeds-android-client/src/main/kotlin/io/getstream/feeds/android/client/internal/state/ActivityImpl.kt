@@ -243,17 +243,17 @@ internal class ActivityImpl(
         }
     }
 
-    override suspend fun deletePoll(userId: String?): Result<Unit> {
+    override suspend fun deletePoll(): Result<Unit> {
         return poll().flatMap { poll ->
-            pollsRepository.deletePoll(pollId = poll.id, userId = userId).onSuccess {
+            pollsRepository.deletePoll(pollId = poll.id).onSuccess {
                 subscriptionManager.onEvent(StateUpdateEvent.PollDeleted(poll.id))
             }
         }
     }
 
-    override suspend fun getPoll(userId: String?): Result<PollData> {
+    override suspend fun getPoll(): Result<PollData> {
         return poll().flatMap { poll ->
-            pollsRepository.getPoll(pollId = poll.id, userId = userId).onSuccess {
+            pollsRepository.getPoll(pollId = poll.id).onSuccess {
                 subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(it))
             }
         }
@@ -284,25 +284,21 @@ internal class ActivityImpl(
         }
     }
 
-    override suspend fun deletePollOption(optionId: String, userId: String?): Result<Unit> {
+    override suspend fun deletePollOption(optionId: String): Result<Unit> {
         return poll().flatMap { poll ->
-            pollsRepository
-                .deletePollOption(pollId = poll.id, optionId = optionId, userId = userId)
-                .onSuccess {
-                    val newPoll = poll.removeOption(optionId)
-                    subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(newPoll))
-                }
+            pollsRepository.deletePollOption(pollId = poll.id, optionId = optionId).onSuccess {
+                val newPoll = poll.removeOption(optionId)
+                subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(newPoll))
+            }
         }
     }
 
-    override suspend fun getPollOption(optionId: String, userId: String?): Result<PollOptionData> {
+    override suspend fun getPollOption(optionId: String): Result<PollOptionData> {
         return poll().flatMap { poll ->
-            pollsRepository
-                .getPollOption(pollId = poll.id, optionId = optionId, userId = userId)
-                .onSuccess {
-                    val newPoll = poll.updateOption(it)
-                    subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(newPoll))
-                }
+            pollsRepository.getPollOption(pollId = poll.id, optionId = optionId).onSuccess {
+                val newPoll = poll.updateOption(it)
+                subscriptionManager.onEvent(StateUpdateEvent.PollUpdated(newPoll))
+            }
         }
     }
 
@@ -332,15 +328,10 @@ internal class ActivityImpl(
         }
     }
 
-    override suspend fun deletePollVote(voteId: String, userId: String?): Result<PollVoteData?> {
+    override suspend fun deletePollVote(voteId: String): Result<PollVoteData?> {
         return poll().flatMap { currentPoll ->
             pollsRepository
-                .deletePollVote(
-                    activityId = activityId,
-                    pollId = currentPoll.id,
-                    voteId = voteId,
-                    userId = userId,
-                )
+                .deletePollVote(activityId = activityId, pollId = currentPoll.id, voteId = voteId)
                 .onSuccess { (vote, updatedPoll) ->
                     if (vote != null && updatedPoll != null) {
                         subscriptionManager.onEvent(

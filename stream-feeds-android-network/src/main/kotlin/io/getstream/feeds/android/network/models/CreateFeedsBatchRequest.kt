@@ -19,15 +19,11 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class CreateFeedsBatchRequest(
     @Json(name = "feeds")
-    public val feeds:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.FeedRequest> =
-        emptyList(),
-    @Json(name = "enrich_own_fields") public val enrichOwnFields: kotlin.Boolean? = null,
+    public val feeds: List<io.getstream.feeds.android.network.models.FeedRequest> = emptyList(),
+    @Json(name = "enrich_own_fields") public val enrichOwnFields: Boolean? = null,
 )

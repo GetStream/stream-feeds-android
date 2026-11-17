@@ -19,14 +19,13 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UnpinActivityResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
-    @Json(name = "feed") public val feed: kotlin.String,
-    @Json(name = "user_id") public val userId: kotlin.String,
+    @Json(name = "duration") public val duration: String,
+    @Json(name = "feed") public val feed: String,
+    @Json(name = "user_id") public val userId: String,
     @Json(name = "activity")
     public val activity: io.getstream.feeds.android.network.models.ActivityResponse,
 )

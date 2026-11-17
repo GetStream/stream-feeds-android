@@ -19,13 +19,10 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class DeleteActivitiesResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
-    @Json(name = "deleted_ids")
-    public val deletedIds: kotlin.collections.List<kotlin.String> = emptyList(),
+    @Json(name = "duration") public val duration: String,
+    @Json(name = "deleted_ids") public val deletedIds: List<String> = emptyList(),
 )

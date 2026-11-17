@@ -19,15 +19,11 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /** List devices response */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class ListDevicesResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "duration") public val duration: String,
     @Json(name = "devices")
-    public val devices:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.DeviceResponse> =
-        emptyList(),
+    public val devices: List<io.getstream.feeds.android.network.models.DeviceResponse> = emptyList(),
 )

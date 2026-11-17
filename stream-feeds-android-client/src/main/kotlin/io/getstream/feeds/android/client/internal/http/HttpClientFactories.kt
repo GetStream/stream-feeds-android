@@ -21,7 +21,7 @@ import io.getstream.android.core.api.model.config.StreamHttpConfig
 import io.getstream.feeds.android.client.api.model.FeedsConfig
 import io.getstream.feeds.android.client.internal.client.EndpointConfig
 import io.getstream.feeds.android.client.internal.logging.createLoggingInterceptor
-import io.getstream.feeds.android.network.infrastructure.MoshiQueryConverterFactory
+import io.getstream.feeds.android.network.infrastructure.QueryConverterFactory
 import io.getstream.feeds.android.network.infrastructure.Serializer
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -48,7 +48,7 @@ internal fun createRetrofit(endpointConfig: EndpointConfig, okHttpClient: OkHttp
     Retrofit.Builder()
         .baseUrl(endpointConfig.httpUrl)
         .client(okHttpClient)
-        .addConverterFactory(MoshiQueryConverterFactory(Serializer.moshi))
+        .addConverterFactory(QueryConverterFactory(Serializer.moshi))
         .addConverterFactory(ScalarsConverterFactory.create())
         .addConverterFactory(MoshiConverterFactory.create(Serializer.moshi))
         .build()

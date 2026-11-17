@@ -44,6 +44,7 @@ import io.getstream.feeds.android.network.models.OwnBatchResponse
 import io.getstream.feeds.android.network.models.PollOptionResponse
 import io.getstream.feeds.android.network.models.PollResponse
 import io.getstream.feeds.android.network.models.PollVotesResponse
+import io.getstream.feeds.android.network.models.PushProviderName
 import io.getstream.feeds.android.network.models.QueryActivitiesRequest
 import io.getstream.feeds.android.network.models.QueryActivitiesResponse
 import io.getstream.feeds.android.network.models.QueryPollVotesRequest
@@ -114,7 +115,9 @@ internal class FeedsSingleFlightApiTest(private val testCase: SingleFlightTestCa
             AddCommentResponse(duration = "100ms", comment = TestData.commentResponse())
         private val testAddReactionResponse =
             AddReactionResponse(
+                counterDelta = 1,
                 duration = "100ms",
+                outcome = "added",
                 activity = TestData.activityResponse(),
                 reaction = TestData.feedsReactionResponse(),
             )
@@ -167,7 +170,9 @@ internal class FeedsSingleFlightApiTest(private val testCase: SingleFlightTestCa
                     SingleFlightTestCase(
                         testName = "queryActivities",
                         expectedKeyPrefix = "queryActivities-",
-                        call = { it.queryActivities(QueryActivitiesRequest()) },
+                        call = {
+                            it.queryActivities(queryActivitiesRequest = QueryActivitiesRequest())
+                        },
                         apiResult = testQueryActivitiesResponse,
                     )
                 ),
@@ -189,7 +194,7 @@ internal class FeedsSingleFlightApiTest(private val testCase: SingleFlightTestCa
                             it.createDevice(
                                 CreateDeviceRequest(
                                     id = "device-1",
-                                    pushProvider = CreateDeviceRequest.PushProvider.Firebase,
+                                    pushProvider = PushProviderName.Firebase,
                                 )
                             )
                         },

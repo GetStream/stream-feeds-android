@@ -19,6 +19,7 @@ package io.getstream.feeds.android.client.internal.http
 import io.getstream.android.core.api.model.StreamTypedKey.Companion.asStreamTypedKey
 import io.getstream.android.core.api.processing.StreamSingleFlightProcessor
 import io.getstream.feeds.android.network.apis.FeedsApi
+import io.getstream.feeds.android.network.infrastructure.JsonQuery
 import io.getstream.feeds.android.network.models.AcceptFeedMemberInviteRequest
 import io.getstream.feeds.android.network.models.AcceptFeedMemberInviteResponse
 import io.getstream.feeds.android.network.models.AcceptFollowRequest
@@ -44,10 +45,25 @@ import io.getstream.feeds.android.network.models.AddUserGroupMembersResponse
 import io.getstream.feeds.android.network.models.AppealRequest
 import io.getstream.feeds.android.network.models.AppealResponse
 import io.getstream.feeds.android.network.models.BanRequest
-import io.getstream.feeds.android.network.models.BanResponse
+import io.getstream.feeds.android.network.models.BatchQueryActivityReactionsRequest
+import io.getstream.feeds.android.network.models.BatchQueryActivityReactionsResponse
+import io.getstream.feeds.android.network.models.BatchQueryCommentReactionsRequest
+import io.getstream.feeds.android.network.models.BatchQueryCommentReactionsResponse
 import io.getstream.feeds.android.network.models.BlockUsersRequest
 import io.getstream.feeds.android.network.models.BlockUsersResponse
+import io.getstream.feeds.android.network.models.BulkActionAppealsRequest
+import io.getstream.feeds.android.network.models.BulkActionAppealsResponse
+import io.getstream.feeds.android.network.models.BulkDeleteActionConfigRequest
+import io.getstream.feeds.android.network.models.BulkDeleteActionConfigResponse
+import io.getstream.feeds.android.network.models.BulkUpsertActionConfigRequest
+import io.getstream.feeds.android.network.models.BulkUpsertActionConfigResponse
 import io.getstream.feeds.android.network.models.CastPollVoteRequest
+import io.getstream.feeds.android.network.models.ChangeFeedVisibilityRequest
+import io.getstream.feeds.android.network.models.ChangeFeedVisibilityResponse
+import io.getstream.feeds.android.network.models.CommentFeedbackRequest
+import io.getstream.feeds.android.network.models.CommentFeedbackResponse
+import io.getstream.feeds.android.network.models.CountReviewQueueRequest
+import io.getstream.feeds.android.network.models.CountReviewQueueResponse
 import io.getstream.feeds.android.network.models.CreateBlockListRequest
 import io.getstream.feeds.android.network.models.CreateBlockListResponse
 import io.getstream.feeds.android.network.models.CreateCollectionsRequest
@@ -59,8 +75,10 @@ import io.getstream.feeds.android.network.models.CreateGuestRequest
 import io.getstream.feeds.android.network.models.CreateGuestResponse
 import io.getstream.feeds.android.network.models.CreatePollOptionRequest
 import io.getstream.feeds.android.network.models.CreatePollRequest
+import io.getstream.feeds.android.network.models.CreateQueueRequest
 import io.getstream.feeds.android.network.models.CreateUserGroupRequest
 import io.getstream.feeds.android.network.models.CreateUserGroupResponse
+import io.getstream.feeds.android.network.models.DeleteActionConfigResponse
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.network.models.DeleteActivityReactionResponse
@@ -73,13 +91,16 @@ import io.getstream.feeds.android.network.models.DeleteCommentReactionResponse
 import io.getstream.feeds.android.network.models.DeleteCommentResponse
 import io.getstream.feeds.android.network.models.DeleteFeedResponse
 import io.getstream.feeds.android.network.models.DeleteModerationConfigResponse
+import io.getstream.feeds.android.network.models.DeleteQueueRequest
+import io.getstream.feeds.android.network.models.DeleteUserInterestsResponse
 import io.getstream.feeds.android.network.models.FileUploadRequest
 import io.getstream.feeds.android.network.models.FileUploadResponse
+import io.getstream.feeds.android.network.models.FlagItemResponse
 import io.getstream.feeds.android.network.models.FlagRequest
-import io.getstream.feeds.android.network.models.FlagResponse
 import io.getstream.feeds.android.network.models.FollowBatchRequest
 import io.getstream.feeds.android.network.models.FollowBatchResponse
 import io.getstream.feeds.android.network.models.FollowRequest
+import io.getstream.feeds.android.network.models.GetActionConfigResponse
 import io.getstream.feeds.android.network.models.GetActivityResponse
 import io.getstream.feeds.android.network.models.GetAppealResponse
 import io.getstream.feeds.android.network.models.GetApplicationResponse
@@ -88,17 +109,27 @@ import io.getstream.feeds.android.network.models.GetCommentRepliesResponse
 import io.getstream.feeds.android.network.models.GetCommentResponse
 import io.getstream.feeds.android.network.models.GetCommentsResponse
 import io.getstream.feeds.android.network.models.GetConfigResponse
+import io.getstream.feeds.android.network.models.GetConfigVersionResponse
+import io.getstream.feeds.android.network.models.GetFeedCountsResponse
 import io.getstream.feeds.android.network.models.GetFollowSuggestionsResponse
+import io.getstream.feeds.android.network.models.GetNotificationStatusResponse
 import io.getstream.feeds.android.network.models.GetOGResponse
 import io.getstream.feeds.android.network.models.GetOrCreateFeedRequest
 import io.getstream.feeds.android.network.models.GetOrCreateFeedResponse
+import io.getstream.feeds.android.network.models.GetOrCreateFollowResponse
+import io.getstream.feeds.android.network.models.GetOrCreateUnfollowRequest
+import io.getstream.feeds.android.network.models.GetOrCreateUnfollowResponse
 import io.getstream.feeds.android.network.models.GetUserGroupResponse
+import io.getstream.feeds.android.network.models.GetUserInterestsResponse
 import io.getstream.feeds.android.network.models.ImageUploadRequest
 import io.getstream.feeds.android.network.models.ImageUploadResponse
 import io.getstream.feeds.android.network.models.ListBlockListResponse
+import io.getstream.feeds.android.network.models.ListConfigVersionsResponse
 import io.getstream.feeds.android.network.models.ListDevicesResponse
+import io.getstream.feeds.android.network.models.ListQueuesResponse
 import io.getstream.feeds.android.network.models.ListUserGroupsResponse
 import io.getstream.feeds.android.network.models.MarkActivityRequest
+import io.getstream.feeds.android.network.models.ModerationBanResponse
 import io.getstream.feeds.android.network.models.MuteRequest
 import io.getstream.feeds.android.network.models.MuteResponse
 import io.getstream.feeds.android.network.models.OwnBatchRequest
@@ -109,10 +140,13 @@ import io.getstream.feeds.android.network.models.PollOptionResponse
 import io.getstream.feeds.android.network.models.PollResponse
 import io.getstream.feeds.android.network.models.PollVoteResponse
 import io.getstream.feeds.android.network.models.PollVotesResponse
+import io.getstream.feeds.android.network.models.PublishConfigVersionRequest
+import io.getstream.feeds.android.network.models.PublishConfigVersionResponse
 import io.getstream.feeds.android.network.models.QueryActivitiesRequest
 import io.getstream.feeds.android.network.models.QueryActivitiesResponse
 import io.getstream.feeds.android.network.models.QueryActivityReactionsRequest
 import io.getstream.feeds.android.network.models.QueryActivityReactionsResponse
+import io.getstream.feeds.android.network.models.QueryActivitySharesResponse
 import io.getstream.feeds.android.network.models.QueryAppealsRequest
 import io.getstream.feeds.android.network.models.QueryAppealsResponse
 import io.getstream.feeds.android.network.models.QueryBookmarkFoldersRequest
@@ -142,6 +176,7 @@ import io.getstream.feeds.android.network.models.QueryReviewQueueRequest
 import io.getstream.feeds.android.network.models.QueryReviewQueueResponse
 import io.getstream.feeds.android.network.models.QueryUsersPayload
 import io.getstream.feeds.android.network.models.QueryUsersResponse
+import io.getstream.feeds.android.network.models.QueueResponse
 import io.getstream.feeds.android.network.models.ReadCollectionsResponse
 import io.getstream.feeds.android.network.models.RejectFeedMemberInviteRequest
 import io.getstream.feeds.android.network.models.RejectFeedMemberInviteResponse
@@ -154,6 +189,11 @@ import io.getstream.feeds.android.network.models.RestoreActivityRequest
 import io.getstream.feeds.android.network.models.RestoreActivityResponse
 import io.getstream.feeds.android.network.models.RestoreCommentRequest
 import io.getstream.feeds.android.network.models.RestoreCommentResponse
+import io.getstream.feeds.android.network.models.RevealMediaRequest
+import io.getstream.feeds.android.network.models.RevealMediaResponse
+import io.getstream.feeds.android.network.models.SaveConfigVersionRequest
+import io.getstream.feeds.android.network.models.SaveConfigVersionResponse
+import io.getstream.feeds.android.network.models.SearchRolesResponse
 import io.getstream.feeds.android.network.models.SearchUserGroupsResponse
 import io.getstream.feeds.android.network.models.SharedLocationResponse
 import io.getstream.feeds.android.network.models.SharedLocationsResponse
@@ -162,11 +202,19 @@ import io.getstream.feeds.android.network.models.SubmitActionRequest
 import io.getstream.feeds.android.network.models.SubmitActionResponse
 import io.getstream.feeds.android.network.models.TrackActivityMetricsRequest
 import io.getstream.feeds.android.network.models.TrackActivityMetricsResponse
+import io.getstream.feeds.android.network.models.TranslateActivityRequest
+import io.getstream.feeds.android.network.models.TranslateActivityResponse
+import io.getstream.feeds.android.network.models.TranslateCommentRequest
+import io.getstream.feeds.android.network.models.TranslateCommentResponse
+import io.getstream.feeds.android.network.models.UnbanRequest
+import io.getstream.feeds.android.network.models.UnbanResponse
 import io.getstream.feeds.android.network.models.UnblockUsersRequest
 import io.getstream.feeds.android.network.models.UnblockUsersResponse
 import io.getstream.feeds.android.network.models.UnfollowBatchRequest
 import io.getstream.feeds.android.network.models.UnfollowBatchResponse
 import io.getstream.feeds.android.network.models.UnfollowResponse
+import io.getstream.feeds.android.network.models.UnmuteRequest
+import io.getstream.feeds.android.network.models.UnmuteResponse
 import io.getstream.feeds.android.network.models.UnpinActivityResponse
 import io.getstream.feeds.android.network.models.UpdateActivityPartialRequest
 import io.getstream.feeds.android.network.models.UpdateActivityPartialResponse
@@ -196,17 +244,22 @@ import io.getstream.feeds.android.network.models.UpdateLiveLocationRequest
 import io.getstream.feeds.android.network.models.UpdatePollOptionRequest
 import io.getstream.feeds.android.network.models.UpdatePollPartialRequest
 import io.getstream.feeds.android.network.models.UpdatePollRequest
+import io.getstream.feeds.android.network.models.UpdateQueueRequest
 import io.getstream.feeds.android.network.models.UpdateUserGroupRequest
 import io.getstream.feeds.android.network.models.UpdateUserGroupResponse
 import io.getstream.feeds.android.network.models.UpdateUsersPartialRequest
 import io.getstream.feeds.android.network.models.UpdateUsersRequest
 import io.getstream.feeds.android.network.models.UpdateUsersResponse
+import io.getstream.feeds.android.network.models.UpsertActionConfigRequest
+import io.getstream.feeds.android.network.models.UpsertActionConfigResponse
 import io.getstream.feeds.android.network.models.UpsertActivitiesRequest
 import io.getstream.feeds.android.network.models.UpsertActivitiesResponse
 import io.getstream.feeds.android.network.models.UpsertConfigRequest
 import io.getstream.feeds.android.network.models.UpsertConfigResponse
 import io.getstream.feeds.android.network.models.UpsertPushPreferencesRequest
 import io.getstream.feeds.android.network.models.UpsertPushPreferencesResponse
+import io.getstream.feeds.android.network.models.UpsertUserInterestsRequest
+import io.getstream.feeds.android.network.models.UpsertUserInterestsResponse
 import io.getstream.feeds.android.network.models.WSAuthMessage
 
 internal class FeedsSingleFlightApi(
@@ -217,8 +270,14 @@ internal class FeedsSingleFlightApi(
     override suspend fun getApp(): GetApplicationResponse =
         singleFlight("getApp") { delegate.getApp() }
 
-    override suspend fun listBlockLists(team: String?): ListBlockListResponse =
-        singleFlight("listBlockLists", team) { delegate.listBlockLists(team) }
+    override suspend fun listBlockLists(
+        team: String?,
+        cursor: String?,
+        limit: Int?,
+    ): ListBlockListResponse =
+        singleFlight("listBlockLists", team, cursor, limit) {
+            delegate.listBlockLists(team, cursor, limit)
+        }
 
     override suspend fun createBlockList(
         createBlockListRequest: CreateBlockListRequest
@@ -277,14 +336,28 @@ internal class FeedsSingleFlightApi(
         }
 
     override suspend fun queryActivities(
-        queryActivitiesRequest: QueryActivitiesRequest
+        language: String?,
+        translateText: Boolean?,
+        queryActivitiesRequest: QueryActivitiesRequest,
     ): QueryActivitiesResponse =
-        singleFlight("queryActivities", queryActivitiesRequest) {
-            delegate.queryActivities(queryActivitiesRequest)
+        singleFlight("queryActivities", language, translateText, queryActivitiesRequest) {
+            delegate.queryActivities(language, translateText, queryActivitiesRequest)
         }
 
-    override suspend fun queryActivities(): QueryActivitiesResponse =
-        singleFlight("queryActivities") { delegate.queryActivities() }
+    override suspend fun queryActivities(
+        language: String?,
+        translateText: Boolean?,
+    ): QueryActivitiesResponse =
+        singleFlight("queryActivities", language, translateText) {
+            delegate.queryActivities(language, translateText)
+        }
+
+    override suspend fun batchQueryActivityReactions(
+        batchQueryActivityReactionsRequest: BatchQueryActivityReactionsRequest
+    ): BatchQueryActivityReactionsResponse =
+        singleFlight("batchQueryActivityReactions", batchQueryActivityReactionsRequest) {
+            delegate.batchQueryActivityReactions(batchQueryActivityReactionsRequest)
+        }
 
     override suspend fun deleteBookmark(
         activityId: String,
@@ -345,10 +418,9 @@ internal class FeedsSingleFlightApi(
         activityId: String,
         pollId: String,
         voteId: String,
-        userId: String?,
     ): PollVoteResponse =
-        singleFlight("deletePollVote", activityId, pollId, voteId, userId) {
-            delegate.deletePollVote(activityId, pollId, voteId, userId)
+        singleFlight("deletePollVote", activityId, pollId, voteId) {
+            delegate.deletePollVote(activityId, pollId, voteId)
         }
 
     override suspend fun addActivityReaction(
@@ -383,6 +455,16 @@ internal class FeedsSingleFlightApi(
             delegate.deleteActivityReaction(activityId, type, deleteNotificationActivity)
         }
 
+    override suspend fun queryActivityShares(
+        activityId: String,
+        limit: Int?,
+        prev: String?,
+        next: String?,
+    ): QueryActivitySharesResponse =
+        singleFlight("queryActivityShares", activityId, limit, prev, next) {
+            delegate.queryActivityShares(activityId, limit, prev, next)
+        }
+
     override suspend fun deleteActivity(
         id: String,
         hardDelete: Boolean?,
@@ -392,8 +474,35 @@ internal class FeedsSingleFlightApi(
             delegate.deleteActivity(id, hardDelete, deleteNotificationActivity)
         }
 
-    override suspend fun getActivity(id: String): GetActivityResponse =
-        singleFlight("getActivity", id) { delegate.getActivity(id) }
+    override suspend fun getActivity(
+        id: String,
+        commentSort: String?,
+        commentLimit: Int?,
+        skipOwnFollowings: Boolean?,
+        language: String?,
+        translateText: Boolean?,
+        includeTopLevelCommentCount: Boolean?,
+    ): GetActivityResponse =
+        singleFlight(
+            "getActivity",
+            id,
+            commentSort,
+            commentLimit,
+            skipOwnFollowings,
+            language,
+            translateText,
+            includeTopLevelCommentCount,
+        ) {
+            delegate.getActivity(
+                id,
+                commentSort,
+                commentLimit,
+                skipOwnFollowings,
+                language,
+                translateText,
+                includeTopLevelCommentCount,
+            )
+        }
 
     override suspend fun updateActivityPartial(
         id: String,
@@ -434,6 +543,14 @@ internal class FeedsSingleFlightApi(
             delegate.restoreActivity(id, enrichOwnFields)
         }
 
+    override suspend fun translateActivity(
+        id: String,
+        translateActivityRequest: TranslateActivityRequest,
+    ): TranslateActivityResponse =
+        singleFlight("translateActivity", id, translateActivityRequest) {
+            delegate.translateActivity(id, translateActivityRequest)
+        }
+
     override suspend fun queryBookmarkFolders(
         queryBookmarkFoldersRequest: QueryBookmarkFoldersRequest
     ): QueryBookmarkFoldersResponse =
@@ -459,14 +576,21 @@ internal class FeedsSingleFlightApi(
         singleFlight("updateBookmarkFolder", folderId) { delegate.updateBookmarkFolder(folderId) }
 
     override suspend fun queryBookmarks(
-        queryBookmarksRequest: QueryBookmarksRequest
+        language: String?,
+        translateText: Boolean?,
+        queryBookmarksRequest: QueryBookmarksRequest,
     ): QueryBookmarksResponse =
-        singleFlight("queryBookmarks", queryBookmarksRequest) {
-            delegate.queryBookmarks(queryBookmarksRequest)
+        singleFlight("queryBookmarks", language, translateText, queryBookmarksRequest) {
+            delegate.queryBookmarks(language, translateText, queryBookmarksRequest)
         }
 
-    override suspend fun queryBookmarks(): QueryBookmarksResponse =
-        singleFlight("queryBookmarks") { delegate.queryBookmarks() }
+    override suspend fun queryBookmarks(
+        language: String?,
+        translateText: Boolean?,
+    ): QueryBookmarksResponse =
+        singleFlight("queryBookmarks", language, translateText) {
+            delegate.queryBookmarks(language, translateText)
+        }
 
     override suspend fun deleteCollections(
         collectionRefs: List<String>
@@ -509,9 +633,12 @@ internal class FeedsSingleFlightApi(
         sort: String?,
         repliesLimit: Int?,
         idAround: String?,
+        language: String?,
+        translateText: Boolean?,
         limit: Int?,
         prev: String?,
         next: String?,
+        includeTopLevelCommentCount: Boolean?,
     ): GetCommentsResponse =
         singleFlight(
             "getComments",
@@ -521,9 +648,12 @@ internal class FeedsSingleFlightApi(
             sort,
             repliesLimit,
             idAround,
+            language,
+            translateText,
             limit,
             prev,
             next,
+            includeTopLevelCommentCount,
         ) {
             delegate.getComments(
                 objectId,
@@ -532,9 +662,12 @@ internal class FeedsSingleFlightApi(
                 sort,
                 repliesLimit,
                 idAround,
+                language,
+                translateText,
                 limit,
                 prev,
                 next,
+                includeTopLevelCommentCount,
             )
         }
 
@@ -552,10 +685,19 @@ internal class FeedsSingleFlightApi(
         }
 
     override suspend fun queryComments(
-        queryCommentsRequest: QueryCommentsRequest
+        language: String?,
+        translateText: Boolean?,
+        queryCommentsRequest: QueryCommentsRequest,
     ): QueryCommentsResponse =
-        singleFlight("queryComments", queryCommentsRequest) {
-            delegate.queryComments(queryCommentsRequest)
+        singleFlight("queryComments", language, translateText, queryCommentsRequest) {
+            delegate.queryComments(language, translateText, queryCommentsRequest)
+        }
+
+    override suspend fun batchQueryCommentReactions(
+        batchQueryCommentReactionsRequest: BatchQueryCommentReactionsRequest
+    ): BatchQueryCommentReactionsResponse =
+        singleFlight("batchQueryCommentReactions", batchQueryCommentReactionsRequest) {
+            delegate.batchQueryCommentReactions(batchQueryCommentReactionsRequest)
         }
 
     override suspend fun deleteCommentBookmark(
@@ -599,8 +741,14 @@ internal class FeedsSingleFlightApi(
             delegate.deleteComment(id, hardDelete, deleteNotificationActivity)
         }
 
-    override suspend fun getComment(id: String): GetCommentResponse =
-        singleFlight("getComment", id) { delegate.getComment(id) }
+    override suspend fun getComment(
+        id: String,
+        language: String?,
+        translateText: Boolean?,
+    ): GetCommentResponse =
+        singleFlight("getComment", id, language, translateText) {
+            delegate.getComment(id, language, translateText)
+        }
 
     override suspend fun updateComment(
         id: String,
@@ -612,6 +760,17 @@ internal class FeedsSingleFlightApi(
 
     override suspend fun updateComment(id: String): UpdateCommentResponse =
         singleFlight("updateComment", id) { delegate.updateComment(id) }
+
+    override suspend fun commentFeedback(
+        id: String,
+        commentFeedbackRequest: CommentFeedbackRequest,
+    ): CommentFeedbackResponse =
+        singleFlight("commentFeedback", id, commentFeedbackRequest) {
+            delegate.commentFeedback(id, commentFeedbackRequest)
+        }
+
+    override suspend fun commentFeedback(id: String): CommentFeedbackResponse =
+        singleFlight("commentFeedback", id) { delegate.commentFeedback(id) }
 
     override suspend fun updateCommentPartial(
         id: String,
@@ -658,6 +817,8 @@ internal class FeedsSingleFlightApi(
         sort: String?,
         repliesLimit: Int?,
         idAround: String?,
+        language: String?,
+        translateText: Boolean?,
         limit: Int?,
         prev: String?,
         next: String?,
@@ -669,11 +830,24 @@ internal class FeedsSingleFlightApi(
             sort,
             repliesLimit,
             idAround,
+            language,
+            translateText,
             limit,
             prev,
             next,
         ) {
-            delegate.getCommentReplies(id, depth, sort, repliesLimit, idAround, limit, prev, next)
+            delegate.getCommentReplies(
+                id,
+                depth,
+                sort,
+                repliesLimit,
+                idAround,
+                language,
+                translateText,
+                limit,
+                prev,
+                next,
+            )
         }
 
     override suspend fun restoreComment(
@@ -687,32 +861,67 @@ internal class FeedsSingleFlightApi(
     override suspend fun restoreComment(id: String): RestoreCommentResponse =
         singleFlight("restoreComment", id) { delegate.restoreComment(id) }
 
+    override suspend fun translateComment(
+        id: String,
+        translateCommentRequest: TranslateCommentRequest,
+    ): TranslateCommentResponse =
+        singleFlight("translateComment", id, translateCommentRequest) {
+            delegate.translateComment(id, translateCommentRequest)
+        }
+
     override suspend fun deleteFeed(
         feedGroupId: String,
         feedId: String,
         hardDelete: Boolean?,
+        purgeUserActivities: Boolean?,
     ): DeleteFeedResponse =
-        singleFlight("deleteFeed", feedGroupId, feedId, hardDelete) {
-            delegate.deleteFeed(feedGroupId, feedId, hardDelete)
+        singleFlight("deleteFeed", feedGroupId, feedId, hardDelete, purgeUserActivities) {
+            delegate.deleteFeed(feedGroupId, feedId, hardDelete, purgeUserActivities)
         }
 
     override suspend fun getOrCreateFeed(
         feedGroupId: String,
         feedId: String,
+        language: String?,
+        translateText: Boolean?,
         connectionId: String?,
         getOrCreateFeedRequest: GetOrCreateFeedRequest,
     ): GetOrCreateFeedResponse =
-        singleFlight("getOrCreateFeed", feedGroupId, feedId, connectionId, getOrCreateFeedRequest) {
-            delegate.getOrCreateFeed(feedGroupId, feedId, connectionId, getOrCreateFeedRequest)
+        singleFlight(
+            "getOrCreateFeed",
+            feedGroupId,
+            feedId,
+            language,
+            translateText,
+            connectionId,
+            getOrCreateFeedRequest,
+        ) {
+            delegate.getOrCreateFeed(
+                feedGroupId,
+                feedId,
+                language,
+                translateText,
+                connectionId,
+                getOrCreateFeedRequest,
+            )
         }
 
     override suspend fun getOrCreateFeed(
         feedGroupId: String,
         feedId: String,
+        language: String?,
+        translateText: Boolean?,
         connectionId: String?,
     ): GetOrCreateFeedResponse =
-        singleFlight("getOrCreateFeed", feedGroupId, feedId, connectionId) {
-            delegate.getOrCreateFeed(feedGroupId, feedId, connectionId)
+        singleFlight(
+            "getOrCreateFeed",
+            feedGroupId,
+            feedId,
+            language,
+            translateText,
+            connectionId,
+        ) {
+            delegate.getOrCreateFeed(feedGroupId, feedId, language, translateText, connectionId)
         }
 
     override suspend fun updateFeed(
@@ -768,6 +977,20 @@ internal class FeedsSingleFlightApi(
     ): PinActivityResponse =
         singleFlight("pinActivity", feedGroupId, feedId, activityId) {
             delegate.pinActivity(feedGroupId, feedId, activityId)
+        }
+
+    override suspend fun changeFeedVisibility(
+        feedGroupId: String,
+        feedId: String,
+        changeFeedVisibilityRequest: ChangeFeedVisibilityRequest,
+    ): ChangeFeedVisibilityResponse =
+        singleFlight("changeFeedVisibility", feedGroupId, feedId, changeFeedVisibilityRequest) {
+            delegate.changeFeedVisibility(feedGroupId, feedId, changeFeedVisibilityRequest)
+        }
+
+    override suspend fun getFeedCounts(feedGroupId: String, feedId: String): GetFeedCountsResponse =
+        singleFlight("getFeedCounts", feedGroupId, feedId) {
+            delegate.getFeedCounts(feedGroupId, feedId)
         }
 
     override suspend fun updateFeedMembers(
@@ -830,21 +1053,47 @@ internal class FeedsSingleFlightApi(
             delegate.rejectFeedMemberInvite(feedGroupId, feedId)
         }
 
-    override suspend fun queryPinnedActivities(
+    override suspend fun getNotificationStatus(
         feedGroupId: String,
         feedId: String,
-        queryPinnedActivitiesRequest: QueryPinnedActivitiesRequest,
-    ): QueryPinnedActivitiesResponse =
-        singleFlight("queryPinnedActivities", feedGroupId, feedId, queryPinnedActivitiesRequest) {
-            delegate.queryPinnedActivities(feedGroupId, feedId, queryPinnedActivitiesRequest)
+        view: String?,
+    ): GetNotificationStatusResponse =
+        singleFlight("getNotificationStatus", feedGroupId, feedId, view) {
+            delegate.getNotificationStatus(feedGroupId, feedId, view)
         }
 
     override suspend fun queryPinnedActivities(
         feedGroupId: String,
         feedId: String,
+        language: String?,
+        translateText: Boolean?,
+        queryPinnedActivitiesRequest: QueryPinnedActivitiesRequest,
     ): QueryPinnedActivitiesResponse =
-        singleFlight("queryPinnedActivities", feedGroupId, feedId) {
-            delegate.queryPinnedActivities(feedGroupId, feedId)
+        singleFlight(
+            "queryPinnedActivities",
+            feedGroupId,
+            feedId,
+            language,
+            translateText,
+            queryPinnedActivitiesRequest,
+        ) {
+            delegate.queryPinnedActivities(
+                feedGroupId,
+                feedId,
+                language,
+                translateText,
+                queryPinnedActivitiesRequest,
+            )
+        }
+
+    override suspend fun queryPinnedActivities(
+        feedGroupId: String,
+        feedId: String,
+        language: String?,
+        translateText: Boolean?,
+    ): QueryPinnedActivitiesResponse =
+        singleFlight("queryPinnedActivities", feedGroupId, feedId, language, translateText) {
+            delegate.queryPinnedActivities(feedGroupId, feedId, language, translateText)
         }
 
     override suspend fun stopWatchingFeed(
@@ -934,6 +1183,13 @@ internal class FeedsSingleFlightApi(
             delegate.rejectFollow(rejectFollowRequest)
         }
 
+    override suspend fun getOrCreateFollow(
+        followRequest: FollowRequest
+    ): GetOrCreateFollowResponse =
+        singleFlight("getOrCreateFollow", followRequest) {
+            delegate.getOrCreateFollow(followRequest)
+        }
+
     override suspend fun unfollow(
         source: String,
         target: String,
@@ -965,12 +1221,77 @@ internal class FeedsSingleFlightApi(
             delegate.getOrCreateUnfollows(unfollowBatchRequest)
         }
 
+    override suspend fun getOrCreateUnfollow(
+        getOrCreateUnfollowRequest: GetOrCreateUnfollowRequest
+    ): GetOrCreateUnfollowResponse =
+        singleFlight("getOrCreateUnfollow", getOrCreateUnfollowRequest) {
+            delegate.getOrCreateUnfollow(getOrCreateUnfollowRequest)
+        }
+
+    override suspend fun deleteUserInterests(
+        userId: String,
+        tags: List<String>,
+    ): DeleteUserInterestsResponse =
+        singleFlight("deleteUserInterests", userId, tags) {
+            delegate.deleteUserInterests(userId, tags)
+        }
+
+    override suspend fun getUserInterests(userId: String, limit: Int?): GetUserInterestsResponse =
+        singleFlight("getUserInterests", userId, limit) { delegate.getUserInterests(userId, limit) }
+
+    override suspend fun upsertUserInterests(
+        userId: String,
+        upsertUserInterestsRequest: UpsertUserInterestsRequest,
+    ): UpsertUserInterestsResponse =
+        singleFlight("upsertUserInterests", userId, upsertUserInterestsRequest) {
+            delegate.upsertUserInterests(userId, upsertUserInterestsRequest)
+        }
+
     override suspend fun createGuest(createGuestRequest: CreateGuestRequest): CreateGuestResponse =
         singleFlight("createGuest", createGuestRequest) { delegate.createGuest(createGuestRequest) }
 
-    override suspend fun longPoll(connectionId: String?, json: WSAuthMessage?) {
-        singleFlight("longPoll", connectionId, json) { delegate.longPoll(connectionId, json) }
-    }
+    override suspend fun longPoll(
+        connectionId: String?,
+        close: Boolean?,
+        json: JsonQuery<WSAuthMessage>?,
+    ): Unit =
+        singleFlight("longPoll", connectionId, close, json) {
+            delegate.longPoll(connectionId, close, json)
+        }
+
+    override suspend fun getActionConfig(
+        queueType: String?,
+        entityType: String?,
+        excludeDefaults: Boolean?,
+        onlyDefaults: Boolean?,
+    ): GetActionConfigResponse =
+        singleFlight("getActionConfig", queueType, entityType, excludeDefaults, onlyDefaults) {
+            delegate.getActionConfig(queueType, entityType, excludeDefaults, onlyDefaults)
+        }
+
+    override suspend fun upsertActionConfig(
+        upsertActionConfigRequest: UpsertActionConfigRequest
+    ): UpsertActionConfigResponse =
+        singleFlight("upsertActionConfig", upsertActionConfigRequest) {
+            delegate.upsertActionConfig(upsertActionConfigRequest)
+        }
+
+    override suspend fun bulkUpsertActionConfig(
+        bulkUpsertActionConfigRequest: BulkUpsertActionConfigRequest
+    ): BulkUpsertActionConfigResponse =
+        singleFlight("bulkUpsertActionConfig", bulkUpsertActionConfigRequest) {
+            delegate.bulkUpsertActionConfig(bulkUpsertActionConfigRequest)
+        }
+
+    override suspend fun bulkDeleteActionConfig(
+        bulkDeleteActionConfigRequest: BulkDeleteActionConfigRequest
+    ): BulkDeleteActionConfigResponse =
+        singleFlight("bulkDeleteActionConfig", bulkDeleteActionConfigRequest) {
+            delegate.bulkDeleteActionConfig(bulkDeleteActionConfigRequest)
+        }
+
+    override suspend fun deleteActionConfig(id: String): DeleteActionConfigResponse =
+        singleFlight("deleteActionConfig", id) { delegate.deleteActionConfig(id) }
 
     override suspend fun appeal(appealRequest: AppealRequest): AppealResponse =
         singleFlight("appeal", appealRequest) { delegate.appeal(appealRequest) }
@@ -988,7 +1309,14 @@ internal class FeedsSingleFlightApi(
     override suspend fun queryAppeals(): QueryAppealsResponse =
         singleFlight("queryAppeals") { delegate.queryAppeals() }
 
-    override suspend fun ban(banRequest: BanRequest): BanResponse =
+    override suspend fun bulkActionAppeals(
+        bulkActionAppealsRequest: BulkActionAppealsRequest
+    ): BulkActionAppealsResponse =
+        singleFlight("bulkActionAppeals", bulkActionAppealsRequest) {
+            delegate.bulkActionAppeals(bulkActionAppealsRequest)
+        }
+
+    override suspend fun ban(banRequest: BanRequest): ModerationBanResponse =
         singleFlight("ban", banRequest) { delegate.ban(banRequest) }
 
     override suspend fun upsertConfig(
@@ -998,11 +1326,50 @@ internal class FeedsSingleFlightApi(
             delegate.upsertConfig(upsertConfigRequest)
         }
 
+    override suspend fun saveConfigVersion(
+        saveConfigVersionRequest: SaveConfigVersionRequest
+    ): SaveConfigVersionResponse =
+        singleFlight("saveConfigVersion", saveConfigVersionRequest) {
+            delegate.saveConfigVersion(saveConfigVersionRequest)
+        }
+
     override suspend fun deleteConfig(key: String, team: String?): DeleteModerationConfigResponse =
         singleFlight("deleteConfig", key, team) { delegate.deleteConfig(key, team) }
 
     override suspend fun getConfig(key: String, team: String?): GetConfigResponse =
         singleFlight("getConfig", key, team) { delegate.getConfig(key, team) }
+
+    override suspend fun listConfigVersions(
+        key: String,
+        team: String?,
+    ): ListConfigVersionsResponse =
+        singleFlight("listConfigVersions", key, team) { delegate.listConfigVersions(key, team) }
+
+    override suspend fun getConfigVersion(
+        key: String,
+        version: Int,
+        team: String?,
+    ): GetConfigVersionResponse =
+        singleFlight("getConfigVersion", key, version, team) {
+            delegate.getConfigVersion(key, version, team)
+        }
+
+    override suspend fun publishConfigVersion(
+        key: String,
+        version: Int,
+        publishConfigVersionRequest: PublishConfigVersionRequest,
+    ): PublishConfigVersionResponse =
+        singleFlight("publishConfigVersion", key, version, publishConfigVersionRequest) {
+            delegate.publishConfigVersion(key, version, publishConfigVersionRequest)
+        }
+
+    override suspend fun publishConfigVersion(
+        key: String,
+        version: Int,
+    ): PublishConfigVersionResponse =
+        singleFlight("publishConfigVersion", key, version) {
+            delegate.publishConfigVersion(key, version)
+        }
 
     override suspend fun queryModerationConfigs(
         queryModerationConfigsRequest: QueryModerationConfigsRequest
@@ -1014,11 +1381,45 @@ internal class FeedsSingleFlightApi(
     override suspend fun queryModerationConfigs(): QueryModerationConfigsResponse =
         singleFlight("queryModerationConfigs") { delegate.queryModerationConfigs() }
 
-    override suspend fun flag(flagRequest: FlagRequest): FlagResponse =
+    override suspend fun flag(flagRequest: FlagRequest): FlagItemResponse =
         singleFlight("flag", flagRequest) { delegate.flag(flagRequest) }
 
     override suspend fun mute(muteRequest: MuteRequest): MuteResponse =
         singleFlight("mute", muteRequest) { delegate.mute(muteRequest) }
+
+    override suspend fun listQueues(): ListQueuesResponse =
+        singleFlight("listQueues") { delegate.listQueues() }
+
+    override suspend fun createQueue(createQueueRequest: CreateQueueRequest): QueueResponse =
+        singleFlight("createQueue", createQueueRequest) { delegate.createQueue(createQueueRequest) }
+
+    override suspend fun getQueue(id: String): QueueResponse =
+        singleFlight("getQueue", id) { delegate.getQueue(id) }
+
+    override suspend fun updateQueue(
+        id: String,
+        updateQueueRequest: UpdateQueueRequest,
+    ): QueueResponse =
+        singleFlight("updateQueue", id, updateQueueRequest) {
+            delegate.updateQueue(id, updateQueueRequest)
+        }
+
+    override suspend fun updateQueue(id: String): QueueResponse =
+        singleFlight("updateQueue", id) { delegate.updateQueue(id) }
+
+    override suspend fun deleteQueue(
+        id: String,
+        deleteQueueRequest: DeleteQueueRequest,
+    ): QueueResponse =
+        singleFlight("deleteQueue", id, deleteQueueRequest) {
+            delegate.deleteQueue(id, deleteQueueRequest)
+        }
+
+    override suspend fun deleteQueue(id: String): QueueResponse =
+        singleFlight("deleteQueue", id) { delegate.deleteQueue(id) }
+
+    override suspend fun revealMedia(revealMediaRequest: RevealMediaRequest): RevealMediaResponse =
+        singleFlight("revealMedia", revealMediaRequest) { delegate.revealMedia(revealMediaRequest) }
 
     override suspend fun queryReviewQueue(
         queryReviewQueueRequest: QueryReviewQueueRequest
@@ -1030,12 +1431,44 @@ internal class FeedsSingleFlightApi(
     override suspend fun queryReviewQueue(): QueryReviewQueueResponse =
         singleFlight("queryReviewQueue") { delegate.queryReviewQueue() }
 
+    override suspend fun countReviewQueue(
+        countReviewQueueRequest: CountReviewQueueRequest
+    ): CountReviewQueueResponse =
+        singleFlight("countReviewQueue", countReviewQueueRequest) {
+            delegate.countReviewQueue(countReviewQueueRequest)
+        }
+
+    override suspend fun countReviewQueue(): CountReviewQueueResponse =
+        singleFlight("countReviewQueue") { delegate.countReviewQueue() }
+
     override suspend fun submitAction(
         submitActionRequest: SubmitActionRequest
     ): SubmitActionResponse =
         singleFlight("submitAction", submitActionRequest) {
             delegate.submitAction(submitActionRequest)
         }
+
+    override suspend fun unban(
+        targetUserId: String,
+        channelCid: String?,
+        removeFutureChannelsBan: Boolean?,
+        unbanRequest: UnbanRequest,
+    ): UnbanResponse =
+        singleFlight("unban", targetUserId, channelCid, removeFutureChannelsBan, unbanRequest) {
+            delegate.unban(targetUserId, channelCid, removeFutureChannelsBan, unbanRequest)
+        }
+
+    override suspend fun unban(
+        targetUserId: String,
+        channelCid: String?,
+        removeFutureChannelsBan: Boolean?,
+    ): UnbanResponse =
+        singleFlight("unban", targetUserId, channelCid, removeFutureChannelsBan) {
+            delegate.unban(targetUserId, channelCid, removeFutureChannelsBan)
+        }
+
+    override suspend fun unmute(unmuteRequest: UnmuteRequest): UnmuteResponse =
+        singleFlight("unmute", unmuteRequest) { delegate.unmute(unmuteRequest) }
 
     override suspend fun getOG(url: String): GetOGResponse =
         singleFlight("getOG", url) { delegate.getOG(url) }
@@ -1046,22 +1479,17 @@ internal class FeedsSingleFlightApi(
     override suspend fun updatePoll(updatePollRequest: UpdatePollRequest): PollResponse =
         singleFlight("updatePoll", updatePollRequest) { delegate.updatePoll(updatePollRequest) }
 
-    override suspend fun queryPolls(
-        userId: String?,
-        queryPollsRequest: QueryPollsRequest,
-    ): QueryPollsResponse =
-        singleFlight("queryPolls", userId, queryPollsRequest) {
-            delegate.queryPolls(userId, queryPollsRequest)
-        }
+    override suspend fun queryPolls(queryPollsRequest: QueryPollsRequest): QueryPollsResponse =
+        singleFlight("queryPolls", queryPollsRequest) { delegate.queryPolls(queryPollsRequest) }
 
-    override suspend fun queryPolls(userId: String?): QueryPollsResponse =
-        singleFlight("queryPolls", userId) { delegate.queryPolls(userId) }
+    override suspend fun queryPolls(): QueryPollsResponse =
+        singleFlight("queryPolls") { delegate.queryPolls() }
 
-    override suspend fun deletePoll(pollId: String, userId: String?): Response =
-        singleFlight("deletePoll", pollId, userId) { delegate.deletePoll(pollId, userId) }
+    override suspend fun deletePoll(pollId: String): Response =
+        singleFlight("deletePoll", pollId) { delegate.deletePoll(pollId) }
 
-    override suspend fun getPoll(pollId: String, userId: String?): PollResponse =
-        singleFlight("getPoll", pollId, userId) { delegate.getPoll(pollId, userId) }
+    override suspend fun getPoll(pollId: String): PollResponse =
+        singleFlight("getPoll", pollId) { delegate.getPoll(pollId) }
 
     override suspend fun updatePollPartial(
         pollId: String,
@@ -1090,41 +1518,41 @@ internal class FeedsSingleFlightApi(
             delegate.updatePollOption(pollId, updatePollOptionRequest)
         }
 
-    override suspend fun deletePollOption(
-        pollId: String,
-        optionId: String,
-        userId: String?,
-    ): Response =
-        singleFlight("deletePollOption", pollId, optionId, userId) {
-            delegate.deletePollOption(pollId, optionId, userId)
+    override suspend fun deletePollOption(pollId: String, optionId: String): Response =
+        singleFlight("deletePollOption", pollId, optionId) {
+            delegate.deletePollOption(pollId, optionId)
         }
 
-    override suspend fun getPollOption(
-        pollId: String,
-        optionId: String,
-        userId: String?,
-    ): PollOptionResponse =
-        singleFlight("getPollOption", pollId, optionId, userId) {
-            delegate.getPollOption(pollId, optionId, userId)
-        }
+    override suspend fun getPollOption(pollId: String, optionId: String): PollOptionResponse =
+        singleFlight("getPollOption", pollId, optionId) { delegate.getPollOption(pollId, optionId) }
 
     override suspend fun queryPollVotes(
         pollId: String,
-        userId: String?,
         queryPollVotesRequest: QueryPollVotesRequest,
     ): PollVotesResponse =
-        singleFlight("queryPollVotes", pollId, userId, queryPollVotesRequest) {
-            delegate.queryPollVotes(pollId, userId, queryPollVotesRequest)
+        singleFlight("queryPollVotes", pollId, queryPollVotesRequest) {
+            delegate.queryPollVotes(pollId, queryPollVotesRequest)
         }
 
-    override suspend fun queryPollVotes(pollId: String, userId: String?): PollVotesResponse =
-        singleFlight("queryPollVotes", pollId, userId) { delegate.queryPollVotes(pollId, userId) }
+    override suspend fun queryPollVotes(pollId: String): PollVotesResponse =
+        singleFlight("queryPollVotes", pollId) { delegate.queryPollVotes(pollId) }
 
     override suspend fun updatePushNotificationPreferences(
         upsertPushPreferencesRequest: UpsertPushPreferencesRequest
     ): UpsertPushPreferencesResponse =
         singleFlight("updatePushNotificationPreferences", upsertPushPreferencesRequest) {
             delegate.updatePushNotificationPreferences(upsertPushPreferencesRequest)
+        }
+
+    override suspend fun searchRoles(
+        query: String,
+        limit: Int?,
+        nameGt: String?,
+        roleType: String?,
+        includeGlobalRoles: Boolean?,
+    ): SearchRolesResponse =
+        singleFlight("searchRoles", query, limit, nameGt, roleType, includeGlobalRoles) {
+            delegate.searchRoles(query, limit, nameGt, roleType, includeGlobalRoles)
         }
 
     override suspend fun deleteFile(url: String?): Response =
@@ -1206,8 +1634,13 @@ internal class FeedsSingleFlightApi(
             delegate.removeUserGroupMembers(id, removeUserGroupMembersRequest)
         }
 
-    override suspend fun queryUsers(payload: QueryUsersPayload?): QueryUsersResponse =
-        singleFlight("queryUsers", payload) { delegate.queryUsers(payload) }
+    override suspend fun queryUsers(
+        connectionId: String?,
+        payload: JsonQuery<QueryUsersPayload>?,
+    ): QueryUsersResponse =
+        singleFlight("queryUsers", connectionId, payload) {
+            delegate.queryUsers(connectionId, payload)
+        }
 
     override suspend fun updateUsersPartial(
         updateUsersPartialRequest: UpdateUsersPartialRequest

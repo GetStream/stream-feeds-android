@@ -46,7 +46,7 @@ internal fun PollResponseData.toModel(): PollData =
         updatedAt = updatedAt,
         voteCount = voteCount,
         voteCountsByOption = voteCountsByOption,
-        votingVisibility = votingVisibility,
+        votingVisibility = votingVisibility.value,
     )
 
 /**

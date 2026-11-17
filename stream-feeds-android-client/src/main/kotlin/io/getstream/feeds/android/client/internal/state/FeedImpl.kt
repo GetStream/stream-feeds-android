@@ -56,6 +56,7 @@ import io.getstream.feeds.android.network.models.AddBookmarkRequest
 import io.getstream.feeds.android.network.models.AddCommentReactionRequest
 import io.getstream.feeds.android.network.models.AddReactionRequest
 import io.getstream.feeds.android.network.models.CreatePollRequest
+import io.getstream.feeds.android.network.models.FollowPushPreference
 import io.getstream.feeds.android.network.models.FollowRequest
 import io.getstream.feeds.android.network.models.MarkActivityRequest
 import io.getstream.feeds.android.network.models.RejectFollowRequest
@@ -363,7 +364,7 @@ internal class FeedImpl(
         targetFid: FeedId,
         createNotificationActivity: Boolean?,
         custom: Map<String, Any>?,
-        pushPreference: FollowRequest.PushPreference?,
+        pushPreference: FollowPushPreference?,
     ): Result<FollowData> {
         val request =
             FollowRequest(
@@ -381,7 +382,7 @@ internal class FeedImpl(
     override suspend fun updateFollow(
         targetFid: FeedId,
         custom: Map<String, Any>?,
-        pushPreference: UpdateFollowRequest.PushPreference?,
+        pushPreference: FollowPushPreference?,
     ): Result<FollowData> {
         val request =
             UpdateFollowRequest(

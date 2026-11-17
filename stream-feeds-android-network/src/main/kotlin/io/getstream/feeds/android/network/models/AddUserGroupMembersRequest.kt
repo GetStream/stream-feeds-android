@@ -19,14 +19,11 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /** Request body for adding members to a user group */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class AddUserGroupMembersRequest(
-    @Json(name = "member_ids")
-    public val memberIds: kotlin.collections.List<kotlin.String> = emptyList(),
-    @Json(name = "as_admin") public val asAdmin: kotlin.Boolean? = null,
-    @Json(name = "team_id") public val teamId: kotlin.String? = null,
+    @Json(name = "member_ids") public val memberIds: List<String> = emptyList(),
+    @Json(name = "as_admin") public val asAdmin: Boolean? = null,
+    @Json(name = "team_id") public val teamId: String? = null,
 )

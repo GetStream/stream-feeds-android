@@ -24,28 +24,24 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UpdateFeedMembersRequest(
     @Json(name = "operation") public val operation: Operation,
-    @Json(name = "limit") public val limit: kotlin.Int? = null,
-    @Json(name = "next") public val next: kotlin.String? = null,
-    @Json(name = "prev") public val prev: kotlin.String? = null,
+    @Json(name = "limit") public val limit: Int? = null,
+    @Json(name = "next") public val next: String? = null,
+    @Json(name = "prev") public val prev: String? = null,
     @Json(name = "members")
-    public val members:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.FeedMemberRequest>? =
-        null,
+    public val members: List<io.getstream.feeds.android.network.models.FeedMemberRequest>? = null,
 ) {
 
     /** Operation Enum */
-    public sealed class Operation(public val value: kotlin.String) {
+    public sealed class Operation(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): Operation =
+            public fun fromString(s: String): Operation =
                 when (s) {
                     "remove" -> Remove
                     "set" -> Set
@@ -60,7 +56,7 @@ public data class UpdateFeedMembersRequest(
 
         public object Upsert : Operation("upsert")
 
-        public data class Unknown(val unknownValue: kotlin.String) : Operation(unknownValue)
+        public data class Unknown(val unknownValue: String) : Operation(unknownValue)
 
         public class OperationAdapter : JsonAdapter<Operation>() {
             @FromJson

@@ -17,5 +17,5 @@
 package io.getstream.feeds.android.network.models
 
 public interface WSClientEvent {
-    public fun getWSClientEventType(): kotlin.String
+    public fun getWSClientEventType(): String
 }

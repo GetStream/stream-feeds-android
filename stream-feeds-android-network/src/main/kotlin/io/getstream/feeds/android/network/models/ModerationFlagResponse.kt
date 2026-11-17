@@ -19,27 +19,24 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class ModerationFlagResponse(
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "entity_id") public val entityId: kotlin.String,
-    @Json(name = "entity_type") public val entityType: kotlin.String,
-    @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "entity_id") public val entityId: String,
+    @Json(name = "entity_type") public val entityType: String,
+    @Json(name = "type") public val type: String,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
-    @Json(name = "user_id") public val userId: kotlin.String,
-    @Json(name = "result")
-    public val result: kotlin.collections.List<kotlin.collections.Map<kotlin.String, Any?>> =
-        emptyList(),
-    @Json(name = "entity_creator_id") public val entityCreatorId: kotlin.String? = null,
-    @Json(name = "reason") public val reason: kotlin.String? = null,
-    @Json(name = "review_queue_item_id") public val reviewQueueItemId: kotlin.String? = null,
-    @Json(name = "labels") public val labels: kotlin.collections.List<kotlin.String>? = null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "user_id") public val userId: String,
+    @Json(name = "result") public val result: List<Map<String, Any?>> = emptyList(),
+    @Json(name = "content_published_at") public val contentPublishedAt: java.util.Date? = null,
+    @Json(name = "entity_creator_id") public val entityCreatorId: String? = null,
+    @Json(name = "id") public val id: String? = null,
+    @Json(name = "reason") public val reason: String? = null,
+    @Json(name = "review_queue_item_id") public val reviewQueueItemId: String? = null,
+    @Json(name = "labels") public val labels: List<String>? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
     @Json(name = "moderation_payload")
     public val moderationPayload:
         io.getstream.feeds.android.network.models.ModerationPayloadResponse? =

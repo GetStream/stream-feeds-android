@@ -215,19 +215,17 @@ public interface Activity {
     /**
      * Deletes the activity from the feed.
      *
-     * @param userId Optional user identifier for authorization.
      * @return A [Result] indicating success or failure of the deletion operation.
      */
-    public suspend fun deletePoll(userId: String? = null): Result<Unit>
+    public suspend fun deletePoll(): Result<Unit>
 
     /**
      * Gets a specific poll by its identifier.
      *
-     * @param userId Optional user identifier for user-specific poll data.
      * @return A [Result] containing the [PollData] if successful, or an error if the operation
      *   fails.
      */
-    public suspend fun getPoll(userId: String? = null): Result<PollData>
+    public suspend fun getPoll(): Result<PollData>
 
     /**
      * Updates a poll with partial data.
@@ -260,23 +258,18 @@ public interface Activity {
      * Removes a poll option.
      *
      * @param optionId The unique identifier of the poll option to be removed.
-     * @param userId Optional user identifier for authorization.
      * @return A [Result] indicating success or failure of the deletion operation.
      */
-    public suspend fun deletePollOption(optionId: String, userId: String? = null): Result<Unit>
+    public suspend fun deletePollOption(optionId: String): Result<Unit>
 
     /**
      * Retrieves a specific poll option by its identifier.
      *
      * @param optionId The unique identifier of the poll option to retrieve.
-     * @param userId Optional user identifier for user-specific poll option data.
      * @return A [Result] containing the [PollOptionData] if successful, or an error if the
      *   operation fails.
      */
-    public suspend fun getPollOption(
-        optionId: String,
-        userId: String? = null,
-    ): Result<PollOptionData>
+    public suspend fun getPollOption(optionId: String): Result<PollOptionData>
 
     /**
      * Updates a poll option.
@@ -300,9 +293,8 @@ public interface Activity {
      * Removes a vote from a poll.
      *
      * @param voteId The unique identifier of the vote to be removed.
-     * @param userId Optional user identifier for authorization.
      * @return A [Result] containing the deleted [PollVoteData] if successful, 'null' if the vote
      *   was not found, or an error if the operation fails.
      */
-    public suspend fun deletePollVote(voteId: String, userId: String? = null): Result<PollVoteData?>
+    public suspend fun deletePollVote(voteId: String): Result<PollVoteData?>
 }

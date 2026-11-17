@@ -19,15 +19,14 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class DecayFunctionConfig(
-    @Json(name = "base") public val base: kotlin.String? = null,
-    @Json(name = "decay") public val decay: kotlin.String? = null,
-    @Json(name = "direction") public val direction: kotlin.String? = null,
-    @Json(name = "offset") public val offset: kotlin.String? = null,
-    @Json(name = "origin") public val origin: kotlin.String? = null,
-    @Json(name = "scale") public val scale: kotlin.String? = null,
+    @Json(name = "base") public val base: String? = null,
+    @Json(name = "decay") public val decay: String? = null,
+    @Json(name = "direction") public val direction: String? = null,
+    @Json(name = "offset") public val offset: String? = null,
+    @Json(name = "origin") public val origin: String? = null,
+    @Json(name = "scale") public val scale: String? = null,
 )

@@ -19,16 +19,13 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class GetFollowSuggestionsResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "duration") public val duration: String,
     @Json(name = "suggestions")
-    public val suggestions:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.FeedSuggestionResponse> =
+    public val suggestions: List<io.getstream.feeds.android.network.models.FeedSuggestionResponse> =
         emptyList(),
-    @Json(name = "algorithm_used") public val algorithmUsed: kotlin.String? = null,
+    @Json(name = "algorithm_used") public val algorithmUsed: String? = null,
 )

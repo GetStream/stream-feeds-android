@@ -19,14 +19,11 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UpdateUserPartialRequest(
-    @Json(name = "id") public val id: kotlin.String,
-    @Json(name = "unset") public val unset: kotlin.collections.List<kotlin.String>? = null,
-    @Json(name = "set") public val set: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "id") public val id: String,
+    @Json(name = "unset") public val unset: List<String>? = null,
+    @Json(name = "set") public val set: Map<String, Any?>? = null,
 )

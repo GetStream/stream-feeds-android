@@ -24,27 +24,25 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class LLMRule(
     @Json(name = "action") public val action: Action,
-    @Json(name = "description") public val description: kotlin.String,
-    @Json(name = "label") public val label: kotlin.String,
+    @Json(name = "description") public val description: String,
+    @Json(name = "label") public val label: String,
     @Json(name = "severity_rules")
     public val severityRules:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.BodyguardSeverityRule> =
+        List<io.getstream.feeds.android.network.models.BodyguardSeverityRule> =
         emptyList(),
 ) {
 
     /** Action Enum */
-    public sealed class Action(public val value: kotlin.String) {
+    public sealed class Action(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): Action =
+            public fun fromString(s: String): Action =
                 when (s) {
                     "bounce" -> Bounce
                     "bounce_flag" -> BounceFlag
@@ -71,7 +69,7 @@ public data class LLMRule(
 
         public object Shadow : Action("shadow")
 
-        public data class Unknown(val unknownValue: kotlin.String) : Action(unknownValue)
+        public data class Unknown(val unknownValue: String) : Action(unknownValue)
 
         public class ActionAdapter : JsonAdapter<Action>() {
             @FromJson

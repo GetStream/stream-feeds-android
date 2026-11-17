@@ -24,11 +24,9 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class FeedsPreferences(
     @Json(name = "comment") public val comment: Comment? = null,
     @Json(name = "comment_mention") public val commentMention: CommentMention? = null,
@@ -38,15 +36,15 @@ public data class FeedsPreferences(
     @Json(name = "mention") public val mention: Mention? = null,
     @Json(name = "reaction") public val reaction: Reaction? = null,
     @Json(name = "custom_activity_types")
-    public val customActivityTypes: kotlin.collections.Map<kotlin.String, kotlin.String>? = null,
+    public val customActivityTypes: Map<String, String>? = null,
 ) {
 
     /** Comment Enum */
-    public sealed class Comment(public val value: kotlin.String) {
+    public sealed class Comment(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): Comment =
+            public fun fromString(s: String): Comment =
                 when (s) {
                     "all" -> All
                     "none" -> None
@@ -58,7 +56,7 @@ public data class FeedsPreferences(
 
         public object None : Comment("none")
 
-        public data class Unknown(val unknownValue: kotlin.String) : Comment(unknownValue)
+        public data class Unknown(val unknownValue: String) : Comment(unknownValue)
 
         public class CommentAdapter : JsonAdapter<Comment>() {
             @FromJson
@@ -75,11 +73,11 @@ public data class FeedsPreferences(
     }
 
     /** CommentMention Enum */
-    public sealed class CommentMention(public val value: kotlin.String) {
+    public sealed class CommentMention(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): CommentMention =
+            public fun fromString(s: String): CommentMention =
                 when (s) {
                     "all" -> All
                     "none" -> None
@@ -91,7 +89,7 @@ public data class FeedsPreferences(
 
         public object None : CommentMention("none")
 
-        public data class Unknown(val unknownValue: kotlin.String) : CommentMention(unknownValue)
+        public data class Unknown(val unknownValue: String) : CommentMention(unknownValue)
 
         public class CommentMentionAdapter : JsonAdapter<CommentMention>() {
             @FromJson
@@ -108,11 +106,11 @@ public data class FeedsPreferences(
     }
 
     /** CommentReaction Enum */
-    public sealed class CommentReaction(public val value: kotlin.String) {
+    public sealed class CommentReaction(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): CommentReaction =
+            public fun fromString(s: String): CommentReaction =
                 when (s) {
                     "all" -> All
                     "none" -> None
@@ -124,7 +122,7 @@ public data class FeedsPreferences(
 
         public object None : CommentReaction("none")
 
-        public data class Unknown(val unknownValue: kotlin.String) : CommentReaction(unknownValue)
+        public data class Unknown(val unknownValue: String) : CommentReaction(unknownValue)
 
         public class CommentReactionAdapter : JsonAdapter<CommentReaction>() {
             @FromJson
@@ -141,11 +139,11 @@ public data class FeedsPreferences(
     }
 
     /** CommentReply Enum */
-    public sealed class CommentReply(public val value: kotlin.String) {
+    public sealed class CommentReply(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): CommentReply =
+            public fun fromString(s: String): CommentReply =
                 when (s) {
                     "all" -> All
                     "none" -> None
@@ -157,7 +155,7 @@ public data class FeedsPreferences(
 
         public object None : CommentReply("none")
 
-        public data class Unknown(val unknownValue: kotlin.String) : CommentReply(unknownValue)
+        public data class Unknown(val unknownValue: String) : CommentReply(unknownValue)
 
         public class CommentReplyAdapter : JsonAdapter<CommentReply>() {
             @FromJson
@@ -174,11 +172,11 @@ public data class FeedsPreferences(
     }
 
     /** Follow Enum */
-    public sealed class Follow(public val value: kotlin.String) {
+    public sealed class Follow(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): Follow =
+            public fun fromString(s: String): Follow =
                 when (s) {
                     "all" -> All
                     "none" -> None
@@ -190,7 +188,7 @@ public data class FeedsPreferences(
 
         public object None : Follow("none")
 
-        public data class Unknown(val unknownValue: kotlin.String) : Follow(unknownValue)
+        public data class Unknown(val unknownValue: String) : Follow(unknownValue)
 
         public class FollowAdapter : JsonAdapter<Follow>() {
             @FromJson
@@ -207,11 +205,11 @@ public data class FeedsPreferences(
     }
 
     /** Mention Enum */
-    public sealed class Mention(public val value: kotlin.String) {
+    public sealed class Mention(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): Mention =
+            public fun fromString(s: String): Mention =
                 when (s) {
                     "all" -> All
                     "none" -> None
@@ -223,7 +221,7 @@ public data class FeedsPreferences(
 
         public object None : Mention("none")
 
-        public data class Unknown(val unknownValue: kotlin.String) : Mention(unknownValue)
+        public data class Unknown(val unknownValue: String) : Mention(unknownValue)
 
         public class MentionAdapter : JsonAdapter<Mention>() {
             @FromJson
@@ -240,11 +238,11 @@ public data class FeedsPreferences(
     }
 
     /** Reaction Enum */
-    public sealed class Reaction(public val value: kotlin.String) {
+    public sealed class Reaction(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): Reaction =
+            public fun fromString(s: String): Reaction =
                 when (s) {
                     "all" -> All
                     "none" -> None
@@ -256,7 +254,7 @@ public data class FeedsPreferences(
 
         public object None : Reaction("none")
 
-        public data class Unknown(val unknownValue: kotlin.String) : Reaction(unknownValue)
+        public data class Unknown(val unknownValue: String) : Reaction(unknownValue)
 
         public class ReactionAdapter : JsonAdapter<Reaction>() {
             @FromJson

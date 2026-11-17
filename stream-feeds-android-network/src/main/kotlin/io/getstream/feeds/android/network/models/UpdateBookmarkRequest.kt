@@ -19,15 +19,13 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UpdateBookmarkRequest(
-    @Json(name = "folder_id") public val folderId: kotlin.String? = null,
-    @Json(name = "new_folder_id") public val newFolderId: kotlin.String? = null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "folder_id") public val folderId: String? = null,
+    @Json(name = "new_folder_id") public val newFolderId: String? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
     @Json(name = "new_folder")
     public val newFolder: io.getstream.feeds.android.network.models.AddFolderRequest? = null,
 )

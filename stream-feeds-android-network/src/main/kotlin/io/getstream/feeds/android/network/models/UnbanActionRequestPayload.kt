@@ -19,13 +19,13 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /** Configuration for unban moderation action */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UnbanActionRequestPayload(
-    @Json(name = "channel_cid") public val channelCid: kotlin.String? = null,
-    @Json(name = "decision_reason") public val decisionReason: kotlin.String? = null,
-    @Json(name = "remove_future_channels_ban")
-    public val removeFutureChannelsBan: kotlin.Boolean? = null,
+    @Json(name = "channel_cid") public val channelCid: String? = null,
+    @Json(name = "decision_reason") public val decisionReason: String? = null,
+    @Json(name = "remove_future_channels_ban") public val removeFutureChannelsBan: Boolean? = null,
+    @Json(name = "restore_shadowed_messages") public val restoreShadowedMessages: Boolean? = null,
+    @Json(name = "target_user_id") public val targetUserId: String? = null,
 )

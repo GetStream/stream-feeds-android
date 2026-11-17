@@ -28,7 +28,7 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 internal class PollVoteListStateImplTest {
-    private val query = PollVotesQuery(pollId = "poll-1", userId = "user-1", limit = 10)
+    private val query = PollVotesQuery(pollId = "poll-1", limit = 10)
     private val pollVoteListState = PollVoteListStateImpl(query)
 
     @Test

@@ -19,18 +19,15 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class HealthCheckEvent(
-    @Json(name = "connection_id") public val connectionId: kotlin.String,
+    @Json(name = "connection_id") public val connectionId: String,
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "custom")
-    public val custom: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-    @Json(name = "type") public val type: kotlin.String = "health.check",
-    @Json(name = "cid") public val cid: kotlin.String? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?> = emptyMap(),
+    @Json(name = "type") public val type: String = "health.check",
+    @Json(name = "cid") public val cid: String? = null,
     @Json(name = "received_at") public val receivedAt: java.util.Date? = null,
     @Json(name = "me")
     public val me: io.getstream.feeds.android.network.models.OwnUserResponse? = null,
@@ -39,11 +36,11 @@ public data class HealthCheckEvent(
     io.getstream.feeds.android.network.models.WSEvent,
     io.getstream.feeds.android.network.models.FeedEvent {
 
-    override fun getWSClientEventType(): kotlin.String {
+    override fun getWSClientEventType(): String {
         return type
     }
 
-    override fun getWSEventType(): kotlin.String {
+    override fun getWSEventType(): String {
         return type
     }
 }

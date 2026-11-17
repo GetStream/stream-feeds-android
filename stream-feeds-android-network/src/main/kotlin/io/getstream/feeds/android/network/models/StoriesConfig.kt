@@ -19,11 +19,10 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class StoriesConfig(
-    @Json(name = "skip_watched") public val skipWatched: kotlin.Boolean? = null,
-    @Json(name = "track_watched") public val trackWatched: kotlin.Boolean? = null,
+    @Json(name = "skip_watched") public val skipWatched: Boolean? = null,
+    @Json(name = "track_watched") public val trackWatched: Boolean? = null,
 )

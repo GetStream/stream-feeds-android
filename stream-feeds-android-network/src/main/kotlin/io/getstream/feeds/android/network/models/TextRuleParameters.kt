@@ -19,25 +19,18 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class TextRuleParameters(
-    @Json(name = "contains_url") public val containsUrl: kotlin.Boolean? = null,
+    @Json(name = "contains_url") public val containsUrl: Boolean? = null,
     @Json(name = "semantic_filter_min_threshold")
-    public val semanticFilterMinThreshold: kotlin.Float? = null,
-    @Json(name = "severity") public val severity: kotlin.String? = null,
-    @Json(name = "threshold") public val threshold: kotlin.Int? = null,
-    @Json(name = "time_window") public val timeWindow: kotlin.String? = null,
-    @Json(name = "blocklist_match")
-    public val blocklistMatch: kotlin.collections.List<kotlin.String>? = null,
-    @Json(name = "harm_labels")
-    public val harmLabels: kotlin.collections.List<kotlin.String>? = null,
-    @Json(name = "semantic_filter_names")
-    public val semanticFilterNames: kotlin.collections.List<kotlin.String>? = null,
-    @Json(name = "llm_harm_labels")
-    public val llmHarmLabels: kotlin.collections.Map<kotlin.String, kotlin.String>? = null,
+    public val semanticFilterMinThreshold: Float? = null,
+    @Json(name = "severity") public val severity: String? = null,
+    @Json(name = "threshold") public val threshold: Int? = null,
+    @Json(name = "time_window") public val timeWindow: String? = null,
+    @Json(name = "blocklist_match") public val blocklistMatch: List<String>? = null,
+    @Json(name = "harm_labels") public val harmLabels: List<String>? = null,
+    @Json(name = "semantic_filter_names") public val semanticFilterNames: List<String>? = null,
+    @Json(name = "llm_harm_labels") public val llmHarmLabels: Map<String, String>? = null,
 )

@@ -19,12 +19,10 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class User(
-    @Json(name = "id") public val id: kotlin.String,
-    @Json(name = "data") public val data: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "id") public val id: String,
+    @Json(name = "data") public val data: Map<String, Any?>? = null,
 )

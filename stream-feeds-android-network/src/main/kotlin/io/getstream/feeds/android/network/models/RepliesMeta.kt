@@ -19,16 +19,15 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**
  * Cursor & depth information for a comment's direct replies. Mirrors Reddit's 'load more replies'
  * semantics.
  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class RepliesMeta(
-    @Json(name = "depth_truncated") public val depthTruncated: kotlin.Boolean,
-    @Json(name = "has_more") public val hasMore: kotlin.Boolean,
-    @Json(name = "remaining") public val remaining: kotlin.Int,
-    @Json(name = "next_cursor") public val nextCursor: kotlin.String? = null,
+    @Json(name = "depth_truncated") public val depthTruncated: Boolean,
+    @Json(name = "has_more") public val hasMore: Boolean,
+    @Json(name = "remaining") public val remaining: Int,
+    @Json(name = "next_cursor") public val nextCursor: String? = null,
 )

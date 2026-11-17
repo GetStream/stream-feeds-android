@@ -19,20 +19,16 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class TextContentParameters(
-    @Json(name = "contains_url") public val containsUrl: kotlin.Boolean? = null,
-    @Json(name = "label_operator") public val labelOperator: kotlin.String? = null,
-    @Json(name = "severity") public val severity: kotlin.String? = null,
-    @Json(name = "blocklist_match")
-    public val blocklistMatch: kotlin.collections.List<kotlin.String>? = null,
-    @Json(name = "harm_labels")
-    public val harmLabels: kotlin.collections.List<kotlin.String>? = null,
-    @Json(name = "llm_harm_labels")
-    public val llmHarmLabels: kotlin.collections.Map<kotlin.String, kotlin.String>? = null,
+    @Json(name = "contains_url") public val containsUrl: Boolean? = null,
+    @Json(name = "label_operator") public val labelOperator: String? = null,
+    @Json(name = "severity") public val severity: String? = null,
+    @Json(name = "text_length") public val textLength: Int? = null,
+    @Json(name = "text_length_operator") public val textLengthOperator: String? = null,
+    @Json(name = "blocklist_match") public val blocklistMatch: List<String>? = null,
+    @Json(name = "harm_labels") public val harmLabels: List<String>? = null,
+    @Json(name = "llm_harm_labels") public val llmHarmLabels: Map<String, String>? = null,
 )

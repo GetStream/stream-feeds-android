@@ -19,15 +19,13 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class FeedMemberRequest(
-    @Json(name = "user_id") public val userId: kotlin.String,
-    @Json(name = "invite") public val invite: kotlin.Boolean? = null,
-    @Json(name = "membership_level") public val membershipLevel: kotlin.String? = null,
-    @Json(name = "role") public val role: kotlin.String? = null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "user_id") public val userId: String,
+    @Json(name = "invite") public val invite: Boolean? = null,
+    @Json(name = "membership_level") public val membershipLevel: String? = null,
+    @Json(name = "role") public val role: String? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
 )

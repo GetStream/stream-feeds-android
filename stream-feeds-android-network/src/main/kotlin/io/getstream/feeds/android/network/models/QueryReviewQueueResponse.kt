@@ -19,31 +19,31 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class QueryReviewQueueResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "duration") public val duration: String,
     @Json(name = "items")
-    public val items:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.ReviewQueueItemResponse> =
+    public val items: List<io.getstream.feeds.android.network.models.ReviewQueueItemResponse> =
         emptyList(),
     @Json(name = "action_config")
     public val actionConfig:
-        kotlin.collections.Map<
-            kotlin.String,
-            kotlin.collections.List<
-                io.getstream.feeds.android.network.models.ModerationActionConfigResponse
-            >,
+        Map<
+            String,
+            List<io.getstream.feeds.android.network.models.ModerationActionConfigResponse>,
         > =
         emptyMap(),
-    @Json(name = "stats")
-    public val stats: kotlin.collections.Map<kotlin.String, Any?> = emptyMap(),
-    @Json(name = "next") public val next: kotlin.String? = null,
-    @Json(name = "prev") public val prev: kotlin.String? = null,
+    @Json(name = "stats") public val stats: Map<String, Any?> = emptyMap(),
+    @Json(name = "next") public val next: String? = null,
+    @Json(name = "prev") public val prev: String? = null,
+    @Json(name = "default_action_config")
+    public val defaultActionConfig:
+        Map<
+            String,
+            List<io.getstream.feeds.android.network.models.ModerationActionConfigResponse>,
+        >? =
+        null,
     @Json(name = "filter_config")
     public val filterConfig: io.getstream.feeds.android.network.models.FilterConfigResponse? = null,
 )

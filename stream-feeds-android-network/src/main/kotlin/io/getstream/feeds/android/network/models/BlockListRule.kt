@@ -24,27 +24,27 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class BlockListRule(
     @Json(name = "action") public val action: Action,
-    @Json(name = "name") public val name: kotlin.String,
-    @Json(name = "team") public val team: kotlin.String,
+    @Json(name = "name") public val name: String,
+    @Json(name = "team") public val team: String,
 ) {
 
     /** Action Enum */
-    public sealed class Action(public val value: kotlin.String) {
+    public sealed class Action(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): Action =
+            public fun fromString(s: String): Action =
                 when (s) {
                     "bounce" -> Bounce
                     "bounce_flag" -> BounceFlag
                     "bounce_remove" -> BounceRemove
                     "flag" -> Flag
+                    "mask" -> Mask
                     "mask_flag" -> MaskFlag
                     "remove" -> Remove
                     "shadow" -> Shadow
@@ -60,13 +60,15 @@ public data class BlockListRule(
 
         public object Flag : Action("flag")
 
+        public object Mask : Action("mask")
+
         public object MaskFlag : Action("mask_flag")
 
         public object Remove : Action("remove")
 
         public object Shadow : Action("shadow")
 
-        public data class Unknown(val unknownValue: kotlin.String) : Action(unknownValue)
+        public data class Unknown(val unknownValue: String) : Action(unknownValue)
 
         public class ActionAdapter : JsonAdapter<Action>() {
             @FromJson

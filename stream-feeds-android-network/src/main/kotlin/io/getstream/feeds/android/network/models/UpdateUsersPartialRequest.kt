@@ -19,16 +19,11 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class UpdateUsersPartialRequest(
     @Json(name = "users")
-    public val users:
-        kotlin.collections.List<
-            io.getstream.feeds.android.network.models.UpdateUserPartialRequest
-        > =
+    public val users: List<io.getstream.feeds.android.network.models.UpdateUserPartialRequest> =
         emptyList()
 )

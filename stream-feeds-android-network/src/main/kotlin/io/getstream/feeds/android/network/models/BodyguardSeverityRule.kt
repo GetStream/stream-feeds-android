@@ -24,26 +24,27 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class BodyguardSeverityRule(
     @Json(name = "action") public val action: Action,
     @Json(name = "severity") public val severity: Severity,
 ) {
 
     /** Action Enum */
-    public sealed class Action(public val value: kotlin.String) {
+    public sealed class Action(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): Action =
+            public fun fromString(s: String): Action =
                 when (s) {
                     "bounce" -> Bounce
                     "bounce_flag" -> BounceFlag
                     "bounce_remove" -> BounceRemove
                     "flag" -> Flag
+                    "keep" -> Keep
+                    "mask" -> Mask
                     "remove" -> Remove
                     "shadow" -> Shadow
                     else -> Unknown(s)
@@ -58,11 +59,15 @@ public data class BodyguardSeverityRule(
 
         public object Flag : Action("flag")
 
+        public object Keep : Action("keep")
+
+        public object Mask : Action("mask")
+
         public object Remove : Action("remove")
 
         public object Shadow : Action("shadow")
 
-        public data class Unknown(val unknownValue: kotlin.String) : Action(unknownValue)
+        public data class Unknown(val unknownValue: String) : Action(unknownValue)
 
         public class ActionAdapter : JsonAdapter<Action>() {
             @FromJson
@@ -79,11 +84,11 @@ public data class BodyguardSeverityRule(
     }
 
     /** Severity Enum */
-    public sealed class Severity(public val value: kotlin.String) {
+    public sealed class Severity(public val value: String) {
         override fun toString(): String = value
 
         public companion object {
-            public fun fromString(s: kotlin.String): Severity =
+            public fun fromString(s: String): Severity =
                 when (s) {
                     "critical" -> Critical
                     "high" -> High
@@ -101,7 +106,7 @@ public data class BodyguardSeverityRule(
 
         public object Medium : Severity("medium")
 
-        public data class Unknown(val unknownValue: kotlin.String) : Severity(unknownValue)
+        public data class Unknown(val unknownValue: String) : Severity(unknownValue)
 
         public class SeverityAdapter : JsonAdapter<Severity>() {
             @FromJson

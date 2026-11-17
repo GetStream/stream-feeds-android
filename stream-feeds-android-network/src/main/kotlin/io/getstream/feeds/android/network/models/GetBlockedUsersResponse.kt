@@ -19,15 +19,12 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class GetBlockedUsersResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "duration") public val duration: String,
     @Json(name = "blocks")
-    public val blocks:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.BlockedUserResponse> =
+    public val blocks: List<io.getstream.feeds.android.network.models.BlockedUserResponse> =
         emptyList(),
 )

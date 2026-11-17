@@ -33,8 +33,6 @@ import java.util.Date
  * @property lastActive The date and time when the user was last active, if available.
  * @property name The name of the user, if available.
  * @property online Indicates if the user is currently online.
- * @property revokeTokensIssuedBefore The date and time before which tokens should be revoked, if
- *   applicable.
  * @property role The role of the user in the system.
  * @property teams A list of team IDs that the user is associated with.
  * @property updatedAt The date and time when the user data was last updated.
@@ -52,7 +50,6 @@ public data class UserData(
     public val lastActive: Date?,
     public val name: String?,
     public val online: Boolean,
-    public val revokeTokensIssuedBefore: Date?,
     public val role: String,
     public val teams: List<String>,
     public val updatedAt: Date,

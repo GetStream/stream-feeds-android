@@ -19,13 +19,12 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class SingleFollowResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "duration") public val duration: String,
     @Json(name = "follow")
     public val follow: io.getstream.feeds.android.network.models.FollowResponse,
-    @Json(name = "notification_created") public val notificationCreated: kotlin.Boolean? = null,
+    @Json(name = "notification_created") public val notificationCreated: Boolean? = null,
 )

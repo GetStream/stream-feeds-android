@@ -25,14 +25,14 @@ import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.client.internal.state.query.toRequest
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.BanRequest
-import io.getstream.feeds.android.network.models.BanResponse
 import io.getstream.feeds.android.network.models.BlockUsersRequest
 import io.getstream.feeds.android.network.models.BlockUsersResponse
 import io.getstream.feeds.android.network.models.DeleteModerationConfigResponse
+import io.getstream.feeds.android.network.models.FlagItemResponse
 import io.getstream.feeds.android.network.models.FlagRequest
-import io.getstream.feeds.android.network.models.FlagResponse
 import io.getstream.feeds.android.network.models.GetBlockedUsersResponse
 import io.getstream.feeds.android.network.models.GetConfigResponse
+import io.getstream.feeds.android.network.models.ModerationBanResponse
 import io.getstream.feeds.android.network.models.MuteRequest
 import io.getstream.feeds.android.network.models.MuteResponse
 import io.getstream.feeds.android.network.models.QueryModerationConfigsRequest
@@ -64,7 +64,7 @@ internal class ModerationRepositoryImpl(private val api: FeedsApi) : ModerationR
         )
     }
 
-    override suspend fun ban(banRequest: BanRequest): Result<BanResponse> = runSafely {
+    override suspend fun ban(banRequest: BanRequest): Result<ModerationBanResponse> = runSafely {
         api.ban(banRequest)
     }
 
@@ -84,7 +84,7 @@ internal class ModerationRepositoryImpl(private val api: FeedsApi) : ModerationR
         api.getBlockedUsers()
     }
 
-    override suspend fun flag(flagRequest: FlagRequest): Result<FlagResponse> = runSafely {
+    override suspend fun flag(flagRequest: FlagRequest): Result<FlagItemResponse> = runSafely {
         api.flag(flagRequest)
     }
 

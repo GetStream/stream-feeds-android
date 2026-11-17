@@ -19,38 +19,29 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class EnrichedActivity(
-    @Json(name = "foreign_id") public val foreignId: kotlin.String? = null,
-    @Json(name = "id") public val id: kotlin.String? = null,
-    @Json(name = "score") public val score: kotlin.Float? = null,
-    @Json(name = "verb") public val verb: kotlin.String? = null,
-    @Json(name = "to") public val to: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "foreign_id") public val foreignId: String? = null,
+    @Json(name = "id") public val id: String? = null,
+    @Json(name = "score") public val score: Float? = null,
+    @Json(name = "time") public val time: String? = null,
+    @Json(name = "verb") public val verb: String? = null,
+    @Json(name = "to") public val to: List<String>? = null,
+    @Json(name = "object")
+    public val `object`: io.getstream.feeds.android.network.models.Data? = null,
     @Json(name = "actor") public val actor: io.getstream.feeds.android.network.models.Data? = null,
     @Json(name = "latest_reactions")
     public val latestReactions:
-        kotlin.collections.Map<
-            kotlin.String,
-            kotlin.collections.List<io.getstream.feeds.android.network.models.EnrichedReaction>,
-        >? =
+        Map<String, List<io.getstream.feeds.android.network.models.EnrichedReaction>>? =
         null,
-    @Json(name = "object")
-    public val `object`: io.getstream.feeds.android.network.models.Data? = null,
     @Json(name = "origin")
     public val origin: io.getstream.feeds.android.network.models.Data? = null,
     @Json(name = "own_reactions")
     public val ownReactions:
-        kotlin.collections.Map<
-            kotlin.String,
-            kotlin.collections.List<io.getstream.feeds.android.network.models.EnrichedReaction>,
-        >? =
+        Map<String, List<io.getstream.feeds.android.network.models.EnrichedReaction>>? =
         null,
-    @Json(name = "reaction_counts")
-    public val reactionCounts: kotlin.collections.Map<kotlin.String, kotlin.Int>? = null,
+    @Json(name = "reaction_counts") public val reactionCounts: Map<String, Int>? = null,
     @Json(name = "target") public val target: io.getstream.feeds.android.network.models.Data? = null,
 )

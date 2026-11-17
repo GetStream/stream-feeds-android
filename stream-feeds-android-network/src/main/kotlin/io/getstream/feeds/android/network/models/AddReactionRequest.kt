@@ -19,18 +19,17 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class AddReactionRequest(
-    @Json(name = "type") public val type: kotlin.String,
+    @Json(name = "type") public val type: String,
     @Json(name = "copy_custom_to_notification")
-    public val copyCustomToNotification: kotlin.Boolean? = null,
+    public val copyCustomToNotification: Boolean? = null,
     @Json(name = "create_notification_activity")
-    public val createNotificationActivity: kotlin.Boolean? = null,
-    @Json(name = "enforce_unique") public val enforceUnique: kotlin.Boolean? = null,
-    @Json(name = "skip_push") public val skipPush: kotlin.Boolean? = null,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    public val createNotificationActivity: Boolean? = null,
+    @Json(name = "enforce_unique") public val enforceUnique: Boolean? = null,
+    @Json(name = "skip_push") public val skipPush: Boolean? = null,
+    @Json(name = "target_feeds") public val targetFeeds: List<String>? = null,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
 )

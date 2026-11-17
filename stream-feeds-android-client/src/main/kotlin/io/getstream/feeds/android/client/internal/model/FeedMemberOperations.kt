@@ -19,6 +19,7 @@ package io.getstream.feeds.android.client.internal.model
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FeedMemberStatus
 import io.getstream.feeds.android.network.models.FeedMemberResponse
+import io.getstream.feeds.android.network.models.FeedMemberStatus as NetworkFeedMemberStatus
 
 /**
  * Converts a [io.getstream.feeds.android.network.models.FeedMemberResponse] to a
@@ -37,13 +38,13 @@ internal fun FeedMemberResponse.toModel() =
     )
 
 /**
- * Converts a [io.getstream.feeds.android.network.models.FeedMemberResponse.Status] to a
+ * Converts a [NetworkFeedMemberStatus] to a
  * [io.getstream.feeds.android.client.api.model.FeedMemberStatus] model.
  */
-internal fun FeedMemberResponse.Status.toModel(): FeedMemberStatus =
+internal fun NetworkFeedMemberStatus.toModel(): FeedMemberStatus =
     when (this) {
-        FeedMemberResponse.Status.Member -> FeedMemberStatus.Member
-        FeedMemberResponse.Status.Pending -> FeedMemberStatus.Pending
-        FeedMemberResponse.Status.Rejected -> FeedMemberStatus.Rejected
-        is FeedMemberResponse.Status.Unknown -> FeedMemberStatus.Unknown(unknownValue)
+        NetworkFeedMemberStatus.Member -> FeedMemberStatus.Member
+        NetworkFeedMemberStatus.Pending -> FeedMemberStatus.Pending
+        NetworkFeedMemberStatus.Rejected -> FeedMemberStatus.Rejected
+        is NetworkFeedMemberStatus.Unknown -> FeedMemberStatus.Unknown(unknownValue)
     }

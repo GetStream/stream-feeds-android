@@ -62,7 +62,7 @@ import io.getstream.feeds.android.network.models.AddCommentReactionRequest
 import io.getstream.feeds.android.network.models.AddReactionRequest
 import io.getstream.feeds.android.network.models.CreatePollRequest
 import io.getstream.feeds.android.network.models.FeedMemberRequest
-import io.getstream.feeds.android.network.models.FollowRequest
+import io.getstream.feeds.android.network.models.FollowPushPreference
 import io.getstream.feeds.android.network.models.MarkActivityRequest
 import io.getstream.feeds.android.network.models.UpdateActivityPartialRequest
 import io.getstream.feeds.android.network.models.UpdateActivityRequest
@@ -70,7 +70,6 @@ import io.getstream.feeds.android.network.models.UpdateBookmarkRequest
 import io.getstream.feeds.android.network.models.UpdateCommentRequest
 import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.network.models.UpdateFeedRequest
-import io.getstream.feeds.android.network.models.UpdateFollowRequest
 import io.mockk.called
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -384,7 +383,7 @@ internal class FeedImplTest {
         val targetFid = FeedId("user:target")
         val createNotificationActivity = true
         val custom = mapOf("key" to "value")
-        val pushPreference = FollowRequest.PushPreference.All
+        val pushPreference = FollowPushPreference.All
         val follow = followData(sourceFid = "group:id", targetFid = "user:target")
 
         // Set up initial feed state
@@ -439,7 +438,7 @@ internal class FeedImplTest {
         val feed = createFeed()
         val targetFid = FeedId("user:target")
         val custom = mapOf("key" to "value")
-        val pushPreference = UpdateFollowRequest.PushPreference.All
+        val pushPreference = FollowPushPreference.All
         val follow = followData(sourceFid = "group:id", targetFid = "user:target")
 
         // Set up initial state with existing follow

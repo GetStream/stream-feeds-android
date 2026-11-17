@@ -19,12 +19,10 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class AddFolderRequest(
-    @Json(name = "name") public val name: kotlin.String,
-    @Json(name = "custom") public val custom: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "name") public val name: String,
+    @Json(name = "custom") public val custom: Map<String, Any?>? = null,
 )

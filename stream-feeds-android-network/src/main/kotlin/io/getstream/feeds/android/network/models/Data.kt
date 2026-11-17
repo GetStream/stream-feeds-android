@@ -19,8 +19,7 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
-public data class Data(@Json(name = "id") public val id: kotlin.String)
+@com.squareup.moshi.JsonClass(generateAdapter = true)
+public data class Data(@Json(name = "id") public val id: String)

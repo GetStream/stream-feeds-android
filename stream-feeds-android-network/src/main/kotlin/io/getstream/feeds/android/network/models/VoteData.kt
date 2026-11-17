@@ -19,11 +19,10 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class VoteData(
-    @Json(name = "answer_text") public val answerText: kotlin.String? = null,
-    @Json(name = "option_id") public val optionId: kotlin.String? = null,
+    @Json(name = "answer_text") public val answerText: String? = null,
+    @Json(name = "option_id") public val optionId: String? = null,
 )

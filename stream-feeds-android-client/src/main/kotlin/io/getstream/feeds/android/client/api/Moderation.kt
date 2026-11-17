@@ -17,14 +17,14 @@
 package io.getstream.feeds.android.client.api
 
 import io.getstream.feeds.android.network.models.BanRequest
-import io.getstream.feeds.android.network.models.BanResponse
 import io.getstream.feeds.android.network.models.BlockUsersRequest
 import io.getstream.feeds.android.network.models.BlockUsersResponse
 import io.getstream.feeds.android.network.models.DeleteModerationConfigResponse
+import io.getstream.feeds.android.network.models.FlagItemResponse
 import io.getstream.feeds.android.network.models.FlagRequest
-import io.getstream.feeds.android.network.models.FlagResponse
 import io.getstream.feeds.android.network.models.GetBlockedUsersResponse
 import io.getstream.feeds.android.network.models.GetConfigResponse
+import io.getstream.feeds.android.network.models.ModerationBanResponse
 import io.getstream.feeds.android.network.models.MuteRequest
 import io.getstream.feeds.android.network.models.MuteResponse
 import io.getstream.feeds.android.network.models.QueryModerationConfigsRequest
@@ -46,10 +46,10 @@ public interface Moderation {
      *
      * @param banRequest The ban request containing details about the user to ban and ban
      *   parameters.
-     * @return A [Result] containing a [BanResponse] if the ban is successful, or an error if the
-     *   ban fails.
+     * @return A [Result] containing a [ModerationBanResponse] if the ban is successful, or an error
+     *   if the ban fails.
      */
-    public suspend fun ban(banRequest: BanRequest): Result<BanResponse>
+    public suspend fun ban(banRequest: BanRequest): Result<ModerationBanResponse>
 
     /**
      * Mutes one or more users.
@@ -92,10 +92,10 @@ public interface Moderation {
      * Flags content for moderation review.
      *
      * @param flagRequest The flag request containing details about the content to flag.
-     * @return A [Result] containing a [FlagResponse] if the flagging is successful, or an error if
-     *   the operation fails.
+     * @return A [Result] containing a [FlagItemResponse] if the flagging is successful, or an error
+     *   if the operation fails.
      */
-    public suspend fun flag(flagRequest: FlagRequest): Result<FlagResponse>
+    public suspend fun flag(flagRequest: FlagRequest): Result<FlagItemResponse>
 
     /**
      * Submits a moderation action.

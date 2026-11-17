@@ -18,7 +18,7 @@ package io.getstream.feeds.android.client.api.model
 
 import io.getstream.feeds.android.network.models.AIImageConfig
 import io.getstream.feeds.android.network.models.AITextConfig
-import io.getstream.feeds.android.network.models.AIVideoConfig
+import io.getstream.feeds.android.network.models.AIVideoConfigResponse
 import io.getstream.feeds.android.network.models.AutomodPlatformCircumventionConfig
 import io.getstream.feeds.android.network.models.AutomodSemanticFiltersConfig
 import io.getstream.feeds.android.network.models.AutomodToxicityConfig
@@ -48,7 +48,7 @@ import java.util.Date
 public data class ModerationConfigData(
     public val aiImageConfig: AIImageConfig?,
     public val aiTextConfig: AITextConfig?,
-    public val aiVideoConfig: AIVideoConfig?,
+    public val aiVideoConfig: AIVideoConfigResponse?,
     public val async: Boolean,
     public val automodPlatformCircumventionConfig: AutomodPlatformCircumventionConfig?,
     public val automodSemanticFiltersConfig: AutomodSemanticFiltersConfig?,

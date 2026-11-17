@@ -19,17 +19,18 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
-/** Response for Device */
+/** An object representing a device which can receive push notifications. */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class DeviceResponse(
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "id") public val id: kotlin.String,
-    @Json(name = "push_provider") public val pushProvider: kotlin.String,
-    @Json(name = "user_id") public val userId: kotlin.String,
-    @Json(name = "disabled") public val disabled: kotlin.Boolean? = null,
-    @Json(name = "disabled_reason") public val disabledReason: kotlin.String? = null,
-    @Json(name = "push_provider_name") public val pushProviderName: kotlin.String? = null,
-    @Json(name = "voip") public val voip: kotlin.Boolean? = null,
+    @Json(name = "id") public val id: String,
+    @Json(name = "push_provider")
+    public val pushProvider: io.getstream.feeds.android.network.models.PushProviderName,
+    @Json(name = "user_id") public val userId: String,
+    @Json(name = "disabled") public val disabled: Boolean? = null,
+    @Json(name = "disabled_reason") public val disabledReason: String? = null,
+    @Json(name = "hardware_id") public val hardwareId: String? = null,
+    @Json(name = "push_provider_name") public val pushProviderName: String? = null,
+    @Json(name = "voip") public val voip: Boolean? = null,
 )

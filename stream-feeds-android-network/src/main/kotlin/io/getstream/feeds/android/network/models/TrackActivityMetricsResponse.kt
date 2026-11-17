@@ -19,17 +19,13 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /** Response containing results for each tracked metric event */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class TrackActivityMetricsResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "duration") public val duration: String,
     @Json(name = "results")
     public val results:
-        kotlin.collections.List<
-            io.getstream.feeds.android.network.models.TrackActivityMetricsEventResult
-        > =
+        List<io.getstream.feeds.android.network.models.TrackActivityMetricsEventResult> =
         emptyList(),
 )

@@ -19,24 +19,21 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class AggregatedActivityResponse(
-    @Json(name = "activity_count") public val activityCount: kotlin.Int,
+    @Json(name = "activity_count") public val activityCount: Int,
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "group") public val group: kotlin.String,
-    @Json(name = "score") public val score: kotlin.Float,
+    @Json(name = "group") public val group: String,
+    @Json(name = "score") public val score: Float,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
-    @Json(name = "user_count") public val userCount: kotlin.Int,
-    @Json(name = "user_count_truncated") public val userCountTruncated: kotlin.Boolean,
+    @Json(name = "user_count") public val userCount: Int,
+    @Json(name = "user_count_truncated") public val userCountTruncated: Boolean,
     @Json(name = "activities")
-    public val activities:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.ActivityResponse> =
+    public val activities: List<io.getstream.feeds.android.network.models.ActivityResponse> =
         emptyList(),
-    @Json(name = "is_read") public val isRead: kotlin.Boolean? = null,
-    @Json(name = "is_seen") public val isSeen: kotlin.Boolean? = null,
-    @Json(name = "is_watched") public val isWatched: kotlin.Boolean? = null,
+    @Json(name = "is_read") public val isRead: Boolean? = null,
+    @Json(name = "is_seen") public val isSeen: Boolean? = null,
+    @Json(name = "is_watched") public val isWatched: Boolean? = null,
 )

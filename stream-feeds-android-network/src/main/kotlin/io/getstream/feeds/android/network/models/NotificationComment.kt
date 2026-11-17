@@ -19,17 +19,14 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class NotificationComment(
-    @Json(name = "comment") public val comment: kotlin.String,
-    @Json(name = "id") public val id: kotlin.String,
-    @Json(name = "user_id") public val userId: kotlin.String,
+    @Json(name = "comment") public val comment: String,
+    @Json(name = "id") public val id: String,
+    @Json(name = "user_id") public val userId: String,
+    @Json(name = "parent_id") public val parentId: String? = null,
     @Json(name = "attachments")
-    public val attachments:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.Attachment>? =
-        null,
+    public val attachments: List<io.getstream.feeds.android.network.models.Attachment>? = null,
 )

@@ -19,14 +19,14 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /** Websocket auth message */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class WSAuthMessage(
-    @Json(name = "token") public val token: kotlin.String,
+    @Json(name = "token") public val token: String,
     @Json(name = "user_details")
     public val userDetails: io.getstream.feeds.android.network.models.ConnectUserDetailsRequest,
-    @Json(name = "products") public val products: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "event_protocol") public val eventProtocol: Int? = null,
+    @Json(name = "member_custom_include") public val memberCustomInclude: List<String>? = null,
+    @Json(name = "products") public val products: List<String>? = null,
 )

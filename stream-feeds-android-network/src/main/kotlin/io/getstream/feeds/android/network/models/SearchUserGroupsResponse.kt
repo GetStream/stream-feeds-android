@@ -19,15 +19,12 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /** Response for searching user groups */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class SearchUserGroupsResponse(
-    @Json(name = "duration") public val duration: kotlin.String,
+    @Json(name = "duration") public val duration: String,
     @Json(name = "user_groups")
-    public val userGroups:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.UserGroupResponse> =
+    public val userGroups: List<io.getstream.feeds.android.network.models.UserGroupResponse> =
         emptyList(),
 )

@@ -19,21 +19,16 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class RankingConfig(
-    @Json(name = "score") public val score: kotlin.String? = null,
-    @Json(name = "type") public val type: kotlin.String? = null,
-    @Json(name = "defaults")
-    public val defaults: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "exclude_below") public val excludeBelow: Float? = null,
+    @Json(name = "score") public val score: String? = null,
+    @Json(name = "type") public val type: String? = null,
+    @Json(name = "defaults") public val defaults: Map<String, Any?>? = null,
     @Json(name = "functions")
     public val functions:
-        kotlin.collections.Map<
-            kotlin.String,
-            io.getstream.feeds.android.network.models.DecayFunctionConfig,
-        >? =
+        Map<String, io.getstream.feeds.android.network.models.DecayFunctionConfig>? =
         null,
 )

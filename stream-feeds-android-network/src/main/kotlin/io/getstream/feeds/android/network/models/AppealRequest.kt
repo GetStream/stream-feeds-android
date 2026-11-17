@@ -19,15 +19,14 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class AppealRequest(
-    @Json(name = "appeal_reason") public val appealReason: kotlin.String,
-    @Json(name = "entity_id") public val entityId: kotlin.String,
-    @Json(name = "entity_type") public val entityType: kotlin.String,
-    @Json(name = "attachments")
-    public val attachments: kotlin.collections.List<kotlin.String>? = null,
+    @Json(name = "appeal_reason") public val appealReason: String,
+    @Json(name = "entity_id") public val entityId: String,
+    @Json(name = "entity_type") public val entityType: String,
+    @Json(name = "channel_cid") public val channelCid: String? = null,
+    @Json(name = "review_queue_item_id") public val reviewQueueItemId: String? = null,
+    @Json(name = "attachments") public val attachments: List<String>? = null,
 )

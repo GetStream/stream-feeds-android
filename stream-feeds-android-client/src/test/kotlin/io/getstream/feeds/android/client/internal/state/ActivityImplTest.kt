@@ -275,10 +275,9 @@ internal class ActivityImplTest {
         val updatedPoll = pollData("poll-1", name = "Updated Poll")
 
         setupActivityWithPoll(poll)
-        coEvery { pollsRepository.getPoll("poll-1", "currentUserId") } returns
-            Result.success(updatedPoll)
+        coEvery { pollsRepository.getPoll("poll-1") } returns Result.success(updatedPoll)
 
-        val result = activity.getPoll("currentUserId")
+        val result = activity.getPoll()
 
         assertEquals(updatedPoll, result.getOrNull())
         assertEquals(updatedPoll, activity.state.poll.value)
@@ -306,10 +305,9 @@ internal class ActivityImplTest {
             val poll = pollData("poll-1")
 
             setupActivityWithPoll(poll)
-            coEvery { pollsRepository.deletePoll("poll-1", "currentUserId") } returns
-                Result.success(Unit)
+            coEvery { pollsRepository.deletePoll("poll-1") } returns Result.success(Unit)
 
-            val result = activity.deletePoll("currentUserId")
+            val result = activity.deletePoll()
 
             assertEquals(Unit, result.getOrNull())
             assertEquals(null, activity.state.poll.value)
@@ -369,11 +367,10 @@ internal class ActivityImplTest {
             val updated = pollData("poll-1", "Updated Poll")
 
             setupActivityWithPoll(poll)
-            coEvery {
-                pollsRepository.deletePollVote("activityId", "poll-1", "vote-1", "currentUserId")
-            } returns Result.success(vote to updated)
+            coEvery { pollsRepository.deletePollVote("activityId", "poll-1", "vote-1") } returns
+                Result.success(vote to updated)
 
-            val result = activity.deletePollVote("vote-1", "currentUserId")
+            val result = activity.deletePollVote("vote-1")
 
             assertEquals(vote, result.getOrNull())
             assertEquals(updated.copy(ownVotes = emptyList()), activity.state.poll.value)
@@ -423,14 +420,13 @@ internal class ActivityImplTest {
                 options = listOf(pollOptionData("option-1"), pollOptionData("option-2")),
             )
         val optionId = "option-1"
-        val userId = "user-1"
         val expectedPoll = poll.copy(options = listOf(pollOptionData("option-2")))
 
         setupActivityWithPoll(poll)
-        coEvery { pollsRepository.deletePollOption("poll-1", optionId, userId) } returns
+        coEvery { pollsRepository.deletePollOption("poll-1", optionId) } returns
             Result.success(Unit)
 
-        val result = activity.deletePollOption(optionId, userId)
+        val result = activity.deletePollOption(optionId)
 
         assertEquals(Unit, result.getOrNull())
         assertEquals(expectedPoll, activity.state.poll.value)
@@ -442,15 +438,14 @@ internal class ActivityImplTest {
         runTest {
             val poll = pollData("poll-1")
             val optionId = "option-1"
-            val userId = "user-1"
             val option = pollOptionData(optionId, text = "Updated text")
             val expectedPoll = poll.copy(options = listOf(option))
 
             setupActivityWithPoll(poll)
-            coEvery { pollsRepository.getPollOption("poll-1", optionId, userId) } returns
+            coEvery { pollsRepository.getPollOption("poll-1", optionId) } returns
                 Result.success(option)
 
-            val result = activity.getPollOption(optionId, userId)
+            val result = activity.getPollOption(optionId)
 
             assertEquals(option, result.getOrNull())
             verify { stateEventListener.onEvent(PollUpdated(expectedPoll)) }

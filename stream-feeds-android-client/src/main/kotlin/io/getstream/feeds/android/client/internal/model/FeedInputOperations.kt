@@ -19,6 +19,7 @@ package io.getstream.feeds.android.client.internal.model
 import io.getstream.feeds.android.client.api.model.FeedInputData
 import io.getstream.feeds.android.client.api.model.FeedVisibility
 import io.getstream.feeds.android.network.models.FeedInput
+import io.getstream.feeds.android.network.models.FeedVisibility as NetworkFeedVisibility
 
 /**
  * Converts a [io.getstream.feeds.android.network.models.FeedInput] to a
@@ -33,20 +34,6 @@ internal fun FeedInput.toModel(): FeedInputData =
         members = members?.map { it.toModel() }.orEmpty(),
         custom = custom.orEmpty(),
     )
-
-/**
- * Converts a [io.getstream.feeds.android.network.models.FeedInput.Visibility] to a
- * [io.getstream.feeds.android.client.api.model.FeedVisibility] model.
- */
-internal fun FeedInput.Visibility.toModel(): FeedVisibility =
-    when (this) {
-        FeedInput.Visibility.Followers -> FeedVisibility.Followers
-        FeedInput.Visibility.Members -> FeedVisibility.Members
-        FeedInput.Visibility.Private -> FeedVisibility.Private
-        FeedInput.Visibility.Public -> FeedVisibility.Public
-        FeedInput.Visibility.Visible -> FeedVisibility.Visible
-        is FeedInput.Visibility.Unknown -> FeedVisibility.Unknown(unknownValue)
-    }
 
 /**
  * Converts a [io.getstream.feeds.android.client.api.model.FeedInputData] to a
@@ -64,14 +51,14 @@ internal fun FeedInputData.toRequest(): FeedInput =
 
 /**
  * Converts a [io.getstream.feeds.android.client.api.model.FeedVisibility] to a
- * [io.getstream.feeds.android.network.models.FeedInput.Visibility] model.
+ * [NetworkFeedVisibility] model.
  */
-internal fun FeedVisibility.toRequest(): FeedInput.Visibility =
+internal fun FeedVisibility.toRequest(): NetworkFeedVisibility =
     when (this) {
-        FeedVisibility.Followers -> FeedInput.Visibility.Followers
-        FeedVisibility.Members -> FeedInput.Visibility.Members
-        FeedVisibility.Private -> FeedInput.Visibility.Private
-        FeedVisibility.Public -> FeedInput.Visibility.Public
-        FeedVisibility.Visible -> FeedInput.Visibility.Visible
-        is FeedVisibility.Unknown -> FeedInput.Visibility.Unknown(unknownValue)
+        FeedVisibility.Followers -> NetworkFeedVisibility.Followers
+        FeedVisibility.Members -> NetworkFeedVisibility.Members
+        FeedVisibility.Private -> NetworkFeedVisibility.Private
+        FeedVisibility.Public -> NetworkFeedVisibility.Public
+        FeedVisibility.Visible -> NetworkFeedVisibility.Visible
+        is FeedVisibility.Unknown -> NetworkFeedVisibility.Unknown(unknownValue)
     }

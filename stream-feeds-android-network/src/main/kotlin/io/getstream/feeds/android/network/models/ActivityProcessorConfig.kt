@@ -19,13 +19,12 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.Map
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class ActivityProcessorConfig(
-    @Json(name = "type") public val type: kotlin.String,
-    @Json(name = "openai_key") public val openaiKey: kotlin.String? = null,
-    @Json(name = "config") public val config: kotlin.collections.Map<kotlin.String, Any?>? = null,
+    @Json(name = "type") public val type: String,
+    @Json(name = "min_text_length") public val minTextLength: Int? = null,
+    @Json(name = "min_word_count") public val minWordCount: Int? = null,
+    @Json(name = "config") public val config: Map<String, Any?>? = null,
 )

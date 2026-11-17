@@ -30,7 +30,6 @@ import io.getstream.feeds.android.client.api.model.PollVoteData
  * specify filters to narrow down results, sorting options, and pagination parameters.
  *
  * @property pollId The unique identifier of the poll to fetch votes for.
- * @param userId Optional user ID used for authentication.
  * @param filter Optional filter to apply to the poll votes query. Use this to narrow down results
  *   based on specific criteria. See [PollVotesFilterField] for available filter fields and their
  *   supported operators.
@@ -45,7 +44,6 @@ import io.getstream.feeds.android.client.api.model.PollVoteData
  */
 public data class PollVotesQuery(
     public val pollId: String,
-    public val userId: String? = null,
     public val filter: PollVotesFilter? = null,
     public val limit: Int? = null,
     public val next: String? = null,

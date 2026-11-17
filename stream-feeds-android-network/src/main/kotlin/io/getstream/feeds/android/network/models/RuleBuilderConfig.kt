@@ -19,15 +19,11 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.collections.List
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class RuleBuilderConfig(
-    @Json(name = "async") public val async: kotlin.Boolean? = null,
+    @Json(name = "async") public val async: Boolean? = null,
     @Json(name = "rules")
-    public val rules:
-        kotlin.collections.List<io.getstream.feeds.android.network.models.RuleBuilderRule>? =
-        null,
+    public val rules: List<io.getstream.feeds.android.network.models.RuleBuilderRule>? = null,
 )

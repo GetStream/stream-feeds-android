@@ -68,7 +68,6 @@ internal class PollVoteListImpl(
         val nextQuery =
             PollVotesQuery(
                 pollId = query.pollId,
-                userId = query.userId,
                 filter = _state.queryConfig?.filter,
                 sort = _state.queryConfig?.sort,
                 limit = limit,

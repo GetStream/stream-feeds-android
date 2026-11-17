@@ -21,6 +21,7 @@ import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedVisibility
 import io.getstream.feeds.android.network.models.FeedOwnData
 import io.getstream.feeds.android.network.models.FeedResponse
+import io.getstream.feeds.android.network.models.FeedVisibility as NetworkFeedVisibility
 import io.getstream.feeds.android.network.models.FollowResponse
 
 /** Converts a [FeedResponse] to a [FeedData] model. */
@@ -50,15 +51,15 @@ internal fun FeedResponse.toModel(): FeedData =
         visibility = visibility?.toModel(),
     )
 
-/** Converts a [FeedResponse.Visibility] to a [FeedVisibility]. */
-internal fun FeedResponse.Visibility.toModel(): FeedVisibility =
+/** Converts a [NetworkFeedVisibility] to a [FeedVisibility]. */
+internal fun NetworkFeedVisibility.toModel(): FeedVisibility =
     when (this) {
-        FeedResponse.Visibility.Followers -> FeedVisibility.Followers
-        FeedResponse.Visibility.Members -> FeedVisibility.Members
-        FeedResponse.Visibility.Private -> FeedVisibility.Private
-        FeedResponse.Visibility.Public -> FeedVisibility.Public
-        FeedResponse.Visibility.Visible -> FeedVisibility.Visible
-        is FeedResponse.Visibility.Unknown -> FeedVisibility.Unknown(unknownValue)
+        NetworkFeedVisibility.Followers -> FeedVisibility.Followers
+        NetworkFeedVisibility.Members -> FeedVisibility.Members
+        NetworkFeedVisibility.Private -> FeedVisibility.Private
+        NetworkFeedVisibility.Public -> FeedVisibility.Public
+        NetworkFeedVisibility.Visible -> FeedVisibility.Visible
+        is NetworkFeedVisibility.Unknown -> FeedVisibility.Unknown(unknownValue)
     }
 
 /**

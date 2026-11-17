@@ -18,54 +18,12 @@
 
 package io.getstream.feeds.android.network.models
 
-import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonReader
-import com.squareup.moshi.JsonWriter
-import com.squareup.moshi.ToJson
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class BlockListOptions(
-    @Json(name = "behavior") public val behavior: Behavior,
-    @Json(name = "blocklist") public val blocklist: kotlin.String,
-) {
-
-    /** Behavior Enum */
-    public sealed class Behavior(public val value: kotlin.String) {
-        override fun toString(): String = value
-
-        public companion object {
-            public fun fromString(s: kotlin.String): Behavior =
-                when (s) {
-                    "block" -> Block
-                    "flag" -> Flag
-                    "shadow_block" -> ShadowBlock
-                    else -> Unknown(s)
-                }
-        }
-
-        public object Block : Behavior("block")
-
-        public object Flag : Behavior("flag")
-
-        public object ShadowBlock : Behavior("shadow_block")
-
-        public data class Unknown(val unknownValue: kotlin.String) : Behavior(unknownValue)
-
-        public class BehaviorAdapter : JsonAdapter<Behavior>() {
-            @FromJson
-            override fun fromJson(reader: JsonReader): Behavior? {
-                val s = reader.nextString() ?: return null
-                return Behavior.fromString(s)
-            }
-
-            @ToJson
-            override fun toJson(writer: JsonWriter, value: Behavior?) {
-                writer.value(value?.value)
-            }
-        }
-    }
-}
+    @Json(name = "behavior")
+    public val behavior: io.getstream.feeds.android.network.models.ChannelModerationBehavior,
+    @Json(name = "blocklist") public val blocklist: String,
+)

@@ -19,19 +19,22 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class SharedLocationResponse(
-    @Json(name = "channel_cid") public val channelCid: kotlin.String,
+    @Json(name = "channel_cid") public val channelCid: String,
     @Json(name = "created_at") public val createdAt: java.util.Date,
-    @Json(name = "created_by_device_id") public val createdByDeviceId: kotlin.String,
-    @Json(name = "duration") public val duration: kotlin.String,
-    @Json(name = "latitude") public val latitude: kotlin.Float,
-    @Json(name = "longitude") public val longitude: kotlin.Float,
-    @Json(name = "message_id") public val messageId: kotlin.String,
+    @Json(name = "created_by_device_id") public val createdByDeviceId: String,
+    @Json(name = "duration") public val duration: String,
+    @Json(name = "latitude") public val latitude: Float,
+    @Json(name = "longitude") public val longitude: Float,
+    @Json(name = "message_id") public val messageId: String,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,
-    @Json(name = "user_id") public val userId: kotlin.String,
+    @Json(name = "user_id") public val userId: String,
     @Json(name = "end_at") public val endAt: java.util.Date? = null,
+    @Json(name = "channel")
+    public val channel: io.getstream.feeds.android.network.models.ChannelResponse? = null,
+    @Json(name = "message")
+    public val message: io.getstream.feeds.android.network.models.MessageResponse? = null,
 )

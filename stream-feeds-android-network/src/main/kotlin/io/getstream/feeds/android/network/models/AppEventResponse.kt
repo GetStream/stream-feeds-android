@@ -19,15 +19,13 @@
 package io.getstream.feeds.android.network.models
 
 import com.squareup.moshi.Json
-import kotlin.collections.*
-import kotlin.io.*
 
 /**  */
+@com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class AppEventResponse(
-    @Json(name = "auto_translation_enabled") public val autoTranslationEnabled: kotlin.Boolean,
-    @Json(name = "name") public val name: kotlin.String,
-    @Json(name = "async_url_enrich_enabled")
-    public val asyncUrlEnrichEnabled: kotlin.Boolean? = null,
+    @Json(name = "auto_translation_enabled") public val autoTranslationEnabled: Boolean,
+    @Json(name = "name") public val name: String,
+    @Json(name = "async_url_enrich_enabled") public val asyncUrlEnrichEnabled: Boolean? = null,
     @Json(name = "file_upload_config")
     public val fileUploadConfig: io.getstream.feeds.android.network.models.FileUploadConfig? = null,
     @Json(name = "image_upload_config")
