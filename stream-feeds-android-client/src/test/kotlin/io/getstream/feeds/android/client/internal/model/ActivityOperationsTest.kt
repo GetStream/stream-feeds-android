@@ -21,6 +21,7 @@ import io.getstream.feeds.android.client.api.model.ShareData
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.activityResponse
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
+import io.getstream.feeds.android.client.internal.test.TestData.bookmarkFolderData
 import io.getstream.feeds.android.client.internal.test.TestData.feedData
 import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionData
 import io.getstream.feeds.android.client.internal.test.TestData.userResponse
@@ -111,5 +112,23 @@ internal class ActivityOperationsTest {
         assertEquals(1, result.position)
         assertEquals(listOf("popular"), result.reasons)
         assertEquals(5, result.topLevelCommentCount)
+    }
+
+    @Test
+    fun `removeOwnBookmarksInFolder never lowers the bookmark count below zero`() {
+        val inFolder = bookmarkData(activityId = "a1", folder = bookmarkFolderData("folder-1"))
+        val activity = activityData(id = "a1", ownBookmarks = listOf(inFolder))
+
+        val result = activity.removeOwnBookmarksInFolder("folder-1")
+
+        assertEquals(emptyList<Any>(), result.ownBookmarks)
+        assertEquals(0, result.bookmarkCount)
+    }
+
+    @Test
+    fun `removeOwnBookmarksInFolder keeps an activity with no bookmark in the folder`() {
+        val activity = activityData(id = "a1", ownBookmarks = listOf(bookmarkData("a1")))
+
+        assertEquals(activity, activity.removeOwnBookmarksInFolder("folder-1"))
     }
 }

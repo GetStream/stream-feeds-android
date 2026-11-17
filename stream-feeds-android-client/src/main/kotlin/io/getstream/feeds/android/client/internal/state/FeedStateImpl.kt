@@ -36,11 +36,13 @@ import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.model.FeedOwnValues
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.model.deleteBookmark
+import io.getstream.feeds.android.client.internal.model.hasOwnBookmarkInFolder
 import io.getstream.feeds.android.client.internal.model.isFollowRequest
 import io.getstream.feeds.android.client.internal.model.isFollowerOf
 import io.getstream.feeds.android.client.internal.model.isFollowing
 import io.getstream.feeds.android.client.internal.model.removeComment
 import io.getstream.feeds.android.client.internal.model.removeCommentReaction
+import io.getstream.feeds.android.client.internal.model.removeOwnBookmarksInFolder
 import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.model.removeVote
 import io.getstream.feeds.android.client.internal.model.update
@@ -180,6 +182,20 @@ internal class FeedStateImpl(
         }
     }
 
+    override fun onActivityRestored(activity: ActivityData) {
+        _activities.update { current ->
+            val existing = current.indexOfFirst { it.id == activity.id }
+            val firstOlder = current.indexOfFirst { it.createdAt < activity.createdAt }
+            when {
+                existing >= 0 -> current.updateIf({ it.id == activity.id }) { it.update(activity) }
+                firstOlder >= 0 -> current.toMutableList().apply { add(firstOlder, activity) }
+                // Older than everything loaded: it comes with a later page
+                canLoadMoreActivities -> current
+                else -> current + activity
+            }
+        }
+    }
+
     override fun onActivityUpdated(activity: ActivityData) {
         updateActivitiesWhere({ it.id == activity.id }) { existingActivity ->
             existingActivity.update(activity)
@@ -209,6 +225,12 @@ internal class FeedStateImpl(
     override fun onBookmarkRemoved(bookmark: BookmarkData) {
         updateActivitiesWhere({ it.id == bookmark.activity.id }) { activity ->
             activity.deleteBookmark(bookmark, currentUserId)
+        }
+    }
+
+    override fun onBookmarkFolderRemoved(folderId: String) {
+        updateActivitiesWhere({ it.hasOwnBookmarkInFolder(folderId) }) { activity ->
+            activity.removeOwnBookmarksInFolder(folderId)
         }
     }
 
@@ -521,6 +543,13 @@ internal interface FeedStateUpdates {
     /** Handles updates to the feed state when activity is added. */
     fun onActivityAdded(activity: ActivityData, action: InsertionAction)
 
+    /**
+     * Handles updates to the feed state when a deleted activity is restored. The activity goes back
+     * to its place by creation date, newest first. It is left out when it is older than every
+     * loaded activity and more pages can be loaded.
+     */
+    fun onActivityRestored(activity: ActivityData)
+
     /** Handles updates to the feed state when activity is updated. */
     fun onActivityUpdated(activity: ActivityData)
 
@@ -538,6 +567,9 @@ internal interface FeedStateUpdates {
 
     /** Handles updates to the feed state when a bookmark is removed. */
     fun onBookmarkRemoved(bookmark: BookmarkData)
+
+    /** Handles updates to the feed state when a bookmark folder, and its bookmarks, is deleted. */
+    fun onBookmarkFolderRemoved(folderId: String)
 
     /** Handles updates to the feed state when a bookmark is added or updated. */
     fun onBookmarkUpserted(bookmark: BookmarkData)

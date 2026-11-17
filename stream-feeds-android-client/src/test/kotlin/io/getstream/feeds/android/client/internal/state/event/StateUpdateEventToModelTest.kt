@@ -16,6 +16,7 @@
 
 package io.getstream.feeds.android.client.internal.state.event
 
+import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.client.internal.test.TestData
 import io.getstream.feeds.android.network.models.ActivityAddedEvent
 import io.getstream.feeds.android.network.models.ActivityDeletedEvent
@@ -23,6 +24,7 @@ import io.getstream.feeds.android.network.models.ActivityPinnedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionAddedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
 import io.getstream.feeds.android.network.models.ActivityRemovedFromFeedEvent
+import io.getstream.feeds.android.network.models.ActivityRestoredEvent
 import io.getstream.feeds.android.network.models.ActivityUnpinnedEvent
 import io.getstream.feeds.android.network.models.ActivityUpdatedEvent
 import io.getstream.feeds.android.network.models.BookmarkAddedEvent
@@ -76,6 +78,19 @@ internal class StateUpdateEventToModelTest(
         assertEquals("Wrong return type for $testName", expectedType, result!!::class)
     }
 
+    @Test
+    fun `restored activity maps to a restored ActivityAdded scoped to its feed`() {
+        val event = activityRestored()
+
+        val expected =
+            StateUpdateEvent.ActivityAdded(
+                scope = FidScope.of("group:feed"),
+                activity = event.activity.toModel(),
+                restored = true,
+            )
+        assertEquals(expected, event.toModel())
+    }
+
     companion object {
         @JvmStatic
         @Parameterized.Parameters(name = "{0}")
@@ -109,6 +124,7 @@ internal class StateUpdateEventToModelTest(
                 feedMemberAdded().shouldMapTo<StateUpdateEvent.FeedMemberAdded>(),
                 feedMemberRemoved().shouldMapTo<StateUpdateEvent.FeedMemberRemoved>(),
                 feedMemberUpdated().shouldMapTo<StateUpdateEvent.FeedMemberUpdated>(),
+                activityRestored().shouldMapTo<StateUpdateEvent.ActivityAdded>(),
                 pollClosedFeed().shouldMapTo<StateUpdateEvent.PollUpdated>(),
                 pollDeletedFeed().shouldMapTo<StateUpdateEvent.PollDeleted>(),
                 pollUpdatedFeed().shouldMapTo<StateUpdateEvent.PollUpdated>(),
@@ -126,6 +142,13 @@ internal class StateUpdateEventToModelTest(
                 fid = "group:feed",
                 activity = TestData.activityResponse(),
                 type = "activity.added",
+            )
+
+        private fun activityRestored() =
+            ActivityRestoredEvent(
+                createdAt = Date(1000),
+                fid = "group:feed",
+                activity = TestData.activityResponse(),
             )
 
         private fun activityDeleted() =

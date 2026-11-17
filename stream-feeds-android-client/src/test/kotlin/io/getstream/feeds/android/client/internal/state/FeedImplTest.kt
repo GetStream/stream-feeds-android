@@ -301,7 +301,7 @@ internal class FeedImplTest {
     }
 
     @Test
-    fun `on restoreActivity, delegate to repository`() = runTest {
+    fun `on restoreActivity, delegate to repository and fire event`() = runTest {
         val feed = createFeed()
         val activityId = "activity-1"
         val restoredActivity = activityData(activityId)
@@ -312,6 +312,11 @@ internal class FeedImplTest {
         val result = feed.restoreActivity(activityId)
 
         assertEquals(restoredActivity, result.getOrNull())
+        verify {
+            stateEventListener.onEvent(
+                StateUpdateEvent.ActivityAdded(FidScope.unknown, restoredActivity, restored = true)
+            )
+        }
     }
 
     @Test
