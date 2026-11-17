@@ -191,6 +191,25 @@ public interface Activity {
     public suspend fun activityFeedback(request: ActivityFeedbackRequest): Result<Unit>
 
     /**
+     * Translates the text of the activity and stores the translation.
+     *
+     * @param language The language code to translate to, for example `fr`.
+     * @return A [Result] containing the [ActivityData] with the translation in
+     *   [ActivityData.translations] if successful, or an error if the operation fails.
+     */
+    public suspend fun translate(language: String): Result<ActivityData>
+
+    /**
+     * Translates the text of a comment and stores the translation.
+     *
+     * @param commentId The unique identifier of the comment to translate.
+     * @param language The language code to translate to, for example `fr`.
+     * @return A [Result] containing the [CommentData] with the translation in
+     *   [CommentData.translations] if successful, or an error if the operation fails.
+     */
+    public suspend fun translateComment(commentId: String, language: String): Result<CommentData>
+
+    /**
      * Pins an activity in the feed.
      *
      * @return A [Result] indicating success or failure of the pinning operation.

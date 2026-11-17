@@ -48,6 +48,8 @@ import io.getstream.feeds.android.network.models.GetCommentsResponse
 import io.getstream.feeds.android.network.models.QueryCommentReactionsResponse
 import io.getstream.feeds.android.network.models.QueryCommentsResponse
 import io.getstream.feeds.android.network.models.ThreadedCommentResponse
+import io.getstream.feeds.android.network.models.TranslateCommentRequest
+import io.getstream.feeds.android.network.models.TranslateCommentResponse
 import io.getstream.feeds.android.network.models.UpdateCommentRequest
 import io.getstream.feeds.android.network.models.UpdateCommentResponse
 import io.mockk.coEvery
@@ -233,7 +235,7 @@ internal class CommentsRepositoryImplTest {
 
     @Test
     fun `on queryComments, delegate to api and transform result`() = runTest {
-        val query = CommentsQuery(limit = 10)
+        val query = CommentsQuery(limit = 10, language = "fr")
         val apiResult =
             QueryCommentsResponse(
                 duration = "duration",
@@ -243,7 +245,9 @@ internal class CommentsRepositoryImplTest {
             )
 
         testDelegation(
-            apiFunction = { feedsApi.queryComments(queryCommentsRequest = query.toRequest()) },
+            apiFunction = {
+                feedsApi.queryComments(language = "fr", queryCommentsRequest = query.toRequest())
+            },
             repositoryCall = { repository.queryComments(query) },
             apiResult = apiResult,
             repositoryResult =
@@ -262,6 +266,7 @@ internal class CommentsRepositoryImplTest {
                 objectType = "activity",
                 depth = 2,
                 limit = 10,
+                language = "fr",
             )
         val apiResult =
             GetCommentsResponse(
@@ -303,6 +308,7 @@ internal class CommentsRepositoryImplTest {
                     objectType = query.objectType,
                     depth = query.depth,
                     sort = query.sort?.toRequest()?.value,
+                    language = "fr",
                     limit = query.limit,
                     next = query.next,
                     prev = query.previous,
@@ -334,8 +340,20 @@ internal class CommentsRepositoryImplTest {
         val apiResult = GetCommentResponse(duration = "duration", comment = commentResponse())
 
         testDelegation(
-            apiFunction = { feedsApi.getComment("commentId") },
-            repositoryCall = { repository.getComment("commentId") },
+            apiFunction = { feedsApi.getComment(id = "commentId", language = "fr") },
+            repositoryCall = { repository.getComment("commentId", "fr") },
+            apiResult = apiResult,
+            repositoryResult = apiResult.comment.toModel(),
+        )
+    }
+
+    @Test
+    fun `on translateComment, delegate to api`() = runTest {
+        val apiResult = TranslateCommentResponse(duration = "duration", comment = commentResponse())
+
+        testDelegation(
+            apiFunction = { feedsApi.translateComment("commentId", TranslateCommentRequest("fr")) },
+            repositoryCall = { repository.translateComment("commentId", "fr") },
             apiResult = apiResult,
             repositoryResult = apiResult.comment.toModel(),
         )
@@ -419,7 +437,8 @@ internal class CommentsRepositoryImplTest {
 
     @Test
     fun `on getCommentReplies, delegate to api and transform result`() = runTest {
-        val query = CommentRepliesQuery(commentId = "commentId", depth = 2, limit = 10)
+        val query =
+            CommentRepliesQuery(commentId = "commentId", depth = 2, limit = 10, language = "fr")
         val apiResult =
             GetCommentRepliesResponse(
                 duration = "duration",
@@ -457,6 +476,7 @@ internal class CommentsRepositoryImplTest {
                 feedsApi.getCommentReplies(
                     id = query.commentId,
                     depth = query.depth,
+                    language = "fr",
                     limit = query.limit,
                     next = query.next,
                     prev = query.previous,

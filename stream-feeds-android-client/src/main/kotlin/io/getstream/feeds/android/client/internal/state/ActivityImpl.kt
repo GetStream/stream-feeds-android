@@ -63,6 +63,7 @@ import io.getstream.feeds.android.network.models.UpdatePollRequest
  *
  * @property activityId The unique identifier of the activity.
  * @property fid The feed ID to which this activity belongs.
+ * @property language The language code of the translations to load, if any.
  * @property currentUserId The ID of the current user.
  * @property activitiesRepository The repository used to fetch and manage activities.
  * @property commentsRepository The repository used to fetch and manage comments.
@@ -73,6 +74,7 @@ import io.getstream.feeds.android.network.models.UpdatePollRequest
 internal class ActivityImpl(
     override val activityId: String,
     override val fid: FeedId,
+    private val language: String?,
     private val currentUserId: String,
     private val activitiesRepository: ActivitiesRepository,
     private val commentsRepository: CommentsRepository,
@@ -96,7 +98,7 @@ internal class ActivityImpl(
 
     override suspend fun get(): Result<ActivityData> {
         val activity =
-            activitiesRepository.getActivity(activityId).onSuccess {
+            activitiesRepository.getActivity(activityId, language).onSuccess {
                 subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.unknown, it))
                 it.currentFeed?.let(feedOwnValuesRepository::cache)
             }
@@ -114,7 +116,7 @@ internal class ActivityImpl(
     }
 
     override suspend fun getComment(commentId: String): Result<CommentData> {
-        return commentsRepository.getComment(commentId).onSuccess { comment ->
+        return commentsRepository.getComment(commentId, language).onSuccess { comment ->
             subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(FidScope.unknown, comment))
         }
     }
@@ -214,6 +216,21 @@ internal class ActivityImpl(
                     StateUpdateEvent.ActivityHidden(activityId, currentUserId, hidden)
                 )
             }
+        }
+    }
+
+    override suspend fun translate(language: String): Result<ActivityData> {
+        return activitiesRepository.translateActivity(activityId, language).onSuccess {
+            subscriptionManager.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.unknown, it))
+        }
+    }
+
+    override suspend fun translateComment(
+        commentId: String,
+        language: String,
+    ): Result<CommentData> {
+        return commentsRepository.translateComment(commentId, language).onSuccess {
+            subscriptionManager.onEvent(StateUpdateEvent.CommentUpdated(FidScope.unknown, it))
         }
     }
 

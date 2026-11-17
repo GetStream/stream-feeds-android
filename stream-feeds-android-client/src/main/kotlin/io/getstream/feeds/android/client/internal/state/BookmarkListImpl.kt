@@ -71,6 +71,7 @@ internal class BookmarkListImpl(
                 limit = limit ?: query.limit,
                 next = next,
                 previous = null,
+                language = query.language,
             )
         return queryBookmarks(nextQuery)
     }

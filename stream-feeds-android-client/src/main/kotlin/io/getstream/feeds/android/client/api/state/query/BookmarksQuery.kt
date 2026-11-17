@@ -40,6 +40,9 @@ import io.getstream.feeds.android.client.api.model.BookmarkData
  *   provided in the response of a previous request.
  * @property previous Pagination cursor for fetching the previous page of results. This is typically
  *   provided in the response of a previous request.
+ * @property language Includes the translations to this language code, for example `fr`, in
+ *   [io.getstream.feeds.android.client.api.model.ActivityData.translations]. By default no
+ *   translations are included.
  */
 public data class BookmarksQuery(
     public val filter: BookmarksFilter? = null,
@@ -47,6 +50,7 @@ public data class BookmarksQuery(
     public val limit: Int? = null,
     public val next: String? = null,
     public val previous: String? = null,
+    public val language: String? = null,
 )
 
 /**

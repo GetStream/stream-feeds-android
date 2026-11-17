@@ -64,6 +64,7 @@ internal fun ActivityResponse.toModel(): ActivityData =
         moderationAction = moderationAction,
         notificationContext = notificationContext,
         ownBookmarks = ownBookmarks.map { it.toModel() },
+        originalLanguage = i18n.originalLanguage(),
         ownReactions = ownReactions.map { it.toModel() },
         parent = parent?.toModel(),
         poll = poll?.toModel(),
@@ -78,6 +79,7 @@ internal fun ActivityResponse.toModel(): ActivityData =
         selectorSource = selectorSource,
         shareCount = shareCount,
         text = text,
+        translations = i18n.translations(),
         type = type,
         updatedAt = updatedAt,
         user = user.toModel(),
@@ -106,7 +108,8 @@ internal fun ActivityVisibility.toModel(): ActivityDataVisibility =
 /**
  * Extension function to update the activity while preserving own bookmarks, reactions, poll votes,
  * and feed own data because "own" data from WS events is not reliable. Optionally, different
- * instances can be provided to be used instead of the current ones.
+ * instances can be provided to be used instead of the current ones. Translations are preserved
+ * while the text is unchanged, because WS events never carry them.
  */
 internal fun ActivityData.update(
     updated: ActivityData,
@@ -121,7 +124,12 @@ internal fun ActivityData.update(
             updated.currentFeed?.let { this.currentFeed?.update(it) ?: it }
         }
 
+    val keepTranslations =
+        keepsTranslations(text, updated.text, updated.translations, updated.originalLanguage)
+
     return updated.copy(
+        originalLanguage = if (keepTranslations) originalLanguage else updated.originalLanguage,
+        translations = if (keepTranslations) translations else updated.translations,
         ownBookmarks = ownBookmarks,
         ownReactions = ownReactions,
         friendReactions = friendReactions,

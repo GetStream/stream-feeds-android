@@ -472,7 +472,11 @@ internal class FeedImplTest {
     @Test
     fun `on queryMoreActivities, delegate to repository`() = runTest {
         val initialQuery =
-            FeedQuery(fid = fid, activityFilter = ActivitiesFilterField.id.equal("id"))
+            FeedQuery(
+                fid = fid,
+                activityFilter = ActivitiesFilterField.id.equal("id"),
+                language = "fr",
+            )
         val feed = createFeed(initialQuery)
         val limit = 10
         val newActivity = activityData("activity-2")
@@ -546,9 +550,41 @@ internal class FeedImplTest {
         val commentId = "comment-1"
         val comment = commentData(commentId)
 
-        coEvery { commentsRepository.getComment(commentId) } returns Result.success(comment)
+        coEvery { commentsRepository.getComment(commentId, null) } returns Result.success(comment)
 
         val result = feed.getComment(commentId)
+
+        assertEquals(comment, result.getOrNull())
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.CommentUpdated(FidScope.unknown, comment))
+        }
+    }
+
+    @Test
+    fun `on translateActivity, delegate to repository and fire event`() = runTest {
+        val feed = createFeed()
+        val activity = activityData("activity-1").copy(translations = mapOf("fr" to "Bonjour"))
+
+        coEvery { activitiesRepository.translateActivity("activity-1", "fr") } returns
+            Result.success(activity)
+
+        val result = feed.translateActivity("activity-1", "fr")
+
+        assertEquals(activity, result.getOrNull())
+        verify {
+            stateEventListener.onEvent(StateUpdateEvent.ActivityUpdated(FidScope.unknown, activity))
+        }
+    }
+
+    @Test
+    fun `on translateComment, delegate to repository and fire event`() = runTest {
+        val feed = createFeed()
+        val comment = commentData("comment-1").copy(translations = mapOf("fr" to "Bonjour"))
+
+        coEvery { commentsRepository.translateComment("comment-1", "fr") } returns
+            Result.success(comment)
+
+        val result = feed.translateComment("comment-1", "fr")
 
         assertEquals(comment, result.getOrNull())
         verify {

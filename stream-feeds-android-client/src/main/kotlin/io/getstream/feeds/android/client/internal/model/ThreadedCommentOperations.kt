@@ -43,6 +43,7 @@ internal fun ThreadedCommentResponse.toModel(): ThreadedCommentData =
         moderation = moderation?.toModel(),
         objectId = objectId,
         objectType = objectType,
+        originalLanguage = i18n.originalLanguage(),
         ownReactions = ownReactions.map { it.toModel() },
         parentId = parentId,
         reactionCount = reactionCount,
@@ -52,6 +53,7 @@ internal fun ThreadedCommentResponse.toModel(): ThreadedCommentData =
         score = score,
         status = status.toModel(),
         text = text,
+        translations = i18n.translations(),
         updatedAt = updatedAt,
         upvoteCount = upvoteCount,
         user = user.toModel(),
@@ -61,7 +63,8 @@ internal fun ThreadedCommentResponse.toModel(): ThreadedCommentData =
  * Sets the comment data for this threaded comment, replacing its properties with those from the
  * provided [CommentData]. [ThreadedCommentData.ownReactions] is not overwritten because "own" data
  * coming from WS event is not reliable. Optionally, a different instance can be provided to be used
- * instead of the current one.
+ * instead of the current one. Translations are preserved while the text is unchanged, because WS
+ * events never carry them.
  *
  * @param comment The [CommentData] to set for this threaded comment.
  * @return A new [ThreadedCommentData] instance with the updated comment data.
@@ -70,6 +73,8 @@ internal fun ThreadedCommentData.update(
     comment: CommentData,
     ownReactions: List<FeedsReactionData> = this.ownReactions,
 ): ThreadedCommentData {
+    val keepTranslations =
+        keepsTranslations(text, comment.text, comment.translations, comment.originalLanguage)
     return this.copy(
         attachments = comment.attachments,
         bookmarkCount = comment.bookmarkCount,
@@ -87,6 +92,7 @@ internal fun ThreadedCommentData.update(
         moderation = comment.moderation,
         objectId = comment.objectId,
         objectType = comment.objectType,
+        originalLanguage = if (keepTranslations) originalLanguage else comment.originalLanguage,
         ownReactions = ownReactions,
         parentId = comment.parentId,
         reactionCount = comment.reactionCount,
@@ -96,6 +102,7 @@ internal fun ThreadedCommentData.update(
         score = comment.score,
         status = comment.status,
         text = comment.text,
+        translations = if (keepTranslations) translations else comment.translations,
         updatedAt = comment.updatedAt,
         upvoteCount = comment.upvoteCount,
         user = comment.user,
