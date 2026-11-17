@@ -186,7 +186,9 @@ internal class ActivitiesRepositoryImplTest {
         val apiResult = GetActivityResponse("duration", activityResponse())
 
         testDelegation(
-            apiFunction = { feedsApi.getActivity(id = "id", language = "fr") },
+            apiFunction = {
+                feedsApi.getActivity(id = "id", language = "fr", includeTopLevelCommentCount = true)
+            },
             repositoryCall = { repository.getActivity("id", "fr") },
             apiResult = apiResult,
             repositoryResult = apiResult.activity.toModel(),

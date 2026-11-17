@@ -34,6 +34,7 @@ internal fun CommentResponse.toModel(): CommentData =
         deletedAt = deletedAt,
         downvoteCount = downvoteCount,
         editedAt = editedAt,
+        hidden = hidden,
         id = id,
         latestReactions = latestReactions?.map { it.toModel() }.orEmpty(),
         mentionedUsers = mentionedUsers.map { it.toModel() },
@@ -78,6 +79,7 @@ internal fun CommentData.update(
     val keepTranslations =
         keepsTranslations(text, updated.text, updated.translations, updated.originalLanguage)
     return updated.copy(
+        hidden = hidden,
         originalLanguage = if (keepTranslations) originalLanguage else updated.originalLanguage,
         ownReactions = ownReactions,
         translations = if (keepTranslations) translations else updated.translations,

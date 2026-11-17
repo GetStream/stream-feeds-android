@@ -54,6 +54,9 @@ import java.util.Date
  *   active, this property is `null`.
  * @property downvoteCount The number of downvotes received by the comment.
  * @property editedAt The date and time when the comment was last edited, if applicable.
+ * @property hidden Whether the comment is hidden by the current user. Only `true` in comment query
+ *   results filtered by
+ *   [io.getstream.feeds.android.client.api.state.query.CommentsFilterField.hidden].
  * @property id The unique identifier of the comment.
  * @property latestReactions The most recent reactions added to the comment. This property contains
  *   the latest reactions from users, typically limited to the most recent ones to keep the data
@@ -102,6 +105,7 @@ public data class CommentData(
     val deletedAt: Date?,
     val downvoteCount: Int,
     val editedAt: Date?,
+    val hidden: Boolean,
     val id: String,
     val latestReactions: List<FeedsReactionData>,
     val mentionedUsers: List<UserData>,

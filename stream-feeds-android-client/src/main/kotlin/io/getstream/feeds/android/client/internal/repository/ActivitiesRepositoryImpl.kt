@@ -104,7 +104,13 @@ internal class ActivitiesRepositoryImpl(
 
     override suspend fun getActivity(activityId: String, language: String?): Result<ActivityData> =
         runSafely {
-            api.getActivity(id = activityId, language = language).activity.toModel()
+            api.getActivity(
+                    id = activityId,
+                    language = language,
+                    includeTopLevelCommentCount = true,
+                )
+                .activity
+                .toModel()
         }
 
     override suspend fun translateActivity(

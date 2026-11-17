@@ -76,6 +76,8 @@ import java.util.Date
  * @property isWatched Whether the activity was watched by the current user. Relevant for stories.
  * @property latestReactions The most recent reactions added to the activity. This property contains
  *   the latest reactions from users, typically limited to the most recent ones.
+ * @property latestShares The most recent shares of the activity. Only filled when activity shares
+ *   are enabled for the organization.
  * @property location Geographic location data associated with the activity, if any.
  * @property mentionedUsers Users mentioned in the activity. This property contains the list of
  *   users who were mentioned in the activity using @mentions or similar functionality.
@@ -94,9 +96,15 @@ import java.util.Date
  * @property poll Poll data if this activity contains a poll. This property contains all
  *   poll-related information including options, votes, and metadata.
  * @property popularity A popularity score for the activity, typically based on engagement metrics.
+ * @property position The 1-based position of the activity in the feed. Ranked feeds continue
+ *   counting across pages, other feeds restart at 1 on each page. Only set on feed reads, and only
+ *   when the app's plan includes activity metrics and a feed group uses exploration or ranks For
+ *   You by `impressions_bucket`. Not set for aggregated feeds.
  * @property reactionCount The total number of reactions on the activity across all reaction types.
  * @property reactionGroups Groups of reactions by type. This property organizes reactions by their
  *   type (e.g., "like", "love", "laugh") and provides counts and metadata for each reaction type.
+ * @property reasons Codes explaining why the activity was shown, for example `following` or
+ *   `popular`. Only filled on For You feed reads that opt in via enrichment options.
  * @property score A relevance or quality score assigned to the activity. This score is typically
  *   used for ranking, sorting, or algorithmic feed placement.
  * @property scoreVars Variable values used at ranking time. Opt-in via enrichment options.
@@ -106,6 +114,10 @@ import java.util.Date
  * @property shareCount The number of times this activity has been shared.
  * @property text The text content of the activity. This property contains the main text content of
  *   the activity. It may be `null` for activities that only contain media or other content types.
+ * @property topLevelCommentCount The number of comments on the activity, excluding replies. Only
+ *   set when a single activity is loaded, such as with
+ *   [io.getstream.feeds.android.client.api.state.Activity.get]. Unlike [commentCount], it is not
+ *   adjusted when comments are added or removed, so it reflects the last load.
  * @property translations Translations of [text], keyed by language code. Only filled when the
  *   activity is loaded with a language, such as
  *   [io.getstream.feeds.android.client.api.state.query.FeedQuery.language], and the activity was
@@ -139,6 +151,7 @@ public data class ActivityData(
     val isSeen: Boolean?,
     val isWatched: Boolean?,
     val latestReactions: List<FeedsReactionData>,
+    val latestShares: List<ShareData>,
     val location: Location?,
     val mentionedUsers: List<UserData>,
     val metrics: Map<String, Int>,
@@ -151,9 +164,11 @@ public data class ActivityData(
     val parent: ActivityData?,
     val poll: PollData?,
     val popularity: Int,
+    val position: Int?,
     val preview: Boolean,
     val reactionCount: Int,
     val reactionGroups: Map<String, ReactionGroupData>,
+    val reasons: List<String>,
     val restrictReplies: RestrictReplies,
     val score: Double,
     val scoreVars: Map<String, Any?>,
@@ -161,6 +176,7 @@ public data class ActivityData(
     val selectorSource: String?,
     val shareCount: Int,
     val text: String?,
+    val topLevelCommentCount: Int?,
     val translations: Map<String, String>,
     val type: String,
     val updatedAt: Date,
