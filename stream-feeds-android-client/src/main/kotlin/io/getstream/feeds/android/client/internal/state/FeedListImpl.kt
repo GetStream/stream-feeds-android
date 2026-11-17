@@ -72,6 +72,7 @@ internal class FeedListImpl(
                 next = next,
                 previous = null,
                 watch = query.watch,
+                enrichOwnFields = query.enrichOwnFields,
             )
         return queryFeeds(nextQuery)
     }

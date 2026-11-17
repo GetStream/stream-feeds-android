@@ -19,6 +19,8 @@ package io.getstream.feeds.android.client.api.state.query
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedInputData
 import io.getstream.feeds.android.network.models.EnrichmentOptions
+import io.getstream.feeds.android.network.models.FriendReactionsOptions
+import io.getstream.feeds.android.network.models.Location
 
 /**
  * A query configuration for retrieving and managing feed data from Stream feeds.
@@ -42,6 +44,11 @@ import io.getstream.feeds.android.network.models.EnrichmentOptions
  * @param language Includes the translations to this language code, for example `fr`, in
  *   [io.getstream.feeds.android.client.api.model.ActivityData.translations]. By default no
  *   translations are included.
+ * @param friendReactionsOptions Options for including reactions from followed or mutually followed
+ *   users on activities. By default they are not included.
+ * @param overwriteInterestWeights If `true`, [interestWeights] replace the user's stored interest
+ *   weights instead of merging with them.
+ * @param viewerLocation The viewer's location. Only the proximity activity selector uses it.
  */
 public data class FeedQuery(
     public val fid: FeedId,
@@ -59,6 +66,9 @@ public data class FeedQuery(
     public val view: String? = null,
     public val watch: Boolean = true,
     public val language: String? = null,
+    public val friendReactionsOptions: FriendReactionsOptions? = null,
+    public val overwriteInterestWeights: Boolean? = null,
+    public val viewerLocation: Location? = null,
 ) {
 
     /**
@@ -82,6 +92,12 @@ public data class FeedQuery(
      * @param language Includes the translations to this language code, for example `fr`, in
      *   [io.getstream.feeds.android.client.api.model.ActivityData.translations]. By default no
      *   translations are included.
+     * @param friendReactionsOptions Options for including reactions from followed or mutually
+     *   followed users on activities. By default they are not included.
+     * @param overwriteInterestWeights If `true`, [interestWeights] replace the user's stored
+     *   interest weights instead of merging with them.
+     * @param viewerLocation The viewer's location. Only the proximity activity selector uses it.
+     * @param enrichmentOptions Options to control enrichment of feed data.
      */
     public constructor(
         group: String,
@@ -99,6 +115,10 @@ public data class FeedQuery(
         view: String? = null,
         watch: Boolean = true,
         language: String? = null,
+        friendReactionsOptions: FriendReactionsOptions? = null,
+        overwriteInterestWeights: Boolean? = null,
+        viewerLocation: Location? = null,
+        enrichmentOptions: EnrichmentOptions? = null,
     ) : this(
         fid = FeedId(group = group, id = id),
         activityFilter = activityFilter,
@@ -114,5 +134,9 @@ public data class FeedQuery(
         view = view,
         watch = watch,
         language = language,
+        friendReactionsOptions = friendReactionsOptions,
+        overwriteInterestWeights = overwriteInterestWeights,
+        viewerLocation = viewerLocation,
+        enrichmentOptions = enrichmentOptions,
     )
 }

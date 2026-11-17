@@ -37,7 +37,7 @@ internal class FeedListImplTest {
     private val feedOwnValuesRepository: FeedOwnValuesRepository = mockk(relaxed = true)
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener> =
         mockk(relaxed = true)
-    private val query = FeedsQuery(limit = 10, watch = false)
+    private val query = FeedsQuery(limit = 10, watch = false, enrichOwnFields = true)
 
     private val feedList =
         FeedListImpl(
@@ -75,7 +75,11 @@ internal class FeedListImplTest {
         val result = feedList.queryMoreFeeds()
 
         assertEquals(moreFeeds, result.getOrNull())
-        coVerify { feedsRepository.queryFeeds(any()) }
+        coVerify {
+            feedsRepository.queryFeeds(
+                match { it.next == "next-cursor" && it.enrichOwnFields == true }
+            )
+        }
     }
 
     @Test

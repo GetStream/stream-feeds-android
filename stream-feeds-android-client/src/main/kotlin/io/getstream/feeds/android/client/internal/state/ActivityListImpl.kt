@@ -83,6 +83,7 @@ internal class ActivityListImpl(
                 next = next,
                 previous = null,
                 language = query.language,
+                enrichOwnFields = query.enrichOwnFields,
             )
         return queryActivities(nextQuery)
     }
