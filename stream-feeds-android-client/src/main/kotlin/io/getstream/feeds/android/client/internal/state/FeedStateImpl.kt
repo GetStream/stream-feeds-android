@@ -185,10 +185,11 @@ internal class FeedStateImpl(
     override fun onActivityRestored(activity: ActivityData) {
         _activities.update { current ->
             val existing = current.indexOfFirst { it.id == activity.id }
-            val firstOlder = current.indexOfFirst { it.createdAt < activity.createdAt }
+            // A tie with a loaded activity counts as loaded: a later page can't be relied on for it
+            val firstNotNewer = current.indexOfFirst { it.createdAt <= activity.createdAt }
             when {
                 existing >= 0 -> current.updateIf({ it.id == activity.id }) { it.update(activity) }
-                firstOlder >= 0 -> current.toMutableList().apply { add(firstOlder, activity) }
+                firstNotNewer >= 0 -> current.toMutableList().apply { add(firstNotNewer, activity) }
                 // Older than everything loaded: it comes with a later page
                 canLoadMoreActivities -> current
                 else -> current + activity

@@ -313,6 +313,18 @@ internal class FeedStateImplTest {
     }
 
     @Test
+    fun `on onActivityRestored as old as the oldest loaded activity, then insert it`() = runTest {
+        val newest = activityData("activity-3", createdAt = 3000)
+        val oldest = activityData("activity-2", createdAt = 2000)
+        setupInitialState(listOf(newest, oldest))
+        val restored = activityData("activity-1", createdAt = 2000)
+
+        feedState.onActivityRestored(restored)
+
+        assertEquals(listOf(newest, restored, oldest), feedState.activities.value)
+    }
+
+    @Test
     fun `on onActivityRestored older than the loaded page, then append only on the last page`() =
         runTest {
             val loaded = activityData("activity-2", createdAt = 2000)
