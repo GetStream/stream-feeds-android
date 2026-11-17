@@ -33,7 +33,7 @@ public data class ActivityResponse(
     @Json(name = "reaction_count") public val reactionCount: Int,
     @Json(name = "restrict_replies")
     public val restrictReplies: io.getstream.feeds.android.network.models.RestrictReplies,
-    @Json(name = "score") public val score: Float,
+    @Json(name = "score") public val score: Double,
     @Json(name = "share_count") public val shareCount: Int,
     @Json(name = "type") public val type: String,
     @Json(name = "updated_at") public val updatedAt: java.util.Date,

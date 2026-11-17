@@ -113,7 +113,7 @@ internal class FeedEventHandlerTest(
                     activityCount = 1,
                     createdAt = Date(),
                     group = "test-group",
-                    score = 1.0f,
+                    score = 1.0,
                     updatedAt = Date(),
                     userCount = 1,
                     userCountTruncated = false,

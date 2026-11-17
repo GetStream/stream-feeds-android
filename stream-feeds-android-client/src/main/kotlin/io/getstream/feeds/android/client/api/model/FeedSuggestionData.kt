@@ -29,7 +29,7 @@ import io.getstream.feeds.android.client.api.state.Feed
  */
 public data class FeedSuggestionData(
     public val feed: FeedData,
-    public val algorithmScores: Map<String, Float>?,
+    public val algorithmScores: Map<String, Double>?,
     public val reason: String?,
-    public val recommendationScore: Float?,
+    public val recommendationScore: Double?,
 )

@@ -23,7 +23,7 @@ import com.squareup.moshi.Json
 /**  */
 @com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class RankingConfig(
-    @Json(name = "exclude_below") public val excludeBelow: Float? = null,
+    @Json(name = "exclude_below") public val excludeBelow: Double? = null,
     @Json(name = "score") public val score: String? = null,
     @Json(name = "type") public val type: String? = null,
     @Json(name = "defaults") public val defaults: Map<String, Any?>? = null,

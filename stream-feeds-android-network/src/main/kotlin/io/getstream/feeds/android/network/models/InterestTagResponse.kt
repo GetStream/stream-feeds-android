@@ -29,5 +29,5 @@ public data class InterestTagResponse(
     @Json(name = "count") public val count: Int,
     @Json(name = "source") public val source: String,
     @Json(name = "tag") public val tag: String,
-    @Json(name = "weight") public val weight: Float,
+    @Json(name = "weight") public val weight: Double,
 )

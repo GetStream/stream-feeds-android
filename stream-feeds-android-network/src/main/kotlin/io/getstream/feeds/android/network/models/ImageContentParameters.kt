@@ -24,6 +24,6 @@ import com.squareup.moshi.Json
 @com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class ImageContentParameters(
     @Json(name = "label_operator") public val labelOperator: String? = null,
-    @Json(name = "min_confidence") public val minConfidence: Float? = null,
+    @Json(name = "min_confidence") public val minConfidence: Double? = null,
     @Json(name = "harm_labels") public val harmLabels: List<String>? = null,
 )

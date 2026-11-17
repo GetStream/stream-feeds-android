@@ -24,7 +24,7 @@ import com.squareup.moshi.Json
 @com.squareup.moshi.JsonClass(generateAdapter = true)
 public data class ThreadedCommentResponse(
     @Json(name = "bookmark_count") public val bookmarkCount: Int,
-    @Json(name = "confidence_score") public val confidenceScore: Float,
+    @Json(name = "confidence_score") public val confidenceScore: Double,
     @Json(name = "created_at") public val createdAt: java.util.Date,
     @Json(name = "downvote_count") public val downvoteCount: Int,
     @Json(name = "hidden") public val hidden: Boolean,
@@ -45,7 +45,7 @@ public data class ThreadedCommentResponse(
     public val ownReactions: List<io.getstream.feeds.android.network.models.FeedsReactionResponse> =
         emptyList(),
     @Json(name = "user") public val user: io.getstream.feeds.android.network.models.UserResponse,
-    @Json(name = "controversy_score") public val controversyScore: Float? = null,
+    @Json(name = "controversy_score") public val controversyScore: Double? = null,
     @Json(name = "deleted_at") public val deletedAt: java.util.Date? = null,
     @Json(name = "edited_at") public val editedAt: java.util.Date? = null,
     @Json(name = "parent_id") public val parentId: String? = null,
