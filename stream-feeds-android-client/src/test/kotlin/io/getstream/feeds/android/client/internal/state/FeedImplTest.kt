@@ -63,6 +63,7 @@ import io.getstream.feeds.android.network.models.AddReactionRequest
 import io.getstream.feeds.android.network.models.CreatePollRequest
 import io.getstream.feeds.android.network.models.FeedMemberRequest
 import io.getstream.feeds.android.network.models.FollowPushPreference
+import io.getstream.feeds.android.network.models.FollowRequest
 import io.getstream.feeds.android.network.models.MarkActivityRequest
 import io.getstream.feeds.android.network.models.UpdateActivityPartialRequest
 import io.getstream.feeds.android.network.models.UpdateActivityRequest
@@ -216,10 +217,10 @@ internal class FeedImplTest {
         val initialActivity = activityData("activity-1")
         setupInitialState(feed, initialFeedData, listOf(initialActivity))
 
-        coEvery { feedsRepository.deleteFeed("group", "id", hardDelete) } returns
+        coEvery { feedsRepository.deleteFeed("group", "id", hardDelete, true) } returns
             Result.success(Unit)
 
-        val result = feed.deleteFeed(hardDelete)
+        val result = feed.deleteFeed(hardDelete, purgeUserActivities = true)
 
         assertEquals(Unit, result.getOrNull())
         assertNull(feed.state.feed.value)
@@ -389,12 +390,68 @@ internal class FeedImplTest {
         // Set up initial feed state
         setupInitialState(feed)
 
-        coEvery { feedsRepository.follow(any()) } returns Result.success(follow)
+        val request =
+            FollowRequest(
+                source = "group:id",
+                target = "user:target",
+                activityCopyLimit = 10,
+                createNotificationActivity = createNotificationActivity,
+                custom = custom,
+                enrichOwnFields = true,
+                pushPreference = pushPreference,
+                skipPush = true,
+            )
+        coEvery { feedsRepository.follow(request) } returns Result.success(follow)
 
-        val result = feed.follow(targetFid, createNotificationActivity, custom, pushPreference)
+        val result =
+            feed.follow(
+                targetFid = targetFid,
+                createNotificationActivity = createNotificationActivity,
+                custom = custom,
+                pushPreference = pushPreference,
+                activityCopyLimit = 10,
+                enrichOwnFields = true,
+                skipPush = true,
+            )
 
         assertEquals(follow, result.getOrNull())
         assertEquals(listOf(follow), feed.state.following.value)
+    }
+
+    @Test
+    fun `on deleteFeed without options, send no purge argument`() = runTest {
+        val feed = createFeed()
+        coEvery { feedsRepository.deleteFeed("group", "id", false, null) } returns
+            Result.success(Unit)
+
+        val result = feed.deleteFeed()
+
+        assertEquals(Unit, result.getOrNull())
+    }
+
+    @Test
+    fun `on follow without options, send only source and target`() = runTest {
+        val feed = createFeed()
+        val follow = followData(sourceFid = "group:id", targetFid = "user:target")
+        val request = FollowRequest(source = "group:id", target = "user:target")
+        coEvery { feedsRepository.follow(request) } returns Result.success(follow)
+
+        val result = feed.follow(FeedId("user:target"))
+
+        assertEquals(follow, result.getOrNull())
+    }
+
+    @Test
+    fun `on unfollow without options, send no optional arguments`() = runTest {
+        val feed = createFeed()
+        val targetFid = FeedId("user:target")
+        val follow = followData("group:id", "user:target")
+        coEvery { feedsRepository.unfollow(FeedId("group:id"), targetFid, null, null) } returns
+            Result.success(follow)
+
+        val result = feed.unfollow(targetFid)
+
+        assertEquals(Unit, result.getOrNull())
     }
 
     @Test
@@ -406,9 +463,16 @@ internal class FeedImplTest {
         // Set up initial state with follow
         setupInitialState(feed, following = listOf(follow))
 
-        coEvery { feedsRepository.unfollow(any(), any(), any()) } returns Result.success(follow)
+        coEvery {
+            feedsRepository.unfollow(
+                source = FeedId("group:id"),
+                target = targetFid,
+                deleteNotificationActivity = true,
+                keepHistory = true,
+            )
+        } returns Result.success(follow)
 
-        val result = feed.unfollow(targetFid)
+        val result = feed.unfollow(targetFid, deleteNotificationActivity = true, keepHistory = true)
 
         assertEquals(Unit, result.getOrNull())
         assertTrue("Following should be removed from state", feed.state.following.value.isEmpty())

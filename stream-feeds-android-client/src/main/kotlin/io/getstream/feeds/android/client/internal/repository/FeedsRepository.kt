@@ -58,7 +58,12 @@ internal interface FeedsRepository {
 
     // BEGIN: Manging the feed
 
-    suspend fun deleteFeed(feedGroupId: String, feedId: String, hardDelete: Boolean): Result<Unit>
+    suspend fun deleteFeed(
+        feedGroupId: String,
+        feedId: String,
+        hardDelete: Boolean,
+        purgeUserActivities: Boolean?,
+    ): Result<Unit>
 
     suspend fun updateFeed(
         feedGroupId: String,
@@ -89,6 +94,7 @@ internal interface FeedsRepository {
         source: FeedId,
         target: FeedId,
         deleteNotificationActivity: Boolean?,
+        keepHistory: Boolean?,
     ): Result<FollowData>
 
     suspend fun getOrCreateFollows(request: FollowBatchRequest): Result<BatchFollowData>

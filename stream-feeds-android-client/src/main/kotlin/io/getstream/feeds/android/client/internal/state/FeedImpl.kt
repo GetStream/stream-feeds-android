@@ -171,9 +171,17 @@ internal class FeedImpl(
             .onSuccess { subscriptionManager.onEvent(StateUpdateEvent.FeedUpdated(it)) }
     }
 
-    override suspend fun deleteFeed(hardDelete: Boolean): Result<Unit> {
+    override suspend fun deleteFeed(
+        hardDelete: Boolean,
+        purgeUserActivities: Boolean?,
+    ): Result<Unit> {
         return feedsRepository
-            .deleteFeed(feedGroupId = group, feedId = id, hardDelete = hardDelete)
+            .deleteFeed(
+                feedGroupId = group,
+                feedId = id,
+                hardDelete = hardDelete,
+                purgeUserActivities = purgeUserActivities,
+            )
             .onSuccess { subscriptionManager.onEvent(StateUpdateEvent.FeedDeleted(fid.rawValue)) }
     }
 
@@ -384,12 +392,18 @@ internal class FeedImpl(
         createNotificationActivity: Boolean?,
         custom: Map<String, Any>?,
         pushPreference: FollowPushPreference?,
+        activityCopyLimit: Int?,
+        enrichOwnFields: Boolean?,
+        skipPush: Boolean?,
     ): Result<FollowData> {
         val request =
             FollowRequest(
+                activityCopyLimit = activityCopyLimit,
                 createNotificationActivity = createNotificationActivity,
                 custom = custom,
+                enrichOwnFields = enrichOwnFields,
                 pushPreference = pushPreference,
+                skipPush = skipPush,
                 source = fid.rawValue,
                 target = targetFid.rawValue,
             )
@@ -418,12 +432,14 @@ internal class FeedImpl(
     override suspend fun unfollow(
         targetFid: FeedId,
         deleteNotificationActivity: Boolean?,
+        keepHistory: Boolean?,
     ): Result<Unit> {
         return feedsRepository
             .unfollow(
                 source = fid,
                 target = targetFid,
                 deleteNotificationActivity = deleteNotificationActivity,
+                keepHistory = keepHistory,
             )
             .onSuccess { subscriptionManager.onEvent(StateUpdateEvent.FollowDeleted(it)) }
             .map {}

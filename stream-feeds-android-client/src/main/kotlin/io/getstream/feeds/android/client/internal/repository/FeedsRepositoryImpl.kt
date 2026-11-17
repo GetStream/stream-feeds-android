@@ -92,8 +92,14 @@ internal class FeedsRepositoryImpl(private val api: FeedsApi) : FeedsRepository 
         feedGroupId: String,
         feedId: String,
         hardDelete: Boolean,
+        purgeUserActivities: Boolean?,
     ): Result<Unit> = runSafely {
-        api.deleteFeed(feedGroupId = feedGroupId, feedId = feedId, hardDelete = hardDelete)
+        api.deleteFeed(
+            feedGroupId = feedGroupId,
+            feedId = feedId,
+            hardDelete = hardDelete,
+            purgeUserActivities = purgeUserActivities,
+        )
     }
 
     override suspend fun updateFeed(
@@ -141,11 +147,13 @@ internal class FeedsRepositoryImpl(private val api: FeedsApi) : FeedsRepository 
         source: FeedId,
         target: FeedId,
         deleteNotificationActivity: Boolean?,
+        keepHistory: Boolean?,
     ): Result<FollowData> = runSafely {
         api.unfollow(
                 source = source.rawValue,
                 target = target.rawValue,
                 deleteNotificationActivity = deleteNotificationActivity,
+                keepHistory = keepHistory,
             )
             .follow
             .toModel()
