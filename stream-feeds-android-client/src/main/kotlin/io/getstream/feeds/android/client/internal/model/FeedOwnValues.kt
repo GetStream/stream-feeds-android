@@ -25,4 +25,10 @@ internal data class FeedOwnValues(
     val followings: List<FollowData>,
     val follows: List<FollowData>,
     val membership: FeedMemberData?,
-)
+) {
+    fun isNotEmpty(): Boolean =
+        capabilities.isNotEmpty() ||
+            followings.isNotEmpty() ||
+            follows.isNotEmpty() ||
+            membership != null
+}
