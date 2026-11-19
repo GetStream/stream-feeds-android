@@ -72,6 +72,7 @@ internal class BookmarkListImpl(
                 next = next,
                 previous = null,
                 language = query.language,
+                enrichOwnFields = query.enrichOwnFields,
             )
         return queryBookmarks(nextQuery)
     }
