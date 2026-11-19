@@ -77,16 +77,8 @@ internal class BookmarkListStateImpl(override val query: BookmarksQuery) :
     }
 
     override fun onBookmarkFolderRemoved(folderId: String) {
-        _bookmarks.update { current ->
-            current.map {
-                if (it.folder?.id == folderId) {
-                    // Remove the folder reference from the bookmark
-                    it.copy(folder = null)
-                } else {
-                    it
-                }
-            }
-        }
+        // Deleting a folder deletes its bookmarks
+        _bookmarks.update { current -> current.filter { it.folder?.id != folderId } }
     }
 
     override fun onBookmarkFolderUpdated(folder: BookmarkFolderData) {

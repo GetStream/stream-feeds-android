@@ -28,6 +28,7 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.A
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkFolderDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentDeleted
@@ -158,6 +159,11 @@ internal class ActivityEventHandlerTest(
                     name = "BookmarkDeleted non-matching activity",
                     event = BookmarkDeleted(nonMatchingBookmark),
                     verifyBlock = { it wasNot called },
+                ),
+                testParams<ActivityStateUpdates>(
+                    name = "BookmarkFolderDeleted",
+                    event = BookmarkFolderDeleted("folder-1"),
+                    verifyBlock = { it.onBookmarkFolderRemoved("folder-1") },
                 ),
                 testParams<ActivityStateUpdates>(
                     name = "BookmarkAdded matching activity",

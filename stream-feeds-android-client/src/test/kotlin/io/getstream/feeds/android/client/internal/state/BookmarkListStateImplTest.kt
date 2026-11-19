@@ -91,7 +91,7 @@ internal class BookmarkListStateImplTest {
     }
 
     @Test
-    fun `on bookmarkFolderRemoved, then remove folder reference from bookmarks`() = runTest {
+    fun `on bookmarkFolderRemoved, then remove the bookmarks in the folder`() = runTest {
         val folder = bookmarkFolderData("folder-1", "Folder 1")
         val bookmark1 = bookmarkData(folder = folder)
         val bookmark2 =
@@ -100,8 +100,7 @@ internal class BookmarkListStateImplTest {
 
         bookmarkListState.onBookmarkFolderRemoved(folder.id)
 
-        val expected = listOf(bookmark1.copy(folder = null), bookmark2)
-        assertEquals(expected, bookmarkListState.bookmarks.value)
+        assertEquals(listOf(bookmark2), bookmarkListState.bookmarks.value)
     }
 
     @Test

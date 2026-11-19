@@ -17,6 +17,7 @@
 package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.api.model.FollowData
+import io.getstream.feeds.android.client.api.state.InsertionAction
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.state.FeedStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
@@ -50,7 +51,11 @@ internal class FeedEventHandler(
                 // We add activities only on strict matches, i.e. we're sure they belong to the feed
                 if (event.scope strictlyMatches query.fid) {
                     val insertionAction = onNewActivity(query, event.activity, currentUserId)
-                    state.onActivityAdded(event.activity, insertionAction)
+                    if (!event.restored) {
+                        state.onActivityAdded(event.activity, insertionAction)
+                    } else if (insertionAction != InsertionAction.Ignore) {
+                        state.onActivityRestored(event.activity)
+                    }
                 }
             }
 
@@ -113,6 +118,10 @@ internal class FeedEventHandler(
 
             is StateUpdateEvent.BookmarkDeleted -> {
                 state.onBookmarkRemoved(event.bookmark)
+            }
+
+            is StateUpdateEvent.BookmarkFolderDeleted -> {
+                state.onBookmarkFolderRemoved(event.folderId)
             }
 
             is StateUpdateEvent.BookmarkUpdated -> {

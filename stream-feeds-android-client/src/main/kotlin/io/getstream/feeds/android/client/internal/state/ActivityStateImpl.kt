@@ -30,6 +30,7 @@ import io.getstream.feeds.android.client.internal.model.FeedOwnValues
 import io.getstream.feeds.android.client.internal.model.deleteBookmark
 import io.getstream.feeds.android.client.internal.model.removeComment
 import io.getstream.feeds.android.client.internal.model.removeCommentReaction
+import io.getstream.feeds.android.client.internal.model.removeOwnBookmarksInFolder
 import io.getstream.feeds.android.client.internal.model.removeReaction
 import io.getstream.feeds.android.client.internal.model.removeVote
 import io.getstream.feeds.android.client.internal.model.update
@@ -113,6 +114,10 @@ internal class ActivityStateImpl(
 
     override fun onBookmarkRemoved(bookmark: BookmarkData) {
         _activity.update { current -> current?.deleteBookmark(bookmark, currentUserId) }
+    }
+
+    override fun onBookmarkFolderRemoved(folderId: String) {
+        _activity.update { current -> current?.removeOwnBookmarksInFolder(folderId) }
     }
 
     override fun onBookmarkUpserted(bookmark: BookmarkData) {
@@ -235,6 +240,13 @@ internal interface ActivityStateUpdates {
      * @param bookmark The bookmark that was deleted.
      */
     fun onBookmarkRemoved(bookmark: BookmarkData)
+
+    /**
+     * Called when a bookmark folder, and its bookmarks, was deleted.
+     *
+     * @param folderId The ID of the deleted folder.
+     */
+    fun onBookmarkFolderRemoved(folderId: String)
 
     /**
      * Called when a bookmark is added to or updated in an activity.

@@ -36,6 +36,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.activityPin
 import io.getstream.feeds.android.client.internal.test.TestData.aggregatedActivityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
+import io.getstream.feeds.android.client.internal.test.TestData.bookmarkFolderData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedData
 import io.getstream.feeds.android.client.internal.test.TestData.feedMemberData
@@ -297,6 +298,74 @@ internal class FeedStateImplTest {
         val pinnedActivityWithoutBookmark =
             feedState.pinnedActivities.value.find { it.activity.id == "activity-1" }
         assertEquals(0, pinnedActivityWithoutBookmark?.activity?.bookmarkCount)
+    }
+
+    @Test
+    fun `on onActivityRestored, then insert the activity by creation date`() = runTest {
+        val newest = activityData("activity-3", createdAt = 3000)
+        val oldest = activityData("activity-1", createdAt = 1000)
+        setupInitialState(listOf(newest, oldest))
+        val restored = activityData("activity-2", createdAt = 2000)
+
+        feedState.onActivityRestored(restored)
+
+        assertEquals(listOf(newest, restored, oldest), feedState.activities.value)
+    }
+
+    @Test
+    fun `on onActivityRestored as old as the oldest loaded activity, then insert it`() = runTest {
+        val newest = activityData("activity-3", createdAt = 3000)
+        val oldest = activityData("activity-2", createdAt = 2000)
+        setupInitialState(listOf(newest, oldest))
+        val restored = activityData("activity-1", createdAt = 2000)
+
+        feedState.onActivityRestored(restored)
+
+        assertEquals(listOf(newest, restored, oldest), feedState.activities.value)
+    }
+
+    @Test
+    fun `on onActivityRestored older than the loaded page, then append only on the last page`() =
+        runTest {
+            val loaded = activityData("activity-2", createdAt = 2000)
+            val restored = activityData("activity-1", createdAt = 1000)
+
+            setupInitialState(listOf(loaded))
+            feedState.onActivityRestored(restored)
+            assertEquals(listOf(loaded), feedState.activities.value)
+
+            feedState.onQueryMoreActivities(emptyList(), emptyList(), PaginationData())
+            feedState.onActivityRestored(restored)
+            assertEquals(listOf(loaded, restored), feedState.activities.value)
+        }
+
+    @Test
+    fun `on onActivityRestored for a loaded activity, then update it in place`() = runTest {
+        val first = activityData("activity-2", createdAt = 2000)
+        val second = activityData("activity-1", createdAt = 1000)
+        setupInitialState(listOf(first, second))
+
+        feedState.onActivityRestored(second.copy(text = "Restored"))
+
+        assertEquals(listOf(first, second.copy(text = "Restored")), feedState.activities.value)
+    }
+
+    @Test
+    fun `on onBookmarkFolderRemoved, then remove the folder's own bookmarks`() = runTest {
+        val inFolder = bookmarkData("activity-1", currentUserId, bookmarkFolderData("folder-1"))
+        val inOtherFolder =
+            bookmarkData("activity-1", currentUserId, bookmarkFolderData("folder-2"))
+        val activity =
+            activityData("activity-1", ownBookmarks = listOf(inFolder, inOtherFolder))
+                .copy(bookmarkCount = 3)
+        val untouched = activityData("activity-2")
+        setupInitialState(listOf(activity, untouched), listOf(activityPin(activity)))
+
+        feedState.onBookmarkFolderRemoved("folder-1")
+
+        val expected = activity.copy(ownBookmarks = listOf(inOtherFolder), bookmarkCount = 2)
+        assertEquals(listOf(expected, untouched), feedState.activities.value)
+        assertEquals(expected, feedState.pinnedActivities.value.single().activity)
     }
 
     @Test

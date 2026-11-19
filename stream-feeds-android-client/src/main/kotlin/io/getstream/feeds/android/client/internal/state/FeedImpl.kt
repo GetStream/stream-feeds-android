@@ -233,7 +233,11 @@ internal class FeedImpl(
     }
 
     override suspend fun restoreActivity(id: String): Result<ActivityData> {
-        return activitiesRepository.restoreActivity(id)
+        return activitiesRepository.restoreActivity(id).onSuccess {
+            subscriptionManager.onEvent(
+                StateUpdateEvent.ActivityAdded(FidScope.unknown, it, restored = true)
+            )
+        }
     }
 
     override suspend fun markActivity(request: MarkActivityRequest): Result<Unit> {

@@ -177,6 +177,24 @@ internal fun ActivityData.removeComment(commentId: String): ActivityData {
 }
 
 /**
+ * Removes the own bookmarks that belong to the folder and lowers the bookmark count by the same
+ * number. Deleting a folder deletes its bookmarks, and the event only carries the folder.
+ *
+ * @param folderId The ID of the deleted folder.
+ * @return The updated [ActivityData], or the same instance if no own bookmark is in the folder.
+ */
+internal fun ActivityData.removeOwnBookmarksInFolder(folderId: String): ActivityData {
+    if (!hasOwnBookmarkInFolder(folderId)) return this
+    val remaining = ownBookmarks.filter { it.folder?.id != folderId }
+    val removed = ownBookmarks.size - remaining.size
+    return copy(ownBookmarks = remaining, bookmarkCount = max(0, bookmarkCount - removed))
+}
+
+/** Whether any of the current user's bookmarks of this activity is in the folder. */
+internal fun ActivityData.hasOwnBookmarkInFolder(folderId: String): Boolean =
+    ownBookmarks.any { it.folder?.id == folderId }
+
+/**
  * Calls [changeBookmarks] with a [filter] operation to remove the bookmark.
  *
  * @see changeBookmarks

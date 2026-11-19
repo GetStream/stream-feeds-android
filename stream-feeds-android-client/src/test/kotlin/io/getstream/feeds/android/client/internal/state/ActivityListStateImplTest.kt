@@ -24,6 +24,7 @@ import io.getstream.feeds.android.client.internal.model.FeedOwnValues
 import io.getstream.feeds.android.client.internal.state.query.ActivitiesQueryConfig
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
+import io.getstream.feeds.android.client.internal.test.TestData.bookmarkFolderData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
 import io.getstream.feeds.android.client.internal.test.TestData.feedData
@@ -132,6 +133,20 @@ internal class ActivityListStateImplTest {
 
         val activityWithoutBookmark = activityListState.activities.value.first()
         assertEquals(0, activityWithoutBookmark.bookmarkCount)
+    }
+
+    @Test
+    fun `on onBookmarkFolderRemoved, then remove the folder's own bookmarks`() = runTest {
+        val inFolder = bookmarkData("activity-1", currentUserId, bookmarkFolderData("folder-1"))
+        val activity1 =
+            activityData("activity-1", ownBookmarks = listOf(inFolder)).copy(bookmarkCount = 1)
+        val activity2 = activityData("activity-2")
+        setupInitialActivities(activity1, activity2)
+
+        activityListState.onBookmarkFolderRemoved("folder-1")
+
+        val expected = activity1.copy(ownBookmarks = emptyList(), bookmarkCount = 0)
+        assertEquals(listOf(expected, activity2), activityListState.activities.value)
     }
 
     @Test

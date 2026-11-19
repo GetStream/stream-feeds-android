@@ -39,6 +39,7 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.A
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkFolderDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentDeleted
@@ -137,6 +138,16 @@ internal class FeedEventHandlerTest(
                     verifyBlock = { state ->
                         state.onActivityAdded(activity, InsertionAction.AddToStart)
                     },
+                ),
+                testParams<FeedStateUpdates>(
+                    name = "Restored ActivityAdded matching feed and filter",
+                    event = ActivityAdded(fidScope, activity, restored = true),
+                    verifyBlock = { state -> state.onActivityRestored(activity) },
+                ),
+                testParams<FeedStateUpdates>(
+                    name = "Restored ActivityAdded non-matching filter",
+                    event = ActivityAdded(fidScope, nonMatchingActivity, restored = true),
+                    verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityAdded non-matching feed",
@@ -249,6 +260,11 @@ internal class FeedEventHandlerTest(
                     name = "BookmarkDeleted always handled",
                     event = BookmarkDeleted(matchingBookmark),
                     verifyBlock = { state -> state.onBookmarkRemoved(matchingBookmark) },
+                ),
+                testParams<FeedStateUpdates>(
+                    name = "BookmarkFolderDeleted always handled",
+                    event = BookmarkFolderDeleted("folder-1"),
+                    verifyBlock = { state -> state.onBookmarkFolderRemoved("folder-1") },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "BookmarkUpdated always handled",
