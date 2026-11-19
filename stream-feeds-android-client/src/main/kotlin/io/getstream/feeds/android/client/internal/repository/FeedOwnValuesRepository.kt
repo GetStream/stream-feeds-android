@@ -49,6 +49,21 @@ internal fun FeedOwnValuesRepository.cache(feed: FeedData) {
     cache(singletonMap(feed.fid, feed.ownValues()))
 }
 
-internal fun FeedOwnValuesRepository.cache(feeds: Iterable<FeedData>) {
-    cache(feeds.associateBy(FeedData::fid, FeedData::ownValues))
+/**
+ * Caches the own values of the feeds coming from a list response, skipping the feeds that carry
+ * none.
+ *
+ * List endpoints only return own values when the request asks for them, and a feed that was not
+ * enriched looks the same as a feed whose own values are all empty. Caching those would replace
+ * real cached values with empty ones, so they are left to be requested on demand instead.
+ */
+internal fun FeedOwnValuesRepository.cacheEnriched(feeds: Iterable<FeedData>) {
+    val ownValues =
+        feeds
+            .associateBy(FeedData::fid, FeedData::ownValues)
+            .filterValues(FeedOwnValues::isNotEmpty)
+
+    if (ownValues.isNotEmpty()) {
+        cache(ownValues)
+    }
 }
