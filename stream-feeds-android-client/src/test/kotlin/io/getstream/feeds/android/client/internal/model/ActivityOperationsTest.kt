@@ -131,4 +131,65 @@ internal class ActivityOperationsTest {
 
         assertEquals(activity, activity.removeOwnBookmarksInFolder("folder-1"))
     }
+
+    @Test
+    fun `update keeps hidden, because only queries return it`() {
+        val original = activityData(id = "a1", hidden = true)
+
+        val result = original.update(activityData(id = "a1", text = "Edited"))
+
+        assertEquals(true, result.hidden)
+        assertEquals("Edited", result.text)
+    }
+
+    @Test
+    fun `update takes preview, because the backend sets it per recipient`() {
+        val original = activityData(id = "a1").copy(preview = true)
+
+        val result = original.update(activityData(id = "a1").copy(preview = false))
+
+        assertEquals(false, result.preview)
+    }
+
+    @Test
+    fun `update keeps a visible activity visible`() {
+        val original = activityData(id = "a1", hidden = false)
+
+        val result = original.update(activityData(id = "a1", hidden = true))
+
+        assertEquals(false, result.hidden)
+    }
+
+    @Test
+    fun `update keeps read-time state the update does not carry`() {
+        val original =
+            activityData(id = "a1", isRead = true, isSeen = true, isWatched = true)
+                .copy(scoreVars = mapOf("decay" to 0.5), selectorSource = "following")
+
+        val result = original.update(activityData(id = "a1"))
+
+        assertEquals(true, result.isRead)
+        assertEquals(true, result.isSeen)
+        assertEquals(true, result.isWatched)
+        assertEquals(mapOf("decay" to 0.5), result.scoreVars)
+        assertEquals("following", result.selectorSource)
+    }
+
+    @Test
+    fun `update takes read-time state the update carries`() {
+        val original =
+            activityData(id = "a1", isRead = true, isSeen = true, isWatched = true)
+                .copy(scoreVars = mapOf("decay" to 0.5), selectorSource = "following")
+        val updated =
+            activityData(id = "a1", isRead = false, isSeen = false, isWatched = false)
+                .copy(scoreVars = mapOf("decay" to 0.9), selectorSource = "popular")
+
+        val result = original.update(updated)
+
+        assertEquals(false, result.isRead)
+        assertEquals(false, result.isSeen)
+        assertEquals(false, result.isWatched)
+        assertEquals(mapOf("decay" to 0.9), result.scoreVars)
+        assertEquals("popular", result.selectorSource)
+    }
 }

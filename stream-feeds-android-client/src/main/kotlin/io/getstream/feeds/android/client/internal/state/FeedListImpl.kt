@@ -24,7 +24,7 @@ import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.repository.FeedOwnValuesRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
-import io.getstream.feeds.android.client.internal.repository.cache
+import io.getstream.feeds.android.client.internal.repository.cacheEnriched
 import io.getstream.feeds.android.client.internal.state.event.handler.FeedListEventHandler
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
@@ -64,15 +64,7 @@ internal class FeedListImpl(
             // If there is no next cursor, return an empty list.
             return Result.success(emptyList())
         }
-        val nextQuery =
-            FeedsQuery(
-                filter = _state.queryConfig?.filter,
-                sort = _state.queryConfig?.sort,
-                limit = limit ?: query.limit,
-                next = next,
-                previous = null,
-                watch = query.watch,
-            )
+        val nextQuery = query.copy(limit = limit ?: query.limit, next = next, previous = null)
         return queryFeeds(nextQuery)
     }
 
@@ -84,7 +76,7 @@ internal class FeedListImpl(
             .queryFeeds(query)
             .onSuccess {
                 _state.onQueryFeeds(it, QueryConfiguration(query.filter, query.sort), replace)
-                feedOwnValuesRepository.cache(it.models)
+                feedOwnValuesRepository.cacheEnriched(it.models)
             }
             .map { it.models }
     }

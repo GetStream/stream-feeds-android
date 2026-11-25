@@ -24,7 +24,7 @@ import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.FeedOwnValuesRepository
-import io.getstream.feeds.android.client.internal.repository.cache
+import io.getstream.feeds.android.client.internal.repository.cacheEnriched
 import io.getstream.feeds.android.client.internal.state.event.handler.ActivityListEventHandler
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 
@@ -75,15 +75,7 @@ internal class ActivityListImpl(
             // If there is no next cursor, return an empty list.
             return Result.success(emptyList())
         }
-        val nextQuery =
-            ActivitiesQuery(
-                filter = _state.queryConfig?.filter,
-                sort = _state.queryConfig?.sort,
-                limit = limit ?: query.limit,
-                next = next,
-                previous = null,
-                language = query.language,
-            )
+        val nextQuery = query.copy(limit = limit ?: query.limit, next = next, previous = null)
         return queryActivities(nextQuery)
     }
 
@@ -95,7 +87,9 @@ internal class ActivityListImpl(
             .queryActivities(query)
             .onSuccess {
                 _state.onQueryActivities(it, QueryConfiguration(query.filter, query.sort), replace)
-                feedOwnValuesRepository.cache(it.models.mapNotNull(ActivityData::currentFeed))
+                feedOwnValuesRepository.cacheEnriched(
+                    it.models.mapNotNull(ActivityData::currentFeed)
+                )
             }
             .map { it.models }
     }

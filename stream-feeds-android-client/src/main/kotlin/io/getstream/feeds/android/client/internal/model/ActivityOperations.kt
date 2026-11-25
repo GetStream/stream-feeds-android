@@ -113,9 +113,12 @@ internal fun ActivityVisibility.toModel(): ActivityDataVisibility =
  * Extension function to update the activity while preserving own bookmarks, reactions, poll votes,
  * and feed own data because "own" data from WS events is not reliable. Optionally, different
  * instances can be provided to be used instead of the current ones. Translations are preserved
- * while the text is unchanged, because WS events never carry them. Position, reasons and the
- * top-level comment count are preserved when the update does not carry them, because they are only
- * returned by some reads.
+ * while the text is unchanged, because WS events never carry them. [ActivityData.hidden] is always
+ * preserved, because it is per viewer and only feed and activity queries return it; events and
+ * single-activity responses always carry `false`. The fields only some reads return (read, seen and
+ * watched state, position, reasons, score variables, selector source and the top-level comment
+ * count) are preserved when the update does not carry them. [ActivityData.preview] is taken from
+ * the update, because the backend sets it per recipient.
  */
 internal fun ActivityData.update(
     updated: ActivityData,
@@ -140,8 +143,14 @@ internal fun ActivityData.update(
         ownReactions = ownReactions,
         friendReactions = friendReactions,
         friendReactionCount = friendReactionCount,
+        hidden = hidden,
+        isRead = updated.isRead ?: isRead,
+        isSeen = updated.isSeen ?: isSeen,
+        isWatched = updated.isWatched ?: isWatched,
         position = updated.position ?: position,
         reasons = updated.reasons.ifEmpty { reasons },
+        scoreVars = updated.scoreVars.ifEmpty { scoreVars },
+        selectorSource = updated.selectorSource ?: selectorSource,
         topLevelCommentCount = updated.topLevelCommentCount ?: topLevelCommentCount,
         poll = updated.poll?.let { poll?.update(it) ?: it },
         currentFeed = updatedCurrentFeed,

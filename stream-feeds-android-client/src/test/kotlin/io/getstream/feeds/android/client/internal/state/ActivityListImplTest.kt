@@ -21,13 +21,17 @@ import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
+import io.getstream.feeds.android.client.internal.model.ownValues
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.FeedOwnValuesRepository
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
+import io.getstream.feeds.android.client.internal.test.TestData.feedData
+import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -37,7 +41,7 @@ internal class ActivityListImplTest {
     private val feedOwnValuesRepository: FeedOwnValuesRepository = mockk(relaxed = true)
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener> =
         mockk(relaxed = true)
-    private val query = ActivitiesQuery(limit = 10, language = "fr")
+    private val query = ActivitiesQuery(limit = 10, language = "fr", enrichOwnFields = true)
     private val currentUserId = "user-123"
 
     private val activityList =
@@ -60,6 +64,24 @@ internal class ActivityListImplTest {
 
         assertEquals(activities, result.getOrNull())
         coVerify { activitiesRepository.queryActivities(query) }
+    }
+
+    @Test
+    fun `get, then cache own values only for current feeds that carry them`() = runTest {
+        val enriched = feedData("feed-1", ownCapabilities = setOf(FeedOwnCapability.ReadFeed))
+        val notEnriched = feedData("feed-2")
+        val activities =
+            listOf(
+                activityData("activity-1", currentFeed = enriched),
+                activityData("activity-2", currentFeed = notEnriched),
+                activityData("activity-3"),
+            )
+        coEvery { activitiesRepository.queryActivities(query) } returns
+            Result.success(createPaginationResult(activities))
+
+        activityList.get()
+
+        verify { feedOwnValuesRepository.cache(mapOf(enriched.fid to enriched.ownValues())) }
     }
 
     @Test
@@ -172,5 +194,6 @@ internal class ActivityListImplTest {
             next = next,
             previous = null,
             language = query.language,
+            enrichOwnFields = query.enrichOwnFields,
         )
 }

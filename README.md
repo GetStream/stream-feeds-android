@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://github.com/GetStream/stream-feeds-android/actions/workflows/android.yml"><img src="https://github.com/GetStream/stream-feeds-android/actions/workflows/android.yml/badge.svg" /></a>
-  <a href="https://android-arsenal.com/api?level=21"><img alt="API" src="https://img.shields.io/badge/API-21%2B-blue.svg?style=flat"/></a>
+  <img alt="API" src="https://img.shields.io/badge/API-21%2B-blue.svg?style=flat"/>
   <a href="https://github.com/GetStream/stream-feeds-android/releases"><img src="https://img.shields.io/github/v/release/GetStream/stream-feeds-android" /></a>
 </p>
 
@@ -40,7 +40,7 @@ V3 keeps that scalability while giving you more flexibility over the content sho
     - match activities to a user’s interests
     - mix-and-match these selectors to build an engaging personalized feed.
 
-- **Performance**: 20–30% faster flat feeds. Major speedups for aggregation & ranking (full benchmarks coming soon)
+- **Performance**: 20–30% faster flat feeds. Major speedups for aggregation & ranking
 
 - **Client-side SDKs**
 
@@ -155,7 +155,7 @@ Built-in support for reactions, comments, bookmarks, and polls makes it easy to 
 ## 👩‍💻 Free for Makers 👨‍💻
 
 Stream is free for most side and hobby projects. To qualify, your project/company needs to have < 5 team members
-and < $10k in monthly revenue. Makers get $100 in monthly credit for video for free.
+and < $10k in monthly revenue.
 
 ## License
 

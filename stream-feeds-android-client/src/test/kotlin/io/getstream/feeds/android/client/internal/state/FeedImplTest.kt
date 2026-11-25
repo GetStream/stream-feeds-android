@@ -61,9 +61,12 @@ import io.getstream.feeds.android.network.models.AddBookmarkRequest
 import io.getstream.feeds.android.network.models.AddCommentReactionRequest
 import io.getstream.feeds.android.network.models.AddReactionRequest
 import io.getstream.feeds.android.network.models.CreatePollRequest
+import io.getstream.feeds.android.network.models.EnrichmentOptions
 import io.getstream.feeds.android.network.models.FeedMemberRequest
 import io.getstream.feeds.android.network.models.FollowPushPreference
 import io.getstream.feeds.android.network.models.FollowRequest
+import io.getstream.feeds.android.network.models.FriendReactionsOptions
+import io.getstream.feeds.android.network.models.Location
 import io.getstream.feeds.android.network.models.MarkActivityRequest
 import io.getstream.feeds.android.network.models.UpdateActivityPartialRequest
 import io.getstream.feeds.android.network.models.UpdateActivityRequest
@@ -544,7 +547,12 @@ internal class FeedImplTest {
             FeedQuery(
                 fid = fid,
                 activityFilter = ActivitiesFilterField.id.equal("id"),
+                enrichmentOptions = EnrichmentOptions(includeReasons = true),
+                interestWeights = mapOf("tech" to 1.0),
                 language = "fr",
+                friendReactionsOptions = FriendReactionsOptions(enabled = true),
+                overwriteInterestWeights = true,
+                viewerLocation = Location(lat = 1.0, lng = 2.0),
             )
         val feed = createFeed(initialQuery)
         val limit = 10
@@ -556,7 +564,9 @@ internal class FeedImplTest {
                 activityNext = "cursor",
                 followerLimit = 0,
                 followingLimit = 0,
+                interestWeights = null,
                 memberLimit = 0,
+                overwriteInterestWeights = null,
             )
 
         setupInitialState(feed, activities = initialActivities)

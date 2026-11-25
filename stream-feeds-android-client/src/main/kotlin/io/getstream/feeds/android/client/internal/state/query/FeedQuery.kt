@@ -41,6 +41,9 @@ internal fun FeedQuery.toRequest(): GetOrCreateFeedRequest =
         filter = activityFilter?.toRequest(),
         followersPagination = followerLimit?.let { PagerRequest(it) },
         followingPagination = followingLimit?.let { PagerRequest(it) },
+        friendReactionsOptions = friendReactionsOptions,
         interestWeights = interestWeights,
+        overwriteInterestWeights = overwriteInterestWeights,
+        viewerLocation = viewerLocation,
         memberPagination = memberLimit?.let { PagerRequest(it) },
     )
