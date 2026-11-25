@@ -56,6 +56,9 @@ import io.getstream.feeds.android.client.internal.state.query.unsupportedLocalVa
  * @property language Includes the translations to this language code, for example `fr`, in
  *   [io.getstream.feeds.android.client.api.model.ActivityData.translations]. By default no
  *   translations are included.
+ * @property enrichOwnFields If `true`, enriches the current feed of each activity with the current
+ *   user's own fields, such as `ownFollows` and `ownCapabilities`. By default they are not
+ *   enriched.
  */
 public data class ActivitiesQuery(
     public val filter: ActivitiesFilter? = null,
@@ -64,6 +67,7 @@ public data class ActivitiesQuery(
     public val next: String? = null,
     public val previous: String? = null,
     public val language: String? = null,
+    public val enrichOwnFields: Boolean? = null,
 )
 
 /**

@@ -271,6 +271,7 @@ internal class FeedImpl(
                 activityLimit = limit ?: query.activityLimit,
                 activityNext = next,
                 data = null,
+                enrichmentOptions = query.enrichmentOptions,
                 externalRanking = null,
                 followerLimit = 0,
                 followingLimit = 0,
@@ -279,6 +280,8 @@ internal class FeedImpl(
                 view = null,
                 watch = query.watch,
                 language = query.language,
+                friendReactionsOptions = query.friendReactionsOptions,
+                viewerLocation = query.viewerLocation,
             )
         return feedsRepository
             .getOrCreateFeed(query)

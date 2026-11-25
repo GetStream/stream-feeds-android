@@ -64,15 +64,7 @@ internal class FeedListImpl(
             // If there is no next cursor, return an empty list.
             return Result.success(emptyList())
         }
-        val nextQuery =
-            FeedsQuery(
-                filter = _state.queryConfig?.filter,
-                sort = _state.queryConfig?.sort,
-                limit = limit ?: query.limit,
-                next = next,
-                previous = null,
-                watch = query.watch,
-            )
+        val nextQuery = query.copy(limit = limit ?: query.limit, next = next, previous = null)
         return queryFeeds(nextQuery)
     }
 

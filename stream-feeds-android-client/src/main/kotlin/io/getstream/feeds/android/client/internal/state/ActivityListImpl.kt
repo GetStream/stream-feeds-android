@@ -75,15 +75,7 @@ internal class ActivityListImpl(
             // If there is no next cursor, return an empty list.
             return Result.success(emptyList())
         }
-        val nextQuery =
-            ActivitiesQuery(
-                filter = _state.queryConfig?.filter,
-                sort = _state.queryConfig?.sort,
-                limit = limit ?: query.limit,
-                next = next,
-                previous = null,
-                language = query.language,
-            )
+        val nextQuery = query.copy(limit = limit ?: query.limit, next = next, previous = null)
         return queryActivities(nextQuery)
     }
 
