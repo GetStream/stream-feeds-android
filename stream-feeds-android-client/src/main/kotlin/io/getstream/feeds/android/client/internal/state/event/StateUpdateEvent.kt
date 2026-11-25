@@ -42,6 +42,7 @@ import io.getstream.feeds.android.network.models.ActivityReactionDeletedEvent
 import io.getstream.feeds.android.network.models.ActivityReactionUpdatedEvent
 import io.getstream.feeds.android.network.models.ActivityRemovedFromFeedEvent
 import io.getstream.feeds.android.network.models.ActivityResponse
+import io.getstream.feeds.android.network.models.ActivityRestoredEvent
 import io.getstream.feeds.android.network.models.ActivityUnpinnedEvent
 import io.getstream.feeds.android.network.models.ActivityUpdatedEvent
 import io.getstream.feeds.android.network.models.AggregatedActivityResponse
@@ -82,7 +83,17 @@ import io.getstream.feeds.android.network.models.WSEvent
  */
 internal sealed interface StateUpdateEvent {
 
-    data class ActivityAdded(val scope: FidScope, val activity: ActivityData) : StateUpdateEvent
+    /**
+     * An activity was added to a feed.
+     *
+     * @property restored Whether the activity is a restored one, which goes back to its place in
+     *   the feed instead of being treated as new.
+     */
+    data class ActivityAdded(
+        val scope: FidScope,
+        val activity: ActivityData,
+        val restored: Boolean = false,
+    ) : StateUpdateEvent
 
     data class ActivityDeleted(val scope: FidScope, val activityId: String) : StateUpdateEvent
 
@@ -195,6 +206,9 @@ internal fun WSEvent.toModel(): StateUpdateEvent? =
             StateUpdateEvent.ActivityAdded(FidScope.of(fid), activity.toModel())
 
         is ActivityDeletedEvent -> StateUpdateEvent.ActivityDeleted(FidScope.of(fid), activity.id)
+
+        is ActivityRestoredEvent ->
+            StateUpdateEvent.ActivityAdded(FidScope.of(fid), activity.toModel(), restored = true)
 
         is ActivityRemovedFromFeedEvent ->
             StateUpdateEvent.ActivityRemovedFromFeed(FidScope.of(fid), activity.id)

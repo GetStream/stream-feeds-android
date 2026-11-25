@@ -39,6 +39,7 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.A
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.ActivityUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkDeleted
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkFolderDeleted
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.BookmarkUpdated
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentAdded
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.CommentDeleted
@@ -68,6 +69,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionDat
 import io.getstream.feeds.android.client.internal.test.TestData.followData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
+import io.getstream.feeds.android.client.internal.test.TestData.userData
 import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.getstream.feeds.android.network.models.NotificationStatusResponse
 import io.mockk.MockKVerificationScope
@@ -95,6 +97,8 @@ internal class FeedEventHandlerTest(
         private const val activityId = "activity-1"
         private val activity = activityData(activityId, type = "post")
         private val nonMatchingActivity = activityData(activityId, type = "comment")
+        private val otherUserActivity =
+            activityData(activityId, type = "post", user = userData("other-user"))
         private val reaction = feedsReactionData(activityId)
         private val matchingBookmark =
             bookmarkData(activityData(feeds = listOf(fid, FeedId("other:feed"))))
@@ -137,6 +141,21 @@ internal class FeedEventHandlerTest(
                     verifyBlock = { state ->
                         state.onActivityAdded(activity, InsertionAction.AddToStart)
                     },
+                ),
+                testParams<FeedStateUpdates>(
+                    name = "Restored ActivityAdded matching feed and filter",
+                    event = ActivityAdded(fidScope, activity, restored = true),
+                    verifyBlock = { state -> state.onActivityRestored(activity) },
+                ),
+                testParams<FeedStateUpdates>(
+                    name = "Restored ActivityAdded from another user",
+                    event = ActivityAdded(fidScope, otherUserActivity, restored = true),
+                    verifyBlock = { state -> state.onActivityRestored(otherUserActivity) },
+                ),
+                testParams<FeedStateUpdates>(
+                    name = "Restored ActivityAdded non-matching filter",
+                    event = ActivityAdded(fidScope, nonMatchingActivity, restored = true),
+                    verifyBlock = { state -> state wasNot called },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "ActivityAdded non-matching feed",
@@ -249,6 +268,11 @@ internal class FeedEventHandlerTest(
                     name = "BookmarkDeleted always handled",
                     event = BookmarkDeleted(matchingBookmark),
                     verifyBlock = { state -> state.onBookmarkRemoved(matchingBookmark) },
+                ),
+                testParams<FeedStateUpdates>(
+                    name = "BookmarkFolderDeleted always handled",
+                    event = BookmarkFolderDeleted("folder-1"),
+                    verifyBlock = { state -> state.onBookmarkFolderRemoved("folder-1") },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "BookmarkUpdated always handled",

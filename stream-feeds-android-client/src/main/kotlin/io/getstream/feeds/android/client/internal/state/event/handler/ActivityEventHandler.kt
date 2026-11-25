@@ -78,6 +78,10 @@ internal class ActivityEventHandler(
                 state.onBookmarkRemoved(event.bookmark)
             }
 
+            is StateUpdateEvent.BookmarkFolderDeleted -> {
+                state.onBookmarkFolderRemoved(event.folderId)
+            }
+
             is StateUpdateEvent.BookmarkUpdated -> {
                 if (event.bookmark.activity.id != activityId) return
                 state.onBookmarkUpserted(event.bookmark)

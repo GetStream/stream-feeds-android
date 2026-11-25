@@ -23,6 +23,7 @@ import io.getstream.feeds.android.client.api.state.ActivityCommentListState
 import io.getstream.feeds.android.client.internal.model.FeedOwnValues
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
+import io.getstream.feeds.android.client.internal.test.TestData.bookmarkFolderData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedData
 import io.getstream.feeds.android.client.internal.test.TestData.feedMemberData
@@ -261,6 +262,19 @@ internal class ActivityStateImplTest {
         val bookmark = bookmarkData("activity-1", currentUserId)
         activityState.onBookmarkUpserted(bookmark)
         activityState.onBookmarkRemoved(bookmark)
+
+        val expectedActivity = initialActivity.copy(bookmarkCount = 0, ownBookmarks = emptyList())
+        assertEquals(expectedActivity, activityState.activity.value)
+    }
+
+    @Test
+    fun `on onBookmarkFolderRemoved, then remove the folder's own bookmarks`() = runTest {
+        val inFolder = bookmarkData("activity-1", currentUserId, bookmarkFolderData("folder-1"))
+        val initialActivity =
+            activityData("activity-1", ownBookmarks = listOf(inFolder)).copy(bookmarkCount = 1)
+        setupInitialActivity(initialActivity)
+
+        activityState.onBookmarkFolderRemoved("folder-1")
 
         val expectedActivity = initialActivity.copy(bookmarkCount = 0, ownBookmarks = emptyList())
         assertEquals(expectedActivity, activityState.activity.value)

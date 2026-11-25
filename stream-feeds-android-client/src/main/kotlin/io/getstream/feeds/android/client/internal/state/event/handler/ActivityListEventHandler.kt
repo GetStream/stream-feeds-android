@@ -67,6 +67,8 @@ internal class ActivityListEventHandler(
 
             is StateUpdateEvent.BookmarkAdded -> state.onBookmarkUpserted(event.bookmark)
             is StateUpdateEvent.BookmarkDeleted -> state.onBookmarkRemoved(event.bookmark)
+            is StateUpdateEvent.BookmarkFolderDeleted ->
+                state.onBookmarkFolderRemoved(event.folderId)
             is StateUpdateEvent.BookmarkUpdated -> state.onBookmarkUpserted(event.bookmark)
             is StateUpdateEvent.CommentAdded -> state.onCommentUpserted(event.comment)
             is StateUpdateEvent.CommentDeleted -> state.onCommentRemoved(event.comment)

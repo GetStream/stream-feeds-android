@@ -49,8 +49,14 @@ internal class FeedEventHandler(
             is StateUpdateEvent.ActivityAdded -> {
                 // We add activities only on strict matches, i.e. we're sure they belong to the feed
                 if (event.scope strictlyMatches query.fid) {
-                    val insertionAction = onNewActivity(query, event.activity, currentUserId)
-                    state.onActivityAdded(event.activity, insertionAction)
+                    if (!event.restored) {
+                        val insertionAction = onNewActivity(query, event.activity, currentUserId)
+                        state.onActivityAdded(event.activity, insertionAction)
+                    } else if (event.activity matches query.activityFilter) {
+                        // A restored activity goes back to its old place, so the rule for new
+                        // activities doesn't apply to it
+                        state.onActivityRestored(event.activity)
+                    }
                 }
             }
 
@@ -113,6 +119,10 @@ internal class FeedEventHandler(
 
             is StateUpdateEvent.BookmarkDeleted -> {
                 state.onBookmarkRemoved(event.bookmark)
+            }
+
+            is StateUpdateEvent.BookmarkFolderDeleted -> {
+                state.onBookmarkFolderRemoved(event.folderId)
             }
 
             is StateUpdateEvent.BookmarkUpdated -> {
