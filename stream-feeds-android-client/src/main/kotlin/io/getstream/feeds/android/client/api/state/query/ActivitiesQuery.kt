@@ -56,7 +56,7 @@ import io.getstream.feeds.android.client.internal.state.query.unsupportedLocalVa
  * @property language Includes the translations to this language code, for example `fr`, in
  *   [io.getstream.feeds.android.client.api.model.ActivityData.translations]. By default no
  *   translations are included.
- * @param enrichOwnFields If `true`, enriches the current feed of each activity with the current
+ * @property enrichOwnFields If `true`, enriches the current feed of each activity with the current
  *   user's own fields, such as `ownFollows` and `ownCapabilities`. By default they are not
  *   enriched.
  */

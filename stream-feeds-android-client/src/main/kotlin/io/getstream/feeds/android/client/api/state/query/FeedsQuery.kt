@@ -52,8 +52,8 @@ import io.getstream.feeds.android.client.internal.state.query.unsupportedLocalVa
  *   provided in the response of a previous request.
  * @property watch Whether to watch for real-time updates on the feeds. Defaults to true for
  *   real-time functionality.
- * @param enrichOwnFields If `true`, enriches each feed with the current user's own fields, such as
- *   `ownFollows` and `ownCapabilities`. By default they are not enriched.
+ * @property enrichOwnFields If `true`, enriches each feed with the current user's own fields, such
+ *   as `ownFollows` and `ownCapabilities`. By default they are not enriched.
  */
 public data class FeedsQuery(
     public val filter: FeedsFilter? = null,
