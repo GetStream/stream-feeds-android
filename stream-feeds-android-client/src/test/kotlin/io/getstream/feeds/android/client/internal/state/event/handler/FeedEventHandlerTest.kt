@@ -69,6 +69,7 @@ import io.getstream.feeds.android.client.internal.test.TestData.feedsReactionDat
 import io.getstream.feeds.android.client.internal.test.TestData.followData
 import io.getstream.feeds.android.client.internal.test.TestData.pollData
 import io.getstream.feeds.android.client.internal.test.TestData.pollVoteData
+import io.getstream.feeds.android.client.internal.test.TestData.userData
 import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.getstream.feeds.android.network.models.NotificationStatusResponse
 import io.mockk.MockKVerificationScope
@@ -96,6 +97,8 @@ internal class FeedEventHandlerTest(
         private const val activityId = "activity-1"
         private val activity = activityData(activityId, type = "post")
         private val nonMatchingActivity = activityData(activityId, type = "comment")
+        private val otherUserActivity =
+            activityData(activityId, type = "post", user = userData("other-user"))
         private val reaction = feedsReactionData(activityId)
         private val matchingBookmark =
             bookmarkData(activityData(feeds = listOf(fid, FeedId("other:feed"))))
@@ -143,6 +146,11 @@ internal class FeedEventHandlerTest(
                     name = "Restored ActivityAdded matching feed and filter",
                     event = ActivityAdded(fidScope, activity, restored = true),
                     verifyBlock = { state -> state.onActivityRestored(activity) },
+                ),
+                testParams<FeedStateUpdates>(
+                    name = "Restored ActivityAdded from another user",
+                    event = ActivityAdded(fidScope, otherUserActivity, restored = true),
+                    verifyBlock = { state -> state.onActivityRestored(otherUserActivity) },
                 ),
                 testParams<FeedStateUpdates>(
                     name = "Restored ActivityAdded non-matching filter",

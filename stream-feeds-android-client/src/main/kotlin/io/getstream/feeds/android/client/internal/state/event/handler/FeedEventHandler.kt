@@ -17,7 +17,6 @@
 package io.getstream.feeds.android.client.internal.state.event.handler
 
 import io.getstream.feeds.android.client.api.model.FollowData
-import io.getstream.feeds.android.client.api.state.InsertionAction
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.state.FeedStateUpdates
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
@@ -50,10 +49,12 @@ internal class FeedEventHandler(
             is StateUpdateEvent.ActivityAdded -> {
                 // We add activities only on strict matches, i.e. we're sure they belong to the feed
                 if (event.scope strictlyMatches query.fid) {
-                    val insertionAction = onNewActivity(query, event.activity, currentUserId)
                     if (!event.restored) {
+                        val insertionAction = onNewActivity(query, event.activity, currentUserId)
                         state.onActivityAdded(event.activity, insertionAction)
-                    } else if (insertionAction != InsertionAction.Ignore) {
+                    } else if (event.activity matches query.activityFilter) {
+                        // A restored activity goes back to its old place, so the rule for new
+                        // activities doesn't apply to it
                         state.onActivityRestored(event.activity)
                     }
                 }
