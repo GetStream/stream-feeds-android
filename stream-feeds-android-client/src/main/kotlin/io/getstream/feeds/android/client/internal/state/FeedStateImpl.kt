@@ -54,6 +54,7 @@ import io.getstream.feeds.android.client.internal.model.upsertReaction
 import io.getstream.feeds.android.client.internal.model.upsertVote
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
 import io.getstream.feeds.android.client.internal.utils.applyUpdates
+import io.getstream.feeds.android.client.internal.utils.prependAll
 import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.client.internal.utils.upsertAll
@@ -147,23 +148,55 @@ internal class FeedStateImpl(
         aggregatedActivities: List<AggregatedActivityData>,
         pagination: PaginationData,
     ) {
-        _activitiesPagination = pagination
+        // A next page can't change where the loaded activities start
+        _activitiesPagination =
+            PaginationData(next = pagination.next, previous = _activitiesPagination?.previous)
         _activities.update { current -> current.upsertAll(activities, ActivityData::id) }
         _aggregatedActivities.update { current ->
             current.upsertAll(aggregatedActivities, AggregatedActivityData::group)
         }
     }
 
+    override fun onQueryPreviousActivities(
+        activities: List<ActivityData>,
+        aggregatedActivities: List<AggregatedActivityData>,
+        pagination: PaginationData,
+    ) {
+        // A previous page can't change where the loaded activities end
+        _activitiesPagination =
+            PaginationData(next = _activitiesPagination?.next, previous = pagination.previous)
+        _activities.update { current -> current.prependAll(activities, ActivityData::id) }
+        _aggregatedActivities.update { current ->
+            current.prependAll(aggregatedActivities, AggregatedActivityData::group)
+        }
+    }
+
+    override fun onQueryActivitiesAround(
+        activities: List<ActivityData>,
+        aggregatedActivities: List<AggregatedActivityData>,
+        pagination: PaginationData,
+    ) {
+        _activitiesPagination = pagination
+        _activities.update { activities }
+        _aggregatedActivities.update { aggregatedActivities }
+    }
+
     override fun onActivityAdded(activity: ActivityData, action: InsertionAction) {
         when (action) {
             InsertionAction.AddToStart -> {
-                _activities.update { current ->
-                    current.upsert(
-                        element = activity,
-                        idSelector = ActivityData::id,
-                        update = { old -> old.update(activity) },
-                        prepend = true,
-                    )
+                if (canLoadPreviousActivities) {
+                    // The loaded activities don't start at the top of the feed: the new activity
+                    // comes with a previous page
+                    onActivityUpdated(activity)
+                } else {
+                    _activities.update { current ->
+                        current.upsert(
+                            element = activity,
+                            idSelector = ActivityData::id,
+                            update = { old -> old.update(activity) },
+                            prepend = true,
+                        )
+                    }
                 }
             }
 
@@ -187,8 +220,12 @@ internal class FeedStateImpl(
             val existing = current.indexOfFirst { it.id == activity.id }
             // A tie with a loaded activity counts as loaded: a later page can't be relied on for it
             val firstNotNewer = current.indexOfFirst { it.createdAt <= activity.createdAt }
+            val newerThanAllLoaded =
+                current.firstOrNull()?.let { it.createdAt < activity.createdAt } == true
             when {
                 existing >= 0 -> current.updateIf({ it.id == activity.id }) { it.update(activity) }
+                // Newer than everything loaded: it comes with a previous page
+                newerThanAllLoaded && canLoadPreviousActivities -> current
                 firstNotNewer >= 0 -> current.toMutableList().apply { add(firstNotNewer, activity) }
                 // Older than everything loaded: it comes with a later page
                 canLoadMoreActivities -> current
@@ -536,6 +573,20 @@ internal interface FeedStateUpdates {
 
     /** Handles the result of a query for more activities. */
     fun onQueryMoreActivities(
+        activities: List<ActivityData>,
+        aggregatedActivities: List<AggregatedActivityData>,
+        pagination: PaginationData,
+    )
+
+    /** Handles the result of a query for the previous activities. */
+    fun onQueryPreviousActivities(
+        activities: List<ActivityData>,
+        aggregatedActivities: List<AggregatedActivityData>,
+        pagination: PaginationData,
+    )
+
+    /** Handles the result of a query for the activities around an activity. */
+    fun onQueryActivitiesAround(
         activities: List<ActivityData>,
         aggregatedActivities: List<AggregatedActivityData>,
         pagination: PaginationData,

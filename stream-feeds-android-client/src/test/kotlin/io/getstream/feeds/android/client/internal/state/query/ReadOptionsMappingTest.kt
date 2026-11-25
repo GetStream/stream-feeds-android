@@ -50,6 +50,18 @@ internal class ReadOptionsMappingTest {
     }
 
     @Test
+    fun `feed query maps the around activity id`() {
+        val request = FeedQuery(fid = FeedId("user:1"), activityIdAround = "activity-1").toRequest()
+
+        assertEquals("activity-1", request.idAround)
+        assertNull(FeedQuery(fid = FeedId("user:1")).toRequest().idAround)
+        assertEquals(
+            "activity-1",
+            FeedQuery(group = "user", id = "1", activityIdAround = "activity-1").activityIdAround,
+        )
+    }
+
+    @Test
     fun `feed query sends no read options by default`() {
         val request = FeedQuery(fid = FeedId("user:1")).toRequest()
 

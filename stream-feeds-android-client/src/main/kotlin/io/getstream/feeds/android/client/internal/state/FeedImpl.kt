@@ -262,33 +262,13 @@ internal class FeedImpl(
     }
 
     override suspend fun queryMoreActivities(limit: Int?): Result<List<ActivityData>> {
-        // Build the query based on the current state(with next cursor) and provided limit.
         val next = _state.activitiesPagination?.next
         if (next == null) {
             // If there is no next cursor, return an empty list.
             return Result.success(emptyList())
         }
-        val query =
-            FeedQuery(
-                fid = fid,
-                activityFilter = query.activityFilter,
-                activityLimit = limit ?: query.activityLimit,
-                activityNext = next,
-                data = null,
-                enrichmentOptions = query.enrichmentOptions,
-                externalRanking = null,
-                followerLimit = 0,
-                followingLimit = 0,
-                interestWeights = null,
-                memberLimit = 0,
-                view = null,
-                watch = query.watch,
-                language = query.language,
-                friendReactionsOptions = query.friendReactionsOptions,
-                viewerLocation = query.viewerLocation,
-            )
         return feedsRepository
-            .getOrCreateFeed(query)
+            .getOrCreateFeed(activitiesPageQuery(limit).copy(activityNext = next))
             .onSuccess {
                 _state.onQueryMoreActivities(
                     activities = it.activities,
@@ -298,6 +278,60 @@ internal class FeedImpl(
             }
             .map(GetOrCreateInfo::activities)
     }
+
+    override suspend fun queryPreviousActivities(limit: Int?): Result<List<ActivityData>> {
+        val previous = _state.activitiesPagination?.previous
+        if (previous == null) {
+            // If there is no previous cursor, return an empty list.
+            return Result.success(emptyList())
+        }
+        return feedsRepository
+            .getOrCreateFeed(activitiesPageQuery(limit).copy(activityPrevious = previous))
+            .onSuccess {
+                _state.onQueryPreviousActivities(
+                    activities = it.activities,
+                    aggregatedActivities = it.aggregatedActivities,
+                    pagination = it.pagination,
+                )
+            }
+            .map(GetOrCreateInfo::activities)
+    }
+
+    override suspend fun queryActivitiesAround(
+        activityId: String,
+        limit: Int?,
+    ): Result<List<ActivityData>> {
+        return feedsRepository
+            .getOrCreateFeed(activitiesPageQuery(limit).copy(activityIdAround = activityId))
+            .onSuccess {
+                _state.onQueryActivitiesAround(
+                    activities = it.activities,
+                    aggregatedActivities = it.aggregatedActivities,
+                    pagination = it.pagination,
+                )
+            }
+            .map(GetOrCreateInfo::activities)
+    }
+
+    /** The query for a page of activities only, without the rest of the feed data. */
+    private fun activitiesPageQuery(limit: Int?): FeedQuery =
+        FeedQuery(
+            fid = fid,
+            activityFilter = query.activityFilter,
+            activityLimit = limit ?: query.activityLimit,
+            data = null,
+            enrichmentOptions = query.enrichmentOptions,
+            externalRanking = null,
+            followerLimit = 0,
+            followingLimit = 0,
+            interestWeights = null,
+            memberLimit = 0,
+            view = null,
+            watch = query.watch,
+            language = query.language,
+            friendReactionsOptions = query.friendReactionsOptions,
+            viewerLocation = query.viewerLocation,
+        )
 
     override suspend fun addBookmark(
         activityId: String,

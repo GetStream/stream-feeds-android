@@ -255,6 +255,21 @@ internal fun <T, ID> List<T>.upsertSorted(
 ): List<T> = upsertSorted(element, idSelector, CompositeComparator(sort), update)
 
 /**
+ * Puts all the elements of [that] before the elements of this list. An element of this list with
+ * the same key (as determined by [idSelector]) as one in [that] is dropped in favour of the new
+ * one.
+ *
+ * @param that The list of elements to put first.
+ * @param idSelector A function that extracts a key from an element.
+ * @return A new list with the elements of [that] followed by the remaining elements of this list.
+ */
+internal fun <T, R> List<T>.prependAll(that: List<T>, idSelector: (T) -> R): List<T> {
+    if (that.isEmpty()) return this
+    val newIds = that.mapTo(mutableSetOf(), idSelector)
+    return that + filterNot { idSelector(it) in newIds }
+}
+
+/**
  * Upserts all elements from another list into this list based on a specified key.
  *
  * This function updates existing elements in the list that have the same key (as determined by

@@ -50,6 +50,7 @@ import io.mockk.mockk
 import java.util.Date
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -132,6 +133,103 @@ internal class FeedStateImplTest {
         assertEquals(initialActivities + newActivities, feedState.activities.value)
         assertEquals((initialAggregated + newAggregated), feedState.aggregatedActivities.value)
     }
+
+    @Test
+    fun `on onQueryMoreActivities, then keep the previous cursor`() = runTest {
+        setupInitialState()
+        feedState.onQueryActivitiesAround(
+            activities = listOf(activityData("activity-5")),
+            aggregatedActivities = emptyList(),
+            pagination = PaginationData(next = "next-1", previous = "previous-1"),
+        )
+
+        feedState.onQueryMoreActivities(
+            activities = listOf(activityData("activity-4")),
+            aggregatedActivities = emptyList(),
+            pagination = PaginationData(next = "next-2", previous = "back-to-loaded"),
+        )
+
+        assertEquals(
+            PaginationData(next = "next-2", previous = "previous-1"),
+            feedState.activitiesPagination,
+        )
+    }
+
+    @Test
+    fun `on onQueryPreviousActivities, then prepend the page and keep the next cursor`() = runTest {
+        val loaded = listOf(activityData("activity-5"), activityData("activity-4"))
+        feedState.onQueryActivitiesAround(
+            activities = loaded,
+            aggregatedActivities = emptyList(),
+            pagination = PaginationData(next = "next-1", previous = "previous-1"),
+        )
+        val overlap = activityData("activity-5", text = "Fresher copy")
+        val previousPage = listOf(activityData("activity-7"), activityData("activity-6"), overlap)
+
+        feedState.onQueryPreviousActivities(
+            activities = previousPage,
+            aggregatedActivities = emptyList(),
+            pagination = PaginationData(next = "forward-to-loaded", previous = null),
+        )
+
+        assertEquals(previousPage + activityData("activity-4"), feedState.activities.value)
+        assertEquals(
+            PaginationData(next = "next-1", previous = null),
+            feedState.activitiesPagination,
+        )
+        assertFalse(feedState.canLoadPreviousActivities)
+    }
+
+    @Test
+    fun `on onQueryActivitiesAround, then replace the activities and the pagination`() = runTest {
+        setupInitialState(activities = listOf(activityData("activity-9")))
+        val page = listOf(activityData("activity-5"), activityData("activity-4"))
+        val pagination = PaginationData(next = "next-1", previous = "previous-1")
+
+        feedState.onQueryActivitiesAround(page, emptyList(), pagination)
+
+        assertEquals(page, feedState.activities.value)
+        assertEquals(pagination, feedState.activitiesPagination)
+        assertTrue(feedState.canLoadPreviousActivities)
+        assertTrue(feedState.canLoadMoreActivities)
+    }
+
+    @Test
+    fun `on onActivityAdded to the start with previous pages left, then leave it out`() = runTest {
+        val loaded = activityData("activity-5")
+        feedState.onQueryActivitiesAround(
+            activities = listOf(loaded),
+            aggregatedActivities = emptyList(),
+            pagination = PaginationData(next = null, previous = "previous-1"),
+        )
+
+        feedState.onActivityAdded(activityData("activity-9"), InsertionAction.AddToStart)
+        assertEquals(listOf(loaded), feedState.activities.value)
+
+        // An activity that is already loaded is still updated
+        val updated = activityData("activity-5", text = "Updated")
+        feedState.onActivityAdded(updated, InsertionAction.AddToStart)
+        assertEquals("Updated", feedState.activities.value.single().text)
+    }
+
+    @Test
+    fun `on onActivityRestored newer than the loaded page with previous pages left, then leave it out`() =
+        runTest {
+            val loaded = activityData("activity-5", createdAt = 5000)
+            feedState.onQueryActivitiesAround(
+                activities = listOf(loaded),
+                aggregatedActivities = emptyList(),
+                pagination = PaginationData(next = null, previous = "previous-1"),
+            )
+
+            feedState.onActivityRestored(activityData("activity-9", createdAt = 9000))
+            assertEquals(listOf(loaded), feedState.activities.value)
+
+            // One that belongs inside the loaded range is still inserted
+            val older = activityData("activity-1", createdAt = 1000)
+            feedState.onActivityRestored(older)
+            assertEquals(listOf(loaded, older), feedState.activities.value)
+        }
 
     @Test
     fun `on onActivityAdded with Ignore action, then ignore activity`() = runTest {

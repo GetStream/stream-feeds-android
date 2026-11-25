@@ -33,6 +33,7 @@ internal fun FeedQuery.toRequest(): GetOrCreateFeedRequest =
         limit = activityLimit,
         next = activityNext,
         prev = activityPrevious,
+        idAround = activityIdAround,
         view = view,
         watch = watch,
         data = data?.toRequest(),
