@@ -38,6 +38,7 @@ import io.getstream.feeds.android.client.api.state.ActivityList
 import io.getstream.feeds.android.client.api.state.ActivityReactionList
 import io.getstream.feeds.android.client.api.state.BookmarkFolderList
 import io.getstream.feeds.android.client.api.state.BookmarkList
+import io.getstream.feeds.android.client.api.state.CollectionList
 import io.getstream.feeds.android.client.api.state.CommentList
 import io.getstream.feeds.android.client.api.state.CommentReactionList
 import io.getstream.feeds.android.client.api.state.CommentReplyList
@@ -55,6 +56,7 @@ import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersQuery
 import io.getstream.feeds.android.client.api.state.query.BookmarksQuery
+import io.getstream.feeds.android.client.api.state.query.CollectionsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
@@ -502,6 +504,18 @@ public interface FeedsClient {
      *   convert the response to an [io.getstream.feeds.android.network.models.Attachment].
      */
     public suspend fun getOG(url: String): Result<GetOGResponse>
+
+    /**
+     * Creates a collection list instance based on the provided query.
+     *
+     * This method creates a [CollectionList] object that represents the collections matching the
+     * specified query. The list can be used to fetch and paginate collections, and it updates when
+     * this client creates, updates or deletes collections.
+     *
+     * @param query The collections query containing filtering, sorting, and pagination parameters.
+     * @return A [CollectionList] instance that can be used to interact with the collections.
+     */
+    public fun collectionList(query: CollectionsQuery): CollectionList
 
     /**
      * Read collections, filtering by collection references. By default, users can only read their

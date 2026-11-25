@@ -17,7 +17,11 @@
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.android.core.result.runSafely
+import io.getstream.feeds.android.client.api.model.PaginationData
+import io.getstream.feeds.android.client.api.state.query.CollectionsQuery
+import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.model.toModel
+import io.getstream.feeds.android.client.internal.state.query.toRequest
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.CollectionResponse
 import io.getstream.feeds.android.network.models.CreateCollectionsRequest
@@ -39,5 +43,13 @@ internal class CollectionsRepositoryImpl(private val api: FeedsApi) : Collection
 
     override suspend fun updateCollections(request: UpdateCollectionsRequest) = runSafely {
         api.updateCollections(request).collections.map(CollectionResponse::toModel)
+    }
+
+    override suspend fun queryCollections(query: CollectionsQuery) = runSafely {
+        val response = api.queryCollections(query.toRequest())
+        PaginationResult(
+            models = response.collections.map(CollectionResponse::toModel),
+            pagination = PaginationData(response.next, response.prev),
+        )
     }
 }

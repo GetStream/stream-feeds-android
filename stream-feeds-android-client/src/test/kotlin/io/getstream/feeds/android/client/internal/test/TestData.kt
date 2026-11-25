@@ -23,6 +23,7 @@ import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.model.AppData
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.BookmarkFolderData
+import io.getstream.feeds.android.client.api.model.CollectionData
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.CommentStatus
 import io.getstream.feeds.android.client.api.model.FeedData
@@ -389,6 +390,22 @@ internal object TestData {
             name = name,
             updatedAt = Date(1000),
             user = userData("user-1"),
+        )
+
+    fun collectionData(
+        id: String = "collection-1",
+        name: String = "movies",
+        createdAt: Long? = 1000,
+        updatedAt: Long? = 1000,
+        custom: Map<String, Any?>? = emptyMap(),
+    ): CollectionData =
+        CollectionData(
+            id = id,
+            name = name,
+            createdAt = createdAt?.let(::Date),
+            updatedAt = updatedAt?.let(::Date),
+            userId = "user-1",
+            custom = custom,
         )
 
     fun activityResponse(id: String = "", createdAt: Long = 1000): ActivityResponse =

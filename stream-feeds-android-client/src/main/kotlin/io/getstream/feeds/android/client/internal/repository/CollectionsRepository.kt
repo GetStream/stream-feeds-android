@@ -17,6 +17,8 @@
 package io.getstream.feeds.android.client.internal.repository
 
 import io.getstream.feeds.android.client.api.model.CollectionData
+import io.getstream.feeds.android.client.api.state.query.CollectionsQuery
+import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.network.models.CreateCollectionsRequest
 import io.getstream.feeds.android.network.models.UpdateCollectionsRequest
 
@@ -57,4 +59,12 @@ internal interface CollectionsRepository {
      * @return A [Result] containing the list of [CollectionData] if successful.
      */
     suspend fun updateCollections(request: UpdateCollectionsRequest): Result<List<CollectionData>>
+
+    /**
+     * Query collections with filtering, sorting and pagination.
+     *
+     * @param query The [CollectionsQuery] to run.
+     * @return A [Result] containing the page of [CollectionData] if successful.
+     */
+    suspend fun queryCollections(query: CollectionsQuery): Result<PaginationResult<CollectionData>>
 }

@@ -16,14 +16,19 @@
 
 package io.getstream.feeds.android.client.internal.repository
 
+import io.getstream.feeds.android.client.api.model.PaginationData
+import io.getstream.feeds.android.client.api.state.query.CollectionsQuery
+import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.model.toModel
 import io.getstream.feeds.android.client.internal.repository.RepositoryTestUtils.testDelegation
+import io.getstream.feeds.android.client.internal.state.query.toRequest
 import io.getstream.feeds.android.network.apis.FeedsApi
 import io.getstream.feeds.android.network.models.CollectionRequest
 import io.getstream.feeds.android.network.models.CollectionResponse
 import io.getstream.feeds.android.network.models.CreateCollectionsRequest
 import io.getstream.feeds.android.network.models.CreateCollectionsResponse
 import io.getstream.feeds.android.network.models.DeleteCollectionsResponse
+import io.getstream.feeds.android.network.models.QueryCollectionsResponse
 import io.getstream.feeds.android.network.models.ReadCollectionsResponse
 import io.getstream.feeds.android.network.models.UpdateCollectionRequest
 import io.getstream.feeds.android.network.models.UpdateCollectionsRequest
@@ -116,6 +121,29 @@ internal class CollectionsRepositoryImplTest {
             repositoryCall = { repository.updateCollections(request) },
             apiResult = apiResult,
             repositoryResult = apiResult.collections.map(CollectionResponse::toModel),
+        )
+    }
+
+    @Test
+    fun `queryCollections should delegate to api`() = runTest {
+        val query = CollectionsQuery(limit = 5, next = "next-cursor")
+        val apiResult =
+            QueryCollectionsResponse(
+                duration = "100ms",
+                collections = listOf(collectionResponse()),
+                next = "next",
+                prev = "prev",
+            )
+
+        testDelegation(
+            apiFunction = { feedsApi.queryCollections(query.toRequest()) },
+            repositoryCall = { repository.queryCollections(query) },
+            apiResult = apiResult,
+            repositoryResult =
+                PaginationResult(
+                    models = apiResult.collections.map(CollectionResponse::toModel),
+                    pagination = PaginationData(next = "next", previous = "prev"),
+                ),
         )
     }
 

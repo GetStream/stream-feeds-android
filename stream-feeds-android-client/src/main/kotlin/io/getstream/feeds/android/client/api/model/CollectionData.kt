@@ -39,7 +39,11 @@ public data class CollectionData(
     val updatedAt: Date? = null,
     val userId: String? = null,
     val custom: Map<String, Any?>? = null,
-)
+) {
+    /** The reference of the collection in the `name:id` format. */
+    val reference: String
+        get() = "$name:$id"
+}
 
 /**
  * The status of a collection when enriched. This indicates whether the collection was successfully
