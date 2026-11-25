@@ -21,13 +21,16 @@ import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
+import io.getstream.feeds.android.client.internal.model.ownValues
 import io.getstream.feeds.android.client.internal.repository.FeedOwnValuesRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.feedData
+import io.getstream.feeds.android.network.models.FeedOwnCapability
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -57,6 +60,29 @@ internal class FeedListImplTest {
 
         assertEquals(feeds, result.getOrNull())
         coVerify { feedsRepository.queryFeeds(query) }
+    }
+
+    @Test
+    fun `on get, cache own values only for feeds that carry them`() = runTest {
+        val enriched = feedData("feed-1", ownCapabilities = setOf(FeedOwnCapability.ReadFeed))
+        val notEnriched = feedData("feed-2")
+        coEvery { feedsRepository.queryFeeds(query) } returns
+            Result.success(createPaginationResult(listOf(enriched, notEnriched)))
+
+        feedList.get()
+
+        verify { feedOwnValuesRepository.cache(mapOf(enriched.fid to enriched.ownValues())) }
+    }
+
+    @Test
+    fun `on get with no feed carrying own values, do not touch the cache`() = runTest {
+        val feeds = listOf(feedData("feed-1"), feedData("feed-2"))
+        coEvery { feedsRepository.queryFeeds(query) } returns
+            Result.success(createPaginationResult(feeds))
+
+        feedList.get()
+
+        verify(exactly = 0) { feedOwnValuesRepository.cache(any()) }
     }
 
     @Test
