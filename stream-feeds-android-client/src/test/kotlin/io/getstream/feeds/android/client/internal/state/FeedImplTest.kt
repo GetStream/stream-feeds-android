@@ -24,6 +24,7 @@ import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FollowData
+import io.getstream.feeds.android.client.api.model.FollowStatus
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
@@ -68,6 +69,7 @@ import io.getstream.feeds.android.network.models.FollowRequest
 import io.getstream.feeds.android.network.models.FriendReactionsOptions
 import io.getstream.feeds.android.network.models.Location
 import io.getstream.feeds.android.network.models.MarkActivityRequest
+import io.getstream.feeds.android.network.models.QueryFollowsRequest
 import io.getstream.feeds.android.network.models.UpdateActivityPartialRequest
 import io.getstream.feeds.android.network.models.UpdateActivityRequest
 import io.getstream.feeds.android.network.models.UpdateBookmarkRequest
@@ -78,6 +80,7 @@ import io.mockk.called
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -488,21 +491,19 @@ internal class FeedImplTest {
     }
 
     @Test
-    fun `on acceptFollow, delegate to repository and update followers state`() = runTest {
+    fun `on acceptFollow, move the request to the followers and fire an update event`() = runTest {
         val feed = createFeed()
-        val sourceFid = FeedId("user:source")
-        val role = "member"
-        val follow = followData(sourceFid = "user:source", targetFid = "group:id")
+        val request = pendingRequest("user:source")
+        setupFollowRequests(feed, listOf(request))
+        val accepted = request.copy(status = FollowStatus.Accepted)
+        coEvery { feedsRepository.acceptFollow(any()) } returns Result.success(accepted)
 
-        // Set up initial feed state
-        setupInitialState(feed)
+        val result = feed.acceptFollow(FeedId("user:source"), "member")
 
-        coEvery { feedsRepository.acceptFollow(any()) } returns Result.success(follow)
-
-        val result = feed.acceptFollow(sourceFid, role)
-
-        assertEquals(follow, result.getOrNull())
-        assertEquals(listOf(follow), feed.state.followers.value)
+        assertEquals(accepted, result.getOrNull())
+        assertEquals(listOf(accepted), feed.state.followers.value)
+        assertEquals(emptyList<FollowData>(), feed.state.followRequests.value)
+        verify { stateEventListener.onEvent(StateUpdateEvent.FollowUpdated(accepted)) }
     }
 
     @Test
@@ -525,20 +526,72 @@ internal class FeedImplTest {
     }
 
     @Test
-    fun `on rejectFollow, delegate to repository and update state`() = runTest {
+    fun `on rejectFollow, remove the request and fire an update event`() = runTest {
         val feed = createFeed()
-        val sourceFid = FeedId("user:source")
-        val follow = followData(sourceFid = "user:source", targetFid = "group:id")
+        val request = pendingRequest("user:source")
+        setupFollowRequests(feed, listOf(request))
+        val rejected = request.copy(status = FollowStatus.Rejected)
+        coEvery { feedsRepository.rejectFollow(any()) } returns Result.success(rejected)
 
-        // Set up initial feed state with follower present
-        setupInitialState(feed, followers = listOf(follow))
+        val result = feed.rejectFollow(FeedId("user:source"))
 
-        coEvery { feedsRepository.rejectFollow(any()) } returns Result.success(follow)
-
-        val result = feed.rejectFollow(sourceFid)
-
-        assertEquals(follow, result.getOrNull())
+        assertEquals(rejected, result.getOrNull())
         assertEquals(emptyList<FollowData>(), feed.state.followRequests.value)
+        assertEquals(emptyList<FollowData>(), feed.state.followers.value)
+        verify { stateEventListener.onEvent(StateUpdateEvent.FollowUpdated(rejected)) }
+    }
+
+    @Test
+    fun `on queryFollowRequests, query the pending follows of this feed`() = runTest {
+        val feed = createFeed()
+        val requests = listOf(pendingRequest("user:source"))
+        val expectedRequest =
+            QueryFollowsRequest(
+                filter =
+                    mapOf(
+                        "\$and" to
+                            listOf(
+                                mapOf("status" to mapOf("\$eq" to "pending")),
+                                mapOf("target_feed" to mapOf("\$eq" to "group:id")),
+                            )
+                    )
+            )
+        coEvery { feedsRepository.queryFollows(expectedRequest) } returns
+            Result.success(PaginationResult(requests, PaginationData(next = "next")))
+
+        val result = feed.queryFollowRequests()
+
+        assertEquals(requests, result.getOrNull())
+        assertEquals(requests, feed.state.followRequests.value)
+    }
+
+    @Test
+    fun `on queryMoreFollowRequests, query the next page with the limit`() = runTest {
+        val feed = createFeed()
+        val first = pendingRequest("user:source-2", createdAt = 2000)
+        val second = pendingRequest("user:source-1", createdAt = 1000)
+        setupFollowRequests(feed, listOf(first), next = "next")
+        val request = slot<QueryFollowsRequest>()
+        coEvery { feedsRepository.queryFollows(capture(request)) } returns
+            Result.success(PaginationResult(listOf(second), PaginationData()))
+
+        val result = feed.queryMoreFollowRequests(limit = 5)
+
+        assertEquals(listOf(second), result.getOrNull())
+        assertEquals(listOf(first, second), feed.state.followRequests.value)
+        assertEquals("next", request.captured.next)
+        assertEquals(5, request.captured.limit)
+        assertEquals(emptyList<FollowData>(), feed.queryMoreFollowRequests().getOrNull())
+    }
+
+    @Test
+    fun `on queryMoreFollowRequests before the first page, return an empty list`() = runTest {
+        val feed = createFeed()
+
+        val result = feed.queryMoreFollowRequests()
+
+        assertEquals(emptyList<FollowData>(), result.getOrNull())
+        coVerify(exactly = 0) { feedsRepository.queryFollows(any()) }
     }
 
     @Test
@@ -983,12 +1036,29 @@ internal class FeedImplTest {
             feedWatchHandler = feedWatchHandler,
         )
 
+    private fun pendingRequest(source: String, createdAt: Long = 1000) =
+        followData(
+            sourceFid = source,
+            targetFid = "group:id",
+            createdAt = createdAt,
+            status = FollowStatus.Pending,
+        )
+
+    private suspend fun setupFollowRequests(
+        feed: FeedImpl,
+        requests: List<FollowData>,
+        next: String? = null,
+    ) {
+        coEvery { feedsRepository.queryFollows(any()) } returns
+            Result.success(PaginationResult(requests, PaginationData(next = next)))
+        feed.queryFollowRequests()
+    }
+
     private fun getOrCreateInfo(
         testFeedData: FeedData,
         activities: List<ActivityData> = emptyList(),
         followers: List<FollowData> = emptyList(),
         following: List<FollowData> = emptyList(),
-        followRequests: List<FollowData> = emptyList(),
         members: List<FeedMemberData> = emptyList(),
     ): GetOrCreateInfo {
         val paginationData = PaginationData(next = "cursor")
@@ -1000,7 +1070,6 @@ internal class FeedImplTest {
             feed = testFeedData,
             followers = followers,
             following = following,
-            followRequests = followRequests,
             members = PaginationResult(models = members, pagination = paginationData),
             pinnedActivities = emptyList(),
             notificationStatus = null,
@@ -1014,10 +1083,8 @@ internal class FeedImplTest {
         members: List<FeedMemberData> = emptyList(),
         followers: List<FollowData> = emptyList(),
         following: List<FollowData> = emptyList(),
-        followRequests: List<FollowData> = emptyList(),
     ) {
-        val feedInfo =
-            getOrCreateInfo(feedData, activities, followers, following, followRequests, members)
+        val feedInfo = getOrCreateInfo(feedData, activities, followers, following, members)
         coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(feedInfo)
         feed.getOrCreate()
     }

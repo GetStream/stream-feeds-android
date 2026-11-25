@@ -432,6 +432,27 @@ public interface Feed {
     public suspend fun rejectFollow(sourceFid: FeedId): Result<FollowData>
 
     /**
+     * Fetches the first page of pending follow requests sent to this feed.
+     *
+     * The results are stored in the state and can be accessed through the [state.followRequests]
+     * property. [getOrCreate] does not load follow requests.
+     *
+     * @return A [Result] containing the fetched follow requests if successful, or an error if the
+     *   operation fails.
+     */
+    public suspend fun queryFollowRequests(): Result<List<FollowData>>
+
+    /**
+     * Fetches the next page of pending follow requests sent to this feed.
+     *
+     * @param limit Optional limit for the number of follow requests to fetch. If not specified, the
+     *   API default is used.
+     * @return A [Result] containing the fetched follow requests if successful, or an error if the
+     *   operation fails. Returns an empty list if no more follow requests are available.
+     */
+    public suspend fun queryMoreFollowRequests(limit: Int? = null): Result<List<FollowData>>
+
+    /**
      * Fetches the initial list of members based on the current query configuration.
      *
      * This method loads the first page of members according to the query's filters, sorting, and

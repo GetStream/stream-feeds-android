@@ -101,7 +101,6 @@ internal class FeedsRepositoryImplTest {
                     feed = apiResult.feed.toModel(),
                     followers = emptyList(),
                     following = emptyList(),
-                    followRequests = emptyList(),
                     members =
                         PaginationResult(models = emptyList(), pagination = PaginationData.EMPTY),
                     pinnedActivities = emptyList(),

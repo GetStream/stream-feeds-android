@@ -28,7 +28,6 @@ import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
 import io.getstream.feeds.android.client.internal.model.PaginationResult
-import io.getstream.feeds.android.client.internal.model.isFollowRequest
 import io.getstream.feeds.android.client.internal.model.isFollowerOf
 import io.getstream.feeds.android.client.internal.model.isFollowing
 import io.getstream.feeds.android.client.internal.model.toModel
@@ -65,15 +64,13 @@ internal class FeedsRepositoryImpl(private val api: FeedsApi) : FeedsRepository 
                 language = query.language,
                 getOrCreateFeedRequest = request,
             )
-        val rawFollowers = response.followers.map { it.toModel() }
         GetOrCreateInfo(
             pagination = PaginationData(next = response.next, previous = response.prev),
             activities = response.activities.map { it.toModel() },
             aggregatedActivities = response.aggregatedActivities.map { it.toModel() },
             feed = response.feed.toModel(),
-            followers = rawFollowers.filter { it.isFollowerOf(fid) },
+            followers = response.followers.map { it.toModel() }.filter { it.isFollowerOf(fid) },
             following = response.following.map { it.toModel() }.filter { it.isFollowing(fid) },
-            followRequests = rawFollowers.filter { it.isFollowRequest },
             members =
                 PaginationResult(
                     models = response.members.map { it.toModel() },

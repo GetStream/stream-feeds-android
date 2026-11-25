@@ -1663,11 +1663,14 @@ public abstract interface class io/getstream/feeds/android/client/api/state/Feed
 	public abstract fun getState ()Lio/getstream/feeds/android/client/api/state/FeedState;
 	public abstract fun markActivity-gIAlu-s (Lio/getstream/feeds/android/network/models/MarkActivityRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun queryFeedMembers-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun queryFollowRequests-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun queryFollowSuggestions-gIAlu-s (Ljava/lang/Integer;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun queryMoreActivities-gIAlu-s (Ljava/lang/Integer;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun queryMoreActivities-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/Feed;Ljava/lang/Integer;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun queryMoreFeedMembers-gIAlu-s (Ljava/lang/Integer;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun queryMoreFeedMembers-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/Feed;Ljava/lang/Integer;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public abstract fun queryMoreFollowRequests-gIAlu-s (Ljava/lang/Integer;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun queryMoreFollowRequests-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/Feed;Ljava/lang/Integer;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun rejectFeedMember-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun rejectFollow-gIAlu-s (Lio/getstream/feeds/android/client/api/model/FeedId;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun repost-0E7RQCE (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -1701,6 +1704,7 @@ public final class io/getstream/feeds/android/client/api/state/Feed$DefaultImpls
 	public static synthetic fun follow-eH_QyT8$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FollowPushPreference;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun queryMoreActivities-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/Feed;Ljava/lang/Integer;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun queryMoreFeedMembers-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/Feed;Ljava/lang/Integer;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static synthetic fun queryMoreFollowRequests-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/Feed;Ljava/lang/Integer;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun unfollow-BWLJW6A$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/lang/Boolean;Ljava/lang/Boolean;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun updateFollow-BWLJW6A$default (Lio/getstream/feeds/android/client/api/state/Feed;Lio/getstream/feeds/android/client/api/model/FeedId;Ljava/util/Map;Lio/getstream/feeds/android/network/models/FollowPushPreference;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
