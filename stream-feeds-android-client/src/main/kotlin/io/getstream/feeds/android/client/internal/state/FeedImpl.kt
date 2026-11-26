@@ -41,8 +41,8 @@ import io.getstream.feeds.android.client.api.state.query.FollowsFilterField
 import io.getstream.feeds.android.client.api.state.query.FollowsQuery
 import io.getstream.feeds.android.client.api.state.query.MembersQuery
 import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
+import io.getstream.feeds.android.client.internal.client.reconnect.PaginatedRefetchable
 import io.getstream.feeds.android.client.internal.client.reconnect.ReconnectionRefetchHandler
-import io.getstream.feeds.android.client.internal.client.reconnect.Refetchable
 import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
@@ -121,7 +121,7 @@ internal class FeedImpl(
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
     private val feedWatchHandler: FeedWatchHandler,
     reconnectionRefetchHandler: ReconnectionRefetchHandler,
-) : Feed, Refetchable {
+) : Feed, PaginatedRefetchable<FeedImpl.FeedItem> {
 
     private val memberList: MemberListImpl =
         MemberListImpl(
@@ -189,38 +189,39 @@ internal class FeedImpl(
         get() = fid.takeIf { query.watch && _state.feed.value != null }
 
     override suspend fun refetch() {
-        if (_state.feed.value == null) {
-            // Nothing is loaded
-            return
-        }
-        refetchActivities()
+        super.refetch()
         if (_state.followRequestsPagination != null) {
             refetchFollowRequests()
         }
     }
 
-    private suspend fun refetchActivities() {
-        val loadedCount = _state.activities.value.size + _state.aggregatedActivities.value.size
-        val result =
-            refetchPages(loadedCount, FeedItem::id) { next ->
-                val info =
-                    if (next == null) {
-                        refetchFirstPage()
-                    } else {
-                        val page = activitiesPageQuery(limit = null).copy(activityNext = next)
-                        feedsRepository.getOrCreateFeed(page).getOrThrow()
-                    }
-                if (next == null) {
-                    // Only the first page has the rest of the feed data
-                    currentCoroutineContext().ensureActive()
-                    _state.onRefetchFeed(info)
-                    feedOwnValuesRepository.cache(info.feed)
-                }
-                val items =
-                    info.activities.map(FeedItem::Single) +
-                        info.aggregatedActivities.map(FeedItem::Group)
-                PaginationResult(items, info.pagination)
+    override fun loadedCount(): Int? =
+        _state.feed.value?.let {
+            _state.activities.value.size + _state.aggregatedActivities.value.size
+        }
+
+    override fun idOf(model: FeedItem): Any = model.id
+
+    override suspend fun fetchPage(next: String?): PaginationResult<FeedItem> {
+        val info =
+            if (next == null) {
+                refetchFirstPage()
+            } else {
+                val page = activitiesPageQuery(limit = null).copy(activityNext = next)
+                feedsRepository.getOrCreateFeed(page).getOrThrow()
             }
+        if (next == null) {
+            // Only the first page has the rest of the feed data
+            currentCoroutineContext().ensureActive()
+            _state.onRefetchFeed(info)
+            feedOwnValuesRepository.cache(info.feed)
+        }
+        val items =
+            info.activities.map(FeedItem::Single) + info.aggregatedActivities.map(FeedItem::Group)
+        return PaginationResult(items, info.pagination)
+    }
+
+    override fun onRefetched(result: PaginationResult<FeedItem>) {
         _state.onRefetchActivities(
             activities = result.models.mapNotNull { (it as? FeedItem.Single)?.activity },
             aggregatedActivities = result.models.mapNotNull { (it as? FeedItem.Group)?.group },
@@ -256,7 +257,7 @@ internal class FeedImpl(
     }
 
     /** An entry of the feed: an activity, or a group of them in an aggregated feed. */
-    private sealed interface FeedItem {
+    sealed interface FeedItem {
         val id: Any
 
         data class Single(val activity: ActivityData) : FeedItem {
