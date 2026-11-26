@@ -185,6 +185,9 @@ internal class FeedImpl(
             .map { it.feed }
     }
 
+    override val rewatchedFeed: FeedId?
+        get() = fid.takeIf { query.watch && _state.feed.value != null }
+
     override suspend fun refetch() {
         if (_state.feed.value == null) {
             // Nothing is loaded
@@ -200,7 +203,13 @@ internal class FeedImpl(
         val loadedCount = _state.activities.value.size + _state.aggregatedActivities.value.size
         val result =
             refetchPages(loadedCount, FeedItem::id) { next ->
-                val info = feedsRepository.getOrCreateFeed(refetchQuery(next)).getOrThrow()
+                val info =
+                    if (next == null) {
+                        refetchFirstPage()
+                    } else {
+                        val page = activitiesPageQuery(limit = null).copy(activityNext = next)
+                        feedsRepository.getOrCreateFeed(page).getOrThrow()
+                    }
                 if (next == null) {
                     // Only the first page has the rest of the feed data
                     currentCoroutineContext().ensureActive()
@@ -219,14 +228,22 @@ internal class FeedImpl(
         )
     }
 
-    /** The refetch starts at the top of the feed, also after loading around an activity. */
-    private fun refetchQuery(next: String?): FeedQuery =
-        if (next == null) {
-            // Members are not refetched: they are managed by the member list
-            query.copy(activityIdAround = null, memberLimit = 0)
+    /**
+     * The refetch starts at the top of the feed, also after loading around an activity. For a
+     * watched feed this request is also what starts watching it again after a reconnection.
+     */
+    private suspend fun refetchFirstPage(): GetOrCreateInfo {
+        val watching = query.watch && feedWatchHandler.isWatching(fid)
+        // Members are not refetched: they are managed by the member list
+        val firstPage = query.copy(activityIdAround = null, memberLimit = 0, watch = watching)
+        return if (watching) {
+            feedWatchHandler
+                .rewatch(fid) { feedsRepository.getOrCreateFeed(firstPage).getOrThrow() }
+                .getOrThrow()
         } else {
-            activitiesPageQuery(limit = null).copy(activityNext = next)
+            feedsRepository.getOrCreateFeed(firstPage).getOrThrow()
         }
+    }
 
     private suspend fun refetchFollowRequests() {
         val result =

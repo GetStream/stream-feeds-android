@@ -17,6 +17,7 @@
 package io.getstream.feeds.android.client.internal.client.reconnect
 
 import io.getstream.android.core.api.model.connection.StreamConnectionState
+import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.internal.test.TestSubscriptionManager
 import io.mockk.mockk
 import kotlinx.coroutines.CompletableDeferred
@@ -115,6 +116,24 @@ internal class ReconnectionRefetchHandlerTest {
         assertEquals(0, refetchable.count)
     }
 
+    @Test
+    fun `on rewatchedFeeds, then return the feeds that the registered objects watch again`() {
+        val feedId = FeedId("group", "id")
+        val handler = createHandler()
+        handler.register(CountingRefetchable())
+        handler.register(CountingRefetchable(rewatchedFeed = feedId))
+
+        assertEquals(setOf(feedId), handler.rewatchedFeeds())
+    }
+
+    @Test
+    fun `on rewatchedFeeds when disabled, then return no feeds`() {
+        val handler = createHandler(enabled = false)
+        handler.register(CountingRefetchable(rewatchedFeed = FeedId("group", "id")))
+
+        assertEquals(emptySet<FeedId>(), handler.rewatchedFeeds())
+    }
+
     private fun createHandler(enabled: Boolean = true) =
         ReconnectionRefetchHandler(
             connectionState = connectionState,
@@ -127,7 +146,7 @@ internal class ReconnectionRefetchHandlerTest {
     private fun connected(connectionId: String) =
         StreamConnectionState.Connected(mockk(), connectionId)
 
-    private class CountingRefetchable : Refetchable {
+    private class CountingRefetchable(override val rewatchedFeed: FeedId? = null) : Refetchable {
         var count = 0
 
         override suspend fun refetch() {

@@ -26,6 +26,7 @@ import io.getstream.android.core.result.runSafely
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
+import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
 import io.mockk.called
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -47,6 +48,8 @@ internal class FeedWatchHandlerTest {
     private val errorBus = MutableSharedFlow<StreamClientException>()
     private val scope = TestScope(UnconfinedTestDispatcher())
 
+    private var rewatchedByRefetch = emptySet<FeedId>()
+
     private val handler =
         FeedWatchHandler(
             connectionState = connectionEvents,
@@ -54,6 +57,7 @@ internal class FeedWatchHandlerTest {
             retryProcessor = retryProcessor,
             errorBus = errorBus,
             scope = scope,
+            rewatchedByRefetch = { rewatchedByRefetch },
         )
 
     @Test
@@ -94,6 +98,55 @@ internal class FeedWatchHandlerTest {
                 )
             assertEquals(setOf(id1, id2), erroredIds)
         }
+    }
+
+    @Test
+    fun `on reconnection, skip the feeds that the refetch watches again`() = runTest {
+        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.success(mockk())
+        val id1 = FeedId("group", "id1")
+        val id2 = FeedId("group", "id2")
+        handler.onStartWatching(id1)
+        handler.onStartWatching(id2)
+        rewatchedByRefetch = setOf(id1)
+
+        connectionEvents.emit(StreamConnectionState.Connected(mockk(), "connection-1"))
+        connectionEvents.emit(StreamConnectionState.Connected(mockk(), "connection-2"))
+
+        // No refetch runs on the first connection, so both are watched there
+        coVerify(exactly = 1) { feedsRepository.getOrCreateFeed(FeedQuery(id1)) }
+        coVerify(exactly = 2) { feedsRepository.getOrCreateFeed(FeedQuery(id2)) }
+    }
+
+    @Test
+    fun `on rewatch with a request, return its result`() = runTest {
+        val id = FeedId("group", "id1")
+        val info: GetOrCreateInfo = mockk()
+
+        val result = handler.rewatch(id) { info }
+
+        assertEquals(Result.success(info), result)
+    }
+
+    @Test
+    fun `on rewatch with a request that fails, post error`() = runTest {
+        val id = FeedId("group", "id1")
+
+        errorBus.test {
+            val result = handler.rewatch(id) { error("failed") }
+
+            assertEquals(id, (awaitItem() as? StreamFeedRewatchException)?.id)
+            assertEquals(true, result.isFailure)
+        }
+    }
+
+    @Test
+    fun `on isWatching, return whether the feed is being watched`() {
+        val id = FeedId("group", "id1")
+        handler.onStartWatching(id)
+
+        assertEquals(true, handler.isWatching(id))
+        handler.onStopWatching(id)
+        assertEquals(false, handler.isWatching(id))
     }
 
     @Test

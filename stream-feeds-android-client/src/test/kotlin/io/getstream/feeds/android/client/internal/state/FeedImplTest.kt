@@ -81,6 +81,7 @@ import io.getstream.feeds.android.network.models.UpdateFeedRequest
 import io.mockk.called
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
@@ -101,6 +102,16 @@ internal class FeedImplTest {
     private val reconnectionRefetchHandler: ReconnectionRefetchHandler = mockk(relaxed = true)
     private val stateEventListener: StateUpdateEventListener = mockk(relaxed = true)
     private val fid = FeedId("group:id")
+
+    init {
+        // A watched feed, whose rewatch runs the request it is given
+        every { feedWatchHandler.isWatching(any()) } returns true
+        coEvery { feedWatchHandler.rewatch(any(), any()) } coAnswers
+            {
+                val fetch = secondArg<suspend () -> GetOrCreateInfo>()
+                runCatching { fetch() }
+            }
+    }
 
     @Test
     fun `on getOrCreate with watch enabled, then call feedWatchHandler`() = runTest {
@@ -1219,6 +1230,42 @@ internal class FeedImplTest {
         feed.refetch()
 
         coVerify(exactly = 0) { feedsRepository.queryFollows(any()) }
+    }
+
+    @Test
+    fun `on refetch of a watched feed, then fetch the first page as a rewatch`() = runTest {
+        val feed = createFeed(FeedQuery(fid, watch = true))
+        setupInitialState(feed, activities = listOf(activityData("activity-1")))
+
+        feed.refetch()
+
+        coVerify(exactly = 1) { feedWatchHandler.rewatch(fid, any()) }
+        coVerify { feedsRepository.getOrCreateFeed(FeedQuery(fid, watch = true, memberLimit = 0)) }
+    }
+
+    @Test
+    fun `on refetch after the feed stopped being watched, then do not watch it again`() = runTest {
+        val feed = createFeed(FeedQuery(fid, watch = true))
+        setupInitialState(feed, activities = listOf(activityData("activity-1")))
+        every { feedWatchHandler.isWatching(fid) } returns false
+
+        feed.refetch()
+
+        coVerify(exactly = 0) { feedWatchHandler.rewatch(any(), any()) }
+        coVerify { feedsRepository.getOrCreateFeed(FeedQuery(fid, watch = false, memberLimit = 0)) }
+    }
+
+    @Test
+    fun `on rewatchedFeed, then return the feed only when it is watched and loaded`() = runTest {
+        val notLoaded = createFeed(FeedQuery(fid, watch = true))
+        val notWatched = createFeed(FeedQuery(fid, watch = false))
+        val watched = createFeed(FeedQuery(fid, watch = true))
+        setupInitialState(notWatched)
+        setupInitialState(watched)
+
+        assertNull(notLoaded.rewatchedFeed)
+        assertNull(notWatched.rewatchedFeed)
+        assertEquals(fid, watched.rewatchedFeed)
     }
 
     @Test

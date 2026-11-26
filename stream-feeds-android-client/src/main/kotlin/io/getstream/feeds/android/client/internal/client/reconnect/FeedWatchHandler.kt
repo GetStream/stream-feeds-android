@@ -37,12 +37,14 @@ import kotlinx.coroutines.launch
  * Handles re-watching feeds upon reconnection.
  *
  * Keeps track of feeds that are being watched and re-subscribes to them when the connection is
- * re-established.
+ * re-established. On a reconnection it leaves out the feeds that a refetch watches again, so those
+ * are not requested twice.
  *
  * @property connectionState A [Flow] that emits events when the connection state changes to
  *   [StreamConnectionState.Connected].
  * @property feedsRepository The [FeedsRepository] used to rewatch feeds on connection.
  * @property scope The [CoroutineScope] in which to launch coroutines for re-watching feeds.
+ * @property rewatchedByRefetch The feeds that the refetch on a reconnection starts watching again.
  */
 internal class FeedWatchHandler(
     private val connectionState: Flow<StreamConnectionState>,
@@ -50,13 +52,20 @@ internal class FeedWatchHandler(
     private val retryProcessor: StreamRetryProcessor,
     private val errorBus: MutableSharedFlow<StreamClientException>,
     private val scope: CoroutineScope,
+    private val rewatchedByRefetch: () -> Set<FeedId> = ::emptySet,
 ) {
     private val watched = ConcurrentHashMap<FeedId, Unit>()
 
     init {
         scope.launch {
-            connectionState.filterIsInstance<StreamConnectionState.Connected>().collect {
-                rewatchAll()
+            var connectionId: String? = null
+            connectionState.filterIsInstance<StreamConnectionState.Connected>().collect { connected
+                ->
+                // The refetch only runs on a reconnection, which is told apart the same way as in
+                // ReconnectionRefetchHandler
+                val reconnected = connectionId != null && connectionId != connected.connectionId
+                connectionId = connected.connectionId
+                rewatchAll(skipped = if (reconnected) rewatchedByRefetch() else emptySet())
             }
         }
     }
@@ -69,16 +78,25 @@ internal class FeedWatchHandler(
         watched -= feedId
     }
 
-    private suspend fun rewatchAll() {
-        coroutineScope { watched.keys.map { id -> async { rewatch(id) } } }
+    fun isWatching(feedId: FeedId): Boolean = watched.containsKey(feedId)
+
+    /**
+     * Runs [fetch], a request that starts watching [id] again, with the retries and the error
+     * reporting of a rewatch.
+     */
+    suspend fun rewatch(id: FeedId, fetch: suspend () -> GetOrCreateInfo): Result<GetOrCreateInfo> =
+        retryProcessor
+            .retry(retryPolicy) { fetch() }
+            .onFailure { errorBus.emit(StreamFeedRewatchException(id)) }
+
+    private suspend fun rewatchAll(skipped: Set<FeedId>) {
+        coroutineScope {
+            watched.keys.filterNot(skipped::contains).map { id -> async { rewatch(id) } }
+        }
     }
 
     private suspend fun rewatch(id: FeedId): Result<GetOrCreateInfo> =
-        retryProcessor
-            .retry(retryPolicy) {
-                feedsRepository.getOrCreateFeed(FeedQuery(id, watch = true)).getOrThrow()
-            }
-            .onFailure { errorBus.emit(StreamFeedRewatchException(id)) }
+        rewatch(id) { feedsRepository.getOrCreateFeed(FeedQuery(id, watch = true)).getOrThrow() }
 
     companion object {
         private val retryPolicy = StreamRetryPolicy.exponential(maxRetries = 3)

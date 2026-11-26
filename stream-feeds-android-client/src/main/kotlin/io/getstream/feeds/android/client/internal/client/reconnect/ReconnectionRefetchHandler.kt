@@ -19,6 +19,7 @@ package io.getstream.feeds.android.client.internal.client.reconnect
 import io.getstream.android.core.api.log.StreamLogger
 import io.getstream.android.core.api.model.connection.StreamConnectionState
 import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
+import io.getstream.feeds.android.client.api.model.FeedId
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -28,6 +29,13 @@ import kotlinx.coroutines.launch
 
 /** A state object that can load its data again, replacing what it has loaded. */
 internal fun interface Refetchable {
+    /**
+     * The feed that [refetch] starts watching again, if any. Such a feed needs no separate request
+     * to watch it again after a reconnection.
+     */
+    val rewatchedFeed: FeedId?
+        get() = null
+
     /**
      * Loads the data again and replaces the loaded data with it. Does nothing if no data is loaded.
      * Throws if a request fails.
@@ -53,7 +61,7 @@ internal class ReconnectionRefetchHandler(
     private val refetchables: StreamSubscriptionManager<Refetchable>,
     private val logger: StreamLogger,
     private val scope: CoroutineScope,
-    enabled: Boolean,
+    private val enabled: Boolean,
 ) {
     init {
         if (enabled) {
@@ -65,6 +73,13 @@ internal class ReconnectionRefetchHandler(
     fun register(refetchable: Refetchable) {
         refetchables.subscribe(refetchable).onFailure {
             logger.e(it) { "[register] Failed to register for a refetch on reconnection" }
+        }
+    }
+
+    /** The feeds that the refetch on the next reconnection starts watching again. */
+    fun rewatchedFeeds(): Set<FeedId> = buildSet {
+        if (enabled) {
+            refetchables.forEach { refetchable -> refetchable.rewatchedFeed?.let(::add) }
         }
     }
 

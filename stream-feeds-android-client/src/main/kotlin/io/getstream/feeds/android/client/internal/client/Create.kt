@@ -241,15 +241,6 @@ internal fun createFeedsClient(
     val moderation = ModerationImpl(moderationRepository)
     val errorBus = MutableSharedFlow<StreamClientException>(extraBufferCapacity = 100)
 
-    val feedWatchHandler =
-        FeedWatchHandler(
-            connectionState = client.connectionState,
-            feedsRepository = feedsRepository,
-            retryProcessor = StreamRetryProcessor(logProvider.taggedLogger("WatchHandler")),
-            errorBus = errorBus,
-            scope = clientScope,
-        )
-
     val reconnectionRefetchHandler =
         ReconnectionRefetchHandler(
             connectionState = client.connectionState,
@@ -263,6 +254,16 @@ internal fun createFeedsClient(
             logger = logProvider.taggedLogger("RefetchHandler"),
             scope = clientScope,
             enabled = config.refetchOnReconnect,
+        )
+
+    val feedWatchHandler =
+        FeedWatchHandler(
+            connectionState = client.connectionState,
+            feedsRepository = feedsRepository,
+            retryProcessor = StreamRetryProcessor(logProvider.taggedLogger("WatchHandler")),
+            errorBus = errorBus,
+            scope = clientScope,
+            rewatchedByRefetch = reconnectionRefetchHandler::rewatchedFeeds,
         )
 
     // Build client
