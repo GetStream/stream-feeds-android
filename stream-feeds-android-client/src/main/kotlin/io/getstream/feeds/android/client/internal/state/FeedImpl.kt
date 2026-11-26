@@ -21,6 +21,7 @@ import io.getstream.android.core.api.filter.equal
 import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.model.ActivityData
+import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedAddActivityRequest
@@ -40,6 +41,9 @@ import io.getstream.feeds.android.client.api.state.query.FollowsFilterField
 import io.getstream.feeds.android.client.api.state.query.FollowsQuery
 import io.getstream.feeds.android.client.api.state.query.MembersQuery
 import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
+import io.getstream.feeds.android.client.internal.client.reconnect.ReconnectionRefetchHandler
+import io.getstream.feeds.android.client.internal.client.reconnect.Refetchable
+import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
@@ -56,6 +60,7 @@ import io.getstream.feeds.android.client.internal.state.query.toRequest
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.subscribe.onEvent
 import io.getstream.feeds.android.client.internal.utils.flatMap
+import io.getstream.feeds.android.client.internal.utils.refetchPages
 import io.getstream.feeds.android.network.models.AcceptFollowRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.AddBookmarkRequest
@@ -73,6 +78,8 @@ import io.getstream.feeds.android.network.models.UpdateCommentRequest
 import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.network.models.UpdateFeedRequest
 import io.getstream.feeds.android.network.models.UpdateFollowRequest
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 
 /**
  * A feed represents a collection of activities and provides methods to interact with them.
@@ -113,7 +120,8 @@ internal class FeedImpl(
     private val feedOwnValuesRepository: FeedOwnValuesRepository,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
     private val feedWatchHandler: FeedWatchHandler,
-) : Feed {
+    reconnectionRefetchHandler: ReconnectionRefetchHandler,
+) : Feed, Refetchable {
 
     private val memberList: MemberListImpl =
         MemberListImpl(
@@ -149,6 +157,7 @@ internal class FeedImpl(
 
     init {
         subscriptionManager.subscribe(eventHandler)
+        reconnectionRefetchHandler.register(this)
     }
 
     private val group: String
@@ -174,6 +183,75 @@ internal class FeedImpl(
                 feedOwnValuesRepository.cache(it.feed)
             }
             .map { it.feed }
+    }
+
+    override suspend fun refetch() {
+        if (_state.feed.value == null) {
+            // Nothing is loaded
+            return
+        }
+        refetchActivities()
+        if (_state.followRequestsPagination != null) {
+            refetchFollowRequests()
+        }
+    }
+
+    private suspend fun refetchActivities() {
+        val loadedCount = _state.activities.value.size + _state.aggregatedActivities.value.size
+        val result =
+            refetchPages(loadedCount, FeedItem::id) { next ->
+                val info = feedsRepository.getOrCreateFeed(refetchQuery(next)).getOrThrow()
+                if (next == null) {
+                    // Only the first page has the rest of the feed data
+                    currentCoroutineContext().ensureActive()
+                    _state.onRefetchFeed(info)
+                    feedOwnValuesRepository.cache(info.feed)
+                }
+                val items =
+                    info.activities.map(FeedItem::Single) +
+                        info.aggregatedActivities.map(FeedItem::Group)
+                PaginationResult(items, info.pagination)
+            }
+        _state.onRefetchActivities(
+            activities = result.models.mapNotNull { (it as? FeedItem.Single)?.activity },
+            aggregatedActivities = result.models.mapNotNull { (it as? FeedItem.Group)?.group },
+            pagination = result.pagination,
+        )
+    }
+
+    /** The refetch starts at the top of the feed, also after loading around an activity. */
+    private fun refetchQuery(next: String?): FeedQuery =
+        if (next == null) {
+            // Members are not refetched: they are managed by the member list
+            query.copy(activityIdAround = null, memberLimit = 0)
+        } else {
+            activitiesPageQuery(limit = null).copy(activityNext = next)
+        }
+
+    private suspend fun refetchFollowRequests() {
+        val result =
+            refetchPages(_state.followRequests.value.size, FollowData::id) { next ->
+                feedsRepository
+                    .queryFollows(followRequestsQuery.copy(next = next).toRequest())
+                    .getOrThrow()
+            }
+        _state.onQueryFollowRequests(result, replace = true)
+    }
+
+    /** An entry of the feed: an activity, or a group of them in an aggregated feed. */
+    private sealed interface FeedItem {
+        val id: Any
+
+        data class Single(val activity: ActivityData) : FeedItem {
+            override val id: Any
+                get() = activity.id
+        }
+
+        data class Group(val group: AggregatedActivityData) : FeedItem {
+            override val id: Any
+                // Kept apart from activity ids
+                get() = Group::class to group.group
+        }
     }
 
     override suspend fun stopWatching(): Result<Unit> {
