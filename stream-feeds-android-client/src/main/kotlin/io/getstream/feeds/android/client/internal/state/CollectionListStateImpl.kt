@@ -50,8 +50,10 @@ internal class CollectionListStateImpl(override val query: CollectionsQuery) :
     // otherwise
     private val collectionsComparator: Comparator<CollectionData> = run {
         val allForward = collectionsSorting.all { it.direction == SortDirection.FORWARD }
-        val byId = compareBy(CollectionData::id)
-        CompositeComparator(collectionsSorting).then(if (allForward) byId else byId.reversed())
+        val byId =
+            if (allForward) compareBy(CollectionData::id)
+            else compareByDescending(CollectionData::id)
+        CompositeComparator(collectionsSorting).then(byId)
     }
 
     override val collections: StateFlow<List<CollectionData>>
