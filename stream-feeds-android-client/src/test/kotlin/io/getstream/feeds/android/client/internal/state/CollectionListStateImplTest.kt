@@ -86,6 +86,16 @@ internal class CollectionListStateImplTest {
     }
 
     @Test
+    fun `on onCollectionsAdded with the same creation date, then order by id descending`() {
+        val first = collectionData("collection-a", createdAt = 2000)
+        val second = collectionData("collection-b", createdAt = 2000)
+
+        state.onCollectionsAdded(listOf(first, second))
+
+        assertEquals(listOf(second, first), state.collections.value)
+    }
+
+    @Test
     fun `on onCollectionsAdded for a loaded reference, then replace it`() {
         state.onQueryCollections(page(listOf(newest, oldest)))
         val replacement = oldest.copy(custom = mapOf("key" to "value"))

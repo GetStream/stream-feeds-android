@@ -45,8 +45,9 @@ internal class CollectionListStateImpl(override val query: CollectionsQuery) :
     private val collectionsSorting: List<CollectionsSort>
         get() = query.sort?.takeIf { it.isNotEmpty() } ?: CollectionsSort.Default
 
-    private val collectionsComparator: Comparator<CollectionData>
-        get() = CompositeComparator(collectionsSorting)
+    // The backend breaks ties by id, descending, on every sort
+    private val collectionsComparator: Comparator<CollectionData> =
+        CompositeComparator(collectionsSorting).thenByDescending(CollectionData::id)
 
     override val collections: StateFlow<List<CollectionData>>
         get() = _collections.asStateFlow()
