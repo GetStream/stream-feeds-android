@@ -82,4 +82,16 @@ public interface FeedState {
     /** Indicates whether there are more activities available to load. */
     public val canLoadMoreActivities: Boolean
         get() = activitiesPagination?.next != null
+
+    /**
+     * Indicates whether there are activities to load before the first loaded activity.
+     *
+     * It becomes true after [Feed.queryActivitiesAround]. [Feed.queryPreviousActivities] loads the
+     * previous activities.
+     *
+     * While it is true, new activities from WebSocket events are not added to the start of the
+     * list. The previous pages include them.
+     */
+    public val canLoadPreviousActivities: Boolean
+        get() = activitiesPagination?.previous != null
 }

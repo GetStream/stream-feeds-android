@@ -29,6 +29,7 @@ import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
+import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.network.models.AddBookmarkRequest
 import io.getstream.feeds.android.network.models.AddCommentReactionRequest
 import io.getstream.feeds.android.network.models.AddReactionRequest
@@ -218,6 +219,39 @@ public interface Feed {
      *   if the operation fails.
      */
     public suspend fun queryMoreActivities(limit: Int? = null): Result<List<ActivityData>>
+
+    /**
+     * Loads the activities before the first loaded activity using the previous page token.
+     *
+     * The previous page token is set after [queryActivitiesAround] or a query with
+     * [FeedQuery.activityIdAround].
+     *
+     * @param limit Optional limit for the number of activities to load. If `null`, uses the limit
+     *   of the feed query.
+     * @return A [Result] containing the loaded [ActivityData] if successful, or an error if the
+     *   operation fails. Returns an empty list if there is no previous page.
+     */
+    public suspend fun queryPreviousActivities(limit: Int? = null): Result<List<ActivityData>>
+
+    /**
+     * Replaces the loaded activities with a page centered on the activity with the given ID.
+     *
+     * Use [queryPreviousActivities] and [queryMoreActivities] to load the activities on either
+     * side.
+     *
+     * Some feeds, for example ranked feeds or feeds with several activity selectors, return the
+     * page without page tokens. Aggregated feeds reject the request.
+     *
+     * @param activityId The ID of the activity to center the page on.
+     * @param limit Optional limit for the number of activities to load. If `null`, uses the limit
+     *   of the feed query.
+     * @return A [Result] containing the loaded [ActivityData] if successful, or an error if the
+     *   activity is not in the feed or the operation fails.
+     */
+    public suspend fun queryActivitiesAround(
+        activityId: String,
+        limit: Int? = null,
+    ): Result<List<ActivityData>>
 
     /**
      * Adds an activity to the user's bookmarks.

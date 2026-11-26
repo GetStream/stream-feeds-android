@@ -49,6 +49,9 @@ import io.getstream.feeds.android.network.models.Location
  * @param overwriteInterestWeights If `true`, [interestWeights] replace the user's stored interest
  *   weights instead of merging with them.
  * @param viewerLocation The viewer's location. Only the proximity activity selector uses it.
+ * @param activityIdAround Loads the page of activities around the activity with this ID instead of
+ *   the newest activities. It can't be combined with [activityNext] or [activityPrevious], and
+ *   aggregated feeds reject it.
  */
 public data class FeedQuery(
     public val fid: FeedId,
@@ -69,6 +72,7 @@ public data class FeedQuery(
     public val friendReactionsOptions: FriendReactionsOptions? = null,
     public val overwriteInterestWeights: Boolean? = null,
     public val viewerLocation: Location? = null,
+    public val activityIdAround: String? = null,
 ) {
 
     /**
@@ -98,6 +102,9 @@ public data class FeedQuery(
      *   interest weights instead of merging with them.
      * @param viewerLocation The viewer's location. Only the proximity activity selector uses it.
      * @param enrichmentOptions Options to control enrichment of feed data.
+     * @param activityIdAround Loads the page of activities around the activity with this ID instead
+     *   of the newest activities. It can't be combined with [activityNext] or [activityPrevious],
+     *   and aggregated feeds reject it.
      */
     public constructor(
         group: String,
@@ -119,6 +126,7 @@ public data class FeedQuery(
         overwriteInterestWeights: Boolean? = null,
         viewerLocation: Location? = null,
         enrichmentOptions: EnrichmentOptions? = null,
+        activityIdAround: String? = null,
     ) : this(
         fid = FeedId(group = group, id = id),
         activityFilter = activityFilter,
@@ -138,5 +146,6 @@ public data class FeedQuery(
         overwriteInterestWeights = overwriteInterestWeights,
         viewerLocation = viewerLocation,
         enrichmentOptions = enrichmentOptions,
+        activityIdAround = activityIdAround,
     )
 }

@@ -595,6 +595,94 @@ internal class FeedImplTest {
     }
 
     @Test
+    fun `on queryActivitiesAround, replace the activities with the page around the activity`() =
+        runTest {
+            val initialQuery =
+                FeedQuery(fid = fid, activityLimit = 20, language = "fr", view = "custom")
+            val feed = createFeed(initialQuery)
+            setupInitialState(feed, activities = listOf(activityData("activity-9")))
+            val page = listOf(activityData("activity-5"), activityData("activity-4"))
+            val expectedQuery =
+                initialQuery.copy(
+                    activityLimit = 5,
+                    activityIdAround = "activity-5",
+                    followerLimit = 0,
+                    followingLimit = 0,
+                    memberLimit = 0,
+                )
+            coEvery { feedsRepository.getOrCreateFeed(expectedQuery) } returns
+                Result.success(
+                    getOrCreateInfo(feedData(), activities = page)
+                        .copy(pagination = PaginationData(next = "next", previous = "previous"))
+                )
+
+            val result = feed.queryActivitiesAround("activity-5", limit = 5)
+
+            assertEquals(page, result.getOrNull())
+            assertEquals(page, feed.state.activities.value)
+            assertEquals(true, feed.state.canLoadPreviousActivities)
+            assertEquals(true, feed.state.canLoadMoreActivities)
+        }
+
+    @Test
+    fun `on queryPreviousActivities, load the page before the loaded activities`() = runTest {
+        val initialQuery =
+            FeedQuery(
+                fid = fid,
+                activityLimit = 20,
+                view = "custom",
+                activityIdAround = "activity-5",
+            )
+        val feed = createFeed(initialQuery)
+        val loaded = listOf(activityData("activity-5"))
+        coEvery { feedsRepository.getOrCreateFeed(initialQuery) } returns
+            Result.success(
+                getOrCreateInfo(feedData(), activities = loaded)
+                    .copy(pagination = PaginationData(next = "next", previous = "previous"))
+            )
+        feed.getOrCreate()
+        val previousPage = listOf(activityData("activity-7"), activityData("activity-6"))
+        // The page query carries the cursor and drops the around id
+        val expectedQuery =
+            FeedQuery(
+                fid = fid,
+                activityLimit = 20,
+                activityPrevious = "previous",
+                followerLimit = 0,
+                followingLimit = 0,
+                memberLimit = 0,
+                view = "custom",
+            )
+        coEvery { feedsRepository.getOrCreateFeed(expectedQuery) } returns
+            Result.success(
+                getOrCreateInfo(feedData(), activities = previousPage)
+                    .copy(pagination = PaginationData(next = "back", previous = null))
+            )
+
+        val result = feed.queryPreviousActivities()
+
+        assertEquals(previousPage, result.getOrNull())
+        assertEquals(previousPage + loaded, feed.state.activities.value)
+        assertEquals(
+            PaginationData(next = "next", previous = null),
+            feed.state.activitiesPagination,
+        )
+        assertEquals(emptyList<ActivityData>(), feed.queryPreviousActivities().getOrNull())
+        coVerify(exactly = 1) { feedsRepository.getOrCreateFeed(expectedQuery) }
+    }
+
+    @Test
+    fun `on queryPreviousActivities with no previous page, return an empty list`() = runTest {
+        val feed = createFeed()
+        setupInitialState(feed, activities = listOf(activityData("activity-1")))
+
+        val result = feed.queryPreviousActivities()
+
+        assertEquals(emptyList<ActivityData>(), result.getOrNull())
+        coVerify(exactly = 1) { feedsRepository.getOrCreateFeed(any()) }
+    }
+
+    @Test
     fun `on queryMoreActivities, delegate to repository`() = runTest {
         val initialQuery =
             FeedQuery(
@@ -603,6 +691,7 @@ internal class FeedImplTest {
                 enrichmentOptions = EnrichmentOptions(includeReasons = true),
                 interestWeights = mapOf("tech" to 1.0),
                 language = "fr",
+                view = "custom",
                 friendReactionsOptions = FriendReactionsOptions(enabled = true),
                 overwriteInterestWeights = true,
                 viewerLocation = Location(lat = 1.0, lng = 2.0),

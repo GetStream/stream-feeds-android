@@ -25,7 +25,13 @@ import io.getstream.feeds.android.client.api.FeedsClient
  * @see [FeedsClient.feed]
  */
 public enum class InsertionAction {
-    /** Insert the item at the start of the list. */
+    /**
+     * Insert the item at the start of the list.
+     *
+     * A new feed activity is not inserted while [FeedState.canLoadPreviousActivities] is `true`,
+     * because the start of the loaded list is not the start of the feed. It is loaded with the
+     * previous pages instead.
+     */
     AddToStart,
 
     /** Insert the item at the end of the list. */
