@@ -30,3 +30,11 @@ include(":stream-feeds-android-sample")
 include(":stream-feeds-android-client")
 include(":stream-feeds-android-network")
 include(":metrics:stream-feeds-android-metrics")
+
+buildCache {
+    local {
+        isEnabled = !System.getenv().containsKey("CI") ||
+            System.getenv("GRADLE_LOCAL_BUILD_CACHE") == "true"
+        removeUnusedEntriesAfterDays = 7
+    }
+}
