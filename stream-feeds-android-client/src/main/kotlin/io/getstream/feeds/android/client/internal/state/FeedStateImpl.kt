@@ -16,6 +16,7 @@
 
 package io.getstream.feeds.android.client.internal.state
 
+import io.getstream.android.core.api.sort.CompositeComparator
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.ActivityPinData
 import io.getstream.feeds.android.client.api.model.AggregatedActivityData
@@ -33,7 +34,9 @@ import io.getstream.feeds.android.client.api.model.PollVoteData
 import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.client.api.state.InsertionAction
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
+import io.getstream.feeds.android.client.api.state.query.FollowsSort
 import io.getstream.feeds.android.client.internal.model.FeedOwnValues
+import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.model.deleteBookmark
 import io.getstream.feeds.android.client.internal.model.hasOwnBookmarkInFolder
@@ -54,10 +57,12 @@ import io.getstream.feeds.android.client.internal.model.upsertReaction
 import io.getstream.feeds.android.client.internal.model.upsertVote
 import io.getstream.feeds.android.client.internal.repository.GetOrCreateInfo
 import io.getstream.feeds.android.client.internal.utils.applyUpdates
+import io.getstream.feeds.android.client.internal.utils.mergeSorted
 import io.getstream.feeds.android.client.internal.utils.prependAll
 import io.getstream.feeds.android.client.internal.utils.updateIf
 import io.getstream.feeds.android.client.internal.utils.upsert
 import io.getstream.feeds.android.client.internal.utils.upsertAll
+import io.getstream.feeds.android.client.internal.utils.upsertSorted
 import io.getstream.feeds.android.network.models.NotificationStatusResponse
 import java.util.Date
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -88,6 +93,13 @@ internal class FeedStateImpl(
     private val _followers: MutableStateFlow<List<FollowData>> = MutableStateFlow(emptyList())
     private val _following: MutableStateFlow<List<FollowData>> = MutableStateFlow(emptyList())
     private val _followRequests: MutableStateFlow<List<FollowData>> = MutableStateFlow(emptyList())
+
+    internal var followRequestsPagination: PaginationData? = null
+        private set
+
+    // Follow requests are paginated newest first
+    private val followRequestsComparator = CompositeComparator(FollowsSort.Default)
+
     private val _pinnedActivities: MutableStateFlow<List<ActivityPinData>> =
         MutableStateFlow(emptyList())
     private val _notificationStatus: MutableStateFlow<NotificationStatusResponse?> =
@@ -135,7 +147,7 @@ internal class FeedStateImpl(
         _feed.update { result.feed }
         _followers.update { result.followers }
         _following.update { result.following }
-        _followRequests.update { result.followRequests }
+        // Follow requests are not part of the result: they are loaded with their own query
         _pinnedActivities.update { result.pinnedActivities }
         _notificationStatus.update { result.notificationStatus }
 
@@ -316,6 +328,7 @@ internal class FeedStateImpl(
         _pinnedActivities.update { emptyList() }
         _notificationStatus.update { null }
         _activitiesPagination = null
+        followRequestsPagination = null
         // Clear the member list state
         memberListState.clear()
     }
@@ -371,7 +384,7 @@ internal class FeedStateImpl(
             // New accepted followings shouldn't count as follow requests anymore
             val removedIds = newFollowers.mapTo(updates.removedIds.toMutableSet(), FollowData::id)
             val requestUpdates = updates.copy(added = newRequests, removedIds = removedIds)
-            it.applyUpdates(requestUpdates, FollowData::id)
+            it.applyUpdates(requestUpdates, FollowData::id, followRequestsComparator)
         }
     }
 
@@ -379,6 +392,17 @@ internal class FeedStateImpl(
         _following.update { current ->
             current.filterNot {
                 it.sourceFeed.id == sourceFid.id && it.targetFeed.id == targetFid.id
+            }
+        }
+    }
+
+    override fun onQueryFollowRequests(result: PaginationResult<FollowData>, replace: Boolean) {
+        followRequestsPagination = result.pagination
+        _followRequests.update { current ->
+            if (replace) {
+                result.models
+            } else {
+                current.mergeSorted(result.models, FollowData::id, followRequestsComparator)
             }
         }
     }
@@ -502,7 +526,12 @@ internal class FeedStateImpl(
 
     private fun addFollow(follow: FollowData) {
         if (follow.isFollowRequest) {
-            _followRequests.update { it.upsert(follow, FollowData::id) }
+            // A pending follow this feed sent is a request for the target feed, not for this one
+            if (follow.targetFeed.fid == fid) {
+                _followRequests.update {
+                    it.upsertSorted(follow, FollowData::id, followRequestsComparator)
+                }
+            }
         } else if (follow.isFollowing(fid)) {
             _following.update { it.upsert(follow, FollowData::id) }
         } else if (follow.isFollowerOf(fid)) {
@@ -665,6 +694,14 @@ internal interface FeedStateUpdates {
 
     /** Handles updates to the feed state when feed is unfollowed. */
     fun onUnfollow(sourceFid: FeedId, targetFid: FeedId)
+
+    /**
+     * Handles a page of follow requests.
+     *
+     * @param result The follow requests and the pagination data.
+     * @param replace If true, replaces the current follow requests; otherwise, merges with them.
+     */
+    fun onQueryFollowRequests(result: PaginationResult<FollowData>, replace: Boolean)
 
     /** Handles updates to the feed state when a follow request is removed. */
     fun onFollowRequestRemoved(id: String)

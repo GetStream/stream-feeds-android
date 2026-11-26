@@ -138,7 +138,6 @@ internal interface FeedsRepository {
  * @property feed The feed data associated with the feed.
  * @property followers A list of followers for the feed.
  * @property following A list of feeds that this feed is following.
- * @property followRequests A list of follow requests for the feed.
  * @property members A paginated result of members in the feed.
  * @property pinnedActivities A list of activities that are pinned in the feed.
  * @property notificationStatus The notification status for the feed, if available.
@@ -150,7 +149,6 @@ internal data class GetOrCreateInfo(
     val feed: FeedData,
     val followers: List<FollowData>,
     val following: List<FollowData>,
-    val followRequests: List<FollowData>,
     val members: PaginationResult<FeedMemberData>,
     val pinnedActivities: List<ActivityPinData>,
     val notificationStatus: NotificationStatusResponse?,

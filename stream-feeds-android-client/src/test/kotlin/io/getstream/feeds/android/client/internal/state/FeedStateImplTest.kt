@@ -644,6 +644,7 @@ internal class FeedStateImplTest {
         assertTrue(feedState.followRequests.value.isEmpty())
         assertNull(feedState.notificationStatus.value)
         assertNull(feedState.activitiesPagination)
+        assertNull(feedState.followRequestsPagination)
     }
 
     @Test
@@ -1055,6 +1056,105 @@ internal class FeedStateImplTest {
     }
 
     @Test
+    fun `on onQueryFeed, then keep the loaded follow requests`() = runTest {
+        val request = pendingRequest("user:source-1")
+        setupInitialState(followRequests = listOf(request))
+
+        feedState.onQueryFeed(createGetOrCreateInfo(activities = emptyList()))
+
+        assertEquals(listOf(request), feedState.followRequests.value)
+    }
+
+    @Test
+    fun `on onQueryFollowRequests, then merge the page and update pagination`() = runTest {
+        val newer = pendingRequest("user:source-2", createdAt = 2000)
+        val older = pendingRequest("user:source-1", createdAt = 1000)
+
+        feedState.onQueryFollowRequests(followRequestsPage(listOf(newer), "next"), replace = true)
+        assertEquals("next", feedState.followRequestsPagination?.next)
+
+        feedState.onQueryFollowRequests(followRequestsPage(listOf(older)), replace = false)
+
+        assertEquals(listOf(newer, older), feedState.followRequests.value)
+        assertNull(feedState.followRequestsPagination?.next)
+    }
+
+    @Test
+    fun `on onQueryFollowRequests with replace, then replace the follow requests`() = runTest {
+        val first = pendingRequest("user:source-1")
+        val second = pendingRequest("user:source-2")
+        feedState.onQueryFollowRequests(followRequestsPage(listOf(first)), replace = true)
+
+        feedState.onQueryFollowRequests(followRequestsPage(listOf(second)), replace = true)
+
+        assertEquals(listOf(second), feedState.followRequests.value)
+    }
+
+    @Test
+    fun `on onFollowAdded with a request for this feed, then add it newest first`() = runTest {
+        val older = pendingRequest("user:source-1", createdAt = 1000)
+        setupInitialState(followRequests = listOf(older))
+        val newer = pendingRequest("user:source-2", createdAt = 2000)
+
+        feedState.onFollowAdded(newer)
+
+        assertEquals(listOf(newer, older), feedState.followRequests.value)
+    }
+
+    @Test
+    fun `on onFollowsUpdated with a new request, then add it newest first`() = runTest {
+        val older = pendingRequest("user:source-1", createdAt = 1000)
+        setupInitialState(followRequests = listOf(older))
+        val newer = pendingRequest("user:source-2", createdAt = 2000)
+
+        feedState.onFollowsUpdated(
+            ModelUpdates(added = listOf(newer), removedIds = emptySet(), updated = emptyList())
+        )
+
+        assertEquals(listOf(newer, older), feedState.followRequests.value)
+    }
+
+    @Test
+    fun `on onFollowAdded with a request this feed sent, then leave the follow requests`() =
+        runTest {
+            setupInitialState()
+            val sent =
+                followData(
+                    sourceFid = "user:test",
+                    targetFid = "user:target-1",
+                    status = FollowStatus.Pending,
+                )
+
+            feedState.onFollowAdded(sent)
+
+            assertTrue(feedState.followRequests.value.isEmpty())
+            assertTrue(feedState.following.value.isEmpty())
+        }
+
+    @Test
+    fun `on onFollowUpdated with an accepted request, then move it to the followers`() = runTest {
+        val request = pendingRequest("user:source-1")
+        setupInitialState(followRequests = listOf(request))
+        val accepted = request.copy(status = FollowStatus.Accepted)
+
+        feedState.onFollowUpdated(accepted)
+
+        assertTrue(feedState.followRequests.value.isEmpty())
+        assertEquals(listOf(accepted), feedState.followers.value)
+    }
+
+    @Test
+    fun `on onFollowUpdated with a rejected request, then remove it`() = runTest {
+        val request = pendingRequest("user:source-1")
+        setupInitialState(followRequests = listOf(request))
+
+        feedState.onFollowUpdated(request.copy(status = FollowStatus.Rejected))
+
+        assertTrue(feedState.followRequests.value.isEmpty())
+        assertTrue(feedState.followers.value.isEmpty())
+    }
+
+    @Test
     fun `on onFeedOwnValuesUpdated, update matching activities`() = runTest {
         val feedId1 = FeedId("user:1")
         val feed1 = feedData(id = "1", groupId = "user", ownCapabilities = emptySet())
@@ -1105,18 +1205,31 @@ internal class FeedStateImplTest {
                 feed = feed,
                 followers = followers,
                 following = following,
-                followRequests = followRequests,
                 aggregatedActivities = aggregatedActivities,
             )
         feedState.onQueryFeed(result)
+        feedState.onQueryFollowRequests(followRequestsPage(followRequests), replace = true)
     }
+
+    private fun followRequestsPage(requests: List<FollowData>, next: String? = null) =
+        PaginationResult(
+            models = requests,
+            pagination = PaginationData(next = next, previous = null),
+        )
+
+    private fun pendingRequest(source: String, createdAt: Long = 1000) =
+        followData(
+            sourceFid = source,
+            targetFid = "user:test",
+            createdAt = createdAt,
+            status = FollowStatus.Pending,
+        )
 
     private fun createGetOrCreateInfo(
         activities: List<ActivityData>,
         feed: FeedData = feedData(),
         followers: List<FollowData> = emptyList(),
         following: List<FollowData> = emptyList(),
-        followRequests: List<FollowData> = emptyList(),
         pinnedActivities: List<ActivityPinData> = emptyList(),
         aggregatedActivities: List<AggregatedActivityData> = emptyList(),
     ): GetOrCreateInfo {
@@ -1129,7 +1242,6 @@ internal class FeedStateImplTest {
             feed = feed,
             followers = followers,
             following = following,
-            followRequests = followRequests,
             pinnedActivities = pinnedActivities,
             notificationStatus = null,
             members =

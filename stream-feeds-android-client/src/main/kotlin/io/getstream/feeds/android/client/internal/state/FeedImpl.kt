@@ -16,6 +16,8 @@
 
 package io.getstream.feeds.android.client.internal.state
 
+import io.getstream.android.core.api.filter.Filters
+import io.getstream.android.core.api.filter.equal
 import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.model.ActivityData
@@ -28,11 +30,14 @@ import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.model.FeedSuggestionData
 import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.model.FollowData
+import io.getstream.feeds.android.client.api.model.FollowStatus
 import io.getstream.feeds.android.client.api.model.ModelUpdates
 import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentRequest
 import io.getstream.feeds.android.client.api.state.Feed
 import io.getstream.feeds.android.client.api.state.FeedState
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
+import io.getstream.feeds.android.client.api.state.query.FollowsFilterField
+import io.getstream.feeds.android.client.api.state.query.FollowsQuery
 import io.getstream.feeds.android.client.api.state.query.MembersQuery
 import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
@@ -47,6 +52,7 @@ import io.getstream.feeds.android.client.internal.state.event.FidScope
 import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.state.event.handler.FeedEventHandler
 import io.getstream.feeds.android.client.internal.state.event.handler.OnNewActivity
+import io.getstream.feeds.android.client.internal.state.query.toRequest
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.subscribe.onEvent
 import io.getstream.feeds.android.client.internal.utils.flatMap
@@ -114,6 +120,16 @@ internal class FeedImpl(
             query = MembersQuery(fid = query.fid),
             feedsRepository = feedsRepository,
             subscriptionManager = subscriptionManager,
+        )
+
+    /** The pending follow requests sent to this feed. */
+    private val followRequestsQuery =
+        FollowsQuery(
+            filter =
+                Filters.and(
+                    FollowsFilterField.status.equal(FollowStatus.Pending.value),
+                    FollowsFilterField.targetFeed.equal(query.fid.rawValue),
+                )
         )
 
     private val _state: FeedStateImpl =
@@ -494,15 +510,38 @@ internal class FeedImpl(
                 target = fid.rawValue,
             )
         return feedsRepository.acceptFollow(request).onSuccess { follow ->
-            subscriptionManager.onEvent(StateUpdateEvent.FollowAdded(follow))
+            subscriptionManager.onEvent(StateUpdateEvent.FollowUpdated(follow))
         }
     }
 
     override suspend fun rejectFollow(sourceFid: FeedId): Result<FollowData> {
         val request = RejectFollowRequest(source = sourceFid.rawValue, target = fid.rawValue)
         return feedsRepository.rejectFollow(request).onSuccess { follow ->
-            subscriptionManager.onEvent(StateUpdateEvent.FollowDeleted(follow))
+            subscriptionManager.onEvent(StateUpdateEvent.FollowUpdated(follow))
         }
+    }
+
+    override suspend fun queryFollowRequests(): Result<List<FollowData>> {
+        return queryFollowRequests(followRequestsQuery, replace = true)
+    }
+
+    override suspend fun queryMoreFollowRequests(limit: Int?): Result<List<FollowData>> {
+        val next = _state.followRequestsPagination?.next
+        if (next == null) {
+            // If there is no next cursor, return an empty list.
+            return Result.success(emptyList())
+        }
+        return queryFollowRequests(followRequestsQuery.copy(limit = limit, next = next))
+    }
+
+    private suspend fun queryFollowRequests(
+        query: FollowsQuery,
+        replace: Boolean = false,
+    ): Result<List<FollowData>> {
+        return feedsRepository
+            .queryFollows(query.toRequest())
+            .onSuccess { _state.onQueryFollowRequests(it, replace) }
+            .map { it.models }
     }
 
     override suspend fun queryFeedMembers(): Result<List<FeedMemberData>> {
