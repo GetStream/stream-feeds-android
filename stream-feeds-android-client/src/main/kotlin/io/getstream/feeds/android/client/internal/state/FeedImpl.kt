@@ -326,7 +326,7 @@ internal class FeedImpl(
             followingLimit = 0,
             interestWeights = null,
             memberLimit = 0,
-            view = null,
+            view = query.view,
             watch = query.watch,
             language = query.language,
             friendReactionsOptions = query.friendReactionsOptions,

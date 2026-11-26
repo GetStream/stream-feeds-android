@@ -544,7 +544,8 @@ internal class FeedImplTest {
     @Test
     fun `on queryActivitiesAround, replace the activities with the page around the activity`() =
         runTest {
-            val initialQuery = FeedQuery(fid = fid, activityLimit = 20, language = "fr")
+            val initialQuery =
+                FeedQuery(fid = fid, activityLimit = 20, language = "fr", view = "custom")
             val feed = createFeed(initialQuery)
             setupInitialState(feed, activities = listOf(activityData("activity-9")))
             val page = listOf(activityData("activity-5"), activityData("activity-4"))
@@ -572,7 +573,13 @@ internal class FeedImplTest {
 
     @Test
     fun `on queryPreviousActivities, load the page before the loaded activities`() = runTest {
-        val initialQuery = FeedQuery(fid = fid, activityLimit = 20, activityIdAround = "activity-5")
+        val initialQuery =
+            FeedQuery(
+                fid = fid,
+                activityLimit = 20,
+                view = "custom",
+                activityIdAround = "activity-5",
+            )
         val feed = createFeed(initialQuery)
         val loaded = listOf(activityData("activity-5"))
         coEvery { feedsRepository.getOrCreateFeed(initialQuery) } returns
@@ -591,6 +598,7 @@ internal class FeedImplTest {
                 followerLimit = 0,
                 followingLimit = 0,
                 memberLimit = 0,
+                view = "custom",
             )
         coEvery { feedsRepository.getOrCreateFeed(expectedQuery) } returns
             Result.success(
@@ -630,6 +638,7 @@ internal class FeedImplTest {
                 enrichmentOptions = EnrichmentOptions(includeReasons = true),
                 interestWeights = mapOf("tech" to 1.0),
                 language = "fr",
+                view = "custom",
                 friendReactionsOptions = FriendReactionsOptions(enabled = true),
                 overwriteInterestWeights = true,
                 viewerLocation = Location(lat = 1.0, lng = 2.0),

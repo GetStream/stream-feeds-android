@@ -239,8 +239,8 @@ public interface Feed {
      * Use [queryPreviousActivities] and [queryMoreActivities] to load the activities on either
      * side.
      *
-     * Ranked feeds and feeds with several activity selectors return the page without page tokens.
-     * Aggregated feeds reject the request.
+     * Some feeds, for example ranked feeds or feeds with several activity selectors, return the
+     * page without page tokens. Aggregated feeds reject the request.
      *
      * @param activityId The ID of the activity to center the page on.
      * @param limit Optional limit for the number of activities to load. If `null`, uses the limit
