@@ -60,6 +60,7 @@ class ProfileViewModel @Inject constructor(loginManager: LoginManager) : ViewMod
     init {
         state.withFirstContent(viewModelScope) {
             feed.getOrCreate().logResult(TAG, "Getting the profile feed")
+            feed.queryFollowRequests().logResult(TAG, "Getting the follow requests")
             _followSuggestions.value =
                 // We query suggestions from a user feed because we want to follow those, not other
                 // timelines.

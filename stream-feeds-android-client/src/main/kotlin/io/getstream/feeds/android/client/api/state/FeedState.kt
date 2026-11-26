@@ -58,7 +58,13 @@ public interface FeedState {
     /** The list of feeds that this feed is following. */
     public val following: StateFlow<List<FollowData>>
 
-    /** The list of pending follow requests for this feed. */
+    /**
+     * The list of pending follow requests for this feed.
+     *
+     * [Feed.getOrCreate] does not load follow requests. Call [Feed.queryFollowRequests] for the
+     * first page and [Feed.queryMoreFollowRequests] for the next ones. WebSocket events keep the
+     * list up to date after that.
+     */
     public val followRequests: StateFlow<List<FollowData>>
 
     /** The list of members in this feed. */
