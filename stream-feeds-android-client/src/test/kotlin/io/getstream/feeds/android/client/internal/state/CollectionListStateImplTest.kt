@@ -96,6 +96,34 @@ internal class CollectionListStateImplTest {
     }
 
     @Test
+    fun `on onCollectionsAdded with an ascending sort, then break ties by id ascending`() {
+        val sort = listOf(CollectionsSort(CollectionsSortField.CreatedAt, SortDirection.FORWARD))
+        val state = CollectionListStateImpl(CollectionsQuery(sort = sort))
+        val first = collectionData("collection-a", createdAt = 2000)
+        val second = collectionData("collection-b", createdAt = 2000)
+
+        state.onCollectionsAdded(listOf(second, first))
+
+        assertEquals(listOf(first, second), state.collections.value)
+    }
+
+    @Test
+    fun `on onCollectionsAdded with mixed sort directions, then break ties by id descending`() {
+        val sort =
+            listOf(
+                CollectionsSort(CollectionsSortField.CreatedAt, SortDirection.FORWARD),
+                CollectionsSort(CollectionsSortField.UpdatedAt, SortDirection.REVERSE),
+            )
+        val state = CollectionListStateImpl(CollectionsQuery(sort = sort))
+        val first = collectionData("collection-a", createdAt = 2000)
+        val second = collectionData("collection-b", createdAt = 2000)
+
+        state.onCollectionsAdded(listOf(first, second))
+
+        assertEquals(listOf(second, first), state.collections.value)
+    }
+
+    @Test
     fun `on onCollectionsAdded for a loaded reference, then replace it`() {
         state.onQueryCollections(page(listOf(newest, oldest)))
         val replacement = oldest.copy(custom = mapOf("key" to "value"))

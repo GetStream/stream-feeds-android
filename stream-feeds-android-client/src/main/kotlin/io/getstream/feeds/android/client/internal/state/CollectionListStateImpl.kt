@@ -17,6 +17,7 @@
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.android.core.api.sort.CompositeComparator
+import io.getstream.android.core.api.sort.SortDirection
 import io.getstream.feeds.android.client.api.model.CollectionData
 import io.getstream.feeds.android.client.api.model.PaginationData
 import io.getstream.feeds.android.client.api.state.CollectionListState
@@ -45,9 +46,13 @@ internal class CollectionListStateImpl(override val query: CollectionsQuery) :
     private val collectionsSorting: List<CollectionsSort>
         get() = query.sort?.takeIf { it.isNotEmpty() } ?: CollectionsSort.Default
 
-    // The backend breaks ties by id, descending, on every sort
-    private val collectionsComparator: Comparator<CollectionData> =
-        CompositeComparator(collectionsSorting).thenByDescending(CollectionData::id)
+    // The backend breaks ties by id: ascending when every sort field is ascending, descending
+    // otherwise
+    private val collectionsComparator: Comparator<CollectionData> = run {
+        val allForward = collectionsSorting.all { it.direction == SortDirection.FORWARD }
+        val byId = compareBy(CollectionData::id)
+        CompositeComparator(collectionsSorting).then(if (allForward) byId else byId.reversed())
+    }
 
     override val collections: StateFlow<List<CollectionData>>
         get() = _collections.asStateFlow()
