@@ -35,6 +35,7 @@ import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersQuery
 import io.getstream.feeds.android.client.api.state.query.BookmarksQuery
+import io.getstream.feeds.android.client.api.state.query.CollectionsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
@@ -58,14 +59,18 @@ import io.getstream.feeds.android.client.internal.repository.FilesRepository
 import io.getstream.feeds.android.client.internal.repository.ModerationRepository
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.state.event.StateEventEnricher
+import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent
 import io.getstream.feeds.android.client.internal.subscribe.FeedsEventListener
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
+import io.getstream.feeds.android.client.internal.test.TestData.collectionData
 import io.getstream.feeds.android.client.internal.test.TestData.defaultPaginationResult
 import io.getstream.feeds.android.network.models.ActivityRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
+import io.getstream.feeds.android.network.models.CreateCollectionsRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
+import io.getstream.feeds.android.network.models.UpdateCollectionsRequest
 import io.getstream.feeds.android.network.models.WSEvent
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -386,6 +391,67 @@ internal class FeedsClientImplTest {
     }
 
     @Test
+    fun `collectionList when called with query, return collection list with correct query`() {
+        val query = CollectionsQuery(limit = 10)
+
+        val result = feedsClient.collectionList(query)
+
+        assertEquals(query, result.query)
+    }
+
+    @Test
+    fun `createCollections on success, publish the created collections`() = runTest {
+        val listener = stateEventListener()
+        val request = CreateCollectionsRequest(collections = emptyList())
+        val collections = listOf(collectionData())
+        coEvery { collectionsRepository.createCollections(request) } returns
+            Result.success(collections)
+
+        val result = feedsClient.createCollections(request)
+
+        assertEquals(collections, result.getOrNull())
+        verify { listener.onEvent(StateUpdateEvent.CollectionsAdded(collections)) }
+    }
+
+    @Test
+    fun `updateCollections on success, publish the updated collections`() = runTest {
+        val listener = stateEventListener()
+        val request = UpdateCollectionsRequest(collections = emptyList())
+        val collections = listOf(collectionData())
+        coEvery { collectionsRepository.updateCollections(request) } returns
+            Result.success(collections)
+
+        val result = feedsClient.updateCollections(request)
+
+        assertEquals(collections, result.getOrNull())
+        verify { listener.onEvent(StateUpdateEvent.CollectionsUpdated(collections)) }
+    }
+
+    @Test
+    fun `deleteCollections on success, publish the deleted references`() = runTest {
+        val listener = stateEventListener()
+        val refs = listOf("movies:lotr")
+        coEvery { collectionsRepository.deleteCollections(refs) } returns Result.success(Unit)
+
+        val result = feedsClient.deleteCollections(refs)
+
+        assertEquals(Unit, result.getOrNull())
+        verify { listener.onEvent(StateUpdateEvent.CollectionsDeleted(refs)) }
+    }
+
+    @Test
+    fun `deleteCollections on failure, publish nothing`() = runTest {
+        val listener = stateEventListener()
+        val refs = listOf("movies:lotr")
+        coEvery { collectionsRepository.deleteCollections(refs) } returns
+            Result.failure(IllegalStateException("failed"))
+
+        feedsClient.deleteCollections(refs)
+
+        verify(exactly = 0) { listener.onEvent(any()) }
+    }
+
+    @Test
     fun `commentList when called with query, return comment list with correct query`() {
         val query = CommentsQuery(limit = 10)
 
@@ -517,6 +583,17 @@ internal class FeedsClientImplTest {
         coEvery { coreClient.connect() } returns Result.success(mockk())
         feedsClient.connect()
         return listener.captured
+    }
+
+    /** Makes the mocked subscription manager deliver state events to the returned listener. */
+    private fun stateEventListener(): StateUpdateEventListener {
+        val listener: StateUpdateEventListener = mockk(relaxed = true)
+        every { stateEventsSubscriptionManager.forEach(any()) } answers
+            {
+                firstArg<(StateUpdateEventListener) -> Unit>().invoke(listener)
+                Result.success(Unit)
+            }
+        return listener
     }
 
     private fun wsEvent(type: String): WSEvent =

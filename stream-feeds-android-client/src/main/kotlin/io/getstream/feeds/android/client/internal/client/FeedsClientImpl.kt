@@ -32,6 +32,7 @@ import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.BatchFollowData
 import io.getstream.feeds.android.client.api.model.BookmarkFolderData
+import io.getstream.feeds.android.client.api.model.CollectionData
 import io.getstream.feeds.android.client.api.model.FeedId
 import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.model.ModelUpdates
@@ -42,6 +43,7 @@ import io.getstream.feeds.android.client.api.state.ActivityList
 import io.getstream.feeds.android.client.api.state.ActivityReactionList
 import io.getstream.feeds.android.client.api.state.BookmarkFolderList
 import io.getstream.feeds.android.client.api.state.BookmarkList
+import io.getstream.feeds.android.client.api.state.CollectionList
 import io.getstream.feeds.android.client.api.state.CommentList
 import io.getstream.feeds.android.client.api.state.CommentReactionList
 import io.getstream.feeds.android.client.api.state.CommentReplyList
@@ -58,6 +60,7 @@ import io.getstream.feeds.android.client.api.state.query.ActivityCommentsQuery
 import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersQuery
 import io.getstream.feeds.android.client.api.state.query.BookmarksQuery
+import io.getstream.feeds.android.client.api.state.query.CollectionsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
 import io.getstream.feeds.android.client.api.state.query.CommentRepliesQuery
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
@@ -87,6 +90,7 @@ import io.getstream.feeds.android.client.internal.state.ActivityListImpl
 import io.getstream.feeds.android.client.internal.state.ActivityReactionListImpl
 import io.getstream.feeds.android.client.internal.state.BookmarkFolderListImpl
 import io.getstream.feeds.android.client.internal.state.BookmarkListImpl
+import io.getstream.feeds.android.client.internal.state.CollectionListImpl
 import io.getstream.feeds.android.client.internal.state.CommentListImpl
 import io.getstream.feeds.android.client.internal.state.CommentReactionListImpl
 import io.getstream.feeds.android.client.internal.state.CommentReplyListImpl
@@ -109,11 +113,13 @@ import io.getstream.feeds.android.client.internal.subscribe.onEvent
 import io.getstream.feeds.android.network.models.ActivityFeedbackRequest
 import io.getstream.feeds.android.network.models.ActivityRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
+import io.getstream.feeds.android.network.models.CreateCollectionsRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesRequest
 import io.getstream.feeds.android.network.models.DeleteActivitiesResponse
 import io.getstream.feeds.android.network.models.FollowBatchRequest
 import io.getstream.feeds.android.network.models.UnfollowBatchRequest
 import io.getstream.feeds.android.network.models.UpdateBookmarkFolderRequest
+import io.getstream.feeds.android.network.models.UpdateCollectionsRequest
 import io.getstream.feeds.android.network.models.WSEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BufferOverflow
@@ -343,6 +349,35 @@ internal class FeedsClientImpl(
     override suspend fun deleteBookmarkFolder(folderId: String): Result<Unit> {
         return bookmarksRepository.deleteBookmarkFolder(folderId).onSuccess {
             stateEventsSubscriptionManager.onEvent(StateUpdateEvent.BookmarkFolderDeleted(folderId))
+        }
+    }
+
+    override fun collectionList(query: CollectionsQuery): CollectionList =
+        CollectionListImpl(
+            query = query,
+            collectionsRepository = collectionsRepository,
+            subscriptionManager = stateEventsSubscriptionManager,
+        )
+
+    override suspend fun createCollections(
+        request: CreateCollectionsRequest
+    ): Result<List<CollectionData>> {
+        return collectionsRepository.createCollections(request).onSuccess {
+            stateEventsSubscriptionManager.onEvent(StateUpdateEvent.CollectionsAdded(it))
+        }
+    }
+
+    override suspend fun updateCollections(
+        request: UpdateCollectionsRequest
+    ): Result<List<CollectionData>> {
+        return collectionsRepository.updateCollections(request).onSuccess {
+            stateEventsSubscriptionManager.onEvent(StateUpdateEvent.CollectionsUpdated(it))
+        }
+    }
+
+    override suspend fun deleteCollections(refs: List<String>): Result<Unit> {
+        return collectionsRepository.deleteCollections(refs).onSuccess {
+            stateEventsSubscriptionManager.onEvent(StateUpdateEvent.CollectionsDeleted(refs))
         }
     }
 

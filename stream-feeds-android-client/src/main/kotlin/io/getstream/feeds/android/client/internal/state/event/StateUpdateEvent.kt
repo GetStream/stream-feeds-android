@@ -21,6 +21,7 @@ import io.getstream.feeds.android.client.api.model.ActivityPinData
 import io.getstream.feeds.android.client.api.model.AggregatedActivityData
 import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.model.BookmarkFolderData
+import io.getstream.feeds.android.client.api.model.CollectionData
 import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.model.FeedId
@@ -132,6 +133,12 @@ internal sealed interface StateUpdateEvent {
     data class BookmarkFolderDeleted(val folderId: String) : StateUpdateEvent
 
     data class BookmarkFolderUpdated(val folder: BookmarkFolderData) : StateUpdateEvent
+
+    data class CollectionsAdded(val collections: List<CollectionData>) : StateUpdateEvent
+
+    data class CollectionsDeleted(val refs: List<String>) : StateUpdateEvent
+
+    data class CollectionsUpdated(val collections: List<CollectionData>) : StateUpdateEvent
 
     data class CommentAdded(val scope: FidScope, val comment: CommentData) : StateUpdateEvent
 

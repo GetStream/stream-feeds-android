@@ -26,6 +26,7 @@ public abstract interface class io/getstream/feeds/android/client/api/FeedsClien
 	public abstract fun addActivity-gIAlu-s (Lio/getstream/feeds/android/network/models/AddActivityRequest;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun bookmarkFolderList (Lio/getstream/feeds/android/client/api/state/query/BookmarkFoldersQuery;)Lio/getstream/feeds/android/client/api/state/BookmarkFolderList;
 	public abstract fun bookmarkList (Lio/getstream/feeds/android/client/api/state/query/BookmarksQuery;)Lio/getstream/feeds/android/client/api/state/BookmarkList;
+	public abstract fun collectionList (Lio/getstream/feeds/android/client/api/state/query/CollectionsQuery;)Lio/getstream/feeds/android/client/api/state/CollectionList;
 	public abstract fun commentList (Lio/getstream/feeds/android/client/api/state/query/CommentsQuery;)Lio/getstream/feeds/android/client/api/state/CommentList;
 	public abstract fun commentReactionList (Lio/getstream/feeds/android/client/api/state/query/CommentReactionsQuery;)Lio/getstream/feeds/android/client/api/state/CommentReactionList;
 	public abstract fun commentReplyList (Lio/getstream/feeds/android/client/api/state/query/CommentRepliesQuery;)Lio/getstream/feeds/android/client/api/state/CommentReplyList;
@@ -517,6 +518,7 @@ public final class io/getstream/feeds/android/client/api/model/CollectionData {
 	public final fun getCustom ()Ljava/util/Map;
 	public final fun getId ()Ljava/lang/String;
 	public final fun getName ()Ljava/lang/String;
+	public final fun getReference ()Ljava/lang/String;
 	public final fun getStatus ()Lio/getstream/feeds/android/client/api/model/CollectionStatus;
 	public final fun getUpdatedAt ()Ljava/util/Date;
 	public final fun getUserId ()Ljava/lang/String;
@@ -1561,6 +1563,29 @@ public final class io/getstream/feeds/android/client/api/state/BookmarkListState
 	public static fun getCanLoadMore (Lio/getstream/feeds/android/client/api/state/BookmarkListState;)Z
 }
 
+public abstract interface class io/getstream/feeds/android/client/api/state/CollectionList {
+	public abstract fun get-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getQuery ()Lio/getstream/feeds/android/client/api/state/query/CollectionsQuery;
+	public abstract fun getState ()Lio/getstream/feeds/android/client/api/state/CollectionListState;
+	public abstract fun queryMoreCollections-gIAlu-s (Ljava/lang/Integer;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun queryMoreCollections-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/CollectionList;Ljava/lang/Integer;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class io/getstream/feeds/android/client/api/state/CollectionList$DefaultImpls {
+	public static synthetic fun queryMoreCollections-gIAlu-s$default (Lio/getstream/feeds/android/client/api/state/CollectionList;Ljava/lang/Integer;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public abstract interface class io/getstream/feeds/android/client/api/state/CollectionListState {
+	public fun getCanLoadMore ()Z
+	public abstract fun getCollections ()Lkotlinx/coroutines/flow/StateFlow;
+	public abstract fun getPagination ()Lio/getstream/feeds/android/client/api/model/PaginationData;
+	public abstract fun getQuery ()Lio/getstream/feeds/android/client/api/state/query/CollectionsQuery;
+}
+
+public final class io/getstream/feeds/android/client/api/state/CollectionListState$DefaultImpls {
+	public static fun getCanLoadMore (Lio/getstream/feeds/android/client/api/state/CollectionListState;)Z
+}
+
 public abstract interface class io/getstream/feeds/android/client/api/state/CommentList {
 	public abstract fun get-IoAF18A (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getQuery ()Lio/getstream/feeds/android/client/api/state/query/CommentsQuery;
@@ -2219,6 +2244,87 @@ public final class io/getstream/feeds/android/client/api/state/query/BookmarksSo
 
 public final class io/getstream/feeds/android/client/api/state/query/BookmarksSortField$UpdatedAt : io/getstream/android/core/api/sort/SortField, io/getstream/feeds/android/client/api/state/query/BookmarksSortField {
 	public static final field INSTANCE Lio/getstream/feeds/android/client/api/state/query/BookmarksSortField$UpdatedAt;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getComparator ()Lio/getstream/android/core/api/sort/AnySortComparator;
+	public fun getRemote ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/getstream/feeds/android/client/api/state/query/CollectionsFilterField : io/getstream/android/core/api/filter/FilterField {
+	public static final field Companion Lio/getstream/feeds/android/client/api/state/query/CollectionsFilterField$Companion;
+	public fun <init> (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lkotlin/jvm/functions/Function1;
+	public final fun copy (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lio/getstream/feeds/android/client/api/state/query/CollectionsFilterField;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/client/api/state/query/CollectionsFilterField;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lio/getstream/feeds/android/client/api/state/query/CollectionsFilterField;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getLocalValue ()Lkotlin/jvm/functions/Function1;
+	public fun getRemote ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/getstream/feeds/android/client/api/state/query/CollectionsFilterField$Companion {
+	public final fun getCreatedAt ()Lio/getstream/feeds/android/client/api/state/query/CollectionsFilterField;
+	public final fun getId ()Lio/getstream/feeds/android/client/api/state/query/CollectionsFilterField;
+	public final fun getName ()Lio/getstream/feeds/android/client/api/state/query/CollectionsFilterField;
+	public final fun getUpdatedAt ()Lio/getstream/feeds/android/client/api/state/query/CollectionsFilterField;
+}
+
+public final class io/getstream/feeds/android/client/api/state/query/CollectionsQuery {
+	public fun <init> ()V
+	public fun <init> (Lio/getstream/android/core/api/filter/Filter;Ljava/util/List;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Lio/getstream/android/core/api/filter/Filter;Ljava/util/List;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/getstream/android/core/api/filter/Filter;
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Ljava/lang/Integer;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun copy (Lio/getstream/android/core/api/filter/Filter;Ljava/util/List;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;)Lio/getstream/feeds/android/client/api/state/query/CollectionsQuery;
+	public static synthetic fun copy$default (Lio/getstream/feeds/android/client/api/state/query/CollectionsQuery;Lio/getstream/android/core/api/filter/Filter;Ljava/util/List;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/getstream/feeds/android/client/api/state/query/CollectionsQuery;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFilter ()Lio/getstream/android/core/api/filter/Filter;
+	public final fun getLimit ()Ljava/lang/Integer;
+	public final fun getNext ()Ljava/lang/String;
+	public final fun getPrevious ()Ljava/lang/String;
+	public final fun getSort ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/getstream/feeds/android/client/api/state/query/CollectionsSort : io/getstream/android/core/api/sort/Sort {
+	public static final field Companion Lio/getstream/feeds/android/client/api/state/query/CollectionsSort$Companion;
+	public fun <init> (Lio/getstream/feeds/android/client/api/state/query/CollectionsSortField;Lio/getstream/android/core/api/sort/SortDirection;)V
+}
+
+public final class io/getstream/feeds/android/client/api/state/query/CollectionsSort$Companion {
+	public final fun getDefault ()Ljava/util/List;
+}
+
+public abstract interface class io/getstream/feeds/android/client/api/state/query/CollectionsSortField : io/getstream/android/core/api/sort/SortField {
+}
+
+public final class io/getstream/feeds/android/client/api/state/query/CollectionsSortField$CreatedAt : io/getstream/android/core/api/sort/SortField, io/getstream/feeds/android/client/api/state/query/CollectionsSortField {
+	public static final field INSTANCE Lio/getstream/feeds/android/client/api/state/query/CollectionsSortField$CreatedAt;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getComparator ()Lio/getstream/android/core/api/sort/AnySortComparator;
+	public fun getRemote ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/getstream/feeds/android/client/api/state/query/CollectionsSortField$Id : io/getstream/android/core/api/sort/SortField, io/getstream/feeds/android/client/api/state/query/CollectionsSortField {
+	public static final field INSTANCE Lio/getstream/feeds/android/client/api/state/query/CollectionsSortField$Id;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getComparator ()Lio/getstream/android/core/api/sort/AnySortComparator;
+	public fun getRemote ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/getstream/feeds/android/client/api/state/query/CollectionsSortField$UpdatedAt : io/getstream/android/core/api/sort/SortField, io/getstream/feeds/android/client/api/state/query/CollectionsSortField {
+	public static final field INSTANCE Lio/getstream/feeds/android/client/api/state/query/CollectionsSortField$UpdatedAt;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getComparator ()Lio/getstream/android/core/api/sort/AnySortComparator;
 	public fun getRemote ()Ljava/lang/String;
