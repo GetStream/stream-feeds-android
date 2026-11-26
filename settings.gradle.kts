@@ -35,6 +35,5 @@ buildCache {
     local {
         isEnabled = !System.getenv().containsKey("CI") ||
             System.getenv("GRADLE_LOCAL_BUILD_CACHE") == "true"
-        removeUnusedEntriesAfterDays = 7
     }
 }
