@@ -207,7 +207,9 @@ internal class FeedImpl(
             if (next == null) {
                 refetchFirstPage()
             } else {
-                val page = activitiesPageQuery(limit = null).copy(activityNext = next)
+                // The first page handles the watch, so a later page never starts it again
+                val page =
+                    activitiesPageQuery(limit = null).copy(activityNext = next, watch = false)
                 feedsRepository.getOrCreateFeed(page).getOrThrow()
             }
         if (next == null) {

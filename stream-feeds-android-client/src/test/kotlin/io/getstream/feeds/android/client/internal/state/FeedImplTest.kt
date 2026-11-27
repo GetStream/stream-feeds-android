@@ -1163,6 +1163,8 @@ internal class FeedImplTest {
                 followerLimit = 0,
                 followingLimit = 0,
                 memberLimit = 0,
+                // Only the first page watches the feed
+                watch = false,
             )
         coEvery { feedsRepository.getOrCreateFeed(firstQuery) } returns
             Result.success(getOrCreateInfo(refreshedFeed, activities = firstPage))
@@ -1245,14 +1247,26 @@ internal class FeedImplTest {
 
     @Test
     fun `on refetch after the feed stopped being watched, then do not watch it again`() = runTest {
-        val feed = createFeed(FeedQuery(fid, watch = true))
-        setupInitialState(feed, activities = listOf(activityData("activity-1")))
+        val feed = createFeed(FeedQuery(fid, watch = true, activityLimit = 1))
+        // Two pages of the query's limit
+        setupInitialState(feed, activities = listOf(activityData("1"), activityData("2")))
         every { feedWatchHandler.isWatching(fid) } returns false
+        val queries = mutableListOf<FeedQuery>()
+        coEvery { feedsRepository.getOrCreateFeed(capture(queries)) } answers
+            {
+                val firstPage = queries.last().activityNext == null
+                val activity = activityData(if (firstPage) "1" else "2")
+                Result.success(
+                    getOrCreateInfo(feedData(), activities = listOf(activity))
+                        .copy(pagination = PaginationData(next = "cursor".takeIf { firstPage }))
+                )
+            }
 
         feed.refetch()
 
         coVerify(exactly = 0) { feedWatchHandler.rewatch(any(), any()) }
-        coVerify { feedsRepository.getOrCreateFeed(FeedQuery(fid, watch = false, memberLimit = 0)) }
+        assertEquals(listOf(null, "cursor"), queries.map(FeedQuery::activityNext))
+        assertEquals(listOf(false, false), queries.map(FeedQuery::watch))
     }
 
     @Test
