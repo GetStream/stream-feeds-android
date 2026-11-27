@@ -18,6 +18,7 @@ package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.android.core.api.filter.Filters
 import io.getstream.android.core.api.filter.equal
+import io.getstream.android.core.api.model.exceptions.StreamEndpointException
 import io.getstream.android.core.api.subscribe.StreamSubscriptionManager
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.model.ActivityData
@@ -61,6 +62,7 @@ import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventList
 import io.getstream.feeds.android.client.internal.subscribe.onEvent
 import io.getstream.feeds.android.client.internal.utils.flatMap
 import io.getstream.feeds.android.client.internal.utils.refetchPages
+import io.getstream.feeds.android.client.internal.utils.refetchPagesAround
 import io.getstream.feeds.android.network.models.AcceptFollowRequest
 import io.getstream.feeds.android.network.models.AddActivityRequest
 import io.getstream.feeds.android.network.models.AddBookmarkRequest
@@ -78,6 +80,7 @@ import io.getstream.feeds.android.network.models.UpdateCommentRequest
 import io.getstream.feeds.android.network.models.UpdateFeedMembersRequest
 import io.getstream.feeds.android.network.models.UpdateFeedRequest
 import io.getstream.feeds.android.network.models.UpdateFollowRequest
+import java.net.HttpURLConnection.HTTP_NOT_FOUND
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 
@@ -160,6 +163,12 @@ internal class FeedImpl(
         reconnectionRefetchHandler.register(this)
     }
 
+    /**
+     * The activity that the loaded activities were last loaded around, which the refetch stays
+     * around. It is null when they were loaded from the top of the feed.
+     */
+    @Volatile private var aroundActivityId: String? = null
+
     private val group: String
         get() = fid.group
 
@@ -179,6 +188,7 @@ internal class FeedImpl(
         return feedsRepository
             .getOrCreateFeed(query)
             .onSuccess {
+                aroundActivityId = query.activityIdAround
                 _state.onQueryFeed(it)
                 feedOwnValuesRepository.cache(it.feed)
             }
@@ -189,7 +199,22 @@ internal class FeedImpl(
         get() = fid.takeIf { query.watch && _state.feed.value != null }
 
     override suspend fun refetch() {
-        super.refetch()
+        val anchor = refetchAnchor()
+        if (anchor == null) {
+            super.refetch()
+        } else {
+            val (anchorId, index) = anchor
+            val result =
+                refetchPagesAround(
+                    anchorId = anchorId,
+                    loadedBefore = index,
+                    loadedAfter = _state.activities.value.size - index - 1,
+                    idSelector = ::idOf,
+                ) { previous, next ->
+                    fetchPage(anchorId, previous, next)
+                }
+            onRefetched(result)
+        }
         if (_state.followRequestsPagination != null) {
             refetchFollowRequests()
         }
@@ -202,17 +227,42 @@ internal class FeedImpl(
 
     override fun idOf(model: FeedItem): Any = model.id
 
-    override suspend fun fetchPage(next: String?): PaginationResult<FeedItem> {
+    override suspend fun fetchPage(next: String?): PaginationResult<FeedItem> =
+        fetchPage(aroundId = null, previous = null, next = next)
+
+    /**
+     * The activity to refetch around and its position in the loaded activities, or null to refetch
+     * from the top of the feed: nothing was loaded around an activity, the loaded activities start
+     * at the top of the feed anyway, or the activity is not loaded anymore.
+     */
+    private fun refetchAnchor(): Pair<String, Int>? {
+        val anchorId = aroundActivityId ?: return null
+        if (_state.feed.value == null || !_state.canLoadPreviousActivities) return null
+        val index = _state.activities.value.indexOfFirst { it.id == anchorId }
+        return if (index >= 0) anchorId to index else null
+    }
+
+    /**
+     * Loads the page at [previous] or [next], or the first page of the refetch if both are null:
+     * the page around [aroundId], or the top of the feed if it is null.
+     */
+    private suspend fun fetchPage(
+        aroundId: String?,
+        previous: String?,
+        next: String?,
+    ): PaginationResult<FeedItem> {
+        val firstPage = previous == null && next == null
         val info =
-            if (next == null) {
-                refetchFirstPage()
+            if (firstPage) {
+                refetchFirstPage(aroundId)
             } else {
-                // The first page handles the watch, so a later page never starts it again
+                // The first page handles the watch, so another page never starts it again
                 val page =
-                    activitiesPageQuery(limit = null).copy(activityNext = next, watch = false)
+                    activitiesPageQuery(limit = null)
+                        .copy(activityPrevious = previous, activityNext = next, watch = false)
                 feedsRepository.getOrCreateFeed(page).getOrThrow()
             }
-        if (next == null) {
+        if (firstPage) {
             // Only the first page has the rest of the feed data
             currentCoroutineContext().ensureActive()
             _state.onRefetchFeed(info)
@@ -232,20 +282,43 @@ internal class FeedImpl(
     }
 
     /**
-     * The refetch starts at the top of the feed, also after loading around an activity. For a
-     * watched feed this request is also what starts watching it again after a reconnection.
+     * The refetch starts around [aroundId], or at the top of the feed if it is null. For a watched
+     * feed this request is also what starts watching it again after a reconnection.
      */
-    private suspend fun refetchFirstPage(): GetOrCreateInfo {
+    private suspend fun refetchFirstPage(aroundId: String?): GetOrCreateInfo {
         val watching = query.watch && feedWatchHandler.isWatching(fid)
         // Members are not refetched: they are managed by the member list
-        val firstPage = query.copy(activityIdAround = null, memberLimit = 0, watch = watching)
-        return if (watching) {
-            feedWatchHandler
-                .rewatch(fid) { feedsRepository.getOrCreateFeed(firstPage).getOrThrow() }
-                .getOrThrow()
-        } else {
-            feedsRepository.getOrCreateFeed(firstPage).getOrThrow()
+        val topOfFeed = query.copy(activityIdAround = null, memberLimit = 0, watch = watching)
+        val fetch: suspend () -> GetOrCreateInfo = {
+            if (aroundId == null) {
+                feedsRepository.getOrCreateFeed(topOfFeed).getOrThrow()
+            } else {
+                fetchAround(aroundId, topOfFeed)
+            }
         }
+        return if (watching) feedWatchHandler.rewatch(fid, fetch).getOrThrow() else fetch()
+    }
+
+    /**
+     * Loads the page around [aroundId]. The backend answers with a not found error when the
+     * activity is not in the feed anymore: the refetch then starts at the top of the feed, with
+     * [topOfFeed], and stays there.
+     */
+    private suspend fun fetchAround(aroundId: String, topOfFeed: FeedQuery): GetOrCreateInfo {
+        // An around request can't carry page tokens
+        val around =
+            topOfFeed.copy(
+                activityIdAround = aroundId,
+                activityNext = null,
+                activityPrevious = null,
+            )
+        val result = feedsRepository.getOrCreateFeed(around)
+        val error = result.exceptionOrNull() as? StreamEndpointException
+        if (error?.apiError?.statusCode != HTTP_NOT_FOUND) {
+            return result.getOrThrow()
+        }
+        aroundActivityId = null
+        return feedsRepository.getOrCreateFeed(topOfFeed).getOrThrow()
     }
 
     private suspend fun refetchFollowRequests() {
@@ -418,6 +491,7 @@ internal class FeedImpl(
         return feedsRepository
             .getOrCreateFeed(activitiesPageQuery(limit).copy(activityIdAround = activityId))
             .onSuccess {
+                aroundActivityId = activityId
                 _state.onQueryActivitiesAround(
                     activities = it.activities,
                     aggregatedActivities = it.aggregatedActivities,
