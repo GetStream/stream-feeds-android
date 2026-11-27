@@ -73,6 +73,7 @@ import io.getstream.feeds.android.client.api.state.query.PollVotesQuery
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
 import io.getstream.feeds.android.client.api.state.query.UsersQuery
 import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
+import io.getstream.feeds.android.client.internal.client.reconnect.ReconnectionRefetchHandler
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.repository.CollectionsRepository
@@ -150,6 +151,7 @@ internal class FeedsClientImpl(
     override val uploader: FeedUploader,
     override val moderation: Moderation,
     private val feedWatchHandler: FeedWatchHandler,
+    private val reconnectionRefetchHandler: ReconnectionRefetchHandler,
     private val logger: StreamLogger,
     scope: CoroutineScope,
     errorBus: Flow<StreamClientException>,
@@ -241,6 +243,7 @@ internal class FeedsClientImpl(
             feedOwnValuesRepository = feedOwnValuesRepository,
             subscriptionManager = stateEventsSubscriptionManager,
             feedWatchHandler = feedWatchHandler,
+            reconnectionRefetchHandler = reconnectionRefetchHandler,
         )
 
     override fun feedList(query: FeedsQuery): FeedList =

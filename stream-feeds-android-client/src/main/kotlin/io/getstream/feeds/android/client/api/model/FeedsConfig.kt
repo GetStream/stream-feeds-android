@@ -31,9 +31,14 @@ import io.getstream.feeds.android.client.api.logging.LoggingConfig
  *   WebSocket. Headers controlled by the SDK or its HTTP stack cannot be overridden and are ignored
  *   with a warning. Building the client rejects a name or value that is not valid HTTP, or two
  *   names differing only in case, which HTTP treats as one header.
+ * @param refetchOnReconnect Whether state objects load their data again after the WebSocket
+ *   reconnects, to pick up the changes made while it was disconnected. When `false`, feeds with
+ *   [watch][io.getstream.feeds.android.client.api.state.query.FeedQuery.watch] set are still
+ *   watched again, and calling `get()` or `getOrCreate()` updates the data.
  */
 public class FeedsConfig(
     public val customUploader: FeedUploader? = null,
     public val loggingConfig: LoggingConfig = LoggingConfig(),
     public val customHeaders: Map<String, String> = emptyMap(),
+    public val refetchOnReconnect: Boolean = true,
 )

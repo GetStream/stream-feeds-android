@@ -31,6 +31,7 @@ import io.getstream.feeds.android.client.api.model.request.ActivityAddCommentReq
 import io.getstream.feeds.android.client.api.state.query.ActivitiesFilterField
 import io.getstream.feeds.android.client.api.state.query.FeedQuery
 import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
+import io.getstream.feeds.android.client.internal.client.reconnect.ReconnectionRefetchHandler
 import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
@@ -48,6 +49,7 @@ import io.getstream.feeds.android.client.internal.state.event.StateUpdateEvent.C
 import io.getstream.feeds.android.client.internal.state.event.handler.defaultOnNewActivity
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
 import io.getstream.feeds.android.client.internal.test.TestData.activityData
+import io.getstream.feeds.android.client.internal.test.TestData.aggregatedActivityData
 import io.getstream.feeds.android.client.internal.test.TestData.bookmarkData
 import io.getstream.feeds.android.client.internal.test.TestData.commentData
 import io.getstream.feeds.android.client.internal.test.TestData.feedData
@@ -79,6 +81,7 @@ import io.getstream.feeds.android.network.models.UpdateFeedRequest
 import io.mockk.called
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
@@ -96,8 +99,19 @@ internal class FeedImplTest {
     private val pollsRepository: PollsRepository = mockk(relaxed = true)
     private val feedOwnValuesRepository: FeedOwnValuesRepository = mockk(relaxed = true)
     private val feedWatchHandler: FeedWatchHandler = mockk(relaxed = true)
+    private val reconnectionRefetchHandler: ReconnectionRefetchHandler = mockk(relaxed = true)
     private val stateEventListener: StateUpdateEventListener = mockk(relaxed = true)
     private val fid = FeedId("group:id")
+
+    init {
+        // A watched feed, whose rewatch runs the request it is given
+        every { feedWatchHandler.isWatching(any()) } returns true
+        coEvery { feedWatchHandler.rewatch(any(), any()) } coAnswers
+            {
+                val fetch = secondArg<suspend () -> GetOrCreateInfo>()
+                runCatching { fetch() }
+            }
+    }
 
     @Test
     fun `on getOrCreate with watch enabled, then call feedWatchHandler`() = runTest {
@@ -1110,6 +1124,178 @@ internal class FeedImplTest {
         verify { stateEventListener.onEvent(ActivityAdded(FidScope.unknown, activity)) }
     }
 
+    @Test
+    fun `on refetch with nothing loaded, then do nothing`() = runTest {
+        val feed = createFeed()
+
+        feed.refetch()
+
+        coVerify(exactly = 0) { feedsRepository.getOrCreateFeed(any()) }
+    }
+
+    @Test
+    fun `on refetch, then load pages until they cover the loaded activities`() = runTest {
+        val query =
+            FeedQuery(
+                fid = fid,
+                activityLimit = 2,
+                memberLimit = 5,
+                activityIdAround = "activity-1",
+            )
+        val feed = createFeed(query)
+        val member = feedMemberData()
+        setupInitialState(
+            feed,
+            // More than a page of the query's limit, as after loading more
+            activities = (1..3).map { activityData("activity-$it") },
+            members = listOf(member),
+        )
+        val firstPage = listOf(activityData("activity-0"), activityData("activity-1"))
+        val secondPage = listOf(activityData("activity-2"))
+        val refreshedFeed = feedData(name = "Refreshed")
+        // The first page starts at the top of the feed and leaves the members out
+        val firstQuery = query.copy(activityIdAround = null, memberLimit = 0)
+        val secondQuery =
+            FeedQuery(
+                fid = fid,
+                activityLimit = 2,
+                activityNext = "cursor",
+                followerLimit = 0,
+                followingLimit = 0,
+                memberLimit = 0,
+                // Only the first page watches the feed
+                watch = false,
+            )
+        coEvery { feedsRepository.getOrCreateFeed(firstQuery) } returns
+            Result.success(getOrCreateInfo(refreshedFeed, activities = firstPage))
+        coEvery { feedsRepository.getOrCreateFeed(secondQuery) } returns
+            Result.success(
+                getOrCreateInfo(feedData(), activities = secondPage)
+                    .copy(pagination = PaginationData(next = "next-cursor"))
+            )
+
+        feed.refetch()
+
+        assertEquals(firstPage + secondPage, feed.state.activities.value)
+        assertEquals(PaginationData(next = "next-cursor"), feed.state.activitiesPagination)
+        assertEquals(refreshedFeed, feed.state.feed.value)
+        assertEquals(listOf(member), feed.state.members.value)
+    }
+
+    @Test
+    fun `on refetch of an aggregated feed, then replace the aggregated activities`() = runTest {
+        val feed = createFeed()
+        val loaded = aggregatedActivityData(group = "group-1")
+        coEvery { feedsRepository.getOrCreateFeed(any()) } returns
+            Result.success(
+                getOrCreateInfo(feedData()).copy(aggregatedActivities = listOf(loaded, loaded))
+            )
+        feed.getOrCreate()
+        val firstPage = listOf(aggregatedActivityData(group = "group-2"))
+        val secondPage = listOf(aggregatedActivityData(group = "group-1"))
+        coEvery { feedsRepository.getOrCreateFeed(any()) } returnsMany
+            listOf(
+                Result.success(getOrCreateInfo(feedData()).copy(aggregatedActivities = firstPage)),
+                Result.success(
+                    getOrCreateInfo(feedData())
+                        .copy(aggregatedActivities = secondPage, pagination = PaginationData())
+                ),
+            )
+
+        feed.refetch()
+
+        assertEquals(firstPage + secondPage, feed.state.aggregatedActivities.value)
+        assertEquals(PaginationData(), feed.state.activitiesPagination)
+    }
+
+    @Test
+    fun `on refetch with follow requests loaded, then refetch them`() = runTest {
+        val feed = createFeed()
+        setupInitialState(feed)
+        coEvery { feedsRepository.queryFollows(any()) } returns
+            Result.success(PaginationResult(listOf(pendingRequest("user:1")), PaginationData()))
+        feed.queryFollowRequests()
+        val refreshed = listOf(pendingRequest("user:2"))
+        coEvery { feedsRepository.queryFollows(any()) } returns
+            Result.success(PaginationResult(refreshed, PaginationData()))
+
+        feed.refetch()
+
+        assertEquals(refreshed, feed.state.followRequests.value)
+    }
+
+    @Test
+    fun `on refetch without follow requests loaded, then do not query them`() = runTest {
+        val feed = createFeed()
+        setupInitialState(feed)
+
+        feed.refetch()
+
+        coVerify(exactly = 0) { feedsRepository.queryFollows(any()) }
+    }
+
+    @Test
+    fun `on refetch of a watched feed, then fetch the first page as a rewatch`() = runTest {
+        val feed = createFeed(FeedQuery(fid, watch = true))
+        setupInitialState(feed, activities = listOf(activityData("activity-1")))
+
+        feed.refetch()
+
+        coVerify(exactly = 1) { feedWatchHandler.rewatch(fid, any()) }
+        coVerify { feedsRepository.getOrCreateFeed(FeedQuery(fid, watch = true, memberLimit = 0)) }
+    }
+
+    @Test
+    fun `on refetch after the feed stopped being watched, then do not watch it again`() = runTest {
+        val feed = createFeed(FeedQuery(fid, watch = true, activityLimit = 1))
+        // Two pages of the query's limit
+        setupInitialState(feed, activities = listOf(activityData("1"), activityData("2")))
+        every { feedWatchHandler.isWatching(fid) } returns false
+        val queries = mutableListOf<FeedQuery>()
+        coEvery { feedsRepository.getOrCreateFeed(capture(queries)) } answers
+            {
+                val firstPage = queries.last().activityNext == null
+                val activity = activityData(if (firstPage) "1" else "2")
+                Result.success(
+                    getOrCreateInfo(feedData(), activities = listOf(activity))
+                        .copy(pagination = PaginationData(next = "cursor".takeIf { firstPage }))
+                )
+            }
+
+        feed.refetch()
+
+        coVerify(exactly = 0) { feedWatchHandler.rewatch(any(), any()) }
+        assertEquals(listOf(null, "cursor"), queries.map(FeedQuery::activityNext))
+        assertEquals(listOf(false, false), queries.map(FeedQuery::watch))
+    }
+
+    @Test
+    fun `on rewatchedFeed, then return the feed only when it is watched and loaded`() = runTest {
+        val notLoaded = createFeed(FeedQuery(fid, watch = true))
+        val notWatched = createFeed(FeedQuery(fid, watch = false))
+        val watched = createFeed(FeedQuery(fid, watch = true))
+        setupInitialState(notWatched)
+        setupInitialState(watched)
+
+        assertNull(notLoaded.rewatchedFeed)
+        assertNull(notWatched.rewatchedFeed)
+        assertEquals(fid, watched.rewatchedFeed)
+    }
+
+    @Test
+    fun `on refetch when a page fails, then throw and keep the loaded activities`() = runTest {
+        val feed = createFeed()
+        val loaded = listOf(activityData("activity-1"))
+        setupInitialState(feed, activities = loaded)
+        val error = IllegalStateException("failed")
+        coEvery { feedsRepository.getOrCreateFeed(any()) } returns Result.failure(error)
+
+        val result = runCatching { feed.refetch() }
+
+        assertEquals(error, result.exceptionOrNull())
+        assertEquals(loaded, feed.state.activities.value)
+    }
+
     private fun createFeed(query: FeedQuery = FeedQuery(fid)) =
         FeedImpl(
             query = query,
@@ -1123,6 +1309,7 @@ internal class FeedImplTest {
             feedOwnValuesRepository = feedOwnValuesRepository,
             subscriptionManager = TestSubscriptionManager(stateEventListener),
             feedWatchHandler = feedWatchHandler,
+            reconnectionRefetchHandler = reconnectionRefetchHandler,
         )
 
     private fun pendingRequest(source: String, createdAt: Long = 1000) =

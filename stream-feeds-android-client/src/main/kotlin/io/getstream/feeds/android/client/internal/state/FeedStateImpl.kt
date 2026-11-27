@@ -193,6 +193,22 @@ internal class FeedStateImpl(
         _aggregatedActivities.update { aggregatedActivities }
     }
 
+    override fun onRefetchFeed(result: GetOrCreateInfo) {
+        _feed.update { result.feed }
+        _followers.update { result.followers }
+        _following.update { result.following }
+        _pinnedActivities.update { result.pinnedActivities }
+        _notificationStatus.update { result.notificationStatus }
+    }
+
+    override fun onRefetchActivities(
+        activities: List<ActivityData>,
+        aggregatedActivities: List<AggregatedActivityData>,
+        pagination: PaginationData,
+    ) {
+        onQueryActivitiesAround(activities, aggregatedActivities, pagination)
+    }
+
     override fun onActivityAdded(activity: ActivityData, action: InsertionAction) {
         when (action) {
             InsertionAction.AddToStart -> {
@@ -616,6 +632,19 @@ internal interface FeedStateUpdates {
 
     /** Handles the result of a query for the activities around an activity. */
     fun onQueryActivitiesAround(
+        activities: List<ActivityData>,
+        aggregatedActivities: List<AggregatedActivityData>,
+        pagination: PaginationData,
+    )
+
+    /**
+     * Handles the feed data loaded again after a reconnection. The activities are replaced once all
+     * their pages are loaded, and the members are left to the member list.
+     */
+    fun onRefetchFeed(result: GetOrCreateInfo)
+
+    /** Handles the activities loaded again after a reconnection, replacing the loaded ones. */
+    fun onRefetchActivities(
         activities: List<ActivityData>,
         aggregatedActivities: List<AggregatedActivityData>,
         pagination: PaginationData,

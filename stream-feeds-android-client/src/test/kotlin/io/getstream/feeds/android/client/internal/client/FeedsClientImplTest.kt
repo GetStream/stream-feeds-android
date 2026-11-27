@@ -142,6 +142,7 @@ internal class FeedsClientImplTest {
             uploader = uploader,
             moderation = moderation,
             feedWatchHandler = feedWatchHandler,
+            reconnectionRefetchHandler = mockk(relaxed = true),
             logger = logger,
             scope = scope,
             errorBus = errorBus,

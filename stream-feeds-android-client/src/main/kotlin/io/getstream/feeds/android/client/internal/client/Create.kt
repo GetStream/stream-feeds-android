@@ -46,6 +46,7 @@ import io.getstream.feeds.android.client.api.file.FeedUploader
 import io.getstream.feeds.android.client.api.model.FeedsConfig
 import io.getstream.feeds.android.client.api.model.User
 import io.getstream.feeds.android.client.internal.client.reconnect.FeedWatchHandler
+import io.getstream.feeds.android.client.internal.client.reconnect.ReconnectionRefetchHandler
 import io.getstream.feeds.android.client.internal.file.StreamFeedUploader
 import io.getstream.feeds.android.client.internal.http.FeedsSingleFlightApi
 import io.getstream.feeds.android.client.internal.http.createHttpConfig
@@ -240,6 +241,21 @@ internal fun createFeedsClient(
     val moderation = ModerationImpl(moderationRepository)
     val errorBus = MutableSharedFlow<StreamClientException>(extraBufferCapacity = 100)
 
+    val reconnectionRefetchHandler =
+        ReconnectionRefetchHandler(
+            connectionState = client.connectionState,
+            // Like the state event listeners, there is one per state object in use
+            refetchables =
+                StreamSubscriptionManager(
+                    logProvider.taggedLogger("RefetchSubscriptions"),
+                    maxStrongSubscriptions = Integer.MAX_VALUE,
+                    maxWeakSubscriptions = Integer.MAX_VALUE,
+                ),
+            logger = logProvider.taggedLogger("RefetchHandler"),
+            scope = clientScope,
+            enabled = config.refetchOnReconnect,
+        )
+
     val feedWatchHandler =
         FeedWatchHandler(
             connectionState = client.connectionState,
@@ -247,6 +263,7 @@ internal fun createFeedsClient(
             retryProcessor = StreamRetryProcessor(logProvider.taggedLogger("WatchHandler")),
             errorBus = errorBus,
             scope = clientScope,
+            rewatchedByRefetch = reconnectionRefetchHandler::rewatchedFeeds,
         )
 
     // Build client
@@ -276,6 +293,7 @@ internal fun createFeedsClient(
         stateEventsSubscriptionManager = stateEventsSubscriptionManager,
         stateEventEnricher = stateEventEnricher,
         feedWatchHandler = feedWatchHandler,
+        reconnectionRefetchHandler = reconnectionRefetchHandler,
         errorBus = errorBus,
         scope = clientScope,
         logger = logger,
