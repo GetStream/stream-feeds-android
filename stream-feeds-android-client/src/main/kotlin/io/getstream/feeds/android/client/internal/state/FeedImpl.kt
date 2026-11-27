@@ -128,6 +128,7 @@ internal class FeedImpl(
             query = MembersQuery(fid = query.fid),
             feedsRepository = feedsRepository,
             subscriptionManager = subscriptionManager,
+            reconnectionRefetchHandler = reconnectionRefetchHandler,
         )
 
     /** The pending follow requests sent to this feed. */

@@ -44,6 +44,7 @@ internal class CommentReplyListImplTest {
             currentUserId = currentUserId,
             commentsRepository = commentsRepository,
             subscriptionManager = subscriptionManager,
+            reconnectionRefetchHandler = mockk(relaxed = true),
         )
 
     @Test
@@ -120,6 +121,25 @@ internal class CommentReplyListImplTest {
         commentReplyList.get()
 
         assertEquals(1, commentReplyList.state.replies.value.size)
+    }
+
+    @Test
+    fun `on refetch with nothing loaded, then do not query`() = runTest {
+        commentReplyList.refetch()
+
+        coVerify(exactly = 0) { commentsRepository.getCommentReplies(any()) }
+    }
+
+    @Test
+    fun `on refetch, then replace the loaded replies with the refetched ones`() = runTest {
+        setupInitialState()
+        val refetched = PaginationResult<ThreadedCommentData>(emptyList(), PaginationData())
+        coEvery { commentsRepository.getCommentReplies(any()) } returns Result.success(refetched)
+
+        commentReplyList.refetch()
+
+        assertEquals(emptyList<ThreadedCommentData>(), commentReplyList.state.replies.value)
+        assertEquals(PaginationData(), commentReplyList.state.pagination)
     }
 
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {

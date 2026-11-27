@@ -43,6 +43,7 @@ internal class MemberListImplTest {
             query = query,
             feedsRepository = feedsRepository,
             subscriptionManager = subscriptionManager,
+            reconnectionRefetchHandler = mockk(relaxed = true),
         )
 
     @Test
@@ -119,6 +120,26 @@ internal class MemberListImplTest {
         memberList.get()
 
         assertEquals(1, memberList.state.members.value.size)
+    }
+
+    @Test
+    fun `on refetch with nothing loaded, then do not query`() = runTest {
+        memberList.refetch()
+
+        coVerify(exactly = 0) { feedsRepository.queryFeedMembers(any(), any(), any()) }
+    }
+
+    @Test
+    fun `on refetch, then replace the loaded members with the refetched ones`() = runTest {
+        setupInitialState()
+        val refetched = PaginationResult<FeedMemberData>(emptyList(), PaginationData())
+        coEvery { feedsRepository.queryFeedMembers(any(), any(), any()) } returns
+            Result.success(refetched)
+
+        memberList.refetch()
+
+        assertEquals(emptyList<FeedMemberData>(), memberList.state.members.value)
+        assertEquals(PaginationData(), memberList.state.pagination)
     }
 
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {

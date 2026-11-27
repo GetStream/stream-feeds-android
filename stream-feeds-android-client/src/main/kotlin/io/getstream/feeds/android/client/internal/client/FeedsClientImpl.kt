@@ -252,6 +252,7 @@ internal class FeedsClientImpl(
             feedsRepository = feedsRepository,
             feedOwnValuesRepository = feedOwnValuesRepository,
             subscriptionManager = stateEventsSubscriptionManager,
+            reconnectionRefetchHandler = reconnectionRefetchHandler,
         )
 
     override fun followList(query: FollowsQuery): FollowList =
@@ -259,6 +260,7 @@ internal class FeedsClientImpl(
             query = query,
             feedsRepository = feedsRepository,
             subscriptionManager = stateEventsSubscriptionManager,
+            reconnectionRefetchHandler = reconnectionRefetchHandler,
         )
 
     override fun activity(activityId: String, fid: FeedId, language: String?): Activity =
@@ -284,6 +286,7 @@ internal class FeedsClientImpl(
                     currentUserId = user.id,
                     commentsRepository = commentsRepository,
                     subscriptionManager = stateEventsSubscriptionManager,
+                    reconnectionRefetchHandler = reconnectionRefetchHandler,
                 ),
         )
 
@@ -294,6 +297,7 @@ internal class FeedsClientImpl(
             activitiesRepository = activitiesRepository,
             feedOwnValuesRepository = feedOwnValuesRepository,
             subscriptionManager = stateEventsSubscriptionManager,
+            reconnectionRefetchHandler = reconnectionRefetchHandler,
         )
 
     override fun activityReactionList(query: ActivityReactionsQuery): ActivityReactionList =
@@ -301,6 +305,7 @@ internal class FeedsClientImpl(
             query = query,
             activitiesRepository = activitiesRepository,
             subscriptionManager = stateEventsSubscriptionManager,
+            reconnectionRefetchHandler = reconnectionRefetchHandler,
         )
 
     override suspend fun addActivity(request: AddActivityRequest): Result<ActivityData> {
@@ -331,6 +336,7 @@ internal class FeedsClientImpl(
             query = query,
             bookmarksRepository = bookmarksRepository,
             subscriptionManager = stateEventsSubscriptionManager,
+            reconnectionRefetchHandler = reconnectionRefetchHandler,
         )
 
     override fun bookmarkFolderList(query: BookmarkFoldersQuery): BookmarkFolderList =
@@ -338,6 +344,7 @@ internal class FeedsClientImpl(
             query = query,
             bookmarksRepository = bookmarksRepository,
             subscriptionManager = stateEventsSubscriptionManager,
+            reconnectionRefetchHandler = reconnectionRefetchHandler,
         )
 
     override suspend fun updateBookmarkFolder(
@@ -360,6 +367,7 @@ internal class FeedsClientImpl(
             query = query,
             collectionsRepository = collectionsRepository,
             subscriptionManager = stateEventsSubscriptionManager,
+            reconnectionRefetchHandler = reconnectionRefetchHandler,
         )
 
     override suspend fun createCollections(
@@ -390,6 +398,7 @@ internal class FeedsClientImpl(
             commentsRepository = commentsRepository,
             currentUserId = user.id,
             subscriptionManager = stateEventsSubscriptionManager,
+            reconnectionRefetchHandler = reconnectionRefetchHandler,
         )
 
     override fun activityCommentList(query: ActivityCommentsQuery): ActivityCommentList =
@@ -398,6 +407,7 @@ internal class FeedsClientImpl(
             currentUserId = user.id,
             commentsRepository = commentsRepository,
             subscriptionManager = stateEventsSubscriptionManager,
+            reconnectionRefetchHandler = reconnectionRefetchHandler,
         )
 
     override fun commentReplyList(query: CommentRepliesQuery): CommentReplyList =
@@ -406,6 +416,7 @@ internal class FeedsClientImpl(
             currentUserId = user.id,
             commentsRepository = commentsRepository,
             subscriptionManager = stateEventsSubscriptionManager,
+            reconnectionRefetchHandler = reconnectionRefetchHandler,
         )
 
     override fun commentReactionList(query: CommentReactionsQuery): CommentReactionList =
@@ -413,6 +424,7 @@ internal class FeedsClientImpl(
             query = query,
             commentsRepository = commentsRepository,
             subscriptionManager = stateEventsSubscriptionManager,
+            reconnectionRefetchHandler = reconnectionRefetchHandler,
         )
 
     override fun memberList(query: MembersQuery): MemberList =
@@ -420,6 +432,7 @@ internal class FeedsClientImpl(
             query = query,
             feedsRepository = feedsRepository,
             subscriptionManager = stateEventsSubscriptionManager,
+            reconnectionRefetchHandler = reconnectionRefetchHandler,
         )
 
     override fun pollVoteList(query: PollVotesQuery): PollVoteList =
@@ -427,6 +440,7 @@ internal class FeedsClientImpl(
             query = query,
             repository = pollsRepository,
             subscriptionManager = stateEventsSubscriptionManager,
+            reconnectionRefetchHandler = reconnectionRefetchHandler,
         )
 
     override fun pollList(query: PollsQuery): PollList =
@@ -435,10 +449,15 @@ internal class FeedsClientImpl(
             currentUserId = user.id,
             pollsRepository = pollsRepository,
             subscriptionManager = stateEventsSubscriptionManager,
+            reconnectionRefetchHandler = reconnectionRefetchHandler,
         )
 
     override fun moderationConfigList(query: ModerationConfigsQuery): ModerationConfigList =
-        ModerationConfigListImpl(query = query, moderationRepository = moderationRepository)
+        ModerationConfigListImpl(
+            query = query,
+            moderationRepository = moderationRepository,
+            reconnectionRefetchHandler = reconnectionRefetchHandler,
+        )
 
     override fun userList(query: UsersQuery): UserList =
         UserListImpl(query = query, commonRepository = commonRepository)

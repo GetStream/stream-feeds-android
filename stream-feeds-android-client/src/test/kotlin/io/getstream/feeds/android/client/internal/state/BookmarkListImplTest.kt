@@ -42,6 +42,7 @@ internal class BookmarkListImplTest {
             query = query,
             bookmarksRepository = bookmarksRepository,
             subscriptionManager = subscriptionManager,
+            reconnectionRefetchHandler = mockk(relaxed = true),
         )
 
     @Test
@@ -125,6 +126,46 @@ internal class BookmarkListImplTest {
 
         assertEquals(1, bookmarkList.state.bookmarks.value.size)
     }
+
+    @Test
+    fun `on refetch with nothing loaded, then do not query`() = runTest {
+        bookmarkList.refetch()
+
+        coVerify(exactly = 0) { bookmarksRepository.queryBookmarks(any()) }
+    }
+
+    @Test
+    fun `on refetch, then replace the loaded bookmarks with the refetched ones`() = runTest {
+        setupInitialState()
+        val refetched = PaginationResult<BookmarkData>(emptyList(), PaginationData())
+        coEvery { bookmarksRepository.queryBookmarks(any()) } returns Result.success(refetched)
+
+        bookmarkList.refetch()
+
+        assertEquals(emptyList<BookmarkData>(), bookmarkList.state.bookmarks.value)
+        assertEquals(PaginationData(), bookmarkList.state.pagination)
+    }
+
+    @Test
+    fun `on refetch with more than a page loaded, then load the pages with the query and its cursor`() =
+        runTest {
+            setupInitialState()
+            val second = createPaginationResult(listOf(bookmarkData("bookmark-2")))
+            coEvery { bookmarksRepository.queryBookmarks(any()) } returns Result.success(second)
+            bookmarkList.queryMoreBookmarks()
+            val firstPage =
+                createPaginationResult(listOf(bookmarkData("bookmark-1")), next = "cursor")
+            val secondPage = createPaginationResult(listOf(bookmarkData("bookmark-3")))
+            val nextQuery = query.copy(next = "cursor", previous = null)
+            coEvery { bookmarksRepository.queryBookmarks(query) } returns Result.success(firstPage)
+            coEvery { bookmarksRepository.queryBookmarks(nextQuery) } returns
+                Result.success(secondPage)
+
+            bookmarkList.refetch()
+
+            assertEquals(firstPage.models + secondPage.models, bookmarkList.state.bookmarks.value)
+            assertEquals(secondPage.pagination, bookmarkList.state.pagination)
+        }
 
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialBookmarks = listOf(bookmarkData("bookmark-1"))

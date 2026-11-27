@@ -21,6 +21,9 @@ import io.getstream.feeds.android.client.api.model.CommentData
 import io.getstream.feeds.android.client.api.state.CommentList
 import io.getstream.feeds.android.client.api.state.CommentListState
 import io.getstream.feeds.android.client.api.state.query.CommentsQuery
+import io.getstream.feeds.android.client.internal.client.reconnect.PaginatedRefetchable
+import io.getstream.feeds.android.client.internal.client.reconnect.ReconnectionRefetchHandler
+import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.CommentListEventHandler
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
@@ -42,7 +45,8 @@ internal class CommentListImpl(
     private val commentsRepository: CommentsRepository,
     currentUserId: String,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
-) : CommentList {
+    reconnectionRefetchHandler: ReconnectionRefetchHandler,
+) : CommentList, PaginatedRefetchable<CommentData> {
 
     private val _state: CommentListStateImpl = CommentListStateImpl(query, currentUserId)
 
@@ -50,6 +54,7 @@ internal class CommentListImpl(
 
     init {
         subscriptionManager.subscribe(eventHandler)
+        reconnectionRefetchHandler.register(this)
     }
 
     override val state: CommentListState
@@ -67,6 +72,19 @@ internal class CommentListImpl(
         }
         val nextQuery = query.copy(limit = limit, next = next, previous = null)
         return queryComments(nextQuery)
+    }
+
+    override fun loadedCount(): Int? = _state.pagination?.let { _state.comments.value.size }
+
+    override fun idOf(model: CommentData): Any = model.id
+
+    override suspend fun fetchPage(next: String?): PaginationResult<CommentData> {
+        val page = if (next == null) query else query.copy(next = next, previous = null)
+        return commentsRepository.queryComments(page).getOrThrow()
+    }
+
+    override fun onRefetched(result: PaginationResult<CommentData>) {
+        _state.onQueryComments(result, replace = true)
     }
 
     private suspend fun queryComments(

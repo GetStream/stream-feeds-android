@@ -21,6 +21,9 @@ import io.getstream.feeds.android.client.api.model.BookmarkFolderData
 import io.getstream.feeds.android.client.api.state.BookmarkFolderList
 import io.getstream.feeds.android.client.api.state.BookmarkFolderListState
 import io.getstream.feeds.android.client.api.state.query.BookmarkFoldersQuery
+import io.getstream.feeds.android.client.internal.client.reconnect.PaginatedRefetchable
+import io.getstream.feeds.android.client.internal.client.reconnect.ReconnectionRefetchHandler
+import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.BookmarkFolderListEventHandler
@@ -42,7 +45,8 @@ internal class BookmarkFolderListImpl(
     override val query: BookmarkFoldersQuery,
     private val bookmarksRepository: BookmarksRepository,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
-) : BookmarkFolderList {
+    reconnectionRefetchHandler: ReconnectionRefetchHandler,
+) : BookmarkFolderList, PaginatedRefetchable<BookmarkFolderData> {
 
     private val _state: BookmarkFolderListStateImpl = BookmarkFolderListStateImpl(query)
 
@@ -50,6 +54,7 @@ internal class BookmarkFolderListImpl(
 
     init {
         subscriptionManager.subscribe(eventHandler)
+        reconnectionRefetchHandler.register(this)
     }
 
     override val state: BookmarkFolderListState
@@ -74,6 +79,23 @@ internal class BookmarkFolderListImpl(
                 previous = null,
             )
         return queryBookmarkFolders(nextQuery)
+    }
+
+    override fun loadedCount(): Int? = _state.pagination?.let { _state.folders.value.size }
+
+    override fun idOf(model: BookmarkFolderData): Any = model.id
+
+    override suspend fun fetchPage(next: String?): PaginationResult<BookmarkFolderData> {
+        val page = if (next == null) query else query.copy(next = next, previous = null)
+        return bookmarksRepository.queryBookmarkFolders(page).getOrThrow()
+    }
+
+    override fun onRefetched(result: PaginationResult<BookmarkFolderData>) {
+        _state.onQueryBookmarkFolders(
+            result,
+            QueryConfiguration(query.filter, query.sort),
+            replace = true,
+        )
     }
 
     private suspend fun queryBookmarkFolders(

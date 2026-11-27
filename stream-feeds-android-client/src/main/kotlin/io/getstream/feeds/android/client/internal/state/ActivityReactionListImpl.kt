@@ -21,6 +21,9 @@ import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.state.ActivityReactionList
 import io.getstream.feeds.android.client.api.state.ActivityReactionListState
 import io.getstream.feeds.android.client.api.state.query.ActivityReactionsQuery
+import io.getstream.feeds.android.client.internal.client.reconnect.PaginatedRefetchable
+import io.getstream.feeds.android.client.internal.client.reconnect.ReconnectionRefetchHandler
+import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.ActivityReactionListEventHandler
@@ -44,7 +47,8 @@ internal class ActivityReactionListImpl(
     override val query: ActivityReactionsQuery,
     private val activitiesRepository: ActivitiesRepository,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
-) : ActivityReactionList {
+    reconnectionRefetchHandler: ReconnectionRefetchHandler,
+) : ActivityReactionList, PaginatedRefetchable<FeedsReactionData> {
 
     private val _state = ActivityReactionListStateImpl(query)
 
@@ -52,6 +56,7 @@ internal class ActivityReactionListImpl(
 
     init {
         subscriptionManager.subscribe(eventHandler)
+        reconnectionRefetchHandler.register(this)
     }
 
     override val state: ActivityReactionListState
@@ -77,6 +82,25 @@ internal class ActivityReactionListImpl(
                 previous = null,
             )
         return queryActivityReactions(nextQuery)
+    }
+
+    override fun loadedCount(): Int? = _state.pagination?.let { _state.reactions.value.size }
+
+    override fun idOf(model: FeedsReactionData): Any = model.id
+
+    override suspend fun fetchPage(next: String?): PaginationResult<FeedsReactionData> {
+        val page = if (next == null) query else query.copy(next = next, previous = null)
+        return activitiesRepository
+            .queryActivityReactions(page.activityId, page.toRequest())
+            .getOrThrow()
+    }
+
+    override fun onRefetched(result: PaginationResult<FeedsReactionData>) {
+        _state.onQueryActivityReactions(
+            result,
+            QueryConfiguration(query.filter, query.sort),
+            replace = true,
+        )
     }
 
     private suspend fun queryActivityReactions(

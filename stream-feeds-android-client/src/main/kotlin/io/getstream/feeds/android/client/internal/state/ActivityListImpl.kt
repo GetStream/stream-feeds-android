@@ -21,6 +21,9 @@ import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.state.ActivityList
 import io.getstream.feeds.android.client.api.state.ActivityListState
 import io.getstream.feeds.android.client.api.state.query.ActivitiesQuery
+import io.getstream.feeds.android.client.internal.client.reconnect.PaginatedRefetchable
+import io.getstream.feeds.android.client.internal.client.reconnect.ReconnectionRefetchHandler
+import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.repository.ActivitiesRepository
 import io.getstream.feeds.android.client.internal.repository.FeedOwnValuesRepository
@@ -47,7 +50,8 @@ internal class ActivityListImpl(
     private val activitiesRepository: ActivitiesRepository,
     private val feedOwnValuesRepository: FeedOwnValuesRepository,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
-) : ActivityList {
+    reconnectionRefetchHandler: ReconnectionRefetchHandler,
+) : ActivityList, PaginatedRefetchable<ActivityData> {
 
     private val _state: ActivityListStateImpl = ActivityListStateImpl(query, currentUserId)
 
@@ -60,6 +64,7 @@ internal class ActivityListImpl(
 
     init {
         subscriptionManager.subscribe(eventHandler)
+        reconnectionRefetchHandler.register(this)
     }
 
     override val state: ActivityListState
@@ -77,6 +82,25 @@ internal class ActivityListImpl(
         }
         val nextQuery = query.copy(limit = limit ?: query.limit, next = next, previous = null)
         return queryActivities(nextQuery)
+    }
+
+    override fun loadedCount(): Int? = _state.pagination?.let { _state.activities.value.size }
+
+    override fun idOf(model: ActivityData): Any = model.id
+
+    override suspend fun fetchPage(next: String?): PaginationResult<ActivityData> {
+        val page = if (next == null) query else query.copy(next = next, previous = null)
+        return activitiesRepository.queryActivities(page).getOrThrow().also {
+            feedOwnValuesRepository.cacheEnriched(it.models.mapNotNull(ActivityData::currentFeed))
+        }
+    }
+
+    override fun onRefetched(result: PaginationResult<ActivityData>) {
+        _state.onQueryActivities(
+            result,
+            QueryConfiguration(query.filter, query.sort),
+            replace = true,
+        )
     }
 
     private suspend fun queryActivities(

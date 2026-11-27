@@ -42,6 +42,7 @@ internal class BookmarkFolderListImplTest {
             query = query,
             bookmarksRepository = bookmarksRepository,
             subscriptionManager = subscriptionManager,
+            reconnectionRefetchHandler = mockk(relaxed = true),
         )
 
     @Test
@@ -118,6 +119,26 @@ internal class BookmarkFolderListImplTest {
         bookmarkFolderList.get()
 
         assertEquals(1, bookmarkFolderList.state.folders.value.size)
+    }
+
+    @Test
+    fun `on refetch with nothing loaded, then do not query`() = runTest {
+        bookmarkFolderList.refetch()
+
+        coVerify(exactly = 0) { bookmarksRepository.queryBookmarkFolders(any()) }
+    }
+
+    @Test
+    fun `on refetch, then replace the loaded folders with the refetched ones`() = runTest {
+        setupInitialState()
+        val refetched = PaginationResult<BookmarkFolderData>(emptyList(), PaginationData())
+        coEvery { bookmarksRepository.queryBookmarkFolders(any()) } returns
+            Result.success(refetched)
+
+        bookmarkFolderList.refetch()
+
+        assertEquals(emptyList<BookmarkFolderData>(), bookmarkFolderList.state.folders.value)
+        assertEquals(PaginationData(), bookmarkFolderList.state.pagination)
     }
 
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {

@@ -51,6 +51,7 @@ internal class ActivityListImplTest {
             activitiesRepository = activitiesRepository,
             feedOwnValuesRepository = feedOwnValuesRepository,
             subscriptionManager = subscriptionManager,
+            reconnectionRefetchHandler = mockk(relaxed = true),
         )
 
     @Test
@@ -164,6 +165,25 @@ internal class ActivityListImplTest {
     }
 
     // Helper functions to reduce boilerplate
+    @Test
+    fun `on refetch with nothing loaded, then do not query`() = runTest {
+        activityList.refetch()
+
+        coVerify(exactly = 0) { activitiesRepository.queryActivities(any()) }
+    }
+
+    @Test
+    fun `on refetch, then replace the loaded activities with the refetched ones`() = runTest {
+        setupInitialState()
+        val refetched = PaginationResult<ActivityData>(emptyList(), PaginationData())
+        coEvery { activitiesRepository.queryActivities(any()) } returns Result.success(refetched)
+
+        activityList.refetch()
+
+        assertEquals(emptyList<ActivityData>(), activityList.state.activities.value)
+        assertEquals(PaginationData(), activityList.state.pagination)
+    }
+
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
         val initialActivities = listOf(activityData("activity-1"))
         val initialPaginationResult =

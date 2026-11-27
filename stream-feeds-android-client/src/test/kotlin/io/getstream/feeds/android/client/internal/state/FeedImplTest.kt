@@ -1125,6 +1125,14 @@ internal class FeedImplTest {
     }
 
     @Test
+    fun `on creation, then register the feed and its member list for a refetch`() {
+        val feed = createFeed()
+
+        verify(exactly = 1) { reconnectionRefetchHandler.register(feed) }
+        verify(exactly = 1) { reconnectionRefetchHandler.register(ofType<MemberListImpl>()) }
+    }
+
+    @Test
     fun `on refetch with nothing loaded, then do nothing`() = runTest {
         val feed = createFeed()
 

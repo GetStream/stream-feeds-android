@@ -42,6 +42,7 @@ internal class ActivityReactionListImplTest {
             query = query,
             activitiesRepository = activitiesRepository,
             subscriptionManager = subscriptionManager,
+            reconnectionRefetchHandler = mockk(relaxed = true),
         )
 
     @Test
@@ -118,6 +119,26 @@ internal class ActivityReactionListImplTest {
         activityReactionList.get()
 
         assertEquals(1, activityReactionList.state.reactions.value.size)
+    }
+
+    @Test
+    fun `on refetch with nothing loaded, then do not query`() = runTest {
+        activityReactionList.refetch()
+
+        coVerify(exactly = 0) { activitiesRepository.queryActivityReactions(any(), any()) }
+    }
+
+    @Test
+    fun `on refetch, then replace the loaded reactions with the refetched ones`() = runTest {
+        setupInitialState()
+        val refetched = PaginationResult<FeedsReactionData>(emptyList(), PaginationData())
+        coEvery { activitiesRepository.queryActivityReactions(any(), any()) } returns
+            Result.success(refetched)
+
+        activityReactionList.refetch()
+
+        assertEquals(emptyList<FeedsReactionData>(), activityReactionList.state.reactions.value)
+        assertEquals(PaginationData(), activityReactionList.state.pagination)
     }
 
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {

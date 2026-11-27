@@ -34,7 +34,11 @@ internal class ModerationConfigListImplTest {
     private val query = ModerationConfigsQuery(limit = 10)
 
     private val moderationConfigList =
-        ModerationConfigListImpl(query = query, moderationRepository = moderationRepository)
+        ModerationConfigListImpl(
+            query = query,
+            moderationRepository = moderationRepository,
+            reconnectionRefetchHandler = mockk(relaxed = true),
+        )
 
     @Test
     fun `on get, then return moderation configs and update state`() = runTest {
@@ -127,6 +131,29 @@ internal class ModerationConfigListImplTest {
         moderationConfigList.get()
 
         assertEquals(page2, moderationConfigList.state.configs.value)
+    }
+
+    @Test
+    fun `on refetch with nothing loaded, then do not query`() = runTest {
+        moderationConfigList.refetch()
+
+        coVerify(exactly = 0) {
+            moderationRepository.queryModerationConfigs(any<ModerationConfigsQuery>())
+        }
+    }
+
+    @Test
+    fun `on refetch, then replace the loaded configs with the refetched ones`() = runTest {
+        setupInitialState()
+        val refetched = PaginationResult<ModerationConfigData>(emptyList(), PaginationData())
+        coEvery {
+            moderationRepository.queryModerationConfigs(any<ModerationConfigsQuery>())
+        } returns Result.success(refetched)
+
+        moderationConfigList.refetch()
+
+        assertEquals(emptyList<ModerationConfigData>(), moderationConfigList.state.configs.value)
+        assertEquals(PaginationData(), moderationConfigList.state.pagination)
     }
 
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {

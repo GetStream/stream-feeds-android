@@ -21,6 +21,9 @@ import io.getstream.feeds.android.client.api.model.FeedsReactionData
 import io.getstream.feeds.android.client.api.state.CommentReactionList
 import io.getstream.feeds.android.client.api.state.CommentReactionListState
 import io.getstream.feeds.android.client.api.state.query.CommentReactionsQuery
+import io.getstream.feeds.android.client.internal.client.reconnect.PaginatedRefetchable
+import io.getstream.feeds.android.client.internal.client.reconnect.ReconnectionRefetchHandler
+import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.repository.CommentsRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.CommentReactionListEventHandler
@@ -42,7 +45,8 @@ internal class CommentReactionListImpl(
     override val query: CommentReactionsQuery,
     private val commentsRepository: CommentsRepository,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
-) : CommentReactionList {
+    reconnectionRefetchHandler: ReconnectionRefetchHandler,
+) : CommentReactionList, PaginatedRefetchable<FeedsReactionData> {
 
     private val _state: CommentReactionListStateImpl = CommentReactionListStateImpl(query)
 
@@ -50,6 +54,7 @@ internal class CommentReactionListImpl(
 
     init {
         subscriptionManager.subscribe(eventHandler)
+        reconnectionRefetchHandler.register(this)
     }
 
     override val state: CommentReactionListState
@@ -67,6 +72,23 @@ internal class CommentReactionListImpl(
         }
         val nextQuery = query.copy(limit = limit, next = next, previous = null)
         return queryCommentReactions(nextQuery)
+    }
+
+    override fun loadedCount(): Int? = _state.pagination?.let { _state.reactions.value.size }
+
+    override fun idOf(model: FeedsReactionData): Any = model.id
+
+    override suspend fun fetchPage(next: String?): PaginationResult<FeedsReactionData> {
+        val page = if (next == null) query else query.copy(next = next, previous = null)
+        return commentsRepository.queryCommentReactions(page.commentId, page).getOrThrow()
+    }
+
+    override fun onRefetched(result: PaginationResult<FeedsReactionData>) {
+        _state.onQueryReactions(
+            result,
+            QueryConfiguration(query.filter, query.sort),
+            replace = true,
+        )
     }
 
     private suspend fun queryCommentReactions(

@@ -20,6 +20,9 @@ import io.getstream.feeds.android.client.api.model.ModerationConfigData
 import io.getstream.feeds.android.client.api.state.ModerationConfigList
 import io.getstream.feeds.android.client.api.state.ModerationConfigListState
 import io.getstream.feeds.android.client.api.state.query.ModerationConfigsQuery
+import io.getstream.feeds.android.client.internal.client.reconnect.PaginatedRefetchable
+import io.getstream.feeds.android.client.internal.client.reconnect.ReconnectionRefetchHandler
+import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.repository.ModerationRepository
 
@@ -34,8 +37,13 @@ import io.getstream.feeds.android.client.internal.repository.ModerationRepositor
 internal class ModerationConfigListImpl(
     override val query: ModerationConfigsQuery,
     private val moderationRepository: ModerationRepository,
+    reconnectionRefetchHandler: ReconnectionRefetchHandler,
     private val _state: ModerationConfigListStateImpl = ModerationConfigListStateImpl(query),
-) : ModerationConfigList {
+) : ModerationConfigList, PaginatedRefetchable<ModerationConfigData> {
+
+    init {
+        reconnectionRefetchHandler.register(this)
+    }
 
     override val state: ModerationConfigListState
         get() = _state
@@ -59,6 +67,19 @@ internal class ModerationConfigListImpl(
                 previous = null,
             )
         return queryConfigs(nextQuery)
+    }
+
+    override fun loadedCount(): Int? = _state.pagination?.let { _state.configs.value.size }
+
+    override fun idOf(model: ModerationConfigData): Any = model.id
+
+    override suspend fun fetchPage(next: String?): PaginationResult<ModerationConfigData> {
+        val page = if (next == null) query else query.copy(next = next, previous = null)
+        return moderationRepository.queryModerationConfigs(page).getOrThrow()
+    }
+
+    override fun onRefetched(result: PaginationResult<ModerationConfigData>) {
+        _state.onLoadConfigs(result, QueryConfiguration(query.filter, query.sort), replace = true)
     }
 
     private suspend fun queryConfigs(

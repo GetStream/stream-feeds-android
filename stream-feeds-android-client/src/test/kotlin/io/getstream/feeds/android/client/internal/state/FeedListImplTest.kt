@@ -48,6 +48,7 @@ internal class FeedListImplTest {
             feedsRepository = feedsRepository,
             feedOwnValuesRepository = feedOwnValuesRepository,
             subscriptionManager = subscriptionManager,
+            reconnectionRefetchHandler = mockk(relaxed = true),
         )
 
     @Test
@@ -148,6 +149,25 @@ internal class FeedListImplTest {
         feedList.get()
 
         assertEquals(1, feedList.state.feeds.value.size)
+    }
+
+    @Test
+    fun `on refetch with nothing loaded, then do not query`() = runTest {
+        feedList.refetch()
+
+        coVerify(exactly = 0) { feedsRepository.queryFeeds(any()) }
+    }
+
+    @Test
+    fun `on refetch, then replace the loaded feeds with the refetched ones`() = runTest {
+        setupInitialState()
+        val refetched = PaginationResult<FeedData>(emptyList(), PaginationData())
+        coEvery { feedsRepository.queryFeeds(any()) } returns Result.success(refetched)
+
+        feedList.refetch()
+
+        assertEquals(emptyList<FeedData>(), feedList.state.feeds.value)
+        assertEquals(PaginationData(), feedList.state.pagination)
     }
 
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {

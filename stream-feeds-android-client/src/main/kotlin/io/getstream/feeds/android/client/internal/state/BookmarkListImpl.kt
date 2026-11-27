@@ -21,6 +21,9 @@ import io.getstream.feeds.android.client.api.model.BookmarkData
 import io.getstream.feeds.android.client.api.state.BookmarkList
 import io.getstream.feeds.android.client.api.state.BookmarkListState
 import io.getstream.feeds.android.client.api.state.query.BookmarksQuery
+import io.getstream.feeds.android.client.internal.client.reconnect.PaginatedRefetchable
+import io.getstream.feeds.android.client.internal.client.reconnect.ReconnectionRefetchHandler
+import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.repository.BookmarksRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.BookmarkListEventHandler
@@ -41,7 +44,8 @@ internal class BookmarkListImpl(
     override val query: BookmarksQuery,
     private val bookmarksRepository: BookmarksRepository,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
-) : BookmarkList {
+    reconnectionRefetchHandler: ReconnectionRefetchHandler,
+) : BookmarkList, PaginatedRefetchable<BookmarkData> {
 
     private val _state: BookmarkListStateImpl = BookmarkListStateImpl(query)
 
@@ -49,6 +53,7 @@ internal class BookmarkListImpl(
 
     init {
         subscriptionManager.subscribe(eventHandler)
+        reconnectionRefetchHandler.register(this)
     }
 
     override val state: BookmarkListState
@@ -66,6 +71,23 @@ internal class BookmarkListImpl(
         }
         val nextQuery = query.copy(limit = limit ?: query.limit, next = next, previous = null)
         return queryBookmarks(nextQuery)
+    }
+
+    override fun loadedCount(): Int? = _state.pagination?.let { _state.bookmarks.value.size }
+
+    override fun idOf(model: BookmarkData): Any = model.id
+
+    override suspend fun fetchPage(next: String?): PaginationResult<BookmarkData> {
+        val page = if (next == null) query else query.copy(next = next, previous = null)
+        return bookmarksRepository.queryBookmarks(page).getOrThrow()
+    }
+
+    override fun onRefetched(result: PaginationResult<BookmarkData>) {
+        _state.onQueryBookmarks(
+            result,
+            QueryConfiguration(query.filter, query.sort),
+            replace = true,
+        )
     }
 
     private suspend fun queryBookmarks(
