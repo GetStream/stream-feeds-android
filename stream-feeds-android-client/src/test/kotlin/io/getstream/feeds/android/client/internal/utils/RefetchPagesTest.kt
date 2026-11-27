@@ -67,7 +67,157 @@ internal class RefetchPagesTest {
         assertEquals(listOf(null, "1"), requested)
     }
 
+    @Test
+    fun `on refetch around, then load both directions until each side is covered`() = runTest {
+        val result =
+            refetchAround(
+                loadedBefore = 4,
+                loadedAfter = 2,
+                around = pages("d", "e", "f"),
+                previous = listOf(pages("b", "c"), pages("a"), pages("z")),
+                next = listOf(pages("g", "h"), pages("i")),
+            )
+
+        // One item before and one after the anchor come with the first page
+        assertEquals(
+            PaginationResult(
+                listOf("a", "b", "c", "d", "e", "f", "g", "h"),
+                PaginationData(next = "next-1", previous = "previous-2"),
+            ),
+            result,
+        )
+        assertEquals(listOf("around", "previous-0", "previous-1", "next-0"), requested)
+    }
+
+    @Test
+    fun `on refetch around with the first page covering both sides, then load it only`() = runTest {
+        val result =
+            refetchAround(
+                loadedBefore = 1,
+                loadedAfter = 1,
+                around = pages("d", "e", "f"),
+                previous = listOf(pages("c")),
+                next = listOf(pages("g")),
+            )
+
+        assertEquals(
+            PaginationResult(
+                listOf("d", "e", "f"),
+                PaginationData(next = "next-0", previous = "previous-0"),
+            ),
+            result,
+        )
+        assertEquals(listOf<String?>("around"), requested)
+    }
+
+    @Test
+    fun `on refetch around with one side running out, then stop that side only`() = runTest {
+        val result =
+            refetchAround(
+                loadedBefore = 10,
+                loadedAfter = 3,
+                around = pages("d", "e", "f"),
+                previous = listOf(pages("c")),
+                next = listOf(pages("g"), pages("h"), pages("i")),
+            )
+
+        assertEquals(
+            PaginationResult(
+                listOf("c", "d", "e", "f", "g", "h"),
+                PaginationData(next = "next-2", previous = null),
+            ),
+            result,
+        )
+        assertEquals(listOf("around", "previous-0", "next-0", "next-1"), requested)
+    }
+
+    @Test
+    fun `on refetch around with a page adding nothing new, then stop that side only`() = runTest {
+        val result =
+            refetchAround(
+                loadedBefore = 10,
+                loadedAfter = 10,
+                around = pages("d", "e", "f"),
+                previous = listOf(pages("c"), pages("b")),
+                next = listOf(pages("g", "e"), pages("f", "g"), pages("h")),
+            )
+
+        // The repeated "e" keeps its place on the first page
+        assertEquals(
+            PaginationResult(
+                listOf("b", "c", "d", "e", "f", "g"),
+                PaginationData(next = "next-2", previous = null),
+            ),
+            result,
+        )
+        assertEquals(listOf("around", "previous-0", "previous-1", "next-0", "next-1"), requested)
+    }
+
+    @Test
+    fun `on refetch around without the anchor in the first page, then load forward only`() =
+        runTest {
+            val result =
+                refetchAround(
+                    loadedBefore = 2,
+                    loadedAfter = 2,
+                    around = pages("a", "b"),
+                    previous = listOf(pages("z")),
+                    next = listOf(pages("c", "d"), pages("f"), pages("g")),
+                )
+
+            // Five items were loaded, so the pages from the start cover five
+            assertEquals(
+                PaginationResult(
+                    listOf("a", "b", "c", "d", "f"),
+                    PaginationData(next = "next-2", previous = "previous-0"),
+                ),
+                result,
+            )
+            assertEquals(listOf("around", "next-0", "next-1"), requested)
+        }
+
     private fun pages(vararg items: String) = items.toList()
+
+    /**
+     * Serves [around] for the anchor "e", then the [previous] and [next] pages in order. The tokens
+     * are the direction and the index of the page they lead to.
+     */
+    private suspend fun refetchAround(
+        loadedBefore: Int,
+        loadedAfter: Int,
+        around: List<String>,
+        previous: List<List<String>>,
+        next: List<List<String>>,
+    ): PaginationResult<String> {
+        fun token(direction: String, index: Int, pages: List<List<String>>) =
+            "$direction-$index".takeIf { index < pages.size }
+        return refetchPagesAround("e", loadedBefore, loadedAfter, idSelector = { it }) {
+            previousToken,
+            nextToken ->
+            requested += previousToken ?: nextToken ?: "around"
+            val index = (previousToken ?: nextToken)?.substringAfter('-')?.toInt()
+            when {
+                index == null ->
+                    PaginationResult(
+                        around,
+                        PaginationData(
+                            next = token("next", 0, next),
+                            previous = token("previous", 0, previous),
+                        ),
+                    )
+                previousToken != null ->
+                    PaginationResult(
+                        previous[index],
+                        PaginationData(previous = token("previous", index + 1, previous)),
+                    )
+                else ->
+                    PaginationResult(
+                        next[index],
+                        PaginationData(next = token("next", index + 1, next)),
+                    )
+            }
+        }
+    }
 
     /** Serves [pages] in order, with the index of the following page as the next page token. */
     private suspend fun refetch(loadedCount: Int, vararg pages: List<String>) =

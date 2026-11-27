@@ -17,6 +17,8 @@
 package io.getstream.feeds.android.client.internal.state
 
 import io.getstream.android.core.api.filter.equal
+import io.getstream.android.core.api.model.exceptions.StreamEndpointErrorData
+import io.getstream.android.core.api.model.exceptions.StreamEndpointException
 import io.getstream.feeds.android.client.api.file.FeedUploadPayload
 import io.getstream.feeds.android.client.api.model.ActivityData
 import io.getstream.feeds.android.client.api.model.FeedAddActivityRequest
@@ -1295,6 +1297,183 @@ internal class FeedImplTest {
         assertEquals(error, result.exceptionOrNull())
         assertEquals(loaded, feed.state.activities.value)
     }
+
+    @Test
+    fun `on refetch after loading around an activity, then refetch around it on both sides`() =
+        runTest {
+            val query = FeedQuery(fid, activityLimit = 3, memberLimit = 5, watch = true)
+            val feed = createFeed(query)
+            loadAroundActivity5(feed)
+            val refreshedFeed = feedData(name = "Refreshed")
+            // The first page stays around the activity and leaves the members out
+            val aroundQuery = query.copy(activityIdAround = "5", memberLimit = 0)
+            // Only the first page watches the feed
+            val pageQuery =
+                FeedQuery(
+                    fid = fid,
+                    activityLimit = 3,
+                    followerLimit = 0,
+                    followingLimit = 0,
+                    memberLimit = 0,
+                    watch = false,
+                )
+            coEvery { feedsRepository.getOrCreateFeed(any()) } returns
+                Result.failure(IllegalStateException("unexpected query"))
+            coEvery { feedsRepository.getOrCreateFeed(aroundQuery) } returns
+                activitiesPage("6", "5", "4", next = "n1", previous = "p1", feed = refreshedFeed)
+            coEvery {
+                feedsRepository.getOrCreateFeed(pageQuery.copy(activityPrevious = "p1"))
+            } returns activitiesPage("9", "8", previous = "p2")
+            coEvery { feedsRepository.getOrCreateFeed(pageQuery.copy(activityNext = "n1")) } returns
+                activitiesPage("3", "2", next = "n2")
+
+            feed.refetch()
+
+            assertEquals(listOf("9", "8", "6", "5", "4", "3", "2"), loadedIds(feed))
+            assertEquals(
+                PaginationData(next = "n2", previous = "p2"),
+                feed.state.activitiesPagination,
+            )
+            assertEquals(refreshedFeed, feed.state.feed.value)
+            coVerify(exactly = 1) { feedWatchHandler.rewatch(fid, any()) }
+        }
+
+    @Test
+    fun `on refetch around an activity with one side running out, then stop that side`() = runTest {
+        val feed = createFeed(FeedQuery(fid, activityLimit = 3))
+        loadAroundActivity5(feed)
+        val queries = mutableListOf<FeedQuery>()
+        coEvery { feedsRepository.getOrCreateFeed(capture(queries)) } answers
+            {
+                val query = queries.last()
+                when {
+                    query.activityIdAround != null ->
+                        activitiesPage("6", "5", "4", next = "n1", previous = "p1")
+                    // The top of the feed, with fewer activities than were loaded
+                    query.activityPrevious != null -> activitiesPage("7")
+                    else -> activitiesPage("3", next = "n2")
+                }
+            }
+
+        feed.refetch()
+
+        assertEquals(listOf("7", "6", "5", "4", "3"), loadedIds(feed))
+        assertEquals(PaginationData(next = "n2"), feed.state.activitiesPagination)
+        assertEquals(listOf("5", null, null), queries.map(FeedQuery::activityIdAround))
+        assertEquals(listOf(null, "p1", null), queries.map(FeedQuery::activityPrevious))
+        assertEquals(listOf(null, null, "n1"), queries.map(FeedQuery::activityNext))
+    }
+
+    @Test
+    fun `on refetch around an activity that is gone, then refetch from the top of the feed`() =
+        runTest {
+            val query = FeedQuery(fid, activityLimit = 3, watch = true)
+            val feed = createFeed(query)
+            loadAroundActivity5(feed)
+            val notFound =
+                StreamEndpointException(
+                    apiError = StreamEndpointErrorData(code = 16, statusCode = 404)
+                )
+            val aroundQuery = query.copy(activityIdAround = "5", memberLimit = 0)
+            coEvery { feedsRepository.getOrCreateFeed(any()) } returns
+                Result.failure(IllegalStateException("unexpected query"))
+            coEvery { feedsRepository.getOrCreateFeed(aroundQuery) } returns
+                Result.failure(notFound)
+            coEvery { feedsRepository.getOrCreateFeed(query.copy(memberLimit = 0)) } returns
+                activitiesPage("9", "8")
+
+            feed.refetch()
+            // The activity is not remembered anymore
+            feed.refetch()
+
+            assertEquals(listOf("9", "8"), loadedIds(feed))
+            assertEquals(false, feed.state.canLoadPreviousActivities)
+            coVerify(exactly = 1) { feedsRepository.getOrCreateFeed(aroundQuery) }
+            // The fallback is part of the same rewatch
+            coVerify(exactly = 2) { feedWatchHandler.rewatch(fid, any()) }
+        }
+
+    @Test
+    fun `on refetch around an activity when the request fails, then throw and keep the state`() =
+        runTest {
+            val feed = createFeed(FeedQuery(fid, activityLimit = 3))
+            loadAroundActivity5(feed)
+            val loaded = loadedIds(feed)
+            val error = IllegalStateException("failed")
+            val queries = mutableListOf<FeedQuery>()
+            coEvery { feedsRepository.getOrCreateFeed(capture(queries)) } returns
+                Result.failure(error)
+
+            val result = runCatching { feed.refetch() }
+
+            assertEquals(error, result.exceptionOrNull())
+            assertEquals(loaded, loadedIds(feed))
+            // No fallback to the top of the feed
+            assertEquals(listOf<String?>("5"), queries.map(FeedQuery::activityIdAround))
+        }
+
+    @Test
+    fun `on refetch after getOrCreate follows loading around, then refetch from the top`() =
+        runTest {
+            val feed = createFeed(FeedQuery(fid, activityLimit = 3))
+            loadAroundActivity5(feed)
+            // Loaded from the top again, with the activity still loaded
+            coEvery { feedsRepository.getOrCreateFeed(any()) } returns
+                activitiesPage("6", "5", next = "next", previous = "previous")
+            feed.getOrCreate()
+            val queries = mutableListOf<FeedQuery>()
+            coEvery { feedsRepository.getOrCreateFeed(capture(queries)) } returns
+                activitiesPage("7", "6")
+
+            feed.refetch()
+
+            assertEquals(listOf("7", "6"), loadedIds(feed))
+            assertEquals(listOf<String?>(null), queries.map(FeedQuery::activityIdAround))
+        }
+
+    @Test
+    fun `on refetch with the page around an activity at the top, then refetch from the top`() =
+        runTest {
+            val feed = createFeed(FeedQuery(fid, activityLimit = 3))
+            setupInitialState(feed)
+            // The activity is close to the top: there is no previous page
+            coEvery { feedsRepository.getOrCreateFeed(any()) } returns
+                activitiesPage("6", "5", next = "next")
+            feed.queryActivitiesAround("5")
+            val queries = mutableListOf<FeedQuery>()
+            coEvery { feedsRepository.getOrCreateFeed(capture(queries)) } returns
+                activitiesPage("7", "6")
+
+            feed.refetch()
+
+            assertEquals(listOf("7", "6"), loadedIds(feed))
+            assertEquals(listOf<String?>(null), queries.map(FeedQuery::activityIdAround))
+        }
+
+    /** Loads `8, 7, 6, 5, 4, 3` around the activity `5`, with a page on both ends. */
+    private suspend fun loadAroundActivity5(feed: FeedImpl) {
+        setupInitialState(feed)
+        coEvery { feedsRepository.getOrCreateFeed(any()) } returns
+            activitiesPage("6", "5", "4", "3", next = "next", previous = "previous")
+        feed.queryActivitiesAround("5")
+        coEvery { feedsRepository.getOrCreateFeed(any()) } returns
+            activitiesPage("8", "7", previous = "previous-2")
+        feed.queryPreviousActivities()
+        assertEquals(listOf("8", "7", "6", "5", "4", "3"), loadedIds(feed))
+    }
+
+    private fun loadedIds(feed: FeedImpl) = feed.state.activities.value.map(ActivityData::id)
+
+    private fun activitiesPage(
+        vararg ids: String,
+        next: String? = null,
+        previous: String? = null,
+        feed: FeedData = feedData(),
+    ): Result<GetOrCreateInfo> =
+        Result.success(
+            getOrCreateInfo(feed, activities = ids.map { activityData(it) })
+                .copy(pagination = PaginationData(next = next, previous = previous))
+        )
 
     private fun createFeed(query: FeedQuery = FeedQuery(fid)) =
         FeedImpl(
