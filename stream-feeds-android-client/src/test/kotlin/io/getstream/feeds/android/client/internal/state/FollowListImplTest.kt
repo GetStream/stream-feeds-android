@@ -42,6 +42,7 @@ internal class FollowListImplTest {
             query = query,
             feedsRepository = feedsRepository,
             subscriptionManager = subscriptionManager,
+            reconnectionRefetchHandler = mockk(relaxed = true),
         )
 
     @Test
@@ -119,6 +120,25 @@ internal class FollowListImplTest {
         followList.get()
 
         assertEquals(page2, followList.state.follows.value)
+    }
+
+    @Test
+    fun `on refetch with nothing loaded, then do not query`() = runTest {
+        followList.refetch()
+
+        coVerify(exactly = 0) { feedsRepository.queryFollows(any()) }
+    }
+
+    @Test
+    fun `on refetch, then replace the loaded follows with the refetched ones`() = runTest {
+        setupInitialState()
+        val refetched = PaginationResult<FollowData>(emptyList(), PaginationData())
+        coEvery { feedsRepository.queryFollows(any()) } returns Result.success(refetched)
+
+        followList.refetch()
+
+        assertEquals(emptyList<FollowData>(), followList.state.follows.value)
+        assertEquals(PaginationData(), followList.state.pagination)
     }
 
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {

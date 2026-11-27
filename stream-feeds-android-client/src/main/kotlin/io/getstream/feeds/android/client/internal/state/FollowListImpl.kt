@@ -21,6 +21,9 @@ import io.getstream.feeds.android.client.api.model.FollowData
 import io.getstream.feeds.android.client.api.state.FollowList
 import io.getstream.feeds.android.client.api.state.FollowListState
 import io.getstream.feeds.android.client.api.state.query.FollowsQuery
+import io.getstream.feeds.android.client.internal.client.reconnect.PaginatedRefetchable
+import io.getstream.feeds.android.client.internal.client.reconnect.ReconnectionRefetchHandler
+import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.FollowListEventHandler
@@ -42,7 +45,8 @@ internal class FollowListImpl(
     override val query: FollowsQuery,
     private val feedsRepository: FeedsRepository,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
-) : FollowList {
+    reconnectionRefetchHandler: ReconnectionRefetchHandler,
+) : FollowList, PaginatedRefetchable<FollowData> {
 
     private val _state: FollowListStateImpl = FollowListStateImpl(query)
 
@@ -50,6 +54,7 @@ internal class FollowListImpl(
 
     init {
         subscriptionManager.subscribe(eventHandler)
+        reconnectionRefetchHandler.register(this)
     }
 
     override val state: FollowListState
@@ -74,6 +79,19 @@ internal class FollowListImpl(
                 previous = null,
             )
         return queryFollows(nextQuery)
+    }
+
+    override fun loadedCount(): Int? = _state.pagination?.let { _state.follows.value.size }
+
+    override fun idOf(model: FollowData): Any = model.id
+
+    override suspend fun fetchPage(next: String?): PaginationResult<FollowData> {
+        val page = if (next == null) query else query.copy(next = next, previous = null)
+        return feedsRepository.queryFollows(page.toRequest()).getOrThrow()
+    }
+
+    override fun onRefetched(result: PaginationResult<FollowData>) {
+        _state.onQueryFollows(result, QueryConfiguration(query.filter, query.sort), replace = true)
     }
 
     private suspend fun queryFollows(

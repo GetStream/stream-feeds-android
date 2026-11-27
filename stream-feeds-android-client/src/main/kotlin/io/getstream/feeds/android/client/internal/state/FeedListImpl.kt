@@ -21,6 +21,9 @@ import io.getstream.feeds.android.client.api.model.FeedData
 import io.getstream.feeds.android.client.api.state.FeedList
 import io.getstream.feeds.android.client.api.state.FeedListState
 import io.getstream.feeds.android.client.api.state.query.FeedsQuery
+import io.getstream.feeds.android.client.internal.client.reconnect.PaginatedRefetchable
+import io.getstream.feeds.android.client.internal.client.reconnect.ReconnectionRefetchHandler
+import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.repository.FeedOwnValuesRepository
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
@@ -41,7 +44,8 @@ internal class FeedListImpl(
     private val feedsRepository: FeedsRepository,
     private val feedOwnValuesRepository: FeedOwnValuesRepository,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
-) : FeedList {
+    reconnectionRefetchHandler: ReconnectionRefetchHandler,
+) : FeedList, PaginatedRefetchable<FeedData> {
 
     private val _state: FeedListStateImpl = FeedListStateImpl(query)
 
@@ -49,6 +53,7 @@ internal class FeedListImpl(
 
     init {
         subscriptionManager.subscribe(eventHandler)
+        reconnectionRefetchHandler.register(this)
     }
 
     override val state: FeedListState
@@ -66,6 +71,21 @@ internal class FeedListImpl(
         }
         val nextQuery = query.copy(limit = limit ?: query.limit, next = next, previous = null)
         return queryFeeds(nextQuery)
+    }
+
+    override fun loadedCount(): Int? = _state.pagination?.let { _state.feeds.value.size }
+
+    override fun idOf(model: FeedData): Any = model.fid
+
+    override suspend fun fetchPage(next: String?): PaginationResult<FeedData> {
+        val page = if (next == null) query else query.copy(next = next, previous = null)
+        return feedsRepository.queryFeeds(page).getOrThrow().also {
+            feedOwnValuesRepository.cacheEnriched(it.models)
+        }
+    }
+
+    override fun onRefetched(result: PaginationResult<FeedData>) {
+        _state.onQueryFeeds(result, QueryConfiguration(query.filter, query.sort), replace = true)
     }
 
     private suspend fun queryFeeds(

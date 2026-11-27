@@ -21,6 +21,9 @@ import io.getstream.feeds.android.client.api.model.PollData
 import io.getstream.feeds.android.client.api.state.PollList
 import io.getstream.feeds.android.client.api.state.PollListState
 import io.getstream.feeds.android.client.api.state.query.PollsQuery
+import io.getstream.feeds.android.client.internal.client.reconnect.PaginatedRefetchable
+import io.getstream.feeds.android.client.internal.client.reconnect.ReconnectionRefetchHandler
+import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.repository.PollsRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.PollListEventHandler
@@ -44,7 +47,8 @@ internal class PollListImpl(
     private val currentUserId: String,
     private val pollsRepository: PollsRepository,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
-) : PollList {
+    reconnectionRefetchHandler: ReconnectionRefetchHandler,
+) : PollList, PaginatedRefetchable<PollData> {
     private val _state: PollListStateImpl = PollListStateImpl(currentUserId = currentUserId, query)
 
     override val state: PollListState
@@ -54,6 +58,7 @@ internal class PollListImpl(
 
     init {
         subscriptionManager.subscribe(eventHandler)
+        reconnectionRefetchHandler.register(this)
     }
 
     override suspend fun get(): Result<List<PollData>> {
@@ -75,6 +80,19 @@ internal class PollListImpl(
                 previous = null,
             )
         return queryPolls(nextQuery)
+    }
+
+    override fun loadedCount(): Int? = _state.pagination?.let { _state.polls.value.size }
+
+    override fun idOf(model: PollData): Any = model.id
+
+    override suspend fun fetchPage(next: String?): PaginationResult<PollData> {
+        val page = if (next == null) query else query.copy(next = next, previous = null)
+        return pollsRepository.queryPolls(page).getOrThrow()
+    }
+
+    override fun onRefetched(result: PaginationResult<PollData>) {
+        _state.onQueryPolls(result, QueryConfiguration(query.filter, query.sort), replace = true)
     }
 
     private suspend fun queryPolls(

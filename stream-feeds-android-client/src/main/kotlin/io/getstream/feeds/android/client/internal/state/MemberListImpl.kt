@@ -21,6 +21,9 @@ import io.getstream.feeds.android.client.api.model.FeedMemberData
 import io.getstream.feeds.android.client.api.state.MemberList
 import io.getstream.feeds.android.client.api.state.MemberListState
 import io.getstream.feeds.android.client.api.state.query.MembersQuery
+import io.getstream.feeds.android.client.internal.client.reconnect.PaginatedRefetchable
+import io.getstream.feeds.android.client.internal.client.reconnect.ReconnectionRefetchHandler
+import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.model.QueryConfiguration
 import io.getstream.feeds.android.client.internal.repository.FeedsRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.MemberListEventHandler
@@ -42,7 +45,8 @@ internal class MemberListImpl(
     override val query: MembersQuery,
     private val feedsRepository: FeedsRepository,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
-) : MemberList {
+    reconnectionRefetchHandler: ReconnectionRefetchHandler,
+) : MemberList, PaginatedRefetchable<FeedMemberData> {
 
     private val _state: MemberListStateImpl = MemberListStateImpl(query)
 
@@ -50,6 +54,7 @@ internal class MemberListImpl(
 
     init {
         subscriptionManager.subscribe(eventHandler)
+        reconnectionRefetchHandler.register(this)
     }
 
     override val state: MemberListState
@@ -80,6 +85,25 @@ internal class MemberListImpl(
     /** Internal property to access the mutable state of the member list. */
     internal val mutableState: MemberListMutableState
         get() = _state
+
+    override fun loadedCount(): Int? = _state.pagination?.let { _state.members.value.size }
+
+    override fun idOf(model: FeedMemberData): Any = model.id
+
+    override suspend fun fetchPage(next: String?): PaginationResult<FeedMemberData> {
+        val page = if (next == null) query else query.copy(next = next, previous = null)
+        return feedsRepository
+            .queryFeedMembers(
+                feedGroupId = page.fid.group,
+                feedId = page.fid.id,
+                request = page.toRequest(),
+            )
+            .getOrThrow()
+    }
+
+    override fun onRefetched(result: PaginationResult<FeedMemberData>) {
+        _state.onQueryMembers(result, QueryConfiguration(query.filter, query.sort), replace = true)
+    }
 
     private suspend fun queryMembers(
         query: MembersQuery,

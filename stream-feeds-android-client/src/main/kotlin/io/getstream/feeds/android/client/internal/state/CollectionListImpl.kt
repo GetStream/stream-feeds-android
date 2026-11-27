@@ -21,6 +21,9 @@ import io.getstream.feeds.android.client.api.model.CollectionData
 import io.getstream.feeds.android.client.api.state.CollectionList
 import io.getstream.feeds.android.client.api.state.CollectionListState
 import io.getstream.feeds.android.client.api.state.query.CollectionsQuery
+import io.getstream.feeds.android.client.internal.client.reconnect.PaginatedRefetchable
+import io.getstream.feeds.android.client.internal.client.reconnect.ReconnectionRefetchHandler
+import io.getstream.feeds.android.client.internal.model.PaginationResult
 import io.getstream.feeds.android.client.internal.repository.CollectionsRepository
 import io.getstream.feeds.android.client.internal.state.event.handler.CollectionListEventHandler
 import io.getstream.feeds.android.client.internal.subscribe.StateUpdateEventListener
@@ -36,7 +39,8 @@ internal class CollectionListImpl(
     override val query: CollectionsQuery,
     private val collectionsRepository: CollectionsRepository,
     private val subscriptionManager: StreamSubscriptionManager<StateUpdateEventListener>,
-) : CollectionList {
+    reconnectionRefetchHandler: ReconnectionRefetchHandler,
+) : CollectionList, PaginatedRefetchable<CollectionData> {
 
     private val _state: CollectionListStateImpl = CollectionListStateImpl(query)
 
@@ -44,6 +48,7 @@ internal class CollectionListImpl(
 
     init {
         subscriptionManager.subscribe(eventHandler)
+        reconnectionRefetchHandler.register(this)
     }
 
     override val state: CollectionListState
@@ -61,6 +66,19 @@ internal class CollectionListImpl(
         }
         val nextQuery = query.copy(limit = limit ?: query.limit, next = next, previous = null)
         return queryCollections(nextQuery)
+    }
+
+    override fun loadedCount(): Int? = _state.pagination?.let { _state.collections.value.size }
+
+    override fun idOf(model: CollectionData): Any = model.reference
+
+    override suspend fun fetchPage(next: String?): PaginationResult<CollectionData> {
+        val page = if (next == null) query else query.copy(next = next, previous = null)
+        return collectionsRepository.queryCollections(page).getOrThrow()
+    }
+
+    override fun onRefetched(result: PaginationResult<CollectionData>) {
+        _state.onQueryCollections(result, replace = true)
     }
 
     private suspend fun queryCollections(

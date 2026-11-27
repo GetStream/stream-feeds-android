@@ -45,6 +45,7 @@ internal class CollectionListImplTest {
             query = query,
             collectionsRepository = collectionsRepository,
             subscriptionManager = subscriptionManager,
+            reconnectionRefetchHandler = mockk(relaxed = true),
         )
 
     @Test
@@ -123,6 +124,25 @@ internal class CollectionListImplTest {
 
         subscriptionManager.onEvent(StateUpdateEvent.CollectionsDeleted(listOf(added.reference)))
         assertEquals(listOf(collectionData("collection-1")), collectionList.state.collections.value)
+    }
+
+    @Test
+    fun `on refetch with nothing loaded, then do not query`() = runTest {
+        collectionList.refetch()
+
+        coVerify(exactly = 0) { collectionsRepository.queryCollections(any()) }
+    }
+
+    @Test
+    fun `on refetch, then replace the loaded collections with the refetched ones`() = runTest {
+        setupInitialState()
+        val refetched = PaginationResult<CollectionData>(emptyList(), PaginationData())
+        coEvery { collectionsRepository.queryCollections(any()) } returns Result.success(refetched)
+
+        collectionList.refetch()
+
+        assertEquals(emptyList<CollectionData>(), collectionList.state.collections.value)
+        assertEquals(PaginationData(), collectionList.state.pagination)
     }
 
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {

@@ -43,6 +43,7 @@ internal class PollListImplTest {
             currentUserId = "user-1",
             pollsRepository = pollsRepository,
             subscriptionManager = subscriptionManager,
+            reconnectionRefetchHandler = mockk(relaxed = true),
         )
 
     @Test
@@ -116,6 +117,25 @@ internal class PollListImplTest {
         pollList.get()
 
         assertEquals(1, pollList.state.polls.value.size)
+    }
+
+    @Test
+    fun `on refetch with nothing loaded, then do not query`() = runTest {
+        pollList.refetch()
+
+        coVerify(exactly = 0) { pollsRepository.queryPolls(any()) }
+    }
+
+    @Test
+    fun `on refetch, then replace the loaded polls with the refetched ones`() = runTest {
+        setupInitialState()
+        val refetched = PaginationResult<PollData>(emptyList(), PaginationData())
+        coEvery { pollsRepository.queryPolls(any()) } returns Result.success(refetched)
+
+        pollList.refetch()
+
+        assertEquals(emptyList<PollData>(), pollList.state.polls.value)
+        assertEquals(PaginationData(), pollList.state.pagination)
     }
 
     private suspend fun setupInitialState(nextCursor: String? = "next-cursor") {
